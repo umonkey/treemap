@@ -10,7 +10,7 @@ use std::time::Duration;
 
 use self::actions::*;
 use self::services::app::AppState;
-use self::utils::{getenv_usize, getenv_string, getenv_u16};
+use self::utils::{get_server_addr, get_server_port, get_workers};
 
 type Result<T> = std::result::Result<T, self::errors::Error>;
 
@@ -31,11 +31,11 @@ async fn main() -> std::io::Result<()> {
     // Enable logging to stderr.
     env_logger::init();
 
-    let workers = getenv_usize("TREEMAP_WORKERS", 1);
-    let host_addr = getenv_string("TREEMAP_ADDR").unwrap_or("0.0.0.0".to_string());
-    let host_port = getenv_u16("TREEMAP_PORT", 8000);
+    let workers = get_workers();
+    let host_addr = get_server_addr();
+    let host_port = get_server_port();
 
-    info!("Running {} workers at {}:{}.", workers, host_addr, host_port);
+    info!("Running {} worker(s) at {}:{}.", workers, host_addr, host_port);
 
     // Create the web server, passing it a closure that will initialize the shared
     // data for each new thread.  When all threads are busy, Actix will create

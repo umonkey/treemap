@@ -7,12 +7,12 @@
  */
 
 use async_sqlite::{Pool, PoolBuilder, JournalMode};
-use log::error;
+use log::{error, info};
 
 use crate::Result;
 use crate::errors::Error;
 use crate::objects::{TreeInfo, TreeList};
-use crate::utils::getenv_string;
+use crate::utils::get_sqlite_path;
 
 pub struct SqliteDatabase {
     pub pool: Pool,
@@ -20,7 +20,9 @@ pub struct SqliteDatabase {
 
 impl SqliteDatabase {
     pub async fn init() -> Result<Self> {
-        let path = getenv_string("TREEMAP_SQLITE_PATH")?;
+        let path = get_sqlite_path()?;
+
+        info!("Using SQLite database from {}.", path);
 
         let pool = match PoolBuilder::new().path(path).journal_mode(JournalMode::Wal).open().await {
             Ok(value) => value,
