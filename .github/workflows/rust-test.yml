@@ -16,7 +16,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+
     - name: Run Clippy
-      run: cargo clippy
+      run: |
+        cd backend
+        cargo clippy
+
     - name: Run tests
-      run: cargo test --verbose
+      run: |
+        cd backend
+        cargo test --verbose
