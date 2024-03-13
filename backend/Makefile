@@ -17,3 +17,6 @@ sqlite-schema:
 
 sqlite-seed:
 	sqlite3 database.sqlite < dev/seed-sqlite.sql
+
+test:
+	cargo test
