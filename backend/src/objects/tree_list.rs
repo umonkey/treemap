@@ -6,11 +6,3 @@ use crate::objects::TreeInfo;
 pub struct TreeList {
     pub trees: Vec<TreeInfo>,
 }
-
-impl TreeList {
-    pub fn create(trees: Vec<TreeInfo>) -> Self {
-        Self {
-            trees,
-        }
-    }
-}

@@ -38,7 +38,7 @@ impl SqliteDatabase {
     /**
      * Read all trees from the database.
      *
-     * https://crates.io/crates/tokio-rusqlite
+     * https://docs.rs/rusqlite/0.30.0/rusqlite/index.html
      */
     #[allow(dead_code)]
     pub async fn get_trees(&self) -> Result<TreeList> {
@@ -75,5 +75,13 @@ impl SqliteDatabase {
         Ok(TreeList {
             trees,
         })
+    }
+}
+
+impl Clone for SqliteDatabase {
+    fn clone(&self) -> Self {
+        Self {
+            pool: self.pool.clone(),
+        }
     }
 }

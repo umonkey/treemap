@@ -4,20 +4,20 @@ use crate::services::SqliteDatabase;
 use crate::Result;
 
 pub struct AppState {
-    db: SqliteDatabase,
     trees: Trees,
 }
 
 impl AppState {
     pub async fn init() -> Result<Self> {
+        let db = SqliteDatabase::init().await?;
+
         Ok(Self {
-            db: SqliteDatabase::init().await?,
-            trees: Trees::init().await,
+            trees: Trees::init(&db).await,
         })
     }
 
     pub async fn get_trees(&self) -> Result<TreeList> {
-        self.trees.get_trees(&self.db).await
+        self.trees.get_trees().await
     }
 
     pub async fn get_tree(&self, id: u64) -> Result<()> {
