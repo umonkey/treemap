@@ -32,7 +32,7 @@ async fn main() -> std::io::Result<()> {
     env_logger::init();
 
     let workers = getenv_usize("TREEMAP_WORKERS", 1);
-    let host_addr = getenv_string("TREEMAP_ADDR", "0.0.0.0");
+    let host_addr = getenv_string("TREEMAP_ADDR").unwrap_or("0.0.0.0".to_string());
     let host_port = getenv_u16("TREEMAP_PORT", 8000);
 
     info!("Running {} workers at {}:{}.", workers, host_addr, host_port);

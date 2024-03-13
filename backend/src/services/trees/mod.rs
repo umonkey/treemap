@@ -3,6 +3,7 @@ use log::debug;
 use crate::Result;
 use crate::errors::Error;
 use crate::objects::{TreeInfo, TreeList};
+use crate::services::SqliteDatabase;
 
 pub struct Trees {
 }
@@ -12,7 +13,7 @@ impl Trees {
         Self { }
     }
 
-    pub async fn get_trees(&self) -> Result<TreeList> {
+    pub async fn get_trees(&self, _db: &SqliteDatabase) -> Result<TreeList> {
         let mut trees: Vec<TreeInfo> = Vec::new();
 
         let tree = TreeInfo::create(1, 1.2, 3.4);

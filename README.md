@@ -19,3 +19,8 @@ The backend is a REST API written in Rust.  It uses the [Actix](https://actix.rs
 ## Getting started
 
 There will be a Docker image with everything compiled.
+
+
+## Motivation
+
+This is a pet project.  I love growing trees, [crowdmapping](https://en.wikipedia.org/wiki/Crowdmapping) and programming.  For me this is also an exercise in advancing my Rust skills, by doing something other than I do on my day job.

@@ -3,12 +3,12 @@ use serde::Serialize;
 #[derive(Debug, Serialize)]
 pub struct TreeInfo {
     pub id: u64,
-    pub lat: f32,
-    pub lon: f32,
+    pub lat: f64,
+    pub lon: f64,
 }
 
 impl TreeInfo {
-    pub fn create(id: u64, lat: f32, lon: f32) -> Self {
+    pub fn create(id: u64, lat: f64, lon: f64) -> Self {
         Self {
             id,
             lat,
