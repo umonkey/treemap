@@ -15,7 +15,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+
+    # Adds cache with some defaults, see https://github.com/marketplace/actions/rust-cache
+    - uses: Swatinem/rust-cache@v2
 
     - name: Run Clippy
       run: |
