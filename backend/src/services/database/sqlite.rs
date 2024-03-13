@@ -7,19 +7,21 @@
  */
 
 use async_sqlite::{Pool, PoolBuilder, JournalMode};
+use async_trait::async_trait;
 use log::{error, info};
 
 use crate::Result;
 use crate::errors::Error;
 use crate::objects::{TreeInfo, TreeList};
 use crate::utils::get_sqlite_path;
+use crate::services::database::r#trait::Database;
 
 pub struct SqliteDatabase {
     pub pool: Pool,
 }
 
 impl SqliteDatabase {
-    pub async fn init() -> Result<Self> {
+    pub async fn new() -> Result<Self> {
         let path = get_sqlite_path()?;
 
         info!("Using SQLite database from {}.", path);
@@ -36,14 +38,16 @@ impl SqliteDatabase {
             pool,
         })
     }
+}
 
+#[async_trait]
+impl Database for SqliteDatabase {
     /**
      * Read all trees from the database.
      *
      * https://docs.rs/rusqlite/0.30.0/rusqlite/index.html
      */
-    #[allow(dead_code)]
-    pub async fn get_trees(&self) -> Result<TreeList> {
+    async fn get_trees(&self) -> Result<TreeList> {
         let res = self.pool.conn(|conn| {
             let mut stmt = conn.prepare("SELECT id, lat, lon FROM trees")?;
             let mut rows = stmt.query([])?;

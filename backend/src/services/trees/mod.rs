@@ -1,16 +1,17 @@
+use std::sync::Arc;
 use log::debug;
 
 use crate::Result;
 use crate::errors::Error;
 use crate::objects::TreeList;
-use crate::services::SqliteDatabase;
+use crate::services::Database;
 
 pub struct Trees {
-    db: SqliteDatabase,
+    db: Arc<dyn Database>,
 }
 
 impl Trees {
-    pub async fn init(db: &SqliteDatabase) -> Self {
+    pub async fn init(db: &Arc<dyn Database>) -> Self {
         Self {
             db: db.clone(),
         }
