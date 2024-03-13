@@ -1,5 +1,6 @@
 use crate::objects::TreeList;
 use crate::services::trees::Trees;
+use crate::services::SqliteDatabase;
 use crate::Result;
 
 pub struct AppState {
@@ -8,8 +9,10 @@ pub struct AppState {
 
 impl AppState {
     pub async fn init() -> Result<Self> {
+        let db = SqliteDatabase::init().await?;
+
         Ok(Self {
-            trees: Trees::init().await,
+            trees: Trees::init(&db).await,
         })
     }
 
