@@ -7,17 +7,25 @@ export const useMarkers = () => {
   const [markers, setMarkers] = useState([]);
 
   useEffect(() => {
-    markers.push({
-      lat: 40.181389,
-      lon: 44.514444,
-    });
+    console.debug("useEffect");
 
-    markers.push({
-      lat: 44.514444,
-      lon: 40.181389,
-    });
+    setMarkers((prev) => {
+      const newMarkers = [...prev];
 
-    console.debug('Added 2 markers.');
+      newMarkers.push({
+        lat: 40.181389,
+        lon: 44.514444,
+      });
+
+      newMarkers.push({
+        lat: 44.514444,
+        lon: 40.181389,
+      });
+
+      console.debug('Added 2 markers.');
+
+      return newMarkers;
+    });
   }, []);
 
   return {
