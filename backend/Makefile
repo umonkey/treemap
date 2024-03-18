@@ -12,6 +12,9 @@ lint:
 serve:
 	cargo run
 
+sqlite:
+	sqlite3 database.sqlite
+
 sqlite-schema:
 	sqlite3 database.sqlite < dev/schema-sqlite.sql
 

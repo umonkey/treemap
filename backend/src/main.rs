@@ -4,6 +4,7 @@ mod objects;
 mod services;
 mod utils;
 
+use actix_cors::Cors;
 use actix_web::{middleware::DefaultHeaders, App, HttpServer};
 use log::{debug, info};
 use std::time::Duration;
@@ -49,8 +50,10 @@ async fn main() -> std::io::Result<()> {
                 DefaultHeaders::new()
                     .add(("Cache-Control", "no-store"))
             )
+            .wrap(Cors::permissive())
             .data_factory(data_factory)
             .service(get_trees)
+            .service(get_tree)
     })
     .bind((host_addr.as_str(), host_port))?
     .workers(workers)
