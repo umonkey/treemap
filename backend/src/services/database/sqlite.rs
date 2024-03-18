@@ -12,7 +12,7 @@ use log::{error, info};
 
 use crate::Result;
 use crate::errors::Error;
-use crate::objects::{TreeInfo, TreeList};
+use crate::objects::{Bounds, TreeInfo, TreeList};
 use crate::utils::get_sqlite_path;
 use crate::services::database::r#trait::Database;
 
@@ -47,10 +47,10 @@ impl Database for SqliteDatabase {
      *
      * https://docs.rs/rusqlite/0.30.0/rusqlite/index.html
      */
-    async fn get_trees(&self) -> Result<TreeList> {
-        let res = self.pool.conn(|conn| {
-            let mut stmt = conn.prepare("SELECT id, lat, lon FROM trees")?;
-            let mut rows = stmt.query([])?;
+    async fn get_trees(&self, bounds: Bounds) -> Result<TreeList> {
+        let res = self.pool.conn(move |conn| {
+            let mut stmt = conn.prepare("SELECT id, lat, lon FROM trees WHERE lat <= ? AND lat >= ? AND lon <= ? AND lon >= ?")?;
+            let mut rows = stmt.query([bounds.n, bounds.s, bounds.e, bounds.w])?;
 
             let mut trees: Vec<TreeInfo> = Vec::new();
 

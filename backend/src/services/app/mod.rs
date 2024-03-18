@@ -1,4 +1,4 @@
-use crate::objects::TreeList;
+use crate::objects::{Bounds, TreeList};
 use crate::services::trees::Trees;
 use crate::services::database::get_database;
 use crate::Result;
@@ -16,8 +16,8 @@ impl AppState {
         })
     }
 
-    pub async fn get_trees(&self) -> Result<TreeList> {
-        self.trees.get_trees().await
+    pub async fn get_trees(&self, bounds: Bounds) -> Result<TreeList> {
+        self.trees.get_trees(bounds).await
     }
 
     pub async fn get_tree(&self, id: u64) -> Result<()> {
