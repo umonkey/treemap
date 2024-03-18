@@ -7,8 +7,6 @@ import "./styles.css";
 export const Map = () => {
   const { center, markers } = useMarkers();
 
-  console.debug(`Have ${markers.length} markers.`);
-
   return (
     <MapContainer center={center} zoom={13} maxZoom={18} scrollWheelZoom={true} className="map">
       <TileLayer

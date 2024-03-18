@@ -1,32 +1,27 @@
-import { useCallback, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 import { ITreeInfo } from "./types";
+import { treeMapService } from "../../services/api";
 
 export const useMarkers = () => {
   const center = [40.181389, 44.514444];
-  const [markers, setMarkers] = useState([]);
+  const [markers, setMarkers] = useState<ITreeInfo>([]);
 
   useEffect(() => {
-    console.debug("useEffect");
+    (async () => {
+      const res = await treeMapService.getMarkers();
+      console.debug("MARKERS", res);
 
-    setMarkers((prev) => {
-      const newMarkers = [...prev];
+      setMarkers(res);
+    })();
 
-      newMarkers.push({
-        lat: 40.181389,
-        lon: 44.514444,
-      });
-
-      newMarkers.push({
-        lat: 44.514444,
-        lon: 40.181389,
-      });
-
-      console.debug('Added 2 markers.');
-
-      return newMarkers;
-    });
+    // Fix markers multiplying on every re-render.
+    return () => {
+      setMarkers([]);
+    };
   }, []);
+
+  console.debug(`Have ${markers.length} markers.`);
 
   return {
     center,
