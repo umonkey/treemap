@@ -3,7 +3,7 @@ use log::debug;
 
 use crate::Result;
 use crate::errors::Error;
-use crate::objects::TreeList;
+use crate::objects::{Bounds, TreeList};
 use crate::services::Database;
 
 pub struct Trees {
@@ -17,8 +17,8 @@ impl Trees {
         }
     }
 
-    pub async fn get_trees(&self) -> Result<TreeList> {
-        self.db.get_trees().await
+    pub async fn get_trees(&self, bounds: Bounds) -> Result<TreeList> {
+        self.db.get_trees(bounds).await
     }
 
     pub async fn get_tree(&self, id: u64) -> Result<()> {
