@@ -6,3 +6,6 @@ lint:
 
 serve:
 	npm run dev
+
+test:
+	npm run test
