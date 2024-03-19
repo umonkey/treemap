@@ -21,5 +21,9 @@ sqlite-schema:
 sqlite-seed:
 	sqlite3 database.sqlite < dev/seed-sqlite.sql
 
+# Some notes on code coverage:
+# https://doc.rust-lang.org/rustc/instrument-coverage.html
+# https://blog.rng0.io/how-to-do-code-coverage-in-rust/
 test:
-	cargo test
+	RUSTFLAGS="-Cinstrument-coverage" LLVM_PROFILE_FILE="test.profraw" cargo test
+	grcov . -s . --binary-path ./target/debug/ -t html --branch --ignore-not-existing -o ./target/debug/coverage/
