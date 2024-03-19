@@ -27,3 +27,6 @@ sqlite-seed:
 test:
 	RUSTFLAGS="-Cinstrument-coverage" LLVM_PROFILE_FILE="test.profraw" cargo test
 	grcov . -s . --binary-path ./target/debug/ -t html --branch --ignore-not-existing -o ./target/debug/coverage/
+
+test-debug:
+	cargo test -- --nocapture

@@ -112,24 +112,9 @@ impl Database for SqliteDatabase {
      * https://docs.rs/rusqlite/0.30.0/rusqlite/index.html
      */
     async fn get_trees(&self, bounds: Bounds) -> Result<TreeList> {
-        let res = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, lat, lon FROM trees WHERE lat <= ? AND lat >= ? AND lon <= ? AND lon >= ?") {
-                Ok(value) => value,
-
-                Err(e) => {
-                    error!("Error preparing SQL statement: {}", e);
-                    return Err(e);
-                },
-            };
-
-            let mut rows = match stmt.query([bounds.n, bounds.s, bounds.e, bounds.w]) {
-                Ok(value) => value,
-
-                Err(e) => {
-                    error!("Error querying the database: {}", e);
-                    return Err(e);
-                },
-            };
+        let trees = self.pool.conn(move |conn| {
+            let mut stmt = conn.prepare("SELECT id, lat, lon FROM trees WHERE lat <= ? AND lat >= ? AND lon <= ? AND lon >= ?")?;
+            let mut rows = stmt.query([bounds.n, bounds.s, bounds.e, bounds.w])?;
 
             let mut trees: Vec<TreeInfo> = Vec::new();
 
@@ -146,16 +131,7 @@ impl Database for SqliteDatabase {
             }
 
             Ok(trees)
-        }).await;
-
-        let trees = match res {
-            Ok(value) => value,
-
-            Err(e) => {
-                error!("Error reading trees from the database: {}", e);
-                return Err(Error::DatabaseQuery);
-            },
-        };
+        }).await?;
 
         Ok(TreeList {
             trees,
@@ -185,12 +161,13 @@ mod tests {
         env_logger::init();
 
         let db = SqliteDatabase::new().await.unwrap();
+        db.execute(include_str!("./fixtures/trees.sql").to_string()).await.unwrap();
 
         let bounds = Bounds {
-            n: 0.0,
-            s: 0.0,
-            e: 0.0,
-            w: 0.0,
+            n: 90.0,
+            e: 180.0,
+            s: -90.0,
+            w: -180.0,
         };
 
         let trees = match db.get_trees(bounds).await {
@@ -201,6 +178,6 @@ mod tests {
             },
         };
 
-        assert_eq!(trees.trees.len(), 0);
+        assert_eq!(trees.trees.len(), 1);
     }
 }
