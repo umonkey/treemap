@@ -1,30 +1,42 @@
 import { MapContainer, TileLayer, Marker, Popup, ZoomControl, useMapEvents } from "react-leaflet";
+import { LatLngBounds } from "leaflet";
 
-import { useMarkers } from "./hooks";
-import { ITreeInfo } from "../../services/api/types";
+import { IBounds, ILatLng, ITreeInfo } from "../../../types";
 
 import "leaflet/dist/leaflet.css";
-import "./styles.css";
 
-export const Map = () => {
-  const { center, markers, reload } = useMarkers();
+interface IProps {
+  center: ILatLng;
+  onBoundsChange?: (bounds: IBounds) => void;
+  markers?: ITreeInfo[];
+}
+
+export const MapControl = (props: IProps) => {
+  const handleBoundsChange = (bounds: LatLngBounds) => {
+    props.onBoundsChange && props.onBoundsChange({
+      north: bounds.getNorth(),
+      east: bounds.getEast(),
+      south: bounds.getSouth(),
+      west: bounds.getWest(),
+    });
+  };
 
   const MapEventHandler = () => {
     const map = useMapEvents({
       click: () => {
-        console.debug("MAP CLICK");
+        handleBoundsChange(map.getBounds());
       },
 
       load: () => {
-        reload(map.getBounds());
+        handleBoundsChange(map.getBounds());
       },
 
       zoomend: () => {
-        reload(map.getBounds());
+        handleBoundsChange(map.getBounds());
       },
 
       moveend: () => {
-        reload(map.getBounds());
+        handleBoundsChange(map.getBounds());
       },
     });
 
@@ -33,7 +45,7 @@ export const Map = () => {
      */
     map.whenReady(() => {
       setTimeout(() => {
-        reload(map.getBounds());
+        handleBoundsChange(map.getBounds());
       }, 100);
     });
 
@@ -41,7 +53,11 @@ export const Map = () => {
   };
 
   const Markers = () => {
-    const items = markers.map((marker: ITreeInfo, index: number) => (
+    if (!props.markers) {
+      return null;
+    }
+
+    const items = props.markers?.map((marker: ITreeInfo, index: number) => (
       <Marker key={index} position={[marker.lat, marker.lon]}>
         <Popup>
           A pretty CSS3 popup. <br /> Easily customizable.
@@ -53,7 +69,7 @@ export const Map = () => {
   };
 
   return (
-    <MapContainer center={center} zoom={13} maxZoom={18} scrollWheelZoom={true} className="map">
+    <MapContainer center={[props.center.lat, props.center.lon]} zoom={13} maxZoom={18} scrollWheelZoom={true} className="map" zoomControl={false}>
       <MapEventHandler />
 
       <TileLayer

@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 
-import { ITreeInfo } from "./types";
+import { ITreeInfo } from "../../types";
 
 interface ITreesResponse {
   trees: ITreeInfo[];

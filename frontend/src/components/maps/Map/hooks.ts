@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
-import { LatLngBounds, LatLngTuple } from "leaflet";
 
-import { treeMapService } from "../../services/api";
-import { ITreeInfo } from "../../services/api/types";
+import { treeMapService } from "../../../services/api";
+import { IBounds, ILatLng, ITreeInfo } from "../../../types";
 
 const coordsChanged = (a: number[], b: number[]): boolean => {
   const _a = a.join(";");
@@ -11,19 +10,23 @@ const coordsChanged = (a: number[], b: number[]): boolean => {
 };
 
 export const useMarkers = () => {
-  const center: LatLngTuple = [40.181389, 44.514444];
+  const center: ILatLng = {
+    lat: 40.181389,
+    lon: 44.514444,
+  };
+
   const [markers, setMarkers] = useState<ITreeInfo[]>([]);
   const [bounds, setBounds] = useState<number[]>([]);
 
   /**
    * Reload markers on map move or zoom.
    */
-  const reload = (newBounds: LatLngBounds) => {
+  const reload = (newBounds: IBounds) => {
     const updated = [
-      newBounds.getNorth(),
-      newBounds.getEast(),
-      newBounds.getSouth(),
-      newBounds.getWest(),
+      newBounds.north,
+      newBounds.east,
+      newBounds.south,
+      newBounds.west,
     ];
 
     if (coordsChanged(bounds, updated)) {
