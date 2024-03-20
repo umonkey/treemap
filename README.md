@@ -7,10 +7,11 @@ The application is heavily inspired by the [New York City Street Tree Map](https
 
 ## Features
 
-- List trees around you.
-- Add new trees to the map.
-- Add photos, comments to trees.
-- Mobile first.
+- [ ] List trees around you.
+- [ ] Find trees by common or latin name.
+- [ ] Add new trees to the map.
+- [ ] Add photos, comments to trees.
+- [ ] Mobile first.
 
 
 ## Architecture
