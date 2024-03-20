@@ -2,6 +2,7 @@ import { MapContainer, TileLayer, Marker, Popup, ZoomControl, useMapEvents } fro
 import { LatLngBounds } from "leaflet";
 
 import { IBounds, ILatLng, ITreeInfo } from "../../../types";
+import { LocateControl } from "../LocateControl";
 
 import "leaflet/dist/leaflet.css";
 
@@ -80,6 +81,7 @@ export const MapControl = (props: IProps) => {
       <Markers />
 
       <ZoomControl position="bottomright" />
+      <LocateControl position="bottomright" />
     </MapContainer>
   );
 };
