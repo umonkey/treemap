@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup, ZoomControl, useMapEvents } fro
 import { useMarkers } from "./hooks";
 import { ITreeInfo } from "../../services/api/types";
 
+import "leaflet/dist/leaflet.css";
 import "./styles.css";
 
 export const Map = () => {
