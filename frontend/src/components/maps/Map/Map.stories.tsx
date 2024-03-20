@@ -31,7 +31,9 @@ const meta = {
       },
     ],
   },
-  args: { onClick: fn() },
+  args: {
+    onClick: fn(),
+  },
 } satisfies Meta<typeof Map>;
 
 export default meta;

@@ -9,6 +9,7 @@ const meta = {
     layout: 'fullscreen', // centered
   },
   args: {
+    onAddTree: fn(),
     onBoundsChange: fn(),
   },
 } satisfies Meta<typeof MapControl>;

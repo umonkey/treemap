@@ -12,10 +12,15 @@ export const Map = () => {
     reload(bounds);
   };
 
+  const handleAddTree = () => {
+    console.debug("Showing add tree form...");
+  };
+
   return (
     <MapControl
       center={center}
       markers={markers}
+      onAddTree={handleAddTree}
       onBoundsChange={handleBoundsChange}
     />
   );

@@ -3,11 +3,13 @@ import { LatLngBounds } from "leaflet";
 
 import { IBounds, ILatLng, ITreeInfo } from "../../../types";
 import { LocateControl } from "../LocateControl";
+import { AddTreeControl } from "../AddTreeControl";
 
 import "leaflet/dist/leaflet.css";
 
 interface IProps {
   center: ILatLng;
+  onAddTree: () => void;
   onBoundsChange?: (bounds: IBounds) => void;
   markers?: ITreeInfo[];
 }
@@ -93,6 +95,7 @@ export const MapControl = (props: IProps) => {
 
       <ZoomControl position="bottomright" />
       <LocateControl position="bottomright" />
+      <AddTreeControl position="bottomright" onClick={props.onAddTree} />
     </MapContainer>
   );
 };
