@@ -1,4 +1,4 @@
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, ZoomControl, useMapEvents } from "react-leaflet";
 
 import { useMarkers } from "./hooks";
 import { ITreeInfo } from "../../services/api/types";
@@ -61,6 +61,8 @@ export const Map = () => {
       />
 
       <Markers />
+
+      <ZoomControl position="bottomright" />
     </MapContainer>
   );
 };
