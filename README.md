@@ -10,6 +10,7 @@ The application is heavily inspired by the [New York City Street Tree Map](https
 - List trees around you.
 - Add new trees to the map.
 - Add photos, comments to trees.
+- Mobile first.
 
 
 ## Architecture
@@ -28,6 +29,6 @@ There will be a Docker image with everything compiled.
 
 ## Motivation
 
-I love growing trees and [crowdmapping](https://en.wikipedia.org/wiki/Crowdmapping).  I always wanted to have a map of all the trees in my city, so that when it's time to collect seeds for the next season, I know exactly where to go.  I could not find any such map, so I decided to make one myself.
+I love growing trees and [crowdmapping](https://en.wikipedia.org/wiki/Crowdmapping).  I always wanted to have a map of all the trees in my city, so that when it's time to collect seeds for the next season, I know exactly where to go.  Or to check how a rare species feels in our climate.  I could not find any such map, so I decided to make one myself.
 
 I also love programming.  So I decided to make the app myself, as a pet project.  I chose Rust for the backend, because it's a language I want to learn better.  I chose TypeScript for the frontend, because it's a language I already know well, and I like it.
