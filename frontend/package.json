@@ -8,7 +8,9 @@
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0 && tsc --noEmit",
     "preview": "vite preview",
-    "test": "vitest run --silent --coverage"
+    "storybook": "storybook dev -p 6006",
+    "test": "vitest run --silent --coverage",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "axios": "^1.6.8",
@@ -19,6 +21,16 @@
     "vitest": "^1.4.0"
   },
   "devDependencies": {
+    "@chromatic-com/storybook": "^1.2.24",
+    "@storybook/addon-essentials": "^8.0.2",
+    "@storybook/addon-interactions": "^8.0.2",
+    "@storybook/addon-links": "^8.0.2",
+    "@storybook/addon-onboarding": "^8.0.2",
+    "@storybook/blocks": "^8.0.2",
+    "@storybook/builder-vite": "^8.0.2",
+    "@storybook/react": "^8.0.2",
+    "@storybook/react-vite": "^8.0.2",
+    "@storybook/test": "^8.0.2",
     "@types/leaflet": "^1.9.8",
     "@types/react": "^18.2.64",
     "@types/react-dom": "^18.2.21",
@@ -29,6 +41,8 @@
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
+    "eslint-plugin-storybook": "^0.8.0",
+    "storybook": "^8.0.2",
     "typescript": "^5.2.2",
     "vite": "^5.1.6"
   }
