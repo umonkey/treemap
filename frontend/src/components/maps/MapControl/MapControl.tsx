@@ -1,4 +1,4 @@
-import { MapContainer, TileLayer, Marker, Popup, ZoomControl, useMapEvents } from "react-leaflet";
+import { LayersControl, MapContainer, TileLayer, Marker, Popup, ZoomControl, useMapEvents } from "react-leaflet";
 import { LatLngBounds } from "leaflet";
 
 import { IBounds, ILatLng, ITreeInfo } from "../../../types";
@@ -73,10 +73,21 @@ export const MapControl = (props: IProps) => {
     <MapContainer center={[props.center.lat, props.center.lon]} zoom={13} maxZoom={18} scrollWheelZoom={true} className="map" zoomControl={false}>
       <MapEventHandler />
 
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+      <LayersControl position="topright">
+        <LayersControl.BaseLayer checked name="OpenStreetMap">
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+        </LayersControl.BaseLayer>
+        <LayersControl.BaseLayer name="Google Maps">
+          <TileLayer
+            attribution='&copy; Google Maps'
+            url="http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}"
+            subdomains={["mt0", "mt1", "mt2", "mt3"]}
+          />
+        </LayersControl.BaseLayer>
+      </LayersControl>
 
       <Markers />
 
