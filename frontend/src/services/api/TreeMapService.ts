@@ -1,6 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 
-import { ITreeInfo } from "../../types";
+import { ITreeInfo } from "@/types";
+import { getApiRoot } from "@/utils/env";
 
 interface ITreesResponse {
   trees: ITreeInfo[];
@@ -11,7 +12,7 @@ export class TreeMapService {
 
   public constructor() {
     this.client = axios.create({
-      baseURL: "http://localhost:8000",
+      baseURL: getApiRoot(),
       timeout: 10000,
       responseType: "json",
       headers: {
