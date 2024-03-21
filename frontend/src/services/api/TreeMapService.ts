@@ -38,8 +38,29 @@ export class TreeMapService {
     return res.trees;
   }
 
+  public async addMarker(params: {
+    lat: number;
+    lon: number;
+    species: string;
+  }): Promise<ITreeInfo> {
+    const res = await this.post<ITreeInfo>("/v1/trees", {
+      params: {
+        lat: params.lat,
+        lng: params.lon,
+        name: params.species,
+      },
+    });
+
+    return res;
+  }
+
   private async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
     const res = await this.client.get<T>(url, config);
+    return res.data;
+  }
+
+  private async post<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
+    const res = await this.client.post<T>(url, config);
     return res.data;
   }
 }
