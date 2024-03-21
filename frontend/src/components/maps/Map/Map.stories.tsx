@@ -32,7 +32,7 @@ const meta = {
     ],
   },
   args: {
-    onClick: fn(),
+    onAddTree: fn(),
   },
 } satisfies Meta<typeof Map>;
 

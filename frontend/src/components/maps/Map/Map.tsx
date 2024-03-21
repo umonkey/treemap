@@ -5,7 +5,11 @@ import { IBounds } from "../../../types";
 
 import "./styles.css";
 
-export const Map = () => {
+interface IProps {
+  onAddTree: () => void;
+}
+
+export const Map = (props: IProps) => {
   const { center, markers, reload } = useMarkers();
 
   const handleBoundsChange = (bounds: IBounds) => {
@@ -14,6 +18,7 @@ export const Map = () => {
 
   const handleAddTree = () => {
     console.debug("Showing add tree form...");
+    props.onAddTree();
   };
 
   return (

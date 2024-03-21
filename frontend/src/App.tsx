@@ -1,8 +1,8 @@
-import { Map } from "./components/maps/Map";
+import { HomePage } from "./components/pages/HomePage";
 
 function App() {
   return (
-    <Map/>
+    <HomePage />
   )
 }
 
