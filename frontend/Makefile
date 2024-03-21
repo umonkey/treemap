@@ -8,7 +8,7 @@ serve:
 	npm run dev
 
 storybook:
-	npm run storybook
+	npm run storybook -- --no-open
 
 test:
 	npm run test
