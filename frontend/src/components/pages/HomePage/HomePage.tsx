@@ -1,15 +1,15 @@
 import { useState } from "react";
 
-import { Map } from "../../maps/Map";
-import { SideBar } from "../../layout/SideBar";
+import { Map, SideBar } from "@/components";
+import { SideBarMode } from "@/types";
 
 import "./styles.css";
 
 export const HomePage = () => {
-  const [showAdd, setShowAdd] = useState(false);
+  const [sideBarMode, setSideBarMode] = useState<SideBarMode>(SideBarMode.DEFAULT);
 
   const handleAddTree = () => {
-    setShowAdd(!showAdd);
+    setSideBarMode((prev) => prev === SideBarMode.ADD_TREE ? SideBarMode.DEFAULT : SideBarMode.ADD_TREE);
   };
 
   return (
@@ -18,7 +18,7 @@ export const HomePage = () => {
         onAddTree={handleAddTree}
       />
 
-      {showAdd && (
+      {sideBarMode === SideBarMode.ADD_TREE && (
         <SideBar>
           <p>Hello, world?</p>
         </SideBar>

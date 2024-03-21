@@ -16,3 +16,8 @@ export interface ITreeInfo {
   lon: number;
   name: string;
 }
+
+export enum SideBarMode {
+  DEFAULT = "default",
+  ADD_TREE = "add_tree",
+}
