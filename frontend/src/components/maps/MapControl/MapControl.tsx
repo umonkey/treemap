@@ -62,9 +62,7 @@ export const MapControl = (props: IProps) => {
 
     const items = props.markers?.map((marker: ITreeInfo, index: number) => (
       <Marker key={index} position={[marker.lat, marker.lon]}>
-        <Popup>
-          A pretty CSS3 popup. <br /> Easily customizable.
-        </Popup>
+        <Popup>{marker.name}</Popup>
       </Marker>
     ));
 

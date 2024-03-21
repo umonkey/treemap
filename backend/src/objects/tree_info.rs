@@ -5,4 +5,5 @@ pub struct TreeInfo {
     pub id: u64,
     pub lat: f64,
     pub lon: f64,
+    pub name: String,
 }

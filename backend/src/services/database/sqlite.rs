@@ -113,7 +113,7 @@ impl Database for SqliteDatabase {
      */
     async fn get_trees(&self, bounds: Bounds) -> Result<TreeList> {
         let trees = self.pool.conn(move |conn| {
-            let mut stmt = conn.prepare("SELECT id, lat, lon FROM trees WHERE lat <= ? AND lat >= ? AND lon <= ? AND lon >= ?")?;
+            let mut stmt = conn.prepare("SELECT id, lat, lon, name FROM trees WHERE lat <= ? AND lat >= ? AND lon <= ? AND lon >= ?")?;
             let mut rows = stmt.query([bounds.n, bounds.s, bounds.e, bounds.w])?;
 
             let mut trees: Vec<TreeInfo> = Vec::new();
@@ -127,6 +127,7 @@ impl Database for SqliteDatabase {
                     id,
                     lat,
                     lon,
+                    name: row.get(3)?,
                 });
             }
 
