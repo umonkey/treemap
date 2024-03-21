@@ -9,7 +9,7 @@ const meta = {
     layout: 'padded', // centered, fullscreen
     mockData: [
       {
-        url: "http://localhost:8000/v1/trees",
+        url: "/v1/trees",
         method: "POST",
         status: 200,
         response: {

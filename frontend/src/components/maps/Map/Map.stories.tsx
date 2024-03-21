@@ -11,7 +11,7 @@ const meta = {
     layout: 'fullscreen', // centered
     mockData: [
       {
-        url: "http://localhost:8000/v1/trees?n=n&e=e&s=s&w=w",
+        url: "/v1/trees?n=n&e=e&s=s&w=w",
         method: "GET",
         status: 200,
         response: {
