@@ -27,6 +27,7 @@ export const Map = (props: IProps) => {
       markers={markers}
       onAddTree={handleAddTree}
       onBoundsChange={handleBoundsChange}
+      picker={false}
     />
   );
 };

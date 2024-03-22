@@ -2,6 +2,11 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { fn } from '@storybook/test';
 import { MapControl } from "./MapControl";
 
+const CENTER = {
+  lat: 40.181389,
+  lon: 44.514444,
+};
+
 const meta = {
   title: 'Maps/MapControl',
   component: MapControl,
@@ -19,10 +24,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Desktop: Story = {
   args: {
-    center: {
-      lat: 40.181389,
-      lon: 44.514444,
-    },
+    center: CENTER,
     markers: [
       {
         id: 1,
@@ -43,6 +45,7 @@ export const Desktop: Story = {
         name: 'Small Willow',
       },
     ],
+    picker: false,
   },
   parameters: {
     viewport: {
@@ -53,10 +56,7 @@ export const Desktop: Story = {
 
 export const Phone: Story = {
   args: {
-    center: {
-      lat: 40.181389,
-      lon: 44.514444,
-    },
+    center: CENTER,
     markers: [
       {
         id: 1,
@@ -65,6 +65,7 @@ export const Phone: Story = {
         name: 'Small Willow',
       },
     ],
+    picker: false,
   },
   parameters: {
     viewport: {
