@@ -26,7 +26,7 @@ export const HomePage = () => {
   };
 
   const handleContinueAddingTree = () => {
-    console.debug("CONTINUE");
+    setSideBarMode(SideBarMode.ADD_TREE_DESCRIPTION);
   };
 
   useEffect(() => {

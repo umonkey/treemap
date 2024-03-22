@@ -25,11 +25,11 @@ export const DraggableMarker = (props: IProps) => {
 
   useMapEvents({
     click: (e) => {
+      reportMove(e.latlng.lat, e.latlng.lng);
+
       const marker = markerRef.current;
 
       if (marker !== null) {
-        reportMove(e.latlng.lat, e.latlng.lng);
-
         // @ts-expect-error TS2339
         marker.setLatLng(e.latlng);
       }

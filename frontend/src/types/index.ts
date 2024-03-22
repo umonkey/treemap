@@ -20,4 +20,5 @@ export interface ITreeInfo {
 export enum SideBarMode {
   DEFAULT = "default",
   ADD_TREE = "add_tree",
+  ADD_TREE_DESCRIPTION = "add_tree_description",
 }
