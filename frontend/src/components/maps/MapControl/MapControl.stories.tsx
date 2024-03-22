@@ -16,6 +16,7 @@ const meta = {
   args: {
     onAddTree: fn(),
     onBoundsChange: fn(),
+    onPick: fn(),
   },
 } satisfies Meta<typeof MapControl>;
 

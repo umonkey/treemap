@@ -1,6 +1,6 @@
 import { useRef } from "react";
 
-import { Marker } from "react-leaflet";
+import { Marker, useMapEvents } from "react-leaflet";
 import { DragEndEvent } from "leaflet";
 import { ILatLng } from "@/types";
 
@@ -12,14 +12,29 @@ interface IProps {
 export const DraggableMarker = (props: IProps) => {
   const markerRef = useRef(null);
 
-  const handleDragEnd = (e: DragEndEvent) => {
-    const pos = {
-      lat: e.target.getLatLng().lat,
-      lon: e.target.getLatLng().lng,
-    };
+  const reportMove = (lat: number, lon: number) => {
+    props.onChange({
+      lat,
+      lon,
+    });
+  }
 
-    props.onChange(pos);
+  const handleDragEnd = (e: DragEndEvent) => {
+    reportMove(e.target.getLatLng().lat, e.target.getLatLng().lng);
   };
+
+  useMapEvents({
+    click: (e) => {
+      const marker = markerRef.current;
+
+      if (marker !== null) {
+        reportMove(e.latlng.lat, e.latlng.lng);
+
+        // @ts-expect-error TS2339
+        marker.setLatLng(e.latlng);
+      }
+    }
+  });
 
   return props.position && (
     <Marker

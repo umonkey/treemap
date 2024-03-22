@@ -1,7 +1,7 @@
-import { MapControl } from "../MapControl";
+import { MapControl } from "@/components";
+import { IBounds } from "@/types";
 
 import { useMarkers } from "./hooks";
-import { IBounds } from "../../../types";
 
 import "./styles.css";
 

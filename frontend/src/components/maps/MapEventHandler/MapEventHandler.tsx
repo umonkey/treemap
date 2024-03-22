@@ -2,6 +2,7 @@
  * A simple wrapper class that makes Leaflet events more usable.
  */
 
+import { useState } from "react";
 import { useMapEvents } from "react-leaflet";
 import { LatLngBounds } from "leaflet";
 
@@ -13,6 +14,8 @@ interface IProps {
 }
 
 export const MapEventHandler = (props: IProps) => {
+  const [initialized, setInitialized] = useState(false);
+
   const handleBoundsChange = (bounds: LatLngBounds) => {
     props.onBoundsChange && props.onBoundsChange({
       north: bounds.getNorth(),
@@ -44,9 +47,15 @@ export const MapEventHandler = (props: IProps) => {
   });
 
   map.whenReady(() => {
-    setTimeout(() => {
-      handleBoundsChange(map.getBounds());
-    }, 100);
+    if (!initialized) {
+      setInitialized(true);
+
+      console.debug("The map is ready.");
+
+      setTimeout(() => {
+        handleBoundsChange(map.getBounds());
+      }, 100);
+    }
   });
 
   return null;

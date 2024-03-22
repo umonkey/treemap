@@ -1,8 +1,20 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
 
 import { HomePage } from "./HomePage";
-import { ITreeInfo } from "../../../types";
+import { ITreeInfo } from "@/types";
+
+const TREES = [
+  {
+    id: 1,
+    lat: 40.181389,
+    lon: 44.514444,
+  },
+  {
+    id: 2,
+    lat: 40.182389,
+    lon: 44.515444,
+  },
+] as ITreeInfo[];
 
 const meta = {
   title: 'Pages/HomePage',
@@ -15,25 +27,12 @@ const meta = {
         method: "GET",
         status: 200,
         response: {
-          trees: [
-           {
-            id: 1,
-            lat: 40.181389,
-            lon: 44.514444,
-           },
-           {
-            id: 2,
-            lat: 40.182389,
-            lon: 44.515444,
-           },
-          ] as ITreeInfo[],
+          trees: TREES,
         },
       },
     ],
   },
-  args: {
-    onClick: fn(),
-  },
+  args: { },
 } satisfies Meta<typeof HomePage>;
 
 export default meta;

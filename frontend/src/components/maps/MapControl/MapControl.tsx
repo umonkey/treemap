@@ -1,5 +1,4 @@
 import { useState } from "react";
-
 import { ZoomControl } from "react-leaflet";
 
 import { IBounds, ILatLng, ITreeInfo } from "@/types";
@@ -12,6 +11,7 @@ interface IProps {
   picker: boolean;
   onAddTree?: () => void;
   onBoundsChange?: (bounds: IBounds) => void;
+  onPick?: (position: ILatLng) => void;
   markers?: ITreeInfo[];
 }
 
@@ -25,20 +25,14 @@ export const MapControl = (props: IProps) => {
   };
 
   const handleMarkerDragged = (position: ILatLng) => {
+    console.debug(`Draggable marker moved to ${position.lat}, ${position.lon}`);
     setPoint(position);
-  };
-
-  const handleMapClick = (position: ILatLng) => {
-      if (props.picker) {
-        setPoint({ lat: position.lat, lon: position.lon });
-        console.debug(`New point picked: ${position.lat}, ${position.lon}`);
-      }
+    props.onPick && props.onPick(position);
   };
 
   return (
     <MapBase center={props.center}>
       <MapEventHandler
-        onClick={handleMapClick}
         onBoundsChange={handleBoundsChange}
       />
 
