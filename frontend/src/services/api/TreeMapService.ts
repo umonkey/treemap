@@ -3,7 +3,7 @@ import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import { ITreeInfo } from "@/types";
 import { getApiRoot } from "@/utils/env";
 
-interface ITreesResponse {
+export interface ITreesResponse {
   trees: ITreeInfo[];
 }
 

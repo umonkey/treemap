@@ -1,6 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import "@testing-library/jest-dom";
 import MockAdapter from "axios-mock-adapter";
+import { vi } from "vitest";
 
 import { AddTreeDialog } from "./AddTreeDialog";
 
@@ -32,9 +34,9 @@ describe("AddTreeDialog", () => {
     render(<AddTreeDialog center={{
       lat: 1,
       lon: 2,
-    }} />);
+    }} onSuccess={vi.fn()} />);
 
-    const submitButton = screen.getByRole("button", { type: /submit/i });
+    const submitButton = screen.getByRole("button");
     expect(submitButton).toBeDisabled();
   });
 
@@ -60,7 +62,7 @@ describe("AddTreeDialog", () => {
 
     await user.type(input, "Oak");
 
-    const submitButton = screen.getByRole("button", { type: /submit/i });
+    const submitButton = screen.getByRole("button");
     expect(submitButton).not.toBeDisabled();
 
     await user.click(submitButton);
