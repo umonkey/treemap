@@ -38,6 +38,11 @@ export const Desktop: Story = {
       lon: 44.514444,
     },
   },
+  parameters: {
+    viewport: {
+      defaultViewport: "desktop",
+    },
+  },
 };
 
 export const Phone: Story = {
@@ -45,6 +50,11 @@ export const Phone: Story = {
     center: {
       lat: 40.181389,
       lon: 44.514444,
+    },
+  },
+  parameters: {
+    viewport: {
+      defaultViewport: "mobile1",
     },
   },
 };

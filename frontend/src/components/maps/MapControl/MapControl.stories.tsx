@@ -44,6 +44,11 @@ export const Desktop: Story = {
       },
     ],
   },
+  parameters: {
+    viewport: {
+      defaultViewport: "desktop",
+    },
+  },
 };
 
 export const Phone: Story = {
@@ -60,5 +65,10 @@ export const Phone: Story = {
         name: 'Small Willow',
       },
     ],
+  },
+  parameters: {
+    viewport: {
+      defaultViewport: "mobile1",
+    },
   },
 };
