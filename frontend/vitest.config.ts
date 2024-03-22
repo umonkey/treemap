@@ -9,9 +9,24 @@ export default mergeConfig(
       environment: "jsdom",
       setupFiles: "./vitest.setup.ts",
       css: true,
+      include: [
+        "./src/**/*.test.ts",
+        "./src/**/*.test.tsx",
+      ],
+      exclude: [
+        "./src/**/*.stories.tsx",
+      ],
       coverage: {
         reportsDirectory: "./var/coverage",
-        provider: "v8"
+        provider: "v8",
+        include: [
+          "src/**/*.ts",
+          "src/**/*.tsx",
+        ],
+        exclude: [
+          "src/**/index.ts",
+          "src/**/*.stories.tsx",
+        ],
       }
     },
   })

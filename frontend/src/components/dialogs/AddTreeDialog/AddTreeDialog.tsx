@@ -33,7 +33,7 @@ export const AddTreeDialog = (props: IProps) => {
         species: species,
       });
 
-      console.debug(`Tree added with id ${tree.id}`);
+      console.debug("Tree added.", tree);
       props.onSuccess(tree);
     } finally {
       setSending(false);
