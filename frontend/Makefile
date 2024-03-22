@@ -12,3 +12,6 @@ storybook:
 
 test:
 	npm run test
+
+test-verbose:
+	npm run test-verbose

@@ -10,6 +10,7 @@
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
     "test": "vitest run --silent --coverage",
+    "test-verbose": "vitest run",
     "build-storybook": "storybook build"
   },
   "dependencies": {
@@ -50,6 +51,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
     "eslint-plugin-storybook": "^0.8.0",
+    "jsdom": "^24.0.0",
     "storybook": "^8.0.2",
     "storybook-addon-mock": "^4.3.0",
     "typescript": "^5.2.2",
