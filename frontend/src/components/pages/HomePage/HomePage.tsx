@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 
-import { MapControl, SelectLocationDialog, SideBar } from "@/components";
-import { IBounds, ILatLng, SideBarMode } from "@/types";
+import {
+  AddTreeDialog,
+  MapControl,
+  SelectLocationDialog,
+  SideBar,
+} from "@/components";
+import { IBounds, ILatLng, ITreeInfo, SideBarMode } from "@/types";
 import { useMarkers } from "./hooks";
 
 import "./styles.css";
@@ -11,14 +16,14 @@ export const HomePage = () => {
   const [sideBarMode, setSideBarMode] = useState<SideBarMode>(SideBarMode.DEFAULT);
   const [picker, setPicker] = useState<boolean>(false);
 
-  const [newPositiong, setNewPosition] = useState<ILatLng | null>(null);
+  const [newPosition, setNewPosition] = useState<ILatLng | null>(null);
 
   const handleBoundsChange = (bounds: IBounds) => {
     reload(bounds);
   };
 
   const handleAddTree = () => {
-    setSideBarMode((prev) => prev === SideBarMode.ADD_TREE ? SideBarMode.DEFAULT : SideBarMode.ADD_TREE);
+    setSideBarMode((prev) => prev === SideBarMode.DEFAULT ? SideBarMode.ADD_TREE : SideBarMode.DEFAULT);
   };
 
   const handlePicker = (position: ILatLng) => {
@@ -27,6 +32,10 @@ export const HomePage = () => {
 
   const handleContinueAddingTree = () => {
     setSideBarMode(SideBarMode.ADD_TREE_DESCRIPTION);
+  };
+
+  const handleTreeCreated = (tree: ITreeInfo) => {
+    console.debug("New tree created", tree);
   };
 
   useEffect(() => {
@@ -46,7 +55,16 @@ export const HomePage = () => {
 
       {sideBarMode === SideBarMode.ADD_TREE && (
         <SideBar>
-          <SelectLocationDialog position={newPositiong} onContinue={handleContinueAddingTree} />
+          <SelectLocationDialog position={newPosition} onContinue={handleContinueAddingTree} />
+        </SideBar>
+      )}
+
+      {sideBarMode === SideBarMode.ADD_TREE_DESCRIPTION && newPosition && (
+        <SideBar>
+          <AddTreeDialog
+            center={newPosition}
+            onSuccess={handleTreeCreated}
+          />
         </SideBar>
       )}
     </div>

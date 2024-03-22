@@ -30,6 +30,17 @@ const meta = {
           trees: TREES,
         },
       },
+      {
+        url: "/v1/trees",
+        method: "POST",
+        status: 200,
+        response: {
+          id: 12345,
+          lat: 40.181389,
+          lon: 44.514444,
+          name: "New Tree",
+        } as ITreeInfo,
+      },
     ],
   },
   args: { },
