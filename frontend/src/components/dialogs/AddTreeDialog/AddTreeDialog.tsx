@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import { Box, Button, FormHelperText, TextField } from "@mui/material";
 
 import { treeMapService } from "@/services/api";
-import { ILatLng } from "@/types";
+import { ILatLng, ITreeInfo } from "@/types";
 import "./styles.css";
 
 interface IProps {
   center: ILatLng;
+  onSuccess: (tree: ITreeInfo) => void;
 }
 
 export const AddTreeDialog = (props: IProps) => {
@@ -26,13 +27,14 @@ export const AddTreeDialog = (props: IProps) => {
     try {
       setSending(true);
 
-      const res = await treeMapService.addMarker({
+      const tree = await treeMapService.addMarker({
         lat: props.center.lat,
         lon: props.center.lon,
         species: species,
       });
 
-      console.debug("SAVE", species, res);
+      console.debug(`Tree added with id ${tree.id}`);
+      props.onSuccess(tree);
     } finally {
       setSending(false);
     }

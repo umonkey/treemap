@@ -39,6 +39,9 @@ export class TreeMapService {
     return res.trees;
   }
 
+  /**
+   * Add a new tree to the map.
+   */
   public async addMarker(params: {
     lat: number;
     lon: number;

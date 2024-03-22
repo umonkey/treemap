@@ -1,4 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { fn } from '@storybook/test';
+
 import { AddTreeDialog } from "./AddTreeDialog";
 import { ITreeInfo } from "@/types";
 
@@ -21,7 +23,9 @@ const meta = {
       },
     ],
   },
-  args: { },
+  args: {
+    onSuccess: fn(),
+  },
 } satisfies Meta<typeof AddTreeDialog>;
 
 export default meta;
