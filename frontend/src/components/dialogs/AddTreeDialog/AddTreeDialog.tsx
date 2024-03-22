@@ -8,6 +8,7 @@ import "./styles.css";
 interface IProps {
   center: ILatLng;
   onSuccess: (tree: ITreeInfo) => void;
+  onCancel?: () => void;
 }
 
 export const AddTreeDialog = (props: IProps) => {
@@ -40,6 +41,10 @@ export const AddTreeDialog = (props: IProps) => {
     }
   };
 
+  const handleCancelClick = () => {
+    props.onCancel && props.onCancel();
+  };
+
   return (
     <Box component="form" className="AddTreeDialog">
       <div className="group">
@@ -53,6 +58,7 @@ export const AddTreeDialog = (props: IProps) => {
 
       <div className="group">
         <Button variant="contained" color="success" disabled={!saveEnabled} onClick={handleSaveClick}>Save</Button>
+        <Button color="secondary" onClick={handleCancelClick}>Cancel</Button>
       </div>
     </Box>
   );

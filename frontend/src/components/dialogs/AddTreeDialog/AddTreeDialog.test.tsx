@@ -36,7 +36,7 @@ describe("AddTreeDialog", () => {
       lon: 2,
     }} onSuccess={vi.fn()} />);
 
-    const submitButton = screen.getByRole("button");
+    const submitButton = screen.getByRole("button", { name: /save/i });
     expect(submitButton).toBeDisabled();
   });
 
@@ -62,7 +62,7 @@ describe("AddTreeDialog", () => {
 
     await user.type(input, "Oak");
 
-    const submitButton = screen.getByRole("button");
+    const submitButton = screen.getByRole("button", { name: /save/i });
     expect(submitButton).not.toBeDisabled();
 
     await user.click(submitButton);
@@ -74,5 +74,21 @@ describe("AddTreeDialog", () => {
       name: "Oak",
     });
   });
-});
 
+  test("cancel without submit", async () => {
+    const user = userEvent.setup();
+    const handleCancel = vi.fn();
+
+    render(<AddTreeDialog center={{
+      lat: 1,
+      lon: 2,
+    }} onSuccess={vi.fn()} onCancel={handleCancel} />);
+
+    const cancelButton = screen.getByRole("button", { name: /cancel/i });
+    expect(cancelButton).not.toBeDisabled();
+
+    await user.click(cancelButton);
+
+    expect(handleCancel).toBeCalled();
+  });
+});

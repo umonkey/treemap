@@ -15,10 +15,12 @@ export const HomePage = () => {
   const { center, markers, reload } = useMarkers();
   const [sideBarMode, setSideBarMode] = useState<SideBarMode>(SideBarMode.DEFAULT);
   const [picker, setPicker] = useState<boolean>(false);
+  const [bounds, setBounds] = useState<IBounds | null>(null);
 
   const [newPosition, setNewPosition] = useState<ILatLng | null>(null);
 
   const handleBoundsChange = (bounds: IBounds) => {
+    setBounds(bounds);
     reload(bounds);
   };
 
@@ -35,7 +37,17 @@ export const HomePage = () => {
   };
 
   const handleTreeCreated = (tree: ITreeInfo) => {
-    console.debug("New tree created", tree);
+    console.debug(`New tree ${tree.id} created, reloading data.`);
+    setSideBarMode(SideBarMode.DEFAULT);
+    setPicker(false);
+
+    bounds && reload(bounds);
+  };
+
+  const handleCancelAddingTree = () => {
+    setSideBarMode(SideBarMode.DEFAULT);
+    setPicker(false);
+    setNewPosition(null);
   };
 
   useEffect(() => {
@@ -64,6 +76,7 @@ export const HomePage = () => {
           <AddTreeDialog
             center={newPosition}
             onSuccess={handleTreeCreated}
+            onCancel={handleCancelAddingTree}
           />
         </SideBar>
       )}

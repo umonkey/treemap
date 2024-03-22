@@ -29,6 +29,7 @@ const meta = {
         response: {
           trees: TREES,
         },
+        delay: 1000,
       },
       {
         url: "/v1/trees",
@@ -40,6 +41,7 @@ const meta = {
           lon: 44.514444,
           name: "New Tree",
         } as ITreeInfo,
+        delay: 2000,
       },
     ],
   },

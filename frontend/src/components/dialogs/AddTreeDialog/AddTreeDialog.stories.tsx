@@ -25,6 +25,7 @@ const meta = {
   },
   args: {
     onSuccess: fn(),
+    onCancel: fn(),
   },
 } satisfies Meta<typeof AddTreeDialog>;
 
