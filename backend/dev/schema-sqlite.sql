@@ -15,6 +15,9 @@ CREATE TABLE IF NOT EXISTS trees (
 --
 -- We keep all records ever added, we then aggregate them to use the latest
 -- added value for each attribute to show on the tree page.
+--
+-- The code that reads or updates this table needs to be aware of the data
+-- type, since the values are stored as strings.
 CREATE TABLE IF NOT EXISTS trees_props (
     `id` INT NOT NULL,
     `tree_id` INT NOT NULL,

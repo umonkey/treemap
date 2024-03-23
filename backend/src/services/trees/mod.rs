@@ -31,6 +31,9 @@ impl Trees {
         debug!("Adding tree at ({}, {}) with name '{}'.", req.lat, req.lon, tree.name);
 
         self.db.add_tree(&tree).await?;
+        self.db.add_tree_prop(tree.id, "lat", &tree.lat.to_string()).await?;
+        self.db.add_tree_prop(tree.id, "lon", &tree.lon.to_string()).await?;
+        self.db.add_tree_prop(tree.id, "name", &tree.name.to_string()).await?;
 
         Ok(tree)
     }

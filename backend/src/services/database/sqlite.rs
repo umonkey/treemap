@@ -13,7 +13,7 @@ use log::{debug, error, info};
 use crate::Result;
 use crate::errors::Error;
 use crate::objects::{Bounds, TreeInfo, TreeList};
-use crate::utils::get_sqlite_path;
+use crate::utils::{get_sqlite_path, get_unique_id};
 use crate::services::database::r#trait::Database;
 
 pub struct SqliteDatabase {
@@ -151,6 +151,33 @@ impl Database for SqliteDatabase {
         Ok(TreeList {
             trees,
         })
+    }
+
+    /**
+     * Record a change in tree properties.
+     *
+     * Returns new property id.
+     */
+    async fn add_tree_prop(&self, tree_id: u64, name: &str, value: &str) -> Result<u64> {
+        let id = get_unique_id()?;
+        let added_at = crate::utils::get_timestamp();
+        let name = name.to_string();
+        let value = value.to_string();
+
+        self.pool.conn(move |conn| {
+            match conn.execute("INSERT INTO trees_props (id, tree_id, added_at, name, value) VALUES (?, ?, ?, ?, ?)", (id, tree_id, added_at, name, value)) {
+                Ok(_) => debug!("Property {} added to tree {}.", id, tree_id),
+
+                Err(e) => {
+                    error!("Error adding property to tree: {}", e);
+                    return Err(e);
+                }
+            }
+
+            Ok(conn.last_insert_rowid())
+        }).await?;
+
+        Ok(id)
     }
 }
 
