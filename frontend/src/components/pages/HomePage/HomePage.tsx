@@ -37,7 +37,7 @@ export const HomePage = () => {
   };
 
   const handleTreeCreated = (tree: ITreeInfo) => {
-    console.debug(`New tree ${tree.id} created, reloading data.`);
+    console.debug(`New tree ${tree.id} created, reloading data.`, bounds);
     setSideBarMode(SideBarMode.DEFAULT);
     setPicker(false);
 

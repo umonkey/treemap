@@ -3,12 +3,6 @@ import { useState, useEffect } from "react";
 import { treeMapService } from "../../../services/api";
 import { IBounds, ILatLng, ITreeInfo } from "../../../types";
 
-const coordsChanged = (a: number[], b: number[]): boolean => {
-  const _a = a.join(";");
-  const _b = b.join(";");
-  return _a !== _b;
-};
-
 export const useMarkers = () => {
   const center: ILatLng = {
     lat: 40.181389,
@@ -29,9 +23,7 @@ export const useMarkers = () => {
       newBounds.west,
     ];
 
-    if (coordsChanged(bounds, updated)) {
-      setBounds(updated);
-    }
+    setBounds(updated);
   };
 
   useEffect(() => {
