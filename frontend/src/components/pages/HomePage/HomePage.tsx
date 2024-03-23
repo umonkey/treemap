@@ -54,11 +54,28 @@ export const HomePage = () => {
     setPicker(sideBarMode === SideBarMode.ADD_TREE);
   }, [sideBarMode]);
 
+  const getMarkers = (): ITreeInfo[] => {
+    if (sideBarMode === SideBarMode.ADD_TREE) {
+      return [];
+    }
+
+    if (sideBarMode === SideBarMode.ADD_TREE_DESCRIPTION && newPosition) {
+      return [{
+        id: 0,
+        lat: newPosition.lat,
+        lon: newPosition.lon,
+        name: "New Tree",
+      } as ITreeInfo];
+    }
+
+    return markers;
+  };
+
   return (
     <div className="HomePage">
       <MapControl
         center={center}
-        markers={markers}
+        markers={getMarkers()}
         onAddTree={handleAddTree}
         onBoundsChange={handleBoundsChange}
         onPick={handlePicker}
