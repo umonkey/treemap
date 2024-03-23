@@ -27,12 +27,16 @@ sqlite-schema:
 sqlite-seed:
 	sqlite3 $(DATABASE) < dev/seed-sqlite.sql
 
+test:
+ifneq (,$(FILTER))
+	RUST_LOG="debug" cargo test -- $(FILTER) --nocapture --test-threads=1
+else
+	RUST_LOG="warn" cargo test
+endif
+
 # Some notes on code coverage:
 # https://doc.rust-lang.org/rustc/instrument-coverage.html
 # https://blog.rng0.io/how-to-do-code-coverage-in-rust/
-test:
-	RUSTFLAGS="-Cinstrument-coverage" LLVM_PROFILE_FILE="test.profraw" cargo test
+test-coverage:
+	RUSTFLAGS="-Cinstrument-coverage" LLVM_PROFILE_FILE="test.profraw" RUST_LOG="warn" cargo test
 	grcov . -s . --binary-path ./target/debug/ -t html --branch --ignore-not-existing -o ./target/debug/coverage/
-
-test-debug:
-	cargo test -- --nocapture

@@ -10,6 +10,7 @@ pub enum Error {
     DatabaseQuery,
     EnvNotSet,
     TreeNotFound,
+    UniqueId,
 }
 
 impl Error {
@@ -26,6 +27,9 @@ impl Error {
             }
             Error::TreeNotFound => {
                 r#"{"error":{"code":"TreeNotFound","description":"The specified tree does not exist in the database."}}"#
+            }
+            Error::UniqueId => {
+                r#"{"error":{"code":"UniqueId","description":"Could not generate a unique id to assign to an object."}}"#
             }
         }
     }
@@ -50,6 +54,7 @@ impl ResponseError for Error {
             Error::DatabaseQuery => StatusCode::INTERNAL_SERVER_ERROR,
             Error::EnvNotSet => StatusCode::INTERNAL_SERVER_ERROR,
             Error::TreeNotFound => StatusCode::NOT_FOUND,
+            Error::UniqueId => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
 }
@@ -61,6 +66,7 @@ impl fmt::Display for Error {
             Error::DatabaseQuery => write!(f, "DatabaseQuery"),
             Error::EnvNotSet => write!(f, "EnvNotSet"),
             Error::TreeNotFound => write!(f, "TreeNotFound"),
+            Error::UniqueId => write!(f, "UniqueId"),
         }
     }
 }

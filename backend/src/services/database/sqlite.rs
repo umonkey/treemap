@@ -68,20 +68,7 @@ impl SqliteDatabase {
 
     async fn setup_memory_db(pool: &Pool) -> Result<()> {
         let script = include_str!("../../../dev/schema-sqlite.sql");
-
-        let res = pool.conn_mut(move |conn| {
-            let tx = conn.transaction()?;
-            tx.execute_batch(script)?;
-            tx.commit()
-        }).await;
-
-        let _ = match res {
-            Ok(_) => Ok(()),
-            Err(e) => {
-                error!("Error setting up in-memory database: {}", e);
-                Err(Error::DatabaseQuery)
-            },
-        };
+        Self::execute_pool(pool, script.to_string()).await?;
 
         debug!("Memory database initialized.");
 
@@ -89,9 +76,13 @@ impl SqliteDatabase {
     }
 
     #[allow(unused)]
-    async fn execute(&self, script: String) -> Result<()> {
-        let res = self.pool.conn(move |conn| {
-            conn.execute(&script, [])
+    pub async fn execute(&self, script: String) -> Result<()> {
+        Self::execute_pool(&self.pool, script).await
+    }
+
+    async fn execute_pool(pool: &Pool, script: String) -> Result<()> {
+        let res = pool.conn(move |conn| {
+            conn.execute_batch(&script)
         }).await;
 
         match res {
@@ -106,6 +97,21 @@ impl SqliteDatabase {
 
 #[async_trait]
 impl Database for SqliteDatabase {
+    async fn add_tree(&self, tree: &TreeInfo) -> Result<()> {
+        let id = tree.id;
+        let lat = tree.lat;
+        let lon = tree.lon;
+        let name = tree.name.clone();
+
+        self.pool.conn(move |conn| {
+            conn.execute("INSERT INTO trees (id, lat, lon, name) VALUES (?, ?, ?, ?)", (id, lat, lon, name))?;
+            debug!("Tree {} added to the database.", id);
+            Ok(())
+        }).await?;
+
+        Ok(())
+    }
+
     /**
      * Read all trees from the database.
      *
@@ -113,7 +119,15 @@ impl Database for SqliteDatabase {
      */
     async fn get_trees(&self, bounds: Bounds) -> Result<TreeList> {
         let trees = self.pool.conn(move |conn| {
-            let mut stmt = conn.prepare("SELECT id, lat, lon, name FROM trees WHERE lat <= ? AND lat >= ? AND lon <= ? AND lon >= ?")?;
+            let mut stmt = match conn.prepare("SELECT id, lat, lon, name FROM trees WHERE lat <= ? AND lat >= ? AND lon <= ? AND lon >= ?") {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error preparing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
             let mut rows = stmt.query([bounds.n, bounds.s, bounds.e, bounds.w])?;
 
             let mut trees: Vec<TreeInfo> = Vec::new();
@@ -154,14 +168,22 @@ mod tests {
     use std::env;
     use env_logger;
 
-    #[tokio::test]
-    async fn test_get_trees() {
-        env::set_var("RUST_LOG", "debug");
+    async fn setup() -> Result<SqliteDatabase> {
         env::set_var("TREEMAP_SQLITE_PATH", ":memory:");
 
-        env_logger::init();
+        if let Err(_) = env_logger::try_init() {
+            debug!("env_logger already initialized.");
+        };
 
-        let db = SqliteDatabase::new().await.unwrap();
+        let db = SqliteDatabase::new().await?;
+        db.execute(include_str!("./fixtures/init.sql").to_string()).await.unwrap();
+
+        Ok(db)
+    }
+
+    #[tokio::test]
+    async fn test_get_trees() ->Result<()> {
+        let db = setup().await?;
         db.execute(include_str!("./fixtures/trees.sql").to_string()).await.unwrap();
 
         let bounds = Bounds {
@@ -179,6 +201,39 @@ mod tests {
             },
         };
 
-        assert_eq!(trees.trees.len(), 1);
+        assert_eq!(trees.trees.len(), 3);
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_add_tree() -> Result<()> {
+        let db = setup().await?;
+
+        let before = db.get_trees(Bounds {
+            n: 90.0,
+            e: 180.0,
+            s: -90.0,
+            w: -180.0,
+        }).await?;
+
+        assert_eq!(before.trees.len(), 0);
+
+        db.add_tree(&TreeInfo {
+            id: 123,
+            lat: 56.65,
+            lon: 28.48,
+            name: "Oak".to_string(),
+        }).await?;
+
+        let after = db.get_trees(Bounds {
+            n: 90.0,
+            e: 180.0,
+            s: -90.0,
+            w: -180.0,
+        }).await?;
+
+        assert_eq!(after.trees.len(), 1);
+
+        Ok(())
     }
 }

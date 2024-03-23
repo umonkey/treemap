@@ -8,10 +8,10 @@ mod sqlite;
 mod r#trait;
 
 pub use self::r#trait::*;
+pub use self::sqlite::*;
 
 use std::sync::Arc;
 use crate::Result;
-use self::sqlite::*;
 
 pub async fn get_database() -> Result<Arc<dyn Database>> {
     Ok(Arc::new(SqliteDatabase::new().await?))
