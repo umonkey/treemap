@@ -16,6 +16,8 @@ export const SelectLocationDialog = (props: IProps) => {
 
   return (
     <>
+      <h2>Adding a new tree</h2>
+
       <p>Please click the map to set the location of the tree you are going to add.</p>
       <p>You can drag the marker around to fine-tune the location.</p>
 

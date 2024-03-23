@@ -1,7 +1,7 @@
 import "./styles.css";
 
 interface IProps {
-  children: React.ReactNode;
+  children?: React.ReactNode | React.ReactNode[];
 }
 
 export const SideBar = (props: IProps) => {
