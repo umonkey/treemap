@@ -27,7 +27,13 @@ The frontend is written in TypeScript, using the [React](https://reactjs.org/) l
 
 ## Getting started
 
-There will be a Docker image with everything compiled.
+You can run the app locally using a pre-composed Docker image.  You will need [Docker](https://www.docker.com/) installed on your machine.  The command line is:
+
+```
+$ docker run -p 8000:8000 -v $PWD/var:/app/var ghcr.io/umonkey/treemap:latest
+```
+
+With this command you'll be running the application, both backend and frontend, on port [localhost:8000](http://localhost:8000/).  The SQLite database will be stored in `./var` directory, and should persist container restarts.  The database will be created automatically on the first run.  To run a public service, this would need to be hidden behind a CDN.  (The service is not yet ready for public use.)
 
 
 ## Motivation
