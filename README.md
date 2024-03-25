@@ -7,6 +7,11 @@ The application is heavily inspired by the [New York City Street Tree Map](https
 [About](https://github.com/umonkey/treemap/wiki/Home) - [API Documentation](https://github.com/umonkey/treemap/wiki/API) - [TODO](https://github.com/umonkey/treemap/wiki/TODO)
 
 
+## Current status
+
+There is a backend and frontend prototype.  One can [run this](https://github.com/umonkey/treemap/wiki/Installation#running-with-docker) on a local machine in a Docker container, use the browser to see a map and add new trees with no details.  Authentication, edits, comments, files, and everything else is missing.
+
+
 ## Features
 
 - [x] List trees around you.
