@@ -11,6 +11,7 @@ strip = true
 
 [dependencies]
 actix-cors = "0.7.0"
+actix-files = "0.6.5"
 actix-web = "4.5.1"
 async-sqlite = "0.2.2"
 async-trait = "0.1.77"

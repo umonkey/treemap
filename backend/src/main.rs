@@ -5,6 +5,7 @@ mod services;
 mod utils;
 
 use actix_cors::Cors;
+use actix_files::Files;
 use actix_web::{middleware::DefaultHeaders, App, HttpServer};
 use log::{debug, info};
 use std::time::Duration;
@@ -55,6 +56,7 @@ async fn main() -> std::io::Result<()> {
             .service(add_tree)
             .service(get_trees)
             .service(get_tree)
+            .service(Files::new("/", "./static").prefer_utf8(true).index_file("index.html"))
     })
     .bind((host_addr.as_str(), host_port))?
     .workers(workers)
