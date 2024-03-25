@@ -6,7 +6,7 @@ help:
 	@echo "serve - run the project"
 
 build:
-	cargo build
+	cargo build --release
 
 clean:
 	rm -f *.profraw
