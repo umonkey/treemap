@@ -1,9 +1,15 @@
 DATABASE=var/database.sqlite
 
 help:
-	@echo "build - build the project"
-	@echo "lint  - run clippy"
-	@echo "serve - run the project"
+	@echo "make build         -- build the project"
+	@echo "make clean         -- delete temporary files"
+	@echo "make lint          -- run clippy"
+	@echo "make serve         -- run the project"
+	@echo "make sqlite        -- run the SQLite console"
+	@echo "make sqlite-schema -- install the schema in SQLite"
+	@echo "make sqlite-seed   -- install the test data"
+	@echo "make test          -- run unit tests"
+	@echo "make test-coverage -- run unit tests with coverage collection"
 
 build:
 	cargo build --release
