@@ -17,7 +17,7 @@ lint:
 	npm run lint
 
 serve:
-	REACT_APP_API_ROOT=http://localhost:8000 npm run dev
+	REACT_APP_API_ROOT=http://localhost:8000 npm run dev -- --host
 
 storybook:
 	npm run storybook -- --no-open
