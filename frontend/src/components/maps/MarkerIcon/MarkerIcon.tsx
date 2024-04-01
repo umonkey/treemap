@@ -4,8 +4,8 @@
  * @docs https://leafletjs.com/examples/custom-icons/
  */
 
-import marker from "./icons/marker-icon.png";
-import shadow from "./icons/marker-shadow.png";
+import marker from "./icons/marker-icon.svg";
+import shadow from "./icons/marker-shadow.svg";
 
 import { Icon } from "leaflet";
 
