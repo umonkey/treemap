@@ -1,7 +1,8 @@
 import { useRef } from "react";
-
 import { Marker, useMapEvents } from "react-leaflet";
 import { DragEndEvent } from "leaflet";
+
+import { MarkerIcon } from "@/components";
 import { ILatLng } from "@/types";
 
 interface IProps {
@@ -44,6 +45,7 @@ export const DraggableMarker = (props: IProps) => {
       eventHandlers={{
         dragend: handleDragEnd,
       }}
+      icon={MarkerIcon}
     />
   );
 };

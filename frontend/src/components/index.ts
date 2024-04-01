@@ -7,6 +7,7 @@ export { Map } from "./maps/Map";
 export { MapBase } from "./maps/MapBase";
 export { MapControl } from "./maps/MapControl";
 export { MapEventHandler } from "./maps/MapEventHandler";
+export { MarkerIcon } from "./maps/MarkerIcon";
 export { Markers } from "./maps/Markers";
 export { SelectLocationDialog } from "./dialogs/SelectLocationDialog";
 export { SideBar } from "./layout/SideBar";
