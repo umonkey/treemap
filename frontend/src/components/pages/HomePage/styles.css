@@ -12,5 +12,17 @@
 
 .SideBar {
   z-index: 2;
-  box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 0px 15px 5px, rgba(0, 0, 0, 0.3) 0px 0px 15px 5px;
+}
+
+@media (orientation: portrait) {
+  .HomePage {
+    flex-direction: column;
+  }
+
+  .HomePage .map, .HomePage .SideBar {
+    flex-basis: 50%;
+    flex-grow: 1;
+    width: 100%;
+  }
 }
