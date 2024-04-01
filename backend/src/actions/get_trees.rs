@@ -28,7 +28,7 @@ pub async fn get_trees(
 
     let trees = state.get_trees(bounds).await?;
 
-    debug!("Returning {} trees", trees.len());
+    debug!("Returning {} trees for n={} e={} s={} w={}", trees.len(), query.n, query.e, query.s, query.w);
 
     Ok(Json(trees))
 }
