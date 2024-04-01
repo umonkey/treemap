@@ -3,6 +3,7 @@ import { ZoomControl } from "react-leaflet";
 
 import { IBounds, ILatLng, ITreeInfo } from "@/types";
 import { AddTreeControl, DraggableMarker, LocateControl, MapBase, MapEventHandler, Markers } from "@/components";
+import { useMobileDevice } from "./hooks";
 
 import "leaflet/dist/leaflet.css";
 
@@ -19,6 +20,8 @@ export const MapControl = (props: IProps) => {
   // This is the point that the user picked.  Used to display
   // a movable pointer when props.picker is true.
   const [point, setPoint] = useState<ILatLng | null>(null);
+
+  const isMobile = useMobileDevice();
 
   const handleBoundsChange = (bounds: IBounds) => {
     props.onBoundsChange && props.onBoundsChange(bounds);
@@ -39,7 +42,10 @@ export const MapControl = (props: IProps) => {
       { !props.picker && props.markers && <Markers markers={props.markers} /> }
       { props.picker && <DraggableMarker position={point} onChange={handleMarkerDragged} /> }
 
-      <ZoomControl position="bottomright" />
+      {!isMobile && (
+        <ZoomControl position="bottomright" />
+      )}
+
       <LocateControl position="bottomright" />
 
       {props.onAddTree && (
