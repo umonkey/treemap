@@ -44,6 +44,11 @@ With this command you'll be running the application, both backend and frontend, 
 Please see the [installation instructions](https://github.com/umonkey/treemap/wiki/Installation) for more details.
 
 
+## Demo
+
+A demo version of the current state of the project is available at [treemap.umonkey.net](https://treemap.umonkey.net/).  The demo is running on a small server, so it might be slow or unresponsive.  The demo is not meant for production use, but for testing and development purposes only.  The demo is not guaranteed to be available at all times, and might be taken down at any time.
+
+
 ## Motivation
 
 I love growing trees and [crowdmapping](https://en.wikipedia.org/wiki/Crowdmapping).  I always wanted to have a map of all the trees in my city, so that when it's time to collect seeds for the next season, I know exactly where to go.  Or to check how a rare species feels in our climate.  I could not find any such map, so I decided to make one myself.
