@@ -1,4 +1,4 @@
-import { DEFAULT_API_ROOT } from "@/utils/config";
+import { DEFAULT_API_ROOT, DEFAULT_GOOGLE_CLIENT_ID } from "@/utils/config";
 
 export const getApiRoot = () => {
   // Have unprefixed requests in Storybook, for simpler mocking.
@@ -10,4 +10,8 @@ export const getApiRoot = () => {
   console.debug(`API Root is ${root}`);
 
   return root;
+};
+
+export const getGoogleClientId = () => {
+  return import.meta.env.VITE_GOOGLE_CLIENT_ID || DEFAULT_GOOGLE_CLIENT_ID;
 };

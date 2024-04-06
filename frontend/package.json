@@ -20,6 +20,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@mui/material": "^5.15.14",
+    "@react-oauth/google": "^0.12.1",
     "@types/leaflet.locatecontrol": "^0.74.4",
     "axios": "^1.6.8",
     "leaflet": "^1.9.4",
