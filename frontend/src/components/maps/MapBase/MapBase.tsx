@@ -36,10 +36,8 @@ export const MapBase = (props: IProps) => {
     return () => resizeObserver.disconnect();
   }, [ref]);
 
-  console.debug("MapBase!", ref);
-
   return (
-    <MapContainer ref={ref} center={[props.center.lat, props.center.lon]} zoom={13} maxZoom={18} scrollWheelZoom={true} className="map" zoomControl={false}>
+    <MapContainer ref={ref} center={[props.center.lat, props.center.lon]} zoom={13} maxNativeZoom={18} maxZoom={25} scrollWheelZoom={true} className="map" zoomControl={false}>
       <LayerSelector />
 
       {props.children}
