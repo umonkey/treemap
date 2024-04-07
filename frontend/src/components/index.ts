@@ -3,6 +3,7 @@ export { AddTreeDialog } from "./dialogs/AddTreeDialog";
 export { DraggableMarker } from "./maps/DraggableMarker";
 export { LayerSelector } from "./maps/LayerSelector";
 export { LocateControl } from "./maps/LocateControl";
+export { LoginWithGoogleButton } from "./elements/LoginWithGoogleButton";
 export { Map } from "./maps/Map";
 export { MapBase } from "./maps/MapBase";
 export { MapControl } from "./maps/MapControl";

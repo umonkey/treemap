@@ -4,9 +4,14 @@ import { TokenResponse, useGoogleLogin } from "@react-oauth/google";
 import { useUserInfo } from "@/utils/userinfo";
 import { treeMapService } from "@/services/api";
 
-export const useGoogleAuth = () => {
+interface IProps {
+  onSuccess: () => void;
+  onError: () => void;
+}
+
+export const useGoogleAuth = (props: IProps) => {
   const [token, setToken] = useState<TokenResponse | null>(null);
-  const { userInfo, setUserInfo } = useUserInfo();
+  const { setUserInfo } = useUserInfo();
 
   const loginFunction = useGoogleLogin({
     onSuccess: (response) => {
@@ -17,6 +22,7 @@ export const useGoogleAuth = () => {
     onError: (error) => {
       console.error("Error logging in with Google:", error);
       setUserInfo(null);
+      props.onError();
     },
   });
 
@@ -28,18 +34,20 @@ export const useGoogleAuth = () => {
 
         try {
           const res = await treeMapService.loginGoogle(token.access_token);
-          setUserInfo(res);
 
+          setUserInfo(res);
           console.info("Logged in with Google.");
+
+          props.onSuccess();
         } catch (e) {
           console.error("Error logging in with Google:", e);
+          props.onError();
         }
       }
     })();
-  }, [token, setUserInfo]);
+  }, [token, setUserInfo, props]);
 
   return {
-    userInfo,
     login: () => { loginFunction() },
   };
 };

@@ -1,7 +1,8 @@
 import { Button } from "@mui/material";
 import { ILatLng } from "@/types";
 
-import { useGoogleAuth } from "./hooks";
+import { LoginWithGoogleButton } from "@/components";
+import { useUserInfo } from "@/utils/userinfo";
 
 interface IProps {
   position: ILatLng | null;
@@ -9,11 +10,19 @@ interface IProps {
 }
 
 export const SelectLocationDialog = (props: IProps) => {
-  const { userInfo, login } = useGoogleAuth();
+  const { userInfo } = useUserInfo();
 
   const handleContinueClick = () => {
     console.debug("Continue clicked.");
     props.onContinue();
+  };
+
+  const handleLoginSuccess = () => {
+    console.debug("Login successful.");
+  };
+
+  const handleLoginError = () => {
+    console.debug("Login failed.");
   };
 
   console.debug("userInfo:", userInfo);
@@ -36,7 +45,11 @@ export const SelectLocationDialog = (props: IProps) => {
       {!userInfo && (
         <>
           <p>You need to log in first.</p>
-          <Button variant="contained" color="success" onClick={login}>Log in with Google</Button>
+
+          <LoginWithGoogleButton
+            onSuccess={handleLoginSuccess}
+            onError={handleLoginError}
+          />
         </>
       )}
     </>
