@@ -1,57 +1,45 @@
 import { useState, useEffect } from "react";
 import { TokenResponse, useGoogleLogin } from "@react-oauth/google";
-import axios from "axios";
 
-import { getGoogleUser, setGoogleUser } from "@/utils/storage";
-
-interface GoogleProfile {
-  id: string;
-  email: string;
-  locale: string;
-  name: string;
-  picture: string;
-  verified_email: boolean;
-}
+import { useUserInfo } from "@/utils/userinfo";
+import { treeMapService } from "@/services/api";
 
 export const useGoogleAuth = () => {
-  const [user, setUser] = useState<TokenResponse | null>(getGoogleUser());
-  const [profile, setProfile] = useState<GoogleProfile | null>(null);
+  const [token, setToken] = useState<TokenResponse | null>(null);
+  const { userInfo, setUserInfo } = useUserInfo();
 
   const loginFunction = useGoogleLogin({
     onSuccess: (response) => {
-      console.debug("Logged in with Google:", response);
-
-      setUser(response);
-      setGoogleUser(response);
+      console.debug("Received a token from Google.");
+      setToken(response);
     },
 
     onError: (error) => {
       console.error("Error logging in with Google:", error);
+      setUserInfo(null);
     },
   });
 
-  const login = () => {
-    loginFunction();
-  };
-
+  // When a Google token is received, exchange it for user info.
   useEffect(() => {
-    if (user) {
-      axios.get("https://www.googleapis.com/oauth2/v1/userinfo", {
-        headers: {
-          Authorization: `Bearer ${user.access_token}`,
-          Accept: "application/json",
-        },
-      }).then((res) => {
-        setProfile(res.data);
-        console.debug("Got profile:", res.data);
-      }).catch((error) => {
-        console.error("Error getting profile:", error);
-      });
-    }
-  }, [user]);
+    (async () => {
+      if (token) {
+        console.debug("Access token received from Google. Logging in.");
+
+        try {
+          const res = await treeMapService.loginGoogle(token.access_token);
+          setUserInfo(res);
+
+          console.info("Logged in with Google.");
+        } catch (e) {
+          console.error("Error logging in with Google:", e);
+        }
+      }
+    })();
+  }, [token, setUserInfo]);
 
   return {
-    profile,
-    login,
+    userInfo,
+    login: () => { loginFunction() },
   };
 };

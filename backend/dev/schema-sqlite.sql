@@ -41,3 +41,16 @@ CREATE TABLE IF NOT EXISTS trees_files (
 );
 
 CREATE INDEX IF NOT EXISTS trees_files_tree_id ON trees_files (tree_id);
+
+
+-- User accounts.
+
+CREATE TABLE IF NOT EXISTS users (
+    `id` INT NOT NULL,
+    `email` TEXT NOT NULL,
+    `name` TEXT NOT NULL,
+    `picture` TEXT NOT NULL,
+    PRIMARY KEY(`id`)
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS users_email ON users (email);

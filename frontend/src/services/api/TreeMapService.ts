@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 
-import { ITreeInfo } from "@/types";
+import { ITreeInfo, IUserInfo } from "@/types";
 import { getApiRoot } from "@/utils/env";
 
 export interface ITreesResponse {
@@ -51,6 +51,20 @@ export class TreeMapService {
       lat: params.lat,
       lon: params.lon,
       name: params.species,
+    });
+
+    return res;
+  }
+
+  /**
+   * Login with Google.
+   *
+   * Exchanges a Google OAuth token for a local user token.
+   * Creates a new user account if necessary.
+   */
+  public async loginGoogle(token: string): Promise<IUserInfo> {
+    const res = await this.post<IUserInfo>("/v1/login/google", {
+      token,
     });
 
     return res;

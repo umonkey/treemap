@@ -12,7 +12,7 @@ use log::{debug, error, info};
 
 use crate::Result;
 use crate::errors::Error;
-use crate::objects::{Bounds, TreeInfo, TreeList};
+use crate::objects::{Bounds, TreeInfo, TreeList, UserInfo};
 use crate::utils::{get_sqlite_path, get_unique_id};
 use crate::services::database::r#trait::Database;
 
@@ -178,6 +178,53 @@ impl Database for SqliteDatabase {
         }).await?;
 
         Ok(id)
+    }
+
+    async fn find_user_by_email(&self, email: &str) -> Result<Option<UserInfo>> {
+        let email = email.to_string();
+
+        let user = self.pool.conn(move |conn| {
+            let mut stmt = match conn.prepare("SELECT id, email, name, picture FROM users WHERE email = ?") {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error preparing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut rows = stmt.query([email])?;
+
+            if let Some(row) = rows.next()? {
+                let id: u64 = row.get(0)?;
+
+                return Ok(Some(UserInfo {
+                    id,
+                    email: row.get(1)?,
+                    name: row.get(2)?,
+                    picture: row.get(3)?,
+                }));
+            }
+
+            Ok(None)
+        }).await?;
+
+        Ok(user)
+    }
+
+    async fn add_user(&self, user: &UserInfo) -> Result<()> {
+        let id = user.id;
+        let email = user.email.clone();
+        let name = user.name.clone();
+        let picture = user.picture.clone();
+
+        self.pool.conn(move |conn| {
+            conn.execute("INSERT INTO users (id, email, name, picture) VALUES (?, ?, ?, ?)", (id, email, name, picture))?;
+            debug!("User {} added to the database.", id);
+            Ok(())
+        }).await?;
+
+        Ok(())
     }
 }
 

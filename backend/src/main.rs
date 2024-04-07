@@ -56,6 +56,7 @@ async fn main() -> std::io::Result<()> {
             .service(add_tree)
             .service(get_trees)
             .service(get_tree)
+            .service(login_google)
             .service(Files::new("/", "./static").prefer_utf8(true).index_file("index.html"))
     })
     .bind((host_addr.as_str(), host_port))?

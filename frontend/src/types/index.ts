@@ -17,6 +17,12 @@ export interface ITreeInfo {
   name: string;
 }
 
+export interface IUserInfo {
+  token: string;
+  name: string;
+  picture: string;
+}
+
 export enum SideBarMode {
   DEFAULT = "default",
   ADD_TREE = "add_tree",

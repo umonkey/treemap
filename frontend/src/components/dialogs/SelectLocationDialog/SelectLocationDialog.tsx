@@ -9,12 +9,14 @@ interface IProps {
 }
 
 export const SelectLocationDialog = (props: IProps) => {
-  const { profile, login } = useGoogleAuth();
+  const { userInfo, login } = useGoogleAuth();
 
   const handleContinueClick = () => {
     console.debug("Continue clicked.");
     props.onContinue();
   };
+
+  console.debug("userInfo:", userInfo);
 
   const canContinue = !!props.position;
 
@@ -22,7 +24,7 @@ export const SelectLocationDialog = (props: IProps) => {
     <>
       <h2>Adding a new tree</h2>
 
-      {profile && (
+      {userInfo && (
         <>
           <p>Please click the map to set the location of the tree you are going to add.</p>
           <p>You can drag the marker around to fine-tune the location.</p>
@@ -31,7 +33,7 @@ export const SelectLocationDialog = (props: IProps) => {
         </>
       )}
 
-      {!profile && (
+      {!userInfo && (
         <>
           <p>You need to log in first.</p>
           <Button variant="contained" color="success" onClick={login}>Log in with Google</Button>
