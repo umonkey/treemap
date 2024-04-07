@@ -14,9 +14,22 @@ export const useGoogleAuth = (props: IProps) => {
   const { setUserInfo } = useUserInfo();
 
   const loginFunction = useGoogleLogin({
-    onSuccess: (response) => {
-      console.debug("Received a token from Google.");
-      setToken(response);
+    onSuccess: async (response) => {
+      console.debug("Google auth successful, received access token.");
+
+      const token = response.access_token;
+
+      try {
+        const res = await treeMapService.loginGoogle(token);
+        console.info("Logged in with Google.");
+
+        setUserInfo(res);
+
+        props.onSuccess();
+      } catch (e) {
+        console.error("Error logging in with Google:", e);
+        props.onError();
+      }
     },
 
     onError: (error) => {
@@ -25,27 +38,6 @@ export const useGoogleAuth = (props: IProps) => {
       props.onError();
     },
   });
-
-  // When a Google token is received, exchange it for user info.
-  useEffect(() => {
-    (async () => {
-      if (token) {
-        console.debug("Access token received from Google. Logging in.");
-
-        try {
-          const res = await treeMapService.loginGoogle(token.access_token);
-
-          setUserInfo(res);
-          console.info("Logged in with Google.");
-
-          props.onSuccess();
-        } catch (e) {
-          console.error("Error logging in with Google:", e);
-          props.onError();
-        }
-      }
-    })();
-  }, [token, setUserInfo, props]);
 
   return {
     login: () => { loginFunction() },

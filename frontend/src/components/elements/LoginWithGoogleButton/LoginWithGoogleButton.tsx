@@ -24,6 +24,6 @@ export const LoginWithGoogleButton = (props: IProps) => {
   };
 
   return (
-    <Button variant="contained" color="success" disabled={props.disabled} onClick={handleClick}>Continue</Button>
+    <Button variant="contained" color="success" disabled={props.disabled} onClick={handleClick}>Log In with Google</Button>
   );
 };

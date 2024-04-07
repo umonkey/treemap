@@ -19,6 +19,10 @@ export const SelectLocationDialog = (props: IProps) => {
 
   const handleLoginSuccess = () => {
     console.debug("Login successful.");
+
+    // For some reason, userInfo is not updated immediately after login,
+    // so we need to reload the page to get the updated userInfo.
+    window.location.reload();
   };
 
   const handleLoginError = () => {
