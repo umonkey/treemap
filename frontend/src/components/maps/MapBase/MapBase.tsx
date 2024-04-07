@@ -37,7 +37,7 @@ export const MapBase = (props: IProps) => {
   }, [ref]);
 
   return (
-    <MapContainer ref={ref} center={[props.center.lat, props.center.lon]} zoom={13} maxNativeZoom={18} maxZoom={25} scrollWheelZoom={true} className="map" zoomControl={false}>
+    <MapContainer ref={ref} center={[props.center.lat, props.center.lon]} zoom={13} maxZoom={25} scrollWheelZoom={true} className="map" zoomControl={false}>
       <LayerSelector />
 
       {props.children}

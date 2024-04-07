@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { TokenResponse, useGoogleLogin } from "@react-oauth/google";
+import { useGoogleLogin } from "@react-oauth/google";
 
 import { useUserInfo } from "@/utils/userinfo";
 import { treeMapService } from "@/services/api";
@@ -10,7 +9,6 @@ interface IProps {
 }
 
 export const useGoogleAuth = (props: IProps) => {
-  const [token, setToken] = useState<TokenResponse | null>(null);
   const { setUserInfo } = useUserInfo();
 
   const loginFunction = useGoogleLogin({
