@@ -30,6 +30,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-leaflet": "^4.2.1",
+    "react-leaflet-cluster": "^2.1.0",
     "react-leaflet-custom-control": "^1.4.0",
     "react-leaflet-vector-tile-layer": "^0.3.2",
     "vitest": "^1.4.0"
