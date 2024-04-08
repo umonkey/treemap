@@ -29,8 +29,6 @@ export const SelectLocationDialog = (props: IProps) => {
     console.debug("Login failed.");
   };
 
-  console.debug("userInfo:", userInfo);
-
   const canContinue = !!props.position;
 
   return (

@@ -21,11 +21,11 @@ export const MapBase = (props: IProps) => {
 
   useEffect(() => {
     if (!ref.current) {
-      console.debug("ref empty :((");
+      console.debug("Ref empty, not installing resize observer.");
       return;
     }
 
-    console.debug("observer installed!");
+    console.debug("Installing resize observer.", ref.current);
 
     const resizeObserver = new ResizeObserver(() => {
       console.debug("Map resized!");
@@ -37,10 +37,15 @@ export const MapBase = (props: IProps) => {
   }, [ref]);
 
   return (
-    <MapContainer ref={ref} center={[props.center.lat, props.center.lon]} zoom={13} maxZoom={25} scrollWheelZoom={true} className="map" zoomControl={false}>
-      <LayerSelector />
+    <div ref={ref} style={{
+      height: "100%",
+      width: "100%",
+    }}>
+      <MapContainer center={[props.center.lat, props.center.lon]} zoom={13} maxZoom={25} scrollWheelZoom={true} className="map" zoomControl={false}>
+        <LayerSelector />
 
-      {props.children}
-    </MapContainer>
+        {props.children}
+      </MapContainer>
+    </div>
   );
 };
