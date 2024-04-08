@@ -1,6 +1,7 @@
 export { AddTreeControl } from "./maps/AddTreeControl";
 export { AddTreeDialog } from "./dialogs/AddTreeDialog";
 export { DraggableMarker } from "./maps/DraggableMarker";
+export { GreenCircleIcon } from "./maps/GreenCircleIcon";
 export { LayerSelector } from "./maps/LayerSelector";
 export { LocateControl } from "./maps/LocateControl";
 export { LoginWithGoogleButton } from "./elements/LoginWithGoogleButton";
