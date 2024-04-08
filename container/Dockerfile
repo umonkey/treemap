@@ -1,6 +1,6 @@
 # (1) Build the backend binary.
 FROM docker.io/rust:1.76-alpine3.18 as rust-builder
-RUN apk add --no-cache musl-dev
+RUN apk add --no-cache musl-dev openssl openssl-dev openssl-libs-static
 COPY backend /app
 RUN cd /app && cargo build --release
 
