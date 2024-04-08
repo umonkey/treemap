@@ -18,6 +18,7 @@ interface IProps {
 
 export const MapBase = (props: IProps) => {
   const ref = useRef(null);
+  const mapRef = useRef(null);
 
   useEffect(() => {
     if (!ref.current) {
@@ -25,10 +26,13 @@ export const MapBase = (props: IProps) => {
       return;
     }
 
-    console.debug("Installing resize observer.", ref.current);
+    console.debug("Installing resize observer.");
 
     const resizeObserver = new ResizeObserver(() => {
-      console.debug("Map resized!");
+      console.debug("Map resized, invalidating size.");
+
+      // @ts-expect-error TS18047
+      mapRef.current.invalidateSize();
     });
 
     resizeObserver.observe(ref.current);
@@ -41,7 +45,7 @@ export const MapBase = (props: IProps) => {
       height: "100%",
       width: "100%",
     }}>
-      <MapContainer center={[props.center.lat, props.center.lon]} zoom={13} maxZoom={25} scrollWheelZoom={true} className="map" zoomControl={false}>
+      <MapContainer ref={mapRef} center={[props.center.lat, props.center.lon]} zoom={13} maxZoom={25} scrollWheelZoom={true} className="map" zoomControl={false}>
         <LayerSelector />
 
         {props.children}
