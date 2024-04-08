@@ -8,7 +8,10 @@ interface IProps {
 export const StoryWrapper = (props: IProps) => {
   return (
     <GoogleOAuthProvider clientId={getGoogleClientId()}>
-      <div className="StoryWrapper">
+      <div className="StoryWrapper" style={{
+        height: "100%",
+        width: "100%",
+      }}>
         {props.children}
       </div>
     </GoogleOAuthProvider>
