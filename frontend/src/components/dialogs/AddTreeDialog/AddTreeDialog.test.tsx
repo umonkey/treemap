@@ -36,7 +36,7 @@ describe("AddTreeDialog", () => {
       lon: 2,
     }} onSuccess={vi.fn()} />);
 
-    const submitButton = screen.getByRole("button", { name: /save/i });
+    const submitButton = screen.getByRole("button", { name: /confirm/i });
     expect(submitButton).toBeDisabled();
   });
 
@@ -62,7 +62,7 @@ describe("AddTreeDialog", () => {
 
     await user.type(input, "Oak");
 
-    const submitButton = screen.getByRole("button", { name: /save/i });
+    const submitButton = screen.getByRole("button", { name: /confirm/i });
     expect(submitButton).not.toBeDisabled();
 
     await user.click(submitButton);

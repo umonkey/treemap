@@ -46,11 +46,15 @@ export class TreeMapService {
     lat: number;
     lon: number;
     species: string;
+    height: number | null;
+    circumference: number | null;
   }): Promise<ITreeInfo> {
     const res = await this.post<ITreeInfo>("/v1/trees", {
       lat: params.lat,
       lon: params.lon,
       name: params.species,
+      height: params.height,
+      circumference: params.circumference,
     });
 
     return res;

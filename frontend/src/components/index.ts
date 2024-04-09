@@ -4,6 +4,7 @@ export { DraggableMarker } from "./maps/DraggableMarker";
 export { GreenCircleIcon } from "./maps/GreenCircleIcon";
 export { LayerSelector } from "./maps/LayerSelector";
 export { LocateControl } from "./maps/LocateControl";
+export { LocationPicker } from "./maps/LocationPicker";
 export { LoginWithGoogleButton } from "./elements/LoginWithGoogleButton";
 export { Map } from "./maps/Map";
 export { MapBase } from "./maps/MapBase";
