@@ -1,3 +1,4 @@
+use jsonwebtoken::errors::Error as JwtError;
 use std::convert::From;
 use std::fmt;
 
@@ -46,6 +47,12 @@ impl Error {
 impl From<SqliteError> for Error {
     fn from(_: SqliteError) -> Self {
         Error::DatabaseQuery
+    }
+}
+
+impl From<JwtError> for Error {
+    fn from(_: JwtError) -> Self {
+        Error::BadAuthToken
     }
 }
 

@@ -5,17 +5,20 @@ use std::sync::Arc;
 use crate::Result;
 use crate::errors::Error;
 use crate::services::Database;
-use crate::types::{GoogleUserinfoResponse, LoginGoogleRequest, LoginResponse, UserInfo};
+use crate::services::TokenService;
+use crate::types::{GoogleUserinfoResponse, LoginGoogleRequest, LoginResponse, TokenClaims, UserInfo};
 use crate::utils::get_unique_id;
 
 pub struct GoogleAuth {
     db: Arc<dyn Database>,
+    tokens: TokenService,
 }
 
 impl GoogleAuth {
     pub async fn init(db: &Arc<dyn Database>) -> Self {
         Self {
             db: db.clone(),
+            tokens: TokenService::new(),
         }
     }
 
@@ -25,8 +28,12 @@ impl GoogleAuth {
         let userinfo = self.get_google_userinfo(req).await?;
         let user = self.get_user(&userinfo).await?;
 
+        let token = self.tokens.encode(&TokenClaims {
+            sub: user.id.to_string(),
+        })?;
+
         Ok(LoginResponse {
-            token: user.id.to_string(),
+            token,
             name: user.name,
             picture: user.picture,
         })

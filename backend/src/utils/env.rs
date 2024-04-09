@@ -4,6 +4,7 @@ use std::env;
 use crate::Result;
 use crate::errors::Error;
 
+const JWT_SECRET: &str = "JWT_SECRET";
 const SQLITE_PATH: &str = "TREEMAP_SQLITE_PATH";
 const SERVER_ADDR: &str = "TREEMAP_ADDR";
 const SERVER_PORT: &str = "TREEMAP_PORT";
@@ -12,6 +13,7 @@ const WORKERS: &str = "TREEMAP_WORKERS";
 const DEFAULT_WORKERS: usize = 1;
 const DEFAULT_ADDR: &str = "0.0.0.0";
 const DEFAULT_PORT: u16 = 8000;
+const DEFAULT_JWT_SECRET: &str = "secret";
 
 
 pub fn get_sqlite_path() -> Result<String> {
@@ -53,6 +55,17 @@ pub fn get_server_port() -> u16 {
         Err(_) => {
             warn!("Environment variable {} not set, using default {}.", SERVER_PORT, DEFAULT_PORT);
             DEFAULT_PORT
+        },
+    }
+}
+
+pub fn get_jwt_secret() -> String {
+    match env::var(JWT_SECRET) {
+        Ok(v) => v,
+
+        Err(_) => {
+            warn!("Environment variable {} not set, using default: {}. This is very insecure, only OK for a test environment. Read more at <https://github.com/umonkey/treemap/wiki/Configuration#jwt_secret>", JWT_SECRET, DEFAULT_JWT_SECRET);
+            DEFAULT_JWT_SECRET.to_string()
         },
     }
 }
