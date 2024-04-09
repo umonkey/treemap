@@ -12,9 +12,9 @@ use log::{debug, error, info};
 
 use crate::Result;
 use crate::errors::Error;
-use crate::objects::{Bounds, TreeInfo, TreeList, UserInfo};
-use crate::utils::{get_sqlite_path, get_unique_id};
 use crate::services::database::r#trait::Database;
+use crate::types::{Bounds, TreeInfo, TreeList, UserInfo};
+use crate::utils::{get_sqlite_path, get_unique_id};
 
 pub struct SqliteDatabase {
     pub pool: Pool,

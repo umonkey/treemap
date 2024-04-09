@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use crate::objects::TreeInfo;
+use crate::types::TreeInfo;
 
 #[derive(Debug, Serialize)]
 pub struct TreeList {

@@ -1,7 +1,7 @@
-use crate::objects::{AddTreeRequest, Bounds, TreeInfo, TreeList, LoginGoogleRequest, LoginResponse};
 use crate::services::GoogleAuth;
 use crate::services::trees::Trees;
 use crate::services::database::get_database;
+use crate::types::{AddTreeRequest, Bounds, TreeInfo, TreeList, LoginGoogleRequest, LoginResponse};
 use crate::Result;
 
 pub struct AppState {

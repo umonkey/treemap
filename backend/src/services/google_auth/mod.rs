@@ -4,8 +4,8 @@ use std::sync::Arc;
 
 use crate::Result;
 use crate::errors::Error;
-use crate::objects::{GoogleUserinfoResponse, LoginGoogleRequest, LoginResponse, UserInfo};
 use crate::services::Database;
+use crate::types::{GoogleUserinfoResponse, LoginGoogleRequest, LoginResponse, UserInfo};
 use crate::utils::get_unique_id;
 
 pub struct GoogleAuth {

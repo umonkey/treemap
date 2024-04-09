@@ -3,8 +3,8 @@ use log::debug;
 
 use crate::Result;
 use crate::errors::Error;
-use crate::objects::{AddTreeRequest, Bounds, TreeInfo, TreeList};
 use crate::services::Database;
+use crate::types::{AddTreeRequest, Bounds, TreeInfo, TreeList};
 use crate::utils::get_unique_id;
 
 pub struct Trees {

@@ -1,8 +1,8 @@
 use actix_web::{post, web::Data, web::Json};
 
 use crate::Result;
-use crate::objects::{LoginGoogleRequest, LoginResponse};
 use crate::services::AppState;
+use crate::types::{LoginGoogleRequest, LoginResponse};
 
 #[post("/v1/login/google")]
 pub async fn login_google(

@@ -1,7 +1,7 @@
 mod actions;
 mod errors;
-mod objects;
 mod services;
+mod types;
 mod utils;
 
 use actix_cors::Cors;

@@ -1,8 +1,8 @@
 use actix_web::{post, web::Data, web::Json};
 
 use crate::Result;
-use crate::objects::{TreeInfo, AddTreeRequest};
 use crate::services::app::AppState;
+use crate::types::{TreeInfo, AddTreeRequest};
 
 #[post("/v1/trees")]
 pub async fn add_tree(
