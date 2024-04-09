@@ -6,6 +6,8 @@ CREATE TABLE IF NOT EXISTS trees (
     `lat` REAL NOT NULL,
     `lon` REAL NOT NULL,
     `name` TEXT NOT NULL,
+    `height` REAL NULL,
+    `circumference` REAL NULL,
     PRIMARY KEY(`id`)
 );
 

@@ -26,6 +26,8 @@ impl Trees {
             lat: req.lat,
             lon: req.lon,
             name: req.name,
+            height: req.height,
+            circumference: req.circumference,
         };
 
         debug!("Adding tree at ({}, {}) with name '{}'.", req.lat, req.lon, tree.name);
@@ -34,6 +36,14 @@ impl Trees {
         self.db.add_tree_prop(tree.id, "lat", &tree.lat.to_string()).await?;
         self.db.add_tree_prop(tree.id, "lon", &tree.lon.to_string()).await?;
         self.db.add_tree_prop(tree.id, "name", &tree.name.to_string()).await?;
+
+        if let Some(height) = tree.height {
+            self.db.add_tree_prop(tree.id, "height", &height.to_string()).await?;
+        }
+
+        if let Some(circumference) = tree.circumference {
+            self.db.add_tree_prop(tree.id, "circumference", &circumference.to_string()).await?;
+        }
 
         Ok(tree)
     }
@@ -114,6 +124,8 @@ mod tests {
             lat: 12.34,
             lon: 56.78,
             name: "Oak".to_string(),
+            height: Some(10.0),
+            circumference: Some(20.0),
         }).await?;
 
         debug!("Tree added: {:?}", tree);

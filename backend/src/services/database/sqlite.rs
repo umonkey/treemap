@@ -142,6 +142,8 @@ impl Database for SqliteDatabase {
                     lat,
                     lon,
                     name: row.get(3)?,
+                    height: None, // only in details view
+                    circumference: None,
                 });
             }
 
@@ -297,6 +299,8 @@ mod tests {
             lat: 56.65,
             lon: 28.48,
             name: "Oak".to_string(),
+            height: Some(12.0),
+            circumference: Some(1.0),
         }).await?;
 
         let after = db.get_trees(Bounds {

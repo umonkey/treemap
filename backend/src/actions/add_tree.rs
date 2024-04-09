@@ -13,6 +13,8 @@ pub async fn add_tree(
         lat: payload.lat,
         lon: payload.lon,
         name: payload.name.clone(),
+        height: payload.height,
+        circumference: payload.circumference,
     };
 
     let tree = state.add_tree(req).await?;
