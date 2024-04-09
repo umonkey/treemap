@@ -16,6 +16,6 @@ export const Markers = (props: IProps) => {
   ));
 
   return (
-    <MarkerClusterGroup>{markers}</MarkerClusterGroup>
+    <MarkerClusterGroup maxClusterRadius={10}>{markers}</MarkerClusterGroup>
   );
 };
