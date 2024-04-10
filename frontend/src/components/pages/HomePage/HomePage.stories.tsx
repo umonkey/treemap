@@ -55,7 +55,7 @@ export const Desktop: Story = {
   args: { },
   parameters: {
     viewport: {
-      defaultViewport: "desktop",
+      defaultViewport: "responsive",
     },
   },
 };

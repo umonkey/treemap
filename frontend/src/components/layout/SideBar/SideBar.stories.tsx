@@ -28,7 +28,7 @@ type Story = StoryObj<typeof meta>;
 export const Desktop: Story = {
   parameters: {
     viewport: {
-      defaultViewport: "desktop",
+      defaultViewport: "responsive",
     },
   },
 };
