@@ -20,6 +20,7 @@ export const AddTreeDialog = (props: IProps) => {
   const [species, setSpecies] = useState<string>('');
   const [height] = useState<number|undefined>(undefined);
   const [circumference] = useState<number|undefined>(undefined);
+  const [diameter] = useState<number|undefined>(undefined);
 
   const [sending, setSending] = useState<boolean>(false);
   const [saveEnabled, setSaveEnabled] = useState<boolean>(false);
@@ -52,6 +53,7 @@ export const AddTreeDialog = (props: IProps) => {
         species: species,
         height: height || null,
         circumference: circumference || null,
+        diameter: diameter || null,
       });
 
       console.debug("Tree added.", tree);
@@ -80,6 +82,10 @@ export const AddTreeDialog = (props: IProps) => {
 
       <div className="group">
         <TextField id="circumference" label="Circumference, m" variant="standard" type="number" value={circumference} />
+      </div>
+
+      <div className="group">
+        <TextField id="diameter" label="Diameter, m" variant="standard" type="number" value={diameter} />
       </div>
 
       <div className="group">
