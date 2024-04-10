@@ -14,9 +14,11 @@ import "leaflet/dist/leaflet.css";
 interface IProps {
   center: ILatLng;
   children?: React.ReactNode | React.ReactNode[];
+  zoom?: number;
 }
 
 export const MapBase = (props: IProps) => {
+  const [zoom] = useState<number>(props.zoom || 13);
   const [maxZoom, setMaxZoom] = useState<number>(18);
 
   const ref = useRef(null);
@@ -60,7 +62,7 @@ export const MapBase = (props: IProps) => {
       height: "100%",
       width: "100%",
     }}>
-      <MapContainer ref={mapRef} center={[props.center.lat, props.center.lon]} zoom={13} maxZoom={maxZoom} scrollWheelZoom={true} className="map" zoomControl={false}>
+      <MapContainer ref={mapRef} center={[props.center.lat, props.center.lon]} zoom={zoom} maxZoom={maxZoom} scrollWheelZoom={true} className="map" zoomControl={false}>
         <LayerSelector onZoomChange={handleZoomChange} />
 
         {props.children}

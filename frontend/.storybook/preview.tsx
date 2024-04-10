@@ -1,4 +1,5 @@
 import type { Preview } from "@storybook/react";
+import { MemoryRouter } from "react-router-dom";
 
 import { StoryWrapper } from "./StoryWrapper";
 import "./preview.css";
@@ -51,7 +52,9 @@ const preview: Preview = {
   decorators: [
     (Story) => (
       <StoryWrapper>
-        <Story />
+        <MemoryRouter>
+          <Story />
+        </MemoryRouter>
       </StoryWrapper>
     ),
   ],

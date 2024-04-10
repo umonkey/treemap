@@ -1,0 +1,1 @@
+export { RouterComponent } from "./RouterComponent";

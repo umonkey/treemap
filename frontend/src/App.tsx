@@ -1,10 +1,13 @@
-import { HomePage } from "./components/pages/HomePage";
+import { BrowserRouter } from "react-router-dom";
+import { RouterComponent } from "@/components";
 
 import "./App.css";
 
 function App() {
   return (
-    <HomePage />
+    <BrowserRouter>
+      <RouterComponent />
+    </BrowserRouter>
   )
 }
 

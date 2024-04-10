@@ -16,15 +16,10 @@ interface IProps {
   onCancel?: () => void;
 }
 
-const parseNumber = (value: string): number | null => {
-  value = value.replace(",", ".");
-  return parseFloat(value) || null;
-};
-
 export const AddTreeDialog = (props: IProps) => {
   const [species, setSpecies] = useState<string>('');
-  const [height, setHeight] = useState<number|null>(null);
-  const [circumference, setCircumference] = useState<number|null>(null);
+  const [height] = useState<number|undefined>(undefined);
+  const [circumference] = useState<number|undefined>(undefined);
 
   const [sending, setSending] = useState<boolean>(false);
   const [saveEnabled, setSaveEnabled] = useState<boolean>(false);
@@ -37,17 +32,14 @@ export const AddTreeDialog = (props: IProps) => {
     setSpecies(event.target.value);
   };
 
-  const handleHeightChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setHeight(parseNumber(event.target.value));
-  };
-
-  const handleCircumferenceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setCircumference(parseNumber(event.target.value));
-  };
-
   const handleSaveClick = async () => {
     if (!props.center) {
       console.error("Center is not set, cannot add tree.");
+      return;
+    }
+
+    if (!species) {
+      console.error("Species not set, cannot add tree.");
       return;
     }
 
@@ -58,8 +50,8 @@ export const AddTreeDialog = (props: IProps) => {
         lat: props.center.lat,
         lon: props.center.lon,
         species: species,
-        height: height,
-        circumference: circumference,
+        height: height || null,
+        circumference: circumference || null,
       });
 
       console.debug("Tree added.", tree);
@@ -75,17 +67,19 @@ export const AddTreeDialog = (props: IProps) => {
 
   return (
     <Box component="form" className="AddTreeDialog">
+      <h2>Add a tree</h2>
+
       <div className="group">
         <TextField id="species" label="Species" variant="standard" required value={species} onChange={handleSpeciesChange} />
         <FormHelperText>Enter English or Latin name.</FormHelperText>
       </div>
 
       <div className="group">
-        <TextField id="height" label="Height, m" variant="standard" type="number" value={height} onChange={handleHeightChange} />
+        <TextField id="height" label="Height, m" variant="standard" type="number" value={height} />
       </div>
 
       <div className="group">
-        <TextField id="circumference" label="Circumference, m" variant="standard" type="number" value={circumference} onChange={handleCircumferenceChange} />
+        <TextField id="circumference" label="Circumference, m" variant="standard" type="number" value={circumference} />
       </div>
 
       <div className="group">
