@@ -20,4 +20,5 @@ export { RouterComponent } from "./router/RouterComponent";
 export { SelectLocationDialog } from "./dialogs/SelectLocationDialog";
 export { SideBar } from "./layout/SideBar";
 export { TreeMarkers } from "./maps/TreeMarkers";
+export { WithAuth } from "./helpers/WithAuth";
 export { WithSidebar } from "./layout/WithSidebar";

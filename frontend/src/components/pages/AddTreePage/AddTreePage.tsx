@@ -1,6 +1,6 @@
 import { useSearchParams, useNavigate } from "react-router-dom";
 
-import { AddTreeDialog, MapWithMarker, SideBar, WithSidebar } from "@/components";
+import { AddTreeDialog, MapWithMarker, SideBar, WithAuth, WithSidebar } from "@/components";
 import { ILatLng, ITreeInfo } from "@/types";
 import { routes } from "@/utils/routes";
 
@@ -60,11 +60,13 @@ export const AddTreePageWrapper = () => {
   };
 
   return (
-    <AddTreePage
-      lat={parseFloat(lat)}
-      lon={parseFloat(lon)}
-      onSuccess={handleSuccess}
-      onCancel={handleCancel}
-    />
+    <WithAuth>
+      <AddTreePage
+        lat={parseFloat(lat)}
+        lon={parseFloat(lon)}
+        onSuccess={handleSuccess}
+        onCancel={handleCancel}
+      />
+    </WithAuth>
   );
 };
