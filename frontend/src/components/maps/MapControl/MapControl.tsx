@@ -23,10 +23,6 @@ export const MapControl = (props: IProps) => {
 
   return (
     <MapBase center={props.center}>
-      {props.picker && (
-        <LocationPicker onChange={handleLocationPick} />
-      )}
-
       {!isMobile && (
         <ZoomControl position="bottomright" />
       )}
@@ -38,6 +34,10 @@ export const MapControl = (props: IProps) => {
       )}
 
       {props.children}
+
+      {props.picker && (
+        <LocationPicker onChange={handleLocationPick} />
+      )}
     </MapBase>
   );
 };
