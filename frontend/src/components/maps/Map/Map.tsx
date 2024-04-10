@@ -1,7 +1,5 @@
 import { MapControl } from "@/components";
-import { IBounds } from "@/types";
-
-import { useMarkers } from "./hooks";
+import { DEFAULT_MAP_CENTER } from "@/utils/config";
 
 import "./styles.css";
 
@@ -10,12 +8,6 @@ interface IProps {
 }
 
 export const Map = (props: IProps) => {
-  const { center, markers, reload } = useMarkers();
-
-  const handleBoundsChange = (bounds: IBounds) => {
-    reload(bounds);
-  };
-
   const handleAddTree = () => {
     console.debug("Showing add tree form...");
     props.onAddTree();
@@ -23,10 +15,8 @@ export const Map = (props: IProps) => {
 
   return (
     <MapControl
-      center={center}
-      markers={markers}
+      center={DEFAULT_MAP_CENTER}
       onAddTree={handleAddTree}
-      onBoundsChange={handleBoundsChange}
       picker={false}
     />
   );

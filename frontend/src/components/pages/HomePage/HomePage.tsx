@@ -6,23 +6,23 @@ import {
   SelectLocationDialog,
   MapControl,
   SideBar,
+  TreeMarkers,
 } from "@/components";
-import { IBounds, ILatLng } from "@/types";
-import { useMarkers } from "./hooks";
+
+import { ILatLng } from "@/types";
 
 import "./styles.css";
 
-export const HomePage = () => {
-  const { center, markers, reload } = useMarkers();
-  const [picker, setPicker] = useState<boolean>(false);
+const CENTER = {
+  lat: 40.181389,
+  lon: 44.514444,
+} as ILatLng;
 
+export const HomePage = () => {
+  const [picker, setPicker] = useState<boolean>(false);
   const [newPosition, setNewPosition] = useState<ILatLng | null>(null);
 
   const navigate = useNavigate();
-
-  const handleBoundsChange = (bounds: IBounds) => {
-    reload(bounds);
-  };
 
   const handleAddTree = () => {
     setPicker(!picker);
@@ -41,13 +41,13 @@ export const HomePage = () => {
   return (
     <div className="HomePage">
       <MapControl
-        center={center}
-        markers={markers}
+        center={CENTER}
         onAddTree={handleAddTree}
-        onBoundsChange={handleBoundsChange}
         onPick={handlePicker}
         picker={picker}
-      />
+      >
+        <TreeMarkers />
+      </MapControl>
 
       {picker && (
         <SideBar>

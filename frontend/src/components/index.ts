@@ -19,4 +19,5 @@ export { Markers } from "./maps/Markers";
 export { RouterComponent } from "./router/RouterComponent";
 export { SelectLocationDialog } from "./dialogs/SelectLocationDialog";
 export { SideBar } from "./layout/SideBar";
+export { TreeMarkers } from "./maps/TreeMarkers";
 export { WithSidebar } from "./layout/WithSidebar";

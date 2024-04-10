@@ -1,22 +1,31 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { MapBase } from "./MapBase";
-import { DEFAULT_MAP_CENTER } from "@/utils/config";
+import { TreeMarkers } from "./TreeMarkers";
+import { MapBase } from "@/components";
+
+const CENTER = {
+  lat: 40.181389,
+  lon: 44.514444,
+};
 
 const meta = {
-  title: 'Maps/MapBase',
-  component: MapBase,
+  title: 'Maps/TreeMarkers',
+  component: TreeMarkers,
   parameters: {
     layout: 'fullscreen', // centered
   },
-} satisfies Meta<typeof MapBase>;
+  args: { },
+  render: () => (
+    <MapBase center={CENTER}>
+      <TreeMarkers />
+    </MapBase>
+  ),
+} satisfies Meta<typeof TreeMarkers>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Desktop: Story = {
-  args: {
-    center: DEFAULT_MAP_CENTER,
-  },
+  args: { },
   parameters: {
     viewport: {
       defaultViewport: "responsive",
@@ -25,9 +34,7 @@ export const Desktop: Story = {
 };
 
 export const Phone: Story = {
-  args: {
-    center: DEFAULT_MAP_CENTER,
-  },
+  args: { },
   parameters: {
     viewport: {
       defaultViewport: "mobile1",

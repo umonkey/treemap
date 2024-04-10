@@ -1,20 +1,9 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
-import { treeMapService } from "../../../services/api";
-import { IBounds, ILatLng, ITreeInfo } from "../../../types";
-
-const coordsChanged = (a: number[], b: number[]): boolean => {
-  const _a = a.join(";");
-  const _b = b.join(";");
-  return _a !== _b;
-};
+import { IBounds, ITreeInfo } from "@/types";
+import { treeMapService } from "@/services/api";
 
 export const useMarkers = () => {
-  const center: ILatLng = {
-    lat: 40.181389,
-    lon: 44.514444,
-  };
-
   const [markers, setMarkers] = useState<ITreeInfo[]>([]);
   const [bounds, setBounds] = useState<number[]>([]);
 
@@ -29,9 +18,7 @@ export const useMarkers = () => {
       newBounds.west,
     ];
 
-    if (coordsChanged(bounds, updated)) {
-      setBounds(updated);
-    }
+    setBounds(updated);
   };
 
   useEffect(() => {
@@ -47,14 +34,13 @@ export const useMarkers = () => {
         west: bounds[3],
       });
 
-      console.debug(`Received ${res.length} markers.`);
+      console.debug(`Received ${res.length} markers from the API.`);
 
       setMarkers(res);
     })();
   }, [bounds]);
 
   return {
-    center,
     markers,
     reload,
   };
