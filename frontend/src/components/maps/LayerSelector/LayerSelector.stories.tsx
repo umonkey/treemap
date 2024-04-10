@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { MapContainer } from "react-leaflet";
+import { fn } from '@storybook/test';
 
 import { LayerSelector } from "./LayerSelector";
 import "leaflet/dist/leaflet.css";
@@ -12,10 +13,12 @@ const meta = {
   parameters: {
     layout: 'fullscreen', // centered
   },
-  args: { },
-  render: () => (
+  args: {
+    onZoomChange: fn(),
+  },
+  render: (args) => (
     <MapContainer center={[POSITION[0], POSITION[1]]} zoom={13} maxZoom={18} scrollWheelZoom={true} className="map" zoomControl={false}>
-      <LayerSelector />
+      <LayerSelector {...args} />
     </MapContainer>
   ),
 } satisfies Meta<typeof LayerSelector>;
