@@ -36,7 +36,7 @@ export interface ITreeDetails {
 export interface IAddTreeRequest {
   lat: number;
   lon: number;
-  species: string;
+  name: string;
   height: number | null;
   circumference: number | null;
   diameter: number | null;

@@ -5,6 +5,7 @@ import MockAdapter from "axios-mock-adapter";
 import { vi } from "vitest";
 
 import { AddTreeDialog } from "./AddTreeDialog";
+import { IAddTreeRequest } from "@/types";
 
 vi.mock("axios", async () => {
   const actual = await vi.importActual<typeof import("axios")>("axios");
@@ -34,7 +35,7 @@ describe("AddTreeDialog", () => {
     render(<AddTreeDialog center={{
       lat: 1,
       lon: 2,
-    }} onSuccess={vi.fn()} />);
+    }} onSave={vi.fn()} error={null} busy={false} />);
 
     const submitButton = screen.getByRole("button", { name: /confirm/i });
     expect(submitButton).toBeDisabled();
@@ -43,7 +44,7 @@ describe("AddTreeDialog", () => {
   test("submit a tree", async () => {
     const user = userEvent.setup();
 
-    const onSuccess = vi.fn();
+    const onSave = vi.fn();
 
     mock.onPost("/v1/trees").reply(200, {
       id: 1,
@@ -55,7 +56,7 @@ describe("AddTreeDialog", () => {
     render(<AddTreeDialog center={{
       lat: 1,
       lon: 2,
-    }} onSuccess={onSuccess} />);
+    }} onSave={onSave} error={null} busy={false} />);
 
     const input = screen.getByRole("textbox", { name: /species/i });
     expect(input).toBeInTheDocument();
@@ -67,12 +68,14 @@ describe("AddTreeDialog", () => {
 
     await user.click(submitButton);
 
-    expect(onSuccess).toBeCalledWith({
-      id: 1,
-      lat: 56.26,
-      lon: 28.48,
+    expect(onSave).toBeCalledWith({
+      lat: 1,
+      lon: 2,
       name: "Oak",
-    });
+      height: null,
+      circumference: null,
+      diameter: null,
+    } as IAddTreeRequest);
   });
 
   test("cancel without submit", async () => {
@@ -82,7 +85,7 @@ describe("AddTreeDialog", () => {
     render(<AddTreeDialog center={{
       lat: 1,
       lon: 2,
-    }} onSuccess={vi.fn()} onCancel={handleCancel} />);
+    }} onSave={vi.fn()} onCancel={handleCancel} error={null} busy={false} />);
 
     const cancelButton = screen.getByRole("button", { name: /cancel/i });
     expect(cancelButton).not.toBeDisabled();

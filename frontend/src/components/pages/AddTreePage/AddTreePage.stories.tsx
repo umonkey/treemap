@@ -41,6 +41,7 @@ export const Desktop: Story = {
   args: {
     lat: CENTER.lat,
     lon: CENTER.lon,
+    token: "foo.bar.baz",
   },
   parameters: {
     viewport: {
@@ -53,6 +54,7 @@ export const Phone: Story = {
   args: {
     lat: CENTER.lat,
     lon: CENTER.lon,
+    token: "foo.bar.baz",
   },
   parameters: {
     viewport: {

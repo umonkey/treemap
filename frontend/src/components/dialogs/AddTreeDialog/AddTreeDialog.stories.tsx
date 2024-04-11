@@ -24,7 +24,7 @@ const meta = {
     ],
   },
   args: {
-    onSuccess: fn(),
+    onSave: fn(),
     onCancel: fn(),
   },
 } satisfies Meta<typeof AddTreeDialog>;
@@ -38,6 +38,8 @@ export const Desktop: Story = {
       lat: 40.181389,
       lon: 44.514444,
     },
+    error: null,
+    busy: false,
   },
   parameters: {
     viewport: {
@@ -52,6 +54,8 @@ export const Phone: Story = {
       lat: 40.181389,
       lon: 44.514444,
     },
+    error: null,
+    busy: false,
   },
   parameters: {
     viewport: {

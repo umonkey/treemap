@@ -3,17 +3,17 @@
  * https://mui.com/material-ui/all-components/
  */
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Box, Button, FormHelperText, TextField } from "@mui/material";
 
-import { treeMapService } from "@/services/api";
-import { ILatLng, ITreeInfo } from "@/types";
-import { useUserInfo } from "@/utils/userinfo";
+import { IAddTreeRequest, ILatLng } from "@/types";
 import "./styles.css";
 
 interface IProps {
   center: ILatLng | null;
-  onSuccess: (tree: ITreeInfo) => void;
+  error: string | null;
+  busy: boolean;
+  onSave: (tree: IAddTreeRequest) => void;
   onCancel?: () => void;
 }
 
@@ -23,13 +23,21 @@ export const AddTreeDialog = (props: IProps) => {
   const [circumference] = useState<number|undefined>(undefined);
   const [diameter] = useState<number|undefined>(undefined);
 
-  const [sending, setSending] = useState<boolean>(false);
-  const [saveEnabled, setSaveEnabled] = useState<boolean>(false);
-  const { userInfo } = useUserInfo();
+  const isSaveEnabled = (): boolean => {
+    if (species.length === 0) {
+      return false;
+    }
 
-  useEffect(() => {
-    setSaveEnabled((species.length > 0) && !sending && props.center !== null);
-  }, [sending, species, props.center]);
+    if (props.busy) {
+      return false;
+    }
+
+    if (props.center === null) {
+      return false;
+    }
+
+    return true;
+  };
 
   const handleSpeciesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSpecies(event.target.value);
@@ -46,28 +54,14 @@ export const AddTreeDialog = (props: IProps) => {
       return;
     }
 
-    if (!userInfo) {
-      console.error("Not logged in, cannot add tree.");
-      return;
-    }
-
-    try {
-      setSending(true);
-
-      const tree = await treeMapService.addMarker({
+    props.onSave({
         lat: props.center.lat,
         lon: props.center.lon,
-        species: species,
+        name: species,
         height: height || null,
         circumference: circumference || null,
         diameter: diameter || null,
-      }, userInfo.token);
-
-      console.debug("Tree added.", tree);
-      props.onSuccess(tree);
-    } finally {
-      setSending(false);
-    }
+    } as IAddTreeRequest);
   };
 
   const handleCancelClick = () => {
@@ -97,7 +91,7 @@ export const AddTreeDialog = (props: IProps) => {
         </div>
 
         <div className="group">
-          <Button variant="contained" color="success" disabled={!saveEnabled} onClick={handleSaveClick}>Confirm</Button>
+          <Button variant="contained" color="success" disabled={!isSaveEnabled()} onClick={handleSaveClick}>Confirm</Button>
           <Button color="secondary" onClick={handleCancelClick}>Cancel</Button>
         </div>
       </Box>
