@@ -8,7 +8,7 @@ interface IProps {
 
 export const TreeDetails = (props: IProps) => {
   const format = (value: number | null) => {
-    if (value === null) {
+    if (!value) {
       return "no data";
     }
 
