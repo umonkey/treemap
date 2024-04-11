@@ -70,7 +70,7 @@ export const AddTreeDialog = (props: IProps) => {
   return (
     <div className="AddTreeDialog Dialog">
       <Box component="form">
-        <h2>Add a tree</h2>
+        <h2>Describe the tree</h2>
 
         <div className="group">
           <TextField id="species" label="Species" variant="standard" required value={species} onChange={handleSpeciesChange} />
