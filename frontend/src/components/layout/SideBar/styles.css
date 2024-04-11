@@ -1,4 +1,5 @@
 .SideBar {
   width: 360px;
+  min-width: 360px;
   padding: 10px;
 }

@@ -8,6 +8,7 @@ import { Box, Button, FormHelperText, TextField } from "@mui/material";
 
 import { treeMapService } from "@/services/api";
 import { ILatLng, ITreeInfo } from "@/types";
+import { useUserInfo } from "@/utils/userinfo";
 import "./styles.css";
 
 interface IProps {
@@ -24,6 +25,7 @@ export const AddTreeDialog = (props: IProps) => {
 
   const [sending, setSending] = useState<boolean>(false);
   const [saveEnabled, setSaveEnabled] = useState<boolean>(false);
+  const { userInfo } = useUserInfo();
 
   useEffect(() => {
     setSaveEnabled((species.length > 0) && !sending && props.center !== null);
@@ -44,6 +46,11 @@ export const AddTreeDialog = (props: IProps) => {
       return;
     }
 
+    if (!userInfo) {
+      console.error("Not logged in, cannot add tree.");
+      return;
+    }
+
     try {
       setSending(true);
 
@@ -54,6 +61,7 @@ export const AddTreeDialog = (props: IProps) => {
         height: height || null,
         circumference: circumference || null,
         diameter: diameter || null,
+        token: userInfo.token,
       });
 
       console.debug("Tree added.", tree);

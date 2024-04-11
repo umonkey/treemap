@@ -49,6 +49,7 @@ export class TreeMapService {
     height: number | null;
     circumference: number | null;
     diameter: number | null;
+    token: string;
   }): Promise<ITreeInfo> {
     const res = await this.post<ITreeInfo>("/v1/trees", {
       lat: params.lat,
@@ -56,6 +57,10 @@ export class TreeMapService {
       name: params.species,
       height: params.height,
       circumference: params.circumference,
+    }, {
+      headers: {
+        "Authorization": `Bearer ${params.token}`,
+      },
     });
 
     return res;
