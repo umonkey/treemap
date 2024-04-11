@@ -94,7 +94,7 @@ export const AddTreeDialog = (props: IProps) => {
 
         <div className="row">
           <div className="group short">
-            <TextField id="diameter" label="Diameter, m" variant="standard" type="number" value={diameter} />
+            <TextField id="diameter" label="Canopy ⌀, m" variant="standard" type="number" value={diameter} />
           </div>
 
           <div className="short">
