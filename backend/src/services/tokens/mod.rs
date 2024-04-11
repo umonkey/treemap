@@ -1,3 +1,4 @@
+use log::{debug, error};
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
 
 use crate::Result;
@@ -29,7 +30,12 @@ impl TokenService {
     pub fn decode(&self, encoded: &str) -> Result<TokenClaims> {
         match decode::<TokenClaims>(encoded, &self.sym_dec, &Validation::default()) {
             Ok(token) => Ok(token.claims),
-            Err(e) => Err(e.into()),
+
+            Err(e) => {
+                error!("Error decoding token: {}", e);
+                debug!("Token payload: {}", encoded);
+                Err(e.into())
+            },
         }
     }
 }
