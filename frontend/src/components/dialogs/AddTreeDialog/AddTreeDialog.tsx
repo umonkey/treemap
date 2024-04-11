@@ -6,8 +6,9 @@
 import { useState } from "react";
 import { Box, Button, FormHelperText, TextField } from "@mui/material";
 
+import { TreeStateSelector } from "@/components";
 import { IAddTreeRequest, ILatLng } from "@/types";
-import "./styles.css";
+import "./styles.scss";
 
 interface IProps {
   center: ILatLng | null;
@@ -18,13 +19,14 @@ interface IProps {
 }
 
 export const AddTreeDialog = (props: IProps) => {
-  const [species, setSpecies] = useState<string>('');
+  const [name, setName] = useState<string>('');
   const [height] = useState<number|undefined>(undefined);
   const [circumference] = useState<number|undefined>(undefined);
   const [diameter] = useState<number|undefined>(undefined);
+  const [state, setState] = useState<string>('healthy');
 
   const isSaveEnabled = (): boolean => {
-    if (species.length === 0) {
+    if (name.length === 0) {
       return false;
     }
 
@@ -39,8 +41,9 @@ export const AddTreeDialog = (props: IProps) => {
     return true;
   };
 
-  const handleSpeciesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSpecies(event.target.value);
+  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.debug("VALUE", event.target.value);
+    setName(event.target.value);
   };
 
   const handleSaveClick = async () => {
@@ -49,18 +52,19 @@ export const AddTreeDialog = (props: IProps) => {
       return;
     }
 
-    if (!species) {
-      console.error("Species not set, cannot add tree.");
+    if (!name) {
+      console.error("Name not set, cannot add tree.");
       return;
     }
 
     props.onSave({
-        lat: props.center.lat,
-        lon: props.center.lon,
-        name: species,
-        height: height || null,
-        circumference: circumference || null,
-        diameter: diameter || null,
+      lat: props.center.lat,
+      lon: props.center.lon,
+      name: name,
+      height: height || null,
+      circumference: circumference || null,
+      diameter: diameter || null,
+      state,
     } as IAddTreeRequest);
   };
 
@@ -73,21 +77,32 @@ export const AddTreeDialog = (props: IProps) => {
       <Box component="form">
         <h2>Describe the tree</h2>
 
-        <div className="group">
-          <TextField id="species" label="Species" variant="standard" required value={species} onChange={handleSpeciesChange} />
-          <FormHelperText>Enter English or Latin name.</FormHelperText>
+        <div className="group wide">
+          <TextField id="name" label="Name" variant="standard" required value={name} onChange={handleNameChange} />
+          <FormHelperText>Describe the tree.</FormHelperText>
         </div>
 
-        <div className="group">
-          <TextField id="height" label="Height, m" variant="standard" type="number" value={height} />
+        <div className="row">
+          <div className="group short">
+            <TextField id="height" label="Height, m" variant="standard" type="number" value={height} />
+          </div>
+
+          <div className="group short">
+            <TextField id="circumference" label="Circumference, m" variant="standard" type="number" value={circumference} />
+          </div>
         </div>
 
-        <div className="group">
-          <TextField id="circumference" label="Circumference, m" variant="standard" type="number" value={circumference} />
-        </div>
+        <div className="row">
+          <div className="group short">
+            <TextField id="diameter" label="Diameter, m" variant="standard" type="number" value={diameter} />
+          </div>
 
-        <div className="group">
-          <TextField id="diameter" label="Diameter, m" variant="standard" type="number" value={diameter} />
+          <div className="short">
+            <TreeStateSelector
+              state={state}
+              onChange={(value: string) => setState(value)}
+            />
+          </div>
         </div>
 
         <div className="group">

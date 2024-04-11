@@ -4,3 +4,10 @@
   padding: 10px;
   box-sizing: border-box;
 }
+
+@media (orientation: portrait) {
+  .SideBar {
+    min-width: 100%;
+    max-width: 100%;
+  }
+}

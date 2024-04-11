@@ -25,5 +25,6 @@ export { SelectLocationDialog } from "./dialogs/SelectLocationDialog";
 export { SideBar } from "./layout/SideBar";
 export { TreeDetails } from "./blocks/TreeDetails";
 export { TreeMarkers } from "./maps/TreeMarkers";
+export { TreeStateSelector } from "./elements/TreeStateSelector";
 export { WithAuth } from "./helpers/WithAuth";
 export { WithSidebar } from "./layout/WithSidebar";

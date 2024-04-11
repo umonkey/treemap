@@ -3,8 +3,22 @@
   padding: 20px;
   background-color: #fff;
 
+  &.state-sick {
+    background-color: #FF7F50;
+  }
+
+  &.state-dead {
+    background-color: #FF4500;
+    color: #fff;
+  }
+
+  &.state-gone {
+    background-color: #800;
+    color: #fff;
+  }
+
   h2 {
-    margin: 0 0 20px;
+    margin: 0 0 10px;
   }
 
   .treeId {
@@ -12,7 +26,14 @@
     font-size: 0.8em;
   }
 
-  ul.props {
-    padding-left: 1em;
+  .props {
+    display: grid;
+    column-gap: 20px;
+    grid-template-columns: auto auto;
+    margin: 10px 0 0;
+
+    div {
+      white-space: nowrap;
+    }
   }
 }

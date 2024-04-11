@@ -13,6 +13,7 @@ struct RequestPayload {
     pub height: Option<f64>,
     pub circumference: Option<f64>,
     pub diameter: Option<f64>,
+    pub state: String,
 }
 
 #[post("/v1/trees")]
@@ -30,6 +31,7 @@ pub async fn add_tree(
         height: payload.height,
         circumference: payload.circumference,
         diameter: payload.diameter,
+        state: payload.state.clone(),
         user_id,
     };
 

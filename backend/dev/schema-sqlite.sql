@@ -9,11 +9,16 @@ CREATE TABLE IF NOT EXISTS trees (
     `height` REAL NULL,
     `circumference` REAL NULL,
     `diameter` REAL NULL,
+    `state` TEXT NOT NULL DEFAULT "healthy",
     `added_at` INT NOT NULL,
     `updated_at` INT NOT NULL,
     `added_by` INT NOT NULL,
     PRIMARY KEY(`id`)
 );
+
+CREATE INDEX IF NOT EXISTS trees_lat ON trees (lat);
+CREATE INDEX IF NOT EXISTS trees_lon ON trees (lon);
+CREATE INDEX IF NOT EXISTS trees_state ON trees (state);
 
 
 -- Tree attributes.

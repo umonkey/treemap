@@ -30,6 +30,7 @@ impl Trees {
             height: req.height,
             circumference: req.circumference,
             diameter: req.diameter,
+            state: req.state.to_string(),
             added_at: now,
             updated_at: now,
             added_by: req.user_id,
@@ -82,6 +83,7 @@ impl Trees {
             height: req.height,
             circumference: req.circumference,
             diameter: req.diameter,
+            state: req.state,
             added_at: old.added_at,
             updated_at: now,
             added_by: old.added_by,
@@ -188,6 +190,7 @@ mod tests {
             height: Some(10.0),
             circumference: Some(20.0),
             diameter: None,
+            state: "healthy".to_string(),
             user_id: 0,
         }).await?;
 

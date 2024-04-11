@@ -1,33 +1,25 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { fn } from '@storybook/test';
 
-import { TreeDetails } from "./TreeDetails";
-import { ITreeDetails } from "@/types";
-
-const DETAILS = {
-  id: "134793003121381380",
-  lat: 40.181389,
-  lon: 44.514444,
-  name: "Sycamore",
-  height: 18.5,
-  circumference: 1.2,
-  diameter: 7,
-  state: "sick",
-} as ITreeDetails;
+import { TreeStateSelector } from "./TreeStateSelector";
 
 const meta = {
-  title: 'Blocks/TreeDetails',
-  component: TreeDetails,
+  title: 'Elements/TreeStateSelector',
+  component: TreeStateSelector,
   parameters: {
     layout: 'padded', // centered, fullscreen
   },
-} satisfies Meta<typeof TreeDetails>;
+  args: {
+    onChange: fn(),
+  },
+} satisfies Meta<typeof TreeStateSelector>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Desktop: Story = {
   args: {
-    tree: DETAILS,
+    state: "healthy",
   },
   parameters: {
     viewport: {
@@ -38,7 +30,7 @@ export const Desktop: Story = {
 
 export const Phone: Story = {
   args: {
-    tree: DETAILS,
+    state: "healthy",
   },
   parameters: {
     viewport: {

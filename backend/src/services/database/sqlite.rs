@@ -104,12 +104,13 @@ impl Database for SqliteDatabase {
         let name = tree.name.clone();
         let height = tree.height;
         let circumference = tree.circumference;
+        let state = tree.state.clone();
         let added_at = tree.added_at;
         let updated_at = tree.updated_at;
         let added_by = tree.added_by;
 
         self.pool.conn(move |conn| {
-            match conn.execute("INSERT INTO trees (id, lat, lon, name, height, circumference, added_at, updated_at, added_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (id, lat, lon, name, height, circumference, added_at, updated_at, added_by)) {
+            match conn.execute("INSERT INTO trees (id, lat, lon, name, height, circumference, state, added_at, updated_at, added_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (id, lat, lon, name, height, circumference, state, added_at, updated_at, added_by)) {
                 Ok(_) => (),
 
                 Err(e) => {
@@ -133,10 +134,11 @@ impl Database for SqliteDatabase {
         let height = tree.height;
         let circumference = tree.circumference;
         let diameter = tree.diameter;
+        let state = tree.state.clone();
         let updated_at = tree.updated_at;
 
         self.pool.conn(move |conn| {
-            match conn.execute("UPDATE trees set lat = ?, lon = ?, name = ?, height = ?, circumference = ?, diameter = ?, updated_at = ? WHERE id = ?", (lat, lon, name, height, circumference, diameter, updated_at, id)) {
+            match conn.execute("UPDATE trees set lat = ?, lon = ?, name = ?, height = ?, circumference = ?, diameter = ?, state = ?, updated_at = ? WHERE id = ?", (lat, lon, name, height, circumference, diameter, state, updated_at, id)) {
                 Ok(_) => (),
 
                 Err(e) => {
@@ -157,7 +159,7 @@ impl Database for SqliteDatabase {
      */
     async fn get_tree(&self, id: u64) -> Result<Option<TreeInfo>> {
         let tree = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, lat, lon, name, height, circumference, diameter, added_at, updated_at, added_by FROM trees WHERE id = ?") {
+            let mut stmt = match conn.prepare("SELECT id, lat, lon, name, height, circumference, diameter, state, added_at, updated_at, added_by FROM trees WHERE id = ?") {
                 Ok(value) => value,
 
                 Err(e) => {
@@ -179,9 +181,10 @@ impl Database for SqliteDatabase {
                     height: row.get(4)?, // only in details view
                     circumference: row.get(5)?,
                     diameter: row.get(6)?,
-                    added_at: row.get(7)?,
-                    updated_at: row.get(8)?,
-                    added_by: row.get(9)?,
+                    state: row.get(7)?,
+                    added_at: row.get(8)?,
+                    updated_at: row.get(9)?,
+                    added_by: row.get(10)?,
                 }));
             }
 
@@ -198,7 +201,7 @@ impl Database for SqliteDatabase {
      */
     async fn get_trees(&self, bounds: Bounds) -> Result<Vec<TreeInfo>> {
         let trees = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, lat, lon, name FROM trees WHERE lat <= ? AND lat >= ? AND lon <= ? AND lon >= ?") {
+            let mut stmt = match conn.prepare("SELECT id, lat, lon, name, state FROM trees WHERE lat <= ? AND lat >= ? AND lon <= ? AND lon >= ? AND state <> 'gone'") {
                 Ok(value) => value,
 
                 Err(e) => {
@@ -224,6 +227,7 @@ impl Database for SqliteDatabase {
                     height: None, // only in details view
                     circumference: None,
                     diameter: None,
+                    state: row.get(4)?,
                     added_at: 0,
                     updated_at: 0,
                     added_by: 0,
@@ -383,6 +387,7 @@ mod tests {
             height: Some(12.0),
             circumference: Some(1.0),
             diameter: None,
+            state: "healthy".to_string(),
             added_at: 0,
             updated_at: 0,
             added_by: 0,

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Box, Button, FormHelperText, TextField } from "@mui/material";
 
+import { TreeStateSelector } from "@/components";
 import { ITreeDetails } from "@/types";
 import "./styles.scss";
 
@@ -16,6 +17,7 @@ export const EditTreeDialog = (props: IProps) => {
   const [height, setHeight] = useState<number>(0.0);
   const [circumference, setCircumference] = useState<number>(0.0);
   const [diameter, setDiameter] = useState<number>(0.0);
+  const [state, setState] = useState<string>(props.tree.state || "healthy");
 
   useEffect(() => {
     setName(props.tree.name);
@@ -40,6 +42,10 @@ export const EditTreeDialog = (props: IProps) => {
     setDiameter(parseFloat(event.target.value));
   };
 
+  const handleStateChange = (value: string) => {
+    setState(value);
+  };
+
   const handleSaveClick = async () => {
     if (!name) {
       console.error("Name not set, cannot add tree.");
@@ -54,6 +60,7 @@ export const EditTreeDialog = (props: IProps) => {
       height,
       circumference,
       diameter,
+      state,
     } as ITreeDetails);
   };
 
@@ -75,22 +82,32 @@ export const EditTreeDialog = (props: IProps) => {
 
   return (
     <div className="EditTreeDialog">
+      <h2>Update tree details</h2>
+
       <Box component="form">
-        <div className="group">
+        <div className="group wide">
           <TextField id="name" label="Name" variant="standard" required value={name} onChange={handleNameChange} />
           <FormHelperText>Enter English or Latin name.</FormHelperText>
         </div>
 
-        <div className="group">
-          <TextField id="height" label="Height, m" variant="standard" type="number" value={height} onChange={handleHeightChange} />
+        <div className="row">
+          <div className="group short">
+            <TextField id="height" label="Height, m" variant="standard" type="number" value={height} onChange={handleHeightChange} />
+          </div>
+
+          <div className="group short">
+            <TextField id="circumference" label="Circumference, m" variant="standard" type="number" value={circumference} onChange={handleCircumferenceChange} />
+          </div>
         </div>
 
-        <div className="group">
-          <TextField id="circumference" label="Circumference, m" variant="standard" type="number" value={circumference} onChange={handleCircumferenceChange} />
-        </div>
+        <div className="row">
+          <div className="group short">
+            <TextField id="diameter" label="Diameter, m" variant="standard" type="number" value={diameter} onChange={handleDiameterChange} />
+          </div>
 
-        <div className="group">
-          <TextField id="diameter" label="Diameter, m" variant="standard" type="number" value={diameter} onChange={handleDiameterChange} />
+          <div className="group short">
+            <TreeStateSelector state={state} onChange={handleStateChange} />
+          </div>
         </div>
 
         <div className="group buttons">

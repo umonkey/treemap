@@ -31,6 +31,7 @@ export interface ITreeDetails {
   height: number | null;
   circumference: number | null;
   diameter: number | null;
+  state: string | null;
 }
 
 export interface IAddTreeRequest {
@@ -40,6 +41,7 @@ export interface IAddTreeRequest {
   height: number | null;
   circumference: number | null;
   diameter: number | null;
+  state: string;
 }
 
 export enum SideBarMode {

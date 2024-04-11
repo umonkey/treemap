@@ -9,5 +9,6 @@ pub struct UpdateTreeRequest {
     pub height: Option<f64>,
     pub circumference: Option<f64>,
     pub diameter: Option<f64>,
+    pub state: String,
     pub user_id: u64,
 }

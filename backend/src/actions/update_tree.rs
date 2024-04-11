@@ -18,6 +18,7 @@ struct RequestPayload {
     pub height: Option<f64>,
     pub circumference: Option<f64>,
     pub diameter: Option<f64>,
+    pub state: String,
 }
 
 #[put("/v1/trees/{id}")]
@@ -37,6 +38,7 @@ pub async fn update_tree(
         height: payload.height,
         circumference: payload.circumference,
         diameter: payload.diameter,
+        state: payload.state.clone(),
         user_id,
     };
 
