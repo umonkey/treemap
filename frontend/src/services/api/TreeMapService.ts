@@ -52,6 +52,19 @@ export class TreeMapService {
     return res;
   }
 
+  /**
+   * Update an existing tree.
+   */
+  public async updateTree(props: ITreeDetails, token: string): Promise<ITreeInfo> {
+    const res = await this.put<ITreeInfo>(`/v1/trees/${props.id}`, props, {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+      },
+    });
+
+    return res;
+  }
+
   public async getTreeDetails(id: string): Promise<ITreeDetails> {
     return await this.get<ITreeDetails>(`/v1/trees/${id}`);
   }
@@ -77,6 +90,11 @@ export class TreeMapService {
 
   private async post<T>(url: string, data: object, config?: AxiosRequestConfig): Promise<T> {
     const res = await this.client.post<T>(url, data, config);
+    return res.data;
+  }
+
+  private async put<T>(url: string, data: object, config?: AxiosRequestConfig): Promise<T> {
+    const res = await this.client.put<T>(url, data, config);
     return res.data;
   }
 }

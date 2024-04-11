@@ -4,7 +4,7 @@ use log::debug;
 use crate::Result;
 use crate::errors::Error;
 use crate::services::Database;
-use crate::types::{AddTreeRequest, Bounds, TreeInfo, TreeList, TreeListItem};
+use crate::types::{AddTreeRequest, UpdateTreeRequest, Bounds, TreeInfo, TreeList, TreeListItem};
 use crate::utils::{get_unique_id, get_timestamp};
 
 pub struct Trees {
@@ -29,6 +29,7 @@ impl Trees {
             name: req.name,
             height: req.height,
             circumference: req.circumference,
+            diameter: req.diameter,
             added_at: now,
             updated_at: now,
             added_by: req.user_id,
@@ -50,6 +51,47 @@ impl Trees {
         }
 
         Ok(tree)
+    }
+
+    pub async fn update_tree(&self, req: UpdateTreeRequest) -> Result<TreeInfo> {
+        let now = get_timestamp();
+
+        let old = self.get_tree(req.id).await?;
+
+        if old.name != req.name {
+            self.db.add_tree_prop(req.id, "name", &req.name).await?;
+        }
+
+        if old.height != req.height {
+            self.db.add_tree_prop(req.id, "height", &req.height.unwrap_or(0.0).to_string()).await?;
+        }
+
+        if old.circumference != req.circumference {
+            self.db.add_tree_prop(req.id, "circumference", &req.circumference.unwrap_or(0.0).to_string()).await?;
+        }
+
+        if old.diameter != req.diameter {
+            self.db.add_tree_prop(req.id, "diameter", &req.diameter.unwrap_or(0.0).to_string()).await?;
+        }
+
+        let new = TreeInfo {
+            id: req.id,
+            lat: old.lat,
+            lon: old.lon,
+            name: req.name,
+            height: req.height,
+            circumference: req.circumference,
+            diameter: req.diameter,
+            added_at: old.added_at,
+            updated_at: now,
+            added_by: old.added_by,
+        };
+
+        debug!("Updating tree: {:?}", new);
+
+        self.db.update_tree(&new).await?;
+
+        Ok(new)
     }
 
     pub async fn get_trees(&self, bounds: Bounds) -> Result<TreeList> {
@@ -145,6 +187,7 @@ mod tests {
             name: "Oak".to_string(),
             height: Some(10.0),
             circumference: Some(20.0),
+            diameter: None,
             user_id: 0,
         }).await?;
 

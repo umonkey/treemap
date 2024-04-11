@@ -8,6 +8,7 @@ mod tree_details;
 mod tree_info;
 mod tree_list;
 mod tree_list_item;
+mod update_tree_request;
 mod user_info;
 
 pub use self::add_tree_request::*;
@@ -20,4 +21,5 @@ pub use self::tree_details::*;
 pub use self::tree_info::*;
 pub use self::tree_list::*;
 pub use self::tree_list_item::*;
+pub use self::update_tree_request::*;
 pub use self::user_info::*;

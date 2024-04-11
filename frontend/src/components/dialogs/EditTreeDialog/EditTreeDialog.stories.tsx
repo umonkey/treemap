@@ -32,6 +32,7 @@ type Story = StoryObj<typeof meta>;
 export const Desktop: Story = {
   args: {
     tree: DETAILS,
+    busy: false,
   },
   parameters: {
     viewport: {
@@ -43,6 +44,7 @@ export const Desktop: Story = {
 export const Phone: Story = {
   args: {
     tree: DETAILS,
+    busy: false,
   },
   parameters: {
     viewport: {

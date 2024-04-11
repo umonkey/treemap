@@ -125,12 +125,39 @@ impl Database for SqliteDatabase {
         Ok(())
     }
 
+    async fn update_tree(&self, tree: &TreeInfo) -> Result<()> {
+        let id = tree.id;
+        let lat = tree.lat;
+        let lon = tree.lon;
+        let name = tree.name.clone();
+        let height = tree.height;
+        let circumference = tree.circumference;
+        let diameter = tree.diameter;
+        let updated_at = tree.updated_at;
+
+        self.pool.conn(move |conn| {
+            match conn.execute("UPDATE trees set lat = ?, lon = ?, name = ?, height = ?, circumference = ?, diameter = ?, updated_at = ? WHERE id = ?", (lat, lon, name, height, circumference, diameter, updated_at, id)) {
+                Ok(_) => (),
+
+                Err(e) => {
+                    error!("Error updating a tree in the database: {}", e);
+                    return Err(e);
+                },
+            };
+
+            debug!("Tree {} updated.", id);
+            Ok(())
+        }).await?;
+
+        Ok(())
+    }
+
     /**
      * Read information on a single tree.
      */
     async fn get_tree(&self, id: u64) -> Result<Option<TreeInfo>> {
         let tree = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, lat, lon, name, height, circumference, added_at, updated_at, added_by FROM trees WHERE id = ?") {
+            let mut stmt = match conn.prepare("SELECT id, lat, lon, name, height, circumference, diameter, added_at, updated_at, added_by FROM trees WHERE id = ?") {
                 Ok(value) => value,
 
                 Err(e) => {
@@ -151,9 +178,10 @@ impl Database for SqliteDatabase {
                     name: row.get(3)?,
                     height: row.get(4)?, // only in details view
                     circumference: row.get(5)?,
-                    added_at: row.get(6)?,
-                    updated_at: row.get(7)?,
-                    added_by: row.get(8)?,
+                    diameter: row.get(6)?,
+                    added_at: row.get(7)?,
+                    updated_at: row.get(8)?,
+                    added_by: row.get(9)?,
                 }));
             }
 
@@ -195,6 +223,7 @@ impl Database for SqliteDatabase {
                     name: row.get(3)?,
                     height: None, // only in details view
                     circumference: None,
+                    diameter: None,
                     added_at: 0,
                     updated_at: 0,
                     added_by: 0,
@@ -353,6 +382,7 @@ mod tests {
             name: "Oak".to_string(),
             height: Some(12.0),
             circumference: Some(1.0),
+            diameter: None,
             added_at: 0,
             updated_at: 0,
             added_by: 0,

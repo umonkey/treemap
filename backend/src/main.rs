@@ -54,6 +54,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(Cors::permissive())
             .data_factory(data_factory)
             .service(add_tree)
+            .service(update_tree)
             .service(get_tree)
             .service(get_trees)
             .service(login_google)

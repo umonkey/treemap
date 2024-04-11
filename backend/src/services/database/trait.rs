@@ -6,6 +6,7 @@ use crate::types::{Bounds, TreeInfo, UserInfo};
 #[async_trait]
 pub trait Database {
     async fn add_tree(&self, tree: &TreeInfo) -> Result<()>;
+    async fn update_tree(&self, tree: &TreeInfo) -> Result<()>;
     async fn get_trees(&self, bounds: Bounds) -> Result<Vec<TreeInfo>>;
     async fn get_tree(&self, id: u64) -> Result<Option<TreeInfo>>;
 

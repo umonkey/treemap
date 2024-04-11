@@ -6,6 +6,7 @@ import "./styles.scss";
 
 interface IProps {
   tree: ITreeDetails;
+  busy: boolean;
   onSave: (tree: ITreeDetails) => void;
   onCancel?: () => void;
 }
@@ -15,7 +16,6 @@ export const EditTreeDialog = (props: IProps) => {
   const [height, setHeight] = useState<number>(0.0);
   const [circumference, setCircumference] = useState<number>(0.0);
   const [diameter, setDiameter] = useState<number>(0.0);
-  const [saveEnabled, setSaveEnabled] = useState<boolean>(false);
 
   useEffect(() => {
     setName(props.tree.name);
@@ -24,12 +24,20 @@ export const EditTreeDialog = (props: IProps) => {
     setDiameter(props.tree.diameter || 0.0);
   }, [props.tree]);
 
-  useEffect(() => {
-    setSaveEnabled(!!name);
-  }, [name]);
-
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
+  };
+
+  const handleHeightChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setHeight(parseFloat(event.target.value));
+  };
+
+  const handleCircumferenceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setCircumference(parseFloat(event.target.value));
+  };
+
+  const handleDiameterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setDiameter(parseFloat(event.target.value));
   };
 
   const handleSaveClick = async () => {
@@ -53,6 +61,18 @@ export const EditTreeDialog = (props: IProps) => {
     props.onCancel && props.onCancel();
   };
 
+  const canSave = (): boolean => {
+    if (!name) {
+      return false;
+    }
+
+    if (props.busy) {
+      return false;
+    }
+
+    return true;
+  };
+
   return (
     <div className="EditTreeDialog">
       <Box component="form">
@@ -62,19 +82,19 @@ export const EditTreeDialog = (props: IProps) => {
         </div>
 
         <div className="group">
-          <TextField id="height" label="Height, m" variant="standard" type="number" value={height} />
+          <TextField id="height" label="Height, m" variant="standard" type="number" value={height} onChange={handleHeightChange} />
         </div>
 
         <div className="group">
-          <TextField id="circumference" label="Circumference, m" variant="standard" type="number" value={circumference} />
+          <TextField id="circumference" label="Circumference, m" variant="standard" type="number" value={circumference} onChange={handleCircumferenceChange} />
         </div>
 
         <div className="group">
-          <TextField id="diameter" label="Diameter, m" variant="standard" type="number" value={diameter} />
+          <TextField id="diameter" label="Diameter, m" variant="standard" type="number" value={diameter} onChange={handleDiameterChange} />
         </div>
 
-        <div className="group">
-          <Button variant="contained" color="success" disabled={!saveEnabled} onClick={handleSaveClick}>Confirm</Button>
+        <div className="group buttons">
+          <Button variant="contained" color="success" disabled={!canSave()} onClick={handleSaveClick}>Confirm</Button>
           <Button color="secondary" onClick={handleCancelClick}>Cancel</Button>
         </div>
       </Box>

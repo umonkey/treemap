@@ -4,7 +4,7 @@
 
 use serde::Serialize;
 
-#[derive(Debug, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct TreeInfo {
     pub id: u64,
     pub lat: f64,
@@ -12,6 +12,7 @@ pub struct TreeInfo {
     pub name: String,
     pub height: Option<f64>,
     pub circumference: Option<f64>,
+    pub diameter: Option<f64>,
     pub added_at: u64,
     pub updated_at: u64,
     pub added_by: u64,

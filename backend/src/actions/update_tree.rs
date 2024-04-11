@@ -1,9 +1,14 @@
-use actix_web::{post, web::Data, web::Json, HttpRequest};
+use actix_web::{put, web::Data, web::Json, web::Path, HttpRequest};
 use serde::Deserialize;
 
 use crate::Result;
 use crate::services::app::AppState;
-use crate::types::{TreeInfo, AddTreeRequest};
+use crate::types::{TreeInfo, UpdateTreeRequest};
+
+#[derive(Debug, Deserialize)]
+pub struct PathInfo {
+    pub id: u64,
+}
 
 #[derive(Debug, Deserialize)]
 struct RequestPayload {
@@ -15,15 +20,17 @@ struct RequestPayload {
     pub diameter: Option<f64>,
 }
 
-#[post("/v1/trees")]
-pub async fn add_tree(
+#[put("/v1/trees/{id}")]
+pub async fn update_tree(
     state: Data<AppState>,
+    path: Path<PathInfo>,
     payload: Json<RequestPayload>,
     req: HttpRequest,
 ) -> Result<Json<TreeInfo>> {
     let user_id = state.get_user_id(&req)?;
 
-    let req = AddTreeRequest {
+    let req = UpdateTreeRequest {
+        id: path.id,
         lat: payload.lat,
         lon: payload.lon,
         name: payload.name.clone(),
@@ -33,6 +40,6 @@ pub async fn add_tree(
         user_id,
     };
 
-    let tree = state.add_tree(req).await?;
+    let tree = state.update_tree(req).await?;
     Ok(Json(tree))
 }

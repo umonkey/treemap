@@ -74,11 +74,6 @@ export const AddTreePageWrapper = () => {
     return null;
   }
 
-  if (!userInfo?.token) {
-    console.error("Missing user token.");
-    return null;
-  }
-
   const handleSuccess = (tree: ITreeInfo) => {
     console.debug("Tree added successfully.", tree);
     navigate(routes.home());
@@ -93,7 +88,7 @@ export const AddTreePageWrapper = () => {
       <AddTreePage
         lat={parseFloat(lat)}
         lon={parseFloat(lon)}
-        token={userInfo.token}
+        token={userInfo?.token ?? ''}
         onSuccess={handleSuccess}
         onCancel={handleCancel}
       />

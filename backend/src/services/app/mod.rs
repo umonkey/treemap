@@ -4,7 +4,7 @@ use crate::Result;
 use crate::services::{GoogleAuth, TokenService};
 use crate::services::database::get_database;
 use crate::services::trees::Trees;
-use crate::types::{AddTreeRequest, Bounds, TreeInfo, TreeList, LoginGoogleRequest, LoginResponse, TreeDetails};
+use crate::types::{AddTreeRequest, UpdateTreeRequest, Bounds, TreeInfo, TreeList, LoginGoogleRequest, LoginResponse, TreeDetails};
 use crate::errors::Error;
 
 pub struct AppState {
@@ -26,6 +26,10 @@ impl AppState {
 
     pub async fn add_tree(&self, req: AddTreeRequest) -> Result<TreeInfo> {
         self.trees.add_tree(req).await
+    }
+
+    pub async fn update_tree(&self, req: UpdateTreeRequest) -> Result<TreeInfo> {
+        self.trees.update_tree(req).await
     }
 
     pub async fn get_trees(&self, bounds: Bounds) -> Result<TreeList> {

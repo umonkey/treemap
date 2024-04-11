@@ -122,7 +122,7 @@ const TREES = [
 ] as ITreeInfo[];
 
 const DETAILS = {
-  "id": 134793003121381380,
+  "id": "134793003121381380",
   "lat": 40.181389,
   "lon": 44.514444,
   "name": "Sycamore",
@@ -203,6 +203,12 @@ const preview: Preview = {
           method: "GET",
           status: 200,
           response: DETAILS,
+          delay: 500,
+        },
+        {
+          url: "/v1/trees/134793003121381380",
+          method: "PUT",
+          status: 202,
           delay: 500,
         },
       ],
