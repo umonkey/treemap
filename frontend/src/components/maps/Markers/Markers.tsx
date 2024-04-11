@@ -6,14 +6,20 @@ import { GreenCircleIcon } from "@/components";
 import { ITreeInfo } from "@/types";
 import { routes } from "@/utils/routes";
 
+import "./styles.scss";
+
 interface IProps {
   markers: ITreeInfo[];
 }
 
 export const Markers = (props: IProps) => {
-  const markers = props.markers?.map((marker: ITreeInfo, index: number) => (
-    <Marker key={index} position={[marker.lat, marker.lon]} icon={GreenCircleIcon}>
-      <Popup><Link to={routes.treeDetails(marker.id.toString())}>{marker.name}</Link></Popup>
+  const markers = props.markers?.map((marker: ITreeInfo) => (
+    <Marker key={marker.id} position={[marker.lat, marker.lon]} icon={GreenCircleIcon}>
+      <Popup>
+        <div className="TreePopup">
+          <Link className="title" to={routes.treeDetails(marker.id.toString())}>{marker.name}</Link>
+        </div>
+      </Popup>
     </Marker>
   ));
 
