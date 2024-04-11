@@ -8,6 +8,10 @@ CREATE TABLE IF NOT EXISTS trees (
     `name` TEXT NOT NULL,
     `height` REAL NULL,
     `circumference` REAL NULL,
+    `diameter` REAL NULL,
+    `added_at` INT NOT NULL,
+    `updated_at` INT NOT NULL,
+    `added_by` INT NOT NULL,
     PRIMARY KEY(`id`)
 );
 

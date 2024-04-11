@@ -13,6 +13,9 @@ pub struct TreeDetails {
     pub name: String,
     pub height: Option<f64>,
     pub circumference: Option<f64>,
+    pub added_at: u64,
+    pub updated_at: u64,
+    pub added_by: String,
 }
 
 impl TreeDetails {
@@ -24,6 +27,9 @@ impl TreeDetails {
             name: tree.name.clone(),
             height: tree.height,
             circumference: tree.circumference,
+            added_at: tree.added_at,
+            updated_at: tree.updated_at,
+            added_by: tree.added_by.to_string(),
         }
     }
 }

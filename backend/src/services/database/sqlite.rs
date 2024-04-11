@@ -117,7 +117,7 @@ impl Database for SqliteDatabase {
      */
     async fn get_tree(&self, id: u64) -> Result<Option<TreeInfo>> {
         let tree = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, lat, lon, name, height, circumference FROM trees WHERE id = ?") {
+            let mut stmt = match conn.prepare("SELECT id, lat, lon, name, height, circumference, added_at, updated_at, added_by FROM trees WHERE id = ?") {
                 Ok(value) => value,
 
                 Err(e) => {
@@ -138,6 +138,9 @@ impl Database for SqliteDatabase {
                     name: row.get(3)?,
                     height: row.get(4)?, // only in details view
                     circumference: row.get(5)?,
+                    added_at: row.get(6)?,
+                    updated_at: row.get(7)?,
+                    added_by: row.get(8)?,
                 }));
             }
 
@@ -179,6 +182,9 @@ impl Database for SqliteDatabase {
                     name: row.get(3)?,
                     height: None, // only in details view
                     circumference: None,
+                    added_at: 0,
+                    updated_at: 0,
+                    added_by: 0,
                 });
             }
 

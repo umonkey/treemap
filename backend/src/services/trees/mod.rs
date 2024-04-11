@@ -5,7 +5,7 @@ use crate::Result;
 use crate::errors::Error;
 use crate::services::Database;
 use crate::types::{AddTreeRequest, Bounds, TreeInfo, TreeList, TreeListItem};
-use crate::utils::get_unique_id;
+use crate::utils::{get_unique_id, get_timestamp};
 
 pub struct Trees {
     db: Arc<dyn Database>,
@@ -20,6 +20,7 @@ impl Trees {
 
     pub async fn add_tree(&self, req: AddTreeRequest) -> Result<TreeInfo> {
         let id = get_unique_id()?;
+        let now = get_timestamp();
 
         let tree = TreeInfo {
             id,
@@ -28,6 +29,9 @@ impl Trees {
             name: req.name,
             height: req.height,
             circumference: req.circumference,
+            added_at: now,
+            updated_at: now,
+            added_by: 0,
         };
 
         debug!("Adding tree at ({}, {}) with name '{}'.", req.lat, req.lon, tree.name);

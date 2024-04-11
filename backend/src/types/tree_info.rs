@@ -12,4 +12,7 @@ pub struct TreeInfo {
     pub name: String,
     pub height: Option<f64>,
     pub circumference: Option<f64>,
+    pub added_at: u64,
+    pub updated_at: u64,
+    pub added_by: u64,
 }
