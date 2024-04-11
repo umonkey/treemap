@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 
-import { ITreeInfo, ITreeDetails, IUserInfo } from "@/types";
+import { IAddTreeRequest, ITreeInfo, ITreeDetails, IUserInfo } from "@/types";
 import { getApiRoot } from "@/utils/env";
 
 export interface ITreesResponse {
@@ -42,24 +42,10 @@ export class TreeMapService {
   /**
    * Add a new tree to the map.
    */
-  public async addMarker(params: {
-    lat: number;
-    lon: number;
-    species: string;
-    height: number | null;
-    circumference: number | null;
-    diameter: number | null;
-    token: string;
-  }): Promise<ITreeInfo> {
-    const res = await this.post<ITreeInfo>("/v1/trees", {
-      lat: params.lat,
-      lon: params.lon,
-      name: params.species,
-      height: params.height,
-      circumference: params.circumference,
-    }, {
+  public async addMarker(props: IAddTreeRequest, token: string): Promise<ITreeInfo> {
+    const res = await this.post<ITreeInfo>("/v1/trees", props, {
       headers: {
-        "Authorization": `Bearer ${params.token}`,
+        "Authorization": `Bearer ${token}`,
       },
     });
 

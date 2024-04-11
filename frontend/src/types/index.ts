@@ -33,6 +33,15 @@ export interface ITreeDetails {
   diameter: number | null;
 }
 
+export interface IAddTreeRequest {
+  lat: number;
+  lon: number;
+  species: string;
+  height: number | null;
+  circumference: number | null;
+  diameter: number | null;
+}
+
 export enum SideBarMode {
   DEFAULT = "default",
   ADD_TREE = "add_tree",

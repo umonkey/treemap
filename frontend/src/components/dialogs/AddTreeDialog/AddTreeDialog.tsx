@@ -61,8 +61,7 @@ export const AddTreeDialog = (props: IProps) => {
         height: height || null,
         circumference: circumference || null,
         diameter: diameter || null,
-        token: userInfo.token,
-      });
+      }, userInfo.token);
 
       console.debug("Tree added.", tree);
       props.onSuccess(tree);
