@@ -15,11 +15,11 @@ There is a backend and frontend prototype.  One can [run this all](https://githu
 ## Features
 
 - [x] List trees around you.
-- [ ] Show details for a single tree.
+- [x] Show details for a single tree.
 - [ ] Find trees by common or latin name.
-- [ ] Add new trees to the map.
+- [x] Add new trees to the map.
 - [ ] Add photos, comments to trees.
-- [ ] Mobile first.
+- [x] Mobile first.
 - [ ] Exchange data with OSM.
 
 
