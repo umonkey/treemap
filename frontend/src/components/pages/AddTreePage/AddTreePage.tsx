@@ -4,7 +4,7 @@ import { AddTreeDialog, MapWithMarker, SideBar, WithAuth, WithSidebar } from "@/
 import { ILatLng, ITreeInfo } from "@/types";
 import { routes } from "@/utils/routes";
 
-import "./styles.css";
+import "./styles.scss";
 
 interface IProps {
   lat: number;
