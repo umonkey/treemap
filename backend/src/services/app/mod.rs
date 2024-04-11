@@ -16,11 +16,12 @@ pub struct AppState {
 impl AppState {
     pub async fn init() -> Result<Self> {
         let db = get_database().await?;
+        let token = TokenService::new();
 
         Ok(Self {
             trees: Trees::init(&db).await,
-            gauth: GoogleAuth::init(&db).await,
-            tokens: TokenService::new(),
+            gauth: GoogleAuth::init(&db, &token).await,
+            tokens: token,
         })
     }
 

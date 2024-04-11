@@ -5,6 +5,7 @@ use crate::Result;
 use crate::types::TokenClaims;
 use crate::utils::get_jwt_secret;
 
+#[derive(Clone)]
 pub struct TokenService {
     sym_enc: EncodingKey,
     #[allow(unused)]
