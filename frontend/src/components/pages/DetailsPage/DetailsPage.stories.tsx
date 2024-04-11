@@ -35,5 +35,6 @@ export const Phone: Story = {
     viewport: {
       defaultViewport: "mobile1",
     },
+    layout: "fullscreen",
   },
 };
