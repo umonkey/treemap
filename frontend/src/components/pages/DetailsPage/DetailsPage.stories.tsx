@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 
 import { DetailsPage } from "./DetailsPage";
 
-const TREE_ID = 134793003121381380;
+const TREE_ID = "134793003121381380";
 
 const meta = {
   title: 'Pages/DetailsPage',

@@ -61,8 +61,8 @@ export class TreeMapService {
     return res;
   }
 
-  public async getTreeDetails(id: number): Promise<ITreeDetails> {
-    return await this.get<ITreeDetails>(`/v1/tree/${id}`);
+  public async getTreeDetails(id: string): Promise<ITreeDetails> {
+    return await this.get<ITreeDetails>(`/v1/trees/${id}`);
   }
 
   /**

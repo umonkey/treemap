@@ -39,7 +39,7 @@ describe("TreeMapService", () => {
     }).reply(200, {
       trees: [
         {
-          id: 1,
+          id: "1",
           lat: 56.26,
           lon: 28.48,
           name: "Oak",
@@ -56,7 +56,7 @@ describe("TreeMapService", () => {
 
     expect(res).toEqual([
       {
-        id: 1,
+        id: "1",
         lat: 56.26,
         lon: 28.48,
         name: "Oak",

@@ -15,7 +15,7 @@ const meta = {
         method: "POST",
         status: 200,
         response: {
-          id: 1,
+          id: "1",
           lat: 40.181389,
           lon: 44.514444,
           name: "Oak",

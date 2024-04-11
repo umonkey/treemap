@@ -11,7 +11,7 @@ export interface ILatLng {
 }
 
 export interface ITreeInfo {
-  id: number;
+  id: string;
   lat: number;
   lon: number;
   name: string;
@@ -24,7 +24,7 @@ export interface IUserInfo {
 }
 
 export interface ITreeDetails {
-  id: number;
+  id: string;
   lat: number;
   lon: number;
   name: string;

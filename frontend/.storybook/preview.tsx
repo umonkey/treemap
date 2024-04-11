@@ -199,7 +199,7 @@ const preview: Preview = {
           delay: 2000,
         },
         {
-          url: "/v1/tree/134793003121381380",
+          url: "/v1/trees/134793003121381380",
           method: "GET",
           status: 200,
           response: DETAILS,

@@ -1,10 +1,10 @@
 use serde::Serialize;
 
-use crate::types::TreeInfo;
+use crate::types::TreeListItem;
 
 #[derive(Debug, Serialize)]
 pub struct TreeList {
-    pub trees: Vec<TreeInfo>,
+    pub trees: Vec<TreeListItem>,
 }
 
 impl TreeList {

@@ -17,12 +17,12 @@ const meta = {
         response: {
           trees: [
            {
-            id: 1,
+            id: "1",
             lat: 40.181389,
             lon: 44.514444,
            },
            {
-            id: 2,
+            id: "2",
             lat: 40.182389,
             lon: 44.515444,
            },

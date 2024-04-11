@@ -4,7 +4,7 @@ import { TreeDetails } from "./TreeDetails";
 import { ITreeDetails } from "@/types";
 
 const DETAILS = {
-  id: 134793003121381380,
+  id: "134793003121381380",
   lat: 40.181389,
   lon: 44.514444,
   name: "Sycamore",

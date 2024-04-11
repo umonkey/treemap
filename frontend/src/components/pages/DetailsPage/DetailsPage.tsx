@@ -6,7 +6,7 @@ import { useTreeDetails } from "./hooks";
 import "./styles.scss";
 
 interface IProps {
-  id: number;
+  id: string;
 }
 
 export const DetailsPage = (props: IProps) => {
@@ -52,7 +52,7 @@ export const DetailsPageWrapper = () => {
 
   return (
     <DetailsPage
-      id={parseInt(id)}
+      id={id}
     />
   );
 };

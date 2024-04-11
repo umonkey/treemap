@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { ITreeDetails } from "@/types";
 import { treeMapService } from "@/services/api";
 
-export const useTreeDetails = (id: number) => {
+export const useTreeDetails = (id: string) => {
   const [tree, setTree] = useState<ITreeDetails | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);

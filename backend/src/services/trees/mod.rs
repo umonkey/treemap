@@ -4,7 +4,7 @@ use log::debug;
 use crate::Result;
 use crate::errors::Error;
 use crate::services::Database;
-use crate::types::{AddTreeRequest, Bounds, TreeInfo, TreeList};
+use crate::types::{AddTreeRequest, Bounds, TreeInfo, TreeList, TreeListItem};
 use crate::utils::get_unique_id;
 
 pub struct Trees {
@@ -49,12 +49,27 @@ impl Trees {
     }
 
     pub async fn get_trees(&self, bounds: Bounds) -> Result<TreeList> {
-        self.db.get_trees(bounds).await
+        let trees = self.db.get_trees(bounds).await?;
+
+        let items = trees.iter().map(|tree| {
+            TreeListItem::from_tree(tree)
+        }).collect();
+
+        Ok(TreeList {
+            trees: items,
+        })
     }
 
-    pub async fn get_tree(&self, id: u64) -> Result<()> {
+    pub async fn get_tree(&self, id: u64) -> Result<TreeInfo> {
         debug!("Getting details for tree {}.", id);
-        Err(Error::TreeNotFound)
+
+        match self.db.get_tree(id).await? {
+            Some(tree) => {
+                Ok(tree)
+            },
+
+            None => Err(Error::TreeNotFound),
+        }
     }
 }
 

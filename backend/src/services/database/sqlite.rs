@@ -13,7 +13,7 @@ use log::{debug, error, info};
 use crate::Result;
 use crate::errors::Error;
 use crate::services::database::r#trait::Database;
-use crate::types::{Bounds, TreeInfo, TreeList, UserInfo};
+use crate::types::{Bounds, TreeInfo, UserInfo};
 use crate::utils::{get_sqlite_path, get_unique_id};
 
 pub struct SqliteDatabase {
@@ -113,11 +113,46 @@ impl Database for SqliteDatabase {
     }
 
     /**
+     * Read information on a single tree.
+     */
+    async fn get_tree(&self, id: u64) -> Result<Option<TreeInfo>> {
+        let tree = self.pool.conn(move |conn| {
+            let mut stmt = match conn.prepare("SELECT id, lat, lon, name, height, circumference FROM trees WHERE id = ?") {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error preparing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut rows = stmt.query([id])?;
+
+            if let Some(row) = rows.next()? {
+                let id: u64 = row.get(0)?;
+
+                return Ok(Some(TreeInfo {
+                    id,
+                    lat: row.get(1)?,
+                    lon: row.get(2)?,
+                    name: row.get(3)?,
+                    height: row.get(4)?, // only in details view
+                    circumference: row.get(5)?,
+                }));
+            }
+
+            Ok(None)
+        }).await?;
+
+        Ok(tree)
+    }
+
+    /**
      * Read all trees from the database.
      *
      * https://docs.rs/rusqlite/0.30.0/rusqlite/index.html
      */
-    async fn get_trees(&self, bounds: Bounds) -> Result<TreeList> {
+    async fn get_trees(&self, bounds: Bounds) -> Result<Vec<TreeInfo>> {
         let trees = self.pool.conn(move |conn| {
             let mut stmt = match conn.prepare("SELECT id, lat, lon, name FROM trees WHERE lat <= ? AND lat >= ? AND lon <= ? AND lon >= ?") {
                 Ok(value) => value,
@@ -150,9 +185,7 @@ impl Database for SqliteDatabase {
             Ok(trees)
         }).await?;
 
-        Ok(TreeList {
-            trees,
-        })
+        Ok(trees)
     }
 
     /**
@@ -277,7 +310,7 @@ mod tests {
             },
         };
 
-        assert_eq!(trees.trees.len(), 3);
+        assert_eq!(trees.len(), 3);
         Ok(())
     }
 
@@ -292,7 +325,7 @@ mod tests {
             w: -180.0,
         }).await?;
 
-        assert_eq!(before.trees.len(), 0);
+        assert_eq!(before.len(), 0);
 
         db.add_tree(&TreeInfo {
             id: 123,
@@ -310,7 +343,7 @@ mod tests {
             w: -180.0,
         }).await?;
 
-        assert_eq!(after.trees.len(), 1);
+        assert_eq!(after.len(), 1);
 
         Ok(())
     }

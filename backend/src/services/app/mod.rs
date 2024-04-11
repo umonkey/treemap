@@ -2,7 +2,7 @@ use crate::Result;
 use crate::services::GoogleAuth;
 use crate::services::database::get_database;
 use crate::services::trees::Trees;
-use crate::types::{AddTreeRequest, Bounds, TreeInfo, TreeList, LoginGoogleRequest, LoginResponse};
+use crate::types::{AddTreeRequest, Bounds, TreeInfo, TreeList, LoginGoogleRequest, LoginResponse, TreeDetails};
 
 pub struct AppState {
     trees: Trees,
@@ -27,8 +27,9 @@ impl AppState {
         self.trees.get_trees(bounds).await
     }
 
-    pub async fn get_tree(&self, id: u64) -> Result<()> {
-        self.trees.get_tree(id).await
+    pub async fn get_tree(&self, id: u64) -> Result<TreeDetails> {
+        let tree = self.trees.get_tree(id).await?;
+        Ok(TreeDetails::from_tree(&tree))
     }
 
     pub async fn login_google(&self, req: LoginGoogleRequest) -> Result<LoginResponse> {
