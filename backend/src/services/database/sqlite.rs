@@ -102,9 +102,22 @@ impl Database for SqliteDatabase {
         let lat = tree.lat;
         let lon = tree.lon;
         let name = tree.name.clone();
+        let height = tree.height;
+        let circumference = tree.circumference;
+        let added_at = tree.added_at;
+        let updated_at = tree.updated_at;
+        let added_by = tree.added_by;
 
         self.pool.conn(move |conn| {
-            conn.execute("INSERT INTO trees (id, lat, lon, name) VALUES (?, ?, ?, ?)", (id, lat, lon, name))?;
+            match conn.execute("INSERT INTO trees (id, lat, lon, name, height, circumference, added_at, updated_at, added_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (id, lat, lon, name, height, circumference, added_at, updated_at, added_by)) {
+                Ok(_) => (),
+
+                Err(e) => {
+                    error!("Error adding tree to the database: {}", e);
+                    return Err(e);
+                },
+            };
+
             debug!("Tree {} added to the database.", id);
             Ok(())
         }).await?;
