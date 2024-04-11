@@ -31,7 +31,7 @@ impl Trees {
             circumference: req.circumference,
             added_at: now,
             updated_at: now,
-            added_by: 0,
+            added_by: req.user_id,
         };
 
         debug!("Adding tree at ({}, {}) with name '{}'.", req.lat, req.lon, tree.name);
@@ -145,6 +145,7 @@ mod tests {
             name: "Oak".to_string(),
             height: Some(10.0),
             circumference: Some(20.0),
+            user_id: 0,
         }).await?;
 
         debug!("Tree added: {:?}", tree);

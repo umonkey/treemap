@@ -353,6 +353,9 @@ mod tests {
             name: "Oak".to_string(),
             height: Some(12.0),
             circumference: Some(1.0),
+            added_at: 0,
+            updated_at: 0,
+            added_by: 0,
         }).await?;
 
         let after = db.get_trees(Bounds {
