@@ -7,4 +7,5 @@ pub struct AddTreeRequest {
     pub name: String,
     pub height: Option<f64>,
     pub circumference: Option<f64>,
+    pub user_id: u64,
 }
