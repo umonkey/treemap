@@ -7,7 +7,9 @@ use crate::errors::Error;
 use crate::services::Database;
 use crate::services::TokenService;
 use crate::types::{GoogleUserinfoResponse, LoginGoogleRequest, LoginResponse, TokenClaims, UserInfo};
-use crate::utils::get_unique_id;
+use crate::utils::{get_unique_id, get_timestamp};
+
+const TOKEN_TTL: u64 = 86400;
 
 pub struct GoogleAuth {
     db: Arc<dyn Database>,
@@ -29,6 +31,7 @@ impl GoogleAuth {
         let user = self.get_user(&userinfo).await?;
 
         let token = self.tokens.encode(&TokenClaims {
+            exp: get_timestamp() + TOKEN_TTL,
             sub: user.id.to_string(),
         })?;
 
