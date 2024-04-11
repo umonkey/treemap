@@ -4,21 +4,26 @@ import { ILatLng } from "@/types";
 interface IProps {
   position: ILatLng | null;
   onContinue: () => void;
+  onCancel: () => void;
 }
 
 export const SelectLocationDialog = (props: IProps) => {
-  const handleContinueClick = () => {
-    console.debug("Continue clicked.");
+  const handleContinue = () => {
     props.onContinue();
+  };
+
+  const handleCancel = () => {
+    props.onCancel();
   };
 
   const canContinue = !!props.position;
 
   return (
-    <>
+    <div className="SelectLocationDialog Dialog">
       <h2>Adding a new tree</h2>
-      <p>Please move the map to select tree location.</p>
-      <Button variant="contained" color="success" disabled={!canContinue} onClick={handleContinueClick}>Continue</Button>
-    </>
+      <p>Move the map to select tree location.&nbsp; You can correct it later.</p>
+      <Button variant="contained" color="success" disabled={!canContinue} onClick={handleContinue}>Continue</Button>
+      <Button color="secondary" onClick={handleCancel}>Cancel</Button>
+    </div>
   );
 };

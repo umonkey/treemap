@@ -17,6 +17,7 @@ const meta = {
   },
   args: {
     onContinue: fn(),
+    onCancel: fn(),
   },
 } satisfies Meta<typeof SelectLocationDialog>;
 

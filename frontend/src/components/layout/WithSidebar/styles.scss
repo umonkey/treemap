@@ -1,0 +1,31 @@
+.WithSidebar {
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+
+  width: 100%;
+  height: 100%;
+
+  .SideBar {
+    z-index: 2;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 0px 15px 5px, rgba(0, 0, 0, 0.3) 0px 0px 15px 5px;
+  }
+}
+
+@media (orientation: portrait) {
+  .WithSidebar {
+    flex-direction: column;
+  }
+
+  .WithSidebar {
+    & > * {
+      flex-grow: 1;
+      width: 100%;
+    }
+
+    .SideBar {
+      flex-basis: auto;
+      flex-shrink: 1;
+    }
+  }
+}

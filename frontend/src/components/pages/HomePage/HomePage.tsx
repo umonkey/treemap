@@ -7,6 +7,7 @@ import {
   MapControl,
   SideBar,
   TreeMarkers,
+  WithSidebar,
 } from "@/components";
 
 import { ILatLng } from "@/types";
@@ -38,25 +39,32 @@ export const HomePage = () => {
     }
   };
 
+  const handleCancel = () => {
+    setPicker(false);
+  };
+
   return (
     <div className="HomePage">
-      <MapControl
-        center={CENTER}
-        onAddTree={handleAddTree}
-        onPick={handlePicker}
-        picker={picker}
-      >
-        <TreeMarkers />
-      </MapControl>
+      <WithSidebar>
+        <MapControl
+          center={CENTER}
+          onAddTree={handleAddTree}
+          onPick={handlePicker}
+          picker={picker}
+        >
+          <TreeMarkers />
+        </MapControl>
 
-      {picker && (
-        <SideBar>
-          <SelectLocationDialog
-            position={newPosition}
-            onContinue={handleContinueAddingTree}
-          />
-        </SideBar>
-      )}
+        {picker && (
+          <SideBar>
+            <SelectLocationDialog
+              position={newPosition}
+              onContinue={handleContinueAddingTree}
+              onCancel={handleCancel}
+            />
+          </SideBar>
+        )}
+      </WithSidebar>
     </div>
   );
 };

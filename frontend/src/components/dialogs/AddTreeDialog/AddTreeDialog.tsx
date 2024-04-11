@@ -68,30 +68,32 @@ export const AddTreeDialog = (props: IProps) => {
   };
 
   return (
-    <Box component="form" className="AddTreeDialog">
-      <h2>Add a tree</h2>
+    <div className="AddTreeDialog Dialog">
+      <Box component="form">
+        <h2>Add a tree</h2>
 
-      <div className="group">
-        <TextField id="species" label="Species" variant="standard" required value={species} onChange={handleSpeciesChange} />
-        <FormHelperText>Enter English or Latin name.</FormHelperText>
-      </div>
+        <div className="group">
+          <TextField id="species" label="Species" variant="standard" required value={species} onChange={handleSpeciesChange} />
+          <FormHelperText>Enter English or Latin name.</FormHelperText>
+        </div>
 
-      <div className="group">
-        <TextField id="height" label="Height, m" variant="standard" type="number" value={height} />
-      </div>
+        <div className="group">
+          <TextField id="height" label="Height, m" variant="standard" type="number" value={height} />
+        </div>
 
-      <div className="group">
-        <TextField id="circumference" label="Circumference, m" variant="standard" type="number" value={circumference} />
-      </div>
+        <div className="group">
+          <TextField id="circumference" label="Circumference, m" variant="standard" type="number" value={circumference} />
+        </div>
 
-      <div className="group">
-        <TextField id="diameter" label="Diameter, m" variant="standard" type="number" value={diameter} />
-      </div>
+        <div className="group">
+          <TextField id="diameter" label="Diameter, m" variant="standard" type="number" value={diameter} />
+        </div>
 
-      <div className="group">
-        <Button variant="contained" color="success" disabled={!saveEnabled} onClick={handleSaveClick}>Confirm</Button>
-        <Button color="secondary" onClick={handleCancelClick}>Cancel</Button>
-      </div>
-    </Box>
+        <div className="group">
+          <Button variant="contained" color="success" disabled={!saveEnabled} onClick={handleSaveClick}>Confirm</Button>
+          <Button color="secondary" onClick={handleCancelClick}>Cancel</Button>
+        </div>
+      </Box>
+    </div>
   );
 }
