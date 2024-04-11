@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 
-import { ITreeInfo, IUserInfo } from "@/types";
+import { ITreeInfo, ITreeDetails, IUserInfo } from "@/types";
 import { getApiRoot } from "@/utils/env";
 
 export interface ITreesResponse {
@@ -59,6 +59,10 @@ export class TreeMapService {
     });
 
     return res;
+  }
+
+  public async getTreeDetails(id: number): Promise<ITreeDetails> {
+    return await this.get<ITreeDetails>(`/v1/tree/${id}`);
   }
 
   /**

@@ -1,0 +1,16 @@
+.DetailsPage {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+
+  .MapWithMarker {
+    height: 450px;
+    max-height: 50vh;
+    border-radius: 5px;
+  }
+
+  .TreeDetails, .MapWithMarker {
+    border: 0.5px solid rgb(209, 220, 224);
+    border-radius: 5px;
+  }
+}

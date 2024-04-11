@@ -23,6 +23,16 @@ export interface IUserInfo {
   picture: string;
 }
 
+export interface ITreeDetails {
+  id: number;
+  lat: number;
+  lon: number;
+  name: string;
+  height: number | null;
+  circumference: number | null;
+  diameter: number | null;
+}
+
 export enum SideBarMode {
   DEFAULT = "default",
   ADD_TREE = "add_tree",

@@ -2,7 +2,7 @@ import type { Preview } from "@storybook/react";
 import { MemoryRouter } from "react-router-dom";
 
 import { StoryWrapper } from "./StoryWrapper";
-import { ITreeInfo } from "@/types";
+import { ITreeInfo, ITreeDetails } from "@/types";
 
 import "./preview.css";
 
@@ -121,6 +121,16 @@ const TREES = [
   }
 ] as ITreeInfo[];
 
+const DETAILS = {
+  "id": 134793003121381380,
+  "lat": 40.181389,
+  "lon": 44.514444,
+  "name": "Sycamore",
+  "height": 18.5,
+  "circumference": 1.2,
+  "diameter": 7,
+} as TreeDetails;
+
 const preview: Preview = {
   parameters: {
     controls: {
@@ -187,6 +197,13 @@ const preview: Preview = {
             name: "New Tree",
           } as ITreeInfo,
           delay: 2000,
+        },
+        {
+          url: "/v1/tree/134793003121381380",
+          method: "GET",
+          status: 200,
+          response: DETAILS,
+          delay: 500,
         },
       ],
     },

@@ -12,15 +12,16 @@ import { ILatLng } from "@/types";
 
 interface IProps {
   center: ILatLng;
+  children?: React.ReactNode | React.ReactNode[];
 }
 
 export const MapWithMarker = (props: IProps) => {
   return (
-    <MapBase center={props.center} zoom={18}>
-      <Marker
-        position={[props.center.lat, props.center.lon]}
-        icon={MarkerIcon}
-      />
-    </MapBase>
+    <div className="MapWithMarker">
+      <MapBase center={props.center} zoom={18}>
+        <Marker position={[props.center.lat, props.center.lon]} icon={MarkerIcon} />
+        {props.children}
+      </MapBase>
+    </div>
   );
 };
