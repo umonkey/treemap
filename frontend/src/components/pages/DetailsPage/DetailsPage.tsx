@@ -1,6 +1,8 @@
-import { useParams } from "react-router-dom";
+import { Button } from "@mui/material";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { MapWithMarker, TreeDetails, TreeMarkers } from "@/components";
+import { routes } from "@/utils/routes";
 import { useTreeDetails } from "./hooks";
 
 import "./styles.scss";
@@ -10,7 +12,16 @@ interface IProps {
 }
 
 export const DetailsPage = (props: IProps) => {
+  const navigate = useNavigate();
   const { tree, loading, error } = useTreeDetails(props.id);
+
+  const handleEdit = () => {
+    navigate(routes.editTree(props.id));
+  };
+
+  const handleBack = () => {
+    navigate(routes.home());
+  };
 
   return (
     <div className="DetailsPage Page">
@@ -32,10 +43,15 @@ export const DetailsPage = (props: IProps) => {
           }}>
             <TreeMarkers />
           </MapWithMarker>
+
+          <div className="buttons">
+            <Button variant="contained" color="success" onClick={handleEdit}>Edit this tree</Button>
+            <Button color="secondary" onClick={handleBack}>Back to map</Button>
+          </div>
         </>
       )}
 
-      {!tree && !error && (
+      {!tree && !error && !loading && (
         <p>Oops, something went wrong.</p>
       )}
     </div>

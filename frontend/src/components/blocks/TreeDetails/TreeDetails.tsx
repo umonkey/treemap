@@ -7,15 +7,23 @@ interface IProps {
 }
 
 export const TreeDetails = (props: IProps) => {
+  const format = (value: number | null) => {
+    if (value === null) {
+      return "no data";
+    }
+
+    return `${value} m`;
+  };
+
   return (
     <div className="TreeDetails">
       <h2>{props.tree.name}</h2>
       <div className="treeId">#{props.tree.id}</div>
 
-      <ul>
-        <li>Height: {props.tree.height || "no data"}</li>
-        <li>Circumference: {props.tree.circumference || "no data"}</li>
-        <li>Canopy: {props.tree.diameter || "no data"}</li>
+      <ul className="props">
+        <li>Height: {format(props.tree.height)}</li>
+        <li>Circumference: {format(props.tree.circumference)}</li>
+        <li>Canopy: {format(props.tree.diameter)}</li>
       </ul>
     </div>
   );

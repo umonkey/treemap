@@ -5,6 +5,7 @@ export { AddTreePageWrapper } from "./pages/AddTreePage";
 export { DetailsPage } from "./pages/DetailsPage";
 export { DetailsPageWrapper } from "./pages/DetailsPage";
 export { DraggableMarker } from "./maps/DraggableMarker";
+export { EditTreeDialog } from "./dialogs/EditTreeDialog";
 export { GreenCircleIcon } from "./maps/GreenCircleIcon";
 export { HomePage } from "./pages/HomePage";
 export { LayerSelector } from "./maps/LayerSelector";
