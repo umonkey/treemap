@@ -8,15 +8,117 @@ import "./preview.css";
 
 const TREES = [
   {
-    id: 1,
-    lat: 40.181389,
-    lon: 44.514444,
+    "circumference": null,
+    "height": null,
+    "id": 1,
+    "lat": 40.181389,
+    "lon": 44.514444,
+    "name": "An old birch"
   },
   {
-    id: 2,
-    lat: 40.182389,
-    lon: 44.515444,
+    "circumference": null,
+    "height": null,
+    "id": 128210594892484600,
+    "lat": 40.22174748453427,
+    "lon": 44.55499326643146,
+    "name": "qwe aasd"
   },
+  {
+    "circumference": null,
+    "height": null,
+    "id": 128242881436717060,
+    "lat": 40.16234575628614,
+    "lon": 44.62291898117552,
+    "name": "test tree"
+  },
+  {
+    "circumference": null,
+    "height": null,
+    "id": 128245117764112380,
+    "lat": 40.18018485291529,
+    "lon": 44.55350590139917,
+    "name": "another tree"
+  },
+  {
+    "circumference": null,
+    "height": null,
+    "id": 128245920759418880,
+    "lat": 40.20026462081529,
+    "lon": 44.5688510139514,
+    "name": "Some tree"
+  },
+  {
+    "circumference": null,
+    "height": null,
+    "id": 128246278395138050,
+    "lat": 40.20060879357814,
+    "lon": 44.57038489822188,
+    "name": "a tree"
+  },
+  {
+    "circumference": null,
+    "height": null,
+    "id": 128246614136590340,
+    "lat": 40.20077678203027,
+    "lon": 44.56939316739498,
+    "name": "ijuhuihg"
+  },
+  {
+    "circumference": null,
+    "height": null,
+    "id": 128258603206447100,
+    "lat": 40.21401378262961,
+    "lon": 44.51072101214662,
+    "name": "test tree"
+  },
+  {
+    "circumference": null,
+    "height": null,
+    "id": 134025978690277380,
+    "lat": 40.18484395454571,
+    "lon": 44.53205108642578,
+    "name": "test 123"
+  },
+  {
+    "circumference": null,
+    "height": null,
+    "id": 134371833565810690,
+    "lat": 40.17440928235685,
+    "lon": 44.537780817706825,
+    "name": "test"
+  },
+  {
+    "circumference": null,
+    "height": null,
+    "id": 134372280418570240,
+    "lat": 40.16739627047165,
+    "lon": 44.55907357476179,
+    "name": "test"
+  },
+  {
+    "circumference": null,
+    "height": null,
+    "id": 134792003752955900,
+    "lat": 40.1687178633028,
+    "lon": 44.50999259948731,
+    "name": "test"
+  },
+  {
+    "circumference": null,
+    "height": null,
+    "id": 134792907214426110,
+    "lat": 40.17164148250818,
+    "lon": 44.53134298324585,
+    "name": "test"
+  },
+  {
+    "circumference": null,
+    "height": null,
+    "id": 134793003121381380,
+    "lat": 40.15545808595177,
+    "lon": 44.577190755610864,
+    "name": "test"
+  }
 ] as ITreeInfo[];
 
 const preview: Preview = {
