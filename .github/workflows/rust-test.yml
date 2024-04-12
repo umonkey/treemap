@@ -24,6 +24,7 @@ jobs:
       run: |
         cd backend
         cargo clippy
+        cargo fmt --check
 
     - name: Run tests
       run: |
