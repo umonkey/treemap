@@ -18,15 +18,18 @@ interface IProps {
 
 export const EditTreePage = (props: IProps) => {
   const [busy, setBusy] = useState<boolean>(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const { tree, error, loading } = useTreeInfo(props.id);
 
   const handleSave = async (tree: ITreeDetails) => {
     try {
       setBusy(true);
+      setSaveError(null);
       await treeMapService.updateTree(tree, props.token);
       props.onSuccess();
     } catch (e) {
       console.log(`Error updating tree: ${e}`);
+      setSaveError("Error updating tree. Please try again.");
     } finally {
       setBusy(false);
     }
@@ -58,6 +61,7 @@ export const EditTreePage = (props: IProps) => {
           <EditTreeDialog
             tree={tree}
             busy={busy}
+            error={saveError}
             onSave={handleSave}
             onCancel={props.onCancel}
           />

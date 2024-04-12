@@ -105,6 +105,10 @@ export const AddTreeDialog = (props: IProps) => {
           </div>
         </div>
 
+        {props.error && (
+          <p className="error">{props.error}</p>
+        )}
+
         <div className="group">
           <Button variant="contained" color="success" disabled={!isSaveEnabled()} onClick={handleSaveClick}>Confirm</Button>
           <Button color="secondary" onClick={handleCancelClick}>Cancel</Button>

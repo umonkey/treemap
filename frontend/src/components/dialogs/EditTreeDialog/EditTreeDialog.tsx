@@ -8,6 +8,7 @@ import "./styles.scss";
 interface IProps {
   tree: ITreeDetails;
   busy: boolean;
+  error?: string | null;
   onSave: (tree: ITreeDetails) => void;
   onCancel?: () => void;
 }
@@ -109,6 +110,10 @@ export const EditTreeDialog = (props: IProps) => {
             <TreeStateSelector state={state} onChange={handleStateChange} />
           </div>
         </div>
+
+        {props.error && (
+          <p className="error">{props.error}</p>
+        )}
 
         <div className="group buttons">
           <Button variant="contained" color="success" disabled={!canSave()} onClick={handleSaveClick}>Confirm</Button>
