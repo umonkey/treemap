@@ -13,7 +13,11 @@ const TREES = [
     "id": 1,
     "lat": 40.181389,
     "lon": 44.514444,
-    "name": "An old birch"
+    "name": "An old birch",
+    "height": 18.5,
+    "circumference": 1.2,
+    "diameter": 7,
+    "state": "healthy",
   },
   {
     "circumference": null,

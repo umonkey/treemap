@@ -15,6 +15,7 @@ pub struct TreeListItem {
     pub circumference: Option<f64>,
     pub diameter: Option<f64>,
     pub state: String,
+    pub updated_at: u64,
 }
 
 impl TreeListItem {
@@ -28,6 +29,7 @@ impl TreeListItem {
             circumference: tree.circumference,
             diameter: tree.diameter,
             state: tree.state.clone(),
+            updated_at: tree.updated_at,
         }
     }
 }

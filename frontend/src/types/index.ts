@@ -15,6 +15,11 @@ export interface ITreeInfo {
   lat: number;
   lon: number;
   name: string;
+  height: number | null;
+  circumference: number | null;
+  diameter: number | null;
+  state: string | null;
+  updated_at: number;
 }
 
 export interface IUserInfo {
@@ -32,6 +37,7 @@ export interface ITreeDetails {
   circumference: number | null;
   diameter: number | null;
   state: string | null;
+  updated_at: number;
 }
 
 export interface IAddTreeRequest {

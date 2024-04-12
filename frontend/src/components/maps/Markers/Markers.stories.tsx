@@ -1,40 +1,55 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from "@storybook/react";
 
 import { MapBase } from "@/components/maps/MapBase";
 import { Markers } from "./Markers";
-import { ITreeInfo } from "@/types";
+import { ILatLng, ITreeInfo } from "@/types";
 
 const POSITION = {
   lat: 40.180379,
   lon: 44.513434,
-} as ITreeInfo;
+} as ILatLng;
 
-const MARKERS = [ 
+const MARKERS = [
   {
     id: "1",
     lat: 40.181389,
     lon: 44.514444,
-    name: 'Old birch',
+    name: "Old birch",
+    height: 17,
+    circumference: 2.3,
+    diameter: 15,
+    state: "healthy",
+    updated_at: 1712916557,
   },
   {
     id: "2",
     lat: 40.180379,
     lon: 44.513434,
-    name: 'Great Oak',
+    name: "Great Oak",
+    height: 17,
+    circumference: 2.3,
+    diameter: 15,
+    state: "sick",
+    updated_at: 1712916557,
   },
   {
     id: "3",
     lat: 40.182399,
     lon: 44.515454,
-    name: 'Small Willow',
+    name: "Small Willow",
+    height: 17,
+    circumference: 2.3,
+    diameter: 15,
+    state: "dead",
+    updated_at: 1712916557,
   },
 ] as ITreeInfo[];
 
 const meta = {
-  title: 'Maps/Markers',
+  title: "Maps/Markers",
   component: Markers,
   parameters: {
-    layout: 'fullscreen', // centered
+    layout: "fullscreen", // centered
   },
   args: { },
   render: (args) => (

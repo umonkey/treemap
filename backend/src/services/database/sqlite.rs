@@ -203,7 +203,7 @@ impl Database for SqliteDatabase {
      */
     async fn get_trees(&self, bounds: Bounds) -> Result<Vec<TreeInfo>> {
         let trees = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, lat, lon, name, state FROM trees WHERE lat <= ? AND lat >= ? AND lon <= ? AND lon >= ? AND state <> 'gone'") {
+            let mut stmt = match conn.prepare("SELECT id, lat, lon, name, height, circumference, diameter, state, added_at, updated_at, added_by FROM trees WHERE lat <= ? AND lat >= ? AND lon <= ? AND lon >= ? AND state <> 'gone'") {
                 Ok(value) => value,
 
                 Err(e) => {
@@ -226,13 +226,13 @@ impl Database for SqliteDatabase {
                     lat,
                     lon,
                     name: row.get(3)?,
-                    height: None, // only in details view
-                    circumference: None,
-                    diameter: None,
-                    state: row.get(4)?,
-                    added_at: 0,
-                    updated_at: 0,
-                    added_by: 0,
+                    height: row.get(4)?, // only in details view
+                    circumference: row.get(5)?,
+                    diameter: row.get(6)?,
+                    state: row.get(7)?,
+                    added_at: row.get(8)?,
+                    updated_at: row.get(9)?,
+                    added_by: row.get(10)?,
                 });
             }
 
