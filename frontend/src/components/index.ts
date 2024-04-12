@@ -9,6 +9,7 @@ export { EditTreeDialog } from "./dialogs/EditTreeDialog";
 export { EditTreePage, EditTreePageWrapper } from "./pages/EditTreePage";
 export { GreenCircleIcon } from "./maps/GreenCircleIcon";
 export { HomePage } from "./pages/HomePage";
+export { ImagePicker } from "./elements/ImagePicker";
 export { LayerSelector } from "./maps/LayerSelector";
 export { LocateControl } from "./maps/LocateControl";
 export { LocationPicker } from "./maps/LocationPicker";

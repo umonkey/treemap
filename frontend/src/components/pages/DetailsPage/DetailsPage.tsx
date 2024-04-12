@@ -1,7 +1,7 @@
 import { Button } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { MapWithMarker, TreeDetails, TreeMarkers } from "@/components";
+import { MapWithMarker, TreeDetails, TreeMarkers, ImagePicker } from "@/components";
 import { routes } from "@/utils/routes";
 import { useTreeDetails } from "./hooks";
 
@@ -23,6 +23,10 @@ export const DetailsPage = (props: IProps) => {
     navigate(routes.home());
   };
 
+  const handleImageUpload = (files: FileList) => {
+    console.debug(`Uploading ${files.length} images...`);
+  };
+
   return (
     <div className="DetailsPage Page">
       {loading && (
@@ -36,6 +40,10 @@ export const DetailsPage = (props: IProps) => {
       {tree && (
         <>
           <TreeDetails tree={tree} />
+
+          <div className="buttons">
+            <ImagePicker onChange={handleImageUpload} />
+          </div>
 
           <MapWithMarker center={{
             lat: tree.lat,
