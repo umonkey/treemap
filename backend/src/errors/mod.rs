@@ -2,8 +2,8 @@ use jsonwebtoken::errors::Error as JwtError;
 use std::convert::From;
 use std::fmt;
 
-use async_sqlite::Error as SqliteError;
 use actix_web::{error::ResponseError, http::header::ContentType, http::StatusCode, HttpResponse};
+use async_sqlite::Error as SqliteError;
 
 #[derive(Debug)]
 pub enum Error {

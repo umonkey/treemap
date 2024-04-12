@@ -16,7 +16,6 @@ use self::utils::{get_server_addr, get_server_port, get_workers};
 
 type Result<T> = std::result::Result<T, self::errors::Error>;
 
-
 async fn data_factory() -> Result<AppState> {
     debug!("Initializing app state.");
 
@@ -37,7 +36,10 @@ async fn main() -> std::io::Result<()> {
     let host_addr = get_server_addr();
     let host_port = get_server_port();
 
-    info!("Running {} worker(s) at {}:{}.", workers, host_addr, host_port);
+    info!(
+        "Running {} worker(s) at {}:{}.",
+        workers, host_addr, host_port
+    );
 
     // Create the web server, passing it a closure that will initialize the shared
     // data for each new thread.  When all threads are busy, Actix will create
@@ -47,10 +49,7 @@ async fn main() -> std::io::Result<()> {
         debug!("Initializing new thread.");
 
         App::new()
-            .wrap(
-                DefaultHeaders::new()
-                    .add(("Cache-Control", "no-store"))
-            )
+            .wrap(DefaultHeaders::new().add(("Cache-Control", "no-store")))
             .wrap(Cors::permissive())
             .data_factory(data_factory)
             .service(add_tree)
@@ -58,7 +57,11 @@ async fn main() -> std::io::Result<()> {
             .service(get_tree)
             .service(get_trees)
             .service(login_google)
-            .service(Files::new("/", "./static").prefer_utf8(true).index_file("index.html"))
+            .service(
+                Files::new("/", "./static")
+                    .prefer_utf8(true)
+                    .index_file("index.html"),
+            )
     })
     .bind((host_addr.as_str(), host_port))?
     .workers(workers)

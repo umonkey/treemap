@@ -1,7 +1,6 @@
 /**
  * This is the JWT token payload.
  */
-
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize)]

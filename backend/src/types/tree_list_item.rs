@@ -1,7 +1,6 @@
 /**
  * This is how a single tree is stored in the database.
  */
-
 use serde::Serialize;
 
 use crate::types::TreeInfo;
@@ -14,6 +13,8 @@ pub struct TreeListItem {
     pub name: String,
     pub height: Option<f64>,
     pub circumference: Option<f64>,
+    pub diameter: Option<f64>,
+    pub state: String,
 }
 
 impl TreeListItem {
@@ -25,6 +26,8 @@ impl TreeListItem {
             name: tree.name.clone(),
             height: tree.height,
             circumference: tree.circumference,
+            diameter: tree.diameter,
+            state: tree.state.clone(),
         }
     }
 }

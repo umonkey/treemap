@@ -5,16 +5,15 @@
  *
  * @docs https://docs.rs/async-sqlite/latest/async_sqlite/
  */
-
-use async_sqlite::{Pool, PoolBuilder, JournalMode};
+use async_sqlite::{JournalMode, Pool, PoolBuilder};
 use async_trait::async_trait;
 use log::{debug, error, info};
 
-use crate::Result;
 use crate::errors::Error;
 use crate::services::database::r#trait::Database;
 use crate::types::{Bounds, TreeInfo, UserInfo};
 use crate::utils::{get_sqlite_path, get_unique_id};
+use crate::Result;
 
 pub struct SqliteDatabase {
     pub pool: Pool,
@@ -39,12 +38,17 @@ impl SqliteDatabase {
     async fn create_file_pool(path: &str) -> Result<Pool> {
         info!("Using SQLite database from {}.", path);
 
-        let pool = match PoolBuilder::new().path(path).journal_mode(JournalMode::Wal).open().await {
+        let pool = match PoolBuilder::new()
+            .path(path)
+            .journal_mode(JournalMode::Wal)
+            .open()
+            .await
+        {
             Ok(value) => value,
             Err(e) => {
                 error!("Error connecting to the database: {}", e);
                 return Err(Error::DatabaseConnect);
-            },
+            }
         };
 
         Ok(pool)
@@ -58,7 +62,7 @@ impl SqliteDatabase {
             Err(e) => {
                 error!("Error connecting to the database: {}", e);
                 return Err(Error::DatabaseConnect);
-            },
+            }
         };
 
         Self::setup_memory_db(&pool).await?;
@@ -81,16 +85,14 @@ impl SqliteDatabase {
     }
 
     async fn execute_pool(pool: &Pool, script: String) -> Result<()> {
-        let res = pool.conn(move |conn| {
-            conn.execute_batch(&script)
-        }).await;
+        let res = pool.conn(move |conn| conn.execute_batch(&script)).await;
 
         match res {
             Ok(_) => Ok(()),
             Err(e) => {
                 error!("Error executing SQL script: {}", e);
                 Err(Error::DatabaseQuery)
-            },
+            }
         }
     }
 }
@@ -270,31 +272,36 @@ impl Database for SqliteDatabase {
     async fn find_user_by_email(&self, email: &str) -> Result<Option<UserInfo>> {
         let email = email.to_string();
 
-        let user = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, email, name, picture FROM users WHERE email = ?") {
-                Ok(value) => value,
+        let user = self
+            .pool
+            .conn(move |conn| {
+                let mut stmt = match conn
+                    .prepare("SELECT id, email, name, picture FROM users WHERE email = ?")
+                {
+                    Ok(value) => value,
 
-                Err(e) => {
-                    error!("Error preparing SQL statement: {}", e);
-                    return Err(e);
-                },
-            };
+                    Err(e) => {
+                        error!("Error preparing SQL statement: {}", e);
+                        return Err(e);
+                    }
+                };
 
-            let mut rows = stmt.query([email])?;
+                let mut rows = stmt.query([email])?;
 
-            if let Some(row) = rows.next()? {
-                let id: u64 = row.get(0)?;
+                if let Some(row) = rows.next()? {
+                    let id: u64 = row.get(0)?;
 
-                return Ok(Some(UserInfo {
-                    id,
-                    email: row.get(1)?,
-                    name: row.get(2)?,
-                    picture: row.get(3)?,
-                }));
-            }
+                    return Ok(Some(UserInfo {
+                        id,
+                        email: row.get(1)?,
+                        name: row.get(2)?,
+                        picture: row.get(3)?,
+                    }));
+                }
 
-            Ok(None)
-        }).await?;
+                Ok(None)
+            })
+            .await?;
 
         Ok(user)
     }
@@ -305,11 +312,16 @@ impl Database for SqliteDatabase {
         let name = user.name.clone();
         let picture = user.picture.clone();
 
-        self.pool.conn(move |conn| {
-            conn.execute("INSERT INTO users (id, email, name, picture) VALUES (?, ?, ?, ?)", (id, email, name, picture))?;
-            debug!("User {} added to the database.", id);
-            Ok(())
-        }).await?;
+        self.pool
+            .conn(move |conn| {
+                conn.execute(
+                    "INSERT INTO users (id, email, name, picture) VALUES (?, ?, ?, ?)",
+                    (id, email, name, picture),
+                )?;
+                debug!("User {} added to the database.", id);
+                Ok(())
+            })
+            .await?;
 
         Ok(())
     }
@@ -326,8 +338,8 @@ impl Clone for SqliteDatabase {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::env;
     use env_logger;
+    use std::env;
 
     async fn setup() -> Result<SqliteDatabase> {
         env::set_var("TREEMAP_SQLITE_PATH", ":memory:");
@@ -337,15 +349,19 @@ mod tests {
         };
 
         let db = SqliteDatabase::new().await?;
-        db.execute(include_str!("./fixtures/init.sql").to_string()).await.unwrap();
+        db.execute(include_str!("./fixtures/init.sql").to_string())
+            .await
+            .unwrap();
 
         Ok(db)
     }
 
     #[tokio::test]
-    async fn test_get_trees() ->Result<()> {
+    async fn test_get_trees() -> Result<()> {
         let db = setup().await?;
-        db.execute(include_str!("./fixtures/trees.sql").to_string()).await.unwrap();
+        db.execute(include_str!("./fixtures/trees.sql").to_string())
+            .await
+            .unwrap();
 
         let bounds = Bounds {
             n: 90.0,
@@ -359,7 +375,7 @@ mod tests {
 
             Err(e) => {
                 panic!("Error reading trees from the database: {}", e);
-            },
+            }
         };
 
         assert_eq!(trees.len(), 3);
@@ -370,12 +386,14 @@ mod tests {
     async fn test_add_tree() -> Result<()> {
         let db = setup().await?;
 
-        let before = db.get_trees(Bounds {
-            n: 90.0,
-            e: 180.0,
-            s: -90.0,
-            w: -180.0,
-        }).await?;
+        let before = db
+            .get_trees(Bounds {
+                n: 90.0,
+                e: 180.0,
+                s: -90.0,
+                w: -180.0,
+            })
+            .await?;
 
         assert_eq!(before.len(), 0);
 
@@ -391,14 +409,17 @@ mod tests {
             added_at: 0,
             updated_at: 0,
             added_by: 0,
-        }).await?;
+        })
+        .await?;
 
-        let after = db.get_trees(Bounds {
-            n: 90.0,
-            e: 180.0,
-            s: -90.0,
-            w: -180.0,
-        }).await?;
+        let after = db
+            .get_trees(Bounds {
+                n: 90.0,
+                e: 180.0,
+                s: -90.0,
+                w: -180.0,
+            })
+            .await?;
 
         assert_eq!(after.len(), 1);
 

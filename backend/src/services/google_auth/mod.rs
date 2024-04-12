@@ -2,12 +2,14 @@ use log::{debug, info};
 use reqwest::header::{HeaderMap, HeaderValue};
 use std::sync::Arc;
 
-use crate::Result;
 use crate::errors::Error;
 use crate::services::Database;
 use crate::services::TokenService;
-use crate::types::{GoogleUserinfoResponse, LoginGoogleRequest, LoginResponse, TokenClaims, UserInfo};
-use crate::utils::{get_unique_id, get_timestamp};
+use crate::types::{
+    GoogleUserinfoResponse, LoginGoogleRequest, LoginResponse, TokenClaims, UserInfo,
+};
+use crate::utils::{get_timestamp, get_unique_id};
+use crate::Result;
 
 const TOKEN_TTL: u64 = 86400;
 
@@ -59,7 +61,10 @@ impl GoogleAuth {
 
         self.db.add_user(&user).await?;
 
-        info!("Created a new user with email {} and id {}.", user.email, user.id);
+        info!(
+            "Created a new user with email {} and id {}.",
+            user.email, user.id
+        );
 
         Ok(user)
     }
@@ -97,7 +102,7 @@ impl GoogleAuth {
             Err(e) => {
                 debug!("Failed to create auth header: {}", e);
                 return Err(Error::BadAuthToken);
-            },
+            }
         };
 
         let mut headers = HeaderMap::new();

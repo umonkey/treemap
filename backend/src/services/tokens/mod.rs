@@ -1,9 +1,9 @@
-use log::{debug, error};
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
+use log::{debug, error};
 
-use crate::Result;
 use crate::types::TokenClaims;
 use crate::utils::get_jwt_secret;
+use crate::Result;
 
 #[derive(Clone)]
 pub struct TokenService {
@@ -23,8 +23,7 @@ impl TokenService {
     }
 
     pub fn encode(&self, claims: &TokenClaims) -> Result<String> {
-        encode(&Header::default(), claims, &self.sym_enc)
-            .map_err(|e| e.into())
+        encode(&Header::default(), claims, &self.sym_enc).map_err(|e| e.into())
     }
 
     #[allow(unused)]
@@ -36,7 +35,7 @@ impl TokenService {
                 error!("Error decoding token: {}", e);
                 debug!("Token payload: {}", encoded);
                 Err(e.into())
-            },
+            }
         }
     }
 }

@@ -1,9 +1,8 @@
+use crate::types::TreeInfo;
 /**
  * This is how a single tree is returned to the API client.
  */
-
 use serde::Serialize;
-use crate::types::TreeInfo;
 
 #[derive(Debug, Serialize)]
 pub struct TreeDetails {

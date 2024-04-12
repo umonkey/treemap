@@ -1,11 +1,14 @@
 use actix_web::HttpRequest;
 
-use crate::Result;
-use crate::services::{GoogleAuth, TokenService};
+use crate::errors::Error;
 use crate::services::database::get_database;
 use crate::services::trees::Trees;
-use crate::types::{AddTreeRequest, UpdateTreeRequest, Bounds, TreeInfo, TreeList, LoginGoogleRequest, LoginResponse, TreeDetails};
-use crate::errors::Error;
+use crate::services::{GoogleAuth, TokenService};
+use crate::types::{
+    AddTreeRequest, Bounds, LoginGoogleRequest, LoginResponse, TreeDetails, TreeInfo, TreeList,
+    UpdateTreeRequest,
+};
+use crate::Result;
 
 pub struct AppState {
     trees: Trees,

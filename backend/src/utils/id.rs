@@ -1,8 +1,8 @@
 use log::error;
 use snowflaker::next_id;
 
-use crate::Result;
 use crate::errors::Error;
+use crate::Result;
 
 pub fn get_unique_id() -> Result<u64> {
     match next_id() {
@@ -11,6 +11,6 @@ pub fn get_unique_id() -> Result<u64> {
         Err(e) => {
             error!("Could not generate unique id: {}", e);
             Err(Error::UniqueId)
-        },
+        }
     }
 }

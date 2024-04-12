@@ -21,6 +21,9 @@ clean:
 lint:
 	cargo clippy
 
+format:
+	cargo fmt
+
 serve:
 	cargo run
 

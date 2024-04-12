@@ -1,9 +1,9 @@
 use actix_web::{post, web::Data, web::Json, HttpRequest};
 use serde::Deserialize;
 
-use crate::Result;
 use crate::services::app::AppState;
-use crate::types::{TreeInfo, AddTreeRequest};
+use crate::types::{AddTreeRequest, TreeInfo};
+use crate::Result;
 
 #[derive(Debug, Deserialize)]
 struct RequestPayload {

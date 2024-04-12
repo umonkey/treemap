@@ -1,11 +1,11 @@
-use std::sync::Arc;
 use log::debug;
+use std::sync::Arc;
 
-use crate::Result;
 use crate::errors::Error;
 use crate::services::Database;
-use crate::types::{AddTreeRequest, UpdateTreeRequest, Bounds, TreeInfo, TreeList, TreeListItem};
-use crate::utils::{get_unique_id, get_timestamp};
+use crate::types::{AddTreeRequest, Bounds, TreeInfo, TreeList, TreeListItem, UpdateTreeRequest};
+use crate::utils::{get_timestamp, get_unique_id};
+use crate::Result;
 
 pub struct Trees {
     db: Arc<dyn Database>,
@@ -13,9 +13,7 @@ pub struct Trees {
 
 impl Trees {
     pub async fn init(db: &Arc<dyn Database>) -> Self {
-        Self {
-            db: db.clone(),
-        }
+        Self { db: db.clone() }
     }
 
     pub async fn add_tree(&self, req: AddTreeRequest) -> Result<TreeInfo> {
@@ -36,19 +34,32 @@ impl Trees {
             added_by: req.user_id,
         };
 
-        debug!("Adding tree at ({}, {}) with name '{}'.", req.lat, req.lon, tree.name);
+        debug!(
+            "Adding tree at ({}, {}) with name '{}'.",
+            req.lat, req.lon, tree.name
+        );
 
         self.db.add_tree(&tree).await?;
-        self.db.add_tree_prop(tree.id, "lat", &tree.lat.to_string()).await?;
-        self.db.add_tree_prop(tree.id, "lon", &tree.lon.to_string()).await?;
-        self.db.add_tree_prop(tree.id, "name", &tree.name.to_string()).await?;
+        self.db
+            .add_tree_prop(tree.id, "lat", &tree.lat.to_string())
+            .await?;
+        self.db
+            .add_tree_prop(tree.id, "lon", &tree.lon.to_string())
+            .await?;
+        self.db
+            .add_tree_prop(tree.id, "name", &tree.name.to_string())
+            .await?;
 
         if let Some(height) = tree.height {
-            self.db.add_tree_prop(tree.id, "height", &height.to_string()).await?;
+            self.db
+                .add_tree_prop(tree.id, "height", &height.to_string())
+                .await?;
         }
 
         if let Some(circumference) = tree.circumference {
-            self.db.add_tree_prop(tree.id, "circumference", &circumference.to_string()).await?;
+            self.db
+                .add_tree_prop(tree.id, "circumference", &circumference.to_string())
+                .await?;
         }
 
         Ok(tree)
@@ -64,15 +75,25 @@ impl Trees {
         }
 
         if old.height != req.height {
-            self.db.add_tree_prop(req.id, "height", &req.height.unwrap_or(0.0).to_string()).await?;
+            self.db
+                .add_tree_prop(req.id, "height", &req.height.unwrap_or(0.0).to_string())
+                .await?;
         }
 
         if old.circumference != req.circumference {
-            self.db.add_tree_prop(req.id, "circumference", &req.circumference.unwrap_or(0.0).to_string()).await?;
+            self.db
+                .add_tree_prop(
+                    req.id,
+                    "circumference",
+                    &req.circumference.unwrap_or(0.0).to_string(),
+                )
+                .await?;
         }
 
         if old.diameter != req.diameter {
-            self.db.add_tree_prop(req.id, "diameter", &req.diameter.unwrap_or(0.0).to_string()).await?;
+            self.db
+                .add_tree_prop(req.id, "diameter", &req.diameter.unwrap_or(0.0).to_string())
+                .await?;
         }
 
         let new = TreeInfo {
@@ -99,22 +120,16 @@ impl Trees {
     pub async fn get_trees(&self, bounds: Bounds) -> Result<TreeList> {
         let trees = self.db.get_trees(bounds).await?;
 
-        let items = trees.iter().map(|tree| {
-            TreeListItem::from_tree(tree)
-        }).collect();
+        let items = trees.iter().map(TreeListItem::from_tree).collect();
 
-        Ok(TreeList {
-            trees: items,
-        })
+        Ok(TreeList { trees: items })
     }
 
     pub async fn get_tree(&self, id: u64) -> Result<TreeInfo> {
         debug!("Getting details for tree {}.", id);
 
         match self.db.get_tree(id).await? {
-            Some(tree) => {
-                Ok(tree)
-            },
+            Some(tree) => Ok(tree),
 
             None => Err(Error::TreeNotFound),
         }
@@ -124,15 +139,16 @@ impl Trees {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::env;
-    use env_logger;
     use crate::services::database::SqliteDatabase;
+    use env_logger;
+    use std::env;
 
     async fn setup(data: Option<String>) -> Result<Trees> {
         env::set_var("TREEMAP_SQLITE_PATH", ":memory:");
 
         let db = SqliteDatabase::new().await?;
-        db.execute(include_str!("./fixtures/init.sql").to_string()).await?;
+        db.execute(include_str!("./fixtures/init.sql").to_string())
+            .await?;
 
         if let Some(init_script) = data {
             db.execute(init_script).await?;
@@ -150,12 +166,14 @@ mod tests {
     async fn test_get_no_trees() -> Result<()> {
         let service = setup(None).await?;
 
-        let trees = service.get_trees(Bounds {
-            n: 90.0,
-            e: 180.0,
-            s: -90.0,
-            w: -180.0,
-        }).await?;
+        let trees = service
+            .get_trees(Bounds {
+                n: 90.0,
+                e: 180.0,
+                s: -90.0,
+                w: -180.0,
+            })
+            .await?;
 
         assert_eq!(trees.trees.len(), 0);
 
@@ -167,12 +185,14 @@ mod tests {
         let script = include_str!("./fixtures/some-trees.sql");
         let service = setup(Some(script.to_string())).await?;
 
-        let trees = service.get_trees(Bounds {
-            n: 90.0,
-            e: 180.0,
-            s: -90.0,
-            w: -180.0,
-        }).await?;
+        let trees = service
+            .get_trees(Bounds {
+                n: 90.0,
+                e: 180.0,
+                s: -90.0,
+                w: -180.0,
+            })
+            .await?;
 
         assert_eq!(trees.trees.len(), 3);
 
@@ -183,16 +203,18 @@ mod tests {
     async fn test_add_tree() -> Result<()> {
         let service = setup(None).await?;
 
-        let tree = service.add_tree(AddTreeRequest {
-            lat: 12.34,
-            lon: 56.78,
-            name: "Oak".to_string(),
-            height: Some(10.0),
-            circumference: Some(20.0),
-            diameter: None,
-            state: "healthy".to_string(),
-            user_id: 0,
-        }).await?;
+        let tree = service
+            .add_tree(AddTreeRequest {
+                lat: 12.34,
+                lon: 56.78,
+                name: "Oak".to_string(),
+                height: Some(10.0),
+                circumference: Some(20.0),
+                diameter: None,
+                state: "healthy".to_string(),
+                user_id: 0,
+            })
+            .await?;
 
         debug!("Tree added: {:?}", tree);
 

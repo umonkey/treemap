@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 
-use crate::Result;
 use crate::types::{Bounds, TreeInfo, UserInfo};
+use crate::Result;
 
 #[async_trait]
 pub trait Database {
