@@ -6,6 +6,7 @@ import "./styles.scss";
 interface IProps {
   onChange: (files: FileList) => void;
   disabled?: boolean;
+  children?: React.ReactNode | React.ReactNode[];
 }
 
 export const ImagePicker = (props: IProps) => {
@@ -25,7 +26,7 @@ export const ImagePicker = (props: IProps) => {
 
   return (
     <div className="ImagePicker">
-      <Button variant="contained" disabled={!!props.disabled} color="success" onClick={handleClick}>Add photos</Button>
+      <Button variant="contained" disabled={!!props.disabled} onClick={handleClick}>{props.children ?? "Add photos"}</Button>
       <input ref={ref} type="file" accept="image/*" multiple onChange={handleFileChange} />
     </div>
   );

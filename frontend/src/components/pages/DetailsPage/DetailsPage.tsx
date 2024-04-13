@@ -49,12 +49,6 @@ export const DetailsPage = (props: IProps) => {
         <>
           <TreeDetails tree={tree} />
 
-          {isDesktop && (
-            <ButtonGroup variant="contained">
-              <ImagePicker onChange={handleImageUpload} />
-            </ButtonGroup>
-          )}
-
           <MapWithMarker center={{
             lat: tree.lat,
             lon: tree.lon,
@@ -66,7 +60,8 @@ export const DetailsPage = (props: IProps) => {
             <ButtonGroup variant="contained">
               <Button variant="contained" color="success" onClick={handleEdit}>Edit this tree</Button>
               <MoveTreeButton id={tree.id} />
-              <Button color="secondary" onClick={handleBack}>Back to map</Button>
+              <ImagePicker onChange={handleImageUpload}>Add photos</ImagePicker>
+              <Button onClick={handleBack}>Back to map</Button>
             </ButtonGroup>
           )}
 

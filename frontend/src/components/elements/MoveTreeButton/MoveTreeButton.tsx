@@ -15,6 +15,6 @@ export const MoveTreeButton = (props: IProps) => {
   };
 
   return (
-    <Button color="secondary" onClick={handleClick}>Move tree</Button>
+    <Button onClick={handleClick}>Move tree</Button>
   );
 };
