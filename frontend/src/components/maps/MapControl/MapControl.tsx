@@ -1,4 +1,4 @@
-import { ZoomControl } from "react-leaflet";
+import { ScaleControl, ZoomControl } from "react-leaflet";
 
 import { ILatLng } from "@/types";
 import { AddTreeControl, LocateControl, LocationPicker, MapBase } from "@/components";
@@ -29,6 +29,7 @@ export const MapControl = (props: IProps) => {
       )}
 
       <LocateControl position="bottomright" />
+      <ScaleControl position="bottomleft" />
 
       {props.onAddTree && (
         <AddTreeControl position="bottomright" onClick={props.onAddTree} />
