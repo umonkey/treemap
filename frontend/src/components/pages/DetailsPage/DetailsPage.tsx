@@ -1,7 +1,7 @@
 import { Button, ButtonGroup } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHouse, faPencil, faUpDownLeftRight, faCamera } from "@fortawesome/free-solid-svg-icons";
+import { faHouse, faPencil, faUpDownLeftRight, faCamera, faShareNodes } from "@fortawesome/free-solid-svg-icons";
 
 import { MapWithMarker, MoveTreeButton, TreeDetails, TreeMarkers, ImagePicker } from "@/components";
 import { routes } from "@/utils/routes";
@@ -83,6 +83,9 @@ export const DetailsPage = (props: IProps) => {
               </Button>
               <Button disabled>
                 <FontAwesomeIcon icon={faCamera} />
+              </Button>
+              <Button disabled>
+                <FontAwesomeIcon icon={faShareNodes} />
               </Button>
             </ButtonGroup>
           )}
