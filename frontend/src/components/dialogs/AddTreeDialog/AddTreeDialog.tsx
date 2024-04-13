@@ -20,9 +20,9 @@ interface IProps {
 
 export const AddTreeDialog = (props: IProps) => {
   const [name, setName] = useState<string>('');
-  const [height] = useState<number|undefined>(undefined);
-  const [circumference] = useState<number|undefined>(undefined);
-  const [diameter] = useState<number|undefined>(undefined);
+  const [height, setHeight] = useState<number|undefined>(undefined);
+  const [circumference, setCircumference] = useState<number|undefined>(undefined);
+  const [diameter, setDiameter] = useState<number|undefined>(undefined);
   const [state, setState] = useState<string>('healthy');
 
   const isSaveEnabled = (): boolean => {
@@ -42,8 +42,19 @@ export const AddTreeDialog = (props: IProps) => {
   };
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.debug("VALUE", event.target.value);
     setName(event.target.value);
+  };
+
+  const handleHeightChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setHeight(parseFloat(event.target.value));
+  };
+
+  const handleCircumferenceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setCircumference(parseFloat(event.target.value));
+  };
+
+  const handleDiameterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setDiameter(parseFloat(event.target.value));
   };
 
   const handleSaveClick = async () => {
@@ -61,9 +72,9 @@ export const AddTreeDialog = (props: IProps) => {
       lat: props.center.lat,
       lon: props.center.lon,
       name: name,
-      height: height || null,
-      circumference: circumference || null,
-      diameter: diameter || null,
+      height: height || 0,
+      circumference: circumference || 0,
+      diameter: diameter || 0,
       state,
     } as IAddTreeRequest);
   };
@@ -84,17 +95,17 @@ export const AddTreeDialog = (props: IProps) => {
 
         <div className="row">
           <div className="group short">
-            <TextField id="height" label="Height, m" variant="standard" type="number" value={height} />
+            <TextField id="height" label="Height, m" variant="standard" type="number" value={height} onChange={handleHeightChange} />
           </div>
 
           <div className="group short">
-            <TextField id="circumference" label="Circumference, m" variant="standard" type="number" value={circumference} />
+            <TextField id="circumference" label="Circumference, m" variant="standard" type="number" value={circumference} onChange={handleCircumferenceChange} />
           </div>
         </div>
 
         <div className="row">
           <div className="group short">
-            <TextField id="diameter" label="Canopy ⌀, m" variant="standard" type="number" value={diameter} />
+            <TextField id="diameter" label="Canopy ⌀, m" variant="standard" type="number" value={diameter} onChange={handleDiameterChange} />
           </div>
 
           <div className="short">
