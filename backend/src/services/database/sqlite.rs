@@ -106,13 +106,14 @@ impl Database for SqliteDatabase {
         let name = tree.name.clone();
         let height = tree.height;
         let circumference = tree.circumference;
+        let diameter = tree.diameter;
         let state = tree.state.clone();
         let added_at = tree.added_at;
         let updated_at = tree.updated_at;
         let added_by = tree.added_by;
 
         self.pool.conn(move |conn| {
-            match conn.execute("INSERT INTO trees (id, lat, lon, name, height, circumference, state, added_at, updated_at, added_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (id, lat, lon, name, height, circumference, state, added_at, updated_at, added_by)) {
+            match conn.execute("INSERT INTO trees (id, lat, lon, name, height, circumference, diameter, state, added_at, updated_at, added_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (id, lat, lon, name, height, circumference, diameter, state, added_at, updated_at, added_by)) {
                 Ok(_) => (),
 
                 Err(e) => {
