@@ -5,9 +5,10 @@ use crate::errors::Error;
 use crate::Result;
 
 const JWT_SECRET: &str = "JWT_SECRET";
-const SQLITE_PATH: &str = "TREEMAP_SQLITE_PATH";
+const S3_BUCKET: &str = "TREEMAP_S3_BUCKET";
 const SERVER_ADDR: &str = "TREEMAP_ADDR";
 const SERVER_PORT: &str = "TREEMAP_PORT";
+const SQLITE_PATH: &str = "TREEMAP_SQLITE_PATH";
 const WORKERS: &str = "TREEMAP_WORKERS";
 
 const DEFAULT_WORKERS: usize = 1;
@@ -74,6 +75,17 @@ pub fn get_jwt_secret() -> String {
         Err(_) => {
             warn!("Environment variable {} not set, using default: {}. This is very insecure, only OK for a test environment. Read more at <https://github.com/umonkey/treemap/wiki/Configuration#jwt_secret>", JWT_SECRET, DEFAULT_JWT_SECRET);
             DEFAULT_JWT_SECRET.to_string()
+        }
+    }
+}
+
+pub fn get_s3_bucket() -> Result<String> {
+    match env::var(S3_BUCKET) {
+        Ok(v) => Ok(v),
+
+        Err(_) => {
+            error!("Environment variable {} not set, unable to continue. Read more at <https://github.com/umonkey/treemap/wiki/Configuration#s3>", S3_BUCKET);
+            Err(Error::EnvNotSet)
         }
     }
 }

@@ -12,6 +12,7 @@ pub enum Error {
     DatabaseConnect,
     DatabaseQuery,
     EnvNotSet,
+    FileUpload,
     GoogleUserInfo,
     MissingAuthorizationHeader,
     TreeNotFound,
@@ -35,6 +36,9 @@ impl Error {
             }
             Error::EnvNotSet => {
                 r#"{"error":{"code":"EnvNotSet","description":"Environment variable not set."}}"#
+            }
+            Error::FileUpload => {
+                r#"{"error":{"code":"FileUpload","description":"Error preparing file upload."}}"#
             }
             Error::GoogleUserInfo => {
                 r#"{"error":{"code":"GoogleUserInfo","description":"Could not get user info from Google."}}"#
@@ -78,6 +82,7 @@ impl ResponseError for Error {
             Error::DatabaseConnect => StatusCode::INTERNAL_SERVER_ERROR,
             Error::DatabaseQuery => StatusCode::INTERNAL_SERVER_ERROR,
             Error::EnvNotSet => StatusCode::INTERNAL_SERVER_ERROR,
+            Error::FileUpload => StatusCode::INTERNAL_SERVER_ERROR,
             Error::GoogleUserInfo => StatusCode::UNAUTHORIZED,
             Error::MissingAuthorizationHeader => StatusCode::UNAUTHORIZED,
             Error::TreeNotFound => StatusCode::NOT_FOUND,
@@ -94,6 +99,7 @@ impl fmt::Display for Error {
             Error::DatabaseConnect => write!(f, "DatabaseConnect"),
             Error::DatabaseQuery => write!(f, "DatabaseQuery"),
             Error::EnvNotSet => write!(f, "EnvNotSet"),
+            Error::FileUpload => write!(f, "FileUpload"),
             Error::GoogleUserInfo => write!(f, "GoogleUserInfo"),
             Error::MissingAuthorizationHeader => write!(f, "MissingAuthorizationHeader"),
             Error::TreeNotFound => write!(f, "TreeNotFound"),

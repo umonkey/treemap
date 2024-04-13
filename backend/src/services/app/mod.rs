@@ -27,7 +27,7 @@ impl AppState {
             trees: Trees::init(&db).await,
             gauth: GoogleAuth::init(&db, &token).await,
             tokens: token,
-            uploads: UploadService::init(&db).await,
+            uploads: UploadService::init(&db).await?,
         })
     }
 
