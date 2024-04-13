@@ -1,11 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { TreeMarkers } from "./TreeMarkers";
 import { MapBase } from "@/components";
-
-const CENTER = {
-  lat: 40.181389,
-  lon: 44.514444,
-};
+import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM } from "@/utils/config";
 
 const meta = {
   title: 'Maps/TreeMarkers',
@@ -15,7 +11,7 @@ const meta = {
   },
   args: { },
   render: () => (
-    <MapBase center={CENTER}>
+    <MapBase center={DEFAULT_MAP_CENTER} zoom={DEFAULT_MAP_ZOOM}>
       <TreeMarkers />
     </MapBase>
   ),

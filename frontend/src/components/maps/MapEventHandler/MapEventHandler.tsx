@@ -4,25 +4,44 @@
 
 import { useState } from "react";
 import { useMapEvents } from "react-leaflet";
-import { LatLngBounds } from "leaflet";
 
-import { IBounds, ILatLng } from "@/types";
+import { IBounds, ILatLng, IMapView } from "@/types";
 
 interface IProps {
   onClick?: (position: ILatLng) => void;
   onBoundsChange?: (bounds: IBounds) => void;
+  onViewChange?: (view: IMapView) => void;
 }
 
 export const MapEventHandler = (props: IProps) => {
   const [initialized, setInitialized] = useState(false);
 
-  const handleBoundsChange = (bounds: LatLngBounds) => {
+  const reportViewChange = () => {
+    const bounds = map.getBounds();
+    const center = map.getCenter();
+
     props.onBoundsChange && props.onBoundsChange({
       north: bounds.getNorth(),
       east: bounds.getEast(),
       south: bounds.getSouth(),
       west: bounds.getWest(),
     });
+
+    const view = {
+      center: {
+        lat: center.lat,
+        lon: center.lng,
+      },
+      zoom: map.getZoom(),
+      bounds: {
+        north: bounds.getNorth(),
+        east: bounds.getEast(),
+        south: bounds.getSouth(),
+        west: bounds.getWest(),
+      },
+    } as IMapView;
+
+    props.onViewChange && props.onViewChange(view);
   };
 
   const map = useMapEvents({
@@ -34,15 +53,15 @@ export const MapEventHandler = (props: IProps) => {
     },
 
     load: () => {
-      handleBoundsChange(map.getBounds());
+      reportViewChange();
     },
 
     zoomend: () => {
-      handleBoundsChange(map.getBounds());
+      reportViewChange();
     },
 
     moveend: () => {
-      handleBoundsChange(map.getBounds());
+      reportViewChange();
     },
   });
 
@@ -53,7 +72,7 @@ export const MapEventHandler = (props: IProps) => {
       console.debug("The map is ready.");
 
       setTimeout(() => {
-        handleBoundsChange(map.getBounds());
+        reportViewChange();
       }, 100);
     }
   });

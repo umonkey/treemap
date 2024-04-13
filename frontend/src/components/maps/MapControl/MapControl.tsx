@@ -9,6 +9,7 @@ import "leaflet/dist/leaflet.css";
 interface IProps {
   center: ILatLng;
   picker: boolean;
+  zoom: number;
   onAddTree?: () => void;
   onPick?: (position: ILatLng) => void;
   children?: React.ReactNode | React.ReactNode[];
@@ -22,7 +23,7 @@ export const MapControl = (props: IProps) => {
   };
 
   return (
-    <MapBase center={props.center}>
+    <MapBase center={props.center} zoom={props.zoom}>
       {!isMobile && (
         <ZoomControl position="bottomright" />
       )}

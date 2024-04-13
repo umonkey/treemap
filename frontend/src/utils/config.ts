@@ -10,3 +10,7 @@ export const DEFAULT_MAP_CENTER = {
   lat: 40.181389,
   lon: 44.514444,
 };
+
+export const DEFAULT_MAP_ZOOM = 12;
+
+export const HOME_PAGE_MAP_KEY = "home-map-state";

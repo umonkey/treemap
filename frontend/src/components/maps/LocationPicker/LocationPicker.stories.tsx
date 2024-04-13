@@ -1,14 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { fn } from '@storybook/test';
 
 import { MapBase } from "@/components/maps/MapBase";
 import { LocationPicker } from "./LocationPicker";
-import { ITreeInfo } from "@/types";
-import { fn } from '@storybook/test';
-
-const POSITION = {
-  lat: 40.180379,
-  lon: 44.513434,
-} as ITreeInfo;
+import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM } from "@/utils/config";
 
 const meta = {
   title: 'Maps/LocationPicker',
@@ -20,7 +15,7 @@ const meta = {
     onChange: fn(),
   },
   render: (args) => (
-    <MapBase center={POSITION}>
+    <MapBase center={DEFAULT_MAP_CENTER} zoom={DEFAULT_MAP_ZOOM}>
       <LocationPicker {...args} />
     </MapBase>
   ),

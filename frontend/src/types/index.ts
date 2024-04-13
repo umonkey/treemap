@@ -50,6 +50,25 @@ export interface IAddTreeRequest {
   state: string;
 }
 
+/**
+ * This is used to save and restore the state of a map view.
+ */
+export interface IMapState {
+  center: ILatLng;
+  zoom: number;
+}
+
+/**
+ * This is used by the map component to report changes in the
+ * view.  Not necessarily all of this is used for remembering
+ * the position, but for stuff like loading markers.
+ */
+export interface IMapView {
+  center: ILatLng;
+  zoom: number;
+  bounds: IBounds;
+}
+
 export enum SideBarMode {
   DEFAULT = "default",
   ADD_TREE = "add_tree",

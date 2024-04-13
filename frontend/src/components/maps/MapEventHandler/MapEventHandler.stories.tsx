@@ -3,11 +3,7 @@ import { fn } from '@storybook/test';
 
 import { MapBase } from "@/components/maps/MapBase";
 import { MapEventHandler } from "./MapEventHandler";
-
-const POSITION = {
-  lat: 56.26,
-  lon: 28.48,
-};
+import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM } from '@/utils/config';
 
 const meta = {
   title: 'Maps/MapEventHandler',
@@ -18,9 +14,10 @@ const meta = {
   args: {
     onClick: fn(),
     onBoundsChange: fn(),
+    onViewChange: fn(),
   },
   render: (args) => (
-    <MapBase center={POSITION}>
+    <MapBase center={DEFAULT_MAP_CENTER} zoom={DEFAULT_MAP_ZOOM}>
       <MapEventHandler {...args} />
     </MapBase>
   ),

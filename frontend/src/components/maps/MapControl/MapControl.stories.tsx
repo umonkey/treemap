@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { fn } from '@storybook/test';
 import { MapControl } from "./MapControl";
-import { DEFAULT_MAP_CENTER } from "@/utils/config";
+import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM } from "@/utils/config";
 
 const meta = {
   title: 'Maps/MapControl',
@@ -21,6 +21,7 @@ type Story = StoryObj<typeof meta>;
 export const Desktop: Story = {
   args: {
     center: DEFAULT_MAP_CENTER,
+    zoom: DEFAULT_MAP_ZOOM,
     picker: false,
   },
   parameters: {
@@ -33,6 +34,7 @@ export const Desktop: Story = {
 export const Phone: Story = {
   args: {
     center: DEFAULT_MAP_CENTER,
+    zoom: DEFAULT_MAP_ZOOM,
     picker: false,
   },
   parameters: {

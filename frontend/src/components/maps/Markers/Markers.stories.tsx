@@ -2,12 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import { MapBase } from "@/components/maps/MapBase";
 import { Markers } from "./Markers";
-import { ILatLng, ITreeInfo } from "@/types";
-
-const POSITION = {
-  lat: 40.180379,
-  lon: 44.513434,
-} as ILatLng;
+import { ITreeInfo } from "@/types";
+import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM } from "@/utils/config";
 
 const MARKERS = [
   {
@@ -53,7 +49,7 @@ const meta = {
   },
   args: { },
   render: (args) => (
-    <MapBase center={POSITION}>
+    <MapBase center={DEFAULT_MAP_CENTER} zoom={DEFAULT_MAP_ZOOM}>
       <Markers {...args} />
     </MapBase>
   ),

@@ -1,7 +1,8 @@
 /**
  * This is the very basic Leaflet map wrapper.
  *
- * Loads the styles, initializes layers, that's it.
+ * Loads the styles, initializes base layers, that's it.
+ * Everything else is up to the children.
  */
 
 import { useEffect, useState, useRef } from "react";
@@ -10,15 +11,16 @@ import { LayerSelector } from "@/components";
 import { ILatLng } from "@/types";
 
 import "leaflet/dist/leaflet.css";
+import "./styles.scss";
 
 interface IProps {
   center: ILatLng;
+  zoom: number;
   children?: React.ReactNode | React.ReactNode[];
-  zoom?: number;
 }
 
 export const MapBase = (props: IProps) => {
-  const [zoom] = useState<number>(props.zoom || 13);
+  const [zoom] = useState<number>(props.zoom);
   const [maxZoom, setMaxZoom] = useState<number>(18);
 
   const ref = useRef(null);
