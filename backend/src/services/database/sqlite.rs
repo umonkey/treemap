@@ -12,7 +12,7 @@ use log::{debug, error, info};
 use crate::errors::Error;
 use crate::services::database::r#trait::Database;
 use crate::types::{Bounds, TreeInfo, UserInfo};
-use crate::utils::{get_sqlite_path, get_unique_id};
+use crate::utils::{get_sqlite_path, get_unique_id, get_timestamp};
 use crate::Result;
 
 pub struct SqliteDatabase {
@@ -151,6 +151,26 @@ impl Database for SqliteDatabase {
             };
 
             debug!("Tree {} updated.", id);
+            Ok(())
+        }).await?;
+
+        Ok(())
+    }
+
+    async fn move_tree(&self, id: u64, lat: f64, lon: f64) -> Result<()> {
+        let updated_at = get_timestamp();
+
+        self.pool.conn(move |conn| {
+            match conn.execute("UPDATE trees set lat = ?, lon = ?, updated_at = ? WHERE id = ?", (lat, lon, updated_at, id)) {
+                Ok(_) => (),
+
+                Err(e) => {
+                    error!("Error updating a tree in the database: {}", e);
+                    return Err(e);
+                },
+            };
+
+            debug!("Tree {} moved.", id);
             Ok(())
         }).await?;
 

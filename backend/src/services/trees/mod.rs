@@ -3,7 +3,7 @@ use std::sync::Arc;
 
 use crate::errors::Error;
 use crate::services::Database;
-use crate::types::{AddTreeRequest, Bounds, TreeInfo, TreeList, TreeListItem, UpdateTreeRequest};
+use crate::types::{AddTreeRequest, Bounds, TreeInfo, TreeList, TreeListItem, MoveTreeRequest, UpdateTreeRequest};
 use crate::utils::{get_timestamp, get_unique_id};
 use crate::Result;
 
@@ -115,6 +115,21 @@ impl Trees {
         self.db.update_tree(&new).await?;
 
         Ok(new)
+    }
+
+    pub async fn move_tree(&self, req: &MoveTreeRequest) -> Result<()> {
+        let id = req.id;
+        let lat = req.lat;
+        let lon = req.lon;
+
+        debug!("Moving tree {} to ({}, {}).", id, lat, lon);
+
+        self.db.move_tree(id, lat, lon).await?;
+
+        self.db.add_tree_prop(id, "lat", &lat.to_string()).await?;
+        self.db.add_tree_prop(id, "lon", &lon.to_string()).await?;
+
+        Ok(())
     }
 
     pub async fn get_trees(&self, bounds: Bounds) -> Result<TreeList> {

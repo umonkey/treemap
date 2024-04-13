@@ -7,6 +7,7 @@ use crate::Result;
 pub trait Database {
     async fn add_tree(&self, tree: &TreeInfo) -> Result<()>;
     async fn update_tree(&self, tree: &TreeInfo) -> Result<()>;
+    async fn move_tree(&self, id: u64, lat: f64, lon: f64) -> Result<()>;
     async fn get_trees(&self, bounds: Bounds) -> Result<Vec<TreeInfo>>;
     async fn get_tree(&self, id: u64) -> Result<Option<TreeInfo>>;
 

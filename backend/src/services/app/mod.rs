@@ -1,11 +1,12 @@
 use actix_web::HttpRequest;
+use log::info;
 
 use crate::errors::Error;
 use crate::services::database::get_database;
 use crate::services::trees::Trees;
 use crate::services::{GoogleAuth, TokenService};
 use crate::types::{
-    AddTreeRequest, Bounds, LoginGoogleRequest, LoginResponse, TreeDetails, TreeInfo, TreeList,
+    AddTreeRequest, Bounds, LoginGoogleRequest, LoginResponse, MoveTreeRequest, TreeDetails, TreeInfo, TreeList,
     UpdateTreeRequest,
 };
 use crate::Result;
@@ -34,6 +35,14 @@ impl AppState {
 
     pub async fn update_tree(&self, req: UpdateTreeRequest) -> Result<TreeInfo> {
         self.trees.update_tree(req).await
+    }
+
+    pub async fn move_tree(&self, req: MoveTreeRequest) -> Result<()> {
+        self.trees.move_tree(&req).await?;
+
+        info!("Tree {} moved to ({},{})", req.id, req.lat, req.lon);
+
+        Ok(())
     }
 
     pub async fn get_trees(&self, bounds: Bounds) -> Result<TreeList> {

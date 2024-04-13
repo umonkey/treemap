@@ -1,7 +1,7 @@
 import { Button } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { MapWithMarker, TreeDetails, TreeMarkers, ImagePicker } from "@/components";
+import { MapWithMarker, MoveTreeButton, TreeDetails, TreeMarkers, ImagePicker } from "@/components";
 import { routes } from "@/utils/routes";
 import { useTreeDetails } from "./hooks";
 
@@ -54,6 +54,7 @@ export const DetailsPage = (props: IProps) => {
 
           <div className="buttons">
             <Button variant="contained" color="success" onClick={handleEdit}>Edit this tree</Button>
+            <MoveTreeButton id={tree.id} />
             <Button color="secondary" onClick={handleBack}>Back to map</Button>
           </div>
         </>

@@ -9,6 +9,7 @@ import { Marker } from "react-leaflet";
 
 import { MarkerIcon, MapBase } from "@/components";
 import { ILatLng } from "@/types";
+import "./styles.scss";
 
 interface IProps {
   center: ILatLng;

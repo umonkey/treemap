@@ -239,6 +239,12 @@ const preview: Preview = {
           status: 202,
           delay: 500,
         },
+        {
+          url: "/v1/trees/134793003121381380/position",
+          method: "PUT",
+          status: 202,
+          delay: 500,
+        },
       ],
     },
   },

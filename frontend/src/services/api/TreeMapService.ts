@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from "axios";
 
-import { IApiError, IAddTreeRequest, ITreeInfo, ITreeDetails, IUserInfo } from "@/types";
+import { IApiError, IAddTreeRequest, ILatLng, ITreeInfo, ITreeDetails, IUserInfo } from "@/types";
 import { getApiRoot } from "@/utils/env";
 
 export interface ITreesResponse {
@@ -67,6 +67,17 @@ export class TreeMapService {
 
   public async getTreeDetails(id: string): Promise<ITreeDetails> {
     return await this.get<ITreeDetails>(`/v1/trees/${id}`);
+  }
+
+  public async updateTreePosition(id: string, position: ILatLng, token: string) {
+    await this.put(`/v1/trees/${id}/position`, {
+      lat: position.lat,
+      lon: position.lon,
+    }, {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+      },
+    });
   }
 
   /**
