@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 
-import { LocationPicker, MoveTreeDialog, MapWithMarker, SideBar, WithAuth, WithSidebar } from "@/components";
+import { LocationPicker, MoveTreeDialog, MapWithMarker, SideBar, TreeMarkers, WithAuth, WithSidebar } from "@/components";
 import { routes } from "@/utils/routes";
 import { useMoveTree } from "./hooks";
 import "./styles.scss";
@@ -38,6 +38,7 @@ export const MoveTreePage = (props: IProps) => {
             lon: tree.lon,
           }}
         >
+          <TreeMarkers />
           <LocationPicker onChange={handlePositionChange} />
         </MapWithMarker>
 
