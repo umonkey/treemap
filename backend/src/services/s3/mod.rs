@@ -1,4 +1,4 @@
-use aws_config::BehaviorVersion;
+use aws_config::{BehaviorVersion, Region};
 use aws_sdk_s3::Client;
 use aws_sdk_s3::presigning::PresigningConfig;
 use log::{debug, error};
@@ -6,7 +6,7 @@ use std::time::Duration;
 
 use crate::Result;
 use crate::errors::Error;
-use crate::utils::get_s3_bucket;
+use crate::utils::{get_s3_bucket, get_s3_region, get_s3_endpoint};
 
 const UPLOAD_TTL: u64 = 3600;
 
@@ -18,8 +18,13 @@ pub struct S3Service {
 impl S3Service {
     pub async fn init() -> Result<Self> {
         let bucket = get_s3_bucket()?;
+        let region = get_s3_region()?;
+        let endpoint = get_s3_endpoint()?;
 
-        let config = aws_config::defaults(BehaviorVersion::latest()).load().await;
+        let config = aws_config::defaults(BehaviorVersion::latest())
+            .region(Region::new(region))
+            .endpoint_url(endpoint)
+            .load().await;
 
         let client = Client::new(&config);
 
@@ -72,8 +77,9 @@ mod tests {
     async fn setup() -> Result<S3Service> {
         env::set_var("AWS_ACCESS_KEY_ID", "test");
         env::set_var("AWS_SECRET_ACCESS_KEY", "secret");
-        env::set_var("AWS_REGION", "moon");
         env::set_var("TREEMAP_S3_BUCKET", "tree-files");
+        env::set_var("TREEMAP_S3_REGION", "moon");
+        env::set_var("TREEMAP_S3_ENDPOINT", "https://moon.digitaloceanspaces.com");
 
         if let Err(_) = env_logger::try_init() {
             debug!("env_logger already initialized.");
@@ -87,7 +93,7 @@ mod tests {
         let service = setup().await?;
         let url = service.get_upload_url("sample.txt").await?;
 
-        assert!(url.starts_with("https://tree-files.s3.moon.amazonaws.com/sample.txt?"));
+        assert!(url.starts_with("https://tree-files.moon.digitaloceanspaces.com/sample.txt?"));
         assert!(url.contains("x-id=PutObject"));
         assert!(url.contains("X-Amz-SignedHeaders=host"));
         assert!(url.contains("X-Amz-Signature="));

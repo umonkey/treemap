@@ -6,6 +6,8 @@ use crate::Result;
 
 const JWT_SECRET: &str = "JWT_SECRET";
 const S3_BUCKET: &str = "TREEMAP_S3_BUCKET";
+const S3_REGION: &str = "TREEMAP_S3_REGION";
+const S3_ENDPOINT: &str = "TREEMAP_S3_ENDPOINT";
 const SERVER_ADDR: &str = "TREEMAP_ADDR";
 const SERVER_PORT: &str = "TREEMAP_PORT";
 const SQLITE_PATH: &str = "TREEMAP_SQLITE_PATH";
@@ -85,6 +87,28 @@ pub fn get_s3_bucket() -> Result<String> {
 
         Err(_) => {
             error!("Environment variable {} not set, unable to continue. Read more at <https://github.com/umonkey/treemap/wiki/Configuration#s3>", S3_BUCKET);
+            Err(Error::EnvNotSet)
+        }
+    }
+}
+
+pub fn get_s3_region() -> Result<String> {
+    match env::var(S3_REGION) {
+        Ok(v) => Ok(v),
+
+        Err(_) => {
+            error!("Environment variable {} not set, unable to continue. Read more at <https://github.com/umonkey/treemap/wiki/Configuration#s3>", S3_REGION);
+            Err(Error::EnvNotSet)
+        }
+    }
+}
+
+pub fn get_s3_endpoint() -> Result<String> {
+    match env::var(S3_ENDPOINT) {
+        Ok(v) => Ok(v),
+
+        Err(_) => {
+            error!("Environment variable {} not set, unable to continue. Read more at <https://github.com/umonkey/treemap/wiki/Configuration#s3>", S3_ENDPOINT);
             Err(Error::EnvNotSet)
         }
     }
