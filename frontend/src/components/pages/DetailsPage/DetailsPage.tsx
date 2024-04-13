@@ -17,7 +17,7 @@ interface IProps {
 export const DetailsPage = (props: IProps) => {
   const navigate = useNavigate();
   const { isPhone, isDesktop } = useDeviceType();
-  const { tree, loading, error } = useTreeDetails(props.id);
+  const { tree, loading, error, canShare, handleShare } = useTreeDetails(props.id);
 
   const handleBack = () => {
     navigate(routes.home());
@@ -84,7 +84,7 @@ export const DetailsPage = (props: IProps) => {
               <Button disabled>
                 <FontAwesomeIcon icon={faCamera} />
               </Button>
-              <Button disabled>
+              <Button disabled={!canShare} onClick={handleShare}>
                 <FontAwesomeIcon icon={faShareNodes} />
               </Button>
             </ButtonGroup>

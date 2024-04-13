@@ -8,6 +8,8 @@ export const useTreeDetails = (id: string) => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
+  const canShare = !!navigator.share;
+
   useEffect(() => {
     (async () => {
       try {
@@ -22,9 +24,22 @@ export const useTreeDetails = (id: string) => {
     })();
   }, [id]);
 
+  const handleShare = () => {
+    if (!tree) {
+      return;
+    }
+
+    navigator.share({
+      title: tree.name,
+      text: "Check out this tree on the Tree Map!",
+    });
+  };
+
   return {
     tree,
     loading,
     error,
+    canShare,
+    handleShare,
   };
 };
