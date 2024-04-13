@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from "axios";
 
-import { IApiError, IAddTreeRequest, ILatLng, ITreeInfo, ITreeDetails, IUserInfo } from "@/types";
+import { IApiError, IAddTreeRequest, ILatLng, ITreeInfo, ITreeDetails, IUploadTicket, IUserInfo } from "@/types";
 import { getUserToken } from "@/utils/userinfo";
 import { getApiRoot } from "@/utils/env";
 
@@ -87,6 +87,15 @@ export class TreeMapService {
     });
 
     return res;
+  }
+
+  /**
+   * Request an upload ticket for uploading images.
+   */
+  public async createUploadTicket(): Promise<IUploadTicket> {
+    return await this.post<IUploadTicket>("/v1/uploads", { }, {
+      headers: this.get_auth_headers(),
+    });
   }
 
   private async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {

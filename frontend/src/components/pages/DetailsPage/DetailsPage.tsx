@@ -5,7 +5,7 @@ import { faHouse, faPencil, faUpDownLeftRight, faCamera, faShareNodes } from "@f
 
 import { MapWithMarker, MoveTreeButton, TreeDetails, TreeMarkers, ImagePicker } from "@/components";
 import { routes } from "@/utils/routes";
-import { useDeviceType } from "@/hooks";
+import { useFileUploader, useDeviceType } from "@/hooks";
 import { useTreeDetails } from "./hooks";
 
 import "./styles.scss";
@@ -18,6 +18,7 @@ export const DetailsPage = (props: IProps) => {
   const navigate = useNavigate();
   const { isPhone, isDesktop } = useDeviceType();
   const { tree, loading, error, canShare, handleShare } = useTreeDetails(props.id);
+  const { uploadFiles } = useFileUploader();
 
   const handleBack = () => {
     navigate(routes.home());
@@ -32,7 +33,7 @@ export const DetailsPage = (props: IProps) => {
   };
 
   const handleImageUpload = (files: FileList) => {
-    console.debug(`Uploading ${files.length} images...`);
+    uploadFiles(props.id, files);
   };
 
   return (

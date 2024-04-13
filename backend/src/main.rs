@@ -53,6 +53,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(Cors::permissive())
             .data_factory(data_factory)
             .service(add_tree)
+            .service(create_upload_ticket)
             .service(update_tree)
             .service(move_tree)
             .service(get_tree)

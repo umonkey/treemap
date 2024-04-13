@@ -46,12 +46,24 @@ CREATE TABLE IF NOT EXISTS trees_files (
     `id` INT NOT NULL,
     `tree_id` INT NOT NULL,
     `added_at` INT NOT NULL,
+    `added_by` INT NOT NULL,
     `small_url` TEXT NOT NULL,
     `large_url` TEXT NOT NULL,
     PRIMARY KEY(`id`)
 );
 
 CREATE INDEX IF NOT EXISTS trees_files_tree_id ON trees_files (tree_id);
+
+
+-- Upload tickets.
+-- Ticket id is also the file name.
+CREATE TABLE IF NOT EXISTS upload_tickets (
+    `id` INT NOT NULL,
+    `created_at` INT NOT NULL,
+    `created_by` INT NOT NULL,
+    `upload_url` TEXT NOT NULL,
+    PRIMARY KEY(`id`)
+);
 
 
 -- User accounts.

@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 
-use crate::types::{Bounds, TreeInfo, UserInfo};
+use crate::types::{Bounds, TreeInfo, UserInfo, UploadTicket};
 use crate::Result;
 
 #[async_trait]
@@ -16,4 +16,7 @@ pub trait Database {
 
     async fn find_user_by_email(&self, email: &str) -> Result<Option<UserInfo>>;
     async fn add_user(&self, user: &UserInfo) -> Result<()>;
+
+    async fn add_upload_ticket(&self, ticket: &UploadTicket) -> Result<()>;
+    async fn get_upload_ticket(&self, id: u64) -> Result<Option<UploadTicket>>;
 }

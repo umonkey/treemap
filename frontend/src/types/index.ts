@@ -75,6 +75,11 @@ export interface IApiError {
   message: string;
 }
 
+export interface IUploadTicket {
+  id: string;
+  upload_url: string;
+}
+
 export enum SideBarMode {
   DEFAULT = "default",
   ADD_TREE = "add_tree",
