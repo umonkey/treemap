@@ -1,6 +1,6 @@
-import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from "axios";
 
-import { IAddTreeRequest, ITreeInfo, ITreeDetails, IUserInfo } from "@/types";
+import { IApiError, IAddTreeRequest, ITreeInfo, ITreeDetails, IUserInfo } from "@/types";
 import { getApiRoot } from "@/utils/env";
 
 export interface ITreesResponse {
@@ -84,17 +84,53 @@ export class TreeMapService {
   }
 
   private async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
-    const res = await this.client.get<T>(url, config);
-    return res.data;
+    try {
+      const res = await this.client.get<T>(url, config);
+      return res.data;
+    } catch (e) {
+      throw this.convert_error(e);
+    }
   }
 
   private async post<T>(url: string, data: object, config?: AxiosRequestConfig): Promise<T> {
-    const res = await this.client.post<T>(url, data, config);
-    return res.data;
+    try {
+      const res = await this.client.post<T>(url, data, config);
+      return res.data;
+    } catch (e) {
+      throw this.convert_error(e);
+    }
   }
 
   private async put<T>(url: string, data: object, config?: AxiosRequestConfig): Promise<T> {
-    const res = await this.client.put<T>(url, data, config);
-    return res.data;
+    try {
+      const res = await this.client.put<T>(url, data, config);
+      return res.data;
+    } catch (e) {
+      throw this.convert_error(e);
+    }
+  }
+
+  private convert_error(e: unknown): IApiError {
+    if (e instanceof AxiosError) {
+      return {
+        status: e.response?.status ?? 500,
+        code: e.response?.data?.error?.code ?? "UnknownError",
+        message: e.response?.data?.error?.description ?? "Something went wrong, please try again later.",
+      } as IApiError;
+    }
+
+    if (e instanceof Error) {
+      return {
+        status: 500,
+        code: "UnknownError",
+        message: e.message,
+      } as IApiError;
+    }
+
+    return {
+      status: 500,
+      code: "UnknownError",
+      message: "Something went wrong, please try again later.",
+    } as IApiError;
   }
 }

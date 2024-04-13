@@ -6,6 +6,7 @@ import { IAddTreeRequest, ILatLng, ITreeInfo } from "@/types";
 import { treeMapService } from "@/services/api";
 import { useUserInfo } from "@/utils/userinfo";
 import { routes } from "@/utils/routes";
+import { formatErrorMessage } from "@/utils";
 
 import "./styles.scss";
 
@@ -33,7 +34,7 @@ export const AddTreePage = (props: IProps) => {
       props.onSuccess(res);
     } catch (e) {
       console.error(`Error adding tree: ${e}`);
-      setError("Error adding tree. Please try again later.");
+      setError(`Error adding tree: ${formatErrorMessage(e)}`);
     } finally {
       setBusy(false);
     }

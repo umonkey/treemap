@@ -7,6 +7,7 @@ import { treeMapService } from "@/services/api";
 import { useTreeInfo } from "./hooks";
 import { useUserInfo } from "@/utils/userinfo";
 import { routes } from "@/utils/routes";
+import { formatErrorMessage } from "@/utils";
 import "./styles.scss";
 
 interface IProps {
@@ -29,7 +30,7 @@ export const EditTreePage = (props: IProps) => {
       props.onSuccess();
     } catch (e) {
       console.log(`Error updating tree: ${e}`);
-      setSaveError("Error updating tree. Please try again.");
+      setSaveError(`Error updating tree. ${formatErrorMessage(e)}`);
     } finally {
       setBusy(false);
     }

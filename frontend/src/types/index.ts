@@ -69,6 +69,12 @@ export interface IMapView {
   bounds: IBounds;
 }
 
+export interface IApiError {
+  status: number;
+  code: string;
+  message: string;
+}
+
 export enum SideBarMode {
   DEFAULT = "default",
   ADD_TREE = "add_tree",
