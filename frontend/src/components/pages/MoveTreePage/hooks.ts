@@ -7,7 +7,6 @@ import { treeMapService } from "@/services/api";
 
 interface IProps {
   id: string;
-  token: string;
   onSuccess: () => void;
 }
 
@@ -36,7 +35,7 @@ export const useMoveTree = (props: IProps) => {
     try {
       setSaving(true);
       setSaveError(null);
-      await treeMapService.updateTreePosition(tree.id, position, props.token);
+      await treeMapService.updateTreePosition(tree.id, position);
       props.onSuccess();
     } catch (e) {
       console.log(`Error updating tree: ${e}`);

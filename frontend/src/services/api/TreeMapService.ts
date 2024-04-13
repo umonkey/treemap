@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from "axios";
 
 import { IApiError, IAddTreeRequest, ILatLng, ITreeInfo, ITreeDetails, IUserInfo } from "@/types";
+import { getUserToken } from "@/utils/userinfo";
 import { getApiRoot } from "@/utils/env";
 
 export interface ITreesResponse {
@@ -42,11 +43,9 @@ export class TreeMapService {
   /**
    * Add a new tree to the map.
    */
-  public async addMarker(props: IAddTreeRequest, token: string): Promise<ITreeInfo> {
+  public async addMarker(props: IAddTreeRequest): Promise<ITreeInfo> {
     const res = await this.post<ITreeInfo>("/v1/trees", props, {
-      headers: {
-        "Authorization": `Bearer ${token}`,
-      },
+      headers: this.get_auth_headers(),
     });
 
     return res;
@@ -55,11 +54,9 @@ export class TreeMapService {
   /**
    * Update an existing tree.
    */
-  public async updateTree(props: ITreeDetails, token: string): Promise<ITreeInfo> {
+  public async updateTree(props: ITreeDetails): Promise<ITreeInfo> {
     const res = await this.put<ITreeInfo>(`/v1/trees/${props.id}`, props, {
-      headers: {
-        "Authorization": `Bearer ${token}`,
-      },
+      headers: this.get_auth_headers(),
     });
 
     return res;
@@ -69,14 +66,12 @@ export class TreeMapService {
     return await this.get<ITreeDetails>(`/v1/trees/${id}`);
   }
 
-  public async updateTreePosition(id: string, position: ILatLng, token: string) {
+  public async updateTreePosition(id: string, position: ILatLng) {
     await this.put(`/v1/trees/${id}/position`, {
       lat: position.lat,
       lon: position.lon,
     }, {
-      headers: {
-        "Authorization": `Bearer ${token}`,
-      },
+      headers: this.get_auth_headers(),
     });
   }
 
@@ -143,5 +138,17 @@ export class TreeMapService {
       code: "UnknownError",
       message: "Something went wrong, please try again later.",
     } as IApiError;
+  }
+
+  private get_auth_headers(): Record<string, string> {
+      const token = getUserToken();
+
+      if (token !== null) {
+        return {
+          "Authorization": `Bearer ${token}`,
+        };
+      }
+
+      return {};
   }
 }

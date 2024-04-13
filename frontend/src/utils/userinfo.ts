@@ -17,6 +17,10 @@ const readStoredValue = (): IUserInfo | null => {
   return null;
 };
 
+export const getUserToken = (): string | null => {
+  return readStoredValue()?.token ?? null;
+};
+
 export const useUserInfo = () => {
   const [userInfo, setUserInfo] = useState<IUserInfo | null>(readStoredValue());
 

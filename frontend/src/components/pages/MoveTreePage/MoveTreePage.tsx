@@ -1,14 +1,12 @@
 import { useNavigate, useParams } from "react-router-dom";
 
 import { LocationPicker, MoveTreeDialog, MapWithMarker, SideBar, WithAuth, WithSidebar } from "@/components";
-import { useUserInfo } from "@/utils/userinfo";
 import { routes } from "@/utils/routes";
 import { useMoveTree } from "./hooks";
 import "./styles.scss";
 
 interface IProps {
   id: string;
-  token: string;
   onSuccess: () => void;
   onCancel: () => void;
 }
@@ -16,7 +14,6 @@ interface IProps {
 export const MoveTreePage = (props: IProps) => {
   const { tree, loading, saving, loadingError, savingError, handlePositionChange, handleSave } = useMoveTree({
     id: props.id,
-    token: props.token,
     onSuccess: props.onSuccess,
   });
 
@@ -69,7 +66,6 @@ export const MoveTreePage = (props: IProps) => {
 
 export const MoveTreePageWrapper = () => {
   const { id } = useParams();
-  const { userInfo } = useUserInfo();
 
   const navigate = useNavigate();
 
@@ -90,7 +86,6 @@ export const MoveTreePageWrapper = () => {
     <WithAuth>
       <MoveTreePage
         id={id}
-        token={userInfo?.token ?? ""}
         onSuccess={handleSuccess}
         onCancel={handleCancel}
       />

@@ -4,7 +4,6 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { AddTreeDialog, MapWithMarker, SideBar, WithAuth, WithSidebar } from "@/components";
 import { IAddTreeRequest, ILatLng, ITreeInfo } from "@/types";
 import { treeMapService } from "@/services/api";
-import { useUserInfo } from "@/utils/userinfo";
 import { routes } from "@/utils/routes";
 import { formatErrorMessage } from "@/utils";
 
@@ -13,7 +12,6 @@ import "./styles.scss";
 interface IProps {
   lat: number;
   lon: number;
-  token: string;
   onSuccess: (tree: ITreeInfo) => void;
   onCancel: () => void;
 }
@@ -30,7 +28,7 @@ export const AddTreePage = (props: IProps) => {
   const handleSave = async (tree: IAddTreeRequest) => {
     try {
       setBusy(true);
-      const res = await treeMapService.addMarker(tree, props.token);
+      const res = await treeMapService.addMarker(tree);
       props.onSuccess(res);
     } catch (e) {
       console.error(`Error adding tree: ${e}`);
@@ -65,8 +63,6 @@ export const AddTreePageWrapper = () => {
   const [ params ] = useSearchParams();
   const navigate = useNavigate();
 
-  const { userInfo } = useUserInfo();
-
   const lat = params.get("lat");
   const lon = params.get("lon");
 
@@ -89,7 +85,6 @@ export const AddTreePageWrapper = () => {
       <AddTreePage
         lat={parseFloat(lat)}
         lon={parseFloat(lon)}
-        token={userInfo?.token ?? ''}
         onSuccess={handleSuccess}
         onCancel={handleCancel}
       />

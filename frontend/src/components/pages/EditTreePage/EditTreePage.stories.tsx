@@ -21,7 +21,6 @@ type Story = StoryObj<typeof meta>;
 export const Desktop: Story = {
   args: {
     id: "134793003121381380",
-    token: "foo.bar.baz",
   },
   parameters: {
     viewport: {
@@ -33,7 +32,6 @@ export const Desktop: Story = {
 export const Phone: Story = {
   args: {
     id: "134793003121381380",
-    token: "foo.bar.baz",
   },
   parameters: {
     viewport: {

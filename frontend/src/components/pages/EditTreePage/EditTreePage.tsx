@@ -5,14 +5,12 @@ import { EditTreeDialog, MapWithMarker, SideBar, WithAuth, WithSidebar } from "@
 import { ITreeDetails } from "@/types";
 import { treeMapService } from "@/services/api";
 import { useTreeInfo } from "./hooks";
-import { useUserInfo } from "@/utils/userinfo";
 import { routes } from "@/utils/routes";
 import { formatErrorMessage } from "@/utils";
 import "./styles.scss";
 
 interface IProps {
   id: string;
-  token: string;
   onSuccess: () => void;
   onCancel: () => void;
 }
@@ -26,7 +24,7 @@ export const EditTreePage = (props: IProps) => {
     try {
       setBusy(true);
       setSaveError(null);
-      await treeMapService.updateTree(tree, props.token);
+      await treeMapService.updateTree(tree);
       props.onSuccess();
     } catch (e) {
       console.log(`Error updating tree: ${e}`);
@@ -80,7 +78,6 @@ export const EditTreePage = (props: IProps) => {
 
 export const EditTreePageWrapper = () => {
   const { id } = useParams();
-  const { userInfo } = useUserInfo();
 
   const navigate = useNavigate();
 
@@ -101,7 +98,6 @@ export const EditTreePageWrapper = () => {
     <WithAuth>
       <EditTreePage
         id={id}
-        token={userInfo?.token ?? ""}
         onSuccess={handleSuccess}
         onCancel={handleCancel}
       />
