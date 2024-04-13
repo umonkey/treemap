@@ -21,7 +21,7 @@ interface IProps {
 
 export const MapBase = (props: IProps) => {
   const [zoom] = useState<number>(props.zoom);
-  const [maxZoom, setMaxZoom] = useState<number>(18);
+  const [maxZoom, setMaxZoom] = useState<number>(25);
 
   const ref = useRef(null);
   const mapRef = useRef(null);
