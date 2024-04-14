@@ -77,7 +77,7 @@ impl ResponseError for Error {
 
     fn status_code(&self) -> StatusCode {
         match self {
-            Error::BadAuthToken => StatusCode::BAD_REQUEST,
+            Error::BadAuthToken => StatusCode::UNAUTHORIZED,
             Error::BadAuthorizationHeader => StatusCode::BAD_REQUEST,
             Error::DatabaseConnect => StatusCode::INTERNAL_SERVER_ERROR,
             Error::DatabaseQuery => StatusCode::INTERNAL_SERVER_ERROR,
