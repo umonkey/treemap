@@ -18,7 +18,7 @@ export const DetailsPage = (props: IProps) => {
   const navigate = useNavigate();
   const { isPhone, isDesktop } = useDeviceType();
   const { tree, loading, error, canShare, handleShare } = useTreeDetails(props.id);
-  const { uploadFiles } = useFileUploader();
+  const { uploadFiles, error: uploadError, uploading } = useFileUploader();
 
   const handleBack = () => {
     navigate(routes.home());
@@ -57,11 +57,19 @@ export const DetailsPage = (props: IProps) => {
             <TreeMarkers />
           </MapWithMarker>
 
+          {uploadError && (
+            <div className="message">{uploadError}</div>
+          )}
+
+          {uploading && (
+            <div className="message">Uploading files, please wait...</div>
+          )}
+
           {isDesktop && (
             <ButtonGroup variant="contained">
               <Button variant="contained" color="success" onClick={handleEdit}>Edit this tree</Button>
               <MoveTreeButton id={tree.id} />
-              <ImagePicker onChange={handleImageUpload}>Add photos</ImagePicker>
+              <ImagePicker disabled={uploading} onChange={handleImageUpload}>Add photos</ImagePicker>
               <Button onClick={handleBack}>Back to map</Button>
             </ButtonGroup>
           )}

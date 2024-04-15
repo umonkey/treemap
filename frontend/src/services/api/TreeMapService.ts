@@ -104,6 +104,7 @@ export class TreeMapService {
 
     const res = await this.post(`/v1/trees/${tree_id}/files`, body, {
       headers: this.get_auth_headers(),
+      timeout: 60000,
     });
 
     console.debug("FILE UPLOADED", res);
