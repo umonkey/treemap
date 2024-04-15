@@ -3,6 +3,9 @@
  *
  * Uses async-sqlite.
  *
+ * Probably nee to split the core database code into a separate class,
+ * and the queue implementation should also be separate, with its own database.
+ *
  * @docs https://docs.rs/async-sqlite/latest/async_sqlite/
  */
 use async_sqlite::{JournalMode, Pool, PoolBuilder};
@@ -11,7 +14,7 @@ use log::{debug, error, info};
 
 use crate::errors::Error;
 use crate::services::database::r#trait::Database;
-use crate::types::{Bounds, TreeInfo, UserInfo, UploadTicket};
+use crate::types::{Bounds, QueueMessage, TreeInfo, UserInfo, UploadTicket};
 use crate::utils::{get_sqlite_path, get_unique_id, get_timestamp};
 use crate::Result;
 
@@ -398,6 +401,77 @@ impl Database for SqliteDatabase {
 
         Ok(ticket)
     }
+
+    async fn add_queue_message(&self, msg: &QueueMessage) -> Result<()> {
+        let id = msg.id;
+        let added_at = msg.added_at;
+        let available_at = msg.available_at;
+        let payload = msg.payload.clone();
+
+        self.pool
+            .conn(move |conn| {
+                conn.execute(
+                    "INSERT INTO queue_messages (id, added_at, available_at, payload) VALUES (?, ?, ?, ?)",
+                    (id, added_at, available_at, payload),
+                )?;
+
+                Ok(())
+            })
+            .await?;
+
+        debug!("Queue message {} added to the database.", id);
+
+        Ok(())
+    }
+
+    async fn pick_queue_message(&self) -> Result<Option<QueueMessage>> {
+        let now = get_timestamp();
+
+        let message = self.pool.conn(move |conn| {
+            let mut stmt = match conn.prepare("SELECT id, added_at, available_at, payload FROM queue_messages WHERE available_at <= ? ORDER BY id LIMIT 1") {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error preparing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut rows = stmt.query([now])?;
+
+            if let Some(row) = rows.next()? {
+                return Ok(Some(QueueMessage {
+                    id: row.get(0)?,
+                    added_at: row.get(1)?,
+                    available_at: row.get(2)?,
+                    payload: row.get(3)?,
+                }));
+            }
+
+            Ok(None)
+        }).await?;
+
+        Ok(message)
+    }
+
+    async fn delay_queue_message(&self, id: u64, available_at: u64) -> Result<()>
+    {
+        self.pool.conn(move |conn| {
+            match conn.execute("UPDATE queue_messages SET available_at = ? WHERE id = ?", (available_at, id)) {
+                Ok(_) => (),
+
+                Err(e) => {
+                    error!("Error updating a queue message: {}", e);
+                    return Err(e);
+                },
+            };
+
+            debug!("Queue message {} updated.", id);
+            Ok(())
+        }).await?;
+
+        Ok(())
+    }
 }
 
 impl Clone for SqliteDatabase {
@@ -522,5 +596,60 @@ mod tests {
         assert_eq!(after.upload_url, "https://example.com");
 
         Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_add_queue_message() {
+        let db = setup().await.expect("Error setting up database.");
+        let now = get_timestamp();
+
+        let msg = QueueMessage {
+            id: 123,
+            added_at: now,
+            available_at: now,
+            payload: "it works".to_string(),
+        };
+
+        db.add_queue_message(&msg).await.expect("Error adding message.");
+
+        let pick = db.pick_queue_message().await.expect("Error picking message.");
+        assert_eq!(pick.unwrap().id, 123);
+    }
+
+    #[tokio::test]
+    async fn test_add_queue_message_not_available() {
+        let db = setup().await.expect("Error setting up database.");
+        let now = get_timestamp();
+
+        let msg = QueueMessage {
+            id: 123,
+            added_at: now,
+            available_at: now + 10,
+            payload: "it works".to_string(),
+        };
+
+        db.add_queue_message(&msg).await.expect("Error adding message.");
+
+        let pick = db.pick_queue_message().await.expect("Error picking message.");
+        assert!(pick.is_none());
+    }
+
+    #[tokio::test]
+    async fn test_delay_queue_message() {
+        let db = setup().await.expect("Error setting up database.");
+        let now = get_timestamp();
+
+        let msg = QueueMessage {
+            id: 123,
+            added_at: now,
+            available_at: now,
+            payload: "it works".to_string(),
+        };
+
+        db.add_queue_message(&msg).await.expect("Error adding message.");
+        db.delay_queue_message(123, now + 10).await.expect("Error delaying message.");
+
+        let pick = db.pick_queue_message().await.expect("Error picking message.");
+        assert!(pick.is_none());
     }
 }

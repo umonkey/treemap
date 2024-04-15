@@ -67,7 +67,6 @@ CREATE TABLE IF NOT EXISTS upload_tickets (
 
 
 -- User accounts.
-
 CREATE TABLE IF NOT EXISTS users (
     `id` INT NOT NULL,
     `email` TEXT NOT NULL,
@@ -77,3 +76,14 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS users_email ON users (email);
+
+
+CREATE TABLE IF NOT EXISTS queue_messages (
+    `id` INT NOT NULL,
+    `added_at` INT NOT NULL,
+    `available_at` INT NOT NULL,
+    `payload` TEXT NOT NULL,
+    PRIMARY KEY(`id`)
+);
+CREATE INDEX IF NOT EXISTS queue_messages_added_at ON queue_messages (added_at);
+CREATE INDEX IF NOT EXISTS queue_messages_available_at ON queue_messages (available_at);

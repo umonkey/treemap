@@ -3,8 +3,7 @@ use reqwest::header::{HeaderMap, HeaderValue};
 use std::sync::Arc;
 
 use crate::errors::Error;
-use crate::services::Database;
-use crate::services::TokenService;
+use crate::services::{Database, TokenService};
 use crate::types::{
     GoogleUserinfoResponse, LoginGoogleRequest, LoginResponse, TokenClaims, UserInfo,
 };
