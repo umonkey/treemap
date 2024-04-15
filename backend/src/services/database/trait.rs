@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 
-use crate::types::{Bounds, FileRecord, QueueMessage, TreeInfo, UserInfo, UploadTicket};
+use crate::types::{Bounds, FileRecord, QueueMessage, TreeInfo, UploadTicket, UserInfo};
 use crate::Result;
 
 #[async_trait]

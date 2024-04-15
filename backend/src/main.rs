@@ -6,13 +6,13 @@ mod utils;
 
 use actix_cors::Cors;
 use actix_files::Files;
-use actix_web::{middleware::DefaultHeaders, App, HttpServer, web::PayloadConfig};
+use actix_web::{middleware::DefaultHeaders, web::PayloadConfig, App, HttpServer};
 use log::{debug, info};
 use std::time::Duration;
 
 use self::actions::*;
 use self::services::AppState;
-use self::utils::{get_server_addr, get_server_port, get_workers, get_payload_size};
+use self::utils::{get_payload_size, get_server_addr, get_server_port, get_workers};
 
 type Result<T> = std::result::Result<T, self::errors::Error>;
 

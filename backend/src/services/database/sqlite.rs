@@ -14,8 +14,8 @@ use log::{debug, error, info};
 
 use crate::errors::Error;
 use crate::services::database::r#trait::Database;
-use crate::types::{Bounds, FileRecord, QueueMessage, TreeInfo, UserInfo, UploadTicket};
-use crate::utils::{get_sqlite_path, get_unique_id, get_timestamp};
+use crate::types::{Bounds, FileRecord, QueueMessage, TreeInfo, UploadTicket, UserInfo};
+use crate::utils::{get_sqlite_path, get_timestamp, get_unique_id};
 use crate::Result;
 
 pub struct SqliteDatabase {
@@ -163,19 +163,24 @@ impl Database for SqliteDatabase {
     async fn move_tree(&self, id: u64, lat: f64, lon: f64) -> Result<()> {
         let updated_at = get_timestamp();
 
-        self.pool.conn(move |conn| {
-            match conn.execute("UPDATE trees set lat = ?, lon = ?, updated_at = ? WHERE id = ?", (lat, lon, updated_at, id)) {
-                Ok(_) => (),
+        self.pool
+            .conn(move |conn| {
+                match conn.execute(
+                    "UPDATE trees set lat = ?, lon = ?, updated_at = ? WHERE id = ?",
+                    (lat, lon, updated_at, id),
+                ) {
+                    Ok(_) => (),
 
-                Err(e) => {
-                    error!("Error updating a tree in the database: {}", e);
-                    return Err(e);
-                },
-            };
+                    Err(e) => {
+                        error!("Error updating a tree in the database: {}", e);
+                        return Err(e);
+                    }
+                };
 
-            debug!("Tree {} moved.", id);
-            Ok(())
-        }).await?;
+                debug!("Tree {} moved.", id);
+                Ok(())
+            })
+            .await?;
 
         Ok(())
     }
@@ -350,8 +355,7 @@ impl Database for SqliteDatabase {
         Ok(())
     }
 
-    async fn add_upload_ticket(&self, ticket: &UploadTicket) -> Result<()>
-    {
+    async fn add_upload_ticket(&self, ticket: &UploadTicket) -> Result<()> {
         let id = ticket.id;
         let created_at = ticket.created_at;
         let created_by = ticket.created_by;
@@ -373,8 +377,7 @@ impl Database for SqliteDatabase {
         Ok(())
     }
 
-    async fn get_upload_ticket(&self, id: u64) -> Result<Option<UploadTicket>>
-    {
+    async fn get_upload_ticket(&self, id: u64) -> Result<Option<UploadTicket>> {
         let ticket = self.pool.conn(move |conn| {
             let mut stmt = match conn.prepare("SELECT id, created_at, created_by, upload_url FROM upload_tickets WHERE id = ?") {
                 Ok(value) => value,
@@ -454,27 +457,30 @@ impl Database for SqliteDatabase {
         Ok(message)
     }
 
-    async fn delay_queue_message(&self, id: u64, available_at: u64) -> Result<()>
-    {
-        self.pool.conn(move |conn| {
-            match conn.execute("UPDATE queue_messages SET available_at = ? WHERE id = ?", (available_at, id)) {
-                Ok(_) => (),
+    async fn delay_queue_message(&self, id: u64, available_at: u64) -> Result<()> {
+        self.pool
+            .conn(move |conn| {
+                match conn.execute(
+                    "UPDATE queue_messages SET available_at = ? WHERE id = ?",
+                    (available_at, id),
+                ) {
+                    Ok(_) => (),
 
-                Err(e) => {
-                    error!("Error updating a queue message: {}", e);
-                    return Err(e);
-                },
-            };
+                    Err(e) => {
+                        error!("Error updating a queue message: {}", e);
+                        return Err(e);
+                    }
+                };
 
-            debug!("Queue message {} updated.", id);
-            Ok(())
-        }).await?;
+                debug!("Queue message {} updated.", id);
+                Ok(())
+            })
+            .await?;
 
         Ok(())
     }
 
-    async fn add_file(&self, file: &FileRecord) -> Result<()>
-    {
+    async fn add_file(&self, file: &FileRecord) -> Result<()> {
         let id = file.id;
         let added_at = file.added_at;
         let added_by = file.added_by;
@@ -619,9 +625,14 @@ mod tests {
             upload_url: "https://example.com".to_string(),
         };
 
-        db.add_upload_ticket(&ticket).await.expect("Error adding upload ticket");
+        db.add_upload_ticket(&ticket)
+            .await
+            .expect("Error adding upload ticket");
 
-        let after = db.get_upload_ticket(123).await?.expect("Ticket not created.");
+        let after = db
+            .get_upload_ticket(123)
+            .await?
+            .expect("Ticket not created.");
         assert_eq!(after.id, 123);
         assert_eq!(after.created_at, 123);
         assert_eq!(after.created_by, 456);
@@ -642,9 +653,14 @@ mod tests {
             payload: "it works".to_string(),
         };
 
-        db.add_queue_message(&msg).await.expect("Error adding message.");
+        db.add_queue_message(&msg)
+            .await
+            .expect("Error adding message.");
 
-        let pick = db.pick_queue_message().await.expect("Error picking message.");
+        let pick = db
+            .pick_queue_message()
+            .await
+            .expect("Error picking message.");
         assert_eq!(pick.unwrap().id, 123);
     }
 
@@ -660,9 +676,14 @@ mod tests {
             payload: "it works".to_string(),
         };
 
-        db.add_queue_message(&msg).await.expect("Error adding message.");
+        db.add_queue_message(&msg)
+            .await
+            .expect("Error adding message.");
 
-        let pick = db.pick_queue_message().await.expect("Error picking message.");
+        let pick = db
+            .pick_queue_message()
+            .await
+            .expect("Error picking message.");
         assert!(pick.is_none());
     }
 
@@ -678,10 +699,17 @@ mod tests {
             payload: "it works".to_string(),
         };
 
-        db.add_queue_message(&msg).await.expect("Error adding message.");
-        db.delay_queue_message(123, now + 10).await.expect("Error delaying message.");
+        db.add_queue_message(&msg)
+            .await
+            .expect("Error adding message.");
+        db.delay_queue_message(123, now + 10)
+            .await
+            .expect("Error delaying message.");
 
-        let pick = db.pick_queue_message().await.expect("Error picking message.");
+        let pick = db
+            .pick_queue_message()
+            .await
+            .expect("Error picking message.");
         assert!(pick.is_none());
     }
 }

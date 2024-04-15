@@ -1,12 +1,12 @@
-use log::{debug, info, error};
+use log::{debug, error, info};
 use std::sync::Arc;
 use tokio::fs;
 
-use crate::Result;
 use crate::errors::Error;
 use crate::services::{Database, ThumbnailerService};
 use crate::types::{AddFileRequest, FileRecord};
-use crate::utils::{get_file_folder, get_unique_id, get_timestamp};
+use crate::utils::{get_file_folder, get_timestamp, get_unique_id};
+use crate::Result;
 
 pub struct FileService {
     db: Arc<dyn Database>,
@@ -47,7 +47,10 @@ impl FileService {
 
         self.db.add_file(&file_record).await?;
 
-        info!("User {} added file {} to tree {}", req.user_id, id, req.tree_id);
+        info!(
+            "User {} added file {} to tree {}",
+            req.user_id, id, req.tree_id
+        );
 
         Ok(file_record)
     }
@@ -70,7 +73,7 @@ impl FileService {
             Err(e) => {
                 error!("Error creating folder: {:?}", e);
                 return Err(Error::FileUpload);
-            },
+            }
         };
 
         match fs::write(file_path, data).await {
@@ -79,18 +82,18 @@ impl FileService {
             Err(e) => {
                 error!("Error writing file: {:?}", e);
                 Err(Error::FileUpload)
-            },
+            }
         }
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+    use crate::services::get_database;
     use env_logger;
     use std::env;
     use std::path::Path;
-    use crate::services::get_database;
-    use super::*;
 
     async fn setup() -> Result<FileService> {
         env::set_var("FILE_FOLDER", "var/test-files");
@@ -116,14 +119,20 @@ mod tests {
             file: body,
         };
 
-        let file = service.add_file(req).await.expect("Failed to store the file");
+        let file = service
+            .add_file(req)
+            .await
+            .expect("Failed to store the file");
         let file_path = format!("var/test-files/{}", file.id);
         let path = Path::new(&file_path);
 
         assert!(path.exists());
 
-        std::fs::remove_file(format!("var/test-files/{}", file.id)).expect("Failed to remove the file");
-        std::fs::remove_file(format!("var/test-files/{}", file.small_id)).expect("Failed to remove the file");
-        std::fs::remove_file(format!("var/test-files/{}", file.large_id)).expect("Failed to remove the file");
+        std::fs::remove_file(format!("var/test-files/{}", file.id))
+            .expect("Failed to remove the file");
+        std::fs::remove_file(format!("var/test-files/{}", file.small_id))
+            .expect("Failed to remove the file");
+        std::fs::remove_file(format!("var/test-files/{}", file.large_id))
+            .expect("Failed to remove the file");
     }
 }

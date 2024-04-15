@@ -3,7 +3,9 @@ use std::sync::Arc;
 
 use crate::errors::Error;
 use crate::services::Database;
-use crate::types::{AddTreeRequest, Bounds, TreeInfo, TreeList, TreeListItem, MoveTreeRequest, UpdateTreeRequest};
+use crate::types::{
+    AddTreeRequest, Bounds, MoveTreeRequest, TreeInfo, TreeList, TreeListItem, UpdateTreeRequest,
+};
 use crate::utils::{get_timestamp, get_unique_id};
 use crate::Result;
 

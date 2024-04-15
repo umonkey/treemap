@@ -1,7 +1,6 @@
 /**
  * Upload tickets are unique file identifiers that are used to upload files to the server.
  */
-
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]

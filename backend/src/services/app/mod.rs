@@ -6,8 +6,8 @@ use crate::services::database::get_database;
 use crate::services::trees::Trees;
 use crate::services::{FileService, GoogleAuth, TokenService, UploadService};
 use crate::types::{
-    AddTreeRequest, Bounds, LoginGoogleRequest, LoginResponse, MoveTreeRequest, TreeDetails, TreeInfo, TreeList,
-    UpdateTreeRequest, UploadTicket, AddFileRequest, FileRecord,
+    AddFileRequest, AddTreeRequest, Bounds, FileRecord, LoginGoogleRequest, LoginResponse,
+    MoveTreeRequest, TreeDetails, TreeInfo, TreeList, UpdateTreeRequest, UploadTicket,
 };
 use crate::Result;
 

@@ -1,13 +1,12 @@
 /**
  * Receive a binary file from the user, attach to a tree.
  */
-
-use actix_web::{post, web::Data, web::Bytes, web::Path, HttpRequest, HttpResponse};
+use actix_web::{post, web::Bytes, web::Data, web::Path, HttpRequest, HttpResponse};
 use serde::Deserialize;
 
-use crate::Result;
 use crate::services::AppState;
 use crate::types::AddFileRequest;
+use crate::Result;
 
 #[derive(Debug, Deserialize)]
 pub struct PathInfo {

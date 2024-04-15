@@ -1,13 +1,12 @@
+use image::io::Reader;
+use log::error;
 /**
  * This module contains image resizing code.
  */
-
 use std::io::Cursor;
-use image::io::Reader;
-use log::error;
 
-use crate::Result;
 use crate::errors::Error;
+use crate::Result;
 
 pub struct ThumbnailerService;
 
@@ -49,10 +48,10 @@ impl ThumbnailerService {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use env_logger;
     use image::DynamicImage;
     use log::debug;
-    use super::*;
 
     fn setup() -> ThumbnailerService {
         if let Err(_) = env_logger::try_init() {

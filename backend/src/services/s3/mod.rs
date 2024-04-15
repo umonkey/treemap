@@ -1,12 +1,12 @@
 use aws_config::{BehaviorVersion, Region};
-use aws_sdk_s3::Client;
 use aws_sdk_s3::presigning::PresigningConfig;
+use aws_sdk_s3::Client;
 use log::{debug, error};
 use std::time::Duration;
 
-use crate::Result;
 use crate::errors::Error;
-use crate::utils::{get_s3_bucket, get_s3_region, get_s3_endpoint};
+use crate::utils::{get_s3_bucket, get_s3_endpoint, get_s3_region};
+use crate::Result;
 
 const UPLOAD_TTL: u64 = 3600;
 
@@ -24,14 +24,12 @@ impl S3Service {
         let config = aws_config::defaults(BehaviorVersion::latest())
             .region(Region::new(region))
             .endpoint_url(endpoint)
-            .load().await;
+            .load()
+            .await;
 
         let client = Client::new(&config);
 
-        Ok(Self {
-            client,
-            bucket,
-        })
+        Ok(Self { client, bucket })
     }
 
     pub async fn get_upload_url(&self, key: &str) -> Result<String> {
@@ -43,10 +41,11 @@ impl S3Service {
             Err(e) => {
                 error!("Error creating expiration: {}", e);
                 return Err(Error::FileUpload);
-            },
+            }
         };
 
-        let req = self.client
+        let req = self
+            .client
             .put_object()
             .bucket(&self.bucket)
             .key(key)
@@ -58,12 +57,12 @@ impl S3Service {
                 let url = req.uri().to_string();
                 debug!("Presigned URL: {}", url);
                 Ok(url)
-            },
+            }
 
             Err(e) => {
                 error!("Error creating presigned URL: {}", e);
                 Err(Error::FileUpload)
-            },
+            }
         }
     }
 }

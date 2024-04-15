@@ -35,6 +35,6 @@ pub async fn move_tree(
     state.move_tree(req).await?;
 
     Ok(HttpResponse::Accepted()
-       .content_type("application/json")
-       .finish())
+        .content_type("application/json")
+        .finish())
 }

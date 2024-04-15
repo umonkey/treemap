@@ -1,10 +1,10 @@
 use log::info;
 use std::sync::Arc;
 
-use crate::Result;
-use crate::utils::{get_timestamp, get_unique_id};
 use crate::services::{Database, S3Service};
 use crate::types::UploadTicket;
+use crate::utils::{get_timestamp, get_unique_id};
+use crate::Result;
 
 pub struct UploadService {
     db: Arc<dyn Database>,
