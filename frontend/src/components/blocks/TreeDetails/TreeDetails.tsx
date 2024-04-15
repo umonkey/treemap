@@ -1,4 +1,5 @@
 import { ITreeDetails } from "@/types";
+import { treeMapService } from "@/services/api";
 
 import "./styles.scss";
 
@@ -17,16 +18,24 @@ export const TreeDetails = (props: IProps) => {
     return `${value} m`;
   };
 
+  const image_id = props.tree.thumbnail_id;
+
   return (
     <div className={`TreeDetails state-${state}`}>
-      <h2>{props.tree.name}</h2>
-      <div className="treeId">#{props.tree.id}</div>
+      {image_id && (
+        <img className="thumbnail" src={treeMapService.getFileURL(image_id)} alt="preview" />
+      )}
 
-      <div className="props">
-        <div>Height: {format(props.tree.height)}</div>
-        <div>Circumference: {format(props.tree.circumference)}</div>
-        <div>Canopy: {format(props.tree.diameter)}</div>
-        <div>State: {state}</div>
+      <div className="inside">
+        <h2>{props.tree.name}</h2>
+        <div className="treeId">#{props.tree.id}</div>
+
+        <div className="props">
+          <div>Height: {format(props.tree.height)}</div>
+          <div>Circumference: {format(props.tree.circumference)}</div>
+          <div>Canopy: {format(props.tree.diameter)}</div>
+          <div>State: {state}</div>
+        </div>
       </div>
     </div>
   );

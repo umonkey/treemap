@@ -1,7 +1,17 @@
 .TreeDetails {
   margin: 0 0 20px;
-  padding: 20px;
   background-color: #fff;
+  overflow: hidden;
+
+  .inside {
+    padding: 20px;
+  }
+
+  img.thumbnail {
+    height: 200px;
+    width: 100%;
+    object-fit: cover;
+  }
 
   &.state-sick {
     background-color: #FF7F50;

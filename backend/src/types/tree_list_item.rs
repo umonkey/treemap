@@ -16,10 +16,13 @@ pub struct TreeListItem {
     pub diameter: Option<f64>,
     pub state: String,
     pub updated_at: u64,
+    pub thumbnail_id: Option<String>,
 }
 
 impl TreeListItem {
     pub fn from_tree(tree: &TreeInfo) -> Self {
+        let thumbnail_id = tree.thumbnail_id.map(|value| value.to_string());
+
         TreeListItem {
             id: tree.id.to_string(),
             lat: tree.lat,
@@ -30,6 +33,7 @@ impl TreeListItem {
             diameter: tree.diameter,
             state: tree.state.clone(),
             updated_at: tree.updated_at,
+            thumbnail_id,
         }
     }
 }

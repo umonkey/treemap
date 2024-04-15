@@ -33,6 +33,7 @@ impl Trees {
             added_at: now,
             updated_at: now,
             added_by: req.user_id,
+            thumbnail_id: None,
         };
 
         debug!(
@@ -109,6 +110,7 @@ impl Trees {
             added_at: old.added_at,
             updated_at: now,
             added_by: old.added_by,
+            thumbnail_id: old.thumbnail_id,
         };
 
         debug!("Updating tree: {:?}", new);

@@ -53,6 +53,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(PayloadConfig::new(get_payload_size()))
             .service(add_file)
             .service(add_tree)
+            .service(get_file)
             .service(create_upload_ticket)
             .service(update_tree)
             .service(move_tree)

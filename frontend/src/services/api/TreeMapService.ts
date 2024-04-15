@@ -110,6 +110,10 @@ export class TreeMapService {
     console.debug("FILE UPLOADED", res);
   }
 
+  public getFileURL(file_id: string): string {
+    return `${getApiRoot()}/v1/files/${file_id}`;
+  }
+
   private async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
     try {
       const res = await this.client.get<T>(url, config);

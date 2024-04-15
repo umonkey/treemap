@@ -13,7 +13,9 @@ use async_trait::async_trait;
 use log::{debug, error, info};
 
 use crate::services::database::r#trait::Database;
-use crate::types::{Bounds, Error, FileRecord, QueueMessage, Result, TreeInfo, UploadTicket, UserInfo};
+use crate::types::{
+    Bounds, Error, FileRecord, QueueMessage, Result, TreeInfo, UploadTicket, UserInfo,
+};
 use crate::utils::{get_sqlite_path, get_timestamp, get_unique_id};
 
 pub struct SqliteDatabase {
@@ -188,7 +190,7 @@ impl Database for SqliteDatabase {
      */
     async fn get_tree(&self, id: u64) -> Result<Option<TreeInfo>> {
         let tree = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, lat, lon, name, height, circumference, diameter, state, added_at, updated_at, added_by FROM trees WHERE id = ?") {
+            let mut stmt = match conn.prepare("SELECT id, lat, lon, name, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id FROM trees WHERE id = ?") {
                 Ok(value) => value,
 
                 Err(e) => {
@@ -214,6 +216,7 @@ impl Database for SqliteDatabase {
                     added_at: row.get(8)?,
                     updated_at: row.get(9)?,
                     added_by: row.get(10)?,
+                    thumbnail_id: row.get(11)?,
                 }));
             }
 
@@ -230,7 +233,7 @@ impl Database for SqliteDatabase {
      */
     async fn get_trees(&self, bounds: Bounds) -> Result<Vec<TreeInfo>> {
         let trees = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, lat, lon, name, height, circumference, diameter, state, added_at, updated_at, added_by FROM trees WHERE lat <= ? AND lat >= ? AND lon <= ? AND lon >= ? AND state <> 'gone'") {
+            let mut stmt = match conn.prepare("SELECT id, lat, lon, name, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id FROM trees WHERE lat <= ? AND lat >= ? AND lon <= ? AND lon >= ? AND state <> 'gone'") {
                 Ok(value) => value,
 
                 Err(e) => {
@@ -260,6 +263,7 @@ impl Database for SqliteDatabase {
                     added_at: row.get(8)?,
                     updated_at: row.get(9)?,
                     added_by: row.get(10)?,
+                    thumbnail_id: row.get(11)?,
                 });
             }
 
@@ -539,6 +543,30 @@ impl Database for SqliteDatabase {
 
         Ok(files)
     }
+
+    async fn update_tree_thumbnail(&self, tree_id: u64, file_id: u64) -> Result<()>
+    {
+        self.pool
+            .conn(move |conn| {
+                match conn.execute(
+                    "UPDATE trees SET thumbnail_id = ? WHERE id = ?",
+                    (file_id, tree_id),
+                ) {
+                    Ok(_) => (),
+
+                    Err(e) => {
+                        error!("Error updating a tree thumbnail: {}", e);
+                        return Err(e);
+                    }
+                };
+
+                debug!("Thumbnail for tree {} updated.", tree_id);
+                Ok(())
+            })
+            .await?;
+
+        Ok(())
+    }
 }
 
 impl Clone for SqliteDatabase {
@@ -623,6 +651,7 @@ mod tests {
             added_at: 0,
             updated_at: 0,
             added_by: 0,
+            thumbnail_id: None,
         })
         .await?;
 

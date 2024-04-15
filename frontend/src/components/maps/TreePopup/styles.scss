@@ -1,4 +1,25 @@
+.leaflet-popup-content-wrapper {
+  overflow: hidden;
+}
+
+.leaflet-popup-content {
+  margin: 0;
+  overflow: hidden;
+  width: 200px;
+}
+
 .TreePopup {
+  img {
+    width: 200px;
+    height: 150px;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .inside {
+    padding: 10px;
+  }
+
   .header {
     font-weight: 600;
     margin: 0 0 5px;

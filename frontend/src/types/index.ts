@@ -20,12 +20,19 @@ export interface ITreeInfo {
   diameter: number | null;
   state: string | null;
   updated_at: number;
+  thumbnail_id: string | null;
 }
 
 export interface IUserInfo {
   token: string;
   name: string;
   picture: string;
+}
+
+export interface IFileInfo {
+  id: string;
+  small_id: string;
+  large_id: string;
 }
 
 export interface ITreeDetails {
@@ -38,6 +45,8 @@ export interface ITreeDetails {
   diameter: number | null;
   state: string | null;
   updated_at: number;
+  thumbnail_id: string | null;
+  files?: IFileInfo[];
 }
 
 export interface IAddTreeRequest {

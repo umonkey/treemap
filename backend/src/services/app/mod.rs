@@ -89,6 +89,10 @@ impl AppState {
         Ok(TreeDetails::from_tree(&tree, &files))
     }
 
+    pub async fn get_file(&self, id: u64) -> Result<Vec<u8>> {
+        self.files.get_file(id).await
+    }
+
     pub async fn login_google(&self, req: LoginGoogleRequest) -> Result<LoginResponse> {
         self.gauth.login(req).await
     }

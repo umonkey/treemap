@@ -1,7 +1,7 @@
 use actix_web::{post, web::Data, web::Json, HttpRequest};
 
 use crate::services::AppState;
-use crate::types::{UploadTicket, Result};
+use crate::types::{Result, UploadTicket};
 
 #[post("/v1/uploads")]
 pub async fn create_upload_ticket(

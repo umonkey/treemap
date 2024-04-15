@@ -16,4 +16,5 @@ pub struct TreeInfo {
     pub added_at: u64,
     pub updated_at: u64,
     pub added_by: u64,
+    pub thumbnail_id: Option<u64>,
 }

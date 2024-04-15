@@ -6,6 +6,9 @@ use crate::services::{Database, ThumbnailerService};
 use crate::types::{AddFileRequest, Error, FileRecord, Result};
 use crate::utils::{get_file_folder, get_timestamp, get_unique_id};
 
+const SMALL_SIZE: u32 = 1000;
+const LARGE_SIZE: u32 = 2000;
+
 pub struct FileService {
     db: Arc<dyn Database>,
     folder: String,
@@ -26,10 +29,10 @@ impl FileService {
     pub async fn add_file(&self, req: AddFileRequest) -> Result<FileRecord> {
         let id = self.write_file(&req.file).await?;
 
-        let small = self.thumbnailer.resize(&req.file, 500)?;
+        let small = self.thumbnailer.resize(&req.file, SMALL_SIZE)?;
         let small_id = self.write_file(&small).await?;
 
-        let large = self.thumbnailer.resize(&req.file, 2000)?;
+        let large = self.thumbnailer.resize(&req.file, LARGE_SIZE)?;
         let large_id = self.write_file(&large).await?;
 
         debug!("Going to add file {} to the database.", id);
@@ -44,6 +47,7 @@ impl FileService {
         };
 
         self.db.add_file(&file_record).await?;
+        self.db.update_tree_thumbnail(req.tree_id, large_id).await?;
 
         info!(
             "User {} added file {} to tree {}",
@@ -55,6 +59,19 @@ impl FileService {
 
     pub async fn find_files_by_tree(&self, tree_id: u64) -> Result<Vec<FileRecord>> {
         self.db.find_files_by_tree(tree_id).await
+    }
+
+    pub async fn get_file(&self, id: u64) -> Result<Vec<u8>> {
+        let file_path = format!("{}/{}", self.folder, id);
+
+        match fs::read(file_path).await {
+            Ok(b) => Ok(b),
+
+            Err(e) => {
+                error!("Error reading file: {:?}", e);
+                Err(Error::FileDownload)
+            }
+        }
     }
 
     /**

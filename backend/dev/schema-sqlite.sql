@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS trees (
     `added_at` INT NOT NULL,
     `updated_at` INT NOT NULL,
     `added_by` INT NOT NULL,
+    `thumbnail_id` INT NULL,
     PRIMARY KEY(`id`)
 );
 
