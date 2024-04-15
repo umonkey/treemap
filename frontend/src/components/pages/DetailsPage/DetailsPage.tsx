@@ -85,9 +85,9 @@ export const DetailsPage = (props: IProps) => {
               <Button onClick={handleMove}>
                 <FontAwesomeIcon icon={faUpDownLeftRight} />
               </Button>
-              <Button disabled>
+              <ImagePicker disabled={uploading} onChange={handleImageUpload}>
                 <FontAwesomeIcon icon={faCamera} />
-              </Button>
+              </ImagePicker>
               <Button disabled={!canShare} onClick={handleShare}>
                 <FontAwesomeIcon icon={faShareNodes} />
               </Button>
