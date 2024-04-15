@@ -1,9 +1,8 @@
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
 use log::{debug, error};
 
-use crate::types::TokenClaims;
+use crate::types::{Result, TokenClaims};
 use crate::utils::get_jwt_secret;
-use crate::Result;
 
 #[derive(Clone)]
 pub struct TokenService {

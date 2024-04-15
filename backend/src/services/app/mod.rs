@@ -6,9 +6,8 @@ use crate::services::trees::Trees;
 use crate::services::{FileService, GoogleAuth, TokenService, UploadService};
 use crate::types::{
     AddFileRequest, AddTreeRequest, Bounds, Error, FileRecord, LoginGoogleRequest, LoginResponse,
-    MoveTreeRequest, TreeDetails, TreeInfo, TreeList, UpdateTreeRequest, UploadTicket,
+    MoveTreeRequest, Result, TreeDetails, TreeInfo, TreeList, UpdateTreeRequest, UploadTicket,
 };
-use crate::Result;
 
 pub struct AppState {
     files: FileService,

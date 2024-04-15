@@ -1,7 +1,6 @@
 use async_trait::async_trait;
 
-use crate::types::{Bounds, FileRecord, QueueMessage, TreeInfo, UploadTicket, UserInfo};
-use crate::Result;
+use crate::types::{Bounds, FileRecord, QueueMessage, Result, TreeInfo, UploadTicket, UserInfo};
 
 #[async_trait]
 pub trait Database {

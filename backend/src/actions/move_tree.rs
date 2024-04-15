@@ -2,8 +2,7 @@ use actix_web::{put, web::Data, web::Json, web::Path, HttpRequest, HttpResponse}
 use serde::Deserialize;
 
 use crate::services::AppState;
-use crate::types::MoveTreeRequest;
-use crate::Result;
+use crate::types::{MoveTreeRequest, Result};
 
 #[derive(Debug, Deserialize)]
 pub struct PathInfo {

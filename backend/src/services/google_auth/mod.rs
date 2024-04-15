@@ -4,10 +4,9 @@ use std::sync::Arc;
 
 use crate::services::{Database, TokenService};
 use crate::types::{
-    Error, GoogleUserinfoResponse, LoginGoogleRequest, LoginResponse, TokenClaims, UserInfo,
+    Error, GoogleUserinfoResponse, LoginGoogleRequest, LoginResponse, Result, TokenClaims, UserInfo,
 };
 use crate::utils::{get_timestamp, get_unique_id};
-use crate::Result;
 
 const TOKEN_TTL: u64 = 86400;
 

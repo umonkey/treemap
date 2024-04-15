@@ -11,9 +11,8 @@ use std::time::Duration;
 
 use self::actions::*;
 use self::services::AppState;
+use self::types::Result;
 use self::utils::{get_payload_size, get_server_addr, get_server_port, get_workers};
-
-type Result<T> = std::result::Result<T, self::types::Error>;
 
 async fn data_factory() -> Result<AppState> {
     debug!("Initializing app state.");

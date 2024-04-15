@@ -35,3 +35,5 @@ pub use self::tree_list_item::*;
 pub use self::update_tree_request::*;
 pub use self::upload_ticket::*;
 pub use self::user_info::*;
+
+pub type Result<T> = std::result::Result<T, self::Error>;

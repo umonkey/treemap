@@ -3,11 +3,10 @@ use std::sync::Arc;
 
 use crate::services::Database;
 use crate::types::{
-    AddTreeRequest, Bounds, Error, MoveTreeRequest, TreeInfo, TreeList, TreeListItem,
+    AddTreeRequest, Bounds, Error, MoveTreeRequest, Result, TreeInfo, TreeList, TreeListItem,
     UpdateTreeRequest,
 };
 use crate::utils::{get_timestamp, get_unique_id};
-use crate::Result;
 
 pub struct Trees {
     db: Arc<dyn Database>,

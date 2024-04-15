@@ -9,7 +9,7 @@ mod r#trait;
 pub use self::r#trait::*;
 pub use self::sqlite::*;
 
-use crate::Result;
+use crate::types::Result;
 use std::sync::Arc;
 
 pub async fn get_database() -> Result<Arc<dyn Database>> {

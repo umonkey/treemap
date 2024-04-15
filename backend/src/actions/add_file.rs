@@ -5,8 +5,7 @@ use actix_web::{post, web::Bytes, web::Data, web::Path, HttpRequest, HttpRespons
 use serde::Deserialize;
 
 use crate::services::AppState;
-use crate::types::AddFileRequest;
-use crate::Result;
+use crate::types::{AddFileRequest, Result};
 
 #[derive(Debug, Deserialize)]
 pub struct PathInfo {

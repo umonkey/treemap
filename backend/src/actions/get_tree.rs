@@ -2,8 +2,7 @@ use actix_web::{get, web::Data, web::Json, web::Path};
 use serde::Deserialize;
 
 use crate::services::AppState;
-use crate::types::TreeDetails;
-use crate::Result;
+use crate::types::{Result, TreeDetails};
 
 #[derive(Debug, Deserialize)]
 pub struct PathInfo {

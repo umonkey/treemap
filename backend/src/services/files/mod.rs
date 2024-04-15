@@ -3,9 +3,8 @@ use std::sync::Arc;
 use tokio::fs;
 
 use crate::services::{Database, ThumbnailerService};
-use crate::types::{AddFileRequest, Error, FileRecord};
+use crate::types::{AddFileRequest, Error, FileRecord, Result};
 use crate::utils::{get_file_folder, get_timestamp, get_unique_id};
-use crate::Result;
 
 pub struct FileService {
     db: Arc<dyn Database>,

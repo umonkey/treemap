@@ -1,8 +1,7 @@
 use log::error;
 use snowflaker::next_id;
 
-use crate::types::Error;
-use crate::Result;
+use crate::types::{Error, Result};
 
 pub fn get_unique_id() -> Result<u64> {
     match next_id() {

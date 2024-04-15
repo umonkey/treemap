@@ -3,8 +3,7 @@ use log::debug;
 use serde::Deserialize;
 
 use crate::services::AppState;
-use crate::types::{Bounds, TreeList};
-use crate::Result;
+use crate::types::{Bounds, Result, TreeList};
 
 #[derive(Deserialize)]
 struct QueryParams {

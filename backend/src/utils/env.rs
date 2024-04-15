@@ -1,8 +1,7 @@
 use log::{error, warn};
 use std::env;
 
-use crate::types::Error;
-use crate::Result;
+use crate::types::{Error, Result};
 
 const FILE_FOLDER: &str = "FILE_FOLDER";
 const JWT_SECRET: &str = "JWT_SECRET";

@@ -4,9 +4,8 @@ use aws_sdk_s3::Client;
 use log::{debug, error};
 use std::time::Duration;
 
-use crate::types::Error;
+use crate::types::{Error, Result};
 use crate::utils::{get_s3_bucket, get_s3_endpoint, get_s3_region};
-use crate::Result;
 
 const UPLOAD_TTL: u64 = 3600;
 

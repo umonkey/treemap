@@ -13,9 +13,8 @@ use async_trait::async_trait;
 use log::{debug, error, info};
 
 use crate::services::database::r#trait::Database;
-use crate::types::{Bounds, Error, FileRecord, QueueMessage, TreeInfo, UploadTicket, UserInfo};
+use crate::types::{Bounds, Error, FileRecord, QueueMessage, Result, TreeInfo, UploadTicket, UserInfo};
 use crate::utils::{get_sqlite_path, get_timestamp, get_unique_id};
-use crate::Result;
 
 pub struct SqliteDatabase {
     pub pool: Pool,
