@@ -1,7 +1,7 @@
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from "axios";
+import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 
 import { IApiError, IAddTreeRequest, ILatLng, ITreeInfo, ITreeDetails, IUploadTicket, IUserInfo } from "@/types";
-import { getUserToken } from "@/utils/userinfo";
+import { getUserToken, removeUserToken } from "@/utils/userinfo";
 import { getApiRoot } from "@/utils/env";
 
 export interface ITreesResponse {
@@ -98,6 +98,17 @@ export class TreeMapService {
     });
   }
 
+  public async uploadImage(tree_id: string, file: File): Promise<void> {
+    const buffer = await file.arrayBuffer();
+    const body = new Blob([buffer], { type: file.type });
+
+    const res = await this.post(`/v1/trees/${tree_id}/files`, body, {
+      headers: this.get_auth_headers(),
+    });
+
+    console.debug("FILE UPLOADED", res);
+  }
+
   private async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
     try {
       const res = await this.client.get<T>(url, config);
@@ -126,27 +137,18 @@ export class TreeMapService {
   }
 
   private convert_error(e: unknown): IApiError {
-    if (e instanceof AxiosError) {
-      return {
-        status: e.response?.status ?? 500,
-        code: e.response?.data?.error?.code ?? "UnknownError",
-        message: e.response?.data?.error?.description ?? "Something went wrong, please try again later.",
-      } as IApiError;
+    // @ts-expect-error TS18046
+    const status = e.response?.status ?? 500;
+    // @ts-expect-error TS18046
+    const code = e.response?.data?.error?.code ?? "UnknownError";
+    // @ts-expect-error TS18046
+    const message = e.response?.data?.error?.description ?? e.message ?? "Something went wrong, please try again later.";
+
+    if (status === 401) {
+      removeUserToken();
     }
 
-    if (e instanceof Error) {
-      return {
-        status: 500,
-        code: "UnknownError",
-        message: e.message,
-      } as IApiError;
-    }
-
-    return {
-      status: 500,
-      code: "UnknownError",
-      message: "Something went wrong, please try again later.",
-    } as IApiError;
+    return { status, code, message };
   }
 
   private get_auth_headers(): Record<string, string> {

@@ -1,6 +1,6 @@
 use actix_web::{post, web::Data, web::Json, HttpRequest};
 
-use crate::services::app::AppState;
+use crate::services::AppState;
 use crate::types::UploadTicket;
 use crate::Result;
 

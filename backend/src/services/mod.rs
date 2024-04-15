@@ -1,13 +1,15 @@
-pub mod app;
+mod app;
 mod database;
+mod files;
 mod google_auth;
 mod s3;
 mod tokens;
-pub mod trees;
+mod trees;
 mod uploads;
 
 pub use app::*;
 pub use database::*;
+pub use files::*;
 pub use google_auth::*;
 pub use s3::*;
 pub use tokens::*;

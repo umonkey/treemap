@@ -1,7 +1,7 @@
 use actix_web::{post, web::Data, web::Json, HttpRequest};
 use serde::Deserialize;
 
-use crate::services::app::AppState;
+use crate::services::AppState;
 use crate::types::{AddTreeRequest, TreeInfo};
 use crate::Result;
 

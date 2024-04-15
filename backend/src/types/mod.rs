@@ -1,3 +1,4 @@
+mod add_file_request;
 mod add_tree_request;
 mod bounds;
 mod google_userinfo_response;
@@ -13,6 +14,7 @@ mod update_tree_request;
 mod upload_ticket;
 mod user_info;
 
+pub use self::add_file_request::*;
 pub use self::add_tree_request::*;
 pub use self::bounds::*;
 pub use self::google_userinfo_response::*;

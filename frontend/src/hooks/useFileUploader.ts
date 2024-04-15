@@ -15,10 +15,9 @@ export const useFileUploader = () => {
 
     for (let n = 0; n < files.length; n++) {
       try {
-        const ticket = await treeMapService.createUploadTicket();
-        console.debug(`Upload ticket ${ticket.id} received, url=${ticket.upload_url}.`);
+        await treeMapService.uploadImage(tree_id, files[n]);
       } catch (e) {
-        console.error("Failed to get upload ticket.", e);
+        console.error("Failed to upload a file.", e);
         setError("Failed to upload a file.");
         return;
       }

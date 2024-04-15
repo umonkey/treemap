@@ -21,6 +21,15 @@ export const getUserToken = (): string | null => {
   return readStoredValue()?.token ?? null;
 };
 
+export const removeUserToken = (): void => {
+  try {
+    localStorage.removeItem(USER_INFO_KEY);
+    console.debug("User info removed.");
+  } catch (e) {
+    console.error("Error removing user info.", e);
+  }
+};
+
 export const useUserInfo = () => {
   const [userInfo, setUserInfo] = useState<IUserInfo | null>(readStoredValue());
 

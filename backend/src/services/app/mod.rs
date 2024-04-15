@@ -4,17 +4,18 @@ use log::info;
 use crate::errors::Error;
 use crate::services::database::get_database;
 use crate::services::trees::Trees;
-use crate::services::{GoogleAuth, TokenService, UploadService};
+use crate::services::{FileService, GoogleAuth, TokenService, UploadService};
 use crate::types::{
     AddTreeRequest, Bounds, LoginGoogleRequest, LoginResponse, MoveTreeRequest, TreeDetails, TreeInfo, TreeList,
-    UpdateTreeRequest, UploadTicket,
+    UpdateTreeRequest, UploadTicket, AddFileRequest,
 };
 use crate::Result;
 
 pub struct AppState {
-    trees: Trees,
+    files: FileService,
     gauth: GoogleAuth,
     tokens: TokenService,
+    trees: Trees,
     uploads: UploadService,
 }
 
@@ -24,9 +25,10 @@ impl AppState {
         let token = TokenService::new();
 
         Ok(Self {
-            trees: Trees::init(&db).await,
+            files: FileService::init()?,
             gauth: GoogleAuth::init(&db, &token).await,
             tokens: token,
+            trees: Trees::init(&db).await,
             uploads: UploadService::init(&db).await?,
         })
     }
@@ -96,5 +98,9 @@ impl AppState {
      */
     pub async fn create_upload_ticket(&self, user_id: u64) -> Result<UploadTicket> {
         self.uploads.create_ticket(user_id).await
+    }
+
+    pub async fn add_file(&self, req: AddFileRequest) -> Result<u64> {
+        self.files.add_file(req).await
     }
 }

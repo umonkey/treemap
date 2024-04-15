@@ -2,7 +2,7 @@ use actix_web::{get, web::Data, web::Json, web::Query};
 use log::debug;
 use serde::Deserialize;
 
-use crate::services::app::AppState;
+use crate::services::AppState;
 use crate::types::{Bounds, TreeList};
 use crate::Result;
 

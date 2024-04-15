@@ -6,13 +6,13 @@ mod utils;
 
 use actix_cors::Cors;
 use actix_files::Files;
-use actix_web::{middleware::DefaultHeaders, App, HttpServer};
+use actix_web::{middleware::DefaultHeaders, App, HttpServer, web::PayloadConfig};
 use log::{debug, info};
 use std::time::Duration;
 
 use self::actions::*;
-use self::services::app::AppState;
-use self::utils::{get_server_addr, get_server_port, get_workers};
+use self::services::AppState;
+use self::utils::{get_server_addr, get_server_port, get_workers, get_payload_size};
 
 type Result<T> = std::result::Result<T, self::errors::Error>;
 
@@ -52,6 +52,8 @@ async fn main() -> std::io::Result<()> {
             .wrap(DefaultHeaders::new().add(("Cache-Control", "no-store")))
             .wrap(Cors::permissive())
             .data_factory(data_factory)
+            .app_data(PayloadConfig::new(get_payload_size()))
+            .service(add_file)
             .service(add_tree)
             .service(create_upload_ticket)
             .service(update_tree)
