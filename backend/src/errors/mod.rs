@@ -9,11 +9,13 @@ use async_sqlite::Error as SqliteError;
 pub enum Error {
     BadAuthToken,
     BadAuthorizationHeader,
+    BadImage,
     DatabaseConnect,
     DatabaseQuery,
     EnvNotSet,
     FileUpload,
     GoogleUserInfo,
+    ImageResize,
     MissingAuthorizationHeader,
     TreeNotFound,
     UniqueId,
@@ -27,6 +29,9 @@ impl Error {
             }
             Error::BadAuthorizationHeader => {
                 r#"{"error":{"code":"BadAuthorizationHeader","description":"Bad authorization header."}}"#
+            }
+            Error::BadImage => {
+                r#"{"error":{"code":"BadImage","description":"Bad image file, cannot work with it."}}"#
             }
             Error::DatabaseConnect => {
                 r#"{"error":{"code":"DatabaseConnect","description":"Error connecting to the database."}}"#
@@ -42,6 +47,9 @@ impl Error {
             }
             Error::GoogleUserInfo => {
                 r#"{"error":{"code":"GoogleUserInfo","description":"Could not get user info from Google."}}"#
+            }
+            Error::ImageResize => {
+                r#"{"error":{"code":"ImageResize","description":"Image reading or resizing failed."}}"#
             }
             Error::MissingAuthorizationHeader => {
                 r#"{"error":{"code":"MissingAuthorizationHeader","description":"Authentication required for this call."}}"#
@@ -79,11 +87,13 @@ impl ResponseError for Error {
         match self {
             Error::BadAuthToken => StatusCode::UNAUTHORIZED,
             Error::BadAuthorizationHeader => StatusCode::BAD_REQUEST,
+            Error::BadImage => StatusCode::BAD_REQUEST,
             Error::DatabaseConnect => StatusCode::INTERNAL_SERVER_ERROR,
             Error::DatabaseQuery => StatusCode::INTERNAL_SERVER_ERROR,
             Error::EnvNotSet => StatusCode::INTERNAL_SERVER_ERROR,
             Error::FileUpload => StatusCode::INTERNAL_SERVER_ERROR,
             Error::GoogleUserInfo => StatusCode::UNAUTHORIZED,
+            Error::ImageResize => StatusCode::INTERNAL_SERVER_ERROR,
             Error::MissingAuthorizationHeader => StatusCode::UNAUTHORIZED,
             Error::TreeNotFound => StatusCode::NOT_FOUND,
             Error::UniqueId => StatusCode::INTERNAL_SERVER_ERROR,
@@ -96,11 +106,13 @@ impl fmt::Display for Error {
         match self {
             Error::BadAuthToken => write!(f, "BadAuthToken"),
             Error::BadAuthorizationHeader => write!(f, "BadAuthorizationHeader"),
+            Error::BadImage => write!(f, "BadImage"),
             Error::DatabaseConnect => write!(f, "DatabaseConnect"),
             Error::DatabaseQuery => write!(f, "DatabaseQuery"),
             Error::EnvNotSet => write!(f, "EnvNotSet"),
             Error::FileUpload => write!(f, "FileUpload"),
             Error::GoogleUserInfo => write!(f, "GoogleUserInfo"),
+            Error::ImageResize => write!(f, "ImageResize"),
             Error::MissingAuthorizationHeader => write!(f, "MissingAuthorizationHeader"),
             Error::TreeNotFound => write!(f, "TreeNotFound"),
             Error::UniqueId => write!(f, "UniqueId"),

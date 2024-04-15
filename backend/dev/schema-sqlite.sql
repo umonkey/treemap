@@ -42,17 +42,17 @@ CREATE INDEX IF NOT EXISTS trees_props_tree_id ON trees_props (tree_id);
 
 
 -- Tree images.
-CREATE TABLE IF NOT EXISTS trees_files (
+CREATE TABLE IF NOT EXISTS files (
     `id` INT NOT NULL,
     `tree_id` INT NOT NULL,
     `added_at` INT NOT NULL,
     `added_by` INT NOT NULL,
-    `small_url` TEXT NOT NULL,
-    `large_url` TEXT NOT NULL,
+    `small_id` INT NOT NULL,
+    `large_id` INT NOT NULL,
     PRIMARY KEY(`id`)
 );
 
-CREATE INDEX IF NOT EXISTS trees_files_tree_id ON trees_files (tree_id);
+CREATE INDEX IF NOT EXISTS files_tree_id ON files (tree_id);
 
 
 -- Upload tickets.

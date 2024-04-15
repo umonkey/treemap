@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 
-use crate::types::{Bounds, QueueMessage, TreeInfo, UserInfo, UploadTicket};
+use crate::types::{Bounds, FileRecord, QueueMessage, TreeInfo, UserInfo, UploadTicket};
 use crate::Result;
 
 #[async_trait]
@@ -19,6 +19,7 @@ pub trait Database {
 
     async fn add_upload_ticket(&self, ticket: &UploadTicket) -> Result<()>;
     async fn get_upload_ticket(&self, id: u64) -> Result<Option<UploadTicket>>;
+    async fn add_file(&self, file: &FileRecord) -> Result<()>;
 
     async fn add_queue_message(&self, msg: &QueueMessage) -> Result<()>;
     async fn pick_queue_message(&self) -> Result<Option<QueueMessage>>;

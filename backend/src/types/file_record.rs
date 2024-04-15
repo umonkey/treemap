@@ -3,12 +3,12 @@
  */
 use serde::Serialize;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize)]
 pub struct FileRecord {
     pub id: u64,
     pub tree_id: u64,
     pub added_at: u64,
     pub added_by: u64,
-    pub small_url: String,
-    pub large_url: String,
+    pub small_id: u64,
+    pub large_id: u64,
 }

@@ -14,7 +14,7 @@ use log::{debug, error, info};
 
 use crate::errors::Error;
 use crate::services::database::r#trait::Database;
-use crate::types::{Bounds, QueueMessage, TreeInfo, UserInfo, UploadTicket};
+use crate::types::{Bounds, FileRecord, QueueMessage, TreeInfo, UserInfo, UploadTicket};
 use crate::utils::{get_sqlite_path, get_unique_id, get_timestamp};
 use crate::Result;
 
@@ -469,6 +469,38 @@ impl Database for SqliteDatabase {
             debug!("Queue message {} updated.", id);
             Ok(())
         }).await?;
+
+        Ok(())
+    }
+
+    async fn add_file(&self, file: &FileRecord) -> Result<()>
+    {
+        let id = file.id;
+        let added_at = file.added_at;
+        let added_by = file.added_by;
+        let tree_id = file.tree_id;
+        let small_id = file.small_id;
+        let large_id = file.large_id;
+
+        self.pool
+            .conn(move |conn| {
+                match conn.execute(
+                    "INSERT INTO files (id, tree_id, added_at, added_by, small_id, large_id) VALUES (?, ?, ?, ?, ?, ?)",
+                    (id, tree_id, added_at, added_by, small_id, large_id),
+                ) {
+                    Ok(_) => (),
+
+                    Err(e) => {
+                        error!("Error adding file to the database: {}", e);
+                        return Err(e);
+                    },
+                }
+
+                Ok(())
+            })
+            .await?;
+
+        debug!("File {} added to the database.", id);
 
         Ok(())
     }

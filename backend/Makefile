@@ -42,6 +42,7 @@ ifneq (,$(FILTER))
 else
 	RUST_LOG="warn" cargo test
 endif
+	rm -f var/test-files/*
 
 # Some notes on code coverage:
 # https://doc.rust-lang.org/rustc/instrument-coverage.html
