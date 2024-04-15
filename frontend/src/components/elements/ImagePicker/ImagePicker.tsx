@@ -27,7 +27,7 @@ export const ImagePicker = (props: IProps) => {
   return (
     <div className="ImagePicker">
       <Button variant="contained" disabled={!!props.disabled} onClick={handleClick}>{props.children ?? "Add photos"}</Button>
-      <input ref={ref} type="file" accept="image/*" multiple onChange={handleFileChange} />
+      <input ref={ref} type="file" accept="image/jpeg" multiple onChange={handleFileChange} />
     </div>
   );
 };
