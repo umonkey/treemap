@@ -4,7 +4,7 @@ use aws_sdk_s3::Client;
 use log::{debug, error};
 use std::time::Duration;
 
-use crate::errors::Error;
+use crate::types::Error;
 use crate::utils::{get_s3_bucket, get_s3_endpoint, get_s3_region};
 use crate::Result;
 

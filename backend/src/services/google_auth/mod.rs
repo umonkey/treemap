@@ -2,10 +2,9 @@ use log::{debug, info};
 use reqwest::header::{HeaderMap, HeaderValue};
 use std::sync::Arc;
 
-use crate::errors::Error;
 use crate::services::{Database, TokenService};
 use crate::types::{
-    GoogleUserinfoResponse, LoginGoogleRequest, LoginResponse, TokenClaims, UserInfo,
+    Error, GoogleUserinfoResponse, LoginGoogleRequest, LoginResponse, TokenClaims, UserInfo,
 };
 use crate::utils::{get_timestamp, get_unique_id};
 use crate::Result;

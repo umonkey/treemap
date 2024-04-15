@@ -1,7 +1,7 @@
 use log::{error, warn};
 use std::env;
 
-use crate::errors::Error;
+use crate::types::Error;
 use crate::Result;
 
 const FILE_FOLDER: &str = "FILE_FOLDER";

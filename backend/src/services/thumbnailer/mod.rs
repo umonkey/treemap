@@ -5,7 +5,7 @@ use log::error;
  */
 use std::io::Cursor;
 
-use crate::errors::Error;
+use crate::types::Error;
 use crate::Result;
 
 pub struct ThumbnailerService;

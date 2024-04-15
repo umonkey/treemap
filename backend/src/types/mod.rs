@@ -1,6 +1,7 @@
 mod add_file_request;
 mod add_tree_request;
 mod bounds;
+mod errors;
 mod file_record;
 mod google_userinfo_response;
 mod login_google_request;
@@ -19,6 +20,7 @@ mod user_info;
 pub use self::add_file_request::*;
 pub use self::add_tree_request::*;
 pub use self::bounds::*;
+pub use self::errors::*;
 pub use self::file_record::*;
 pub use self::google_userinfo_response::*;
 pub use self::login_google_request::*;

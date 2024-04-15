@@ -1,12 +1,11 @@
 use actix_web::HttpRequest;
 use log::info;
 
-use crate::errors::Error;
 use crate::services::database::get_database;
 use crate::services::trees::Trees;
 use crate::services::{FileService, GoogleAuth, TokenService, UploadService};
 use crate::types::{
-    AddFileRequest, AddTreeRequest, Bounds, FileRecord, LoginGoogleRequest, LoginResponse,
+    AddFileRequest, AddTreeRequest, Bounds, Error, FileRecord, LoginGoogleRequest, LoginResponse,
     MoveTreeRequest, TreeDetails, TreeInfo, TreeList, UpdateTreeRequest, UploadTicket,
 };
 use crate::Result;
