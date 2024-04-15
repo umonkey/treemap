@@ -84,7 +84,9 @@ impl AppState {
 
     pub async fn get_tree(&self, id: u64) -> Result<TreeDetails> {
         let tree = self.trees.get_tree(id).await?;
-        Ok(TreeDetails::from_tree(&tree))
+        let files = self.files.find_files_by_tree(id).await?;
+
+        Ok(TreeDetails::from_tree(&tree, &files))
     }
 
     pub async fn login_google(&self, req: LoginGoogleRequest) -> Result<LoginResponse> {

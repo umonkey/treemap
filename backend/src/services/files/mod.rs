@@ -53,6 +53,10 @@ impl FileService {
         Ok(file_record)
     }
 
+    pub async fn find_files_by_tree(&self, tree_id: u64) -> Result<Vec<FileRecord>> {
+        self.db.find_files_by_tree(tree_id).await
+    }
+
     /**
      * Writes the binary data to a new file, returns its id.
      *

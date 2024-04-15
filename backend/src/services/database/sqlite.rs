@@ -508,6 +508,37 @@ impl Database for SqliteDatabase {
 
         Ok(())
     }
+
+    async fn find_files_by_tree(&self, tree_id: u64) -> Result<Vec<FileRecord>> {
+        let files = self.pool.conn(move |conn| {
+            let mut stmt = match conn.prepare("SELECT id, tree_id, added_at, added_by, small_id, large_id FROM files WHERE tree_id = ? ORDER BY id DESC") {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error preparing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut rows = stmt.query([tree_id])?;
+            let mut files: Vec<FileRecord> = Vec::new();
+
+            while let Some(row) = rows.next()? {
+                files.push(FileRecord {
+                    id: row.get(0)?,
+                    tree_id: row.get(1)?,
+                    added_at: row.get(2)?,
+                    added_by: row.get(3)?,
+                    small_id: row.get(4)?,
+                    large_id: row.get(5)?,
+                });
+            }
+
+            Ok(files)
+        }).await?;
+
+        Ok(files)
+    }
 }
 
 impl Clone for SqliteDatabase {

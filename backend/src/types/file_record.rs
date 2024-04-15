@@ -3,7 +3,7 @@
  */
 use serde::Serialize;
 
-#[derive(Debug, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct FileRecord {
     pub id: u64,
     pub tree_id: u64,

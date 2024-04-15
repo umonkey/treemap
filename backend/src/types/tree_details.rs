@@ -1,8 +1,9 @@
-use crate::types::TreeInfo;
 /**
  * This is how a single tree is returned to the API client.
  */
 use serde::Serialize;
+
+use crate::types::{FileRecord, TreeInfo};
 
 #[derive(Debug, Serialize)]
 pub struct TreeDetails {
@@ -17,10 +18,11 @@ pub struct TreeDetails {
     pub added_at: u64,
     pub updated_at: u64,
     pub added_by: String,
+    pub files: Vec<FileRecord>,
 }
 
 impl TreeDetails {
-    pub fn from_tree(tree: &TreeInfo) -> TreeDetails {
+    pub fn from_tree(tree: &TreeInfo, files: &[FileRecord]) -> TreeDetails {
         TreeDetails {
             id: tree.id.to_string(),
             lat: tree.lat,
@@ -33,6 +35,7 @@ impl TreeDetails {
             added_at: tree.added_at,
             updated_at: tree.updated_at,
             added_by: tree.added_by.to_string(),
+            files: files.to_vec(),
         }
     }
 }
