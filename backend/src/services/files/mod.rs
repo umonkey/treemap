@@ -1,4 +1,4 @@
-use log::{debug, error};
+use log::{debug, info, error};
 use tokio::fs;
 
 use crate::Result;
@@ -20,6 +20,12 @@ impl FileService {
     }
 
     pub async fn add_file(&self, req: AddFileRequest) -> Result<u64> {
+        let id = self.write_file(&req.file).await?;
+        info!("User {} added file {} to tree {}", req.user_id, id, req.tree_id);
+        Ok(id)
+    }
+
+    async fn write_file(&self, data: &Vec<u8>) -> Result<u64> {
         let id = get_unique_id()?;
         let file_path = format!("{}/{}", self.folder, id);
 
@@ -34,7 +40,7 @@ impl FileService {
             },
         };
 
-        match fs::write(file_path, req.file).await {
+        match fs::write(file_path, data).await {
             Ok(()) => Ok(id),
 
             Err(e) => {
