@@ -23,6 +23,10 @@ export interface ITreeInfo {
   thumbnail_id: string | null;
 }
 
+export interface ITreeInfoMap {
+  [id: string]: ITreeInfo;
+}
+
 export interface IUserInfo {
   token: string;
   name: string;

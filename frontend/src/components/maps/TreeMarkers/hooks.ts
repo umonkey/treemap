@@ -1,12 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { IBounds, ITreeInfo } from "@/types";
+import { IBounds, ITreeInfoMap } from "@/types";
 import { treeMapService } from "@/services/api";
 
 const RELOAD_DELAY = 100;
 
 export const useMarkers = () => {
-  const [markers, setMarkers] = useState<ITreeInfo[]>([]);
+  // This is all markers that we ever loaded, indexed by key.
+  const [map, setMap] = useState<ITreeInfoMap>({});
+
+  // Last displayed bounds, tracked to request the API.
   const [bounds, setBounds] = useState<number[]>([]);
 
   const timeoutId = useRef<ReturnType<typeof setTimeout>|null>(null);
@@ -37,7 +40,15 @@ export const useMarkers = () => {
 
     console.debug(`Received ${res.length} markers from the API.`);
 
-    setMarkers(res);
+    setMap((prev) => {
+      const updated = { ...prev };
+
+      for (const marker of res) {
+        updated[marker.id] = marker;
+      }
+
+      return updated;
+    });
   }, [bounds]);
 
   useEffect(() => {
@@ -55,7 +66,7 @@ export const useMarkers = () => {
   }, [bounds, fetchMarkers]);
 
   return {
-    markers,
+    markers: Object.values(map),
     reload,
   };
 };
