@@ -8,12 +8,14 @@ import { treeMapService } from "@/services/api";
 export const useFileUploader = () => {
   const [uploading, setUploading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [uploadFinished, setUploadFinished] = useState<boolean>(false);
 
   const uploadFiles = async (tree_id: string, files: FileList) => {
     console.debug(`Uploading ${files.length} files for tree ${tree_id}...`);
 
     setError(null);
     setUploading(true);
+    setUploadFinished(false);
 
     try {
       for (let n = 0; n < files.length; n++) {
@@ -26,6 +28,8 @@ export const useFileUploader = () => {
         }
       }
 
+      setUploadFinished(true);
+
       console.debug("Upload complete.");
     } finally {
       setUploading(false);
@@ -36,5 +40,6 @@ export const useFileUploader = () => {
     uploadFiles,
     error,
     uploading,
+    uploadFinished,
   }
 };

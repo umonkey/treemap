@@ -18,7 +18,7 @@ export const DetailsPage = (props: IProps) => {
   const navigate = useNavigate();
   const { isPhone, isDesktop } = useDeviceType();
   const { tree, loading, error, canShare, handleShare } = useTreeDetails(props.id);
-  const { uploadFiles, error: uploadError, uploading } = useFileUploader();
+  const { uploadFiles, error: uploadError, uploading, uploadFinished } = useFileUploader();
 
   const handleBack = () => {
     navigate(routes.home());
@@ -44,6 +44,10 @@ export const DetailsPage = (props: IProps) => {
 
       {error && (
         <p>{error}</p>
+      )}
+
+      {uploadFinished && (
+        <p>Upload OK, the photos will show up soon.</p>
       )}
 
       {tree && (
