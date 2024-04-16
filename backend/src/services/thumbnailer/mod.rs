@@ -1,8 +1,9 @@
-use image::io::Reader;
-use log::error;
 /**
  * This module contains image resizing code.
  */
+
+use image::{io::Reader, DynamicImage, imageops};
+use log::{debug, error};
 use std::io::Cursor;
 
 use crate::types::{Error, Result};
@@ -31,17 +32,56 @@ impl ThumbnailerService {
             return Ok(data.clone());
         }
 
-        let img = img.resize(size, size, image::imageops::FilterType::Lanczos3);
+        let rotated = self.autorotate(&img, data)?;
+        let resized = rotated.resize(size, size, image::imageops::FilterType::Lanczos3);
 
         let mut buf: Vec<u8> = Vec::new();
 
-        img.write_to(&mut Cursor::new(&mut buf), image::ImageFormat::Jpeg)
+        resized.to_rgb8().write_to(&mut Cursor::new(&mut buf), image::ImageFormat::Jpeg)
             .map_err(|e| {
                 error!("Error writing image: {:?}", e);
                 Error::ImageResize
             })?;
 
         Ok(buf)
+    }
+
+    fn autorotate(&self, img: &DynamicImage, raw_image: &[u8]) -> Result<DynamicImage> {
+        let rotated = match self.get_orientation(raw_image)? {
+            Some(90) => imageops::rotate90(img),
+            Some(180) => imageops::rotate180(img),
+            Some(270) => imageops::rotate270(img),
+            _ => img.clone().into(),
+        };
+
+        Ok(rotated.into())
+    }
+
+    fn get_orientation(&self, data: &[u8]) -> Result<Option<u32>> {
+        let reader = exif::Reader::new();
+        let mut cursor = Cursor::new(data);
+
+        let exif_data = reader.read_from_container(&mut cursor).map_err(|e| {
+            debug!("Error reading EXIF data: {:?}", e);
+            Error::BadImage
+        })?;
+
+        let exif_field = match exif_data.get_field(exif::Tag::Orientation, exif::In::PRIMARY) {
+            Some(value) => value,
+            None => return Ok(None),
+        };
+
+        match exif_field.value.get_uint(0) {
+            Some(1) => Ok(None),
+            Some(3) => Ok(Some(180)),
+            Some(6) => Ok(Some(90)),
+            Some(8) => Ok(Some(270)),
+
+            _ => {
+                debug!("Unknown EXIF orientation: {:?}", exif_field.value.get_uint(0));
+                Ok(None)
+            }
+        }
     }
 }
 
@@ -106,5 +146,20 @@ mod tests {
         let image = read_image(resized);
         assert_eq!(image.width(), 1023);
         assert_eq!(image.height(), 680);
+    }
+
+    #[test]
+    fn test_autorotate() {
+        let thumbnailer = setup();
+
+        let data = include_bytes!("test/rotated.jpg");
+        let resized = thumbnailer
+            .resize(&data.to_vec(), 100)
+            .expect("Error resizing image.");
+
+        let image = read_image(resized);
+
+        assert_eq!(image.width(), 45);
+        assert_eq!(image.height(), 100);
     }
 }
