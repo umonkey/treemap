@@ -21,7 +21,7 @@ WORKDIR /app
 COPY --from=rust-builder /app/target/release/treemap /app/bin/
 COPY --from=rust-builder /app/dev/schema-sqlite.sql /app/schema-sqlite.sql
 COPY --from=node-builder /app/dist /app/static
-COPY container/startup.sh /app
+COPY container/rootfs/ /
 
 ENV RUST_LOG info,treemap=debug
 ENV TREEMAP_SQLITE_PATH /app/var/database.sqlite
