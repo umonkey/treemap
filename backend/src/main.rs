@@ -41,9 +41,11 @@ async fn main() -> std::io::Result<()> {
     env_logger::init();
 
     if is_queue_consumer() {
-        let consumer = QueueConsumer::init().await.expect("Error creating queue consumer.");
+        let consumer = QueueConsumer::init()
+            .await
+            .expect("Error creating queue consumer.");
         consumer.run().await;
-        return Ok(())
+        return Ok(());
     }
 
     let workers = get_workers();

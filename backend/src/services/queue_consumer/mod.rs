@@ -4,12 +4,11 @@
  *
  * Runs in an infinite loop.
  */
-
-use log::{debug, info, error};
+use log::{debug, error, info};
 use std::time::Duration;
 
-use crate::services::{FileService, QueueService};
 use crate::services::database::get_database;
+use crate::services::{FileService, QueueService};
 use crate::types::{QueueCommand, Result};
 
 // Seconds to wait for a new message.
@@ -41,7 +40,7 @@ impl QueueConsumer {
                     match self.process_message(msg.payload.as_str()).await {
                         Ok(_) => {
                             self.queue.delete(&msg).await.unwrap();
-                        },
+                        }
 
                         Err(e) => {
                             error!("Error while processing message: {:?}", e);
@@ -50,7 +49,6 @@ impl QueueConsumer {
                 }
 
                 Ok(None) => {
-                    debug!("No messages, waiting.");
                     tokio::time::sleep(Duration::from_secs(DELAY)).await;
                 }
 
