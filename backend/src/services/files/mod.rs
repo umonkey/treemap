@@ -2,8 +2,8 @@ use log::{debug, error, info};
 use std::sync::Arc;
 use tokio::fs;
 
-use crate::services::{Database, ThumbnailerService};
-use crate::types::{AddFileRequest, Error, FileRecord, Result};
+use crate::services::{Database, QueueService, ThumbnailerService};
+use crate::types::{AddFileRequest, Error, FileRecord, ResizeImageMessage, Result};
 use crate::utils::{get_file_folder, get_timestamp, get_unique_id};
 
 const SMALL_SIZE: u32 = 1000;
@@ -13,6 +13,7 @@ pub struct FileService {
     db: Arc<dyn Database>,
     folder: String,
     thumbnailer: ThumbnailerService,
+    queue: QueueService,
 }
 
 impl FileService {
@@ -22,18 +23,19 @@ impl FileService {
         Ok(Self {
             db: db.clone(),
             folder,
+            queue: QueueService::init(db)?,
             thumbnailer: ThumbnailerService::init(),
         })
     }
 
+    /**
+     * Add a file to the tree.
+     *
+     * Image resizing is rather slow, so we offload that
+     * to the background queue consumer.
+     */
     pub async fn add_file(&self, req: AddFileRequest) -> Result<FileRecord> {
         let id = self.write_file(&req.file).await?;
-
-        let small = self.thumbnailer.resize(&req.file, SMALL_SIZE)?;
-        let small_id = self.write_file(&small).await?;
-
-        let large = self.thumbnailer.resize(&req.file, LARGE_SIZE)?;
-        let large_id = self.write_file(&large).await?;
 
         debug!("Going to add file {} to the database.", id);
 
@@ -42,12 +44,13 @@ impl FileService {
             tree_id: req.tree_id,
             added_at: get_timestamp(),
             added_by: req.user_id,
-            small_id,
-            large_id,
+            small_id: 0,
+            large_id: 0,
         };
 
         self.db.add_file(&file_record).await?;
-        self.db.update_tree_thumbnail(req.tree_id, large_id).await?;
+
+        self.schedule_file_processing(id).await?;
 
         info!(
             "User {} added file {} to tree {}",
@@ -55,6 +58,41 @@ impl FileService {
         );
 
         Ok(file_record)
+    }
+
+    pub async fn resize_images(&self, file_id: u64) -> Result<()> {
+        match self.db.get_file(file_id).await {
+            Ok(Some(file)) => {
+                let body = self.get_file(file.id).await?;
+
+                let small = self.thumbnailer.resize(&body, SMALL_SIZE)?;
+                let small_id = self.write_file(&small).await?;
+
+                let large = self.thumbnailer.resize(&body, LARGE_SIZE)?;
+                let large_id = self.write_file(&large).await?;
+
+                let updated = FileRecord {
+                    small_id,
+                    large_id,
+                    ..file
+                };
+
+                self.db.update_file(&updated).await?;
+
+                info!("Resized images for file {}", file_id);
+                Ok(())
+            }
+
+            Ok(None) => {
+                error!("File {} not found, cannot resize images.", file_id);
+                Ok(())
+            },
+
+            Err(e) => {
+                error!("Error resizing images for file {}: {:?}", file_id, e);
+                Ok(())
+            }
+        }
     }
 
     pub async fn find_files_by_tree(&self, tree_id: u64) -> Result<Vec<FileRecord>> {
@@ -104,6 +142,16 @@ impl FileService {
             }
         }
     }
+
+    async fn schedule_file_processing(&self, file_id: u64) -> Result<()> {
+        let msg = ResizeImageMessage {
+            id: file_id,
+        };
+
+        self.queue.push(&msg.encode()).await?;
+
+        Ok(())
+    }
 }
 
 #[cfg(test)]
@@ -146,12 +194,10 @@ mod tests {
         let path = Path::new(&file_path);
 
         assert!(path.exists());
+        assert_eq!(file.small_id, 0);
+        assert_eq!(file.large_id, 0);
 
         std::fs::remove_file(format!("var/test-files/{}", file.id))
-            .expect("Failed to remove the file");
-        std::fs::remove_file(format!("var/test-files/{}", file.small_id))
-            .expect("Failed to remove the file");
-        std::fs::remove_file(format!("var/test-files/{}", file.large_id))
             .expect("Failed to remove the file");
     }
 }

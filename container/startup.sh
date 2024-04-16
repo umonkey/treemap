@@ -13,4 +13,8 @@ if [ ! -f $DATABASE ]; then
     sqlite3 $DATABASE < $SCHEMA
 fi
 
-exec $BINARY
+$BINARY --queue-consumer &
+$BINARY &
+
+wait -n
+exit $?

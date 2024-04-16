@@ -3429,6 +3429,7 @@ dependencies = [
  "log 0.4.21",
  "reqwest",
  "serde",
+ "serde_json",
  "snowflaker",
  "tokio",
 ]

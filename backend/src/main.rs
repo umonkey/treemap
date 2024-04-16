@@ -10,7 +10,7 @@ use log::{debug, info};
 use std::time::Duration;
 
 use self::actions::*;
-use self::services::AppState;
+use self::services::{AppState, QueueConsumer};
 use self::types::Result;
 use self::utils::{get_payload_size, get_server_addr, get_server_port, get_workers};
 
@@ -22,6 +22,16 @@ async fn data_factory() -> Result<AppState> {
     Ok(state)
 }
 
+fn is_queue_consumer() -> bool {
+    for arg in std::env::args() {
+        if arg == "--queue-consumer" {
+            return true;
+        }
+    }
+
+    false
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     // Read environment overrides from the .env file.
@@ -29,6 +39,12 @@ async fn main() -> std::io::Result<()> {
 
     // Enable logging to stderr.
     env_logger::init();
+
+    if is_queue_consumer() {
+        let consumer = QueueConsumer::init().await.expect("Error creating queue consumer.");
+        consumer.run().await;
+        return Ok(())
+    }
 
     let workers = get_workers();
     let host_addr = get_server_addr();

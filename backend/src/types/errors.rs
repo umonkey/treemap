@@ -18,6 +18,7 @@ pub enum Error {
     GoogleUserInfo,
     ImageResize,
     MissingAuthorizationHeader,
+    Queue,
     TreeNotFound,
     UniqueId,
 }
@@ -57,6 +58,9 @@ impl Error {
             }
             Error::MissingAuthorizationHeader => {
                 r#"{"error":{"code":"MissingAuthorizationHeader","description":"Authentication required for this call."}}"#
+            }
+            Error::Queue => {
+                r#"{"error":{"code":"Queue","description":"Error processing queue request."}}"#
             }
             Error::TreeNotFound => {
                 r#"{"error":{"code":"TreeNotFound","description":"The specified tree does not exist in the database."}}"#
@@ -100,6 +104,7 @@ impl ResponseError for Error {
             Error::GoogleUserInfo => StatusCode::UNAUTHORIZED,
             Error::ImageResize => StatusCode::INTERNAL_SERVER_ERROR,
             Error::MissingAuthorizationHeader => StatusCode::UNAUTHORIZED,
+            Error::Queue => StatusCode::INTERNAL_SERVER_ERROR,
             Error::TreeNotFound => StatusCode::NOT_FOUND,
             Error::UniqueId => StatusCode::INTERNAL_SERVER_ERROR,
         }
@@ -120,6 +125,7 @@ impl fmt::Display for Error {
             Error::GoogleUserInfo => write!(f, "GoogleUserInfo"),
             Error::ImageResize => write!(f, "ImageResize"),
             Error::MissingAuthorizationHeader => write!(f, "MissingAuthorizationHeader"),
+            Error::Queue => write!(f, "Queue"),
             Error::TreeNotFound => write!(f, "TreeNotFound"),
             Error::UniqueId => write!(f, "UniqueId"),
         }

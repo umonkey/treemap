@@ -21,8 +21,11 @@ pub trait Database {
     async fn get_upload_ticket(&self, id: u64) -> Result<Option<UploadTicket>>;
     async fn add_file(&self, file: &FileRecord) -> Result<()>;
     async fn find_files_by_tree(&self, tree_id: u64) -> Result<Vec<FileRecord>>;
+    async fn get_file(&self, id: u64) -> Result<Option<FileRecord>>;
+    async fn update_file(&self, file: &FileRecord) -> Result<()>;
 
     async fn add_queue_message(&self, msg: &QueueMessage) -> Result<()>;
     async fn pick_queue_message(&self) -> Result<Option<QueueMessage>>;
     async fn delay_queue_message(&self, id: u64, available_at: u64) -> Result<()>;
+    async fn delete_queue_message(&self, id: u64) -> Result<()>;
 }

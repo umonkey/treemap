@@ -482,6 +482,26 @@ impl Database for SqliteDatabase {
         Ok(())
     }
 
+    async fn delete_queue_message(&self, id: u64) -> Result<()> {
+        self.pool
+            .conn(move |conn| {
+                match conn.execute("DELETE FROM queue_messages WHERE id = ?", [id]) {
+                    Ok(_) => (),
+
+                    Err(e) => {
+                        error!("Error deleting a queue message: {}", e);
+                        return Err(e);
+                    }
+                };
+
+                debug!("Queue message {} deleted.", id);
+                Ok(())
+            })
+            .await?;
+
+        Ok(())
+    }
+
     async fn add_file(&self, file: &FileRecord) -> Result<()> {
         let id = file.id;
         let added_at = file.added_at;
@@ -511,6 +531,36 @@ impl Database for SqliteDatabase {
         debug!("File {} added to the database.", id);
 
         Ok(())
+    }
+
+    async fn get_file(&self, id: u64) -> Result<Option<FileRecord>> {
+        let file = self.pool.conn(move |conn| {
+            let mut stmt = match conn.prepare("SELECT id, tree_id, added_at, added_by, small_id, large_id FROM files WHERE id = ?") {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error preparing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut rows = stmt.query([id])?;
+
+            if let Some(row) = rows.next()? {
+                return Ok(Some(FileRecord {
+                    id: row.get(0)?,
+                    tree_id: row.get(1)?,
+                    added_at: row.get(2)?,
+                    added_by: row.get(3)?,
+                    small_id: row.get(4)?,
+                    large_id: row.get(5)?,
+                }));
+            }
+
+            Ok(None)
+        }).await?;
+
+        Ok(file)
     }
 
     async fn find_files_by_tree(&self, tree_id: u64) -> Result<Vec<FileRecord>> {
@@ -544,8 +594,34 @@ impl Database for SqliteDatabase {
         Ok(files)
     }
 
-    async fn update_tree_thumbnail(&self, tree_id: u64, file_id: u64) -> Result<()>
-    {
+    async fn update_file(&self, file: &FileRecord) -> Result<()> {
+        let id = file.id;
+        let small_id = file.small_id;
+        let large_id = file.large_id;
+
+        self.pool
+            .conn(move |conn| {
+                match conn.execute(
+                    "UPDATE files SET small_id = ?, large_id = ? WHERE id = ?",
+                    (small_id, large_id, id),
+                ) {
+                    Ok(_) => (),
+
+                    Err(e) => {
+                        error!("Error updating a file in the database: {}", e);
+                        return Err(e);
+                    }
+                };
+
+                debug!("File {} updated.", id);
+                Ok(())
+            })
+            .await?;
+
+        Ok(())
+    }
+
+    async fn update_tree_thumbnail(&self, tree_id: u64, file_id: u64) -> Result<()> {
         self.pool
             .conn(move |conn| {
                 match conn.execute(
