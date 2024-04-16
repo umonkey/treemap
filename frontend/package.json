@@ -23,6 +23,7 @@
     "@maptiler/leaflet-maptilersdk": "^2.0.0",
     "@mui/material": "^5.15.14",
     "@react-oauth/google": "^0.12.1",
+    "@sentry/react": "^7.110.1",
     "@types/leaflet.locatecontrol": "^0.74.4",
     "axios": "^1.6.8",
     "leaflet": "^1.9.4",
