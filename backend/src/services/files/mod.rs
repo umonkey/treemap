@@ -78,15 +78,24 @@ impl FileService {
                 };
 
                 self.db.update_file(&updated).await?;
+                self.db
+                    .update_tree_thumbnail(file.tree_id, small_id)
+                    .await?;
 
-                info!("Resized images for file {}", file_id);
+                self.db.add_tree_prop(
+                    file.tree_id,
+                    "thumbnail_id",
+                    small_id.to_string().as_str(),
+                ).await?;
+
+                info!("Resized images for file {}, tree {}", file_id, file.tree_id);
                 Ok(())
             }
 
             Ok(None) => {
                 error!("File {} not found, cannot resize images.", file_id);
                 Ok(())
-            },
+            }
 
             Err(e) => {
                 error!("Error resizing images for file {}: {:?}", file_id, e);
@@ -144,9 +153,7 @@ impl FileService {
     }
 
     async fn schedule_file_processing(&self, file_id: u64) -> Result<()> {
-        let msg = ResizeImageMessage {
-            id: file_id,
-        };
+        let msg = ResizeImageMessage { id: file_id };
 
         self.queue.push(&msg.encode()).await?;
 
