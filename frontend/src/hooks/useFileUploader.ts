@@ -4,6 +4,7 @@
 
 import { useState } from "react";
 import { treeMapService } from "@/services/api";
+import { formatErrorMessage } from "@/utils";
 
 export const useFileUploader = () => {
   const [uploading, setUploading] = useState<boolean>(false);
@@ -23,7 +24,7 @@ export const useFileUploader = () => {
           await treeMapService.uploadImage(tree_id, files[n]);
         } catch (e) {
           console.error("Failed to upload a file.", e);
-          setError("Failed to upload a file.");
+          setError("Failed to upload a file. " + formatErrorMessage(e));
           return;
         }
       }
