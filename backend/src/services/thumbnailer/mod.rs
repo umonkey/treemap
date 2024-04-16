@@ -1,8 +1,7 @@
 /**
  * This module contains image resizing code.
  */
-
-use image::{io::Reader, DynamicImage, imageops};
+use image::{imageops, io::Reader, DynamicImage};
 use log::{debug, error};
 use std::io::Cursor;
 
@@ -37,7 +36,9 @@ impl ThumbnailerService {
 
         let mut buf: Vec<u8> = Vec::new();
 
-        resized.to_rgb8().write_to(&mut Cursor::new(&mut buf), image::ImageFormat::Jpeg)
+        resized
+            .to_rgb8()
+            .write_to(&mut Cursor::new(&mut buf), image::ImageFormat::Jpeg)
             .map_err(|e| {
                 error!("Error writing image: {:?}", e);
                 Error::ImageResize
@@ -61,10 +62,14 @@ impl ThumbnailerService {
         let reader = exif::Reader::new();
         let mut cursor = Cursor::new(data);
 
-        let exif_data = reader.read_from_container(&mut cursor).map_err(|e| {
-            debug!("Error reading EXIF data: {:?}", e);
-            Error::BadImage
-        })?;
+        let exif_data = match reader.read_from_container(&mut cursor) {
+            Ok(value) => value,
+
+            Err(e) => {
+                debug!("Error reading EXIF data: {}.", e);
+                return Ok(None);
+            }
+        };
 
         let exif_field = match exif_data.get_field(exif::Tag::Orientation, exif::In::PRIMARY) {
             Some(value) => value,
@@ -78,7 +83,10 @@ impl ThumbnailerService {
             Some(8) => Ok(Some(270)),
 
             _ => {
-                debug!("Unknown EXIF orientation: {:?}", exif_field.value.get_uint(0));
+                debug!(
+                    "Unknown EXIF orientation: {:?}",
+                    exif_field.value.get_uint(0)
+                );
                 Ok(None)
             }
         }

@@ -82,11 +82,9 @@ impl FileService {
                     .update_tree_thumbnail(file.tree_id, small_id)
                     .await?;
 
-                self.db.add_tree_prop(
-                    file.tree_id,
-                    "thumbnail_id",
-                    small_id.to_string().as_str(),
-                ).await?;
+                self.db
+                    .add_tree_prop(file.tree_id, "thumbnail_id", small_id.to_string().as_str())
+                    .await?;
 
                 info!("Resized images for file {}, tree {}", file_id, file.tree_id);
                 Ok(())
