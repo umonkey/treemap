@@ -2,8 +2,9 @@ import { Link } from "react-router-dom";
 
 import { ITreeDetails } from "@/types";
 import { routes } from "@/utils/routes";
-import { formatMeta, formatDate, formatState } from "./utils";
+import { formatMeta, formatState } from "./utils";
 import { treeMapService } from "@/services/api";
+import { formatDate } from "@/utils";
 import "./styles.scss";
 
 interface IProps {
@@ -29,7 +30,7 @@ export const TreePopup = ({ tree }: IProps) => {
         <div className="meta">{formatMeta(tree)}</div>
 
         {tree.updated_at && (
-          <div className="timestamp">Updated on {formatDate(tree)}</div>
+          <div className="timestamp">Updated on {formatDate(tree.updated_at)}</div>
         )}
       </div>
     </div>

@@ -30,11 +30,6 @@ export const formatMeta = (tree: ITreeDetails): string => {
   return parts.join(", ");
 }
 
-export const formatDate = (tree: ITreeDetails): string => {
-  const date = new Date(tree.updated_at * 1000);
-  return `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
-}
-
 export const formatState = (state: string): string => {
   return STATES[state] ?? `Looks ${state}.`;
 };
