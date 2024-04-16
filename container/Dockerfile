@@ -15,7 +15,7 @@ LABEL maintainer="hex@umonkey.net"
 LABEL org.opencontainers.image.source=https://github.com/umonkey/treemap
 LABEL org.opencontainers.image.description="A simple self-container backend and frontend image using an SQLite database."
 
-RUN apk add --no-cache sqlite
+RUN apk add --no-cache sqlite supervisor
 
 WORKDIR /app
 COPY --from=rust-builder /app/target/release/treemap /app/bin/
