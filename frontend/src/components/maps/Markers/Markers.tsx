@@ -1,5 +1,4 @@
 import { Marker, Popup } from "react-leaflet";
-import MarkerClusterGroup from "react-leaflet-cluster";
 
 import { GreenCircleIcon, RedCircleIcon, BlackCircleIcon, TreePopup } from "@/components";
 import { ITreeInfo } from "@/types";
@@ -25,13 +24,19 @@ export const Markers = (props: IProps) => {
 
   const markers = props.markers?.map((marker: ITreeInfo) => (
     <Marker key={marker.id} position={[marker.lat, marker.lon]} icon={getIcon(marker.state)}>
-      <Popup>
+      <Popup autoPan={false}>
         <TreePopup tree={marker} />
       </Popup>
     </Marker>
   ));
 
+  /*
   return (
     <MarkerClusterGroup maxClusterRadius={10}>{markers}</MarkerClusterGroup>
+  );
+  */
+
+  return (
+    <>{markers}</>
   );
 };
