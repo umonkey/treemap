@@ -15,7 +15,9 @@ export const TreePopup = ({ tree }: IProps) => {
   return (
     <div className="TreePopup">
       {tree.thumbnail_id && (
-        <img src={treeMapService.getFileURL(tree.thumbnail_id)} alt={tree.name} />
+        <Link to={routes.treeDetails(tree.id.toString())}>
+          <img src={treeMapService.getFileURL(tree.thumbnail_id)} alt={tree.name} />
+        </Link>
       )}
 
       <div className="inside">
