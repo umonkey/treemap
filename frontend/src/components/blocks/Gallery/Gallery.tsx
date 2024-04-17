@@ -1,5 +1,9 @@
-import { IGalleryImage } from "@/types";
+import LightGallery from "lightgallery/react";
+import lgZoom from "lightgallery/plugins/zoom";
+import "lightgallery/scss/lightgallery.scss";
+import "lightgallery/scss/lg-zoom.scss";
 
+import { IGalleryImage } from "@/types";
 import "./styles.scss";
 
 interface IProps {
@@ -9,13 +13,13 @@ interface IProps {
 export const Gallery = (props: IProps) => {
   return (
     <div className="Gallery">
-      <div className="items">
+      <LightGallery plugins={[lgZoom]}>
         {props.images.map((image, index) => (
-          <div key={index} className="image">
+          <a key={index} href={image.large}>
             <img src={image.small} alt="" />
-          </div>
+          </a>
         ))}
-      </div>
+      </LightGallery>
     </div>
   );
 };

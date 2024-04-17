@@ -1,5 +1,5 @@
 .Gallery {
-  .items {
+  .lg-react-element {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -8,7 +8,8 @@
     scrollbar-width: none;
   }
 
-  .image {
+  a {
+    display: block;
     width: 100px;
     height: 100px;
     overflow: hidden;

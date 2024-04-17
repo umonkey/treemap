@@ -29,6 +29,7 @@
     "leaflet": "^1.9.4",
     "leaflet-vector-tile-layer": "^0.16.0",
     "leaflet.locatecontrol": "^0.79.0",
+    "lightgallery": "^2.7.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-leaflet": "^4.2.1",
