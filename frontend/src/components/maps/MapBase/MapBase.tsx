@@ -34,7 +34,6 @@ export const MapBase = (props: IProps) => {
 
   // Local center changed, move the map.
   useEffect(() => {
-    console.debug("MAP", mapRef.current);
     mapRef.current?.closePopup();
     mapRef.current?.panTo([center.lat, center.lon]);
   }, [center]);
