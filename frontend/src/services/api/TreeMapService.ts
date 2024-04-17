@@ -9,11 +9,15 @@ export interface ITreesResponse {
 }
 
 export class TreeMapService {
+  private readonly root: string;
+
   private readonly client: AxiosInstance;
 
   public constructor() {
+    this.root = getApiRoot();
+
     this.client = axios.create({
-      baseURL: getApiRoot(),
+      baseURL: this.root,
       timeout: 10000,
       responseType: "json",
       headers: {
@@ -111,7 +115,7 @@ export class TreeMapService {
   }
 
   public getFileURL(file_id: string): string {
-    return `${getApiRoot()}/v1/files/${file_id}`;
+    return `${this.root}/v1/files/${file_id}`;
   }
 
   private async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
