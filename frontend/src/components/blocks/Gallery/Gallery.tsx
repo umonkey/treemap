@@ -13,7 +13,9 @@ interface IProps {
 export const Gallery = (props: IProps) => {
   return (
     <div className="Gallery">
-      <LightGallery plugins={[lgZoom]}>
+      <LightGallery plugins={[lgZoom]} mobileSettings={{
+        showCloseIcon: true,
+      }}>
         {props.images.map((image, index) => (
           <a key={index} href={image.large}>
             <img src={image.small} alt="" />
