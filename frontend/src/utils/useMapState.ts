@@ -41,11 +41,10 @@ const update = (key: string, value: IMapState) => {
 }
 
 export const useMapState = (key: string) => {
-  const [state, setState] = useState<IMapState>(extract(key));
+  const [state] = useState<IMapState>(extract(key));
 
   const setMapState = (value: IMapState) => {
     update(key, value);
-    setState(value);
   }
 
   return {
