@@ -79,23 +79,25 @@ export const DetailsPage = (props: IProps) => {
           )}
 
           {isPhone && (
-            <ButtonGroup variant="contained">
-              <Button onClick={handleBack}>
-                <FontAwesomeIcon icon={faHouse} />
-              </Button>
-              <Button onClick={handleEdit}>
-                <FontAwesomeIcon icon={faPencil} />
-              </Button>
-              <Button onClick={handleMove}>
-                <FontAwesomeIcon icon={faUpDownLeftRight} />
-              </Button>
-              <ImagePicker disabled={uploading} onChange={handleImageUpload}>
-                <FontAwesomeIcon icon={faCamera} />
-              </ImagePicker>
-              <Button disabled={!canShare} onClick={handleShare}>
-                <FontAwesomeIcon icon={faShareNodes} />
-              </Button>
-            </ButtonGroup>
+            <div className="toolbar">
+              <ButtonGroup variant="contained">
+                <Button onClick={handleBack}>
+                  <FontAwesomeIcon icon={faHouse} />
+                </Button>
+                <Button onClick={handleEdit}>
+                  <FontAwesomeIcon icon={faPencil} />
+                </Button>
+                <Button onClick={handleMove}>
+                  <FontAwesomeIcon icon={faUpDownLeftRight} />
+                </Button>
+                <ImagePicker disabled={uploading} onChange={handleImageUpload}>
+                  <FontAwesomeIcon icon={faCamera} />
+                </ImagePicker>
+                <Button disabled={!canShare} onClick={handleShare}>
+                  <FontAwesomeIcon icon={faShareNodes} />
+                </Button>
+              </ButtonGroup>
+            </div>
           )}
         </>
       )}
