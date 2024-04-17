@@ -40,16 +40,21 @@ export const useMarkers = () => {
 
     console.debug(`Received ${res.length} markers from the API.`);
 
-    setMap((prev) => {
-      const updated = { ...prev };
+    let added = 0;
+    const updated = { ...map };
 
-      for (const marker of res) {
+    for (const marker of res) {
+      if (!(marker.id in updated)) {
         updated[marker.id] = marker;
+        added++;
       }
+    }
 
-      return updated;
-    });
-  }, [bounds]);
+    if (added) {
+      console.debug(`Added ${added} new markers.`);
+      setMap(updated);
+    }
+  }, [bounds, map]);
 
   useEffect(() => {
     if (bounds.length !== 4) {
