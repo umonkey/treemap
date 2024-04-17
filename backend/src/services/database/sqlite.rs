@@ -565,7 +565,7 @@ impl Database for SqliteDatabase {
 
     async fn find_files_by_tree(&self, tree_id: u64) -> Result<Vec<FileRecord>> {
         let files = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, tree_id, added_at, added_by, small_id, large_id FROM files WHERE tree_id = ? ORDER BY id DESC") {
+            let mut stmt = match conn.prepare("SELECT id, tree_id, added_at, added_by, small_id, large_id FROM files WHERE tree_id = ? AND small_id <> 0 AND large_id <> 0 ORDER BY id DESC") {
                 Ok(value) => value,
 
                 Err(e) => {
@@ -845,5 +845,32 @@ mod tests {
             .await
             .expect("Error picking message.");
         assert!(pick.is_none());
+    }
+
+    #[tokio::test]
+    async fn test_pending_files_ignored() {
+        let db = setup().await.expect("Error setting up database.");
+
+        db.add_file(&FileRecord {
+            id: 1,
+            added_at: 0,
+            added_by: 0,
+            tree_id: 2,
+            small_id: 3,
+            large_id: 0,
+        }).await.expect("Error adding file.");
+
+        db.add_file(&FileRecord {
+            id: 2,
+            added_at: 0,
+            added_by: 0,
+            tree_id: 2,
+            small_id: 3,
+            large_id: 5,
+        }).await.expect("Error adding file.");
+
+        let files = db.find_files_by_tree(2).await.expect("Error finding files.");
+        assert_eq!(files.len(), 1);
+        assert_eq!(files[0].id, 2);
     }
 }
