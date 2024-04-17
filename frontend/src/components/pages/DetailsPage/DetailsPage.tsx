@@ -3,9 +3,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHouse, faPencil, faUpDownLeftRight, faCamera, faShareNodes } from "@fortawesome/free-solid-svg-icons";
 
-import { MapWithMarker, MoveTreeButton, TreeDetails, TreeMarkers, ImagePicker } from "@/components";
+import { Gallery, MapWithMarker, MoveTreeButton, TreeDetails, TreeMarkers, ImagePicker } from "@/components";
 import { routes } from "@/utils/routes";
 import { useFileUploader, useDeviceType } from "@/hooks";
+import { treeMapService } from "@/services/api";
 import { useTreeDetails } from "./hooks";
 
 import "./styles.scss";
@@ -46,10 +47,6 @@ export const DetailsPage = (props: IProps) => {
         <p>{error}</p>
       )}
 
-      {uploadFinished && (
-        <p>Upload OK, the photos will show up soon.</p>
-      )}
-
       {tree && (
         <>
           <TreeDetails tree={tree} />
@@ -61,12 +58,23 @@ export const DetailsPage = (props: IProps) => {
             <TreeMarkers />
           </MapWithMarker>
 
+          {tree.files && tree.files.length > 0 && (
+            <Gallery images={tree.files.map(file => ({
+              small: treeMapService.getFileURL(file.small_id),
+              large: treeMapService.getFileURL(file.large_id),
+            }))} />
+          )}
+
           {uploadError && (
             <div className="message">{uploadError}</div>
           )}
 
           {uploading && (
             <div className="message">Uploading files, please wait...</div>
+          )}
+
+          {uploadFinished && (
+            <div className="message">Upload OK, the photos will show up soon.</div>
           )}
 
           {isDesktop && (

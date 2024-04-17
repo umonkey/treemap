@@ -7,6 +7,7 @@ export { DetailsPage } from "./pages/DetailsPage";
 export { DetailsPageWrapper } from "./pages/DetailsPage";
 export { EditTreeDialog } from "./dialogs/EditTreeDialog";
 export { EditTreePage, EditTreePageWrapper } from "./pages/EditTreePage";
+export { Gallery } from "./blocks/Gallery";
 export { GreenCircleIcon } from "./maps/GreenCircleIcon";
 export { HomePage } from "./pages/HomePage";
 export { ImagePicker } from "./elements/ImagePicker";

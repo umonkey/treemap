@@ -93,6 +93,11 @@ export interface IUploadTicket {
   upload_url: string;
 }
 
+export interface IGalleryImage {
+  small: string;
+  large: string;
+}
+
 export enum SideBarMode {
   DEFAULT = "default",
   ADD_TREE = "add_tree",
