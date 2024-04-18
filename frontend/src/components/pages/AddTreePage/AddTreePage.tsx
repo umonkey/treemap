@@ -73,7 +73,7 @@ export const AddTreePageWrapper = () => {
 
   const handleSuccess = (tree: ITreeInfo) => {
     console.debug("Tree added successfully.", tree);
-    navigate(routes.home());
+    navigate(routes.treeDetails(tree.id));
   };
 
   const handleCancel = () => {
