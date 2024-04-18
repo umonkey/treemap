@@ -14,7 +14,8 @@ use log::{debug, error, info};
 
 use crate::services::database::r#trait::Database;
 use crate::types::{
-    Bounds, Error, FileRecord, QueueMessage, Result, TreeInfo, UploadTicket, UserInfo,
+    Bounds, CommentRecord, Error, FileRecord, QueueMessage, Result, TreeInfo, UploadTicket,
+    UserInfo,
 };
 use crate::utils::{get_sqlite_path, get_timestamp, get_unique_id};
 
@@ -643,6 +644,56 @@ impl Database for SqliteDatabase {
 
         Ok(())
     }
+
+    async fn add_comment(&self, comment: &CommentRecord) -> Result<()> {
+        let tmp = comment.clone();
+
+        self.pool.conn(move |conn| {
+            match conn.execute("INSERT INTO comments (id, tree_id, added_at, added_by, message) VALUES (?, ?, ?, ?, ?)", (tmp.id, tmp.tree_id, tmp.added_at, tmp.added_by, tmp.message)) {
+                Ok(_) => (),
+
+                Err(e) => {
+                    error!("Error adding comment to the database: {}", e);
+                    return Err(e);
+                },
+            };
+
+            debug!("Comment {} added to the database.", tmp.id);
+            Ok(())
+        }).await?;
+
+        Ok(())
+    }
+
+    async fn find_comments_by_tree(&self, tree_id: u64) -> Result<Vec<CommentRecord>> {
+        let comments = self.pool.conn(move |conn| {
+            let mut stmt = match conn.prepare("SELECT id, tree_id, added_at, added_by, message FROM comments WHERE tree_id = ? ORDER BY added_at DESC") {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error preparing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut rows = stmt.query([tree_id])?;
+            let mut comments: Vec<CommentRecord> = Vec::new();
+
+            while let Some(row) = rows.next()? {
+                comments.push(CommentRecord {
+                    id: row.get(0)?,
+                    tree_id: row.get(1)?,
+                    added_at: row.get(2)?,
+                    added_by: row.get(3)?,
+                    message: row.get(4)?,
+                });
+            }
+
+            Ok(comments)
+        }).await?;
+
+        Ok(comments)
+    }
 }
 
 impl Clone for SqliteDatabase {
@@ -858,7 +909,9 @@ mod tests {
             tree_id: 2,
             small_id: 3,
             large_id: 0,
-        }).await.expect("Error adding file.");
+        })
+        .await
+        .expect("Error adding file.");
 
         db.add_file(&FileRecord {
             id: 2,
@@ -867,10 +920,44 @@ mod tests {
             tree_id: 2,
             small_id: 3,
             large_id: 5,
-        }).await.expect("Error adding file.");
+        })
+        .await
+        .expect("Error adding file.");
 
-        let files = db.find_files_by_tree(2).await.expect("Error finding files.");
+        let files = db
+            .find_files_by_tree(2)
+            .await
+            .expect("Error finding files.");
         assert_eq!(files.len(), 1);
         assert_eq!(files[0].id, 2);
+    }
+
+    #[tokio::test]
+    async fn test_comments() {
+        let db = setup().await.expect("Error setting up database.");
+        let now = get_timestamp();
+
+        let tree_id: u64 = 2;
+
+        let comment = CommentRecord {
+            id: 1,
+            tree_id,
+            added_at: now,
+            added_by: 3,
+            message: "it works".to_string(),
+        };
+
+        db.add_comment(&comment)
+            .await
+            .expect("Error adding comment.");
+
+        let comments = db
+            .find_comments_by_tree(tree_id)
+            .await
+            .expect("Error finding comments.");
+
+        assert_eq!(comments.len(), 1);
+        assert_eq!(comments[0].id, 1);
+        assert_eq!(comments[0].tree_id, tree_id);
     }
 }

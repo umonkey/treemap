@@ -75,8 +75,19 @@ CREATE TABLE IF NOT EXISTS users (
     `picture` TEXT NOT NULL,
     PRIMARY KEY(`id`)
 );
-
 CREATE UNIQUE INDEX IF NOT EXISTS users_email ON users (email);
+
+
+CREATE TABLE IF NOT EXISTS comments (
+    `id` INT NOT NULL,
+    `tree_id` INT NOT NULL,
+    `added_at` INT NOT NULL,
+    `added_by` INT NOT NULL,
+    `message` TEXT NOT NULL,
+    PRIMARY KEY(`id`)
+);
+CREATE INDEX IF NOT EXISTS comments_tree_id ON comments (tree_id);
+CREATE INDEX IF NOT EXISTS comments_added_at ON comments (added_at);
 
 
 CREATE TABLE IF NOT EXISTS queue_messages (

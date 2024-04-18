@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 
-import { IApiError, IAddTreeRequest, ILatLng, ITreeInfo, ITreeDetails, IUploadTicket, IUserInfo } from "@/types";
+import { IApiError, IAddTreeRequest, IComment, ILatLng, ITreeInfo, ITreeDetails, IUploadTicket, IUserInfo } from "@/types";
 import { getUserToken, removeUserToken } from "@/utils/userinfo";
 import { getApiRoot } from "@/utils/env";
 
@@ -116,6 +116,18 @@ export class TreeMapService {
 
   public getFileURL(file_id: string): string {
     return `${this.root}/v1/files/${file_id}`;
+  }
+
+  public async addComment(tree_id: string, text: string): Promise<IComment[]> {
+    return await this.post(`/v1/trees/${tree_id}/comments`, {
+      message: text,
+    }, {
+      headers: this.get_auth_headers(),
+    });
+  }
+
+  public async getComments(tree_id: string): Promise<IComment[]> {
+    return await this.get<IComment[]>(`/v1/trees/${tree_id}/comments`);
   }
 
   private async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {

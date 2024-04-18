@@ -1,0 +1,24 @@
+.TreeComments {
+  margin: 20px 0 0;
+
+  .comment {
+    border-top: solid 1px #ccc;
+    padding: 5px 0 10px;
+    margin: 10px 0;
+
+    .date {
+      opacity: 0.75;
+      font-size: 80%;
+    }
+  }
+
+  .MuiFormControl-root {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+  }
+
+  .MuiInputBase-root {
+    width: 100%;
+  }
+}

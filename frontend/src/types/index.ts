@@ -98,6 +98,12 @@ export interface IGalleryImage {
   large: string;
 }
 
+export interface IComment {
+  id: string;
+  added_at: number;
+  message: string;
+}
+
 export enum SideBarMode {
   DEFAULT = "default",
   ADD_TREE = "add_tree",

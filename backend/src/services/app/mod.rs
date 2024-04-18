@@ -3,13 +3,15 @@ use log::info;
 
 use crate::services::database::get_database;
 use crate::services::trees::Trees;
-use crate::services::{FileService, GoogleAuth, TokenService, UploadService};
+use crate::services::{CommentsService, FileService, GoogleAuth, TokenService, UploadService};
 use crate::types::{
-    AddFileRequest, AddTreeRequest, Bounds, Error, FileRecord, LoginGoogleRequest, LoginResponse,
-    MoveTreeRequest, Result, TreeDetails, TreeInfo, TreeList, UpdateTreeRequest, UploadTicket,
+    AddCommentRequest, AddFileRequest, AddTreeRequest, Bounds, Error, FileRecord,
+    LoginGoogleRequest, LoginResponse, MoveTreeRequest, PublicCommentInfo, Result, TreeDetails,
+    TreeInfo, TreeList, UpdateTreeRequest, UploadTicket,
 };
 
 pub struct AppState {
+    comments: CommentsService,
     files: FileService,
     gauth: GoogleAuth,
     tokens: TokenService,
@@ -23,6 +25,7 @@ impl AppState {
         let token = TokenService::new();
 
         Ok(Self {
+            comments: CommentsService::init(&db),
             files: FileService::init(&db)?,
             gauth: GoogleAuth::init(&db, &token).await,
             tokens: token,
@@ -106,5 +109,15 @@ impl AppState {
 
     pub async fn add_file(&self, req: AddFileRequest) -> Result<FileRecord> {
         self.files.add_file(req).await
+    }
+
+    pub async fn add_comment(&self, req: AddCommentRequest) -> Result<()> {
+        self.comments.add_comment(&req).await
+    }
+
+    pub async fn get_comments(&self, tree_id: u64) -> Result<Vec<PublicCommentInfo>> {
+        let records = self.comments.get_comments(tree_id).await?;
+        let comments = records.iter().map(PublicCommentInfo::from_record).collect();
+        Ok(comments)
     }
 }

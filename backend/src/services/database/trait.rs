@@ -1,6 +1,8 @@
 use async_trait::async_trait;
 
-use crate::types::{Bounds, FileRecord, QueueMessage, Result, TreeInfo, UploadTicket, UserInfo};
+use crate::types::{
+    Bounds, CommentRecord, FileRecord, QueueMessage, Result, TreeInfo, UploadTicket, UserInfo,
+};
 
 #[async_trait]
 pub trait Database {
@@ -28,4 +30,7 @@ pub trait Database {
     async fn pick_queue_message(&self) -> Result<Option<QueueMessage>>;
     async fn delay_queue_message(&self, id: u64, available_at: u64) -> Result<()>;
     async fn delete_queue_message(&self, id: u64) -> Result<()>;
+
+    async fn add_comment(&self, comment: &CommentRecord) -> Result<()>;
+    async fn find_comments_by_tree(&self, tree_id: u64) -> Result<Vec<CommentRecord>>;
 }

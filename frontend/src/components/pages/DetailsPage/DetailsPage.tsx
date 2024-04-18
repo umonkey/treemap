@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHouse, faPencil, faUpDownLeftRight, faCamera, faShareNodes } from "@fortawesome/free-solid-svg-icons";
 
-import { Gallery, MapWithMarker, MoveTreeButton, TreeDetails, TreeMarkers, ImagePicker } from "@/components";
+import { Gallery, MapWithMarker, MoveTreeButton, TreeComments, TreeDetails, TreeMarkers, ImagePicker } from "@/components";
 import { routes } from "@/utils/routes";
 import { useFileUploader, useDeviceType } from "@/hooks";
 import { treeMapService } from "@/services/api";
@@ -107,6 +107,8 @@ export const DetailsPage = (props: IProps) => {
               </ButtonGroup>
             </div>
           )}
+
+          <TreeComments id={tree.id} />
         </>
       )}
 

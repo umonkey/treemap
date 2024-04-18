@@ -2,7 +2,7 @@ import type { Preview } from "@storybook/react";
 import { MemoryRouter } from "react-router-dom";
 
 import { StoryWrapper } from "./StoryWrapper";
-import { ITreeInfo, ITreeDetails } from "@/types";
+import { IComment, ITreeInfo, ITreeDetails } from "@/types";
 
 import "./preview.css";
 
@@ -159,6 +159,19 @@ const DETAILS = {
   "diameter": 7,
 } as TreeDetails;
 
+const COMMENTS = [
+  {
+    id: "2",
+    added_at: 1713464517,
+    message: "This tree is awesome!",
+  },
+  {
+    id: "1",
+    added_at: 1570329700,
+    message: "I like it",
+  },
+] as IComment[];
+
 const preview: Preview = {
   parameters: {
     controls: {
@@ -243,6 +256,13 @@ const preview: Preview = {
           url: "/v1/trees/134793003121381380/position",
           method: "PUT",
           status: 202,
+          delay: 500,
+        },
+        {
+          url: "/v1/trees/134793003121381380/comments",
+          method: "GET",
+          status: 200,
+          response: COMMENTS,
           delay: 500,
         },
       ],

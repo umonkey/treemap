@@ -7,8 +7,9 @@ const readStoredValue = (): IUserInfo | null => {
     const stored = localStorage.getItem(USER_INFO_KEY);
 
     if (stored) {
-      console.debug("User info loaded from storage.");
-      return JSON.parse(stored);
+      const parsed = JSON.parse(stored);
+      console.debug(`User info for ${parsed.name} loaded from storage.`);
+      return parsed;
     }
   } catch (e) {
     console.error("Error reading user info from local storage.", e);

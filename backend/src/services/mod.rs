@@ -1,4 +1,5 @@
 mod app;
+mod comments;
 mod database;
 mod files;
 mod google_auth;
@@ -12,6 +13,7 @@ mod trees;
 mod uploads;
 
 pub use app::*;
+pub use comments::*;
 pub use database::*;
 pub use files::*;
 pub use google_auth::*;

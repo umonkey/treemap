@@ -1,3 +1,5 @@
+export { AddCommentButton } from "./elements/AddCommentButton";
+export { AddCommentForm } from "./dialogs/AddCommentForm";
 export { AddTreeControl } from "./maps/AddTreeControl";
 export { AddTreeDialog } from "./dialogs/AddTreeDialog";
 export { AddTreePage } from "./pages/AddTreePage";
@@ -29,6 +31,7 @@ export { RedCircleIcon } from "./maps/RedCircleIcon";
 export { RouterComponent } from "./router/RouterComponent";
 export { SelectLocationDialog } from "./dialogs/SelectLocationDialog";
 export { SideBar } from "./layout/SideBar";
+export { TreeComments } from "./blocks/TreeComments";
 export { TreeDetails } from "./blocks/TreeDetails";
 export { TreeMarker } from "./maps/TreeMarker";
 export { TreeMarkers } from "./maps/TreeMarkers";
