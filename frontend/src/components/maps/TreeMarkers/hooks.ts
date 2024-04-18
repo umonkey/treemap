@@ -17,7 +17,7 @@ export const useMarkers = () => {
   /**
    * Reload markers on map move or zoom.
    */
-  const reload = (newBounds: IBounds) => {
+  const reload = useCallback((newBounds: IBounds) => {
     const updated = [
       newBounds.north,
       newBounds.east,
@@ -26,7 +26,7 @@ export const useMarkers = () => {
     ];
 
     setBounds(updated);
-  };
+  }, []);
 
   const fetchMarkers = useCallback(async () => {
     const res = await treeMapService.getMarkers({

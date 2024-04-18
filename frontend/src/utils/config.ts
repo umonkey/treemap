@@ -11,6 +11,13 @@ export const DEFAULT_MAP_CENTER = {
   lon: 44.514444,
 };
 
+export const DEFAULT_BOUNDS = {
+  north: 90.0,
+  east: 180.0,
+  south: -90.0,
+  west: -180.0,
+};
+
 export const DEFAULT_MAP_ZOOM = 12;
 
 export const HOME_PAGE_MAP_KEY = "home-map-state";

@@ -1,42 +1,16 @@
-import { Marker, Popup } from "react-leaflet";
-
-import { GreenCircleIcon, RedCircleIcon, BlackCircleIcon, TreePopup } from "@/components";
+import { MarkerCluster, TreeMarker } from "@/components";
 import { ITreeInfo } from "@/types";
-
-import "./styles.scss";
 
 interface IProps {
   markers: ITreeInfo[];
 }
 
 export const Markers = (props: IProps) => {
-  const getIcon = (state: string | null) => {
-    if (state === "dead") {
-      return BlackCircleIcon;
-    }
-
-    if (state === "sick") {
-      return RedCircleIcon;
-    }
-
-    return GreenCircleIcon;
-  };
-
   const markers = props.markers?.map((marker: ITreeInfo) => (
-    <Marker key={marker.id} position={[marker.lat, marker.lon]} icon={getIcon(marker.state)}>
-      <Popup autoPan={false}>
-        <TreePopup tree={marker} />
-      </Popup>
-    </Marker>
+    <TreeMarker key={marker.id} tree={marker} />
   ));
 
-  /*
   return (
-    <MarkerClusterGroup maxClusterRadius={10}>{markers}</MarkerClusterGroup>
-  );
-  */
-
-  return (
-    <>{markers}</>
+    <MarkerCluster>{markers}</MarkerCluster>
   );
 };
