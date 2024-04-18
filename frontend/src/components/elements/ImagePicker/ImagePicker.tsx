@@ -1,3 +1,11 @@
+/**
+ * Simple image picker component.
+ *
+ * Note that it allows text/plain.  Without that, Chrome on Android
+ * will not allow to take a picture with the camera, only select
+ * from the gallery.  (Firefox works fine.)
+ */
+
 import { useRef } from "react";
 import { Button } from "@mui/material";
 
@@ -27,7 +35,7 @@ export const ImagePicker = (props: IProps) => {
   return (
     <div className="ImagePicker">
       <Button variant="contained" disabled={!!props.disabled} onClick={handleClick}>{props.children ?? "Add photos"}</Button>
-      <input ref={ref} type="file" accept="image/jpeg" multiple onChange={handleFileChange} />
+      <input ref={ref} type="file" accept="image/jpeg,text/plain" multiple onChange={handleFileChange} />
     </div>
   );
 };
