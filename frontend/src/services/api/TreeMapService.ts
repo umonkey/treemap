@@ -47,8 +47,8 @@ export class TreeMapService {
   /**
    * Add a new tree to the map.
    */
-  public async addMarker(props: IAddTreeRequest): Promise<ITreeInfo> {
-    const res = await this.post<ITreeInfo>("/v1/trees", props, {
+  public async addMarker(props: IAddTreeRequest): Promise<ITreeDetails> {
+    const res = await this.post<ITreeDetails>("/v1/trees", props, {
       headers: this.get_auth_headers(),
     });
 

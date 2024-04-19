@@ -2,7 +2,7 @@ use actix_web::{post, web::Data, web::Json, HttpRequest};
 use serde::Deserialize;
 
 use crate::services::AppState;
-use crate::types::{AddTreeRequest, Result, TreeInfo};
+use crate::types::{AddTreeRequest, Result, TreeDetails};
 
 #[derive(Debug, Deserialize)]
 struct RequestPayload {
@@ -20,7 +20,7 @@ pub async fn add_tree(
     state: Data<AppState>,
     payload: Json<RequestPayload>,
     req: HttpRequest,
-) -> Result<Json<TreeInfo>> {
+) -> Result<Json<TreeDetails>> {
     let user_id = state.get_user_id(&req)?;
 
     let req = AddTreeRequest {
@@ -35,5 +35,7 @@ pub async fn add_tree(
     };
 
     let tree = state.add_tree(req).await?;
-    Ok(Json(tree))
+    let details = TreeDetails::from_tree(&tree, &[]);
+
+    Ok(Json(details))
 }
