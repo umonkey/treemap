@@ -31,6 +31,7 @@ export { RedCircleIcon } from "./maps/RedCircleIcon";
 export { RouterComponent } from "./router/RouterComponent";
 export { SelectLocationDialog } from "./dialogs/SelectLocationDialog";
 export { SideBar } from "./layout/SideBar";
+export { SpeciesSelector } from "./elements/SpeciesSelector";
 export { TreeComments } from "./blocks/TreeComments";
 export { TreeDetails } from "./blocks/TreeDetails";
 export { TreeMarker } from "./maps/TreeMarker";

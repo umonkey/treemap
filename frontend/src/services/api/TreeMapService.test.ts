@@ -3,6 +3,7 @@ import { vi } from "vitest";
 
 import { treeMapService } from "@/services/api";
 import { ITreesResponse } from "@/services/api/TreeMapService";
+import { ISpecies } from "@/types";
 
 vi.mock("axios", async () => {
   const actual = await vi.importActual<typeof import("axios")>("axios");
@@ -65,6 +66,18 @@ describe("TreeMapService", () => {
   });
 
   test("submit a tree", async () => {
+  });
+
+  test("search for species", async () => {
+    mock.onGet("/v1/species/search?query=oak").reply(200, [
+      {
+        "name": "Quercus",
+        "local": "Oak",
+      },
+    ] as ISpecies[]);
+
+    const res = await treeMapService.searchSpecies("oak");
+    expect(res[0].name).toEqual("Quercus");
   });
 });
 

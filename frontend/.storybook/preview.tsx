@@ -2,7 +2,7 @@ import type { Preview } from "@storybook/react";
 import { MemoryRouter } from "react-router-dom";
 
 import { StoryWrapper } from "./StoryWrapper";
-import { IComment, ITreeInfo, ITreeDetails } from "@/types";
+import { IComment, ISpecies, ITreeInfo, ITreeDetails } from "@/types";
 
 import "./preview.css";
 
@@ -264,6 +264,27 @@ const preview: Preview = {
           status: 200,
           response: COMMENTS,
           delay: 500,
+        },
+
+        {
+          url: "/v1/species/search?query=query",
+          method: "GET",
+          status: 200,
+          delay: 300,
+          response: [
+            {
+              "name": "Fraxinus",
+              "local": "Ash",
+            },
+            {
+              "name": "Quecrus",
+              "local": "Oak",
+            },
+            {
+              "name": "Ulmus",
+              "local": "Elm",
+            },
+          ] as ISpecies[],
         },
       ],
     },

@@ -61,6 +61,7 @@ export interface IAddTreeRequest {
   circumference: number | null;
   diameter: number | null;
   state: string;
+  notes: string | null;
 }
 
 /**
@@ -102,6 +103,11 @@ export interface IComment {
   id: string;
   added_at: number;
   message: string;
+}
+
+export interface ISpecies {
+  name: string;
+  local: string;
 }
 
 export enum SideBarMode {

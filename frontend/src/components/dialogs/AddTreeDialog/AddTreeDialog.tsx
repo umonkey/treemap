@@ -4,9 +4,9 @@
  */
 
 import { useState } from "react";
-import { Box, Button, FormHelperText, TextField } from "@mui/material";
+import { Box, Button, ButtonGroup, FormHelperText, TextField } from "@mui/material";
 
-import { TreeStateSelector } from "@/components";
+import { SpeciesSelector, TreeStateSelector } from "@/components";
 import { IAddTreeRequest, ILatLng } from "@/types";
 import "./styles.scss";
 
@@ -24,6 +24,7 @@ export const AddTreeDialog = (props: IProps) => {
   const [circumference, setCircumference] = useState<number|undefined>(undefined);
   const [diameter, setDiameter] = useState<number|undefined>(undefined);
   const [state, setState] = useState<string>('healthy');
+  const [notes, setNotes] = useState<string>("");
 
   const isSaveEnabled = (): boolean => {
     if (name.length === 0) {
@@ -41,8 +42,8 @@ export const AddTreeDialog = (props: IProps) => {
     return true;
   };
 
-  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setName(event.target.value);
+  const handleNotesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNotes(event.target.value);
   };
 
   const handleHeightChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,11 +77,16 @@ export const AddTreeDialog = (props: IProps) => {
       circumference: circumference || 0,
       diameter: diameter || 0,
       state,
+      notes: notes || null,
     } as IAddTreeRequest);
   };
 
   const handleCancelClick = () => {
     props.onCancel && props.onCancel();
+  };
+
+  const handleNameChange = (value: string) => {
+    setName(value);
   };
 
   return (
@@ -89,8 +95,7 @@ export const AddTreeDialog = (props: IProps) => {
         <h2>Describe the tree</h2>
 
         <div className="group wide">
-          <TextField id="name" label="Name" variant="standard" required value={name} onChange={handleNameChange} />
-          <FormHelperText>Describe the tree.</FormHelperText>
+          <SpeciesSelector onChange={handleNameChange} />
         </div>
 
         <div className="row">
@@ -116,13 +121,20 @@ export const AddTreeDialog = (props: IProps) => {
           </div>
         </div>
 
+        <div className="group wide">
+          <TextField id="notes" label="Notes" variant="standard" value={notes} onChange={handleNotesChange} />
+          <FormHelperText>Add for notable trees, like: Queen's Oak.</FormHelperText>
+        </div>
+
         {props.error && (
           <p className="error">{props.error}</p>
         )}
 
         <div className="group">
-          <Button variant="contained" color="success" disabled={!isSaveEnabled()} onClick={handleSaveClick}>Confirm</Button>
-          <Button color="secondary" onClick={handleCancelClick}>Cancel</Button>
+          <ButtonGroup variant="contained">
+            <Button color="success" disabled={!isSaveEnabled()} onClick={handleSaveClick}>Confirm</Button>
+            <Button onClick={handleCancelClick}>Cancel</Button>
+          </ButtonGroup>
         </div>
       </Box>
     </div>

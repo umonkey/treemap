@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS trees (
     `lat` REAL NOT NULL,
     `lon` REAL NOT NULL,
     `name` TEXT NOT NULL,
+    `species` TEXT NULL,
     `height` REAL NULL,
     `circumference` REAL NULL,
     `diameter` REAL NULL,
@@ -99,3 +100,32 @@ CREATE TABLE IF NOT EXISTS queue_messages (
 );
 CREATE INDEX IF NOT EXISTS queue_messages_added_at ON queue_messages (added_at);
 CREATE INDEX IF NOT EXISTS queue_messages_available_at ON queue_messages (available_at);
+
+
+CREATE TABLE IF NOT EXISTS species (
+    `name` TEXT NOT NULL,
+    `local` TEXT NOT NULL,
+    `keywords` TEXT NULL,
+    PRIMARY KEY(`name`)
+);
+
+DELETE FROM species;
+INSERT INTO species (name, local, keywords) VALUES ('Acer negundo', 'Box Elder', 'клён;ясенелистный;boxelder;maple;ashleaf;manitoba');
+INSERT INTO species (name, local, keywords) VALUES ('Acer pseudoplatanus', 'Sycamore maple', 'клён белый;явор;немецкий;maple;sycamore');
+INSERT INTO species (name, local, keywords) VALUES ('Acer', 'Maple', 'клён');
+INSERT INTO species (name, local, keywords) VALUES ('Aesculus hippocastanum', 'Horse chestnut', 'каштан;конский;buckeye;conker');
+INSERT INTO species (name, local, keywords) VALUES ('Betula', 'Birch', 'берёза;береза');
+INSERT INTO species (name, local, keywords) VALUES ('Catalpa', 'Catalpa', 'катальпа');
+INSERT INTO species (name, local, keywords) VALUES ('Cercis siliquastrum', 'Judas tree', 'багряник европейский');
+INSERT INTO species (name, local, keywords) VALUES ('Fraxinus', 'Ash', 'ясень');
+INSERT INTO species (name, local, keywords) VALUES ('Juglans', 'Walnut', 'орех');
+INSERT INTO species (name, local, keywords) VALUES ('Paulwnia', 'Foxglove', 'пауловния;павловния');
+INSERT INTO species (name, local, keywords) VALUES ('Platanus orientalis', 'Oriental plane', 'sycamore;платан;чинар');
+INSERT INTO species (name, local, keywords) VALUES ('Populus alba', 'White poplar', 'тополь;белый');
+INSERT INTO species (name, local, keywords) VALUES ('Populus', 'Poplar', 'тополь');
+INSERT INTO species (name, local, keywords) VALUES ('Quercus robur', 'Pedunculate oak', 'дуб;черешчатый');
+INSERT INTO species (name, local, keywords) VALUES ('Quercus rubra', 'Northern red oak', 'дуб;красный');
+INSERT INTO species (name, local, keywords) VALUES ('Quercus', 'Oak', 'дуб');
+INSERT INTO species (name, local, keywords) VALUES ('Ulmus glabra', 'Wych elm', 'вяз;шершавый;scots');
+INSERT INTO species (name, local, keywords) VALUES ('Ulmus parvifolia', 'Lacebark elm', 'вяз;мелколистный;карагач;chinese;sieboldii');
+INSERT INTO species (name, local, keywords) VALUES ('Ulmus', 'Elm', 'вяз;карагач');

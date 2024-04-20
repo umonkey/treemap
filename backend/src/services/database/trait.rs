@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 
 use crate::types::{
-    Bounds, CommentRecord, FileRecord, QueueMessage, Result, TreeInfo, UploadTicket, UserInfo,
+    Bounds, CommentRecord, FileRecord, QueueMessage, Result, SpeciesRecord, TreeInfo, UploadTicket, UserInfo,
 };
 
 #[async_trait]
@@ -33,4 +33,6 @@ pub trait Database {
 
     async fn add_comment(&self, comment: &CommentRecord) -> Result<()>;
     async fn find_comments_by_tree(&self, tree_id: u64) -> Result<Vec<CommentRecord>>;
+
+    async fn find_species(&self, query: &str) -> Result<Vec<SpeciesRecord>>;
 }

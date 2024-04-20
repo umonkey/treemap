@@ -1,16 +1,18 @@
 use actix_web::HttpRequest;
 use log::info;
+use std::sync::Arc;
 
 use crate::services::database::get_database;
 use crate::services::trees::Trees;
-use crate::services::{CommentsService, FileService, GoogleAuth, TokenService, UploadService};
+use crate::services::{CommentsService, Database, FileService, GoogleAuth, TokenService, UploadService};
 use crate::types::{
     AddCommentRequest, AddFileRequest, AddTreeRequest, Bounds, Error, FileRecord,
-    LoginGoogleRequest, LoginResponse, MoveTreeRequest, PublicCommentInfo, Result, TreeDetails,
+    LoginGoogleRequest, LoginResponse, MoveTreeRequest, PublicCommentInfo, PublicSpeciesInfo, Result, TreeDetails,
     TreeInfo, TreeList, UpdateTreeRequest, UploadTicket,
 };
 
 pub struct AppState {
+    db: Arc<dyn Database>,
     comments: CommentsService,
     files: FileService,
     gauth: GoogleAuth,
@@ -25,6 +27,7 @@ impl AppState {
         let token = TokenService::new();
 
         Ok(Self {
+            db: db.clone(),
             comments: CommentsService::init(&db),
             files: FileService::init(&db)?,
             gauth: GoogleAuth::init(&db, &token).await,
@@ -119,5 +122,11 @@ impl AppState {
         let records = self.comments.get_comments(tree_id).await?;
         let comments = records.iter().map(PublicCommentInfo::from_record).collect();
         Ok(comments)
+    }
+
+    pub async fn find_species(&self, query: &str) -> Result<Vec<PublicSpeciesInfo>> {
+        let records = self.db.find_species(query).await?;
+        let species = records.iter().map(PublicSpeciesInfo::from_record).collect();
+        Ok(species)
     }
 }

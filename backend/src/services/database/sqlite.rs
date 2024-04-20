@@ -14,7 +14,7 @@ use log::{debug, error, info};
 
 use crate::services::database::r#trait::Database;
 use crate::types::{
-    Bounds, CommentRecord, Error, FileRecord, QueueMessage, Result, TreeInfo, UploadTicket,
+    Bounds, CommentRecord, Error, FileRecord, QueueMessage, Result, SpeciesRecord, TreeInfo, UploadTicket,
     UserInfo,
 };
 use crate::utils::{get_sqlite_path, get_timestamp, get_unique_id};
@@ -104,20 +104,10 @@ impl SqliteDatabase {
 #[async_trait]
 impl Database for SqliteDatabase {
     async fn add_tree(&self, tree: &TreeInfo) -> Result<()> {
-        let id = tree.id;
-        let lat = tree.lat;
-        let lon = tree.lon;
-        let name = tree.name.clone();
-        let height = tree.height;
-        let circumference = tree.circumference;
-        let diameter = tree.diameter;
-        let state = tree.state.clone();
-        let added_at = tree.added_at;
-        let updated_at = tree.updated_at;
-        let added_by = tree.added_by;
+        let tree = tree.clone();
 
         self.pool.conn(move |conn| {
-            match conn.execute("INSERT INTO trees (id, lat, lon, name, height, circumference, diameter, state, added_at, updated_at, added_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (id, lat, lon, name, height, circumference, diameter, state, added_at, updated_at, added_by)) {
+            match conn.execute("INSERT INTO trees (id, lat, lon, name, species, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (tree.id, tree.lat, tree.lon, tree.name, tree.species, tree.height, tree.circumference, tree.diameter, tree.state, tree.added_at, tree.updated_at, tree.added_by, tree.thumbnail_id)) {
                 Ok(_) => (),
 
                 Err(e) => {
@@ -126,7 +116,7 @@ impl Database for SqliteDatabase {
                 },
             };
 
-            debug!("Tree {} added to the database.", id);
+            debug!("Tree {} added to the database.", tree.id);
             Ok(())
         }).await?;
 
@@ -191,7 +181,7 @@ impl Database for SqliteDatabase {
      */
     async fn get_tree(&self, id: u64) -> Result<Option<TreeInfo>> {
         let tree = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, lat, lon, name, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id FROM trees WHERE id = ?") {
+            let mut stmt = match conn.prepare("SELECT id, lat, lon, name, species, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id FROM trees WHERE id = ?") {
                 Ok(value) => value,
 
                 Err(e) => {
@@ -210,14 +200,15 @@ impl Database for SqliteDatabase {
                     lat: row.get(1)?,
                     lon: row.get(2)?,
                     name: row.get(3)?,
-                    height: row.get(4)?, // only in details view
-                    circumference: row.get(5)?,
-                    diameter: row.get(6)?,
-                    state: row.get(7)?,
-                    added_at: row.get(8)?,
-                    updated_at: row.get(9)?,
-                    added_by: row.get(10)?,
-                    thumbnail_id: row.get(11)?,
+                    species: row.get(4)?,
+                    height: row.get(5)?, // only in details view
+                    circumference: row.get(6)?,
+                    diameter: row.get(7)?,
+                    state: row.get(8)?,
+                    added_at: row.get(9)?,
+                    updated_at: row.get(10)?,
+                    added_by: row.get(11)?,
+                    thumbnail_id: row.get(12)?,
                 }));
             }
 
@@ -234,7 +225,7 @@ impl Database for SqliteDatabase {
      */
     async fn get_trees(&self, bounds: Bounds) -> Result<Vec<TreeInfo>> {
         let trees = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, lat, lon, name, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id FROM trees WHERE lat <= ? AND lat >= ? AND lon <= ? AND lon >= ? AND state <> 'gone'") {
+            let mut stmt = match conn.prepare("SELECT id, lat, lon, name, species, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id FROM trees WHERE lat <= ? AND lat >= ? AND lon <= ? AND lon >= ? AND state <> 'gone'") {
                 Ok(value) => value,
 
                 Err(e) => {
@@ -243,28 +234,32 @@ impl Database for SqliteDatabase {
                 },
             };
 
-            let mut rows = stmt.query([bounds.n, bounds.s, bounds.e, bounds.w])?;
+            let mut rows = match stmt.query([bounds.n, bounds.s, bounds.e, bounds.w]) {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error executing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
 
             let mut trees: Vec<TreeInfo> = Vec::new();
 
             while let Some(row) = rows.next()? {
-                let id: u64 = row.get(0)?;
-                let lat: f64 = row.get(1)?;
-                let lon: f64 = row.get(2)?;
-
                 trees.push(TreeInfo {
-                    id,
-                    lat,
-                    lon,
+                    id: row.get(0)?,
+                    lat: row.get(1)?,
+                    lon: row.get(2)?,
                     name: row.get(3)?,
-                    height: row.get(4)?, // only in details view
-                    circumference: row.get(5)?,
-                    diameter: row.get(6)?,
-                    state: row.get(7)?,
-                    added_at: row.get(8)?,
-                    updated_at: row.get(9)?,
-                    added_by: row.get(10)?,
-                    thumbnail_id: row.get(11)?,
+                    species: row.get(4)?,
+                    height: row.get(5)?, // only in details view
+                    circumference: row.get(6)?,
+                    diameter: row.get(7)?,
+                    state: row.get(8)?,
+                    added_at: row.get(9)?,
+                    updated_at: row.get(10)?,
+                    added_by: row.get(11)?,
+                    thumbnail_id: row.get(12)?,
                 });
             }
 
@@ -694,6 +689,44 @@ impl Database for SqliteDatabase {
 
         Ok(comments)
     }
+
+    async fn find_species(&self, query: &str) -> Result<Vec<SpeciesRecord>> {
+        let pattern = format!("%{}%", query.trim().to_lowercase());
+
+        let species = self.pool.conn(move |conn| {
+            let mut stmt = match conn.prepare("SELECT name, local, keywords FROM species WHERE name LIKE ?1 OR local LIKE ?1 OR keywords LIKE ?1 ORDER BY name LIMIT 10") {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error preparing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut rows = match stmt.query([pattern]) {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error executing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut species: Vec<SpeciesRecord> = Vec::new();
+
+            while let Some(row) = rows.next()? {
+                species.push(SpeciesRecord {
+                    name: row.get(0)?,
+                    local: row.get(1)?,
+                    keywords: row.get(2)?,
+                });
+            }
+
+            Ok(species)
+        }).await?;
+
+        Ok(species)
+    }
 }
 
 impl Clone for SqliteDatabase {
@@ -752,48 +785,47 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_add_tree() -> Result<()> {
-        let db = setup().await?;
-
-        let before = db
-            .get_trees(Bounds {
-                n: 90.0,
-                e: 180.0,
-                s: -90.0,
-                w: -180.0,
-            })
-            .await?;
-
-        assert_eq!(before.len(), 0);
+    async fn test_add_tree() {
+        let db = setup()
+            .await
+            .expect("Error setting up database.");
 
         db.add_tree(&TreeInfo {
             id: 123,
             lat: 56.65,
             lon: 28.48,
             name: "Oak".to_string(),
+            species: Some("Quercus".to_string()),
             height: Some(12.0),
             circumference: Some(1.0),
-            diameter: None,
+            diameter: Some(2.3),
             state: "healthy".to_string(),
-            added_at: 0,
-            updated_at: 0,
-            added_by: 0,
-            thumbnail_id: None,
+            added_at: 12345,
+            updated_at: 23456,
+            added_by: 7,
+            thumbnail_id: Some(8),
         })
-        .await?;
+        .await
+        .expect("Error adding tree");
 
-        let after = db
-            .get_trees(Bounds {
-                n: 90.0,
-                e: 180.0,
-                s: -90.0,
-                w: -180.0,
-            })
-            .await?;
+        let tree = db.get_tree(123)
+            .await
+            .expect("Error reading a tree that was just added")
+            .expect("Tree not found.");
 
-        assert_eq!(after.len(), 1);
-
-        Ok(())
+        assert_eq!(tree.id, 123, "wrong id");
+        assert_eq!(tree.lat, 56.65, "wrong lat");
+        assert_eq!(tree.lon, 28.48,"wrong lon");
+        assert_eq!(tree.name, "Oak", "wrong name");
+        assert_eq!(tree.species, Some("Quercus".to_string()), "wrong species");
+        assert_eq!(tree.height, Some(12.0), "wrong height");
+        assert_eq!(tree.circumference, Some(1.0), "wrong circumference");
+        assert_eq!(tree.diameter, Some(2.3), "wrong diameter");
+        assert_eq!(tree.state, "healthy", "wrong state");
+        assert_eq!(tree.added_at, 12345, "wrong added_at");
+        assert_eq!(tree.updated_at, 23456, "wrong updated_at");
+        assert_eq!(tree.added_by, 7, "wrong added_by");
+        assert_eq!(tree.thumbnail_id, Some(8), "wrong thumbnail_id");
     }
 
     #[tokio::test]
@@ -959,5 +991,18 @@ mod tests {
         assert_eq!(comments.len(), 1);
         assert_eq!(comments[0].id, 1);
         assert_eq!(comments[0].tree_id, tree_id);
+    }
+
+    #[tokio::test]
+    async fn test_species() {
+        let db = setup().await.expect("Error setting up database.");
+
+        let species = db
+            .find_species(" oak ")
+            .await
+            .expect("Error finding species.");
+
+        assert_eq!(species.len(), 3);
+        assert_eq!("Quercus", species[0].name);
     }
 }

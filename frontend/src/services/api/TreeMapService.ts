@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 
-import { IApiError, IAddTreeRequest, IComment, ILatLng, ITreeInfo, ITreeDetails, IUploadTicket, IUserInfo } from "@/types";
+import { IApiError, IAddTreeRequest, IComment, ILatLng, ISpecies, ITreeInfo, ITreeDetails, IUploadTicket, IUserInfo } from "@/types";
 import { getUserToken, removeUserToken } from "@/utils/userinfo";
 import { getApiRoot } from "@/utils/env";
 
@@ -128,6 +128,12 @@ export class TreeMapService {
 
   public async getComments(tree_id: string): Promise<IComment[]> {
     return await this.get<IComment[]>(`/v1/trees/${tree_id}/comments`);
+  }
+
+  public async searchSpecies(query: string): Promise<ISpecies[]> {
+    const params = new URLSearchParams();
+    params.append("query", query);
+    return await this.get<ISpecies[]>(`/v1/species/search?${params.toString()}`);
   }
 
   private async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {

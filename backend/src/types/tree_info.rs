@@ -9,6 +9,7 @@ pub struct TreeInfo {
     pub lat: f64,
     pub lon: f64,
     pub name: String,
+    pub species: Option<String>,
     pub height: Option<f64>,
     pub circumference: Option<f64>,
     pub diameter: Option<f64>,

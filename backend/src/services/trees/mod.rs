@@ -1,3 +1,10 @@
+/**
+ * The tree service performs updates to the trees database.
+ *
+ * Reading is straight-forward, updates also log individual property changes
+ * to be able to track changes over time.
+ */
+
 use log::debug;
 use std::sync::Arc;
 
@@ -26,6 +33,7 @@ impl Trees {
             lat: req.lat,
             lon: req.lon,
             name: req.name,
+            species: req.species,
             height: req.height,
             circumference: req.circumference,
             diameter: req.diameter,
@@ -103,6 +111,7 @@ impl Trees {
             lat: old.lat,
             lon: old.lon,
             name: req.name,
+            species: req.species,
             height: req.height,
             circumference: req.circumference,
             diameter: req.diameter,
@@ -201,7 +210,10 @@ mod tests {
     #[tokio::test]
     async fn test_get_some_trees() -> Result<()> {
         let script = include_str!("./fixtures/some-trees.sql");
-        let service = setup(Some(script.to_string())).await?;
+
+        let service = setup(Some(script.to_string()))
+            .await
+            .expect("Error initializing database");
 
         let trees = service
             .get_trees(Bounds {
@@ -210,7 +222,8 @@ mod tests {
                 s: -90.0,
                 w: -180.0,
             })
-            .await?;
+            .await
+            .expect("Error getting trees");
 
         assert_eq!(trees.trees.len(), 3);
 
@@ -218,27 +231,78 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_add_tree() -> Result<()> {
-        let service = setup(None).await?;
+    async fn test_add_tree_minimal() {
+        let service = setup(None)
+            .await
+            .expect("Error initializing the service");
 
         let tree = service
             .add_tree(AddTreeRequest {
                 lat: 12.34,
                 lon: 56.78,
                 name: "Oak".to_string(),
-                height: Some(10.0),
-                circumference: Some(20.0),
+                species: None,
+                height: None,
+                circumference: None,
                 diameter: None,
                 state: "healthy".to_string(),
-                user_id: 0,
+                user_id: 3,
             })
-            .await?;
+            .await
+            .expect("Error adding tree");
 
         debug!("Tree added: {:?}", tree);
 
+        let tree = service.get_tree(tree.id)
+            .await
+            .expect("Error reading a tree that was just added");
+
         assert_eq!(tree.lat, 12.34);
         assert_eq!(tree.lon, 56.78);
+        assert_eq!(tree.name, "Oak");
+        assert!(tree.species.is_none(), "species should be empty");
+        assert!(tree.height.is_none(), "height should be empty");
+        assert!(tree.circumference.is_none(), "circumference should be empty");
+        assert!(tree.diameter.is_none(), "diameter should be empty");
+        assert_eq!(tree.state, "healthy");
+        assert_eq!(tree.added_by, 3);
+    }
 
-        Ok(())
+    #[tokio::test]
+    async fn test_add_tree_full() {
+        let service = setup(None)
+            .await
+            .expect("Error initializing the service");
+
+        let tree = service
+            .add_tree(AddTreeRequest {
+                lat: 12.34,
+                lon: 56.78,
+                name: "Oak".to_string(),
+                species: Some("Quercus".to_string()),
+                height: Some(12.3),
+                circumference: Some(3.4),
+                diameter: Some(15.0),
+                state: "healthy".to_string(),
+                user_id: 3,
+            })
+            .await
+            .expect("Error adding tree");
+
+        debug!("Tree added: {:?}", tree);
+
+        let tree = service.get_tree(tree.id)
+            .await
+            .expect("Error reading a tree that was just added");
+
+        assert_eq!(tree.lat, 12.34);
+        assert_eq!(tree.lon, 56.78);
+        assert_eq!(tree.name, "Oak");
+        assert_eq!(tree.species.expect("species not set"), "Quercus");
+        assert_eq!(tree.height.expect("height not set"), 12.3);
+        assert_eq!(tree.circumference.expect("circumference not set"), 3.4);
+        assert_eq!(tree.diameter.expect("diameter not set"), 15.0);
+        assert_eq!(tree.state, "healthy");
+        assert_eq!(tree.added_by, 3);
     }
 }
