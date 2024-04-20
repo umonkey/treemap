@@ -19,7 +19,7 @@ interface IProps {
 }
 
 export const AddTreeDialog = (props: IProps) => {
-  const [name, setName] = useState<string>('');
+  const [species, setSpecies] = useState<string>('');
   const [height, setHeight] = useState<number|undefined>(undefined);
   const [circumference, setCircumference] = useState<number|undefined>(undefined);
   const [diameter, setDiameter] = useState<number|undefined>(undefined);
@@ -27,7 +27,7 @@ export const AddTreeDialog = (props: IProps) => {
   const [notes, setNotes] = useState<string>("");
 
   const isSaveEnabled = (): boolean => {
-    if (name.length === 0) {
+    if (species.length === 0) {
       return false;
     }
 
@@ -64,15 +64,15 @@ export const AddTreeDialog = (props: IProps) => {
       return;
     }
 
-    if (!name) {
-      console.error("Name not set, cannot add tree.");
+    if (!species) {
+      console.error("species not set, cannot add tree.");
       return;
     }
 
     props.onSave({
       lat: props.center.lat,
       lon: props.center.lon,
-      name: name,
+      species: species,
       height: height || 0,
       circumference: circumference || 0,
       diameter: diameter || 0,
@@ -86,7 +86,7 @@ export const AddTreeDialog = (props: IProps) => {
   };
 
   const handleNameChange = (value: string) => {
-    setName(value);
+    setSpecies(value);
   };
 
   return (

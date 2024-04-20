@@ -7,7 +7,7 @@ const DETAILS = {
   id: "134025978690277376",
   lat: 40.180379,
   lon: 44.513434,
-  name: "Great Oak",
+  species: "Great Oak",
   height: 25.0,
   circumference: 4.2,
   diameter: 15.0,

@@ -8,7 +8,7 @@ const TREE = {
   id: "12345",
   lat: 40.181389,
   lon: 44.514444,
-  name: "Big Oak",
+  species: "Big Oak",
   height: 15.0,
   circumference: 1.6,
   diameter: 4.5,

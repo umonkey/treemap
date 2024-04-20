@@ -14,7 +14,7 @@ interface IProps {
 }
 
 export const EditTreeDialog = (props: IProps) => {
-  const [name, setName] = useState<string>('');
+  const [species, setSpecies] = useState<string>('');
   const [height, setHeight] = useState<number>(0.0);
   const [circumference, setCircumference] = useState<number>(0.0);
   const [diameter, setDiameter] = useState<number>(0.0);
@@ -22,14 +22,14 @@ export const EditTreeDialog = (props: IProps) => {
   const [notes, setNotes] = useState<string>(props.tree.notes || "");
 
   useEffect(() => {
-    setName(props.tree.name);
+    setSpecies(props.tree.species);
     setHeight(props.tree.height || 0.0);
     setCircumference(props.tree.circumference || 0.0);
     setDiameter(props.tree.diameter || 0.0);
   }, [props.tree]);
 
   const handleNameChange = (value: string) => {
-    setName(value);
+    setSpecies(value);
   };
 
   const handleHeightChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,8 +53,8 @@ export const EditTreeDialog = (props: IProps) => {
   };
 
   const handleSaveClick = async () => {
-    if (!name) {
-      console.error("Name not set, cannot add tree.");
+    if (!species) {
+      console.error("species not set, cannot add tree.");
       return;
     }
 
@@ -62,7 +62,7 @@ export const EditTreeDialog = (props: IProps) => {
       id: props.tree.id,
       lat: props.tree.lat,
       lon: props.tree.lon,
-      name,
+      species,
       notes,
       height,
       circumference,
@@ -76,7 +76,7 @@ export const EditTreeDialog = (props: IProps) => {
   };
 
   const canSave = (): boolean => {
-    if (!name) {
+    if (!species) {
       return false;
     }
 
@@ -93,7 +93,7 @@ export const EditTreeDialog = (props: IProps) => {
 
       <Box component="form">
         <div className="group wide">
-          <SpeciesSelector value={name} onChange={handleNameChange} />
+          <SpeciesSelector value={species} onChange={handleNameChange} />
         </div>
 
         <div className="row">

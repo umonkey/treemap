@@ -27,7 +27,11 @@ export const TreeDetails = (props: IProps) => {
       )}
 
       <div className="inside">
-        <h2>{props.tree.name}</h2>
+        <h2>{props.tree.species}</h2>
+
+        {props.tree.notes && (
+          <h3>{props.tree.notes}</h3>
+        )}
 
         <div className="props">
           <div>Height: {format(props.tree.height)}</div>

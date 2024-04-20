@@ -23,7 +23,7 @@ const meta = {
           id: "1",
           lat: 40.181389,
           lon: 44.514444,
-          name: "Oak",
+          species: "Oak",
         } as ITreeInfo,
       },
     ],

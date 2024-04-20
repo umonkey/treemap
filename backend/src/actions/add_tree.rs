@@ -8,7 +8,7 @@ use crate::types::{AddTreeRequest, Result, TreeDetails};
 struct RequestPayload {
     pub lat: f64,
     pub lon: f64,
-    pub name: String,
+    pub species: String,
     pub notes: Option<String>,
     pub height: Option<f64>,
     pub circumference: Option<f64>,
@@ -27,7 +27,7 @@ pub async fn add_tree(
     let req = AddTreeRequest {
         lat: payload.lat,
         lon: payload.lon,
-        name: payload.name.clone(),
+        species: payload.species.clone(),
         notes: payload.notes.clone(),
         height: payload.height,
         circumference: payload.circumference,

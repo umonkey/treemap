@@ -107,7 +107,7 @@ impl Database for SqliteDatabase {
         let tree = tree.clone();
 
         self.pool.conn(move |conn| {
-            match conn.execute("INSERT INTO trees (id, lat, lon, name, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (tree.id, tree.lat, tree.lon, tree.name, tree.notes, tree.height, tree.circumference, tree.diameter, tree.state, tree.added_at, tree.updated_at, tree.added_by, tree.thumbnail_id)) {
+            match conn.execute("INSERT INTO trees (id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (tree.id, tree.lat, tree.lon, tree.species, tree.notes, tree.height, tree.circumference, tree.diameter, tree.state, tree.added_at, tree.updated_at, tree.added_by, tree.thumbnail_id)) {
                 Ok(_) => (),
 
                 Err(e) => {
@@ -124,18 +124,10 @@ impl Database for SqliteDatabase {
     }
 
     async fn update_tree(&self, tree: &TreeInfo) -> Result<()> {
-        let id = tree.id;
-        let lat = tree.lat;
-        let lon = tree.lon;
-        let name = tree.name.clone();
-        let height = tree.height;
-        let circumference = tree.circumference;
-        let diameter = tree.diameter;
-        let state = tree.state.clone();
-        let updated_at = tree.updated_at;
+        let tree = tree.clone();
 
         self.pool.conn(move |conn| {
-            match conn.execute("UPDATE trees set lat = ?, lon = ?, name = ?, height = ?, circumference = ?, diameter = ?, state = ?, updated_at = ? WHERE id = ?", (lat, lon, name, height, circumference, diameter, state, updated_at, id)) {
+            match conn.execute("UPDATE trees set lat = ?, lon = ?, species = ?, notes = ?, height = ?, circumference = ?, diameter = ?, state = ?, updated_at = ? WHERE id = ?", (tree.lat, tree.lon, tree.species, tree.notes, tree.height, tree.circumference, tree.diameter, tree.state, tree.updated_at, tree.id)) {
                 Ok(_) => (),
 
                 Err(e) => {
@@ -144,7 +136,7 @@ impl Database for SqliteDatabase {
                 },
             };
 
-            debug!("Tree {} updated.", id);
+            debug!("Tree {} updated.", tree.id);
             Ok(())
         }).await?;
 
@@ -181,7 +173,7 @@ impl Database for SqliteDatabase {
      */
     async fn get_tree(&self, id: u64) -> Result<Option<TreeInfo>> {
         let tree = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, lat, lon, name, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id FROM trees WHERE id = ?") {
+            let mut stmt = match conn.prepare("SELECT id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id FROM trees WHERE id = ?") {
                 Ok(value) => value,
 
                 Err(e) => {
@@ -204,7 +196,7 @@ impl Database for SqliteDatabase {
                     id: row.get(0)?,
                     lat: row.get(1)?,
                     lon: row.get(2)?,
-                    name: row.get(3)?,
+                    species: row.get(3)?,
                     notes: row.get(4)?,
                     height: row.get(5)?, // only in details view
                     circumference: row.get(6)?,
@@ -230,7 +222,7 @@ impl Database for SqliteDatabase {
      */
     async fn get_trees(&self, bounds: Bounds) -> Result<Vec<TreeInfo>> {
         let trees = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, lat, lon, name, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id FROM trees WHERE lat <= ? AND lat >= ? AND lon <= ? AND lon >= ? AND state <> 'gone'") {
+            let mut stmt = match conn.prepare("SELECT id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id FROM trees WHERE lat <= ? AND lat >= ? AND lon <= ? AND lon >= ? AND state <> 'gone'") {
                 Ok(value) => value,
 
                 Err(e) => {
@@ -255,7 +247,7 @@ impl Database for SqliteDatabase {
                     id: row.get(0)?,
                     lat: row.get(1)?,
                     lon: row.get(2)?,
-                    name: row.get(3)?,
+                    species: row.get(3)?,
                     notes: row.get(4)?,
                     height: row.get(5)?, // only in details view
                     circumference: row.get(6)?,
@@ -797,7 +789,7 @@ mod tests {
             id: 123,
             lat: 56.65,
             lon: 28.48,
-            name: "Quercus".to_string(),
+            species: "Quercus".to_string(),
             notes: Some("Big Oak".to_string()),
             height: Some(12.0),
             circumference: Some(1.0),
@@ -820,7 +812,7 @@ mod tests {
         assert_eq!(tree.id, 123, "wrong id");
         assert_eq!(tree.lat, 56.65, "wrong lat");
         assert_eq!(tree.lon, 28.48, "wrong lon");
-        assert_eq!(tree.name, "Quercus", "wrong name");
+        assert_eq!(tree.species, "Quercus", "wrong species");
         assert_eq!(tree.notes, Some("Big Oak".to_string()), "wrong notes");
         assert_eq!(tree.height, Some(12.0), "wrong height");
         assert_eq!(tree.circumference, Some(1.0), "wrong circumference");

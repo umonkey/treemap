@@ -30,7 +30,7 @@ export const useTreeDetails = (id: string) => {
     }
 
     navigator.share({
-      title: `${tree.name} -- check out this tree on the Tree Map!`,
+      title: `${tree.species} -- check out this tree on the Tree Map!`,
       url: window.location.href,
     });
   };

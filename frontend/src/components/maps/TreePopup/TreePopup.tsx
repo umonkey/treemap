@@ -16,13 +16,13 @@ export const TreePopup = ({ tree }: IProps) => {
     <div className="TreePopup">
       {tree.thumbnail_id && (
         <Link to={routes.treeDetails(tree.id.toString())}>
-          <img src={treeMapService.getFileURL(tree.thumbnail_id)} alt={tree.name} />
+          <img src={treeMapService.getFileURL(tree.thumbnail_id)} alt={tree.species} />
         </Link>
       )}
 
       <div className="inside">
         <div className="header">
-          <Link className="title" to={routes.treeDetails(tree.id.toString())}>{tree.name}</Link>
+          <Link className="title" to={routes.treeDetails(tree.id.toString())}>{tree.species}</Link>
         </div>
 
         {tree.state && (

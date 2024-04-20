@@ -8,7 +8,7 @@ const DETAILS = {
   id: "134793003121381380",
   lat: 40.181389,
   lon: 44.514444,
-  name: "Sycamore",
+  species: "Sycamore",
   height: 18.5,
   circumference: 1.2,
   diameter: 7,

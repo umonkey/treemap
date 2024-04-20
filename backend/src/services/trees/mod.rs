@@ -31,7 +31,7 @@ impl Trees {
             id,
             lat: req.lat,
             lon: req.lon,
-            name: req.name,
+            species: req.species,
             notes: req.notes,
             height: req.height,
             circumference: req.circumference,
@@ -44,8 +44,8 @@ impl Trees {
         };
 
         debug!(
-            "Adding tree at ({}, {}) with name '{}'.",
-            req.lat, req.lon, tree.name
+            "Adding tree at ({}, {}) with species '{}'.",
+            req.lat, req.lon, tree.species
         );
 
         self.db.add_tree(&tree).await?;
@@ -56,7 +56,7 @@ impl Trees {
             .add_tree_prop(tree.id, "lon", &tree.lon.to_string())
             .await?;
         self.db
-            .add_tree_prop(tree.id, "name", &tree.name.to_string())
+            .add_tree_prop(tree.id, "species", &tree.species.to_string())
             .await?;
 
         if let Some(height) = tree.height {
@@ -79,8 +79,13 @@ impl Trees {
 
         let old = self.get_tree(req.id).await?;
 
-        if old.name != req.name {
-            self.db.add_tree_prop(req.id, "name", &req.name).await?;
+        if old.species != req.species {
+            self.db.add_tree_prop(req.id, "species", &req.species).await?;
+        }
+
+        if old.notes != req.notes{
+            let notes = req.notes.clone().unwrap_or("".to_string());
+            self.db.add_tree_prop(req.id, "notes", &notes).await?;
         }
 
         if old.height != req.height {
@@ -109,7 +114,7 @@ impl Trees {
             id: req.id,
             lat: old.lat,
             lon: old.lon,
-            name: req.name,
+            species: req.species,
             notes: req.notes,
             height: req.height,
             circumference: req.circumference,
@@ -237,7 +242,7 @@ mod tests {
             .add_tree(AddTreeRequest {
                 lat: 12.34,
                 lon: 56.78,
-                name: "Oak".to_string(),
+                species: "Oak".to_string(),
                 notes: None,
                 height: None,
                 circumference: None,
@@ -257,7 +262,7 @@ mod tests {
 
         assert_eq!(tree.lat, 12.34);
         assert_eq!(tree.lon, 56.78);
-        assert_eq!(tree.name, "Oak");
+        assert_eq!(tree.species, "Oak");
         assert!(tree.notes.is_none(), "notes should be empty");
         assert!(tree.height.is_none(), "height should be empty");
         assert!(
@@ -277,7 +282,7 @@ mod tests {
             .add_tree(AddTreeRequest {
                 lat: 12.34,
                 lon: 56.78,
-                name: "Quercus".to_string(),
+                species: "Quercus".to_string(),
                 notes: Some("Oak".to_string()),
                 height: Some(12.3),
                 circumference: Some(3.4),
@@ -297,7 +302,7 @@ mod tests {
 
         assert_eq!(tree.lat, 12.34);
         assert_eq!(tree.lon, 56.78);
-        assert_eq!(tree.name, "Quercus");
+        assert_eq!(tree.species, "Quercus");
         assert_eq!(tree.notes.expect("notes not set"), "Oak");
         assert_eq!(tree.height.expect("height not set"), 12.3);
         assert_eq!(tree.circumference.expect("circumference not set"), 3.4);

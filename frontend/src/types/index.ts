@@ -14,7 +14,7 @@ export interface ITreeInfo {
   id: string;
   lat: number;
   lon: number;
-  name: string;
+  species: string;
   notes: string | null;
   height: number | null;
   circumference: number | null;
@@ -44,7 +44,7 @@ export interface ITreeDetails {
   id: string;
   lat: number;
   lon: number;
-  name: string;
+  species: string;
   notes: string | null;
   height: number | null;
   circumference: number | null;
@@ -58,7 +58,7 @@ export interface ITreeDetails {
 export interface IAddTreeRequest {
   lat: number;
   lon: number;
-  name: string;
+  species: string;
   notes: string | null;
   height: number | null;
   circumference: number | null;

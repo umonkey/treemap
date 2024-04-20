@@ -5,7 +5,7 @@ test("should round numbers", () => {
     id: "1",
     lat: 0,
     lon: 0,
-    name: "Quercus",
+    species: "Quercus",
     notes: "Oak",
     height: 1.234,
     circumference: 2.345,

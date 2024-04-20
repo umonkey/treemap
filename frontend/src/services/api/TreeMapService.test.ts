@@ -43,7 +43,7 @@ describe("TreeMapService", () => {
           id: "1",
           lat: 56.26,
           lon: 28.48,
-          name: "Oak",
+          species: "Quercus",
         },
       ],
     } as ITreesResponse);
@@ -60,7 +60,7 @@ describe("TreeMapService", () => {
         id: "1",
         lat: 56.26,
         lon: 28.48,
-        name: "Oak",
+        species: "Quercus",
       },
     ]);
   });

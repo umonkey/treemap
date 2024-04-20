@@ -20,7 +20,7 @@ const getMarkers = () => {
       id: idx.toString(),
       lat,
       lon,
-      name: `Tree ${idx}`,
+      species: `Tree ${idx}`,
       height: Math.random() * 40,
       circumference: 0.05 + Math.random() * 2,
       diameter: 1.0 + Math.random() * 3,
