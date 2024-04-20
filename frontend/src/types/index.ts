@@ -15,10 +15,11 @@ export interface ITreeInfo {
   lat: number;
   lon: number;
   name: string;
+  notes: string | null;
   height: number | null;
   circumference: number | null;
   diameter: number | null;
-  state: string | null;
+  state: string;
   updated_at: number;
   thumbnail_id: string | null;
 }
@@ -44,10 +45,11 @@ export interface ITreeDetails {
   lat: number;
   lon: number;
   name: string;
+  notes: string | null;
   height: number | null;
   circumference: number | null;
   diameter: number | null;
-  state: string | null;
+  state: string;
   updated_at: number;
   thumbnail_id: string | null;
   files?: IFileInfo[];
@@ -57,11 +59,11 @@ export interface IAddTreeRequest {
   lat: number;
   lon: number;
   name: string;
+  notes: string | null;
   height: number | null;
   circumference: number | null;
   diameter: number | null;
   state: string;
-  notes: string | null;
 }
 
 /**

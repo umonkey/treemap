@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS trees (
     `lat` REAL NOT NULL,
     `lon` REAL NOT NULL,
     `name` TEXT NOT NULL,
-    `species` TEXT NULL,
+    `notes` TEXT NULL,
     `height` REAL NULL,
     `circumference` REAL NULL,
     `diameter` REAL NULL,

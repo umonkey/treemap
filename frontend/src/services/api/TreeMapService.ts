@@ -58,8 +58,8 @@ export class TreeMapService {
   /**
    * Update an existing tree.
    */
-  public async updateTree(props: ITreeDetails): Promise<ITreeInfo> {
-    const res = await this.put<ITreeInfo>(`/v1/trees/${props.id}`, props, {
+  public async updateTree(id: string, props: IAddTreeRequest): Promise<ITreeInfo> {
+    const res = await this.put<ITreeInfo>(`/v1/trees/${id}`, props, {
       headers: this.get_auth_headers(),
     });
 

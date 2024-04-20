@@ -33,7 +33,7 @@ impl Trees {
             lat: req.lat,
             lon: req.lon,
             name: req.name,
-            species: req.species,
+            notes: req.notes,
             height: req.height,
             circumference: req.circumference,
             diameter: req.diameter,
@@ -111,7 +111,7 @@ impl Trees {
             lat: old.lat,
             lon: old.lon,
             name: req.name,
-            species: req.species,
+            notes: req.notes,
             height: req.height,
             circumference: req.circumference,
             diameter: req.diameter,
@@ -241,7 +241,7 @@ mod tests {
                 lat: 12.34,
                 lon: 56.78,
                 name: "Oak".to_string(),
-                species: None,
+                notes: None,
                 height: None,
                 circumference: None,
                 diameter: None,
@@ -260,7 +260,7 @@ mod tests {
         assert_eq!(tree.lat, 12.34);
         assert_eq!(tree.lon, 56.78);
         assert_eq!(tree.name, "Oak");
-        assert!(tree.species.is_none(), "species should be empty");
+        assert!(tree.notes.is_none(), "notes should be empty");
         assert!(tree.height.is_none(), "height should be empty");
         assert!(tree.circumference.is_none(), "circumference should be empty");
         assert!(tree.diameter.is_none(), "diameter should be empty");
@@ -278,8 +278,8 @@ mod tests {
             .add_tree(AddTreeRequest {
                 lat: 12.34,
                 lon: 56.78,
-                name: "Oak".to_string(),
-                species: Some("Quercus".to_string()),
+                name: "Quercus".to_string(),
+                notes: Some("Oak".to_string()),
                 height: Some(12.3),
                 circumference: Some(3.4),
                 diameter: Some(15.0),
@@ -297,8 +297,8 @@ mod tests {
 
         assert_eq!(tree.lat, 12.34);
         assert_eq!(tree.lon, 56.78);
-        assert_eq!(tree.name, "Oak");
-        assert_eq!(tree.species.expect("species not set"), "Quercus");
+        assert_eq!(tree.name, "Quercus");
+        assert_eq!(tree.notes.expect("notes not set"), "Oak");
         assert_eq!(tree.height.expect("height not set"), 12.3);
         assert_eq!(tree.circumference.expect("circumference not set"), 3.4);
         assert_eq!(tree.diameter.expect("diameter not set"), 15.0);

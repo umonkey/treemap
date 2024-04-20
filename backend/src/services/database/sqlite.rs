@@ -107,7 +107,7 @@ impl Database for SqliteDatabase {
         let tree = tree.clone();
 
         self.pool.conn(move |conn| {
-            match conn.execute("INSERT INTO trees (id, lat, lon, name, species, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (tree.id, tree.lat, tree.lon, tree.name, tree.species, tree.height, tree.circumference, tree.diameter, tree.state, tree.added_at, tree.updated_at, tree.added_by, tree.thumbnail_id)) {
+            match conn.execute("INSERT INTO trees (id, lat, lon, name, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (tree.id, tree.lat, tree.lon, tree.name, tree.notes, tree.height, tree.circumference, tree.diameter, tree.state, tree.added_at, tree.updated_at, tree.added_by, tree.thumbnail_id)) {
                 Ok(_) => (),
 
                 Err(e) => {
@@ -181,7 +181,7 @@ impl Database for SqliteDatabase {
      */
     async fn get_tree(&self, id: u64) -> Result<Option<TreeInfo>> {
         let tree = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, lat, lon, name, species, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id FROM trees WHERE id = ?") {
+            let mut stmt = match conn.prepare("SELECT id, lat, lon, name, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id FROM trees WHERE id = ?") {
                 Ok(value) => value,
 
                 Err(e) => {
@@ -190,17 +190,22 @@ impl Database for SqliteDatabase {
                 },
             };
 
-            let mut rows = stmt.query([id])?;
+            let mut rows = match stmt.query([id]) {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error executing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
 
             if let Some(row) = rows.next()? {
-                let id: u64 = row.get(0)?;
-
                 return Ok(Some(TreeInfo {
-                    id,
+                    id: row.get(0)?,
                     lat: row.get(1)?,
                     lon: row.get(2)?,
                     name: row.get(3)?,
-                    species: row.get(4)?,
+                    notes: row.get(4)?,
                     height: row.get(5)?, // only in details view
                     circumference: row.get(6)?,
                     diameter: row.get(7)?,
@@ -225,7 +230,7 @@ impl Database for SqliteDatabase {
      */
     async fn get_trees(&self, bounds: Bounds) -> Result<Vec<TreeInfo>> {
         let trees = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, lat, lon, name, species, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id FROM trees WHERE lat <= ? AND lat >= ? AND lon <= ? AND lon >= ? AND state <> 'gone'") {
+            let mut stmt = match conn.prepare("SELECT id, lat, lon, name, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id FROM trees WHERE lat <= ? AND lat >= ? AND lon <= ? AND lon >= ? AND state <> 'gone'") {
                 Ok(value) => value,
 
                 Err(e) => {
@@ -251,7 +256,7 @@ impl Database for SqliteDatabase {
                     lat: row.get(1)?,
                     lon: row.get(2)?,
                     name: row.get(3)?,
-                    species: row.get(4)?,
+                    notes: row.get(4)?,
                     height: row.get(5)?, // only in details view
                     circumference: row.get(6)?,
                     diameter: row.get(7)?,
@@ -794,8 +799,8 @@ mod tests {
             id: 123,
             lat: 56.65,
             lon: 28.48,
-            name: "Oak".to_string(),
-            species: Some("Quercus".to_string()),
+            name: "Quercus".to_string(),
+            notes: Some("Big Oak".to_string()),
             height: Some(12.0),
             circumference: Some(1.0),
             diameter: Some(2.3),
@@ -816,8 +821,8 @@ mod tests {
         assert_eq!(tree.id, 123, "wrong id");
         assert_eq!(tree.lat, 56.65, "wrong lat");
         assert_eq!(tree.lon, 28.48,"wrong lon");
-        assert_eq!(tree.name, "Oak", "wrong name");
-        assert_eq!(tree.species, Some("Quercus".to_string()), "wrong species");
+        assert_eq!(tree.name, "Quercus", "wrong name");
+        assert_eq!(tree.notes, Some("Big Oak".to_string()), "wrong notes");
         assert_eq!(tree.height, Some(12.0), "wrong height");
         assert_eq!(tree.circumference, Some(1.0), "wrong circumference");
         assert_eq!(tree.diameter, Some(2.3), "wrong diameter");
