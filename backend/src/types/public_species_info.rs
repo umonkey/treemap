@@ -1,7 +1,6 @@
 /**
  * This is a public version of the species record, exported from the API.
  */
-
 use crate::types::SpeciesRecord;
 use serde::Serialize;
 

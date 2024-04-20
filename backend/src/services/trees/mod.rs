@@ -4,7 +4,6 @@
  * Reading is straight-forward, updates also log individual property changes
  * to be able to track changes over time.
  */
-
 use log::debug;
 use std::sync::Arc;
 
@@ -232,9 +231,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_add_tree_minimal() {
-        let service = setup(None)
-            .await
-            .expect("Error initializing the service");
+        let service = setup(None).await.expect("Error initializing the service");
 
         let tree = service
             .add_tree(AddTreeRequest {
@@ -253,7 +250,8 @@ mod tests {
 
         debug!("Tree added: {:?}", tree);
 
-        let tree = service.get_tree(tree.id)
+        let tree = service
+            .get_tree(tree.id)
             .await
             .expect("Error reading a tree that was just added");
 
@@ -262,7 +260,10 @@ mod tests {
         assert_eq!(tree.name, "Oak");
         assert!(tree.notes.is_none(), "notes should be empty");
         assert!(tree.height.is_none(), "height should be empty");
-        assert!(tree.circumference.is_none(), "circumference should be empty");
+        assert!(
+            tree.circumference.is_none(),
+            "circumference should be empty"
+        );
         assert!(tree.diameter.is_none(), "diameter should be empty");
         assert_eq!(tree.state, "healthy");
         assert_eq!(tree.added_by, 3);
@@ -270,9 +271,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_add_tree_full() {
-        let service = setup(None)
-            .await
-            .expect("Error initializing the service");
+        let service = setup(None).await.expect("Error initializing the service");
 
         let tree = service
             .add_tree(AddTreeRequest {
@@ -291,7 +290,8 @@ mod tests {
 
         debug!("Tree added: {:?}", tree);
 
-        let tree = service.get_tree(tree.id)
+        let tree = service
+            .get_tree(tree.id)
             .await
             .expect("Error reading a tree that was just added");
 

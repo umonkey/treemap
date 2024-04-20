@@ -4,11 +4,13 @@ use std::sync::Arc;
 
 use crate::services::database::get_database;
 use crate::services::trees::Trees;
-use crate::services::{CommentsService, Database, FileService, GoogleAuth, TokenService, UploadService};
+use crate::services::{
+    CommentsService, Database, FileService, GoogleAuth, TokenService, UploadService,
+};
 use crate::types::{
     AddCommentRequest, AddFileRequest, AddTreeRequest, Bounds, Error, FileRecord,
-    LoginGoogleRequest, LoginResponse, MoveTreeRequest, PublicCommentInfo, PublicSpeciesInfo, Result, TreeDetails,
-    TreeInfo, TreeList, UpdateTreeRequest, UploadTicket,
+    LoginGoogleRequest, LoginResponse, MoveTreeRequest, PublicCommentInfo, PublicSpeciesInfo,
+    Result, TreeDetails, TreeInfo, TreeList, UpdateTreeRequest, UploadTicket,
 };
 
 pub struct AppState {

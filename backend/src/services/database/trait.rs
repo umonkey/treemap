@@ -1,7 +1,8 @@
 use async_trait::async_trait;
 
 use crate::types::{
-    Bounds, CommentRecord, FileRecord, QueueMessage, Result, SpeciesRecord, TreeInfo, UploadTicket, UserInfo,
+    Bounds, CommentRecord, FileRecord, QueueMessage, Result, SpeciesRecord, TreeInfo, UploadTicket,
+    UserInfo,
 };
 
 #[async_trait]

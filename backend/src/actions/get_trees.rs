@@ -24,14 +24,7 @@ pub async fn get_trees(state: Data<AppState>, query: Query<QueryParams>) -> Resu
 
     let trees = state.get_trees(bounds).await?;
 
-    debug!(
-        "Returning {} trees for n={} e={} s={} w={}",
-        trees.len(),
-        query.n,
-        query.e,
-        query.s,
-        query.w
-    );
+    debug!("Returning {} trees.", trees.len());
 
     Ok(Json(trees))
 }

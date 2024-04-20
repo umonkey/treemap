@@ -14,8 +14,8 @@ use log::{debug, error, info};
 
 use crate::services::database::r#trait::Database;
 use crate::types::{
-    Bounds, CommentRecord, Error, FileRecord, QueueMessage, Result, SpeciesRecord, TreeInfo, UploadTicket,
-    UserInfo,
+    Bounds, CommentRecord, Error, FileRecord, QueueMessage, Result, SpeciesRecord, TreeInfo,
+    UploadTicket, UserInfo,
 };
 use crate::utils::{get_sqlite_path, get_timestamp, get_unique_id};
 
@@ -791,9 +791,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_add_tree() {
-        let db = setup()
-            .await
-            .expect("Error setting up database.");
+        let db = setup().await.expect("Error setting up database.");
 
         db.add_tree(&TreeInfo {
             id: 123,
@@ -813,14 +811,15 @@ mod tests {
         .await
         .expect("Error adding tree");
 
-        let tree = db.get_tree(123)
+        let tree = db
+            .get_tree(123)
             .await
             .expect("Error reading a tree that was just added")
             .expect("Tree not found.");
 
         assert_eq!(tree.id, 123, "wrong id");
         assert_eq!(tree.lat, 56.65, "wrong lat");
-        assert_eq!(tree.lon, 28.48,"wrong lon");
+        assert_eq!(tree.lon, 28.48, "wrong lon");
         assert_eq!(tree.name, "Quercus", "wrong name");
         assert_eq!(tree.notes, Some("Big Oak".to_string()), "wrong notes");
         assert_eq!(tree.height, Some(12.0), "wrong height");

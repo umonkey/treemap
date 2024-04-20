@@ -10,7 +10,10 @@ struct QueryParams {
 }
 
 #[get("/v1/species/search")]
-pub async fn search_species(state: Data<AppState>, query: Query<QueryParams>) -> Result<Json<Vec<PublicSpeciesInfo>>> {
+pub async fn search_species(
+    state: Data<AppState>,
+    query: Query<QueryParams>,
+) -> Result<Json<Vec<PublicSpeciesInfo>>> {
     let species = state.find_species(&query.query).await?;
     Ok(Json(species))
 }
