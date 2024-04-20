@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Box, Button, FormHelperText, TextField } from "@mui/material";
 
-import { TreeStateSelector } from "@/components";
+import { SpeciesSelector, TreeStateSelector } from "@/components";
 import { ITreeDetails } from "@/types";
 import "./styles.scss";
 
@@ -19,6 +19,7 @@ export const EditTreeDialog = (props: IProps) => {
   const [circumference, setCircumference] = useState<number>(0.0);
   const [diameter, setDiameter] = useState<number>(0.0);
   const [state, setState] = useState<string>(props.tree.state || "healthy");
+  const [notes, setNotes] = useState<string>(props.tree.notes || "");
 
   useEffect(() => {
     setName(props.tree.name);
@@ -27,8 +28,8 @@ export const EditTreeDialog = (props: IProps) => {
     setDiameter(props.tree.diameter || 0.0);
   }, [props.tree]);
 
-  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setName(event.target.value);
+  const handleNameChange = (value: string) => {
+    setName(value);
   };
 
   const handleHeightChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,6 +48,10 @@ export const EditTreeDialog = (props: IProps) => {
     setState(value);
   };
 
+  const handleNotesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNotes(event.target.value);
+  };
+
   const handleSaveClick = async () => {
     if (!name) {
       console.error("Name not set, cannot add tree.");
@@ -58,6 +63,7 @@ export const EditTreeDialog = (props: IProps) => {
       lat: props.tree.lat,
       lon: props.tree.lon,
       name,
+      notes,
       height,
       circumference,
       diameter,
@@ -87,8 +93,7 @@ export const EditTreeDialog = (props: IProps) => {
 
       <Box component="form">
         <div className="group wide">
-          <TextField id="name" label="Name" variant="standard" required value={name} onChange={handleNameChange} />
-          <FormHelperText>Enter English or Latin name.</FormHelperText>
+          <SpeciesSelector value={name} onChange={handleNameChange} />
         </div>
 
         <div className="row">
@@ -109,6 +114,11 @@ export const EditTreeDialog = (props: IProps) => {
           <div className="group short">
             <TreeStateSelector state={state} onChange={handleStateChange} />
           </div>
+        </div>
+
+        <div className="group wide">
+          <TextField id="notes" label="Notes" variant="standard" value={notes} onChange={handleNotesChange} />
+          <FormHelperText>For famous trees, like: Alien Shaped Pine.</FormHelperText>
         </div>
 
         {props.error && (

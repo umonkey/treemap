@@ -27,7 +27,6 @@ export const EditTreePage = (props: IProps) => {
       await treeMapService.updateTree(tree.id, tree);
       props.onSuccess();
     } catch (e) {
-      console.log(`Error updating tree: ${e}`);
       setSaveError(`Error updating tree. ${formatErrorMessage(e)}`);
     } finally {
       setBusy(false);
