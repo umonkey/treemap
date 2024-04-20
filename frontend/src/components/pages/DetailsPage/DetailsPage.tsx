@@ -51,6 +51,28 @@ export const DetailsPage = (props: IProps) => {
         <>
           <TreeDetails tree={tree} />
 
+          {isPhone && (
+            <div className="toolbar">
+              <ButtonGroup variant="contained">
+                <Button onClick={handleBack}>
+                  <FontAwesomeIcon icon={faHouse} />
+                </Button>
+                <Button onClick={handleEdit}>
+                  <FontAwesomeIcon icon={faPencil} />
+                </Button>
+                <Button onClick={handleMove}>
+                  <FontAwesomeIcon icon={faUpDownLeftRight} />
+                </Button>
+                <ImagePicker disabled={uploading} onChange={handleImageUpload}>
+                  <FontAwesomeIcon icon={faCamera} />
+                </ImagePicker>
+                <Button disabled={!canShare} onClick={handleShare}>
+                  <FontAwesomeIcon icon={faShareNodes} />
+                </Button>
+              </ButtonGroup>
+            </div>
+          )}
+
           <MapWithMarker center={{
             lat: tree.lat,
             lon: tree.lon,
@@ -84,28 +106,6 @@ export const DetailsPage = (props: IProps) => {
               <ImagePicker disabled={uploading} onChange={handleImageUpload}>Add photos</ImagePicker>
               <Button onClick={handleBack}>Back to map</Button>
             </ButtonGroup>
-          )}
-
-          {isPhone && (
-            <div className="toolbar">
-              <ButtonGroup variant="contained">
-                <Button onClick={handleBack}>
-                  <FontAwesomeIcon icon={faHouse} />
-                </Button>
-                <Button onClick={handleEdit}>
-                  <FontAwesomeIcon icon={faPencil} />
-                </Button>
-                <Button onClick={handleMove}>
-                  <FontAwesomeIcon icon={faUpDownLeftRight} />
-                </Button>
-                <ImagePicker disabled={uploading} onChange={handleImageUpload}>
-                  <FontAwesomeIcon icon={faCamera} />
-                </ImagePicker>
-                <Button disabled={!canShare} onClick={handleShare}>
-                  <FontAwesomeIcon icon={faShareNodes} />
-                </Button>
-              </ButtonGroup>
-            </div>
           )}
 
           <TreeComments id={tree.id} />
