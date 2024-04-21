@@ -4,7 +4,7 @@
  * @docs https://leafletjs.com/examples/custom-icons/
  */
 
-import icon from "./icons/red.svg";
+import icon from "@/icons/dot-red.svg";
 
 import { Icon } from "leaflet";
 
