@@ -5,6 +5,8 @@ use crate::types::{Error, Result};
 
 const FILE_FOLDER: &str = "FILE_FOLDER";
 const JWT_SECRET: &str = "JWT_SECRET";
+const OVERPASS_ENDPOINT: &str = "TREEMAP_OVERPASS_ENDPOINT";
+const OVERPASS_QUERY: &str = "TREEMAP_OVERPASS_QUERY";
 const PAYLOAD_SIZE: &str = "PAYLOAD_SIZE";
 const S3_BUCKET: &str = "TREEMAP_S3_BUCKET";
 const S3_ENDPOINT: &str = "TREEMAP_S3_ENDPOINT";
@@ -17,6 +19,8 @@ const WORKERS: &str = "TREEMAP_WORKERS";
 const DEFAULT_ADDR: &str = "0.0.0.0";
 const DEFAULT_FILE_FOLDER: &str = "var/files";
 const DEFAULT_JWT_SECRET: &str = "secret";
+const DEFAULT_OVERPASS_ENDPONT: &str = "https://overpass-api.de/api/interpreter";
+const DEFAULT_OVERPASS_QUERY: &str = "[out:json];node[natural=tree](40.052848, 44.294472, 40.300476, 44.807396);out;";
 const DEFAULT_PAYLOAD_SIZE: usize = 50_485_760;
 const DEFAULT_PORT: u16 = 8000;
 const DEFAULT_WORKERS: usize = 1;
@@ -138,6 +142,28 @@ pub fn get_file_folder() -> String {
         Err(_) => {
             warn!("Environment variable {} not set, using default: {}. Read more at <https://github.com/umonkey/treemap/wiki/Configuration#jwt_secret>", FILE_FOLDER, DEFAULT_FILE_FOLDER);
             DEFAULT_FILE_FOLDER.to_string()
+        }
+    }
+}
+
+pub fn get_overpass_endpoint() -> String {
+    match env::var(OVERPASS_ENDPOINT) {
+        Ok(v) => v,
+
+        Err(_) => {
+            warn!("Environment variable {} not set, using default: {}. Read more at <https://github.com/umonkey/treemap/wiki/Configuration#overpass_endpoint>", OVERPASS_ENDPOINT, DEFAULT_OVERPASS_ENDPONT);
+            DEFAULT_OVERPASS_ENDPONT.to_string()
+        }
+    }
+}
+
+pub fn get_overpass_query() -> String {
+    match env::var(OVERPASS_QUERY) {
+        Ok(v) => v,
+
+        Err(_) => {
+            warn!("Environment variable {} not set, using default: {}. Read more at <https://github.com/umonkey/treemap/wiki/Configuration#overpass_query>", OVERPASS_QUERY, DEFAULT_OVERPASS_QUERY);
+            DEFAULT_OVERPASS_QUERY.to_string()
         }
     }
 }
