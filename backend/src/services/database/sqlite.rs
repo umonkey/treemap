@@ -8,13 +8,14 @@
  *
  * @docs https://docs.rs/async-sqlite/latest/async_sqlite/
  */
+
 use async_sqlite::{JournalMode, Pool, PoolBuilder};
 use async_trait::async_trait;
 use log::{debug, error, info};
 
 use crate::services::database::r#trait::Database;
 use crate::types::{
-    Bounds, CommentRecord, Error, FileRecord, QueueMessage, Result, SpeciesRecord, TreeInfo,
+    Bounds, CommentRecord, Error, FileRecord, OsmTreeNode, QueueMessage, Result, SpeciesRecord, TreeInfo,
     UploadTicket, UserInfo,
 };
 use crate::utils::{get_sqlite_path, get_timestamp, get_unique_id};
@@ -99,6 +100,119 @@ impl SqliteDatabase {
             }
         }
     }
+
+    async fn log_tree_changes(&self, old: &TreeInfo, new: &TreeInfo) -> Result<()> {
+        debug!("Logging changes for tree {}.", new.id);
+
+        if old.species != new.species {
+            self.add_tree_prop(new.id, "species", &new.species).await?;
+        }
+
+        if old.osm_id != new.osm_id {
+            let value = match new.osm_id {
+                Some(value) => value.to_string(),
+                None => "".to_string(),
+            };
+
+            self.add_tree_prop(new.id, "osm_id", &value).await?;
+        }
+
+        if old.lat != new.lat {
+            self.add_tree_prop(new.id, "lat", &new.lat.to_string()).await?;
+        }
+
+        if old.lon != new.lon {
+            self.add_tree_prop(new.id, "lon", &new.lon.to_string()).await?;
+        }
+
+        if old.species != new.species {
+            self.add_tree_prop(new.id, "species", &new.species).await?;
+        }
+
+        if old.notes != new.notes {
+            let value = match &new.notes {
+                Some(value) => value.to_string(),
+                None => "".to_string(),
+            };
+
+            self.add_tree_prop(new.id, "notes", &value).await?;
+        }
+
+        if old.height != new.height {
+            let value = match new.height {
+                Some(value) => value.to_string(),
+                None => "".to_string(),
+            };
+
+            self.add_tree_prop(new.id, "height", &value).await?;
+        }
+
+        if old.circumference != new.circumference {
+            let value = match new.circumference {
+                Some(value) => value.to_string(),
+                None => "".to_string(),
+            };
+
+            self.add_tree_prop(new.id, "circumference", &value).await?;
+        }
+
+        if old.diameter != new.diameter {
+            let value = match new.diameter {
+                Some(value) => value.to_string(),
+                None => "".to_string(),
+            };
+
+            self.add_tree_prop(new.id, "diameter", &value).await?;
+        }
+
+        if old.state != new.state {
+            self.add_tree_prop(new.id, "state", &new.state).await?;
+        }
+
+        if old.thumbnail_id != new.thumbnail_id {
+            let value = match new.thumbnail_id {
+                Some(value) => value.to_string(),
+                None => "".to_string(),
+            };
+
+            self.add_tree_prop(new.id, "thumbnail_id", &value).await?;
+        }
+
+        Ok(())
+    }
+
+    fn tree_from_row(row: &async_sqlite::rusqlite::Row) -> std::result::Result<TreeInfo, async_sqlite::rusqlite::Error> {
+        Ok(TreeInfo {
+            id: row.get(0)?,
+            osm_id: row.get(1)?,
+            lat: row.get(2)?,
+            lon: row.get(3)?,
+            species: row.get(4)?,
+            notes: row.get(5)?,
+            height: row.get(6)?,
+            circumference: row.get(7)?,
+            diameter: row.get(8)?,
+            state: row.get(9)?,
+            added_at: row.get(10)?,
+            updated_at: row.get(11)?,
+            added_by: row.get(12)?,
+            thumbnail_id: row.get(13)?,
+        })
+    }
+
+    fn osm_tree_from_row(row: &async_sqlite::rusqlite::Row) -> std::result::Result<OsmTreeNode, async_sqlite::rusqlite::Error> {
+        Ok(OsmTreeNode {
+            id: row.get(0)?,
+            lat: row.get(1)?,
+            lon: row.get(2)?,
+            genus: row.get(3)?,
+            species: row.get(4)?,
+            species_wikidata: row.get(5)?,
+            height: row.get(6)?,
+            circumference: row.get(7)?,
+            diameter_crown: row.get(8)?,
+        })
+    }
 }
 
 #[async_trait]
@@ -107,7 +221,7 @@ impl Database for SqliteDatabase {
         let tree = tree.clone();
 
         self.pool.conn(move |conn| {
-            match conn.execute("INSERT INTO trees (id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (tree.id, tree.lat, tree.lon, tree.species, tree.notes, tree.height, tree.circumference, tree.diameter, tree.state, tree.added_at, tree.updated_at, tree.added_by, tree.thumbnail_id)) {
+            match conn.execute("INSERT INTO trees (id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (tree.id, tree.osm_id, tree.lat, tree.lon, tree.species, tree.notes, tree.height, tree.circumference, tree.diameter, tree.state, tree.added_at, tree.updated_at, tree.added_by, tree.thumbnail_id)) {
                 Ok(_) => (),
 
                 Err(e) => {
@@ -126,8 +240,19 @@ impl Database for SqliteDatabase {
     async fn update_tree(&self, tree: &TreeInfo) -> Result<()> {
         let tree = tree.clone();
 
+        let old = match self.get_tree(tree.id).await? {
+            Some(value) => value,
+
+            None => {
+                error!("Tree {} not found in the database.", tree.id);
+                return Err(Error::DatabaseQuery);
+            },
+        };
+
+        let new = tree.clone();
+
         self.pool.conn(move |conn| {
-            match conn.execute("UPDATE trees set lat = ?, lon = ?, species = ?, notes = ?, height = ?, circumference = ?, diameter = ?, state = ?, updated_at = ? WHERE id = ?", (tree.lat, tree.lon, tree.species, tree.notes, tree.height, tree.circumference, tree.diameter, tree.state, tree.updated_at, tree.id)) {
+            match conn.execute("UPDATE trees SET osm_id = ?, lat = ?, lon = ?, species = ?, notes = ?, height = ?, circumference = ?, diameter = ?, state = ?, updated_at = ? WHERE id = ?", (tree.osm_id, tree.lat, tree.lon, tree.species, tree.notes, tree.height, tree.circumference, tree.diameter, tree.state, tree.updated_at, tree.id)) {
                 Ok(_) => (),
 
                 Err(e) => {
@@ -139,6 +264,8 @@ impl Database for SqliteDatabase {
             debug!("Tree {} updated.", tree.id);
             Ok(())
         }).await?;
+
+        self.log_tree_changes(&old, &new).await?;
 
         Ok(())
     }
@@ -173,7 +300,7 @@ impl Database for SqliteDatabase {
      */
     async fn get_tree(&self, id: u64) -> Result<Option<TreeInfo>> {
         let tree = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id FROM trees WHERE id = ?") {
+            let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id FROM trees WHERE id = ? LIMIT 1") {
                 Ok(value) => value,
 
                 Err(e) => {
@@ -192,21 +319,40 @@ impl Database for SqliteDatabase {
             };
 
             if let Some(row) = rows.next()? {
-                return Ok(Some(TreeInfo {
-                    id: row.get(0)?,
-                    lat: row.get(1)?,
-                    lon: row.get(2)?,
-                    species: row.get(3)?,
-                    notes: row.get(4)?,
-                    height: row.get(5)?, // only in details view
-                    circumference: row.get(6)?,
-                    diameter: row.get(7)?,
-                    state: row.get(8)?,
-                    added_at: row.get(9)?,
-                    updated_at: row.get(10)?,
-                    added_by: row.get(11)?,
-                    thumbnail_id: row.get(12)?,
-                }));
+                return Ok(Some(Self::tree_from_row(row)?));
+            }
+
+            Ok(None)
+        }).await?;
+
+        Ok(tree)
+    }
+
+    /**
+     * Read information on a single tree.
+     */
+    async fn get_tree_by_osm_id(&self, osm_id: u64) -> Result<Option<TreeInfo>> {
+        let tree = self.pool.conn(move |conn| {
+            let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id FROM trees WHERE osm_id = ? LIMIT 1") {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error preparing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut rows = match stmt.query([osm_id]) {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error executing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            if let Some(row) = rows.next()? {
+                return Ok(Some(Self::tree_from_row(row)?));
             }
 
             Ok(None)
@@ -222,7 +368,7 @@ impl Database for SqliteDatabase {
      */
     async fn get_trees(&self, bounds: Bounds) -> Result<Vec<TreeInfo>> {
         let trees = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id FROM trees WHERE lat <= ? AND lat >= ? AND lon <= ? AND lon >= ? AND state <> 'gone'") {
+            let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id FROM trees WHERE lat <= ? AND lat >= ? AND lon <= ? AND lon >= ? AND state <> 'gone'") {
                 Ok(value) => value,
 
                 Err(e) => {
@@ -243,27 +389,34 @@ impl Database for SqliteDatabase {
             let mut trees: Vec<TreeInfo> = Vec::new();
 
             while let Some(row) = rows.next()? {
-                trees.push(TreeInfo {
-                    id: row.get(0)?,
-                    lat: row.get(1)?,
-                    lon: row.get(2)?,
-                    species: row.get(3)?,
-                    notes: row.get(4)?,
-                    height: row.get(5)?, // only in details view
-                    circumference: row.get(6)?,
-                    diameter: row.get(7)?,
-                    state: row.get(8)?,
-                    added_at: row.get(9)?,
-                    updated_at: row.get(10)?,
-                    added_by: row.get(11)?,
-                    thumbnail_id: row.get(12)?,
-                });
+                trees.push(Self::tree_from_row(row)?);
             }
 
             Ok(trees)
         }).await?;
 
         Ok(trees)
+    }
+
+    /**
+     * Find the closest tree to the given coordinates.
+     */
+    async fn find_closest_tree(&self, lat: f64, lon: f64, distance: f64) -> Result<Option<TreeInfo>> {
+        let delta = distance / 111_111.0; // meters per degree
+
+        let bounds = Bounds {
+            n: lat + delta,
+            s: lat - delta,
+            e: lon + delta,
+            w: lon - delta,
+        };
+
+        let trees = self.get_trees(bounds).await?;
+
+        match trees.is_empty() {
+            true => Ok(None),
+            false => Ok(Some(trees[0].clone())),
+        }
     }
 
     /**
@@ -724,6 +877,68 @@ impl Database for SqliteDatabase {
 
         Ok(species)
     }
+
+    async fn get_osm_tree(&self, id: u64) -> Result<Option<OsmTreeNode>>
+    {
+        let tree = self.pool.conn(move |conn| {
+            let mut stmt = match conn.prepare("SELECT id, lat, lon, genus, species, species_wikidata, height, circumference, diameter_crown FROM osm_trees WHERE id = ? LIMIT 1") {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error preparing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut rows = match stmt.query([id]) {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error executing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            if let Some(row) = rows.next()? {
+                return Ok(Some(Self::osm_tree_from_row(row)?));
+            }
+
+            Ok(None)
+        }).await?;
+
+        Ok(tree)
+    }
+
+    async fn add_osm_tree(&self, tree: &OsmTreeNode) -> Result<()>
+    {
+        let tmp = tree.clone();
+
+        self.pool.conn(move |conn| {
+            match conn.execute("DELETE FROM osm_trees WHERE id = ?", [tmp.id]) {
+                Ok(_) => (),
+
+                Err(e) => {
+                    error!("Error deleting existing tree: {}", e);
+                    return Err(e);
+                },
+            };
+
+            match conn.execute("INSERT INTO osm_trees (id, lat, lon, genus, species, species_wikidata, height, circumference, diameter_crown) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (tmp.id, tmp.lat, tmp.lon, tmp.genus, tmp.species, tmp.species_wikidata, tmp.height, tmp.circumference, tmp.diameter_crown)) {
+                Ok(_) => (),
+
+                Err(e) => {
+                    error!("Error adding comment to the database: {}", e);
+                    return Err(e);
+                },
+            };
+
+            debug!("OSM Tree {} added to the database.", tmp.id);
+
+            Ok(())
+        }).await?;
+
+        Ok(())
+    }
 }
 
 impl Clone for SqliteDatabase {
@@ -748,6 +963,7 @@ mod tests {
         };
 
         let db = SqliteDatabase::new().await?;
+
         db.execute(include_str!("./fixtures/init.sql").to_string())
             .await
             .unwrap();
@@ -787,6 +1003,7 @@ mod tests {
 
         db.add_tree(&TreeInfo {
             id: 123,
+            osm_id: Some(234),
             lat: 56.65,
             lon: 28.48,
             species: "Quercus".to_string(),
@@ -810,6 +1027,7 @@ mod tests {
             .expect("Tree not found.");
 
         assert_eq!(tree.id, 123, "wrong id");
+        assert_eq!(tree.osm_id, Some(234), "wrong osm_id");
         assert_eq!(tree.lat, 56.65, "wrong lat");
         assert_eq!(tree.lon, 28.48, "wrong lon");
         assert_eq!(tree.species, "Quercus", "wrong species");
@@ -990,15 +1208,19 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_species() {
+    async fn test_find_species() {
         let db = setup().await.expect("Error setting up database.");
+
+        db.execute(include_str!("./fixtures/species.sql").to_string())
+            .await
+            .expect("Error adding species.");
 
         let species = db
             .find_species(" oak ")
             .await
             .expect("Error finding species.");
 
-        assert_eq!(species.len(), 3);
-        assert_eq!("Quercus", species[0].name);
+        assert_eq!(species.len(), 1, "Could not find species for oak.");
+        assert_eq!("Quercus robur", species[0].name);
     }
 }

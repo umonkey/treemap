@@ -8,7 +8,7 @@ use crate::types::{
 };
 use crate::utils::{get_timestamp, get_unique_id};
 
-const TOKEN_TTL: u64 = 86400;
+const TOKEN_TTL: u64 = 30 * 86400; // 30 days
 
 pub struct GoogleAuth {
     db: Arc<dyn Database>,

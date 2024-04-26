@@ -3448,6 +3448,7 @@ dependencies = [
  "serde_json",
  "snowflaker",
  "tokio",
+ "url",
 ]
 
 [[package]]

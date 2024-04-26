@@ -10,7 +10,7 @@ use log::{debug, info};
 use std::time::Duration;
 
 use self::actions::*;
-use self::services::{AppState, QueueConsumer};
+use self::services::{AppState, OsmReaderService, QueueConsumer};
 use self::types::Result;
 use self::utils::{get_payload_size, get_server_addr, get_server_port, get_workers};
 
@@ -22,14 +22,22 @@ async fn data_factory() -> Result<AppState> {
     Ok(state)
 }
 
-fn is_queue_consumer() -> bool {
+fn has_cli_arg(wanted_arg: &str) -> bool {
     for arg in std::env::args() {
-        if arg == "--queue-consumer" {
+        if arg == wanted_arg {
             return true;
         }
     }
 
     false
+}
+
+fn is_queue_consumer() -> bool {
+    has_cli_arg("--queue-consumer")
+}
+
+fn is_osm_reader() -> bool {
+    has_cli_arg("--osm-pull")
 }
 
 #[actix_web::main]
@@ -45,6 +53,14 @@ async fn main() -> std::io::Result<()> {
             .await
             .expect("Error creating queue consumer.");
         consumer.run().await;
+        return Ok(());
+    }
+
+    if is_osm_reader() {
+        let service = OsmReaderService::init()
+            .await
+            .expect("Error creating OSM reader service.");
+        service.run().await.expect("Error running OSM reader service.");
         return Ok(());
     }
 
