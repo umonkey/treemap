@@ -3,6 +3,7 @@
 
 CREATE TABLE IF NOT EXISTS trees (
     `id` INT NOT NULL,
+    `osm_id` INT NULL,
     `lat` REAL NOT NULL,
     `lon` REAL NOT NULL,
     `species` TEXT NOT NULL, -- latin name
@@ -20,6 +21,7 @@ CREATE TABLE IF NOT EXISTS trees (
 
 CREATE INDEX IF NOT EXISTS trees_lat ON trees (lat);
 CREATE INDEX IF NOT EXISTS trees_lon ON trees (lon);
+CREATE UNIQUE INDEX IF NOT EXISTS trees_osm_id ON trees (osm_id);
 CREATE INDEX IF NOT EXISTS trees_state ON trees (state);
 
 
@@ -109,29 +111,16 @@ CREATE TABLE IF NOT EXISTS species (
     PRIMARY KEY(`name`)
 );
 
-DELETE FROM species;
-INSERT INTO species (name, local, keywords) VALUES ('Acer negundo', 'Box Elder', 'клён;ясенелистный;boxelder;maple;ashleaf;manitoba');
-INSERT INTO species (name, local, keywords) VALUES ('Acer pseudoplatanus', 'Sycamore maple', 'клён белый;явор;немецкий;maple;sycamore');
-INSERT INTO species (name, local, keywords) VALUES ('Acer', 'Maple', 'клён');
-INSERT INTO species (name, local, keywords) VALUES ('Aesculus hippocastanum', 'Horse chestnut', 'каштан;конский;buckeye;conker');
-INSERT INTO species (name, local, keywords) VALUES ('Betula', 'Birch', 'берёза;береза');
-INSERT INTO species (name, local, keywords) VALUES ('Catalpa', 'Catalpa', 'катальпа');
-INSERT INTO species (name, local, keywords) VALUES ('Cercis siliquastrum', 'Judas tree', 'багряник европейский');
-INSERT INTO species (name, local, keywords) VALUES ('Fraxinus', 'Ash', 'ясень');
-INSERT INTO species (name, local, keywords) VALUES ('Juglans', 'Walnut', 'орех');
-INSERT INTO species (name, local, keywords) VALUES ('Morus', 'Mulberry', 'шелковица;silkworm');
-INSERT INTO species (name, local, keywords) VALUES ('Paulwnia', 'Foxglove', 'пауловния;павловния');
-INSERT INTO species (name, local, keywords) VALUES ('Picea', 'Spruce', 'ель;ёлка');
-INSERT INTO species (name, local, keywords) VALUES ('Pinus', 'Pine', 'сосна');
-INSERT INTO species (name, local, keywords) VALUES ('Platanus orientalis', 'Oriental plane', 'sycamore;платан;чинар');
-INSERT INTO species (name, local, keywords) VALUES ('Populus alba', 'White poplar', 'тополь;белый');
-INSERT INTO species (name, local, keywords) VALUES ('Populus', 'Poplar', 'тополь');
-INSERT INTO species (name, local, keywords) VALUES ('Quercus robur', 'Pedunculate oak', 'дуб;черешчатый');
-INSERT INTO species (name, local, keywords) VALUES ('Quercus rubra', 'Northern red oak', 'дуб;красный');
-INSERT INTO species (name, local, keywords) VALUES ('Quercus', 'Oak', 'дуб');
-INSERT INTO species (name, local, keywords) VALUES ('Salix', 'Willow', 'ива');
-INSERT INTO species (name, local, keywords) VALUES ('Thuja', 'Cedar', 'туя;биота;cedar');
-INSERT INTO species (name, local, keywords) VALUES ('Tilia', 'Linden', 'липа');
-INSERT INTO species (name, local, keywords) VALUES ('Ulmus glabra', 'Wych elm', 'вяз;шершавый;scots');
-INSERT INTO species (name, local, keywords) VALUES ('Ulmus parvifolia', 'Lacebark elm', 'вяз;мелколистный;карагач;chinese;sieboldii');
-INSERT INTO species (name, local, keywords) VALUES ('Ulmus', 'Elm', 'вяз;карагач');
+
+CREATE TABLE IF NOT EXISTS osm_trees (
+    `id` INT UNSIGNED NOT NULL,
+    `lat` REAL NOT NULL,
+    `lon` REAL NOT NULL,
+    `genus` TEXT NULL,
+    `species` TEXT NULL,
+    `species_wikidata` TEXT NULL,
+    `height` REAL NULL,
+    `circumference` REAL NULL,
+    `diameter_crown` REAL NULL,
+    PRIMARY KEY(`id`)
+);

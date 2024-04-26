@@ -1,9 +1,13 @@
+mod node_parser;
+
 use url::Url;
 use log::{debug, error};
 use serde_json::Value;
 
-use crate::types::{Error, Result};
+use crate::types::{Error, OsmTreeNode, Result};
 use crate::utils::{get_overpass_endpoint, get_overpass_query};
+
+use self::node_parser::NodeParser;
 
 pub struct OverpassClient {
     client: reqwest::Client,
@@ -22,11 +26,31 @@ impl OverpassClient {
         }
     }
 
-    pub async fn query(&self) -> Result<()> {
+    pub async fn query(&self) -> Result<Vec<OsmTreeNode>> {
         let query_url = self.get_query_url()?;
         let json = self.read_json(&query_url).await?;
 
-        Ok(())
+        let elements = match json["elements"].as_array() {
+            Some(elements) => elements,
+
+            None => {
+                error!("OSM response does not contain elements array.");
+                return Err(Error::OsmExchange);
+            },
+        };
+
+        let mut trees: Vec<OsmTreeNode> = Vec::new();
+
+        for element in elements {
+            match NodeParser::parse(element) {
+                Some(tree) => trees.push(tree),
+                None => {
+                    error!("Error parsing OSM node: {:?}", element);
+                },
+            }
+        }
+
+        Ok(trees)
     }
 
     async fn read_json(&self, url: &str) -> Result<Value> {

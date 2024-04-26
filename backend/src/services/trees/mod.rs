@@ -29,6 +29,7 @@ impl Trees {
 
         let tree = TreeInfo {
             id,
+            osm_id: None,
             lat: req.lat,
             lon: req.lon,
             species: req.species,
@@ -112,6 +113,7 @@ impl Trees {
 
         let new = TreeInfo {
             id: req.id,
+            osm_id: old.osm_id,
             lat: old.lat,
             lon: old.lon,
             species: req.species,

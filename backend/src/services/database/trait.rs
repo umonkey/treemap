@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 
 use crate::types::{
-    Bounds, CommentRecord, FileRecord, QueueMessage, Result, SpeciesRecord, TreeInfo, UploadTicket,
+    Bounds, CommentRecord, FileRecord, OsmTreeNode, QueueMessage, Result, SpeciesRecord, TreeInfo, UploadTicket,
     UserInfo,
 };
 
@@ -12,6 +12,8 @@ pub trait Database {
     async fn move_tree(&self, id: u64, lat: f64, lon: f64) -> Result<()>;
     async fn get_trees(&self, bounds: Bounds) -> Result<Vec<TreeInfo>>;
     async fn get_tree(&self, id: u64) -> Result<Option<TreeInfo>>;
+    async fn get_tree_by_osm_id(&self, osm_id: u64) -> Result<Option<TreeInfo>>;
+    async fn find_closest_tree(&self, lat: f64, lon: f64, distance: f64) -> Result<Option<TreeInfo>>;
 
     // Record a new property value.  Returns the assigned prop id.
     async fn add_tree_prop(&self, id: u64, name: &str, value: &str) -> Result<u64>;
@@ -36,4 +38,7 @@ pub trait Database {
     async fn find_comments_by_tree(&self, tree_id: u64) -> Result<Vec<CommentRecord>>;
 
     async fn find_species(&self, query: &str) -> Result<Vec<SpeciesRecord>>;
+
+    async fn get_osm_tree(&self, id: u64) -> Result<Option<OsmTreeNode>>;
+    async fn add_osm_tree(&self, tree: &OsmTreeNode) -> Result<()>;
 }

@@ -6,6 +6,7 @@ use serde::Serialize;
 #[derive(Clone, Debug, Serialize)]
 pub struct TreeInfo {
     pub id: u64,
+    pub osm_id: Option<u64>,
     pub lat: f64,
     pub lon: f64,
     pub species: String,
