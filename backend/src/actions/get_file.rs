@@ -1,4 +1,5 @@
 use actix_web::{get, web::Data, web::Path, HttpResponse};
+use actix_web::http::header::{CacheControl, CacheDirective};
 use log::debug;
 use serde::Deserialize;
 
@@ -16,7 +17,13 @@ pub async fn get_file(state: Data<AppState>, path: Path<PathInfo>) -> Result<Htt
 
     let file = state.get_file(path.id).await?;
 
-    let res = HttpResponse::Ok().content_type("image/jpeg").body(file);
+    let res = HttpResponse::Ok()
+        .content_type("image/jpeg")
+        .insert_header(CacheControl(vec![
+            CacheDirective::Public,
+            CacheDirective::MaxAge(31536000),
+        ]))
+        .body(file);
 
     Ok(res)
 }
