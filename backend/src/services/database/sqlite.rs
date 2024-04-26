@@ -15,8 +15,8 @@ use log::{debug, error, info};
 
 use crate::services::database::r#trait::Database;
 use crate::types::{
-    Bounds, CommentRecord, Error, FileRecord, OsmTreeNode, QueueMessage, Result, SpeciesRecord, TreeInfo,
-    UploadTicket, UserInfo,
+    Bounds, CommentRecord, Error, FileRecord, OsmTreeRecord, QueueMessage, Result, SpeciesRecord, TreeRecord,
+    UploadTicketRecord, UserRecord,
 };
 use crate::utils::{get_sqlite_path, get_timestamp, get_unique_id};
 
@@ -101,7 +101,7 @@ impl SqliteDatabase {
         }
     }
 
-    async fn log_tree_changes(&self, old: &TreeInfo, new: &TreeInfo) -> Result<()> {
+    async fn log_tree_changes(&self, old: &TreeRecord, new: &TreeRecord) -> Result<()> {
         debug!("Logging changes for tree {}.", new.id);
 
         if old.species != new.species {
@@ -181,8 +181,8 @@ impl SqliteDatabase {
         Ok(())
     }
 
-    fn tree_from_row(row: &async_sqlite::rusqlite::Row) -> std::result::Result<TreeInfo, async_sqlite::rusqlite::Error> {
-        Ok(TreeInfo {
+    fn tree_from_row(row: &async_sqlite::rusqlite::Row) -> std::result::Result<TreeRecord, async_sqlite::rusqlite::Error> {
+        Ok(TreeRecord {
             id: row.get(0)?,
             osm_id: row.get(1)?,
             lat: row.get(2)?,
@@ -200,8 +200,8 @@ impl SqliteDatabase {
         })
     }
 
-    fn osm_tree_from_row(row: &async_sqlite::rusqlite::Row) -> std::result::Result<OsmTreeNode, async_sqlite::rusqlite::Error> {
-        Ok(OsmTreeNode {
+    fn osm_tree_from_row(row: &async_sqlite::rusqlite::Row) -> std::result::Result<OsmTreeRecord, async_sqlite::rusqlite::Error> {
+        Ok(OsmTreeRecord {
             id: row.get(0)?,
             lat: row.get(1)?,
             lon: row.get(2)?,
@@ -217,7 +217,7 @@ impl SqliteDatabase {
 
 #[async_trait]
 impl Database for SqliteDatabase {
-    async fn add_tree(&self, tree: &TreeInfo) -> Result<()> {
+    async fn add_tree(&self, tree: &TreeRecord) -> Result<()> {
         let tree = tree.clone();
 
         self.pool.conn(move |conn| {
@@ -237,7 +237,7 @@ impl Database for SqliteDatabase {
         Ok(())
     }
 
-    async fn update_tree(&self, tree: &TreeInfo) -> Result<()> {
+    async fn update_tree(&self, tree: &TreeRecord) -> Result<()> {
         let tree = tree.clone();
 
         let old = match self.get_tree(tree.id).await? {
@@ -298,7 +298,7 @@ impl Database for SqliteDatabase {
     /**
      * Read information on a single tree.
      */
-    async fn get_tree(&self, id: u64) -> Result<Option<TreeInfo>> {
+    async fn get_tree(&self, id: u64) -> Result<Option<TreeRecord>> {
         let tree = self.pool.conn(move |conn| {
             let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id FROM trees WHERE id = ? LIMIT 1") {
                 Ok(value) => value,
@@ -331,7 +331,7 @@ impl Database for SqliteDatabase {
     /**
      * Read information on a single tree.
      */
-    async fn get_tree_by_osm_id(&self, osm_id: u64) -> Result<Option<TreeInfo>> {
+    async fn get_tree_by_osm_id(&self, osm_id: u64) -> Result<Option<TreeRecord>> {
         let tree = self.pool.conn(move |conn| {
             let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id FROM trees WHERE osm_id = ? LIMIT 1") {
                 Ok(value) => value,
@@ -366,7 +366,7 @@ impl Database for SqliteDatabase {
      *
      * https://docs.rs/rusqlite/0.30.0/rusqlite/index.html
      */
-    async fn get_trees(&self, bounds: Bounds) -> Result<Vec<TreeInfo>> {
+    async fn get_trees(&self, bounds: Bounds) -> Result<Vec<TreeRecord>> {
         let trees = self.pool.conn(move |conn| {
             let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id FROM trees WHERE lat <= ? AND lat >= ? AND lon <= ? AND lon >= ? AND state <> 'gone'") {
                 Ok(value) => value,
@@ -386,7 +386,7 @@ impl Database for SqliteDatabase {
                 },
             };
 
-            let mut trees: Vec<TreeInfo> = Vec::new();
+            let mut trees: Vec<TreeRecord> = Vec::new();
 
             while let Some(row) = rows.next()? {
                 trees.push(Self::tree_from_row(row)?);
@@ -401,7 +401,7 @@ impl Database for SqliteDatabase {
     /**
      * Find the closest tree to the given coordinates.
      */
-    async fn find_closest_tree(&self, lat: f64, lon: f64, distance: f64) -> Result<Option<TreeInfo>> {
+    async fn find_closest_tree(&self, lat: f64, lon: f64, distance: f64) -> Result<Option<TreeRecord>> {
         let delta = distance / 111_111.0; // meters per degree
 
         let bounds = Bounds {
@@ -446,7 +446,7 @@ impl Database for SqliteDatabase {
         Ok(id)
     }
 
-    async fn find_user_by_email(&self, email: &str) -> Result<Option<UserInfo>> {
+    async fn find_user_by_email(&self, email: &str) -> Result<Option<UserRecord>> {
         let email = email.to_string();
 
         let user = self
@@ -468,7 +468,7 @@ impl Database for SqliteDatabase {
                 if let Some(row) = rows.next()? {
                     let id: u64 = row.get(0)?;
 
-                    return Ok(Some(UserInfo {
+                    return Ok(Some(UserRecord {
                         id,
                         email: row.get(1)?,
                         name: row.get(2)?,
@@ -483,7 +483,7 @@ impl Database for SqliteDatabase {
         Ok(user)
     }
 
-    async fn add_user(&self, user: &UserInfo) -> Result<()> {
+    async fn add_user(&self, user: &UserRecord) -> Result<()> {
         let id = user.id;
         let email = user.email.clone();
         let name = user.name.clone();
@@ -503,7 +503,7 @@ impl Database for SqliteDatabase {
         Ok(())
     }
 
-    async fn add_upload_ticket(&self, ticket: &UploadTicket) -> Result<()> {
+    async fn add_upload_ticket(&self, ticket: &UploadTicketRecord) -> Result<()> {
         let id = ticket.id;
         let created_at = ticket.created_at;
         let created_by = ticket.created_by;
@@ -525,7 +525,7 @@ impl Database for SqliteDatabase {
         Ok(())
     }
 
-    async fn get_upload_ticket(&self, id: u64) -> Result<Option<UploadTicket>> {
+    async fn get_upload_ticket(&self, id: u64) -> Result<Option<UploadTicketRecord>> {
         let ticket = self.pool.conn(move |conn| {
             let mut stmt = match conn.prepare("SELECT id, created_at, created_by, upload_url FROM upload_tickets WHERE id = ?") {
                 Ok(value) => value,
@@ -539,7 +539,7 @@ impl Database for SqliteDatabase {
             let mut rows = stmt.query([id])?;
 
             if let Some(row) = rows.next()? {
-                return Ok(Some(UploadTicket {
+                return Ok(Some(UploadTicketRecord {
                     id: row.get(0)?,
                     created_at: row.get(1)?,
                     created_by: row.get(2)?,
@@ -878,7 +878,7 @@ impl Database for SqliteDatabase {
         Ok(species)
     }
 
-    async fn get_osm_tree(&self, id: u64) -> Result<Option<OsmTreeNode>>
+    async fn get_osm_tree(&self, id: u64) -> Result<Option<OsmTreeRecord>>
     {
         let tree = self.pool.conn(move |conn| {
             let mut stmt = match conn.prepare("SELECT id, lat, lon, genus, species, species_wikidata, height, circumference, diameter_crown FROM osm_trees WHERE id = ? LIMIT 1") {
@@ -909,7 +909,7 @@ impl Database for SqliteDatabase {
         Ok(tree)
     }
 
-    async fn add_osm_tree(&self, tree: &OsmTreeNode) -> Result<()>
+    async fn add_osm_tree(&self, tree: &OsmTreeRecord) -> Result<()>
     {
         let tmp = tree.clone();
 
@@ -1001,7 +1001,7 @@ mod tests {
     async fn test_add_tree() {
         let db = setup().await.expect("Error setting up database.");
 
-        db.add_tree(&TreeInfo {
+        db.add_tree(&TreeRecord {
             id: 123,
             osm_id: Some(234),
             lat: 56.65,
@@ -1049,7 +1049,7 @@ mod tests {
         let before = db.get_upload_ticket(123).await?;
         assert!(before.is_none());
 
-        let ticket = UploadTicket {
+        let ticket = UploadTicketRecord {
             id: 123,
             created_at: 123,
             created_by: 456,

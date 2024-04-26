@@ -2,7 +2,7 @@ use log::info;
 use std::sync::Arc;
 
 use crate::services::{Database, S3Service};
-use crate::types::{Result, UploadTicket};
+use crate::types::{Result, UploadTicketRecord};
 use crate::utils::{get_timestamp, get_unique_id};
 
 pub struct UploadService {
@@ -18,11 +18,11 @@ impl UploadService {
         })
     }
 
-    pub async fn create_ticket(&self, user_id: u64) -> Result<UploadTicket> {
+    pub async fn create_ticket(&self, user_id: u64) -> Result<UploadTicketRecord> {
         let id = get_unique_id()?;
         let upload_url = self.s3.get_upload_url(&id.to_string()).await?;
 
-        let ticket = UploadTicket {
+        let ticket = UploadTicketRecord {
             id,
             created_at: get_timestamp(),
             created_by: user_id,

@@ -10,7 +10,7 @@ use crate::services::{
 use crate::types::{
     AddCommentRequest, AddFileRequest, AddTreeRequest, Bounds, Error, FileRecord,
     LoginGoogleRequest, LoginResponse, MoveTreeRequest, PublicCommentInfo, PublicSpeciesInfo,
-    Result, TreeDetails, TreeInfo, TreeList, UpdateTreeRequest, UploadTicket,
+    Result, TreeDetails, TreeRecord, TreeList, UpdateTreeRequest, UploadTicketRecord,
 };
 
 pub struct AppState {
@@ -39,11 +39,11 @@ impl AppState {
         })
     }
 
-    pub async fn add_tree(&self, req: AddTreeRequest) -> Result<TreeInfo> {
+    pub async fn add_tree(&self, req: AddTreeRequest) -> Result<TreeRecord> {
         self.trees.add_tree(req).await
     }
 
-    pub async fn update_tree(&self, req: UpdateTreeRequest) -> Result<TreeInfo> {
+    pub async fn update_tree(&self, req: UpdateTreeRequest) -> Result<TreeRecord> {
         self.trees.update_tree(req).await
     }
 
@@ -108,7 +108,7 @@ impl AppState {
     /**
      * Creates an upload ticket for the specified user.
      */
-    pub async fn create_upload_ticket(&self, user_id: u64) -> Result<UploadTicket> {
+    pub async fn create_upload_ticket(&self, user_id: u64) -> Result<UploadTicketRecord> {
         self.uploads.create_ticket(user_id).await
     }
 

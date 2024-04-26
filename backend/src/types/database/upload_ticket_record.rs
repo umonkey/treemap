@@ -4,7 +4,7 @@
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]
-pub struct UploadTicket {
+pub struct UploadTicketRecord {
     pub id: u64,
     pub created_at: u64,
     pub created_by: u64,

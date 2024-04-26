@@ -2,7 +2,7 @@ use actix_web::{put, web::Data, web::Json, web::Path, HttpRequest};
 use serde::Deserialize;
 
 use crate::services::AppState;
-use crate::types::{Result, TreeInfo, UpdateTreeRequest};
+use crate::types::{Result, TreeRecord, UpdateTreeRequest};
 
 #[derive(Debug, Deserialize)]
 pub struct PathInfo {
@@ -27,7 +27,7 @@ pub async fn update_tree(
     path: Path<PathInfo>,
     payload: Json<RequestPayload>,
     req: HttpRequest,
-) -> Result<Json<TreeInfo>> {
+) -> Result<Json<TreeRecord>> {
     let user_id = state.get_user_id(&req)?;
 
     let req = UpdateTreeRequest {

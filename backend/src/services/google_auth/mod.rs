@@ -4,7 +4,7 @@ use std::sync::Arc;
 
 use crate::services::{Database, TokenService};
 use crate::types::{
-    Error, GoogleUserinfoResponse, LoginGoogleRequest, LoginResponse, Result, TokenClaims, UserInfo,
+    Error, GoogleUserinfoResponse, LoginGoogleRequest, LoginResponse, Result, TokenClaims, UserRecord,
 };
 use crate::utils::{get_timestamp, get_unique_id};
 
@@ -41,7 +41,7 @@ impl GoogleAuth {
         })
     }
 
-    async fn get_user(&self, userinfo: &GoogleUserinfoResponse) -> Result<UserInfo> {
+    async fn get_user(&self, userinfo: &GoogleUserinfoResponse) -> Result<UserRecord> {
         if let Some(user) = self.db.find_user_by_email(&userinfo.email).await? {
             debug!("Found a user with email {}.", userinfo.email);
             return Ok(user);
@@ -49,7 +49,7 @@ impl GoogleAuth {
 
         debug!("Creating a new user with email {}.", userinfo.email);
 
-        let user = UserInfo {
+        let user = UserRecord {
             id: get_unique_id()?,
             email: userinfo.email.clone(),
             name: userinfo.name.clone(),

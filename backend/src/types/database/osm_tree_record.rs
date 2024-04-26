@@ -1,7 +1,7 @@
 const DEFAULT_SPECIES: &str = "Unknown tree";
 
 #[derive(Clone, Debug, PartialEq)]
-pub struct OsmTreeNode {
+pub struct OsmTreeRecord {
     pub id: u64,
     pub lat: f64,
     pub lon: f64,
@@ -13,7 +13,7 @@ pub struct OsmTreeNode {
     pub diameter_crown: Option<f64>,
 }
 
-impl OsmTreeNode {
+impl OsmTreeRecord {
     pub fn get_species(&self) -> String {
         if let Some(value) = &self.species {
             return value.to_string();
@@ -31,8 +31,8 @@ impl OsmTreeNode {
 mod tests {
     use super::*;
 
-    fn default() -> OsmTreeNode {
-        OsmTreeNode {
+    fn default() -> OsmTreeRecord {
+        OsmTreeRecord {
             id: 1,
             lat: 0.0,
             lon: 0.0,
@@ -47,7 +47,7 @@ mod tests {
 
     #[test]
     fn test_get_species() {
-        let tree = OsmTreeNode {
+        let tree = OsmTreeRecord {
             species: Some("Quercus robur".to_string()),
             ..default()
         };
@@ -57,7 +57,7 @@ mod tests {
 
     #[test]
     fn test_get_species_genus() {
-        let tree = OsmTreeNode {
+        let tree = OsmTreeRecord {
             genus: Some("Quercus".to_string()),
             ..default()
         };

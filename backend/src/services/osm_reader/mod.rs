@@ -19,7 +19,7 @@
 use log::{debug, error, info};
 use std::sync::Arc;
 
-use crate::types::{Error, OsmTreeNode, Result, TreeInfo};
+use crate::types::{Error, OsmTreeRecord, Result, TreeRecord};
 use crate::services::{get_database, Database, OverpassClient};
 use crate::utils::{get_timestamp, get_unique_id};
 
@@ -65,7 +65,7 @@ impl OsmReaderService {
         Ok(())
     }
 
-    async fn process_node(&self, node: &OsmTreeNode) -> Result<()> {
+    async fn process_node(&self, node: &OsmTreeRecord) -> Result<()> {
         if self.db.get_osm_tree(node.id).await?.is_some() {
             debug!("Node {} already exists in the database.", node.id);
             return Ok(());
@@ -81,13 +81,13 @@ impl OsmReaderService {
         Ok(())
     }
 
-    async fn update_tree(&self, tree: &TreeInfo, node: &OsmTreeNode) -> Result<()> {
+    async fn update_tree(&self, tree: &TreeRecord, node: &OsmTreeRecord) -> Result<()> {
         if !self.has_changes(tree, node) {
             debug!("Tree {} has no changes.", tree.id);
             return Ok(());
         }
 
-        let new = TreeInfo {
+        let new = TreeRecord {
             lat: node.lat,
             lon: node.lon,
             species: node.get_species(),
@@ -104,14 +104,14 @@ impl OsmReaderService {
         Ok(())
     }
 
-    fn has_changes(&self, tree: &TreeInfo, node: &OsmTreeNode) -> bool {
+    fn has_changes(&self, tree: &TreeRecord, node: &OsmTreeRecord) -> bool {
         tree.species != node.get_species()
             || tree.height != node.height
             || tree.circumference != node.circumference
             || tree.diameter != node.diameter_crown
     }
 
-    async fn find_local_tree(&self, node: &OsmTreeNode) -> Result<Option<TreeInfo>> {
+    async fn find_local_tree(&self, node: &OsmTreeRecord) -> Result<Option<TreeRecord>> {
         // There is a linked tree.
         if let Some(tree) = self.db.get_tree_by_osm_id(node.id).await? {
             return Ok(Some(tree));
@@ -119,7 +119,7 @@ impl OsmReaderService {
 
         // There is a very close tree.
         if let Some(tree) = self.db.find_closest_tree(node.lat, node.lon, 5.0).await? {
-            self.db.update_tree(&TreeInfo {
+            self.db.update_tree(&TreeRecord {
                 osm_id: Some(node.id),
                 ..tree.clone()
             }).await?;
@@ -132,10 +132,10 @@ impl OsmReaderService {
         Ok(Some(self.add_local_tree(node).await?))
     }
 
-    async fn add_local_tree(&self, node: &OsmTreeNode) -> Result<TreeInfo> {
+    async fn add_local_tree(&self, node: &OsmTreeRecord) -> Result<TreeRecord> {
         let now = get_timestamp();
 
-        let tree = TreeInfo {
+        let tree = TreeRecord {
             id: get_unique_id()?,
             osm_id: Some(node.id),
             lat: node.lat,

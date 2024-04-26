@@ -1,13 +1,13 @@
 use actix_web::{post, web::Data, web::Json, HttpRequest};
 
 use crate::services::AppState;
-use crate::types::{Result, UploadTicket};
+use crate::types::{Result, UploadTicketRecord};
 
 #[post("/v1/uploads")]
 pub async fn create_upload_ticket(
     state: Data<AppState>,
     req: HttpRequest,
-) -> Result<Json<UploadTicket>> {
+) -> Result<Json<UploadTicketRecord>> {
     let user_id = state.get_user_id(&req)?;
     let ticket = state.create_upload_ticket(user_id).await?;
 

@@ -1,12 +1,12 @@
 use serde_json::Value;
 use log::debug;
 
-use crate::types::OsmTreeNode;
+use crate::types::OsmTreeRecord;
 
 pub struct NodeParser { }
 
 impl NodeParser {
-    pub fn parse(node: &Value) -> Option<OsmTreeNode> {
+    pub fn parse(node: &Value) -> Option<OsmTreeRecord> {
         if node["type"] != "node" {
             return None;
         }
@@ -36,7 +36,7 @@ impl NodeParser {
             return None;
         }
 
-        Some(OsmTreeNode {
+        Some(OsmTreeRecord {
             id,
             lat,
             lon,

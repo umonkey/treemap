@@ -4,7 +4,7 @@ use url::Url;
 use log::{debug, error};
 use serde_json::Value;
 
-use crate::types::{Error, OsmTreeNode, Result};
+use crate::types::{Error, OsmTreeRecord, Result};
 use crate::utils::{get_overpass_endpoint, get_overpass_query};
 
 use self::node_parser::NodeParser;
@@ -26,7 +26,7 @@ impl OverpassClient {
         }
     }
 
-    pub async fn query(&self) -> Result<Vec<OsmTreeNode>> {
+    pub async fn query(&self) -> Result<Vec<OsmTreeRecord>> {
         let query_url = self.get_query_url()?;
         let json = self.read_json(&query_url).await?;
 
@@ -39,7 +39,7 @@ impl OverpassClient {
             },
         };
 
-        let mut trees: Vec<OsmTreeNode> = Vec::new();
+        let mut trees: Vec<OsmTreeRecord> = Vec::new();
 
         for element in elements {
             match NodeParser::parse(element) {

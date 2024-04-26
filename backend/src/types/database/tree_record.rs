@@ -4,7 +4,7 @@
 use serde::Serialize;
 
 #[derive(Clone, Debug, Serialize)]
-pub struct TreeInfo {
+pub struct TreeRecord {
     pub id: u64,
     pub osm_id: Option<u64>,
     pub lat: f64,

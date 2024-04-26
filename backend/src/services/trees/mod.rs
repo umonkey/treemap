@@ -9,7 +9,7 @@ use std::sync::Arc;
 
 use crate::services::Database;
 use crate::types::{
-    AddTreeRequest, Bounds, Error, MoveTreeRequest, Result, TreeInfo, TreeList, TreeListItem,
+    AddTreeRequest, Bounds, Error, MoveTreeRequest, Result, TreeRecord, TreeList, TreeListItem,
     UpdateTreeRequest,
 };
 use crate::utils::{get_timestamp, get_unique_id};
@@ -23,11 +23,11 @@ impl Trees {
         Self { db: db.clone() }
     }
 
-    pub async fn add_tree(&self, req: AddTreeRequest) -> Result<TreeInfo> {
+    pub async fn add_tree(&self, req: AddTreeRequest) -> Result<TreeRecord> {
         let id = get_unique_id()?;
         let now = get_timestamp();
 
-        let tree = TreeInfo {
+        let tree = TreeRecord {
             id,
             osm_id: None,
             lat: req.lat,
@@ -75,7 +75,7 @@ impl Trees {
         Ok(tree)
     }
 
-    pub async fn update_tree(&self, req: UpdateTreeRequest) -> Result<TreeInfo> {
+    pub async fn update_tree(&self, req: UpdateTreeRequest) -> Result<TreeRecord> {
         let now = get_timestamp();
 
         let old = self.get_tree(req.id).await?;
@@ -111,7 +111,7 @@ impl Trees {
                 .await?;
         }
 
-        let new = TreeInfo {
+        let new = TreeRecord {
             id: req.id,
             osm_id: old.osm_id,
             lat: old.lat,
@@ -158,7 +158,7 @@ impl Trees {
         Ok(TreeList { trees: items })
     }
 
-    pub async fn get_tree(&self, id: u64) -> Result<TreeInfo> {
+    pub async fn get_tree(&self, id: u64) -> Result<TreeRecord> {
         debug!("Getting details for tree {}.", id);
 
         match self.db.get_tree(id).await? {
