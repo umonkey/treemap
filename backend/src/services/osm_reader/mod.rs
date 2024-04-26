@@ -23,7 +23,6 @@ use crate::types::{Error, OsmTreeNode, Result, TreeInfo};
 use crate::services::{get_database, Database, OverpassClient};
 use crate::utils::{get_timestamp, get_unique_id};
 
-const DEFAULT_NOTE: &str = "Imported from OSM.";
 const DEFAULT_STATE: &str = "healthy";
 
 pub struct OsmReaderService {
@@ -142,7 +141,7 @@ impl OsmReaderService {
             lat: node.lat,
             lon: node.lon,
             species: node.get_species(),
-            notes: Some(DEFAULT_NOTE.to_string()),
+            notes: None,
             height: node.height,
             circumference: node.circumference,
             diameter: node.diameter_crown,
