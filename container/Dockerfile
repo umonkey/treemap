@@ -20,6 +20,7 @@ RUN apk add --no-cache sqlite supervisor
 WORKDIR /app
 COPY --from=rust-builder /app/target/release/treemap /app/bin/
 COPY --from=rust-builder /app/dev/schema-sqlite.sql /app/schema-sqlite.sql
+COPY --from=rust-builder /app/dev/species.sql /app/species.sql
 COPY --from=node-builder /app/dist /app/static
 COPY container/rootfs/ /
 
