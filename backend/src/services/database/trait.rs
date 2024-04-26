@@ -11,6 +11,8 @@ pub trait Database {
     async fn update_tree(&self, tree: &TreeRecord) -> Result<()>;
     async fn move_tree(&self, id: u64, lat: f64, lon: f64) -> Result<()>;
     async fn get_trees(&self, bounds: Bounds) -> Result<Vec<TreeRecord>>;
+    async fn get_trees_no_metrics(&self, bounds: Bounds) -> Result<Vec<TreeRecord>>;
+    async fn get_trees_no_photos(&self, bounds: Bounds) -> Result<Vec<TreeRecord>>;
     async fn get_tree(&self, id: u64) -> Result<Option<TreeRecord>>;
     async fn get_tree_by_osm_id(&self, osm_id: u64) -> Result<Option<TreeRecord>>;
     async fn find_closest_tree(&self, lat: f64, lon: f64, distance: f64) -> Result<Option<TreeRecord>>;

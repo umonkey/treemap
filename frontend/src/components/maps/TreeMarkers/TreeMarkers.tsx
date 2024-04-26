@@ -4,14 +4,9 @@
 
 import { Markers, MapEventHandler } from "@/components";
 import { useMarkers } from "./hooks";
-import { IBounds } from "@/types";
 
 export const TreeMarkers = () => {
-  const { markers, reload } = useMarkers();
-
-  const handleBoundsChange = (bounds: IBounds) => {
-    reload(bounds);
-  };
+  const { markers, handleBoundsChange } = useMarkers();
 
   return (
     <>

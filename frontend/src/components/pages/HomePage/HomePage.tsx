@@ -1,21 +1,23 @@
+// Global imports.
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { MapEventHandler } from "@/components";
+// Project imports.
 import { routes } from "@/utils/routes";
 import { useMapState } from "@/utils";
 import { HOME_PAGE_MAP_KEY } from "@/utils/config";
-
 import {
-  SelectLocationDialog,
+  Header,
   MapControl,
+  MapEventHandler,
+  SelectLocationDialog,
   SideBar,
   TreeMarkers,
   WithSidebar,
 } from "@/components";
-
 import { ILatLng, IMapView } from "@/types";
 
+// Local imports.
 import "./styles.css";
 
 export const HomePage = () => {
@@ -49,6 +51,8 @@ export const HomePage = () => {
 
   return (
     <div className="HomePage">
+      <Header />
+
       <WithSidebar>
         <MapControl
           center={mapState.center}

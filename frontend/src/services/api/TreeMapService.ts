@@ -31,6 +31,7 @@ export class TreeMapService {
     east: number;
     south: number;
     west: number;
+    search?: string;
   }): Promise<ITreeInfo[]> {
     const res = await this.get<ITreesResponse>("/v1/trees", {
       params: {
@@ -38,6 +39,7 @@ export class TreeMapService {
         e: params.east,
         s: params.south,
         w: params.west,
+        search: params.search || "",
       }
     });
 

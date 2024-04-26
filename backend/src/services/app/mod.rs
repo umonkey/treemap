@@ -8,7 +8,7 @@ use crate::services::{
     CommentsService, Database, FileService, GoogleAuth, TokenService, UploadService,
 };
 use crate::types::{
-    AddCommentRequest, AddFileRequest, AddTreeRequest, Bounds, Error, FileRecord,
+    AddCommentRequest, AddFileRequest, AddTreeRequest, Error, FileRecord, GetTreesRequest,
     LoginGoogleRequest, LoginResponse, MoveTreeRequest, PublicCommentInfo, PublicSpeciesInfo,
     Result, TreeDetails, TreeRecord, TreeList, UpdateTreeRequest, UploadTicketRecord,
 };
@@ -55,8 +55,8 @@ impl AppState {
         Ok(())
     }
 
-    pub async fn get_trees(&self, bounds: Bounds) -> Result<TreeList> {
-        self.trees.get_trees(bounds).await
+    pub async fn get_trees(&self, request: &GetTreesRequest) -> Result<TreeList> {
+        self.trees.get_trees(request).await
     }
 
     pub fn get_user_id(&self, req: &HttpRequest) -> Result<u64> {

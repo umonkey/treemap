@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { useSearchQuery } from "@/hooks";
 import { IBounds, ITreeInfoMap } from "@/types";
 import { treeMapService } from "@/services/api";
 
@@ -11,6 +12,9 @@ export const useMarkers = () => {
 
   // Last displayed bounds, tracked to request the API.
   const [bounds, setBounds] = useState<number[]>([]);
+
+  // Search string.
+  const { searchQuery } = useSearchQuery();
 
   const timeoutId = useRef<ReturnType<typeof setTimeout>|null>(null);
 
@@ -34,6 +38,7 @@ export const useMarkers = () => {
       east: bounds[1],
       south: bounds[2],
       west: bounds[3],
+      search: searchQuery,
     });
 
     timeoutId.current = null;
@@ -54,7 +59,11 @@ export const useMarkers = () => {
       console.debug(`Added ${added} new markers.`);
       setMap(updated);
     }
-  }, [bounds, map]);
+  }, [bounds, map, searchQuery]);
+
+  const handleBoundsChange = (bounds: IBounds) => {
+    reload(bounds);
+  };
 
   useEffect(() => {
     if (bounds.length !== 4) {
@@ -72,6 +81,6 @@ export const useMarkers = () => {
 
   return {
     markers: Object.values(map),
-    reload,
+    handleBoundsChange,
   };
 };

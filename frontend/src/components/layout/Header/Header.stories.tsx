@@ -1,17 +1,17 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from "@storybook/react";
 
-import { HomePage } from "./HomePage";
+import { Header } from "./Header";
 
 const meta = {
-  title: 'Pages/HomePage',
-  component: HomePage,
+  title: "Layout/Header",
+  component: Header,
   parameters: {
-    layout: 'fullscreen', // centered
+    layout: "padded", // centered, fullscreen
   },
   args: {
     searchQuery: "Thuja cordata",
   },
-} satisfies Meta<typeof HomePage>;
+} satisfies Meta<typeof Header>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
