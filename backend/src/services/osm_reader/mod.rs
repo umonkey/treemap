@@ -68,18 +68,13 @@ impl OsmReaderService {
     }
 
     async fn process_node(&self, node: &OsmTreeNode) -> Result<()> {
-        match self.db.get_osm_tree(node.id).await? {
-            Some(existing) => {
-                if existing == *node {
-                    debug!("Node {} has no changes.", node.id);
-                    return Ok(());
-                }
-            },
+        if self.db.get_osm_tree(node.id).await?.is_some() {
+            debug!("Node {} already exists in the database.", node.id);
+            return Ok(());
+        }
 
-            None => {
-                self.db.add_osm_tree(node).await?;
-            },
-        };
+        self.db.add_osm_tree(node).await?;
+        info!("OSM node {} added to the database.", node.id);
 
         if let Some(local) = self.find_local_tree(node).await? {
             self.update_tree(&local, node).await?;
@@ -126,7 +121,13 @@ impl OsmReaderService {
 
         // There is a very close tree.
         if let Some(tree) = self.db.find_closest_tree(node.lat, node.lon, 5.0).await? {
-            // TODO: link them!
+            self.db.update_tree(&TreeInfo {
+                osm_id: Some(node.id),
+                ..tree.clone()
+            }).await?;
+
+            info!("Tree {} linked to OSM node {}.", tree.id, node.id);
+
             return Ok(Some(tree));
         }
 
