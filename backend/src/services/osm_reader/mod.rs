@@ -23,7 +23,6 @@ use crate::types::{Error, OsmTreeNode, Result, TreeInfo};
 use crate::services::{get_database, Database, OverpassClient};
 use crate::utils::{get_timestamp, get_unique_id};
 
-const DEFAULT_TREE_NAME: &str = "Unknown tree";
 const DEFAULT_NOTE: &str = "Imported from OSM.";
 const DEFAULT_STATE: &str = "healthy";
 
@@ -92,7 +91,7 @@ impl OsmReaderService {
         let new = TreeInfo {
             lat: node.lat,
             lon: node.lon,
-            species: node.species.clone().unwrap_or(DEFAULT_TREE_NAME.to_string()),
+            species: node.get_species(),
             height: node.height,
             circumference: node.circumference,
             diameter: node.diameter_crown,
@@ -107,7 +106,7 @@ impl OsmReaderService {
     }
 
     fn has_changes(&self, tree: &TreeInfo, node: &OsmTreeNode) -> bool {
-        tree.species != node.species.clone().unwrap_or(DEFAULT_TREE_NAME.to_string())
+        tree.species != node.get_species()
             || tree.height != node.height
             || tree.circumference != node.circumference
             || tree.diameter != node.diameter_crown
@@ -142,7 +141,7 @@ impl OsmReaderService {
             osm_id: Some(node.id),
             lat: node.lat,
             lon: node.lon,
-            species: node.species.clone().unwrap_or(DEFAULT_TREE_NAME.to_string()),
+            species: node.get_species(),
             notes: Some(DEFAULT_NOTE.to_string()),
             height: node.height,
             circumference: node.circumference,
