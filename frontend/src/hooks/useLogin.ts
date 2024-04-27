@@ -46,6 +46,7 @@ export const useLogin = (props: IProps) => {
 
   const logoutFunction = () => {
     setUserInfo(null);
+    window.location.reload();
   };
 
   return {

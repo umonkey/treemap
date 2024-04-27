@@ -1,12 +1,13 @@
 import { IconButton } from "@mui/material";
 import AccountCircle from "@mui/icons-material/AccountCircle";
+import LogoutIcon from '@mui/icons-material/Logout';
 
-import { useUserInfo } from "@/hooks";
+import { useProfileHeaderButton } from "./hooks";
 
 export const ProfileHeaderButton = () => {
-  const { userInfo } = useUserInfo();
+  const { isLoggedIn, loginFunction, logoutFunction } = useProfileHeaderButton();
 
-  if (userInfo) {
+  if (isLoggedIn) {
     return (
       <IconButton
         size="large"
@@ -14,8 +15,9 @@ export const ProfileHeaderButton = () => {
         aria-label="account of current user"
         aria-haspopup="true"
         color="inherit"
+        onClick={logoutFunction}
       >
-        <AccountCircle />
+        <LogoutIcon />
       </IconButton>
     );
   }
@@ -27,6 +29,7 @@ export const ProfileHeaderButton = () => {
       aria-label="account of current user"
       aria-haspopup="true"
       color="inherit"
+      onClick={loginFunction}
     >
       <AccountCircle />
     </IconButton>
