@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { EditTreeDialog, MapWithMarker, SideBar, WithAuth, WithSidebar } from "@/components";
+import { EditTreeDialog, MapWithMarker, SideBar, WithAuth, WithHeader, WithSidebar } from "@/components";
 import { ITreeDetails } from "@/types";
 import { treeMapService } from "@/services/api";
 import { useTreeInfo } from "./hooks";
@@ -95,11 +95,13 @@ export const EditTreePageWrapper = () => {
 
   return (
     <WithAuth>
-      <EditTreePage
-        id={id}
-        onSuccess={handleSuccess}
-        onCancel={handleCancel}
-      />
+      <WithHeader>
+        <EditTreePage
+          id={id}
+          onSuccess={handleSuccess}
+          onCancel={handleCancel}
+        />
+      </WithHeader>
     </WithAuth>
   );
 };

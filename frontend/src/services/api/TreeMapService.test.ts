@@ -36,6 +36,7 @@ describe("TreeMapService", () => {
         e: 2.2,
         s: 3.3,
         w: 4.4,
+        search: "",
       },
     }).reply(200, {
       trees: [

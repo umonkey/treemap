@@ -20,7 +20,8 @@ const DEFAULT_ADDR: &str = "0.0.0.0";
 const DEFAULT_FILE_FOLDER: &str = "var/files";
 const DEFAULT_JWT_SECRET: &str = "secret";
 const DEFAULT_OVERPASS_ENDPONT: &str = "https://overpass-api.de/api/interpreter";
-const DEFAULT_OVERPASS_QUERY: &str = "[out:json];node[natural=tree](40.052848, 44.294472, 40.300476, 44.807396);out;";
+const DEFAULT_OVERPASS_QUERY: &str =
+    "[out:json];node[natural=tree](40.052848, 44.294472, 40.300476, 44.807396);out;";
 const DEFAULT_PAYLOAD_SIZE: usize = 50_485_760;
 const DEFAULT_PORT: u16 = 8000;
 const DEFAULT_WORKERS: usize = 1;

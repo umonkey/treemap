@@ -1,7 +1,7 @@
 /**
  * A button to log in with Google.
  *
- * To know when a user logged in successfully, see `src/utils/userinfo.ts`.
+ * To know when a user logged in successfully, see `src/hooks/useUserInfo.ts`.
  */
 
 import { Button } from "@mui/material";
@@ -14,16 +14,12 @@ interface IProps {
 }
 
 export const LoginWithGoogleButton = (props: IProps) => {
-  const { login } = useGoogleAuth({
+  const { loginFunction } = useGoogleAuth({
     onSuccess: props.onSuccess,
     onError: props.onError,
   });
 
-  const handleClick = () => {
-    login();
-  };
-
   return (
-    <Button variant="contained" color="success" disabled={props.disabled} onClick={handleClick}>Log In with Google</Button>
+    <Button variant="contained" color="success" disabled={props.disabled} onClick={loginFunction}>Log In with Google</Button>
   );
 };

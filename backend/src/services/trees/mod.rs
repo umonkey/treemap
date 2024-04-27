@@ -9,8 +9,8 @@ use std::sync::Arc;
 
 use crate::services::Database;
 use crate::types::{
-    AddTreeRequest, Bounds, Error, MoveTreeRequest, Result, TreeRecord, TreeList, TreeListItem,
-    UpdateTreeRequest,
+    AddTreeRequest, Error, GetTreesRequest, MoveTreeRequest, Result, SearchQuery, TreeList,
+    TreeRecord, UpdateTreeRequest,
 };
 use crate::utils::{get_timestamp, get_unique_id};
 
@@ -50,27 +50,6 @@ impl Trees {
         );
 
         self.db.add_tree(&tree).await?;
-        self.db
-            .add_tree_prop(tree.id, "lat", &tree.lat.to_string())
-            .await?;
-        self.db
-            .add_tree_prop(tree.id, "lon", &tree.lon.to_string())
-            .await?;
-        self.db
-            .add_tree_prop(tree.id, "species", &tree.species.to_string())
-            .await?;
-
-        if let Some(height) = tree.height {
-            self.db
-                .add_tree_prop(tree.id, "height", &height.to_string())
-                .await?;
-        }
-
-        if let Some(circumference) = tree.circumference {
-            self.db
-                .add_tree_prop(tree.id, "circumference", &circumference.to_string())
-                .await?;
-        }
 
         Ok(tree)
     }
@@ -79,37 +58,6 @@ impl Trees {
         let now = get_timestamp();
 
         let old = self.get_tree(req.id).await?;
-
-        if old.species != req.species {
-            self.db.add_tree_prop(req.id, "species", &req.species).await?;
-        }
-
-        if old.notes != req.notes{
-            let notes = req.notes.clone().unwrap_or("".to_string());
-            self.db.add_tree_prop(req.id, "notes", &notes).await?;
-        }
-
-        if old.height != req.height {
-            self.db
-                .add_tree_prop(req.id, "height", &req.height.unwrap_or(0.0).to_string())
-                .await?;
-        }
-
-        if old.circumference != req.circumference {
-            self.db
-                .add_tree_prop(
-                    req.id,
-                    "circumference",
-                    &req.circumference.unwrap_or(0.0).to_string(),
-                )
-                .await?;
-        }
-
-        if old.diameter != req.diameter {
-            self.db
-                .add_tree_prop(req.id, "diameter", &req.diameter.unwrap_or(0.0).to_string())
-                .await?;
-        }
 
         let new = TreeRecord {
             id: req.id,
@@ -144,18 +92,21 @@ impl Trees {
 
         self.db.move_tree(id, lat, lon).await?;
 
-        self.db.add_tree_prop(id, "lat", &lat.to_string()).await?;
-        self.db.add_tree_prop(id, "lon", &lon.to_string()).await?;
-
         Ok(())
     }
 
-    pub async fn get_trees(&self, bounds: Bounds) -> Result<TreeList> {
-        let trees = self.db.get_trees(bounds).await?;
+    pub async fn get_trees(&self, request: &GetTreesRequest) -> Result<TreeList> {
+        let mut trees = self.db.get_trees(request.bounds()).await?;
 
-        let items = trees.iter().map(TreeListItem::from_tree).collect();
+        if let Some(search) = &request.search {
+            let query = SearchQuery::from_string(search);
 
-        Ok(TreeList { trees: items })
+            if !query.is_empty() {
+                trees.retain(|t| query.r#match(t));
+            }
+        }
+
+        Ok(TreeList::from_trees(trees))
     }
 
     pub async fn get_tree(&self, id: u64) -> Result<TreeRecord> {
@@ -200,11 +151,12 @@ mod tests {
         let service = setup(None).await?;
 
         let trees = service
-            .get_trees(Bounds {
+            .get_trees(&GetTreesRequest {
                 n: 90.0,
                 e: 180.0,
                 s: -90.0,
                 w: -180.0,
+                search: None,
             })
             .await?;
 
@@ -222,11 +174,12 @@ mod tests {
             .expect("Error initializing database");
 
         let trees = service
-            .get_trees(Bounds {
+            .get_trees(&GetTreesRequest {
                 n: 90.0,
                 e: 180.0,
                 s: -90.0,
                 w: -180.0,
+                search: None,
             })
             .await
             .expect("Error getting trees");

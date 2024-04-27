@@ -1,6 +1,9 @@
+// Global imports.
 import { useCallback, useState, useEffect } from "react";
+
+// Project imports.
 import { IUserInfo } from "@/types";
-import { USER_INFO_KEY } from "./config";
+import { USER_INFO_KEY } from "@/utils/config";
 
 const readStoredValue = (): IUserInfo | null => {
   try {

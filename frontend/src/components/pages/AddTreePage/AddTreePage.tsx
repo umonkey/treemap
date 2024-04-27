@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 
-import { AddTreeDialog, MapWithMarker, SideBar, WithAuth, WithSidebar } from "@/components";
+import { AddTreeDialog, MapWithMarker, SideBar, WithAuth, WithHeader, WithSidebar } from "@/components";
 import { IAddTreeRequest, ILatLng, ITreeInfo } from "@/types";
 import { treeMapService } from "@/services/api";
 import { routes } from "@/utils/routes";
@@ -82,12 +82,14 @@ export const AddTreePageWrapper = () => {
 
   return (
     <WithAuth>
-      <AddTreePage
-        lat={parseFloat(lat)}
-        lon={parseFloat(lon)}
-        onSuccess={handleSuccess}
-        onCancel={handleCancel}
-      />
+      <WithHeader>
+        <AddTreePage
+          lat={parseFloat(lat)}
+          lon={parseFloat(lon)}
+          onSuccess={handleSuccess}
+          onCancel={handleCancel}
+        />
+      </WithHeader>
     </WithAuth>
   );
 };

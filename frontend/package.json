@@ -21,6 +21,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@maptiler/leaflet-maptilersdk": "^2.0.0",
+    "@mui/icons-material": "^5.15.15",
     "@mui/material": "^5.15.14",
     "@react-oauth/google": "^0.12.1",
     "@sentry/react": "^7.110.1",

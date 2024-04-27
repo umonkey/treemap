@@ -4,7 +4,8 @@ use std::sync::Arc;
 
 use crate::services::{Database, TokenService};
 use crate::types::{
-    Error, GoogleUserinfoResponse, LoginGoogleRequest, LoginResponse, Result, TokenClaims, UserRecord,
+    Error, GoogleUserinfoResponse, LoginGoogleRequest, LoginResponse, Result, TokenClaims,
+    UserRecord,
 };
 use crate::utils::{get_timestamp, get_unique_id};
 

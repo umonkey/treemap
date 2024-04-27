@@ -1,23 +1,24 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "@storybook/test";
 
-import { HomePage } from "./HomePage";
+import { SearchBar } from "./SearchBar";
 
 const meta = {
-  title: 'Pages/HomePage',
-  component: HomePage,
+  title: "Elements/SearchBar",
+  component: SearchBar,
   parameters: {
-    layout: 'fullscreen', // centered
+    layout: "padded", // centered, fullscreen
   },
   args: {
     searchQuery: "Thuja cordata",
+    onChange: fn(),
   },
-} satisfies Meta<typeof HomePage>;
+} satisfies Meta<typeof SearchBar>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Desktop: Story = {
-  args: { },
   parameters: {
     viewport: {
       defaultViewport: "responsive",
@@ -26,7 +27,6 @@ export const Desktop: Story = {
 };
 
 export const Phone: Story = {
-  args: { },
   parameters: {
     viewport: {
       defaultViewport: "mobile1",
