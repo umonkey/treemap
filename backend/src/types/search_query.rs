@@ -27,7 +27,7 @@ impl SearchQuery {
         let mut deformed = false;
         let mut healthy = false;
 
-        for word in query.split_whitespace() {
+        for word in query.to_lowercase().split_whitespace() {
             if word.contains("nometric") {
                 nometrics = true;
             } else if word.contains("noimage") || word.contains("nophoto") {
@@ -277,7 +277,7 @@ mod tests {
 
     #[test]
     fn test_sick() {
-        let query = SearchQuery::from_string("sick");
+        let query = SearchQuery::from_string("Sick");
 
         assert_eq!(
             true,
