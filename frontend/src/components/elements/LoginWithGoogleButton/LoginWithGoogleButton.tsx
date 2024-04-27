@@ -1,7 +1,7 @@
 /**
  * A button to log in with Google.
  *
- * To know when a user logged in successfully, see `src/utils/userinfo.ts`.
+ * To know when a user logged in successfully, see `src/hooks/useUserInfo.ts`.
  */
 
 import { Button } from "@mui/material";

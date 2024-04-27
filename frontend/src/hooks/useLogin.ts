@@ -3,7 +3,7 @@ import { useGoogleLogin } from "@react-oauth/google";
 
 // Project imports.
 import { treeMapService } from "@/services/api";
-import { useUserInfo } from "@/utils/userinfo";
+import { useUserInfo } from "@/hooks";
 
 interface IProps {
   onError: () => void;

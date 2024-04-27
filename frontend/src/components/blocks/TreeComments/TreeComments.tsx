@@ -1,8 +1,11 @@
+// Project imports.
 import { AddCommentForm, LoginWithGoogleButton } from "@/components";
 import { IComment } from "@/types";
-import { useComments } from "./hooks";
 import { formatDate } from "@/utils";
-import { useUserInfo } from "@/utils/userinfo";
+import { useUserInfo } from "@/hooks";
+
+// Local imports.
+import { useComments } from "./hooks";
 import "./styles.scss";
 
 interface IProps {

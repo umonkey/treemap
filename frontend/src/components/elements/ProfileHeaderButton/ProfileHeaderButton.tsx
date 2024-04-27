@@ -1,7 +1,7 @@
 import { IconButton } from "@mui/material";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 
-import { useUserInfo } from "@/utils/userinfo";
+import { useUserInfo } from "@/hooks";
 
 export const ProfileHeaderButton = () => {
   const { userInfo } = useUserInfo();

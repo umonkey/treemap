@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 
 import { IApiError, IAddTreeRequest, IComment, ILatLng, ISpecies, ITreeInfo, ITreeDetails, IUploadTicket, IUserInfo } from "@/types";
-import { getUserToken, removeUserToken } from "@/utils/userinfo";
+import { getUserToken, removeUserToken} from "@/hooks/useUserInfo";
 import { getApiRoot } from "@/utils/env";
 
 export interface ITreesResponse {

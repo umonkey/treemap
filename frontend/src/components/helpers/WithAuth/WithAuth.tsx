@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { LoginWithGoogleButton } from "@/components";
-import { useUserInfo } from "@/utils/userinfo";
+import { useUserInfo } from "@/hooks";
 import "./style.css";
 
 interface IProps {
