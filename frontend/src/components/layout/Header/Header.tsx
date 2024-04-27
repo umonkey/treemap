@@ -1,6 +1,6 @@
 import { AppBar, Box, Toolbar, Typography } from "@mui/material";
 
-import { ProfileHeaderButton, SearchBar } from "@/components";
+import { HomeButton, ProfileHeaderButton, SearchBar } from "@/components";
 
 import { useHeader } from "./hooks";
 import "./styles.scss";
@@ -12,6 +12,8 @@ export const Header = () => {
     <div className="Header">
       <AppBar>
         <Toolbar variant="dense">
+          <HomeButton />
+
           <Typography variant="h6" color="inherit" noWrap sx={{
             display: {
               xs: "none",

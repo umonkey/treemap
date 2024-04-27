@@ -12,6 +12,7 @@ export { EditTreePage, EditTreePageWrapper } from "./pages/EditTreePage";
 export { Gallery } from "./blocks/Gallery";
 export { GreenCircleIcon } from "./maps/GreenCircleIcon";
 export { Header } from "./layout/Header";
+export { HomeButton } from "./elements/HomeButton";
 export { HomePage } from "./pages/HomePage";
 export { ImagePicker } from "./elements/ImagePicker";
 export { LayerSelector } from "./maps/LayerSelector";
