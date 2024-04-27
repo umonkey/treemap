@@ -1,8 +1,8 @@
 mod node_parser;
 
-use url::Url;
 use log::{debug, error};
 use serde_json::Value;
+use url::Url;
 
 use crate::types::{Error, OsmTreeRecord, Result};
 use crate::utils::{get_overpass_endpoint, get_overpass_query};
@@ -36,7 +36,7 @@ impl OverpassClient {
             None => {
                 error!("OSM response does not contain elements array.");
                 return Err(Error::OsmExchange);
-            },
+            }
         };
 
         let mut trees: Vec<OsmTreeRecord> = Vec::new();
@@ -46,7 +46,7 @@ impl OverpassClient {
                 Some(tree) => trees.push(tree),
                 None => {
                     error!("Error parsing OSM node: {:?}", element);
-                },
+                }
             }
         }
 
@@ -62,7 +62,7 @@ impl OverpassClient {
             Err(e) => {
                 error!("Error sending Overpass query: {}", e);
                 return Err(Error::OsmExchange);
-            },
+            }
         };
 
         if response.status() != 200 {
@@ -76,21 +76,20 @@ impl OverpassClient {
             Err(e) => {
                 error!("Error parsing Overpass response JSON: {:?}", e);
                 return Err(Error::OsmExchange);
-            },
+            }
         };
 
         Ok(json)
     }
 
     fn get_query_url(&self) -> Result<String> {
-        match Url::parse_with_params(&self.endpoint,
-            &[("data", self.query.clone())]) {
+        match Url::parse_with_params(&self.endpoint, &[("data", self.query.clone())]) {
             Ok(url) => Ok(url.to_string()),
 
             Err(e) => {
                 error!("Error building Overpass query URL: {}", e);
                 Err(Error::OsmExchange)
-            },
+            }
         }
     }
 }

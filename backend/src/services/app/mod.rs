@@ -10,7 +10,7 @@ use crate::services::{
 use crate::types::{
     AddCommentRequest, AddFileRequest, AddTreeRequest, Error, FileRecord, GetTreesRequest,
     LoginGoogleRequest, LoginResponse, MoveTreeRequest, PublicCommentInfo, PublicSpeciesInfo,
-    Result, TreeDetails, TreeRecord, TreeList, UpdateTreeRequest, UploadTicketRecord,
+    Result, TreeDetails, TreeList, TreeRecord, UpdateTreeRequest, UploadTicketRecord,
 };
 
 pub struct AppState {

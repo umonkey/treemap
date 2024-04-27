@@ -1,7 +1,6 @@
 /**
  * This is how a single tree is stored in the database.
  */
-
 use serde::Serialize;
 
 #[derive(Clone, Debug, Serialize)]

@@ -9,8 +9,8 @@ use std::sync::Arc;
 
 use crate::services::Database;
 use crate::types::{
-    AddTreeRequest, Error, GetTreesRequest, MoveTreeRequest, Result, SearchQuery, TreeRecord,
-    TreeList, UpdateTreeRequest,
+    AddTreeRequest, Error, GetTreesRequest, MoveTreeRequest, Result, SearchQuery, TreeList,
+    TreeRecord, UpdateTreeRequest,
 };
 use crate::utils::{get_timestamp, get_unique_id};
 

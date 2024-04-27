@@ -15,12 +15,11 @@
  * 3. If not found, find a tree within 10 meters and link them.
  * 4. If a local tree is found, update it.
  */
-
 use log::{debug, error, info};
 use std::sync::Arc;
 
-use crate::types::{Error, OsmTreeRecord, Result, TreeRecord};
 use crate::services::{get_database, Database, OverpassClient};
+use crate::types::{Error, OsmTreeRecord, Result, TreeRecord};
 use crate::utils::{get_timestamp, get_unique_id};
 
 const DEFAULT_STATE: &str = "healthy";
@@ -49,7 +48,7 @@ impl OsmReaderService {
             Err(e) => {
                 error!("Error querying OSM: {:?}", e);
                 return Err(Error::OsmExchange);
-            },
+            }
         };
 
         debug!("Going to add {} nodes to the database.", doc.len());
@@ -99,7 +98,10 @@ impl OsmReaderService {
 
         self.db.update_tree(&new).await?;
 
-        debug!("Updated tree {} with OSM data from node {}.", tree.id, node.id);
+        debug!(
+            "Updated tree {} with OSM data from node {}.",
+            tree.id, node.id
+        );
 
         Ok(())
     }
@@ -119,10 +121,12 @@ impl OsmReaderService {
 
         // There is a very close tree.
         if let Some(tree) = self.db.find_closest_tree(node.lat, node.lon, 5.0).await? {
-            self.db.update_tree(&TreeRecord {
-                osm_id: Some(node.id),
-                ..tree.clone()
-            }).await?;
+            self.db
+                .update_tree(&TreeRecord {
+                    osm_id: Some(node.id),
+                    ..tree.clone()
+                })
+                .await?;
 
             info!("Tree {} linked to OSM node {}.", tree.id, node.id);
 

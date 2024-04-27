@@ -4,7 +4,6 @@
  * We parse it to extract the words to search for, and flags to disable certain
  * search features.
  */
-
 use crate::types::TreeRecord;
 
 #[derive(Debug)]
@@ -76,7 +75,11 @@ impl SearchQuery {
             return false;
         }
 
-        if self.nometrics && tree.height.is_some() && tree.circumference.is_some() && tree.diameter.is_some() {
+        if self.nometrics
+            && tree.height.is_some()
+            && tree.circumference.is_some()
+            && tree.diameter.is_some()
+        {
             return false;
         }
 
@@ -219,99 +222,140 @@ mod tests {
             ..default_tree()
         };
 
-        assert_eq!(query.r#match(&tree2), false, "tree has thumbnail and must not match");
+        assert_eq!(
+            query.r#match(&tree2),
+            false,
+            "tree has thumbnail and must not match"
+        );
     }
 
     #[test]
     fn test_match_nometrics() {
         let query = SearchQuery::from_string("nometrics");
 
-        assert_eq!(true, query.r#match(&TreeRecord {
-            height: None,
-            circumference: Some(2.0),
-            diameter: Some(3.0),
-            ..default_tree()
-        }));
+        assert_eq!(
+            true,
+            query.r#match(&TreeRecord {
+                height: None,
+                circumference: Some(2.0),
+                diameter: Some(3.0),
+                ..default_tree()
+            })
+        );
 
-        assert_eq!(true, query.r#match(&TreeRecord {
-            height: Some(1.0),
-            circumference: None,
-            diameter: Some(3.0),
-            ..default_tree()
-        }));
+        assert_eq!(
+            true,
+            query.r#match(&TreeRecord {
+                height: Some(1.0),
+                circumference: None,
+                diameter: Some(3.0),
+                ..default_tree()
+            })
+        );
 
-        assert_eq!(true, query.r#match(&TreeRecord {
-            height: Some(1.0),
-            circumference: Some(2.0),
-            diameter: None,
-            ..default_tree()
-        }));
+        assert_eq!(
+            true,
+            query.r#match(&TreeRecord {
+                height: Some(1.0),
+                circumference: Some(2.0),
+                diameter: None,
+                ..default_tree()
+            })
+        );
 
-        assert_eq!(false, query.r#match(&TreeRecord {
-            height: Some(1.0),
-            circumference: Some(2.0),
-            diameter: Some(3.0),
-            ..default_tree()
-        }), "the tree has all metrics and must not match");
+        assert_eq!(
+            false,
+            query.r#match(&TreeRecord {
+                height: Some(1.0),
+                circumference: Some(2.0),
+                diameter: Some(3.0),
+                ..default_tree()
+            }),
+            "the tree has all metrics and must not match"
+        );
     }
 
     #[test]
     fn test_sick() {
         let query = SearchQuery::from_string("sick");
 
-        assert_eq!(true, query.r#match(&TreeRecord {
-            state: "sick".to_string(),
-            ..default_tree()
-        }));
+        assert_eq!(
+            true,
+            query.r#match(&TreeRecord {
+                state: "sick".to_string(),
+                ..default_tree()
+            })
+        );
 
-        assert_eq!(false, query.r#match(&TreeRecord {
-            state: "healthy".to_string(),
-            ..default_tree()
-        }));
+        assert_eq!(
+            false,
+            query.r#match(&TreeRecord {
+                state: "healthy".to_string(),
+                ..default_tree()
+            })
+        );
     }
 
     #[test]
     fn test_dead() {
         let query = SearchQuery::from_string("dead");
 
-        assert_eq!(true, query.r#match(&TreeRecord {
-            state: "dead".to_string(),
-            ..default_tree()
-        }));
+        assert_eq!(
+            true,
+            query.r#match(&TreeRecord {
+                state: "dead".to_string(),
+                ..default_tree()
+            })
+        );
 
-        assert_eq!(false, query.r#match(&TreeRecord {
-            state: "healthy".to_string(),
-            ..default_tree()
-        }));
+        assert_eq!(
+            false,
+            query.r#match(&TreeRecord {
+                state: "healthy".to_string(),
+                ..default_tree()
+            })
+        );
     }
 
     #[test]
     fn test_deformed() {
         let query = SearchQuery::from_string("deformed");
 
-        assert_eq!(true, query.r#match(&TreeRecord {
-            state: "deformed".to_string(),
-            ..default_tree()
-        }));
+        assert_eq!(
+            true,
+            query.r#match(&TreeRecord {
+                state: "deformed".to_string(),
+                ..default_tree()
+            })
+        );
 
-        assert_eq!(false, query.r#match(&TreeRecord {
-            state: "healthy".to_string(),
-            ..default_tree()
-        }));
+        assert_eq!(
+            false,
+            query.r#match(&TreeRecord {
+                state: "healthy".to_string(),
+                ..default_tree()
+            })
+        );
     }
 
     #[test]
     fn test_healthy() {
         let query = SearchQuery::from_string("healthy");
 
-        assert_eq!(true, query.r#match(&TreeRecord {
-            state: "healthy".to_string(),
-            ..default_tree()
-        }));
+        assert_eq!(
+            true,
+            query.r#match(&TreeRecord {
+                state: "healthy".to_string(),
+                ..default_tree()
+            })
+        );
 
-        assert_eq!(false, query.r#match(&TreeRecord {
-            state: "sick".to_string(),
-            ..default_tree()
-        }));
+        assert_eq!(
+            false,
+            query.r#match(&TreeRecord {
+                state: "sick".to_string(),
+                ..default_tree()
+            })
+        );
     }
 }

@@ -1,5 +1,5 @@
-use actix_web::{get, web::Data, web::Path, HttpResponse};
 use actix_web::http::header::{CacheControl, CacheDirective};
+use actix_web::{get, web::Data, web::Path, HttpResponse};
 use log::debug;
 use serde::Deserialize;
 

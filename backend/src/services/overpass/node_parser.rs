@@ -1,9 +1,9 @@
-use serde_json::Value;
 use log::debug;
+use serde_json::Value;
 
 use crate::types::OsmTreeRecord;
 
-pub struct NodeParser { }
+pub struct NodeParser {}
 
 impl NodeParser {
     pub fn parse(node: &Value) -> Option<OsmTreeRecord> {

@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use crate::types::{TreeRecord, TreeListItem};
+use crate::types::{TreeListItem, TreeRecord};
 
 #[derive(Debug, Serialize)]
 pub struct TreeList {

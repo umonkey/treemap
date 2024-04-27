@@ -8,15 +8,14 @@
  *
  * @docs https://docs.rs/async-sqlite/latest/async_sqlite/
  */
-
 use async_sqlite::{JournalMode, Pool, PoolBuilder};
 use async_trait::async_trait;
 use log::{debug, error, info};
 
 use crate::services::database::r#trait::Database;
 use crate::types::{
-    Bounds, CommentRecord, Error, FileRecord, OsmTreeRecord, QueueMessage, Result, SpeciesRecord, TreeRecord,
-    UploadTicketRecord, UserRecord,
+    Bounds, CommentRecord, Error, FileRecord, OsmTreeRecord, QueueMessage, Result, SpeciesRecord,
+    TreeRecord, UploadTicketRecord, UserRecord,
 };
 use crate::utils::{get_sqlite_path, get_timestamp, get_unique_id};
 
@@ -118,11 +117,13 @@ impl SqliteDatabase {
         }
 
         if old.lat != new.lat {
-            self.add_tree_prop(new.id, "lat", &new.lat.to_string()).await?;
+            self.add_tree_prop(new.id, "lat", &new.lat.to_string())
+                .await?;
         }
 
         if old.lon != new.lon {
-            self.add_tree_prop(new.id, "lon", &new.lon.to_string()).await?;
+            self.add_tree_prop(new.id, "lon", &new.lon.to_string())
+                .await?;
         }
 
         if old.species != new.species {
@@ -181,7 +182,9 @@ impl SqliteDatabase {
         Ok(())
     }
 
-    fn tree_from_row(row: &async_sqlite::rusqlite::Row) -> std::result::Result<TreeRecord, async_sqlite::rusqlite::Error> {
+    fn tree_from_row(
+        row: &async_sqlite::rusqlite::Row,
+    ) -> std::result::Result<TreeRecord, async_sqlite::rusqlite::Error> {
         Ok(TreeRecord {
             id: row.get(0)?,
             osm_id: row.get(1)?,
@@ -200,7 +203,9 @@ impl SqliteDatabase {
         })
     }
 
-    fn osm_tree_from_row(row: &async_sqlite::rusqlite::Row) -> std::result::Result<OsmTreeRecord, async_sqlite::rusqlite::Error> {
+    fn osm_tree_from_row(
+        row: &async_sqlite::rusqlite::Row,
+    ) -> std::result::Result<OsmTreeRecord, async_sqlite::rusqlite::Error> {
         Ok(OsmTreeRecord {
             id: row.get(0)?,
             lat: row.get(1)?,
@@ -246,7 +251,7 @@ impl Database for SqliteDatabase {
             None => {
                 error!("Tree {} not found in the database.", tree.id);
                 return Err(Error::DatabaseQuery);
-            },
+            }
         };
 
         let new = tree.clone();
@@ -401,7 +406,12 @@ impl Database for SqliteDatabase {
     /**
      * Find the closest tree to the given coordinates.
      */
-    async fn find_closest_tree(&self, lat: f64, lon: f64, distance: f64) -> Result<Option<TreeRecord>> {
+    async fn find_closest_tree(
+        &self,
+        lat: f64,
+        lon: f64,
+        distance: f64,
+    ) -> Result<Option<TreeRecord>> {
         let delta = distance / 111_111.0; // meters per degree
 
         let bounds = Bounds {
@@ -878,8 +888,7 @@ impl Database for SqliteDatabase {
         Ok(species)
     }
 
-    async fn get_osm_tree(&self, id: u64) -> Result<Option<OsmTreeRecord>>
-    {
+    async fn get_osm_tree(&self, id: u64) -> Result<Option<OsmTreeRecord>> {
         let tree = self.pool.conn(move |conn| {
             let mut stmt = match conn.prepare("SELECT id, lat, lon, genus, species, species_wikidata, height, circumference, diameter_crown FROM osm_trees WHERE id = ? LIMIT 1") {
                 Ok(value) => value,
@@ -909,8 +918,7 @@ impl Database for SqliteDatabase {
         Ok(tree)
     }
 
-    async fn add_osm_tree(&self, tree: &OsmTreeRecord) -> Result<()>
-    {
+    async fn add_osm_tree(&self, tree: &OsmTreeRecord) -> Result<()> {
         let tmp = tree.clone();
 
         self.pool.conn(move |conn| {

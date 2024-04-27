@@ -60,7 +60,10 @@ async fn main() -> std::io::Result<()> {
         let service = OsmReaderService::init()
             .await
             .expect("Error creating OSM reader service.");
-        service.run().await.expect("Error running OSM reader service.");
+        service
+            .run()
+            .await
+            .expect("Error running OSM reader service.");
         return Ok(());
     }
 
