@@ -9,7 +9,7 @@ use std::sync::Arc;
 
 use crate::services::Database;
 use crate::types::{
-    AddTreeRequest, Error, GetTreesRequest, MoveTreeRequest, Result, TreeRecord,
+    AddTreeRequest, Error, GetTreesRequest, MoveTreeRequest, Result, SearchQuery, TreeRecord,
     TreeList, UpdateTreeRequest,
 };
 use crate::utils::{get_timestamp, get_unique_id};
@@ -96,17 +96,16 @@ impl Trees {
     }
 
     pub async fn get_trees(&self, request: &GetTreesRequest) -> Result<TreeList> {
-        if request.has_no_metrics() {
-            let trees = self.db.get_trees_no_metrics(request.bounds()).await?;
-            return Ok(TreeList::from_trees(trees));
+        let mut trees = self.db.get_trees(request.bounds()).await?;
+
+        if let Some(search) = &request.search {
+            let query = SearchQuery::from_string(search);
+
+            if !query.is_empty() {
+                trees.retain(|t| query.r#match(t));
+            }
         }
 
-        if request.has_no_photo() {
-            let trees = self.db.get_trees_no_photos(request.bounds()).await?;
-            return Ok(TreeList::from_trees(trees));
-        }
-
-        let trees = self.db.get_trees_no_metrics(request.bounds()).await?;
         Ok(TreeList::from_trees(trees))
     }
 
