@@ -28,6 +28,7 @@ export { Markers } from "./maps/Markers";
 export { MoveTreeButton } from "./elements/MoveTreeButton";
 export { MoveTreeDialog } from "./dialogs/MoveTreeDialog";
 export { MoveTreePage, MoveTreePageWrapper } from "./pages/MoveTreePage";
+export { ProfileHeaderButton } from "./elements/ProfileHeaderButton";
 export { RedCircleIcon } from "./maps/RedCircleIcon";
 export { RouterComponent } from "./router/RouterComponent";
 export { SearchBar } from "./elements/SearchBar";
