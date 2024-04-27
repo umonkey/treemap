@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 
-import { LocationPicker, MoveTreeDialog, MapWithMarker, SideBar, TreeMarkers, WithAuth, WithSidebar } from "@/components";
+import { LocationPicker, MoveTreeDialog, MapWithMarker, SideBar, TreeMarkers, WithAuth, WithHeader, WithSidebar } from "@/components";
 import { routes } from "@/utils/routes";
 import { useMoveTree } from "./hooks";
 import "./styles.scss";
@@ -85,11 +85,13 @@ export const MoveTreePageWrapper = () => {
 
   return (
     <WithAuth>
-      <MoveTreePage
-        id={id}
-        onSuccess={handleSuccess}
-        onCancel={handleCancel}
-      />
+      <WithHeader>
+        <MoveTreePage
+          id={id}
+          onSuccess={handleSuccess}
+          onCancel={handleCancel}
+        />
+      </WithHeader>
     </WithAuth>
   );
 };

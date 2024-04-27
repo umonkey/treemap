@@ -42,4 +42,5 @@ export { TreeMarkers } from "./maps/TreeMarkers";
 export { TreePopup } from "./maps/TreePopup";
 export { TreeStateSelector } from "./elements/TreeStateSelector";
 export { WithAuth } from "./helpers/WithAuth";
+export { WithHeader } from "./layout/WithHeader";
 export { WithSidebar } from "./layout/WithSidebar";

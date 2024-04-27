@@ -1,6 +1,4 @@
 .HomePage {
-  display: flex;
-  flex-direction: row;
   overflow: hidden;
 
   width: 100%;

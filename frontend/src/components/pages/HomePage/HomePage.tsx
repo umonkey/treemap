@@ -7,9 +7,9 @@ import { routes } from "@/utils/routes";
 import { useMapState } from "@/utils";
 import { HOME_PAGE_MAP_KEY } from "@/utils/config";
 import {
-  Header,
   MapControl,
   MapEventHandler,
+  WithHeader,
   SelectLocationDialog,
   SideBar,
   TreeMarkers,
@@ -51,33 +51,33 @@ export const HomePage = () => {
 
   return (
     <div className="HomePage">
-      <Header />
-
-      <WithSidebar>
-        <MapControl
-          center={mapState.center}
-          zoom={mapState.zoom}
-          onAddTree={handleAddTree}
-          onPick={handlePicker}
-          picker={picker}
-        >
-          <MapEventHandler
-            onViewChange={handleViewChange}
-          />
-
-          <TreeMarkers />
-        </MapControl>
-
-        {picker && (
-          <SideBar>
-            <SelectLocationDialog
-              position={newPosition}
-              onContinue={handleContinueAddingTree}
-              onCancel={handleCancel}
+      <WithHeader>
+        <WithSidebar>
+          <MapControl
+            center={mapState.center}
+            zoom={mapState.zoom}
+            onAddTree={handleAddTree}
+            onPick={handlePicker}
+            picker={picker}
+          >
+            <MapEventHandler
+              onViewChange={handleViewChange}
             />
-          </SideBar>
-        )}
-      </WithSidebar>
+
+            <TreeMarkers />
+          </MapControl>
+
+          {picker && (
+            <SideBar>
+              <SelectLocationDialog
+                position={newPosition}
+                onContinue={handleContinueAddingTree}
+                onCancel={handleCancel}
+              />
+            </SideBar>
+          )}
+        </WithSidebar>
+      </WithHeader>
     </div>
   );
 };
