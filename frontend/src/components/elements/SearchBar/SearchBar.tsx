@@ -60,7 +60,7 @@ export const SearchBar = (props: IProps) => {
         </SearchIconWrapper>
 
         <StyledInputBase
-          placeholder="Search..."
+          placeholder="Search trees..."
           inputProps={{
             "aria-label": "search",
           }}

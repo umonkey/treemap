@@ -12,7 +12,12 @@ export const Header = () => {
     <div className="Header">
       <AppBar>
         <Toolbar variant="dense">
-          <Typography variant="h6" color="inherit" noWrap>Tree Map</Typography>
+          <Typography variant="h6" color="inherit" noWrap sx={{
+            display: {
+              xs: "none",
+              md: "block",
+            },
+          }}>Tree Map</Typography>
 
           <Box>
             <SearchBar
