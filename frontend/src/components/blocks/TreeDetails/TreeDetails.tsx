@@ -29,6 +29,8 @@ export const TreeDetails = (props: IProps) => {
       <div className="inside">
         <h2>{props.tree.species}</h2>
 
+        <div className="treeId">#{props.tree.id}</div>
+
         {props.tree.notes && (
           <h3>{props.tree.notes}</h3>
         )}
@@ -39,6 +41,13 @@ export const TreeDetails = (props: IProps) => {
           <div>Canopy: {format(props.tree.diameter)}</div>
           <div>State: {state}</div>
         </div>
+
+        <ul className="links">
+          {props.tree.osm_id && (
+            <li><a href={`https://www.openstreetmap.org/node/${props.tree.osm_id}`} target="_blank">OSM</a></li>
+          )}
+          <li><a href={`https://www.wikidata.org/w/index.php?search=${props.tree.species}`} target="_blank">Wikidata</a></li>
+        </ul>
       </div>
     </div>
   );

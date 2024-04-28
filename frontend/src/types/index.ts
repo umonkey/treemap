@@ -14,6 +14,7 @@ export interface ITreeInfo {
   id: string;
   lat: number;
   lon: number;
+  osm_id: number | null;
   species: string;
   notes: string | null;
   height: number | null;
@@ -44,6 +45,7 @@ export interface ITreeDetails {
   id: string;
   lat: number;
   lon: number;
+  osm_id: number | null;
   species: string;
   notes: string | null;
   height: number | null;
