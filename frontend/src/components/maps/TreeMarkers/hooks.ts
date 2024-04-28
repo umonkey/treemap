@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchQuery } from "@/hooks";
 import { IBounds, ITreeInfoMap } from "@/types";
 import { treeMapService } from "@/services/api";
+import { mainBus } from "@/bus";
 
 const RELOAD_DELAY = 100;
 
@@ -17,6 +18,17 @@ export const useMarkers = () => {
   const { searchQuery } = useSearchQuery();
 
   const timeoutId = useRef<ReturnType<typeof setTimeout>|null>(null);
+
+  const handleSearchQueryChange = useCallback(() => {
+    console.debug("Search query changed, emptying the map.");
+    setMap({});
+  }, []);
+
+  // Listen for the search query change.
+  useEffect(() => {
+    mainBus.on("before_search", handleSearchQueryChange);
+    return () => mainBus.off("before_search", handleSearchQueryChange);
+  });
 
   /**
    * Reload markers on map move or zoom.
