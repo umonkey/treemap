@@ -58,6 +58,7 @@ export const MapEventHandler = (props: IProps) => {
 
     zoomend: () => {
       reportViewChange();
+      console.debug(`Map zoom changed to ${map.getZoom()}.`);
     },
 
     moveend: () => {

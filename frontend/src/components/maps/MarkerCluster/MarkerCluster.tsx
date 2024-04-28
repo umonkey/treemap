@@ -6,6 +6,9 @@ interface IProps {
 
 export const MarkerCluster = (props: IProps) => {
   return (
-    <MarkerClusterGroup maxClusterRadius={20}>{props.children}</MarkerClusterGroup>
+    <MarkerClusterGroup
+      maxClusterRadius={20}
+      disableClusteringAtZoom={20}
+    >{props.children}</MarkerClusterGroup>
   );
 }
