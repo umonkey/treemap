@@ -358,4 +358,27 @@ mod tests {
             })
         );
     }
+
+    #[test]
+    fn test_notes() {
+        let query = SearchQuery::from_string("osm");
+
+        assert_eq!(
+            true,
+            query.r#match(&TreeRecord {
+                species: "Thuja plicata".to_string(),
+                notes: Some("Imported from OSM".to_string()),
+                ..default_tree()
+            })
+        );
+
+        assert_eq!(
+            false,
+            query.r#match(&TreeRecord {
+                species: "Thuja plicata".to_string(),
+                notes: Some("Big tree".to_string()),
+                ..default_tree()
+            })
+        );
+    }
 }
