@@ -13,12 +13,12 @@ pub trait Database {
     async fn get_trees(&self, bounds: Bounds) -> Result<Vec<TreeRecord>>;
     async fn get_tree(&self, id: u64) -> Result<Option<TreeRecord>>;
     async fn get_tree_by_osm_id(&self, osm_id: u64) -> Result<Option<TreeRecord>>;
-    async fn find_closest_tree(
+    async fn find_closest_trees(
         &self,
         lat: f64,
         lon: f64,
         distance: f64,
-    ) -> Result<Option<TreeRecord>>;
+    ) -> Result<Vec<TreeRecord>>;
 
     // Record a new property value.  Returns the assigned prop id.
     async fn add_tree_prop(&self, id: u64, name: &str, value: &str) -> Result<u64>;
@@ -46,4 +46,5 @@ pub trait Database {
 
     async fn get_osm_tree(&self, id: u64) -> Result<Option<OsmTreeRecord>>;
     async fn add_osm_tree(&self, tree: &OsmTreeRecord) -> Result<()>;
+    async fn find_osm_trees(&self) -> Result<Vec<OsmTreeRecord>>;
 }

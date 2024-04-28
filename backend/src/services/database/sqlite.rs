@@ -406,12 +406,12 @@ impl Database for SqliteDatabase {
     /**
      * Find the closest tree to the given coordinates.
      */
-    async fn find_closest_tree(
+    async fn find_closest_trees(
         &self,
         lat: f64,
         lon: f64,
         distance: f64,
-    ) -> Result<Option<TreeRecord>> {
+    ) -> Result<Vec<TreeRecord>> {
         let delta = distance / 111_111.0; // meters per degree
 
         let bounds = Bounds {
@@ -421,12 +421,7 @@ impl Database for SqliteDatabase {
             w: lon - delta,
         };
 
-        let trees = self.get_trees(bounds).await?;
-
-        match trees.is_empty() {
-            true => Ok(None),
-            false => Ok(Some(trees[0].clone())),
-        }
+        self.get_trees(bounds).await
     }
 
     /**
@@ -946,6 +941,38 @@ impl Database for SqliteDatabase {
         }).await?;
 
         Ok(())
+    }
+
+    async fn find_osm_trees(&self) -> Result<Vec<OsmTreeRecord>> {
+        let trees = self.pool.conn(move |conn| {
+            let mut stmt = match conn.prepare("SELECT id, lat, lon, genus, species, species_wikidata, height, circumference, diameter_crown FROM osm_trees") {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error preparing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut rows = match stmt.query([]) {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error executing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut trees: Vec<OsmTreeRecord> = Vec::new();
+
+            while let Some(row) = rows.next()? {
+                trees.push(Self::osm_tree_from_row(row)?);
+            }
+
+            Ok(trees)
+        }).await?;
+
+        Ok(trees)
     }
 }
 

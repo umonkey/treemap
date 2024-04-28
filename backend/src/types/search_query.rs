@@ -9,6 +9,7 @@ use crate::types::TreeRecord;
 #[derive(Debug)]
 pub struct SearchQuery {
     pub words: Vec<String>,
+    pub incomplete: bool,
     pub nometrics: bool,
     pub noimages: bool,
     pub sick: bool,
@@ -26,6 +27,7 @@ impl SearchQuery {
         let mut dead = false;
         let mut deformed = false;
         let mut healthy = false;
+        let mut incomplete = false;
 
         for word in query.to_lowercase().split_whitespace() {
             if word.contains("nometric") {
@@ -40,6 +42,8 @@ impl SearchQuery {
                 deformed = true;
             } else if word.contains("healthy") {
                 healthy = true;
+            } else if word.contains("incomplete") {
+                incomplete = true;
             } else {
                 words.push(word.to_string().to_lowercase());
             }
@@ -53,6 +57,7 @@ impl SearchQuery {
             dead,
             deformed,
             healthy,
+            incomplete,
         }
     }
 
@@ -64,6 +69,7 @@ impl SearchQuery {
             && !self.dead
             && !self.deformed
             && !self.healthy
+            && !self.incomplete
     }
 
     pub fn r#match(&self, tree: &TreeRecord) -> bool {
@@ -99,6 +105,10 @@ impl SearchQuery {
             return false;
         }
 
+        if self.incomplete && Self::is_tree_incomplete(tree) {
+            return true;
+        }
+
         true
     }
 
@@ -116,6 +126,13 @@ impl SearchQuery {
         }
 
         true
+    }
+
+    fn is_tree_incomplete(tree: &TreeRecord) -> bool {
+        tree.height.is_none()
+            || tree.circumference.is_none()
+            || tree.diameter.is_none()
+            || tree.thumbnail_id.is_none()
     }
 
     fn get_tree_text(tree: &TreeRecord) -> String {
