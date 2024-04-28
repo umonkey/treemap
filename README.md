@@ -18,7 +18,7 @@ There is a backend and frontend prototype.  One can [run this all](https://githu
 
 - [x] List trees around you.
 - [x] Show details for a single tree.
-- [ ] Find trees by common or latin name.
+- [x] Find trees by common or latin name.
 - [x] Add new trees to the map.
 - [x] Add photos, comments to trees.
 - [x] Mobile first.
