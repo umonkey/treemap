@@ -9,6 +9,7 @@ mod get_trees;
 mod login_google;
 mod move_tree;
 mod search_species;
+mod suggest_species;
 mod update_tree;
 
 pub use self::add_comment::*;
@@ -22,4 +23,5 @@ pub use self::get_trees::*;
 pub use self::login_google::*;
 pub use self::move_tree::*;
 pub use self::search_species::*;
+pub use self::suggest_species::*;
 pub use self::update_tree::*;

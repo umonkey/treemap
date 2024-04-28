@@ -1,4 +1,5 @@
 // Global imports.
+import { useState } from "react";
 import { Autocomplete, TextField } from '@mui/material';
 
 // Local imports.
@@ -12,12 +13,17 @@ interface IProps {
 }
 
 export const SpeciesSelector = (props: IProps) => {
-  const { value } = props;
+  const [currentValue, setCurrentValue] = useState<string>(props.value || "");
   const required = props.required || true;
 
-  const { options, handleChange, handleInputChange, renderOption } = useSpeciesSelector({
+  const { options, handleChange, handleInputChange, renderOption, recent } = useSpeciesSelector({
     onChange: props.onChange,
   });
+
+  const handleHintClick = (hint: string) => {
+    console.debug(`Hint clicked: ${hint}`);
+    setCurrentValue(hint);
+  };
 
   return (
     <div className="SpeciesSelector">
@@ -32,8 +38,24 @@ export const SpeciesSelector = (props: IProps) => {
         renderOption={renderOption}
         onChange={handleChange}
         onInputChange={handleInputChange}
-        value={value}
+        value={currentValue}
       />
+
+      {recent.length >= 3 && (
+        <div className="recent">Recent species: {recent.slice(0, 3).map((n, idx) => {
+          const items = [];
+
+          if (idx > 0) {
+            items.push(", ");
+          }
+
+          items.push(<span onClick={() => {
+            handleHintClick(n);
+          }} key={idx}><u>{n}</u></span>);
+
+          return items;
+        })}.</div>
+      )}
     </div>
   );
 };

@@ -131,4 +131,8 @@ impl AppState {
         let species = records.iter().map(PublicSpeciesInfo::from_record).collect();
         Ok(species)
     }
+
+    pub async fn suggest_species(&self, user_id: u64) -> Result<Vec<String>> {
+        self.db.find_recent_species(user_id).await
+    }
 }

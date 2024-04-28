@@ -3,11 +3,15 @@
  * https://mui.com/material-ui/all-components/
  */
 
+// Global imports.
 import { useState } from "react";
 import { Box, Button, ButtonGroup, FormHelperText, TextField } from "@mui/material";
 
+// Project imports.
 import { SpeciesSelector, TreeStateSelector } from "@/components";
 import { IAddTreeRequest, ILatLng } from "@/types";
+
+// Local imports.
 import "./styles.scss";
 
 interface IProps {

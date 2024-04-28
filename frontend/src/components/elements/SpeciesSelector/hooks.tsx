@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { treeMapService } from "@/services/api";
 
@@ -13,6 +13,19 @@ interface IProps {
 
 export const useSpeciesSelector = (props: IProps) => {
   const [options, setOptions] = useState<IOption[]>([]);
+  const [recent, setRecent] = useState<string[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await treeMapService.suggestSpecies();
+        setRecent(res);
+      } catch (e) {
+        console.error("Error reading recent species.", e);
+        setRecent([]);
+      }
+    })();
+  }, []);
 
   // @ts-expect-error TS6133
   const handleChange = (event: React.SyntheticEvent<Element, Event>, value: string | IOption) => {
@@ -55,5 +68,6 @@ export const useSpeciesSelector = (props: IProps) => {
     handleChange,
     handleInputChange,
     renderOption,
+    recent,
   };
 };

@@ -106,6 +106,7 @@ async fn main() -> std::io::Result<()> {
             .service(login_google)
             .service(move_tree)
             .service(search_species)
+            .service(suggest_species)
             .service(update_tree)
             .service(
                 Files::new("/", "./static")

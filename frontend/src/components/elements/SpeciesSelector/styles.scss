@@ -6,4 +6,19 @@
       margin-top: 0.25em;
     }
   }
+
+  .recent {
+    margin: 10px 0;
+    font-size: 80%;
+    opacity: 0.8;
+
+    u {
+      display: inline-block;
+      cursor: pointer;
+    }
+  }
+
+  span.hint {
+    border-bottom: 1px dashed;
+  }
 }

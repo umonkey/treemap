@@ -47,4 +47,6 @@ pub trait Database {
     async fn get_osm_tree(&self, id: u64) -> Result<Option<OsmTreeRecord>>;
     async fn add_osm_tree(&self, tree: &OsmTreeRecord) -> Result<()>;
     async fn find_osm_trees(&self) -> Result<Vec<OsmTreeRecord>>;
+
+    async fn find_recent_species(&self, user_id: u64) -> Result<Vec<String>>;
 }

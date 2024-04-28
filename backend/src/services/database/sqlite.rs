@@ -974,6 +974,41 @@ impl Database for SqliteDatabase {
 
         Ok(trees)
     }
+
+    /**
+     * Find most recent species added by a specific user.
+     */
+    async fn find_recent_species(&self, user_id: u64) -> Result<Vec<String>> {
+        let items = self.pool.conn(move |conn| {
+            let mut stmt = match conn.prepare("SELECT DISTINCT species FROM trees WHERE state <> 'gone' AND added_by = ? ORDER BY added_at DESC LIMIT 10") {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error preparing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut rows = match stmt.query([user_id]) {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error executing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut values: Vec<String> = Vec::new();
+
+            while let Some(row) = rows.next()? {
+                values.push(row.get(0)?);
+            }
+
+            Ok(values)
+        }).await?;
+
+        Ok(items)
+    }
 }
 
 impl Clone for SqliteDatabase {

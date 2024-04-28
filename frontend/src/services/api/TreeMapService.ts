@@ -138,6 +138,12 @@ export class TreeMapService {
     return await this.get<ISpecies[]>(`/v1/species/search?${params.toString()}`);
   }
 
+  public async suggestSpecies(): Promise<string[]> {
+    return await this.get<string[]>("/v1/species/suggest", {
+      headers: this.get_auth_headers(),
+    });
+  }
+
   private async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
     try {
       const res = await this.client.get<T>(url, config);
