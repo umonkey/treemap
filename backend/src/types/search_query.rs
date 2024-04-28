@@ -11,6 +11,7 @@ pub struct SearchQuery {
     pub words: Vec<String>,
     pub incomplete: bool,
     pub nometrics: bool,
+    pub nocirc: bool,
     pub noimages: bool,
     pub sick: bool,
     pub dead: bool,
@@ -22,6 +23,7 @@ impl SearchQuery {
     pub fn from_string(query: &str) -> SearchQuery {
         let mut words = Vec::new();
         let mut nometrics = false;
+        let mut nocirc = false;
         let mut noimages = false;
         let mut sick = false;
         let mut dead = false;
@@ -32,6 +34,8 @@ impl SearchQuery {
         for word in query.to_lowercase().split_whitespace() {
             if word.contains("nometric") {
                 nometrics = true;
+            } else if word.contains("nocirc") {
+                nocirc = true;
             } else if word.contains("noimage") || word.contains("nophoto") {
                 noimages = true;
             } else if word.contains("sick") {
@@ -52,6 +56,7 @@ impl SearchQuery {
         SearchQuery {
             words,
             nometrics,
+            nocirc,
             noimages,
             sick,
             dead,
@@ -64,6 +69,7 @@ impl SearchQuery {
     pub fn is_empty(&self) -> bool {
         self.words.is_empty()
             && !self.nometrics
+            && !self.nocirc
             && !self.noimages
             && !self.sick
             && !self.dead
@@ -86,6 +92,10 @@ impl SearchQuery {
             && tree.circumference.is_some()
             && tree.diameter.is_some()
         {
+            return false;
+        }
+
+        if self.nocirc && tree.circumference.is_some() {
             return false;
         }
 
@@ -394,6 +404,29 @@ mod tests {
             query.r#match(&TreeRecord {
                 species: "Thuja plicata".to_string(),
                 notes: Some("Big tree".to_string()),
+                ..default_tree()
+            })
+        );
+    }
+
+    #[test]
+    fn test_nocirc() {
+        let query = SearchQuery::from_string("nocirc");
+
+        assert_eq!(
+            true,
+            query.r#match(&TreeRecord {
+                species: "Thuja plicata".to_string(),
+                circumference: None,
+                ..default_tree()
+            })
+        );
+
+        assert_eq!(
+            false,
+            query.r#match(&TreeRecord {
+                species: "Thuja plicata".to_string(),
+                circumference: Some(2.0),
                 ..default_tree()
             })
         );
