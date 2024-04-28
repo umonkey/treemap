@@ -41,3 +41,23 @@
     }
   }
 }
+
+@media screen and (max-width: 600px) {
+  .DetailsPage {
+    padding: 10px 10px 60px;
+
+    .toolbar {
+      margin: 0;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100vw;
+      z-index: 5;
+      background-color: #1976d2;
+
+      button {
+        border-radius: 0;
+      }
+    }
+  }
+}
