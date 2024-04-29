@@ -5,7 +5,7 @@
 import { useState } from "react";
 
 import { IMapState } from "@/types";
-import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM } from "./config";
+import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM } from "@/utils/config";
 
 export const DEFAULT_MAP_STATE = {
   center: DEFAULT_MAP_CENTER,

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 // Project imports.
 import { routes } from "@/utils/routes";
-import { useMapState } from "@/utils";
+import { useMapState } from "@/hooks";
 import { HOME_PAGE_MAP_KEY } from "@/utils/config";
 import {
   MapControl,
