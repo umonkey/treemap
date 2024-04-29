@@ -1,5 +1,5 @@
 // Global imports.
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useMemo, useState, useEffect } from "react";
 
 // Project imports.
 import { IUserInfo } from "@/types";
@@ -35,7 +35,8 @@ export const removeUserToken = (): void => {
 };
 
 export const useUserInfo = () => {
-  const [userInfo, setUserInfo] = useState<IUserInfo | null>(readStoredValue());
+  const stored = useMemo(() => readStoredValue, []);
+  const [userInfo, setUserInfo] = useState<IUserInfo | null>(stored);
 
   const handleChange = useCallback((event: StorageEvent) => {
     console.debug("CHANGE", event);
