@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 // Project imports.
 import { routes } from "@/utils/routes";
 import { useMapState } from "@/hooks";
-import { HOME_PAGE_MAP_KEY } from "@/utils/config";
 import {
   MapControl,
   MapEventHandler,
@@ -23,7 +22,7 @@ import "./styles.css";
 export const HomePage = () => {
   const [picker, setPicker] = useState<boolean>(false);
   const [newPosition, setNewPosition] = useState<ILatLng | null>(null);
-  const { mapState, setMapState } = useMapState(HOME_PAGE_MAP_KEY);
+  const { mapState, setMapState } = useMapState();
 
   const navigate = useNavigate();
 
