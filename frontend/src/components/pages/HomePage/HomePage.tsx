@@ -1,20 +1,23 @@
 // Global imports.
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 // Project imports.
 import { routes } from "@/utils/routes";
 import { useMapState } from "@/hooks";
 import {
+  DefaultMarker,
   MapControl,
   MapEventHandler,
-  WithHeader,
   SelectLocationDialog,
   SideBar,
   TreeMarkers,
+  TreeSidePane,
+  WithHeader,
   WithSidebar,
 } from "@/components";
 import { ILatLng, IMapView } from "@/types";
+import { useStore } from "@/store";
 
 // Local imports.
 import "./styles.css";
@@ -23,6 +26,9 @@ export const HomePage = () => {
   const [picker, setPicker] = useState<boolean>(false);
   const [newPosition, setNewPosition] = useState<ILatLng | null>(null);
   const { mapState, setMapState } = useMapState();
+
+  const showTree = useStore((state) => state.showTree);
+  const setShowTree = useStore((state) => state.setShowTree);
 
   const navigate = useNavigate();
 
@@ -48,6 +54,10 @@ export const HomePage = () => {
     setMapState({ center, zoom });
   };
 
+  useEffect(() => {
+    setShowTree(null);
+  }, [setShowTree]);
+
   return (
     <div className="HomePage">
       <WithHeader>
@@ -64,6 +74,10 @@ export const HomePage = () => {
             />
 
             <TreeMarkers />
+
+            {showTree && (
+              <DefaultMarker center={showTree.position} />
+            )}
           </MapControl>
 
           {picker && (
@@ -73,6 +87,12 @@ export const HomePage = () => {
                 onContinue={handleContinueAddingTree}
                 onCancel={handleCancel}
               />
+            </SideBar>
+          )}
+
+          {showTree && (
+            <SideBar>
+              <TreeSidePane id={showTree.id} />
             </SideBar>
           )}
         </WithSidebar>

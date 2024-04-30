@@ -11,3 +11,9 @@
     max-width: 100%;
   }
 }
+
+@media screen and (orientation: portrait) and (max-width: 600px) {
+  .SideBar {
+    max-height: 50vh;
+  }
+}

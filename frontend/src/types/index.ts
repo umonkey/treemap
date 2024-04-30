@@ -114,6 +114,11 @@ export interface ISpecies {
   local: string;
 }
 
+export interface IMarkerClickEvent {
+  id: string;
+  position: ILatLng;
+}
+
 export enum SideBarMode {
   DEFAULT = "default",
   ADD_TREE = "add_tree",

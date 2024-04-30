@@ -1,4 +1,4 @@
-import { IComment, ITreeInfo } from "@/types";
+import { IComment, ITreeDetails, ITreeInfo } from "@/types";
 
 export const SAMPLE_TREES = [
   {
@@ -211,3 +211,15 @@ export const SAMPLE_COMMENTS = [
     message: "I like it",
   },
 ] as IComment[];
+
+export const SAMPLE_TREE = {
+  "id": "134793003121381380",
+  "lat": 40.181389,
+  "lon": 44.514444,
+  "osm_id": 12345,
+  "species": "Sycamore",
+  "notes": "The biggest Sycamore in region.",
+  "height": 18.5,
+  "circumference": 1.2,
+  "diameter": 7,
+} as ITreeDetails;

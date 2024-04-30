@@ -4,21 +4,12 @@ import { MemoryRouter } from "react-router-dom";
 
 // Project imports.
 import { IComment, ISpecies, ITreeInfo, ITreeDetails } from "@/types";
-import { SAMPLE_COMMENTS, SAMPLE_TREES } from "@/sample-data";
+import { SAMPLE_COMMENTS, SAMPLE_TREES, SAMPLE_TREE } from "@/sample-data";
 
 // Local imports.
 import { StoryWrapper } from "./StoryWrapper";
 import "./preview.css";
-
-const DETAILS = {
-  "id": "134793003121381380",
-  "lat": 40.181389,
-  "lon": 44.514444,
-  "name": "Sycamore",
-  "height": 18.5,
-  "circumference": 1.2,
-  "diameter": 7,
-} as TreeDetails;
+import "../src/index.css";
 
 const preview: Preview = {
   parameters: {
@@ -100,7 +91,7 @@ const preview: Preview = {
           url: "/v1/trees/134793003121381380",
           method: "GET",
           status: 200,
-          response: DETAILS,
+          response: SAMPLE_TREE,
           delay: 500,
         },
         {

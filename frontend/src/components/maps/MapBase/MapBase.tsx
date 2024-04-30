@@ -5,12 +5,16 @@
  * Everything else is up to the children.
  */
 
+// Global imports.
 import { useEffect, useState, useRef } from "react";
 import { MapContainer } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+
+// Project imports.
 import { LayerSelector } from "@/components";
 import { ILatLng } from "@/types";
+import { mainBus } from "@/bus";
 
-import "leaflet/dist/leaflet.css";
 import "./styles.scss";
 
 interface IProps {
@@ -45,6 +49,16 @@ export const MapBase = (props: IProps) => {
       setCenter(props.center);
     }
   }, [center, props.center]);
+
+  useEffect(() => {
+    const handler = (center: ILatLng) => {
+      console.debug("PAN TO", center);
+      mapRef.current?.panTo([center.lat, center.lon]);
+    };
+
+    mainBus.on("pan_to", handler);
+    return () => mainBus.off("pan_to", handler);
+  }, []);
 
   // react-leaflet does not update properties dynamically, so we need to do it manually.
   useEffect(() => {

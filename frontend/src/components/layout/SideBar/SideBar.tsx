@@ -1,4 +1,4 @@
-import "./styles.css";
+import "./styles.scss";
 
 interface IProps {
   children?: React.ReactNode | React.ReactNode[];

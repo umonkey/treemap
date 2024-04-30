@@ -1,0 +1,85 @@
+.TreeSidePane {
+  min-height: 180px;
+  position: relative;
+
+  h2 {
+    font-weight: 400;
+    margin: 10px 0;
+  }
+
+  .treeId {
+    opacity: 0.5;
+    font-size: 0.8rem;
+  }
+
+  .notes {
+    margin: 10px 0;
+  }
+
+  ul.props {
+    list-style-type: none;
+    padding: 0;
+
+    li {
+      line-height: 150%;
+      display: inline-block;
+      margin: 0 20px 0 0;
+    }
+
+    li.location, li.status {
+      display: block;
+    }
+
+    svg {
+      width: 16px;
+      height: 16px;
+      text-align: center;
+      color: #444;
+      margin-right: 5px;
+    }
+  }
+
+  ul.links {
+    margin: 20px 0 10px;
+    list-style-type: none;
+    padding: 0;
+
+    li {
+      margin: 0 10px 0 0;
+      display: inline-block;
+      text-decoration: underline;
+    }
+  }
+
+  .buttons {
+    margin: 20px 0 10px;
+  }
+
+  button.close {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    color: #000;
+    margin: 0;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    line-height: 26px;
+
+    position: absolute;
+    top: 0px;
+    right: 0px;
+
+    svg {
+      width: 14px;
+      height: 14px;
+      color: #888;
+    }
+  }
+}
+
+@media screen and (orientation: portrait) and (max-width: 600px) {
+  .TreeSidePane {
+    min-height: 200px;
+  }
+}

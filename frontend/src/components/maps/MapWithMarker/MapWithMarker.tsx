@@ -5,9 +5,7 @@
  * TODO: make this map non-draggable.
  */
 
-import { Marker } from "react-leaflet";
-
-import { MarkerIcon, MapBase } from "@/components";
+import { DefaultMarker, MapBase } from "@/components";
 import { ILatLng } from "@/types";
 import "./styles.scss";
 
@@ -20,7 +18,7 @@ export const MapWithMarker = (props: IProps) => {
   return (
     <div className="MapWithMarker">
       <MapBase center={props.center} zoom={18}>
-        <Marker position={[props.center.lat, props.center.lon]} icon={MarkerIcon} />
+        <DefaultMarker center={props.center} />
         {props.children}
       </MapBase>
     </div>

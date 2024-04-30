@@ -1,13 +1,17 @@
-import { useState, useEffect } from "react";
+import { useCallback, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
-import { ITreeDetails } from "@/types";
+import { IMarkerClickEvent, ITreeDetails } from "@/types";
 import { treeMapService } from "@/services/api";
+import { mainBus } from "@/bus";
+import { routes } from "@/utils";
 
 export const useTreeDetails = (id: string) => {
   const [tree, setTree] = useState<ITreeDetails | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
+  const navigate = useNavigate();
   const canShare = !!navigator.share;
 
   useEffect(() => {
@@ -34,6 +38,15 @@ export const useTreeDetails = (id: string) => {
       url: window.location.href,
     });
   };
+
+  const handleTreeClick = useCallback((e: IMarkerClickEvent) => {
+    navigate(routes.treeDetails(e.id));
+  }, [navigate]);
+
+  useEffect(() => {
+    mainBus.on("tree_clicked", handleTreeClick);
+    return () => mainBus.off("tree_clicked", handleTreeClick);
+  }, [handleTreeClick]);
 
   return {
     tree,

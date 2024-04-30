@@ -4,16 +4,22 @@
  * Shows the right icon, popup.
  */
 
-import { Marker, Popup } from "react-leaflet";
+// Global imports.
+import { Marker } from "react-leaflet";
 
-import { GreenCircleIcon, RedCircleIcon, BlackCircleIcon, TreePopup } from "@/components";
-import { ITreeInfo } from "@/types";
+// Project imports.
+import { GreenCircleIcon, RedCircleIcon, BlackCircleIcon } from "@/components";
+import { IMarkerClickEvent, ITreeInfo } from "@/types";
+import { useStore } from "@/store";
+import { mainBus } from "@/bus";
 
 interface IProps {
   tree: ITreeInfo;
 }
 
 export const TreeMarker = (props: IProps) => {
+  const setShowTree = useStore((state) => state.setShowTree);
+
   const getIcon = (state: string | null) => {
     if (state === "dead") {
       return BlackCircleIcon;
@@ -26,11 +32,25 @@ export const TreeMarker = (props: IProps) => {
     return GreenCircleIcon;
   };
 
+  const handleMarkerClick = () => {
+    const e = {
+      id: props.tree.id,
+      position: {
+        lat: props.tree.lat,
+        lon: props.tree.lon,
+      }
+    } as IMarkerClickEvent;
+
+    setShowTree(e);
+
+    mainBus.emit("tree_clicked", e);
+  };
+
   return (
-    <Marker position={[props.tree.lat, props.tree.lon]} icon={getIcon(props.tree.state)}>
-      <Popup autoPan={false}>
-        <TreePopup tree={props.tree} />
-      </Popup>
-    </Marker>
+    <Marker
+      position={[props.tree.lat, props.tree.lon]}
+      icon={getIcon(props.tree.state)}
+      eventHandlers={{ click: handleMarkerClick }}
+    />
   );
 }
