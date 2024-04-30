@@ -1,15 +1,19 @@
+// Global imports.
 import { useCallback, useEffect, useRef, useState } from "react";
 
+// Project imports.
 import { useSearchQuery } from "@/hooks";
-import { IBounds, ITreeInfoMap } from "@/types";
+import { IBounds } from "@/types";
 import { treeMapService } from "@/services/api";
 import { mainBus } from "@/bus";
+import { useStore } from "@/store";
 
 const RELOAD_DELAY = 100;
 
 export const useMarkers = () => {
-  // This is all markers that we ever loaded, indexed by key.
-  const [map, setMap] = useState<ITreeInfoMap>({});
+  const map = useStore((state) => state.trees);
+  const addTrees = useStore((state) => state.addTrees);
+  const resetTrees = useStore((state) => state.resetTrees);
 
   // Last displayed bounds, tracked to request the API.
   const [bounds, setBounds] = useState<number[]>([]);
@@ -21,8 +25,8 @@ export const useMarkers = () => {
 
   const handleSearchQueryChange = useCallback(() => {
     console.debug("Search query changed, emptying the map.");
-    setMap({});
-  }, []);
+    resetTrees();
+  }, [resetTrees]);
 
   // Listen for the search query change.
   useEffect(() => {
@@ -56,22 +60,8 @@ export const useMarkers = () => {
     timeoutId.current = null;
 
     console.debug(`Received ${res.length} markers from the API.`);
-
-    let added = 0;
-    const updated = { ...map };
-
-    for (const marker of res) {
-      if (!(marker.id in updated)) {
-        updated[marker.id] = marker;
-        added++;
-      }
-    }
-
-    if (added) {
-      console.debug(`Added ${added} new markers.`);
-      setMap(updated);
-    }
-  }, [bounds, map, searchQuery]);
+    addTrees(res);
+  }, [bounds, addTrees, searchQuery]);
 
   const handleBoundsChange = (bounds: IBounds) => {
     reload(bounds);
