@@ -1,12 +1,12 @@
 // Global imports.
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 // Project imports.
 import { ITreeDetails } from "@/types";
 import { treeMapService } from "@/services/api";
-import { formatTreeDimensions, formatDate } from "@/utils";
+import { routes, formatTreeDimensions, formatDate } from "@/utils";
 import { mainBus } from "@/bus";
-import { useStore } from "@/store";
 
 const formatStatusLine = (state: string, updatedAt: number): string => {
   return `${state.charAt(0).toUpperCase() + state.slice(1)}, checked on ${formatDate(updatedAt)}.`;
@@ -19,7 +19,7 @@ export const useTreeSidePane = (id: string) => {
   const [status, setStatus] = useState<string | null>(null);
   const [dimensions, setDimensions] = useState<string | null>(null);
 
-  const setShowTree = useStore((state) => state.setShowTree);
+  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
@@ -50,7 +50,7 @@ export const useTreeSidePane = (id: string) => {
   }, [id]);
 
   const handleCloseClick = () => {
-    setShowTree(null);
+    navigate(routes.home());
   };
 
   return {

@@ -2,15 +2,12 @@
 import { create } from "zustand";
 
 // Project imports.
-import { IMarkerClickEvent, ITreeInfo, ITreeInfoMap } from "@/types";
+import { ITreeInfo, ITreeInfoMap } from "@/types";
 
 interface IStore {
   trees: ITreeInfoMap;
   addTrees: (trees: ITreeInfo[]) => void;
   resetTrees: () => void;
-
-  showTree: IMarkerClickEvent | null;
-  setShowTree: (id: IMarkerClickEvent | null) => void;
 }
 
 export const useStore = create<IStore>((set) => ({
@@ -39,11 +36,5 @@ export const useStore = create<IStore>((set) => ({
   resetTrees: () => {
     console.debug("Resetting the trees store.");
     set({ trees: {} });
-  },
-
-  showTree: null,
-
-  setShowTree: (tree: IMarkerClickEvent | null) => {
-    set({ showTree: tree });
   },
 }));

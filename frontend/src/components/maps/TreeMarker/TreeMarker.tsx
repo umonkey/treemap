@@ -6,19 +6,20 @@
 
 // Global imports.
 import { Marker } from "react-leaflet";
+import { useNavigate } from "react-router-dom";
 
 // Project imports.
 import { GreenCircleIcon, RedCircleIcon, BlackCircleIcon } from "@/components";
 import { IMarkerClickEvent, ITreeInfo } from "@/types";
-import { useStore } from "@/store";
 import { mainBus } from "@/bus";
+import { routes } from "@/utils";
 
 interface IProps {
   tree: ITreeInfo;
 }
 
 export const TreeMarker = (props: IProps) => {
-  const setShowTree = useStore((state) => state.setShowTree);
+  const navigate = useNavigate();
 
   const getIcon = (state: string | null) => {
     if (state === "dead") {
@@ -41,7 +42,7 @@ export const TreeMarker = (props: IProps) => {
       }
     } as IMarkerClickEvent;
 
-    setShowTree(e);
+    navigate(routes.treePreview(props.tree.id));
 
     mainBus.emit("tree_clicked", e);
   };

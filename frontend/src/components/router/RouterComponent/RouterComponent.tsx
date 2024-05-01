@@ -1,7 +1,15 @@
 import { Route, Routes } from "react-router-dom";
 import { routes } from "@/utils/routes";
 
-import { AddPage, AddTreeDetailsPageWrapper, DetailsPageWrapper, EditTreePageWrapper, MoveTreePageWrapper, HomePage } from "@/pages";
+import {
+  AddPage,
+  AddTreeDetailsPageWrapper,
+  DetailsPageWrapper,
+  EditTreePageWrapper,
+  HomePage,
+  MoveTreePageWrapper,
+  PreviewPageWrapper,
+} from "@/pages";
 
 export const RouterComponent = () => {
   return (
@@ -12,6 +20,7 @@ export const RouterComponent = () => {
       <Route path={routes.treeDetails(":id")} element={<DetailsPageWrapper />} />
       <Route path={routes.editTree(":id")} element={<EditTreePageWrapper />} />
       <Route path={routes.moveTree(":id")} element={<MoveTreePageWrapper />} />
+      <Route path={routes.treePreview(":id")} element={<PreviewPageWrapper />} />
     </Routes>
   );
 };

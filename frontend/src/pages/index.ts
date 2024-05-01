@@ -6,3 +6,5 @@ export { DetailsPageWrapper } from "./DetailsPageWrapper";
 export { EditTreePage, EditTreePageWrapper } from "./EditTreePage";
 export { HomePage } from "./HomePage";
 export { MoveTreePage, MoveTreePageWrapper } from "./MoveTreePage";
+export { PreviewPage } from "./PreviewPage";
+export { PreviewPageWrapper } from "./PreviewPageWrapper";

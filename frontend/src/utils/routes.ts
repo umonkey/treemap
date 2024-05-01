@@ -9,4 +9,5 @@ export const routes = {
   moveTree: (id: string) => `/tree/${id}/move`,
   search: (query: string) => `/?search=${query}`,
   treeDetails: (id: string) => `/tree/${id}`,
+  treePreview: (id: string) => `/tree/${id}/preview`,
 };
