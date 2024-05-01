@@ -4,6 +4,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 // Project imports.
 import { WithHeader, WithSidebar, SideBar } from "@/components";
 import { ITreeInfo } from "@/types";
+import { SAMPLE_TREE } from "@/sample-data";
 
 // Local imports.
 import { TreeSidePane } from "./TreeSidePane";
@@ -42,24 +43,8 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Desktop: Story = {
+export const Default: Story = {
   args: {
-    id: "134793003121381380",
-  },
-  parameters: {
-    viewport: {
-      defaultViewport: "responsive",
-    },
-  },
-};
-
-export const Phone: Story = {
-  args: {
-    id: "134793003121381380",
-  },
-  parameters: {
-    viewport: {
-      defaultViewport: "mobile1",
-    },
+    tree: SAMPLE_TREE,
   },
 };

@@ -38,7 +38,7 @@ export const PreviewPage = (props: IProps) => {
             </MapControl>
 
             <SideBar>
-              <TreeSidePane id={tree.id} />
+              <TreeSidePane tree={tree} />
             </SideBar>
           </WithSidebar>
         )}
