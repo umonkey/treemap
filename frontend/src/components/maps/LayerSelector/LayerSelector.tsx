@@ -17,7 +17,7 @@ export const LayerSelector = (props: IProps) => {
     <LayersControl position="topright">
       <LayersControl.BaseLayer checked name="MapTiler (vector)">
         <VectorTileLayer
-          attribution='&copy; <a href="https://github.com/umonkey/treemap">Tree Map</a> contributors'
+          attribution='&copy; <a href="https://github.com/umonkey/treemap/wiki/Data-contribution" target="_blank">Tree Map</a> contributors'
           styleUrl={`https://api.maptiler.com/maps/streets-v2/style.json?key=${mapTilerKey}`}
           accessToken={mapTilerKey}
           eventHandlers={{
