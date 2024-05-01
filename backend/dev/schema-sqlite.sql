@@ -108,6 +108,7 @@ CREATE TABLE IF NOT EXISTS species (
     `name` TEXT NOT NULL,
     `local` TEXT NOT NULL,
     `keywords` TEXT NULL,
+    `wikidata_id` TEXT NOT NULL,
     PRIMARY KEY(`name`)
 );
 
