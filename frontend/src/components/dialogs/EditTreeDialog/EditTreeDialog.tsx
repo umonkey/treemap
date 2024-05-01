@@ -14,10 +14,10 @@ interface IProps {
 }
 
 export const EditTreeDialog = (props: IProps) => {
-  const [species, setSpecies] = useState<string>('');
-  const [height, setHeight] = useState<number>(0.0);
-  const [circumference, setCircumference] = useState<number>(0.0);
-  const [diameter, setDiameter] = useState<number>(0.0);
+  const [species, setSpecies] = useState<string>(props.tree.species);
+  const [height, setHeight] = useState<number>(props.tree.height || 0.0);
+  const [circumference, setCircumference] = useState<number>(props.tree.circumference || 0.0);
+  const [diameter, setDiameter] = useState<number>(props.tree.diameter || 0.0);
   const [state, setState] = useState<string>(props.tree.state || "healthy");
   const [notes, setNotes] = useState<string>(props.tree.notes || "");
 
