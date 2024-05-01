@@ -1,10 +1,4 @@
-// Global imports.
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-
 // Project imports.
-import { routes } from "@/utils/routes";
-import { useMapState } from "@/hooks";
 import {
   DefaultMarker,
   MapControl,
@@ -16,47 +10,24 @@ import {
   WithHeader,
   WithSidebar,
 } from "@/components";
-import { ILatLng, IMapView } from "@/types";
-import { useStore } from "@/store";
 
 // Local imports.
+import { useHomePage } from "./hooks";
 import "./styles.css";
 
 export const HomePage = () => {
-  const [picker, setPicker] = useState<boolean>(false);
-  const [newPosition, setNewPosition] = useState<ILatLng | null>(null);
-  const { mapState, setMapState } = useMapState();
-
-  const showTree = useStore((state) => state.showTree);
-  const setShowTree = useStore((state) => state.setShowTree);
-
-  const navigate = useNavigate();
-
-  const handleAddTree = () => {
-    setPicker(!picker);
-  };
-
-  const handlePicker = (position: ILatLng) => {
-    setNewPosition(position);
-  };
-
-  const handleContinueAddingTree = () => {
-    if (newPosition) {
-      navigate(routes.addTree(newPosition));
-    }
-  };
-
-  const handleCancel = () => {
-    setPicker(false);
-  };
-
-  const handleViewChange = ({ center, zoom }: IMapView) => {
-    setMapState({ center, zoom });
-  };
-
-  useEffect(() => {
-    setShowTree(null);
-  }, [setShowTree]);
+  const {
+    handleAddTree,
+    handleCancel,
+    handleContinueAddingTree,
+    handlePicker,
+    handleViewChange,
+    mapState,
+    newPosition,
+    picker,
+    sideBarMode,
+    showTree,
+  } = useHomePage();
 
   return (
     <div className="HomePage">
@@ -80,7 +51,7 @@ export const HomePage = () => {
             )}
           </MapControl>
 
-          {picker && (
+          {sideBarMode === "picker" && (
             <SideBar>
               <SelectLocationDialog
                 position={newPosition}
@@ -90,7 +61,7 @@ export const HomePage = () => {
             </SideBar>
           )}
 
-          {showTree && (
+          {sideBarMode === "tree" && showTree && (
             <SideBar>
               <TreeSidePane id={showTree.id} />
             </SideBar>
