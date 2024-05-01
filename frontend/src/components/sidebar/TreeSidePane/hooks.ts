@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 // Project imports.
 import { ITreeDetails } from "@/types";
 import { treeMapService } from "@/services/api";
-import { formatDate } from "@/utils";
+import { formatTreeDimensions, formatDate } from "@/utils";
 import { mainBus } from "@/bus";
 import { useStore } from "@/store";
 
@@ -17,6 +17,7 @@ export const useTreeSidePane = (id: string) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
+  const [dimensions, setDimensions] = useState<string | null>(null);
 
   const setShowTree = useStore((state) => state.setShowTree);
 
@@ -30,6 +31,7 @@ export const useTreeSidePane = (id: string) => {
 
         setTree(res);
         setStatus(formatStatusLine(res.state, res.updated_at));
+        setDimensions(formatTreeDimensions(res));
 
         mainBus.emit("pan_to", {
           lat: res.lat,
@@ -57,5 +59,6 @@ export const useTreeSidePane = (id: string) => {
     loading,
     error,
     handleCloseClick,
+    dimensions,
   };
 };
