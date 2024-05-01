@@ -222,4 +222,46 @@ export const SAMPLE_TREE = {
   "height": 18.5,
   "circumference": 1.2,
   "diameter": 7,
+  "files": [
+    {
+      id: "1",
+      small_id: "1S",
+      large_id: "1L",
+    },
+    {
+      id: "2",
+      small_id: "2S",
+      large_id: "2L",
+    },
+    {
+      id: "3",
+      small_id: "3S",
+      large_id: "3L",
+    },
+    {
+      id: "4",
+      small_id: "4S",
+      large_id: "4L",
+    },
+    {
+      id: "5",
+      small_id: "5S",
+      large_id: "5L",
+    },
+    {
+      id: "6",
+      small_id: "6S",
+      large_id: "6L",
+    },
+    {
+      id: "7",
+      small_id: "7S",
+      large_id: "7L",
+    },
+    {
+      id: "8",
+      small_id: "8S",
+      large_id: "8L",
+    },
+  ],
 } as ITreeDetails;

@@ -1,4 +1,4 @@
-import { getApiRoot, getGoogleClientId } from "./env";
+import { getApiRoot, getGoogleClientId, getFileUrlPattern } from "./env";
 import { DEFAULT_GOOGLE_CLIENT_ID } from "@/utils/config";
 
 test("should return an empty default API root", () => {
@@ -23,4 +23,14 @@ test("should return the default Google client ID", () => {
 test("should return a custom Google client ID", () => {
   import.meta.env.VITE_GOOGLE_CLIENT_ID = "foobar";
   expect(getGoogleClientId()).toBe("foobar");
+});
+
+test("should return an empty file url pattern", () => {
+  import.meta.env.FILE_URL_PATTERN = "";
+  expect(getFileUrlPattern()).toBe(null);
+});
+
+test("should return a non-empty file url pattern", () => {
+  import.meta.env.FILE_URL_PATTERN = "https://example.com/{id}";
+  expect(getFileUrlPattern()).toBe("https://example.com/{id}");
 });

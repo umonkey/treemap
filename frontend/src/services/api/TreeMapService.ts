@@ -116,10 +116,6 @@ export class TreeMapService {
     console.debug("FILE UPLOADED", res);
   }
 
-  public getFileURL(file_id: string): string {
-    return `${this.root}/v1/files/${file_id}`;
-  }
-
   public async addComment(tree_id: string, text: string): Promise<IComment[]> {
     return await this.post(`/v1/trees/${tree_id}/comments`, {
       message: text,

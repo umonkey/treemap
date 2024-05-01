@@ -17,7 +17,7 @@ export const Gallery = (props: IProps) => {
         showCloseIcon: true,
       }}>
         {props.images.map((image, index) => (
-          <a key={index} href={image.large}>
+          <a key={index} href={image.large} className="tile">
             <img src={image.small} alt="" />
           </a>
         ))}

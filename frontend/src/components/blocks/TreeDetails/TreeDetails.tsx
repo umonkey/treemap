@@ -1,6 +1,6 @@
 import { ExternalTreeLinks } from "@/components";
 import { ITreeDetails } from "@/types";
-import { treeMapService } from "@/services/api";
+import { getFileURL } from "@/utils";
 
 import "./styles.scss";
 
@@ -24,7 +24,7 @@ export const TreeDetails = (props: IProps) => {
   return (
     <div className={`TreeDetails state-${state}`}>
       {image_id && (
-        <img className="thumbnail" src={treeMapService.getFileURL(image_id)} alt="preview" />
+        <img className="thumbnail" src={getFileURL(image_id)} alt="preview" />
       )}
 
       <div className="inside">

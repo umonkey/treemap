@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRulerCombined, faCircleInfo, faX } from "@fortawesome/free-solid-svg-icons";
 
 // Project imports.
-import { TreePreviewButtons, ExternalTreeLinks } from "@/components";
+import { GalleryLoader, TreePreviewButtons, ExternalTreeLinks } from "@/components";
 
 // Local imports.
 import { useTreeSidePane } from "./hooks";
@@ -42,6 +42,8 @@ export const TreeSidePane = (props: IProps) => {
               <li><FontAwesomeIcon icon={faRulerCombined} /> {dimensions}</li>
             )}
           </ul>
+
+          <GalleryLoader id={tree.id} />
         </>
       )}
 

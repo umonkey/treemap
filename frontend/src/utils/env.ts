@@ -12,6 +12,10 @@ export const getApiRoot = () => {
   return root;
 };
 
+export const getFileUrlPattern = (): string | null => {
+  return import.meta.env.FILE_URL_PATTERN || null;
+};
+
 export const getGoogleClientId = () => {
   return import.meta.env.VITE_GOOGLE_CLIENT_ID || DEFAULT_GOOGLE_CLIENT_ID;
 };

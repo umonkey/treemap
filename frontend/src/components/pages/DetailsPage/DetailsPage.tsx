@@ -3,10 +3,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faPencil, faUpDownLeftRight, faCamera, faShareNodes } from "@fortawesome/free-solid-svg-icons";
 
-import { Gallery, MapWithMarker, MoveTreeButton, TreeComments, TreeDetails, TreeMarkers, ImagePicker, WithHeader } from "@/components";
-import { routes } from "@/utils/routes";
+import { GalleryLoader, MapWithMarker, MoveTreeButton, TreeComments, TreeDetails, TreeMarkers, ImagePicker, WithHeader } from "@/components";
+import { routes } from "@/utils";
 import { useFileUploader, useDeviceType } from "@/hooks";
-import { treeMapService } from "@/services/api";
+
 import { useTreeDetails } from "./hooks";
 
 import "./styles.scss";
@@ -80,12 +80,7 @@ export const DetailsPage = (props: IProps) => {
             <TreeMarkers />
           </MapWithMarker>
 
-          {tree.files && tree.files.length > 0 && (
-            <Gallery images={tree.files.map(file => ({
-              small: treeMapService.getFileURL(file.small_id),
-              large: treeMapService.getFileURL(file.large_id),
-            }))} />
-          )}
+          <GalleryLoader id={tree.id} />
 
           {uploadError && (
             <div className="message">{uploadError}</div>

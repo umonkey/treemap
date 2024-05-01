@@ -12,6 +12,7 @@ export { EditTreeDialog } from "./dialogs/EditTreeDialog";
 export { EditTreePage, EditTreePageWrapper } from "./pages/EditTreePage";
 export { ExternalTreeLinks } from "./elements/ExternalTreeLinks";
 export { Gallery } from "./blocks/Gallery";
+export { GalleryLoader } from "./blocks/GalleryLoader";
 export { GreenCircleIcon } from "./maps/GreenCircleIcon";
 export { Header } from "./layout/Header";
 export { HomeButton } from "./elements/HomeButton";

@@ -1,3 +1,10 @@
 .Header {
   height: 48px;
+
+  /**
+   * The gallery plugin we use (light-box) has a z-index of 1040,
+   * and the MUI appbar has 1100, so we have to adjust it here
+   * to make the gallery controls visible.
+   **/
+  z-index: 800;
 }
