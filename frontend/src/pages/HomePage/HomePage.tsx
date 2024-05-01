@@ -2,7 +2,6 @@
 import {
   DefaultMarker,
   MapControl,
-  MapEventHandler,
   SideBar,
   TreeMarkers,
   TreeSidePane,
@@ -16,7 +15,6 @@ import "./styles.css";
 
 export const HomePage = () => {
   const {
-    handleViewChange,
     mapState,
     sideBarMode,
     showTree,
@@ -30,10 +28,6 @@ export const HomePage = () => {
             center={mapState.center}
             zoom={mapState.zoom}
           >
-            <MapEventHandler
-              onViewChange={handleViewChange}
-            />
-
             <TreeMarkers />
 
             {showTree && (
