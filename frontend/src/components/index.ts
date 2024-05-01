@@ -43,6 +43,7 @@ export { TreeDetails } from "./blocks/TreeDetails";
 export { TreeMarker } from "./maps/TreeMarker";
 export { TreeMarkers } from "./maps/TreeMarkers";
 export { TreePopup } from "./maps/TreePopup";
+export { TreePreviewButtons } from "./elements/TreePreviewButtons";
 export { TreeSidePane } from "./dialogs/TreeSidePane";
 export { TreeStateSelector } from "./elements/TreeStateSelector";
 export { WithAuth } from "./helpers/WithAuth";

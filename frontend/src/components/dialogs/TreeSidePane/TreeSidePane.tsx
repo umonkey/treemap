@@ -1,10 +1,9 @@
 // Global imports.
-import { Button, ButtonGroup } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationDot, faUpDown, faLeftRight, faCircleNotch, faCircleInfo, faX } from "@fortawesome/free-solid-svg-icons";
 
 // Project imports.
-import { ExternalTreeLinks } from "@/components";
+import { TreePreviewButtons, ExternalTreeLinks } from "@/components";
 
 // Local imports.
 import { useTreeSidePane } from "./hooks";
@@ -15,7 +14,7 @@ interface IProps {
 }
 
 export const TreeSidePane = (props: IProps) => {
-  const { tree, status, loading, error, handleDetailsClick, handleEditClick, handleMoveClick, handleCloseClick } = useTreeSidePane(props.id);
+  const { tree, status, loading, error, handleCloseClick } = useTreeSidePane(props.id);
 
   return (
     <div className="TreeSidePane">
@@ -36,13 +35,7 @@ export const TreeSidePane = (props: IProps) => {
 
           <ExternalTreeLinks tree={tree} />
 
-          <div className="buttons">
-            <ButtonGroup variant="contained">
-              <Button onClick={handleDetailsClick}>Details</Button>
-              <Button onClick={handleEditClick}>Edit</Button>
-              <Button onClick={handleMoveClick}>Move</Button>
-            </ButtonGroup>
-          </div>
+          <TreePreviewButtons id={props.id} />
 
           <ul className="props">
             <li className="status"><FontAwesomeIcon icon={faCircleInfo} /> {status}</li>

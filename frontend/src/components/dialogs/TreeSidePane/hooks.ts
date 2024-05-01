@@ -1,11 +1,10 @@
 // Global imports.
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 // Project imports.
 import { ITreeDetails } from "@/types";
 import { treeMapService } from "@/services/api";
-import { routes, formatDate } from "@/utils";
+import { formatDate } from "@/utils";
 import { mainBus } from "@/bus";
 import { useStore } from "@/store";
 
@@ -20,8 +19,6 @@ export const useTreeSidePane = (id: string) => {
   const [status, setStatus] = useState<string | null>(null);
 
   const setShowTree = useStore((state) => state.setShowTree);
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
@@ -50,18 +47,6 @@ export const useTreeSidePane = (id: string) => {
     })();
   }, [id]);
 
-  const handleDetailsClick = () => {
-    navigate(routes.treeDetails(id));
-  };
-
-  const handleEditClick = () => {
-    navigate(routes.editTree(id));
-  };
-
-  const handleMoveClick = () => {
-    navigate(routes.moveTree(id));
-  };
-
   const handleCloseClick = () => {
     setShowTree(null);
   };
@@ -71,9 +56,6 @@ export const useTreeSidePane = (id: string) => {
     status,
     loading,
     error,
-    handleDetailsClick,
-    handleEditClick,
-    handleMoveClick,
     handleCloseClick,
   };
 };
