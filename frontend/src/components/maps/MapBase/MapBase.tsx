@@ -52,7 +52,6 @@ export const MapBase = (props: IProps) => {
 
   useEffect(() => {
     const handler = (center: ILatLng) => {
-      console.debug("PAN TO", center);
       mapRef.current?.panTo([center.lat, center.lon]);
     };
 
