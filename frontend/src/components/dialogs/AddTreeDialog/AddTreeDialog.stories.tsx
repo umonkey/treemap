@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
+
+import { SAMPLE_TREES } from "@/sample-data";
 
 import { AddTreeDialog } from "./AddTreeDialog";
-import { ITreeInfo } from "@/types";
 
 const meta = {
   title: 'Dialogs/AddTreeDialog',
@@ -14,52 +14,25 @@ const meta = {
         url: "/v1/trees",
         method: "POST",
         status: 200,
-        response: {
-          id: "1",
-          lat: 40.181389,
-          lon: 44.514444,
-          species: "Oak",
-        } as ITreeInfo,
+        response: SAMPLE_TREES[0],
       },
     ],
-  },
-  args: {
-    onSave: fn(),
-    onCancel: fn(),
   },
 } satisfies Meta<typeof AddTreeDialog>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Desktop: Story = {
+export const Default: Story = {
   args: {
     center: {
       lat: 40.181389,
       lon: 44.514444,
     },
-    error: null,
-    busy: false,
   },
   parameters: {
     viewport: {
       defaultViewport: "responsive",
-    },
-  },
-};
-
-export const Phone: Story = {
-  args: {
-    center: {
-      lat: 40.181389,
-      lon: 44.514444,
-    },
-    error: null,
-    busy: false,
-  },
-  parameters: {
-    viewport: {
-      defaultViewport: "mobile1",
     },
   },
 };

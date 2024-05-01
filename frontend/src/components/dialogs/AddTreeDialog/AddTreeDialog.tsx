@@ -4,100 +4,44 @@
  */
 
 // Global imports.
-import { useState } from "react";
-import { Box, Button, ButtonGroup, FormHelperText, TextField } from "@mui/material";
+import { Box, FormHelperText, TextField } from "@mui/material";
 
 // Project imports.
-import { SpeciesSelector, TreeStateSelector } from "@/components";
-import { IAddTreeRequest, ILatLng } from "@/types";
+import { ConfirmCancelButtons, SpeciesSelector, TreeStateSelector } from "@/components";
+import { ILatLng } from "@/types";
 
 // Local imports.
+import { useAddTreeDialog } from "./hooks";
 import "./styles.scss";
 
 interface IProps {
-  center: ILatLng | null;
-  error: string | null;
-  busy: boolean;
-  onSave: (tree: IAddTreeRequest) => void;
-  onCancel?: () => void;
+  center: ILatLng;
 }
 
 export const AddTreeDialog = (props: IProps) => {
-  const [species, setSpecies] = useState<string>('');
-  const [height, setHeight] = useState<number|undefined>(undefined);
-  const [circumference, setCircumference] = useState<number|undefined>(undefined);
-  const [diameter, setDiameter] = useState<number|undefined>(undefined);
-  const [state, setState] = useState<string>('healthy');
-  const [notes, setNotes] = useState<string>("");
-
-  const isSaveEnabled = (): boolean => {
-    if (species.length === 0) {
-      return false;
-    }
-
-    if (props.busy) {
-      return false;
-    }
-
-    if (props.center === null) {
-      return false;
-    }
-
-    return true;
-  };
-
-  const handleNotesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNotes(event.target.value);
-  };
-
-  const handleHeightChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setHeight(parseFloat(event.target.value));
-  };
-
-  const handleCircumferenceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setCircumference(parseFloat(event.target.value));
-  };
-
-  const handleDiameterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setDiameter(parseFloat(event.target.value));
-  };
-
-  const handleSaveClick = async () => {
-    if (!props.center) {
-      console.error("Center is not set, cannot add tree.");
-      return;
-    }
-
-    if (!species) {
-      console.error("species not set, cannot add tree.");
-      return;
-    }
-
-    props.onSave({
-      lat: props.center.lat,
-      lon: props.center.lon,
-      species: species,
-      height: height || 0,
-      circumference: circumference || 0,
-      diameter: diameter || 0,
-      state,
-      notes: notes || null,
-    } as IAddTreeRequest);
-  };
-
-  const handleCancelClick = () => {
-    props.onCancel && props.onCancel();
-  };
-
-  const handleNameChange = (value: string) => {
-    setSpecies(value);
-  };
+  const {
+    canSave,
+    circumference,
+    diameter,
+    error,
+    handleCancelClick,
+    handleCircumferenceChange,
+    handleDiameterChange,
+    handleHeightChange,
+    handleNameChange,
+    handleNotesChange,
+    handleSaveClick,
+    handleStateChange,
+    height,
+    notes,
+    state,
+  } = useAddTreeDialog({
+    center: props.center,
+  });
 
   return (
     <div className="AddTreeDialog Dialog">
       <Box component="form">
-        <h2>Describe the tree</h2>
-
         <div className="group wide">
           <SpeciesSelector onChange={handleNameChange} />
         </div>
@@ -118,10 +62,7 @@ export const AddTreeDialog = (props: IProps) => {
           </div>
 
           <div className="short">
-            <TreeStateSelector
-              state={state}
-              onChange={(value: string) => setState(value)}
-            />
+            <TreeStateSelector state={state} onChange={handleStateChange} />
           </div>
         </div>
 
@@ -130,16 +71,15 @@ export const AddTreeDialog = (props: IProps) => {
           <FormHelperText>Add for notable trees, like: Queen's Oak.</FormHelperText>
         </div>
 
-        {props.error && (
-          <p className="error">{props.error}</p>
+        {error && (
+          <p className="error">{error}</p>
         )}
 
-        <div className="group">
-          <ButtonGroup variant="contained">
-            <Button color="success" disabled={!isSaveEnabled()} onClick={handleSaveClick}>Confirm</Button>
-            <Button onClick={handleCancelClick}>Cancel</Button>
-          </ButtonGroup>
-        </div>
+        <ConfirmCancelButtons
+          canConfirm={canSave}
+          onCancel={handleCancelClick}
+          onConfirm={handleSaveClick}
+        />
       </Box>
     </div>
   );

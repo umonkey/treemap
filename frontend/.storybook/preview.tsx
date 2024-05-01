@@ -4,7 +4,7 @@ import { MemoryRouter } from "react-router-dom";
 
 // Project imports.
 import { IComment, ISpecies, ITreeInfo, ITreeDetails } from "@/types";
-import { SAMPLE_COMMENTS, SAMPLE_TREES, SAMPLE_TREE } from "@/sample-data";
+import { SAMPLE_COMMENTS, SAMPLE_TREES, SAMPLE_TREE, SAMPLE_SPECIES_SEARCH } from "@/sample-data";
 
 // Local imports.
 import { StoryWrapper } from "./StoryWrapper";
@@ -133,6 +133,20 @@ const preview: Preview = {
               "local": "Elm",
             },
           ] as ISpecies[],
+        },
+        {
+          url: "/v1/species/search?query=_",
+          method: "GET",
+          status: 200,
+          delay: 500,
+          response: SAMPLE_SPECIES_SEARCH,
+        },
+        {
+          url: "/v1/species/suggest",
+          method: "GET",
+          status: 200,
+          delay: 500,
+          response: ["Acer", "Ulmus", "Unknown tree"],
         },
       ],
     },

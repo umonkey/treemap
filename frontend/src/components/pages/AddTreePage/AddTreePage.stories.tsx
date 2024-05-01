@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
 
 import { AddTreePage } from "./AddTreePage";
 import { ILatLng, ITreeInfo } from "@/types";
@@ -28,16 +27,12 @@ const meta = {
       },
     ],
   },
-  args: {
-    onSuccess: fn(),
-    onCancel: fn(),
-  },
 } satisfies Meta<typeof AddTreePage>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Desktop: Story = {
+export const Default: Story = {
   args: {
     lat: CENTER.lat,
     lon: CENTER.lon,
@@ -45,18 +40,6 @@ export const Desktop: Story = {
   parameters: {
     viewport: {
       defaultViewport: "responsive",
-    },
-  },
-};
-
-export const Phone: Story = {
-  args: {
-    lat: CENTER.lat,
-    lon: CENTER.lon,
-  },
-  parameters: {
-    viewport: {
-      defaultViewport: "mobile1",
     },
   },
 };

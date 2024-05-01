@@ -1,4 +1,4 @@
-import { IComment, ITreeDetails, ITreeInfo } from "@/types";
+import { IComment, ISpecies, ITreeDetails, ITreeInfo } from "@/types";
 
 export const SAMPLE_TREES = [
   {
@@ -265,3 +265,18 @@ export const SAMPLE_TREE = {
     },
   ],
 } as ITreeDetails;
+
+export const SAMPLE_SPECIES_SEARCH = [
+  {
+    name: "Acer",
+    local: "Maple",
+  },
+  {
+    name: "Acer negundo",
+    local: "Box Elder",
+  },
+  {
+    name: "Acer pseudoplatanus",
+    local: "Sycamore maple",
+  },
+] as ISpecies[];

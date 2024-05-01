@@ -1,0 +1,1 @@
+export { NarrowPage } from "./NarrowPage";
