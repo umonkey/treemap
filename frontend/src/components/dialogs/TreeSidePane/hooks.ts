@@ -28,6 +28,7 @@ export const useTreeSidePane = (id: string) => {
       try {
         setLoading(true);
         setError(null);
+
         const res = await treeMapService.getTreeDetails(id);
 
         setTree(res);

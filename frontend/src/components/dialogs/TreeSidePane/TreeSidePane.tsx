@@ -22,7 +22,7 @@ export const TreeSidePane = (props: IProps) => {
         <p className="error">{error}</p>
       )}
 
-      {!loading && !error && tree && (
+      {!error && tree && (
         <>
           <h2>{tree.species}</h2>
           <div className="treeId">#{tree.id}</div>
