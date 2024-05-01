@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faPencil, faUpDownLeftRight, faCamera, faShareNodes } from "@fortawesome/free-solid-svg-icons";
 
-import { GalleryLoader, MapWithMarker, MoveTreeButton, TreeComments, TreeDetails, TreeMarkers, ImagePicker } from "@/components";
+import { GalleryLoader, MapWithMarker, MoveTreeButton, NarrowPage, TreeComments, TreeDetails, TreeMarkers, ImagePicker } from "@/components";
 import { routes } from "@/utils";
 import { useFileUploader, useDeviceType } from "@/hooks";
 
@@ -38,7 +38,7 @@ export const DetailsPage = (props: IProps) => {
   };
 
   return (
-    <div className="DetailsPage Page">
+    <NarrowPage className="DetailsPage">
       {loading && (
         <p>Loading...</p>
       )}
@@ -110,6 +110,6 @@ export const DetailsPage = (props: IProps) => {
       {!tree && !error && !loading && (
         <p>Oops, something went wrong.</p>
       )}
-    </div>
+    </NarrowPage>
   );
 };

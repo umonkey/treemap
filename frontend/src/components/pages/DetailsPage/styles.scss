@@ -1,14 +1,9 @@
 .DetailsPage {
-  width: 100%;
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 20px;
-  box-sizing: border-box;
-
   .MapWithMarker {
     height: 450px;
-    max-height: 50vh;
-    border-radius: 5px;
+    max-height: 40vh;
+    width: 100%;
+    margin: 10px 0 20px;
   }
 
   .TreeDetails, .MapWithMarker {
