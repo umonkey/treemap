@@ -3,6 +3,9 @@ import { Button, ButtonGroup } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationDot, faUpDown, faLeftRight, faCircleNotch, faCircleInfo, faX } from "@fortawesome/free-solid-svg-icons";
 
+// Project imports.
+import { ExternalTreeLinks } from "@/components";
+
 // Local imports.
 import { useTreeSidePane } from "./hooks";
 import "./styles.scss";
@@ -30,6 +33,8 @@ export const TreeSidePane = (props: IProps) => {
           {tree.notes && (
             <div className="notes">{tree.notes}</div>
           )}
+
+          <ExternalTreeLinks tree={tree} />
 
           <div className="buttons">
             <ButtonGroup variant="contained">

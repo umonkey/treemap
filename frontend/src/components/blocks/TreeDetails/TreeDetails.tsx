@@ -1,3 +1,4 @@
+import { ExternalTreeLinks } from "@/components";
 import { ITreeDetails } from "@/types";
 import { treeMapService } from "@/services/api";
 
@@ -42,12 +43,7 @@ export const TreeDetails = (props: IProps) => {
           <div>State: {state}</div>
         </div>
 
-        <ul className="links">
-          {props.tree.osm_id && (
-            <li><a href={`https://www.openstreetmap.org/node/${props.tree.osm_id}`} target="_blank">OSM</a></li>
-          )}
-          <li><a href={`https://www.wikidata.org/w/index.php?search=${props.tree.species}`} target="_blank">Wikidata</a></li>
-        </ul>
+        <ExternalTreeLinks tree={props.tree} />
       </div>
     </div>
   );
