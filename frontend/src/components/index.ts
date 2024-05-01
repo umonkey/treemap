@@ -8,7 +8,7 @@ export { BlackCircleIcon } from "./maps/BlackCircleIcon";
 export { ConfirmCancelButtons } from "./blocks/ConfirmCancelButtons";
 export { DefaultMarker } from "./maps/DefaultMarker";
 export { DetailsPage } from "./pages/DetailsPage";
-export { DetailsPageWrapper } from "./pages/DetailsPage";
+export { DetailsPageWrapper } from "./pages/DetailsPageWrapper";
 export { EditTreeDialog } from "./dialogs/EditTreeDialog";
 export { EditTreePage, EditTreePageWrapper } from "./pages/EditTreePage";
 export { ExternalTreeLinks } from "./elements/ExternalTreeLinks";

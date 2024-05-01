@@ -1,9 +1,9 @@
 import { Button, ButtonGroup } from "@mui/material";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faPencil, faUpDownLeftRight, faCamera, faShareNodes } from "@fortawesome/free-solid-svg-icons";
 
-import { GalleryLoader, MapWithMarker, MoveTreeButton, TreeComments, TreeDetails, TreeMarkers, ImagePicker, WithHeader } from "@/components";
+import { GalleryLoader, MapWithMarker, MoveTreeButton, TreeComments, TreeDetails, TreeMarkers, ImagePicker } from "@/components";
 import { routes } from "@/utils";
 import { useFileUploader, useDeviceType } from "@/hooks";
 
@@ -111,22 +111,5 @@ export const DetailsPage = (props: IProps) => {
         <p>Oops, something went wrong.</p>
       )}
     </div>
-  );
-};
-
-export const DetailsPageWrapper = () => {
-  const { id } = useParams();
-
-  if (!id) {
-    console.error("Missing tree id.");
-    return null;
-  }
-
-  return (
-    <WithHeader>
-      <DetailsPage
-        id={id}
-      />
-    </WithHeader>
   );
 };
