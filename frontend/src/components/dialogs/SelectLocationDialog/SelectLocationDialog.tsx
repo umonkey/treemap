@@ -22,7 +22,7 @@ export const SelectLocationDialog = (props: IProps) => {
 
   return (
     <div className="SelectLocationDialog Dialog">
-      <h2>Adding a new tree</h2>
+      <h2>Where to add the tree?</h2>
       <p>Move the map to select tree location.&nbsp; You can correct it later.</p>
 
       <div className="buttons">

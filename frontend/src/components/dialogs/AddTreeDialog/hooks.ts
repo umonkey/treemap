@@ -1,6 +1,7 @@
 // Global imports.
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 
 // Project imports.
 import { treeMapService } from "@/services/api";
@@ -74,7 +75,9 @@ export const useAddTreeDialog = (props: IProps) => {
 
       console.debug(`Tree added with id ${res.id}, showing details page.`);
 
-      navigate(routes.treeDetails(res.id));
+      toast.success("Tree added successfully.");
+
+      navigate(routes.add());
     } catch (e) {
       console.error("Error adding a tree.", e);
       setError("Error adding tree, please try again later.");

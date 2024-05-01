@@ -1,3 +1,4 @@
+import { Toaster } from "react-hot-toast";
 import { HashRouter } from "react-router-dom";
 import { RouterComponent } from "@/components";
 import { initSentry } from "@/utils";
@@ -12,6 +13,7 @@ initSentry();
 function App() {
   return (
     <HashRouter>
+      <Toaster position="bottom-center" />
       <RouterComponent />
     </HashRouter>
   )
