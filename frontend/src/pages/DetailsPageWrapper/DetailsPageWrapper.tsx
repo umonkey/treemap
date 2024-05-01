@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 
-import { DetailsPage } from "@/components";
+import { DetailsPage } from "@/pages";
 
 export const DetailsPageWrapper = () => {
   const { id } = useParams();

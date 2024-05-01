@@ -1,7 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import { routes } from "@/utils/routes";
 
-import { AddTreePageWrapper, DetailsPageWrapper, EditTreePageWrapper, MoveTreePageWrapper, HomePage } from "@/components";
+import { AddTreePageWrapper, DetailsPageWrapper, EditTreePageWrapper, MoveTreePageWrapper, HomePage } from "@/pages";
 
 export const RouterComponent = () => {
   return (

@@ -1,5 +1,6 @@
 // Project imports.
-import { AddTreePage, WithAuth } from "@/components";
+import { WithAuth } from "@/components";
+import { AddTreePage } from "@/pages";
 
 // Local imports.
 import { useAddTreePageWrapper } from "./hooks";
