@@ -28,10 +28,6 @@ export const TreeSidePane = (props: IProps) => {
         <>
           <h2>{tree.species}</h2>
 
-          {false && (
-            <div className="treeId">#{tree.id}</div>
-          )}
-
           {tree.notes && (
             <div className="notes">{tree.notes}</div>
           )}
