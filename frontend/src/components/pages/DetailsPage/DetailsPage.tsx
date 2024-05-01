@@ -1,14 +1,10 @@
 import { Button, ButtonGroup } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faPencil, faUpDownLeftRight, faCamera, faShareNodes } from "@fortawesome/free-solid-svg-icons";
 
 import { GalleryLoader, MapWithMarker, MoveTreeButton, NarrowPage, TreeComments, TreeDetails, TreeMarkers, ImagePicker } from "@/components";
-import { routes } from "@/utils";
-import { useFileUploader, useDeviceType } from "@/hooks";
 
-import { useTreeDetails } from "./hooks";
-
+import { useDetailsPage } from "./hooks";
 import "./styles.scss";
 
 interface IProps {
@@ -16,26 +12,22 @@ interface IProps {
 }
 
 export const DetailsPage = (props: IProps) => {
-  const navigate = useNavigate();
-  const { isPhone, isDesktop } = useDeviceType();
-  const { tree, loading, error, canShare, handleShare } = useTreeDetails(props.id);
-  const { uploadFiles, error: uploadError, uploading, uploadFinished } = useFileUploader();
-
-  const handleBack = () => {
-    navigate(routes.home());
-  };
-
-  const handleEdit = () => {
-    navigate(routes.editTree(props.id));
-  };
-
-  const handleMove = () => {
-    navigate(routes.moveTree(props.id));
-  };
-
-  const handleImageUpload = (files: FileList) => {
-    uploadFiles(props.id, files);
-  };
+  const {
+    canShare,
+    error,
+    handleBack,
+    handleEdit,
+    handleImageUpload,
+    handleMove,
+    handleShare,
+    isDesktop,
+    isPhone,
+    loading,
+    tree,
+    uploadError,
+    uploadFinished,
+    uploading,
+  } = useDetailsPage(props.id);
 
   return (
     <NarrowPage className="DetailsPage">

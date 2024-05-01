@@ -2,14 +2,19 @@ import { useCallback, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { IMarkerClickEvent, ITreeDetails } from "@/types";
-import { treeMapService } from "@/services/api";
 import { mainBus } from "@/bus";
 import { routes } from "@/utils";
+import { treeMapService } from "@/services/api";
+import { useFileUploader, useDeviceType } from "@/hooks";
 
-export const useTreeDetails = (id: string) => {
+export const useDetailsPage = (id: string) => {
   const [tree, setTree] = useState<ITreeDetails | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+
+  const { uploadFiles, error: uploadError, uploading, uploadFinished } = useFileUploader();
+
+  const { isPhone, isDesktop } = useDeviceType();
 
   const navigate = useNavigate();
   const canShare = !!navigator.share;
@@ -48,11 +53,36 @@ export const useTreeDetails = (id: string) => {
     return () => mainBus.off("tree_clicked", handleTreeClick);
   }, [handleTreeClick]);
 
+  const handleBack = () => {
+    navigate(routes.home());
+  };
+
+  const handleEdit = () => {
+    navigate(routes.editTree(id));
+  };
+
+  const handleMove = () => {
+    navigate(routes.moveTree(id));
+  };
+
+  const handleImageUpload = (files: FileList) => {
+    uploadFiles(id, files);
+  };
+
   return {
-    tree,
-    loading,
-    error,
     canShare,
+    error,
+    handleBack,
+    handleEdit,
+    handleImageUpload,
+    handleMove,
     handleShare,
+    isDesktop,
+    isPhone,
+    loading,
+    tree,
+    uploadError,
+    uploadFinished,
+    uploading,
   };
 };
