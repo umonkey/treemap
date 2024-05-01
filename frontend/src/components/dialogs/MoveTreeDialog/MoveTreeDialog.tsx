@@ -1,5 +1,6 @@
-import { Button } from "@mui/material";
 import { ILatLng } from "@/types";
+
+import { ConfirmCancelButtons } from "@/components";
 
 import "./styles.scss";
 
@@ -22,21 +23,20 @@ export const MoveTreeDialog = (props: IProps) => {
 
   const canContinue = !!props.position && !props.busy;
 
-  const label = props.error ? "Retry" : "Confirm";
-
   return (
     <div className="MoveTreeDialog Dialog">
-      <h2>Select new tree location</h2>
+      <h2>Where to move the tree?</h2>
       <p>Move the map to select tree correct location for the tree.</p>
 
       {props.error && (
         <p className="error">{props.error}</p>
       )}
 
-      <div className="buttons">
-        <Button variant="contained" color="success" disabled={!canContinue} onClick={handleContinue}>{label}</Button>
-        <Button color="secondary" onClick={handleCancel}>Cancel</Button>
-      </div>
+      <ConfirmCancelButtons
+        onConfirm={handleContinue}
+        onCancel={handleCancel}
+        canConfirm={canContinue}
+      />
     </div>
   );
 };

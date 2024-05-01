@@ -1,5 +1,6 @@
-import { Button } from "@mui/material";
 import { ILatLng } from "@/types";
+
+import { ConfirmCancelButtons } from "@/components";
 
 import "./styles.scss";
 
@@ -25,10 +26,11 @@ export const SelectLocationDialog = (props: IProps) => {
       <h2>Where to add the tree?</h2>
       <p>Move the map to select tree location.&nbsp; You can correct it later.</p>
 
-      <div className="buttons">
-        <Button variant="contained" color="success" disabled={!canContinue} onClick={handleContinue}>Continue</Button>
-        <Button color="secondary" onClick={handleCancel}>Cancel</Button>
-      </div>
+      <ConfirmCancelButtons
+        onConfirm={handleContinue}
+        onCancel={handleCancel}
+        canConfirm={canContinue}
+      />
     </div>
   );
 };

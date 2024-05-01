@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { Box, Button, FormHelperText, TextField } from "@mui/material";
+import { Box, FormHelperText, TextField } from "@mui/material";
 
-import { SpeciesSelector, TreeStateSelector } from "@/components";
+import { ConfirmCancelButtons, SpeciesSelector, TreeStateSelector } from "@/components";
 import { ITreeDetails } from "@/types";
 import "./styles.scss";
 
@@ -125,10 +125,11 @@ export const EditTreeDialog = (props: IProps) => {
           <p className="error">{props.error}</p>
         )}
 
-        <div className="group buttons">
-          <Button variant="contained" color="success" disabled={!canSave()} onClick={handleSaveClick}>Confirm</Button>
-          <Button color="secondary" onClick={handleCancelClick}>Cancel</Button>
-        </div>
+        <ConfirmCancelButtons
+          onConfirm={handleSaveClick}
+          onCancel={handleCancelClick}
+          canConfirm={canSave()}
+        />
       </Box>
     </div>
   );
