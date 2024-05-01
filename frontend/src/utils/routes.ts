@@ -1,11 +1,12 @@
 import { ILatLng } from "@/types";
 
 export const routes = {
-  home: () => "/",
+  add: () => "/add",
   addComment: (tree_id: string) => `/tree/${tree_id}/comment`,
-  addTree: (position: ILatLng) => `/add/continue?lat=${position.lat}&lon=${position.lon}`,
-  treeDetails: (id: string) => `/tree/${id}`,
+  addContinue: (position: ILatLng) => `/add/continue?lat=${position.lat}&lon=${position.lon}`,
   editTree: (id: string) => `/tree/${id}/edit`,
+  home: () => "/",
   moveTree: (id: string) => `/tree/${id}/move`,
   search: (query: string) => `/?search=${query}`,
+  treeDetails: (id: string) => `/tree/${id}`,
 };

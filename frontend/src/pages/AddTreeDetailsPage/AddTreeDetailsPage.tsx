@@ -8,9 +8,9 @@ interface IProps {
   lon: number;
 }
 
-export const AddTreePage = (props: IProps) => {
+export const AddTreeDetailsPage = (props: IProps) => {
   return (
-    <NarrowPage className="AddTreePage">
+    <NarrowPage className="AddTreeDetailsPage">
       <h1>Adding a new tree</h1>
 
       <MapWithMarker center={{

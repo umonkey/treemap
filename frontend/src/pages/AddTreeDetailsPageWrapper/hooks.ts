@@ -6,7 +6,7 @@ const getFloatParam = (params: URLSearchParams, key: string) => {
   return value ? parseFloat(value) : null;
 };
 
-export const useAddTreePageWrapper = () => {
+export const useAddTreeDetailsPageWrapper = () => {
   const [params] = useSearchParams();
 
   const lat = getFloatParam(params, "lat");

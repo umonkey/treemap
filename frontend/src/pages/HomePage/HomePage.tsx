@@ -3,7 +3,6 @@ import {
   DefaultMarker,
   MapControl,
   MapEventHandler,
-  SelectLocationDialog,
   SideBar,
   TreeMarkers,
   TreeSidePane,
@@ -17,14 +16,8 @@ import "./styles.css";
 
 export const HomePage = () => {
   const {
-    handleAddTree,
-    handleCancel,
-    handleContinueAddingTree,
-    handlePicker,
     handleViewChange,
     mapState,
-    newPosition,
-    picker,
     sideBarMode,
     showTree,
   } = useHomePage();
@@ -36,9 +29,6 @@ export const HomePage = () => {
           <MapControl
             center={mapState.center}
             zoom={mapState.zoom}
-            onAddTree={handleAddTree}
-            onPick={handlePicker}
-            picker={picker}
           >
             <MapEventHandler
               onViewChange={handleViewChange}
@@ -50,16 +40,6 @@ export const HomePage = () => {
               <DefaultMarker center={showTree.position} />
             )}
           </MapControl>
-
-          {sideBarMode === "picker" && (
-            <SideBar>
-              <SelectLocationDialog
-                position={newPosition}
-                onContinue={handleContinueAddingTree}
-                onCancel={handleCancel}
-              />
-            </SideBar>
-          )}
 
           {sideBarMode === "tree" && showTree && (
             <SideBar>

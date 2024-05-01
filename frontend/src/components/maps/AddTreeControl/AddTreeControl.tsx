@@ -1,18 +1,18 @@
+// Global imports.
 import Control from "react-leaflet-custom-control";
-import * as L from 'leaflet';
+import * as L from "leaflet";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTree } from "@fortawesome/free-solid-svg-icons";
 
+// Local imports.
+import { useAddTreeControl } from "./hooks";
+
 interface IProps {
   position: L.ControlPosition;
-  onClick: () => void;
 }
 
-export const AddTreeControl = ({ position, onClick }: IProps) => {
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    onClick();
-  };
+export const AddTreeControl = ({ position }: IProps) => {
+  const { handleClick } = useAddTreeControl();
 
   return (
     <Control prepend position={position}>

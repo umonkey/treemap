@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { AddTreePage } from "./AddTreePage";
+import { AddTreeDetailsPage } from "./AddTreeDetailsPage";
 import { ILatLng, ITreeInfo } from "@/types";
 
 const CENTER = {
@@ -9,8 +9,8 @@ const CENTER = {
 } as ILatLng;
 
 const meta = {
-  title: 'Pages/AddTreePage',
-  component: AddTreePage,
+  title: 'Pages/AddTreeDetailsPage',
+  component: AddTreeDetailsPage,
   parameters: {
     layout: 'fullscreen', // centered
     mockData: [
@@ -27,7 +27,7 @@ const meta = {
       },
     ],
   },
-} satisfies Meta<typeof AddTreePage>;
+} satisfies Meta<typeof AddTreeDetailsPage>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
