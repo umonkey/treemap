@@ -8,4 +8,5 @@ pub struct SpeciesRecord {
     pub name: String,
     pub local: String,
     pub keywords: String,
+    pub wikidata_id: String,
 }

@@ -849,7 +849,7 @@ impl Database for SqliteDatabase {
         let pattern = format!("%{}%", query.trim().to_lowercase());
 
         let species = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT name, local, keywords FROM species WHERE name LIKE ?1 OR local LIKE ?1 OR keywords LIKE ?1 ORDER BY name LIMIT 10") {
+            let mut stmt = match conn.prepare("SELECT name, local, keywords, wikidata_id FROM species WHERE name LIKE ?1 OR local LIKE ?1 OR keywords LIKE ?1 ORDER BY name LIMIT 10") {
                 Ok(value) => value,
 
                 Err(e) => {
@@ -874,6 +874,7 @@ impl Database for SqliteDatabase {
                     name: row.get(0)?,
                     local: row.get(1)?,
                     keywords: row.get(2)?,
+                    wikidata_id: row.get(3)?,
                 });
             }
 
