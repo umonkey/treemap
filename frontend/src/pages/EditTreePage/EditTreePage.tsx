@@ -1,11 +1,9 @@
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
 
-import { EditTreeDialog, MapWithMarker, SideBar, WithAuth, WithHeader, WithSidebar } from "@/components";
+import { EditTreeDialog, MapWithMarker, NarrowPage } from "@/components";
 import { ITreeDetails } from "@/types";
 import { treeMapService } from "@/services/api";
 import { useTreeInfo } from "./hooks";
-import { routes } from "@/utils/routes";
 import { formatErrorMessage } from "@/utils";
 import "./styles.scss";
 
@@ -47,7 +45,9 @@ export const EditTreePage = (props: IProps) => {
     }
 
     return (
-      <WithSidebar>
+      <NarrowPage className="EditTreePage">
+        <h1>Update tree details</h1>
+
         <MapWithMarker
           center={{
             lat: tree.lat,
@@ -55,16 +55,15 @@ export const EditTreePage = (props: IProps) => {
           }}
         />
 
-        <SideBar>
-          <EditTreeDialog
-            tree={tree}
-            busy={busy}
-            error={saveError}
-            onSave={handleSave}
-            onCancel={props.onCancel}
-          />
-        </SideBar>
-      </WithSidebar>
+        <EditTreeDialog
+          tree={tree}
+          busy={busy}
+          error={saveError}
+          onSave={handleSave}
+          onCancel={props.onCancel}
+        />
+
+      </NarrowPage>
     );
   };
 
@@ -72,36 +71,5 @@ export const EditTreePage = (props: IProps) => {
     <div className="EditTreePage Page">
       {render()}
     </div>
-  );
-};
-
-export const EditTreePageWrapper = () => {
-  const { id } = useParams();
-
-  const navigate = useNavigate();
-
-  if (!id) {
-    console.error("Tree id not set.");
-    return null;
-  }
-
-  const handleSuccess = () => {
-    navigate(routes.treeDetails(id));
-  };
-
-  const handleCancel = () => {
-    navigate(routes.treeDetails(id));
-  };
-
-  return (
-    <WithAuth>
-      <WithHeader>
-        <EditTreePage
-          id={id}
-          onSuccess={handleSuccess}
-          onCancel={handleCancel}
-        />
-      </WithHeader>
-    </WithAuth>
   );
 };

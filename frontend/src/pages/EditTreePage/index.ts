@@ -1,1 +1,1 @@
-export { EditTreePage, EditTreePageWrapper } from "./EditTreePage";
+export { EditTreePage } from "./EditTreePage";

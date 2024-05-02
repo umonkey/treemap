@@ -89,8 +89,6 @@ export const EditTreeDialog = (props: IProps) => {
 
   return (
     <div className="EditTreeDialog">
-      <h2>Update tree details</h2>
-
       <Box component="form">
         <div className="group wide">
           <SpeciesSelector value={species} onChange={handleNameChange} />
