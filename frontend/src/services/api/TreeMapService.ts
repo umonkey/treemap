@@ -1,7 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 
 import { IApiError, IAddTreeRequest, IComment, ILatLng, ISpecies, ITreeInfo, ITreeDetails, IUploadTicket, IUserInfo } from "@/types";
-import { getUserToken, removeUserToken} from "@/hooks/useUserInfo";
 import { getApiRoot } from "@/utils/env";
 
 export interface ITreesResponse {
@@ -12,6 +11,8 @@ export class TreeMapService {
   private readonly root: string;
 
   private readonly client: AxiosInstance;
+
+  private token: string | null = null;
 
   public constructor() {
     this.root = getApiRoot();
@@ -92,7 +93,15 @@ export class TreeMapService {
       token,
     });
 
+    this.setToken(res.token);
+
     return res;
+  }
+
+  public async getUserInfo(): Promise<IUserInfo> {
+    return await this.get<IUserInfo>("/v1/me", {
+      headers: this.get_auth_headers(),
+    });
   }
 
   /**
@@ -140,6 +149,11 @@ export class TreeMapService {
     });
   }
 
+  public setToken(value: string | null): void {
+    this.token = value;
+    console.debug("[api] Token updated.");
+  }
+
   private async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
     try {
       const res = await this.client.get<T>(url, config);
@@ -175,22 +189,16 @@ export class TreeMapService {
     // @ts-expect-error TS18046
     const message = e.response?.data?.error?.description ?? e.message ?? "Something went wrong, please try again later.";
 
-    if (status === 401) {
-      removeUserToken();
-    }
-
     return { status, code, message };
   }
 
   private get_auth_headers(): Record<string, string> {
-      const token = getUserToken();
+    if (this.token !== null) {
+      return {
+        "Authorization": `Bearer ${this.token}`,
+      };
+    }
 
-      if (token !== null) {
-        return {
-          "Authorization": `Bearer ${token}`,
-        };
-      }
-
-      return {};
+    return {};
   }
 }

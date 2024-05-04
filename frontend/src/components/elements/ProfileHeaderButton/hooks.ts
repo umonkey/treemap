@@ -4,7 +4,7 @@ export const useProfileHeaderButton = () => {
   const { userInfo } = useUserInfo();
 
   const handleSuccess = () => {
-    window.location.reload();
+    // ignore for now
   };
 
   const handleError = () => {
