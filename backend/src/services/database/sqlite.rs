@@ -516,16 +516,15 @@ impl Database for SqliteDatabase {
         let user = self
             .pool
             .conn(move |conn| {
-                let mut stmt = match conn
-                    .prepare("SELECT id, email, name, picture FROM users WHERE id = ?")
-                {
-                    Ok(value) => value,
+                let mut stmt =
+                    match conn.prepare("SELECT id, email, name, picture FROM users WHERE id = ?") {
+                        Ok(value) => value,
 
-                    Err(e) => {
-                        error!("Error preparing SQL statement: {}", e);
-                        return Err(e);
-                    }
-                };
+                        Err(e) => {
+                            error!("Error preparing SQL statement: {}", e);
+                            return Err(e);
+                        }
+                    };
 
                 let mut rows = stmt.query([id])?;
 
