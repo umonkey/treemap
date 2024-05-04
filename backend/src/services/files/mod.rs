@@ -17,14 +17,14 @@ pub struct FileService {
 }
 
 impl FileService {
-    pub fn init(db: &Arc<dyn Database>) -> Result<Self> {
+    pub fn new(db: &Arc<dyn Database>) -> Result<Self> {
         let folder = get_file_folder();
 
         Ok(Self {
             db: db.clone(),
             folder,
-            queue: QueueService::init(db)?,
-            thumbnailer: ThumbnailerService::init(),
+            queue: QueueService::new(db)?,
+            thumbnailer: ThumbnailerService::new(),
         })
     }
 
@@ -177,7 +177,7 @@ mod tests {
 
         let db = get_database().await.expect("Error creating the database");
 
-        FileService::init(&db)
+        FileService::new(&db)
     }
 
     #[tokio::test]

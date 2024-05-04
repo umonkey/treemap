@@ -17,7 +17,7 @@ pub struct GoogleAuth {
 }
 
 impl GoogleAuth {
-    pub async fn init(db: &Arc<dyn Database>, tokens: &TokenService) -> Self {
+    pub async fn new(db: &Arc<dyn Database>, tokens: &TokenService) -> Self {
         Self {
             db: db.clone(),
             tokens: tokens.clone(),

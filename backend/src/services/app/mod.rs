@@ -24,18 +24,18 @@ pub struct AppState {
 }
 
 impl AppState {
-    pub async fn init() -> Result<Self> {
+    pub async fn new() -> Result<Self> {
         let db = get_database().await?;
         let token = TokenService::new();
 
         Ok(Self {
             db: db.clone(),
-            comments: CommentsService::init(&db),
-            files: FileService::init(&db)?,
-            gauth: GoogleAuth::init(&db, &token).await,
+            comments: CommentsService::new(&db),
+            files: FileService::new(&db)?,
+            gauth: GoogleAuth::new(&db, &token).await,
             tokens: token,
-            trees: Trees::init(&db).await,
-            uploads: UploadService::init(&db).await?,
+            trees: Trees::new(&db).await,
+            uploads: UploadService::new(&db).await?,
         })
     }
 
