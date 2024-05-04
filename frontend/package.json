@@ -10,7 +10,7 @@
     "lint-tsc": "tsc --noEmit",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
-    "test": "vitest run --silent --coverage --no-isolate",
+    "test": "vitest run --silent --coverage",
     "test-verbose": "vitest run",
     "build-storybook": "storybook build",
     "vitest-version": "vitest --version"
