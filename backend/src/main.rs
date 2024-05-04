@@ -102,6 +102,7 @@ async fn main() -> std::io::Result<()> {
             .service(get_comments)
             .service(get_file)
             .service(get_me)
+            .service(get_tree_defaults)
             .service(get_tree)
             .service(get_trees)
             .service(login_google)

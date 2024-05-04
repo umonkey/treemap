@@ -118,6 +118,11 @@ impl Trees {
             None => Err(Error::TreeNotFound),
         }
     }
+
+    pub async fn get_last_tree_by_user(&self, user_id: u64) -> Result<Option<TreeRecord>> {
+        debug!("Getting last tree for user {}.", user_id);
+        self.db.get_last_tree_by_user(user_id).await
+    }
 }
 
 #[cfg(test)]

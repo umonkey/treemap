@@ -13,6 +13,7 @@ pub trait Database {
     async fn get_trees(&self, bounds: Bounds) -> Result<Vec<TreeRecord>>;
     async fn get_tree(&self, id: u64) -> Result<Option<TreeRecord>>;
     async fn get_tree_by_osm_id(&self, osm_id: u64) -> Result<Option<TreeRecord>>;
+    async fn get_last_tree_by_user(&self, user_id: u64) -> Result<Option<TreeRecord>>;
     async fn find_closest_trees(
         &self,
         lat: f64,

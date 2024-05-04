@@ -9,9 +9,9 @@ use crate::services::{
 };
 use crate::types::{
     AddCommentRequest, AddFileRequest, AddTreeRequest, Error, FileRecord, GetTreesRequest,
-    LoginGoogleRequest, LoginResponse, MeResponse, MoveTreeRequest, PublicCommentInfo,
-    PublicSpeciesInfo, Result, TreeDetails, TreeList, TreeRecord, UpdateTreeRequest,
-    UploadTicketRecord,
+    LoginGoogleRequest, LoginResponse, MeResponse, MoveTreeRequest, NewTreeDefaultsResponse,
+    PublicCommentInfo, PublicSpeciesInfo, Result, TreeDetails, TreeList, TreeRecord,
+    UpdateTreeRequest, UploadTicketRecord,
 };
 
 pub struct AppState {
@@ -58,6 +58,21 @@ impl AppState {
 
     pub async fn get_trees(&self, request: &GetTreesRequest) -> Result<TreeList> {
         self.trees.get_trees(request).await
+    }
+
+    pub async fn get_tree_defaults(&self, user_id: u64) -> Result<NewTreeDefaultsResponse> {
+        match self.trees.get_last_tree_by_user(user_id).await? {
+            Some(tree) => Ok(NewTreeDefaultsResponse::from_tree(&tree)),
+
+            None => Ok(NewTreeDefaultsResponse {
+                species: None,
+                notes: None,
+                height: Some(0.0),
+                circumference: Some(0.0),
+                diameter: Some(0.0),
+                state: "healthy".to_string(),
+            }),
+        }
     }
 
     pub fn get_user_id(&self, req: &HttpRequest) -> Result<u64> {

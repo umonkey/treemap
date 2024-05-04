@@ -435,6 +435,36 @@ impl Database for SqliteDatabase {
         self.get_trees(bounds).await
     }
 
+    async fn get_last_tree_by_user(&self, user_id: u64) -> Result<Option<TreeRecord>> {
+        let tree = self.pool.conn(move |conn| {
+            let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id FROM trees WHERE added_by = ? ORDER BY id DESC") {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error preparing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut rows = match stmt.query([user_id]) {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error executing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            if let Some(row) = rows.next()? {
+                return Ok(Some(Self::tree_from_row(row)?));
+            }
+
+            Ok(None)
+        }).await?;
+
+        Ok(tree)
+    }
+
     /**
      * Record a change in tree properties.
      *
