@@ -27,3 +27,5 @@ test:
 
 test-verbose:
 	npm run test-verbose
+
+.PHONY: lint test

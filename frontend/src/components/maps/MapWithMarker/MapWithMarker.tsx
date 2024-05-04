@@ -7,6 +7,9 @@
 
 import { DefaultMarker, MapBase } from "@/components";
 import { ILatLng } from "@/types";
+
+// Local imports.
+import { useMapWithMarker } from "./hooks";
 import "./styles.scss";
 
 interface IProps {
@@ -15,9 +18,11 @@ interface IProps {
 }
 
 export const MapWithMarker = (props: IProps) => {
+const { zoom } = useMapWithMarker();
+
   return (
     <div className="MapWithMarker">
-      <MapBase center={props.center} zoom={18}>
+      <MapBase center={props.center} zoom={zoom}>
         <DefaultMarker center={props.center} />
         {props.children}
       </MapBase>
