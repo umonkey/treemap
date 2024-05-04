@@ -99,6 +99,23 @@ export const useAddTreeDialog = (props: IProps) => {
     setState(value);
   };
 
+  // Get defaults.
+  useState(() => {
+    (async () => {
+      try {
+        const res = await treeMapService.getTreeDefaults();
+        setSpecies(res.species); // not working
+        setHeight(res.height || 0.0);
+        setCircumference(res.circumference || 0.0);
+        setDiameter(res.diameter || 0.0);
+        setNotes(res.notes || "");
+        console.debug("Applying new tree defaults.");
+      } catch (e) {
+        console.error("Error getting new tree defaults.", e);
+      }
+    })();
+  });
+
   return {
     canSave: isSaveEnabled(),
     circumference,
@@ -114,6 +131,7 @@ export const useAddTreeDialog = (props: IProps) => {
     handleStateChange,
     height,
     notes,
+    species,
     state,
   };
 };

@@ -8,12 +8,19 @@ interface IOption {
 }
 
 interface IProps {
+  default: string;
   onChange: (value: string) => void;
 }
 
 export const useSpeciesSelector = (props: IProps) => {
+  const [currentValue, setCurrentValue] = useState<string>(props.default);
+
   const [options, setOptions] = useState<IOption[]>([]);
   const [recent, setRecent] = useState<string[]>([]);
+
+  useEffect(() => {
+    setCurrentValue(props.default);
+  }, [props.default]);
 
   useEffect(() => {
     (async () => {
@@ -64,10 +71,12 @@ export const useSpeciesSelector = (props: IProps) => {
   };
 
   return {
+    currentValue,
     options,
     handleChange,
     handleInputChange,
     renderOption,
     recent,
+    setCurrentValue,
   };
 };
