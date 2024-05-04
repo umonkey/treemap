@@ -19,7 +19,7 @@ pub struct Trees {
 }
 
 impl Trees {
-    pub async fn init(db: &Arc<dyn Database>) -> Self {
+    pub async fn new(db: &Arc<dyn Database>) -> Self {
         Self { db: db.clone() }
     }
 
@@ -143,7 +143,7 @@ mod tests {
         };
 
         let dbh: Arc<dyn Database> = Arc::new(db);
-        Ok(Trees::init(&dbh).await)
+        Ok(Trees::new(&dbh).await)
     }
 
     #[tokio::test]

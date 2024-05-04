@@ -9,8 +9,9 @@ use crate::services::{
 };
 use crate::types::{
     AddCommentRequest, AddFileRequest, AddTreeRequest, Error, FileRecord, GetTreesRequest,
-    LoginGoogleRequest, LoginResponse, MoveTreeRequest, PublicCommentInfo, PublicSpeciesInfo,
-    Result, TreeDetails, TreeList, TreeRecord, UpdateTreeRequest, UploadTicketRecord,
+    LoginGoogleRequest, LoginResponse, MeResponse, MoveTreeRequest, PublicCommentInfo,
+    PublicSpeciesInfo, Result, TreeDetails, TreeList, TreeRecord, UpdateTreeRequest,
+    UploadTicketRecord,
 };
 
 pub struct AppState {
@@ -24,18 +25,18 @@ pub struct AppState {
 }
 
 impl AppState {
-    pub async fn init() -> Result<Self> {
+    pub async fn new() -> Result<Self> {
         let db = get_database().await?;
         let token = TokenService::new();
 
         Ok(Self {
             db: db.clone(),
-            comments: CommentsService::init(&db),
-            files: FileService::init(&db)?,
-            gauth: GoogleAuth::init(&db, &token).await,
+            comments: CommentsService::new(&db),
+            files: FileService::new(&db)?,
+            gauth: GoogleAuth::new(&db, &token).await,
             tokens: token,
-            trees: Trees::init(&db).await,
-            uploads: UploadService::init(&db).await?,
+            trees: Trees::new(&db).await,
+            uploads: UploadService::new(&db).await?,
         })
     }
 
@@ -103,6 +104,18 @@ impl AppState {
 
     pub async fn login_google(&self, req: LoginGoogleRequest) -> Result<LoginResponse> {
         self.gauth.login(req).await
+    }
+
+    pub async fn get_user_info(&self, user_id: u64) -> Result<MeResponse> {
+        let user = match self.db.get_user(user_id).await? {
+            Some(u) => u,
+            None => return Err(Error::UserNotFound),
+        };
+
+        Ok(MeResponse {
+            name: user.name,
+            picture: user.picture,
+        })
     }
 
     /**

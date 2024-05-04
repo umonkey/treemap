@@ -30,12 +30,12 @@ pub struct OsmReaderService {
 }
 
 impl OsmReaderService {
-    pub async fn init() -> Result<Self> {
+    pub async fn new() -> Result<Self> {
         let db = get_database().await?;
 
         Ok(Self {
             db: db.clone(),
-            overpass_client: OverpassClient::init(),
+            overpass_client: OverpassClient::new(),
         })
     }
 

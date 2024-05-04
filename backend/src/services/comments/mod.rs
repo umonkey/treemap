@@ -10,7 +10,7 @@ pub struct CommentsService {
 }
 
 impl CommentsService {
-    pub fn init(db: &Arc<dyn Database>) -> Self {
+    pub fn new(db: &Arc<dyn Database>) -> Self {
         Self { db: db.clone() }
     }
 
@@ -59,7 +59,7 @@ mod tests {
         };
 
         let dbh: Arc<dyn Database> = Arc::new(db);
-        CommentsService::init(&dbh)
+        CommentsService::new(&dbh)
     }
 
     #[tokio::test]

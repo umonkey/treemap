@@ -11,10 +11,10 @@ pub struct UploadService {
 }
 
 impl UploadService {
-    pub async fn init(db: &Arc<dyn Database>) -> Result<Self> {
+    pub async fn new(db: &Arc<dyn Database>) -> Result<Self> {
         Ok(Self {
             db: db.clone(),
-            s3: S3Service::init().await?,
+            s3: S3Service::new().await?,
         })
     }
 

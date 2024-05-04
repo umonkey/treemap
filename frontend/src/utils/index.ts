@@ -4,7 +4,7 @@ export { formatTreeDimensions } from "./details";
 export { getApiRoot } from "./env";
 export { getFileURL } from "./files";
 export { getFileUrlPattern } from "./env";
-export { getMapState, setMapState } from "./storage";
+export { getMapState, setMapState, getUserInfo, setUserInfo } from "./storage";
 export { initSentry } from "./sentry";
 export { mainBus } from "./bus";
 export { routes } from "./routes";

@@ -2,12 +2,17 @@
 import { create } from "zustand";
 
 // Project imports.
-import { ITreeInfo, ITreeInfoMap } from "@/types";
+import { ITreeInfo, ITreeInfoMap, IUserInfo } from "@/types";
+import { getUserInfo, setUserInfo } from "@/utils";
+import { treeMapService } from "@/services/api";
 
 interface IStore {
   trees: ITreeInfoMap;
   addTrees: (trees: ITreeInfo[]) => void;
   resetTrees: () => void;
+
+  userInfo: IUserInfo | null;
+  setUserInfo: (value: IUserInfo | null) => void;
 }
 
 export const useStore = create<IStore>((set) => ({
@@ -36,5 +41,23 @@ export const useStore = create<IStore>((set) => ({
   resetTrees: () => {
     console.debug("Resetting the trees store.");
     set({ trees: {} });
+  },
+
+  userInfo: (() => {
+    const info = getUserInfo();
+
+    if (info !== null) {
+      treeMapService.setToken(info.token);
+    }
+
+    return info;
+  })(),
+
+  setUserInfo: (value: IUserInfo | null) => {
+    setUserInfo(value);
+
+    set(() => {
+      return { userInfo: value };
+    });
   },
 }));

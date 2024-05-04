@@ -10,7 +10,7 @@ use crate::types::{Error, Result};
 pub struct ThumbnailerService;
 
 impl ThumbnailerService {
-    pub fn init() -> Self {
+    pub fn new() -> Self {
         Self
     }
 
@@ -105,7 +105,7 @@ mod tests {
             debug!("env_logger already initialized.");
         };
 
-        ThumbnailerService::init()
+        ThumbnailerService::new()
     }
 
     fn read_image(bytes: Vec<u8>) -> DynamicImage {

@@ -20,7 +20,7 @@ pub struct QueueService {
 }
 
 impl QueueService {
-    pub fn init(db: &Arc<dyn Database>) -> Result<Self> {
+    pub fn new(db: &Arc<dyn Database>) -> Result<Self> {
         Ok(Self {
             db: db.clone(),
             delay: DELAY,
@@ -91,7 +91,7 @@ mod tests {
             .expect("Error initializing database.");
         let dbh: Arc<dyn Database> = Arc::new(db);
 
-        QueueService::init(&dbh).expect("Error creating queue service.")
+        QueueService::new(&dbh).expect("Error creating queue service.")
     }
 
     #[tokio::test]

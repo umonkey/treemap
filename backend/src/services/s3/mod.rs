@@ -15,7 +15,7 @@ pub struct S3Service {
 }
 
 impl S3Service {
-    pub async fn init() -> Result<Self> {
+    pub async fn new() -> Result<Self> {
         let bucket = get_s3_bucket()?;
         let region = get_s3_region()?;
         let endpoint = get_s3_endpoint()?;
@@ -83,7 +83,7 @@ mod tests {
             debug!("env_logger already initialized.");
         };
 
-        S3Service::init().await
+        S3Service::new().await
     }
 
     #[tokio::test]

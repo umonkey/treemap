@@ -17,7 +17,7 @@ use self::utils::{get_payload_size, get_server_addr, get_server_port, get_worker
 async fn data_factory() -> Result<AppState> {
     debug!("Initializing app state.");
 
-    let state = AppState::init().await?;
+    let state = AppState::new().await?;
 
     Ok(state)
 }
@@ -49,7 +49,7 @@ async fn main() -> std::io::Result<()> {
     env_logger::init();
 
     if is_queue_consumer() {
-        let consumer = QueueConsumer::init()
+        let consumer = QueueConsumer::new()
             .await
             .expect("Error creating queue consumer.");
         consumer.run().await;
@@ -57,7 +57,7 @@ async fn main() -> std::io::Result<()> {
     }
 
     if is_osm_reader() {
-        let service = OsmReaderService::init()
+        let service = OsmReaderService::new()
             .await
             .expect("Error creating OSM reader service.");
 
@@ -101,6 +101,7 @@ async fn main() -> std::io::Result<()> {
             .service(create_upload_ticket)
             .service(get_comments)
             .service(get_file)
+            .service(get_me)
             .service(get_tree)
             .service(get_trees)
             .service(login_google)

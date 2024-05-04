@@ -16,7 +16,7 @@ pub struct OverpassClient {
 }
 
 impl OverpassClient {
-    pub fn init() -> Self {
+    pub fn new() -> Self {
         let client = reqwest::Client::new();
 
         Self {

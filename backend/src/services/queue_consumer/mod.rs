@@ -20,12 +20,12 @@ pub struct QueueConsumer {
 }
 
 impl QueueConsumer {
-    pub async fn init() -> Result<Self> {
+    pub async fn new() -> Result<Self> {
         let db = get_database().await?;
 
         Ok(Self {
-            files: FileService::init(&db)?,
-            queue: QueueService::init(&db)?,
+            files: FileService::new(&db)?,
+            queue: QueueService::new(&db)?,
         })
     }
 
