@@ -26,6 +26,7 @@ pub trait Database {
 
     async fn find_user_by_email(&self, email: &str) -> Result<Option<UserRecord>>;
     async fn add_user(&self, user: &UserRecord) -> Result<()>;
+    async fn get_user(&self, id: u64) -> Result<Option<UserRecord>>;
 
     async fn add_upload_ticket(&self, ticket: &UploadTicketRecord) -> Result<()>;
     async fn get_upload_ticket(&self, id: u64) -> Result<Option<UploadTicketRecord>>;

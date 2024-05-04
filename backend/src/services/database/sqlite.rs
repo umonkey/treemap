@@ -218,6 +218,17 @@ impl SqliteDatabase {
             diameter_crown: row.get(8)?,
         })
     }
+
+    fn user_from_row(
+        row: &async_sqlite::rusqlite::Row,
+    ) -> std::result::Result<UserRecord, async_sqlite::rusqlite::Error> {
+        Ok(UserRecord {
+            id: row.get(0)?,
+            email: row.get(1)?,
+            name: row.get(2)?,
+            picture: row.get(3)?,
+        })
+    }
 }
 
 #[async_trait]
@@ -471,14 +482,7 @@ impl Database for SqliteDatabase {
                 let mut rows = stmt.query([email])?;
 
                 if let Some(row) = rows.next()? {
-                    let id: u64 = row.get(0)?;
-
-                    return Ok(Some(UserRecord {
-                        id,
-                        email: row.get(1)?,
-                        name: row.get(2)?,
-                        picture: row.get(3)?,
-                    }));
+                    return Ok(Some(Self::user_from_row(row)?));
                 }
 
                 Ok(None)
@@ -506,6 +510,34 @@ impl Database for SqliteDatabase {
             .await?;
 
         Ok(())
+    }
+
+    async fn get_user(&self, id: u64) -> Result<Option<UserRecord>> {
+        let user = self
+            .pool
+            .conn(move |conn| {
+                let mut stmt = match conn
+                    .prepare("SELECT id, email, name, picture FROM users WHERE id = ?")
+                {
+                    Ok(value) => value,
+
+                    Err(e) => {
+                        error!("Error preparing SQL statement: {}", e);
+                        return Err(e);
+                    }
+                };
+
+                let mut rows = stmt.query([id])?;
+
+                if let Some(row) = rows.next()? {
+                    return Ok(Some(Self::user_from_row(row)?));
+                }
+
+                Ok(None)
+            })
+            .await?;
+
+        Ok(user)
     }
 
     async fn add_upload_ticket(&self, ticket: &UploadTicketRecord) -> Result<()> {

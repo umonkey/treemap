@@ -11,6 +11,7 @@ use crate::types::{
     AddCommentRequest, AddFileRequest, AddTreeRequest, Error, FileRecord, GetTreesRequest,
     LoginGoogleRequest, LoginResponse, MoveTreeRequest, PublicCommentInfo, PublicSpeciesInfo,
     Result, TreeDetails, TreeList, TreeRecord, UpdateTreeRequest, UploadTicketRecord,
+    MeResponse,
 };
 
 pub struct AppState {
@@ -103,6 +104,18 @@ impl AppState {
 
     pub async fn login_google(&self, req: LoginGoogleRequest) -> Result<LoginResponse> {
         self.gauth.login(req).await
+    }
+
+    pub async fn get_user_info(&self, user_id: u64) -> Result<MeResponse> {
+        let user = match self.db.get_user(user_id).await? {
+            Some(u) => u,
+            None => return Err(Error::UserNotFound),
+        };
+
+        Ok(MeResponse {
+            name: user.name,
+            picture: user.picture,
+        })
     }
 
     /**

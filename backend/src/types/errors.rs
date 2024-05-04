@@ -22,6 +22,7 @@ pub enum Error {
     Queue,
     TreeNotFound,
     UniqueId,
+    UserNotFound,
 }
 
 impl Error {
@@ -72,6 +73,9 @@ impl Error {
             Error::UniqueId => {
                 r#"{"error":{"code":"UniqueId","description":"Could not generate a unique id to assign to an object."}}"#
             }
+            Error::UserNotFound => {
+                r#"{"error":{"code":"UserNotFound","description":"User record not found, or deleted."}}"#
+            }
         }
     }
 }
@@ -112,6 +116,7 @@ impl ResponseError for Error {
             Error::Queue => StatusCode::INTERNAL_SERVER_ERROR,
             Error::TreeNotFound => StatusCode::NOT_FOUND,
             Error::UniqueId => StatusCode::INTERNAL_SERVER_ERROR,
+            Error::UserNotFound => StatusCode::UNAUTHORIZED,
         }
     }
 }
@@ -134,6 +139,7 @@ impl fmt::Display for Error {
             Error::Queue => write!(f, "Queue"),
             Error::TreeNotFound => write!(f, "TreeNotFound"),
             Error::UniqueId => write!(f, "UniqueId"),
+            Error::UserNotFound => write!(f, "UserNotFound"),
         }
     }
 }

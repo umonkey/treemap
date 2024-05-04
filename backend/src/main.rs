@@ -101,6 +101,7 @@ async fn main() -> std::io::Result<()> {
             .service(create_upload_ticket)
             .service(get_comments)
             .service(get_file)
+            .service(get_me)
             .service(get_tree)
             .service(get_trees)
             .service(login_google)
