@@ -4,13 +4,13 @@
  * [x] Receives new upload requests via the bus.
  * [x] Sends files to the API while the user can navigate around.
  * [x] Maintains global file upload progress.
- * [ ] Reports when all uploads are done, to show a toast.
- * [ ] Checks file upload status.
- * [ ] When the file is ready, notifies the UI that a tree has new files.
+ * [x] Reports when all uploads are done, to show a toast.
+ * [x] Checks file upload status.
+ * [x] When the file is ready, notifies the UI that a tree has new files.
  * [ ] Uses IndexedDB to keep the upload queue between sessions (app crashes etc).
  */
 
-import { IFileUploadRequest } from "@/types";
+import { IFileUploadRequest, IFileUploadResponse } from "@/types";
 import { treeMapService } from "@/services";
 import { mainBus } from "@/bus";
 
@@ -30,7 +30,7 @@ class FileUploader {
   }
 
   public finish() {
-    console.debug("[upload] Finishing.");
+    console.debug("[upload] Cleaning up.");
     this.queue = [];
   }
 
@@ -55,8 +55,8 @@ class FileUploader {
 
       if (req) {
         try {
-          await this.uploadSingleFile(req);
-          await this.sleep(1000);
+          const res = await this.uploadSingleFile(req);
+          this.checkFile(res.id, req.tree);
 
           // Finished all processing?
           if (this.queue.length === 0) {
@@ -83,10 +83,36 @@ class FileUploader {
     }
   }
 
-  private async uploadSingleFile(req: IFileUploadRequest) {
+  /**
+   * Check when the file is ready, ask the details page to reload.
+   */
+  private async checkFile(file_id: string, tree_id: string) {
+    console.debug(`[upload] Checking file ${file_id} status for tree ${tree_id}...`);
+
+    for (let n = 0; n < 30; n++) {
+      const status = await treeMapService.getFileStatus(file_id);
+
+      if (status.ready) {
+        console.debug(`[upload] File ${file_id} is ready.`);
+
+        mainBus.emit("upload_ready", {
+          file_id: file_id,
+          tree_id: tree_id,
+        });
+
+        return;
+      }
+
+      await this.sleep(1000);
+    }
+
+    console.debug(`[upload] File ${file_id} did not become ready in time.`);
+  }
+
+  private async uploadSingleFile(req: IFileUploadRequest): Promise<IFileUploadResponse> {
     this.currentSent = 0;
     
-    await treeMapService.uploadImage({
+    const res = await treeMapService.uploadImage({
       tree_id: req.tree,
       file: req.file,
       progress: (sent: number) => {
@@ -102,6 +128,8 @@ class FileUploader {
     this.reportProgress();
 
     console.info(`[upload] File added to tree ${req.tree} successfully.`);
+
+    return res;
   }
 
   private sleep(time: number) {

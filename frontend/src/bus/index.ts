@@ -2,7 +2,7 @@
 import mitt, { Emitter } from "mitt";
 
 // Project imports.
-import { ILatLng, IFileUploadRequest, IMarkerClickEvent } from "@/types";
+import { ILatLng, IFileUploadRequest, IMarkerClickEvent, IFileReadyEvent } from "@/types";
 
 type MainBusEvents = {
   before_search: void;
@@ -11,6 +11,7 @@ type MainBusEvents = {
   upload_image: IFileUploadRequest;
   upload_progress: number;
   upload_finished: void;
+  upload_ready: IFileReadyEvent;
 };
 
 type BusType = Emitter<MainBusEvents>;

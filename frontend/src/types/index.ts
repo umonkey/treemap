@@ -133,6 +133,19 @@ export interface IFileUploadRequest {
   file: File;
 }
 
+export interface IFileUploadResponse {
+  id: string;
+}
+
+export interface IFileStatusResponse {
+  ready: boolean;
+}
+
+export interface IFileReadyEvent {
+  file_id: string;
+  tree_id: string;
+}
+
 export enum SideBarMode {
   DEFAULT = "default",
   ADD_TREE = "add_tree",
