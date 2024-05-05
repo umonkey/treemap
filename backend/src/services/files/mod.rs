@@ -3,7 +3,9 @@ use std::sync::Arc;
 use tokio::fs;
 
 use crate::services::{Database, QueueService, ThumbnailerService};
-use crate::types::{AddFileRequest, Error, FileRecord, ResizeImageMessage, Result};
+use crate::types::{
+    AddFileRequest, Error, FileRecord, FileStatusResponse, ResizeImageMessage, Result,
+};
 use crate::utils::{get_file_folder, get_timestamp, get_unique_id};
 
 const SMALL_SIZE: u32 = 1000;
@@ -116,6 +118,13 @@ impl FileService {
                 error!("Error reading file: {:?}", e);
                 Err(Error::FileDownload)
             }
+        }
+    }
+
+    pub async fn get_status(&self, id: u64) -> Result<FileStatusResponse> {
+        match self.db.get_file(id).await? {
+            Some(file) => Ok(FileStatusResponse::from_file(&file)),
+            None => Err(Error::FileNotFound),
         }
     }
 

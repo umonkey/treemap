@@ -8,10 +8,10 @@ use crate::services::{
     CommentsService, Database, FileService, GoogleAuth, TokenService, UploadService,
 };
 use crate::types::{
-    AddCommentRequest, AddFileRequest, AddTreeRequest, Error, FileUploadResponse, GetTreesRequest,
-    LoginGoogleRequest, LoginResponse, MeResponse, MoveTreeRequest, NewTreeDefaultsResponse,
-    PublicCommentInfo, PublicSpeciesInfo, Result, TreeDetails, TreeList, TreeRecord,
-    UpdateTreeRequest, UploadTicketRecord,
+    AddCommentRequest, AddFileRequest, AddTreeRequest, Error, FileStatusResponse,
+    FileUploadResponse, GetTreesRequest, LoginGoogleRequest, LoginResponse, MeResponse,
+    MoveTreeRequest, NewTreeDefaultsResponse, PublicCommentInfo, PublicSpeciesInfo, Result,
+    TreeDetails, TreeList, TreeRecord, UpdateTreeRequest, UploadTicketRecord,
 };
 
 pub struct AppState {
@@ -115,6 +115,10 @@ impl AppState {
 
     pub async fn get_file(&self, id: u64) -> Result<Vec<u8>> {
         self.files.get_file(id).await
+    }
+
+    pub async fn get_file_status(&self, id: u64) -> Result<FileStatusResponse> {
+        self.files.get_status(id).await
     }
 
     pub async fn login_google(&self, req: LoginGoogleRequest) -> Result<LoginResponse> {
