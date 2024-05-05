@@ -34,6 +34,7 @@ export const AddTreeDialog = (props: IProps) => {
     handleStateChange,
     height,
     notes,
+    species,
     state,
   } = useAddTreeDialog({
     center: props.center,
@@ -43,7 +44,7 @@ export const AddTreeDialog = (props: IProps) => {
     <div className="AddTreeDialog Dialog">
       <Box component="form">
         <div className="group wide">
-          <SpeciesSelector onChange={handleNameChange} />
+          <SpeciesSelector value={species} onChange={handleNameChange} />
         </div>
 
         <div className="row">

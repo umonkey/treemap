@@ -119,6 +119,15 @@ export interface IMarkerClickEvent {
   position: ILatLng;
 }
 
+export interface ITreeDefaults {
+  species: string;
+  notes: string | null;
+  height: number | null;
+  circumference: number | null;
+  diameter: number | null;
+  state: string;
+}
+
 export enum SideBarMode {
   DEFAULT = "default",
   ADD_TREE = "add_tree",

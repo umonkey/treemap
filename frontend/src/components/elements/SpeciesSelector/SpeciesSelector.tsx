@@ -1,5 +1,4 @@
 // Global imports.
-import { useState } from "react";
 import { Autocomplete, TextField } from '@mui/material';
 
 // Local imports.
@@ -13,11 +12,11 @@ interface IProps {
 }
 
 export const SpeciesSelector = (props: IProps) => {
-  const [currentValue, setCurrentValue] = useState<string>(props.value || "");
   const required = props.required || true;
 
-  const { options, handleChange, handleInputChange, renderOption, recent } = useSpeciesSelector({
+  const { currentValue, setCurrentValue, options, handleChange, handleInputChange, renderOption, recent } = useSpeciesSelector({
     onChange: props.onChange,
+    default: props.value || "",
   });
 
   const handleHintClick = (hint: string) => {

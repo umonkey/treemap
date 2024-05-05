@@ -19,7 +19,7 @@ clean:
 	cargo clean
 
 lint:
-	cargo clippy
+	cargo clippy -- -D warnings
 
 format:
 	cargo fmt
