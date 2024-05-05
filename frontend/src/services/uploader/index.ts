@@ -38,6 +38,7 @@ class FileUploader {
     console.debug(`[upload] File added to queue, tree=${req.tree}, size=${req.file.size}.`);
     this.totalSize += req.file.size;
     this.queue.push(req);
+    this.reportProgress();
   }
 
   public async run() {
@@ -113,13 +114,19 @@ class FileUploader {
     mainBus.emit("upload_progress", percentage);
   }
 
+  /**
+   * Calculate current upload progress.
+   *
+   * Reports 0% only if there's no pending uploads.
+   * Otherwise, reports at least 1% to make sure the progress bar is visible.
+   */
   private getPercentage(): number {
     if (this.totalSize === 0) {
       return 0;
     }
 
     const sent = this.totalSent + this.currentSent;
-    return sent * 100 / this.totalSize;
+    return Math.max(1, sent * 100 / this.totalSize);
   }
 }
 
