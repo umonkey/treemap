@@ -8,10 +8,10 @@ use crate::services::{
     CommentsService, Database, FileService, GoogleAuth, TokenService, UploadService,
 };
 use crate::types::{
-    AddCommentRequest, AddFileRequest, AddTreeRequest, Error, FileRecord, GetTreesRequest,
-    LoginGoogleRequest, LoginResponse, MeResponse, MoveTreeRequest, NewTreeDefaultsResponse,
-    PublicCommentInfo, PublicSpeciesInfo, Result, TreeDetails, TreeList, TreeRecord,
-    UpdateTreeRequest, UploadTicketRecord,
+    AddCommentRequest, AddFileRequest, AddTreeRequest, Error, FileStatusResponse,
+    FileUploadResponse, GetTreesRequest, LoginGoogleRequest, LoginResponse, MeResponse,
+    MoveTreeRequest, NewTreeDefaultsResponse, PublicCommentInfo, PublicSpeciesInfo, Result,
+    TreeDetails, TreeList, TreeRecord, UpdateTreeRequest, UploadTicketRecord,
 };
 
 pub struct AppState {
@@ -117,6 +117,10 @@ impl AppState {
         self.files.get_file(id).await
     }
 
+    pub async fn get_file_status(&self, id: u64) -> Result<FileStatusResponse> {
+        self.files.get_status(id).await
+    }
+
     pub async fn login_google(&self, req: LoginGoogleRequest) -> Result<LoginResponse> {
         self.gauth.login(req).await
     }
@@ -140,8 +144,9 @@ impl AppState {
         self.uploads.create_ticket(user_id).await
     }
 
-    pub async fn add_file(&self, req: AddFileRequest) -> Result<FileRecord> {
-        self.files.add_file(req).await
+    pub async fn add_file(&self, req: AddFileRequest) -> Result<FileUploadResponse> {
+        let file = self.files.add_file(req).await?;
+        Ok(FileUploadResponse::from_file(&file))
     }
 
     pub async fn add_comment(&self, req: AddCommentRequest) -> Result<()> {

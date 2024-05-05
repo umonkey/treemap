@@ -1,3 +1,5 @@
+mod file_status_response;
+mod file_upload_response;
 mod google_userinfo_response;
 mod login_response;
 mod me_response;
@@ -9,6 +11,8 @@ mod tree_details;
 mod tree_list;
 mod tree_list_item;
 
+pub use self::file_status_response::*;
+pub use self::file_upload_response::*;
 pub use self::google_userinfo_response::*;
 pub use self::login_response::*;
 pub use self::me_response::*;

@@ -6,7 +6,7 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
 // Project imports.
-import { RouterComponent } from "@/components";
+import { ProgressBar, RouterComponent } from "@/components";
 
 // Local imports.
 import "./styles.scss";
@@ -19,6 +19,7 @@ export const App = () => {
     <HashRouter>
       <Toaster position="bottom-center" />
       <RouterComponent />
+      <ProgressBar />
     </HashRouter>
   )
 };

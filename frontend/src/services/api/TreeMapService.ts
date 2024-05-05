@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 
-import { IApiError, IAddTreeRequest, IComment, ILatLng, ISpecies, ITreeInfo, ITreeDetails, IUploadTicket, IUserInfo, ITreeDefaults } from "@/types";
+import { IApiError, IAddTreeRequest, IComment, ILatLng, ISpecies, ITreeInfo, ITreeDetails, IUploadTicket, IUserInfo, ITreeDefaults, IFileUploadResponse, IFileStatusResponse } from "@/types";
 import { getApiRoot } from "@/utils/env";
 
 export interface ITreesResponse {
@@ -119,16 +119,32 @@ export class TreeMapService {
     });
   }
 
-  public async uploadImage(tree_id: string, file: File): Promise<void> {
+  public async uploadImage({
+    tree_id,
+    file,
+    progress,
+  }: {
+    tree_id: string,
+    file: File,
+    progress: (total: number, sent: number) => void,
+  }): Promise<IFileUploadResponse> {
     const buffer = await file.arrayBuffer();
     const body = new Blob([buffer], { type: file.type });
 
-    const res = await this.post(`/v1/trees/${tree_id}/files`, body, {
+    return await this.post(`/v1/trees/${tree_id}/files`, body, {
       headers: this.get_auth_headers(),
       timeout: 60000,
-    });
 
-    console.debug("FILE UPLOADED", res);
+      onUploadProgress: (event) => {
+        if (event.total && event.bytes) {
+          progress(event.bytes, event.total);
+        }
+      },
+    });
+  }
+
+  public async getFileStatus(file_id: string): Promise<IFileStatusResponse> {
+    return await this.get(`/v1/files/${file_id}/status`);
   }
 
   public async addComment(tree_id: string, text: string): Promise<IComment[]> {

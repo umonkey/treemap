@@ -29,6 +29,7 @@ export { MoveTreeButton } from "./elements/MoveTreeButton";
 export { MoveTreeDialog } from "./dialogs/MoveTreeDialog";
 export { NarrowPage } from "./layout/NarrowPage";
 export { ProfileHeaderButton } from "./elements/ProfileHeaderButton";
+export { ProgressBar } from "./elements/ProgressBar";
 export { RedCircleIcon } from "./maps/RedCircleIcon";
 export { RouterComponent } from "./router/RouterComponent";
 export { SearchBar } from "./elements/SearchBar";

@@ -14,6 +14,7 @@ pub enum Error {
     DatabaseQuery,
     EnvNotSet,
     FileDownload,
+    FileNotFound,
     FileUpload,
     GoogleUserInfo,
     ImageResize,
@@ -48,6 +49,9 @@ impl Error {
             }
             Error::FileDownload => {
                 r#"{"error":{"code":"FileDownload","description":"Error downloading the file."}}"#
+            }
+            Error::FileNotFound => {
+                r#"{"error":{"code":"FileNotFound","description":"File not found file."}}"#
             }
             Error::FileUpload => {
                 r#"{"error":{"code":"FileUpload","description":"Error preparing file upload."}}"#
@@ -108,6 +112,7 @@ impl ResponseError for Error {
             Error::DatabaseQuery => StatusCode::INTERNAL_SERVER_ERROR,
             Error::EnvNotSet => StatusCode::INTERNAL_SERVER_ERROR,
             Error::FileDownload => StatusCode::NOT_FOUND,
+            Error::FileNotFound => StatusCode::NOT_FOUND,
             Error::FileUpload => StatusCode::INTERNAL_SERVER_ERROR,
             Error::GoogleUserInfo => StatusCode::UNAUTHORIZED,
             Error::ImageResize => StatusCode::INTERNAL_SERVER_ERROR,
@@ -131,6 +136,7 @@ impl fmt::Display for Error {
             Error::DatabaseQuery => write!(f, "DatabaseQuery"),
             Error::EnvNotSet => write!(f, "EnvNotSet"),
             Error::FileDownload => write!(f, "FileDownload"),
+            Error::FileNotFound => write!(f, "FileNotFound"),
             Error::FileUpload => write!(f, "FileUpload"),
             Error::GoogleUserInfo => write!(f, "GoogleUserInfo"),
             Error::ImageResize => write!(f, "ImageResize"),
