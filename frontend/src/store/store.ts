@@ -13,6 +13,9 @@ interface IStore {
 
   userInfo: IUserInfo | null;
   setUserInfo: (value: IUserInfo | null) => void;
+
+  uploadProgress: number;
+  setUploadProgress: (value: number) => void;
 }
 
 export const useStore = create<IStore>((set) => ({
@@ -22,8 +25,6 @@ export const useStore = create<IStore>((set) => ({
    * Add more trees.  Call this when you receive updates from the API.
    */
   addTrees: (trees: ITreeInfo[]) => {
-    console.debug(`Adding ${trees.length} trees to the store.`);
-
     set((state) => {
       const updated = { ...state.trees };
 
@@ -60,4 +61,10 @@ export const useStore = create<IStore>((set) => ({
       return { userInfo: value };
     });
   },
+
+  uploadProgress: 0.0,
+
+  setUploadProgress: (value: number) => set({
+    uploadProgress: value,
+  }),
 }));

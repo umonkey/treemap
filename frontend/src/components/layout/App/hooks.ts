@@ -2,12 +2,18 @@
 import { useEffect } from "react";
 
 // Project imports.
-import { treeMapService } from "@/services/api";
+import { treeMapService, fileUploader } from "@/services";
 import { useStore } from "@/store";
 
 export const useApp = () => {
   const userInfo = useStore((state) => state.userInfo);
   const setUserInfo = useStore((state) => state.setUserInfo);
+
+  // Run the background file uploader.
+  useEffect(() => {
+    fileUploader.run();
+    return () => fileUploader.finish();
+  });
 
   useEffect(() => {
     if (userInfo === null) {

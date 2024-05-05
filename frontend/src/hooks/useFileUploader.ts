@@ -1,37 +1,48 @@
 /**
  * A hook to upload files and attach to a tree.
+ *
+ * Uses the background upload queue.
  */
 
-import { useState } from "react";
-import { treeMapService } from "@/services/api";
-import { formatErrorMessage } from "@/utils";
+// Global imports.
+import { useState, useEffect } from "react";
+import { toast } from "react-hot-toast";
+
+// Project imports.
+import { mainBus } from "@/bus";
 
 export const useFileUploader = () => {
   const [uploading, setUploading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [uploadFinished, setUploadFinished] = useState<boolean>(false);
 
-  const uploadFiles = async (tree_id: string, files: FileList) => {
-    console.debug(`Uploading ${files.length} files for tree ${tree_id}...`);
+  // Deliver upload finished notifications.
+  useEffect(() => {
+    const handler = () => {
+      toast.success("Files uploaded successfully.", {
+        duration: 5000,
+      });
+    };
 
+    mainBus.on("upload_finished", handler);
+    return () => mainBus.off("upload_finished", handler);
+  });
+
+  const uploadFiles = async (tree_id: string, files: FileList) => {
     setError(null);
     setUploading(true);
     setUploadFinished(false);
 
     try {
       for (let n = 0; n < files.length; n++) {
-        try {
-          await treeMapService.uploadImage(tree_id, files[n]);
-        } catch (e) {
-          console.error("Failed to upload a file.", e);
-          setError("Failed to upload a file. " + formatErrorMessage(e));
-          return;
-        }
-      }
+        mainBus.emit("upload_image", {
+          tree: tree_id,
+          file: files[n],
+        });
+     }
 
       setUploadFinished(true);
-
-      console.debug("Upload complete.");
+     console.debug("Upload complete.");
     } finally {
       setUploading(false);
     }

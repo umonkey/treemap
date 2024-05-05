@@ -128,6 +128,11 @@ export interface ITreeDefaults {
   state: string;
 }
 
+export interface IFileUploadRequest {
+  tree: string;
+  file: File;
+}
+
 export enum SideBarMode {
   DEFAULT = "default",
   ADD_TREE = "add_tree",
