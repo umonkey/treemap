@@ -1,11 +1,11 @@
 /**
  * Receive a binary file from the user, attach to a tree.
  */
-use actix_web::{post, web::Bytes, web::Data, web::Path, HttpRequest, HttpResponse};
+use actix_web::{post, web::Bytes, web::Data, web::Json, web::Path, HttpRequest};
 use serde::Deserialize;
 
 use crate::services::AppState;
-use crate::types::{AddFileRequest, Result};
+use crate::types::{AddFileRequest, FileUploadResponse, Result};
 
 #[derive(Debug, Deserialize)]
 pub struct PathInfo {
@@ -18,7 +18,7 @@ pub async fn add_file(
     path: Path<PathInfo>,
     req: HttpRequest,
     body: Bytes,
-) -> Result<HttpResponse> {
+) -> Result<Json<FileUploadResponse>> {
     let user_id = state.get_user_id(&req)?;
 
     let req = AddFileRequest {
@@ -27,7 +27,7 @@ pub async fn add_file(
         file: body.to_vec(),
     };
 
-    state.add_file(req).await?;
+    let rec = state.add_file(req).await?;
 
-    Ok(HttpResponse::Accepted().finish())
+    Ok(Json(rec))
 }

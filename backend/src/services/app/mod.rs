@@ -8,7 +8,7 @@ use crate::services::{
     CommentsService, Database, FileService, GoogleAuth, TokenService, UploadService,
 };
 use crate::types::{
-    AddCommentRequest, AddFileRequest, AddTreeRequest, Error, FileRecord, GetTreesRequest,
+    AddCommentRequest, AddFileRequest, AddTreeRequest, Error, FileUploadResponse, GetTreesRequest,
     LoginGoogleRequest, LoginResponse, MeResponse, MoveTreeRequest, NewTreeDefaultsResponse,
     PublicCommentInfo, PublicSpeciesInfo, Result, TreeDetails, TreeList, TreeRecord,
     UpdateTreeRequest, UploadTicketRecord,
@@ -140,8 +140,9 @@ impl AppState {
         self.uploads.create_ticket(user_id).await
     }
 
-    pub async fn add_file(&self, req: AddFileRequest) -> Result<FileRecord> {
-        self.files.add_file(req).await
+    pub async fn add_file(&self, req: AddFileRequest) -> Result<FileUploadResponse> {
+        let file = self.files.add_file(req).await?;
+        Ok(FileUploadResponse::from_file(&file))
     }
 
     pub async fn add_comment(&self, req: AddCommentRequest) -> Result<()> {
