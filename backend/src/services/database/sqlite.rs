@@ -19,6 +19,8 @@ use crate::types::{
 };
 use crate::utils::{get_sqlite_path, get_timestamp, get_unique_id};
 
+const SUGGEST_WINDOW: u64 = 3600 * 24; // 24 hours
+
 pub struct SqliteDatabase {
     pub pool: Pool,
 }
@@ -1041,8 +1043,10 @@ impl Database for SqliteDatabase {
      * Find most recent species added by a specific user.
      */
     async fn find_recent_species(&self, user_id: u64) -> Result<Vec<String>> {
+        let since = get_timestamp() - SUGGEST_WINDOW;
+
         let items = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT DISTINCT species FROM trees WHERE state <> 'gone' AND added_by = ? ORDER BY added_at DESC LIMIT 10") {
+            let mut stmt = match conn.prepare("SELECT species, COUNT(1) AS use_count FROM trees WHERE added_by = ? AND added_at >= ? GROUP BY species ORDER BY use_count DESC LIMIT 5") {
                 Ok(value) => value,
 
                 Err(e) => {
@@ -1051,7 +1055,7 @@ impl Database for SqliteDatabase {
                 },
             };
 
-            let mut rows = match stmt.query([user_id]) {
+            let mut rows = match stmt.query([user_id, since]) {
                 Ok(value) => value,
 
                 Err(e) => {
@@ -1087,25 +1091,27 @@ mod tests {
     use env_logger;
     use std::env;
 
-    async fn setup() -> Result<SqliteDatabase> {
+    async fn setup() -> SqliteDatabase {
         env::set_var("TREEMAP_SQLITE_PATH", ":memory:");
 
         if let Err(_) = env_logger::try_init() {
             debug!("env_logger already initialized.");
         };
 
-        let db = SqliteDatabase::new().await?;
+        let db = SqliteDatabase::new()
+            .await
+            .expect("Error creating database.");
 
         db.execute(include_str!("./fixtures/init.sql").to_string())
             .await
-            .unwrap();
+            .expect("Error installing fixtures.");
 
-        Ok(db)
+        db
     }
 
     #[tokio::test]
     async fn test_get_trees() -> Result<()> {
-        let db = setup().await?;
+        let db = setup().await;
         db.execute(include_str!("./fixtures/trees.sql").to_string())
             .await
             .unwrap();
@@ -1131,7 +1137,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_add_tree() {
-        let db = setup().await.expect("Error setting up database.");
+        let db = setup().await;
 
         db.add_tree(&TreeRecord {
             id: 123,
@@ -1176,7 +1182,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_create_upload_ticket() -> Result<()> {
-        let db = setup().await?;
+        let db = setup().await;
 
         let before = db.get_upload_ticket(123).await?;
         assert!(before.is_none());
@@ -1206,7 +1212,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_add_queue_message() {
-        let db = setup().await.expect("Error setting up database.");
+        let db = setup().await;
         let now = get_timestamp();
 
         let msg = QueueMessage {
@@ -1229,7 +1235,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_add_queue_message_not_available() {
-        let db = setup().await.expect("Error setting up database.");
+        let db = setup().await;
         let now = get_timestamp();
 
         let msg = QueueMessage {
@@ -1252,7 +1258,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_delay_queue_message() {
-        let db = setup().await.expect("Error setting up database.");
+        let db = setup().await;
         let now = get_timestamp();
 
         let msg = QueueMessage {
@@ -1278,7 +1284,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_pending_files_ignored() {
-        let db = setup().await.expect("Error setting up database.");
+        let db = setup().await;
 
         db.add_file(&FileRecord {
             id: 1,
@@ -1312,7 +1318,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_comments() {
-        let db = setup().await.expect("Error setting up database.");
+        let db = setup().await;
         let now = get_timestamp();
 
         let tree_id: u64 = 2;
@@ -1341,7 +1347,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_find_species() {
-        let db = setup().await.expect("Error setting up database.");
+        let db = setup().await;
 
         db.execute(include_str!("./fixtures/species.sql").to_string())
             .await
@@ -1354,5 +1360,113 @@ mod tests {
 
         assert_eq!(species.len(), 1, "Could not find species for oak.");
         assert_eq!("Quercus robur", species[0].name);
+    }
+
+    #[tokio::test]
+    async fn test_find_recent_species() {
+        let db = setup().await;
+
+        let now = get_timestamp();
+        let user_id: u64 = 12345;
+
+        for species_id in 0..10 {
+            for _ in 0..species_id {
+                db.add_tree(&TreeRecord {
+                    id: get_unique_id().expect("Error generating tree id."),
+                    osm_id: None,
+                    lat: 0.0,
+                    lon: 0.0,
+                    species: format!("Species nr.{}", species_id + 1),
+                    notes: None,
+                    height: None,
+                    circumference: None,
+                    diameter: None,
+                    state: "healthy".to_string(),
+                    added_at: now,
+                    added_by: user_id,
+                    updated_at: now,
+                    thumbnail_id: None,
+                })
+                .await
+                .expect("Error adding tree.");
+            }
+        }
+
+        let recent = db
+            .find_recent_species(user_id)
+            .await
+            .expect("Error reading recent species.");
+        assert_eq!(recent.len(), 5);
+        assert_eq!(recent[0], "Species nr.10");
+        assert_eq!(recent[1], "Species nr.9");
+    }
+
+    #[tokio::test]
+    async fn test_find_recent_species_single() {
+        let db = setup().await;
+
+        let now = get_timestamp();
+        let user_id: u64 = 12345;
+
+        db.add_tree(&TreeRecord {
+            id: get_unique_id().expect("Error generating tree id."),
+            osm_id: None,
+            lat: 0.0,
+            lon: 0.0,
+            species: "Some tree".to_string(),
+            notes: None,
+            height: None,
+            circumference: None,
+            diameter: None,
+            state: "healthy".to_string(),
+            added_at: now,
+            added_by: user_id,
+            updated_at: now,
+            thumbnail_id: None,
+        })
+        .await
+        .expect("Error adding tree");
+
+        let recent = db
+            .find_recent_species(user_id)
+            .await
+            .expect("Error reading recent species.");
+
+        assert_eq!(recent.len(), 1);
+        assert_eq!(recent[0], "Some tree");
+    }
+
+    #[tokio::test]
+    async fn test_find_recent_species_old() {
+        let db = setup().await;
+
+        let now = get_timestamp();
+        let user_id: u64 = 12345;
+
+        db.add_tree(&TreeRecord {
+            id: get_unique_id().expect("Error generating tree id."),
+            osm_id: None,
+            lat: 0.0,
+            lon: 0.0,
+            species: "Some tree".to_string(),
+            notes: None,
+            height: None,
+            circumference: None,
+            diameter: None,
+            state: "healthy".to_string(),
+            added_at: now - 86400 * 7, // one week ago
+            added_by: user_id,
+            updated_at: now,
+            thumbnail_id: None,
+        })
+        .await
+        .expect("Error adding tree");
+
+        let recent = db
+            .find_recent_species(user_id)
+            .await
+            .expect("Error reading recent species.");
+
+        assert_eq!(recent.len(), 0);
     }
 }

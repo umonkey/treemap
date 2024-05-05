@@ -38,9 +38,9 @@ sqlite-seed:
 
 test:
 ifneq (,$(FILTER))
-	RUST_LOG="debug" cargo test -- $(FILTER) --nocapture --test-threads=1
+	RUST_LOG="debug" cargo test -- $(FILTER) --nocapture --test-threads=1 --color=always
 else
-	RUST_LOG="warn" cargo test
+	RUST_LOG="warn" cargo test -- --color=always
 endif
 	rm -f var/test-files/*
 
