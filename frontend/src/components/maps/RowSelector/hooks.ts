@@ -1,5 +1,5 @@
 // Global imports.
-import { useState, useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
 
 // Project imports.
 import { ILatLng } from "@/types";
@@ -12,6 +12,13 @@ interface IProps {
 export const useRowSelector = (props: IProps) => {
   const [center1, setCenter1] = useState<ILatLng>(props.center);
   const [center2, setCenter2] = useState<ILatLng>(props.center);
+
+  const path: [number, number][] = useMemo(() => {
+    return [
+      [center1.lat, center1.lon],
+      [center2.lat, center2.lon],
+    ];
+  }, [center1, center2]);
 
   useEffect(() => {
     setCenter1(props.center);
@@ -33,5 +40,6 @@ export const useRowSelector = (props: IProps) => {
     center2,
     handleChange1,
     handleChange2,
+    path,
   };
 };
