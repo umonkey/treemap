@@ -3,7 +3,7 @@ import { create } from "zustand";
 
 // Project imports.
 import { ITreeInfo, ITreeInfoMap, IUserInfo } from "@/types";
-import { getUserInfo, setUserInfo } from "@/utils";
+import { getUserInfo, setUserInfo, getMapLayer, setMapLayer } from "@/utils";
 import { treeMapService } from "@/services/api";
 
 interface IStore {
@@ -16,6 +16,9 @@ interface IStore {
 
   uploadProgress: number;
   setUploadProgress: (value: number) => void;
+
+  mapLayer: string;
+  setMapLayer: (value: string) => void;
 }
 
 export const useStore = create<IStore>((set) => ({
@@ -67,4 +70,13 @@ export const useStore = create<IStore>((set) => ({
   setUploadProgress: (value: number) => set({
     uploadProgress: value,
   }),
+
+  mapLayer: getMapLayer(),
+
+  setMapLayer: (value: string) => {
+    setMapLayer(value);
+    set({
+      mapLayer: value,
+    });
+  },
 }));
