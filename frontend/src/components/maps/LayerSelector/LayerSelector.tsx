@@ -33,6 +33,19 @@ export const LayerSelector = () => {
           maxNativeZoom={22}
         />
       </LayersControl.BaseLayer>
+
+      <LayersControl.BaseLayer name="MapTiler (raster)">
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url={`https://api.maptiler.com/maps/basic-v2/{z}/{x}/{y}.png?key=${mapTilerKey}`}
+          maxZoom={25}
+          maxNativeZoom={19}
+          tileSize={512}
+          zoomOffset={-1}
+          crossOrigin={true}
+        />
+      </LayersControl.BaseLayer>
+
     </LayersControl>
   );
 };
