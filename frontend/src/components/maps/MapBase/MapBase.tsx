@@ -26,9 +26,7 @@ interface IProps {
 export const MapBase = (props: IProps) => {
   const {
     handleViewChange,
-    handleZoomChange,
     mapRef,
-    maxZoom,
     ref,
     zoom,
   } = useMapBase({
@@ -41,9 +39,17 @@ export const MapBase = (props: IProps) => {
       height: "100%",
       width: "100%",
     }}>
-      <MapContainer ref={mapRef} center={[props.center.lat, props.center.lon]} zoom={zoom} maxZoom={maxZoom} scrollWheelZoom={true} className="map" zoomControl={false}>
+      <MapContainer
+        ref={mapRef}
+        center={[props.center.lat, props.center.lon]}
+        zoom={zoom}
+        maxZoom={25}
+        scrollWheelZoom={true}
+        className="map"
+        zoomControl={false}
+      >
         <MapEventHandler onViewChange={handleViewChange} />
-        <LayerSelector onZoomChange={handleZoomChange} />
+        <LayerSelector />
 
         {props.children}
       </MapContainer>

@@ -16,9 +16,9 @@ const meta = {
   args: {
     onZoomChange: fn(),
   },
-  render: (args) => (
-    <MapContainer center={[POSITION[0], POSITION[1]]} zoom={13} maxZoom={18} scrollWheelZoom={true} className="map" zoomControl={false}>
-      <LayerSelector {...args} />
+  render: () => (
+    <MapContainer center={[POSITION[0], POSITION[1]]} zoom={18} maxZoom={25} scrollWheelZoom={true} className="map" zoomControl={false}>
+      <LayerSelector />
     </MapContainer>
   ),
 } satisfies Meta<typeof LayerSelector>;
@@ -26,20 +26,6 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Desktop: Story = {
+export const Default: Story = {
   args: { },
-  parameters: {
-    viewport: {
-      defaultViewport: "responsive",
-    },
-  },
-};
-
-export const Phone: Story = {
-  args: { },
-  parameters: {
-    viewport: {
-      defaultViewport: "mobile1",
-    },
-  },
 };

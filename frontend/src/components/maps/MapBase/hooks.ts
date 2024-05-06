@@ -18,7 +18,6 @@ interface IProps {
 export const useMapBase = (props: IProps) => {
   const [center, setCenter] = useState<ILatLng>(props.center);
   const [zoom] = useState<number>(props.zoom);
-  const [maxZoom, setMaxZoom] = useState<number>(25);
   const { setMapState } = useMapState();
 
   const ref = useRef(null);
@@ -47,13 +46,6 @@ export const useMapBase = (props: IProps) => {
     return () => mainBus.off("pan_to", handler);
   }, []);
 
-  // react-leaflet does not update properties dynamically, so we need to do it manually.
-  useEffect(() => {
-    if (mapRef.current) {
-      mapRef.current.setMaxZoom(maxZoom);
-    }
-  }, [maxZoom]);
-
   useEffect(() => {
     if (!ref.current) {
       console.debug("Ref empty, not installing resize observer.");
@@ -74,11 +66,6 @@ export const useMapBase = (props: IProps) => {
     return () => resizeObserver.disconnect();
   }, [ref]);
 
-  const handleZoomChange = (zoom: number) => {
-    console.debug(`Max zoom changed to ${zoom}.`);
-    setMaxZoom(zoom);
-  };
-
   const handleViewChange = (view: IMapView) => {
     setMapState(view);
   };
@@ -87,8 +74,6 @@ export const useMapBase = (props: IProps) => {
     ref,
     mapRef,
     zoom,
-    maxZoom,
     handleViewChange,
-    handleZoomChange,
   };
 };
