@@ -31,8 +31,11 @@ export const LayerSelector = (props: IProps) => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           eventHandlers={{
-            add: () => handleMaxZoomChange(18),
+            add: () => handleMaxZoomChange(25),
           }}
+          maxZoom={25}
+          // @ts-expect-error TS2322
+          mazNativeZoom={18}
         />
       </LayersControl.BaseLayer>
 
@@ -42,8 +45,11 @@ export const LayerSelector = (props: IProps) => {
           url="http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}"
           subdomains={["mt0", "mt1", "mt2", "mt3"]}
           eventHandlers={{
-            add: () => handleMaxZoomChange(18),
+            add: () => handleMaxZoomChange(25),
           }}
+          maxZoom={25}
+          // @ts-expect-error TS2322
+          mazNativeZoom={18}
         />
       </LayersControl.BaseLayer>
     </LayersControl>
