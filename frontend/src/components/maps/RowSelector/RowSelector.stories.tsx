@@ -1,5 +1,6 @@
 // Global imports.
 import type { Meta, StoryObj } from '@storybook/react';
+import { fn } from '@storybook/test';
 
 // Project imports.
 import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM } from "@/utils/config";
@@ -14,7 +15,9 @@ const meta = {
   parameters: {
     layout: 'fullscreen', // centered
   },
-  args: { },
+  args: {
+    onChange: fn(),
+  },
   render: (args) => (
     <MapBase center={DEFAULT_MAP_CENTER} zoom={DEFAULT_MAP_ZOOM}>
       <RowSelector {...args} />

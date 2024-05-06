@@ -7,6 +7,7 @@ import { useRowSelector } from "./hooks";
 
 interface IProps {
   center: ILatLng;
+  onChange: (a: ILatLng, b: ILatLng) => void;
 }
 
 export const RowSelector = (props: IProps) => {
