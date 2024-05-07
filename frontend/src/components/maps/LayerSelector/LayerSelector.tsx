@@ -33,7 +33,7 @@ export const LayerSelector = () => {
       <LayersControl.BaseLayer checked={mapLayer === "Google Maps"} name="Google Maps">
         <TileLayer
           attribution='&copy; Google Maps'
-          url="http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}"
+          url="http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
           subdomains={["mt0", "mt1", "mt2", "mt3"]}
           maxZoom={25}
           maxNativeZoom={22}
