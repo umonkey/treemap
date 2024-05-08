@@ -8,15 +8,11 @@ import { Box, FormHelperText, TextField } from "@mui/material";
 
 // Project imports.
 import { ConfirmCancelButtons, SpeciesSelector, TreeStateSelector } from "@/components";
-import { ILatLng } from "@/types";
 
 // Local imports.
 import { useAddTreeDialog } from "./hooks";
+import { IProps } from "./types";
 import "./styles.scss";
-
-interface IProps {
-  center: ILatLng;
-}
 
 export const AddTreeDialog = (props: IProps) => {
   const {
@@ -36,9 +32,7 @@ export const AddTreeDialog = (props: IProps) => {
     notes,
     species,
     state,
-  } = useAddTreeDialog({
-    center: props.center,
-  });
+  } = useAddTreeDialog(props);
 
   return (
     <div className="AddTreeDialog Dialog">

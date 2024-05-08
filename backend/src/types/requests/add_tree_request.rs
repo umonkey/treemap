@@ -1,9 +1,10 @@
 use serde::{Deserialize, Serialize};
 
+use crate::types::LatLon;
+
 #[derive(Debug, Deserialize, Serialize)]
 pub struct AddTreeRequest {
-    pub lat: f64,
-    pub lon: f64,
+    pub points: Vec<LatLon>,
     pub species: String,
     pub notes: Option<String>,
     pub height: Option<f64>,

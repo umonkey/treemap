@@ -3,7 +3,6 @@ import { routes } from "@/utils/routes";
 
 import {
   AddPage,
-  AddTreeDetailsPageWrapper,
   DetailsPageWrapper,
   EditTreePageWrapper,
   HomePage,
@@ -16,7 +15,6 @@ export const RouterComponent = () => {
     <Routes>
       <Route path={routes.home()} element={<HomePage />} />
       <Route path={routes.add()} element={<AddPage />} />
-      <Route path="/add/continue" element={<AddTreeDetailsPageWrapper />} />
       <Route path={routes.treeDetails(":id")} element={<DetailsPageWrapper />} />
       <Route path={routes.editTree(":id")} element={<EditTreePageWrapper />} />
       <Route path={routes.moveTree(":id")} element={<MoveTreePageWrapper />} />

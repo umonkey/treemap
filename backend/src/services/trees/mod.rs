@@ -23,35 +23,40 @@ impl Trees {
         Self { db: db.clone() }
     }
 
-    pub async fn add_tree(&self, req: AddTreeRequest) -> Result<TreeRecord> {
-        let id = get_unique_id()?;
+    pub async fn add_trees(&self, req: AddTreeRequest) -> Result<Vec<TreeRecord>> {
         let now = get_timestamp();
 
-        let tree = TreeRecord {
-            id,
-            osm_id: None,
-            lat: req.lat,
-            lon: req.lon,
-            species: req.species,
-            notes: req.notes,
-            height: req.height,
-            circumference: req.circumference,
-            diameter: req.diameter,
-            state: req.state.to_string(),
-            added_at: now,
-            updated_at: now,
-            added_by: req.user_id,
-            thumbnail_id: None,
-        };
+        let mut trees: Vec<TreeRecord> = Vec::new();
 
-        debug!(
-            "Adding tree at ({}, {}) with species '{}'.",
-            req.lat, req.lon, tree.species
-        );
+        for point in req.points {
+            let tree = TreeRecord {
+                id: get_unique_id()?,
+                osm_id: None,
+                lat: point.lat,
+                lon: point.lon,
+                species: req.species.clone(),
+                notes: req.notes.clone(),
+                height: req.height,
+                circumference: req.circumference,
+                diameter: req.diameter,
+                state: req.state.to_string(),
+                added_at: now,
+                updated_at: now,
+                added_by: req.user_id,
+                thumbnail_id: None,
+            };
 
-        self.db.add_tree(&tree).await?;
+            debug!(
+                "Adding tree at ({}, {}) with species '{}'.",
+                tree.lat, tree.lon, tree.species
+            );
 
-        Ok(tree)
+            self.db.add_tree(&tree).await?;
+
+            trees.push(tree);
+        }
+
+        Ok(trees)
     }
 
     pub async fn update_tree(&self, req: UpdateTreeRequest) -> Result<TreeRecord> {
@@ -129,6 +134,7 @@ impl Trees {
 mod tests {
     use super::*;
     use crate::services::database::SqliteDatabase;
+    use crate::types::LatLon;
     use env_logger;
     use std::env;
 
@@ -198,10 +204,12 @@ mod tests {
     async fn test_add_tree_minimal() {
         let service = setup(None).await.expect("Error initializing the service");
 
-        let tree = service
-            .add_tree(AddTreeRequest {
-                lat: 12.34,
-                lon: 56.78,
+        let trees = service
+            .add_trees(AddTreeRequest {
+                points: vec![LatLon {
+                    lat: 12.34,
+                    lon: 56.78,
+                }],
                 species: "Oak".to_string(),
                 notes: None,
                 height: None,
@@ -212,6 +220,10 @@ mod tests {
             })
             .await
             .expect("Error adding tree");
+
+        assert_eq!(trees.len(), 1);
+
+        let tree = &trees[0];
 
         debug!("Tree added: {:?}", tree);
 
@@ -238,10 +250,12 @@ mod tests {
     async fn test_add_tree_full() {
         let service = setup(None).await.expect("Error initializing the service");
 
-        let tree = service
-            .add_tree(AddTreeRequest {
-                lat: 12.34,
-                lon: 56.78,
+        let trees = service
+            .add_trees(AddTreeRequest {
+                points: vec![LatLon {
+                    lat: 12.34,
+                    lon: 56.78,
+                }],
                 species: "Quercus".to_string(),
                 notes: Some("Oak".to_string()),
                 height: Some(12.3),
@@ -253,10 +267,10 @@ mod tests {
             .await
             .expect("Error adding tree");
 
-        debug!("Tree added: {:?}", tree);
+        assert_eq!(trees.len(), 1);
 
         let tree = service
-            .get_tree(tree.id)
+            .get_tree(trees[0].id)
             .await
             .expect("Error reading a tree that was just added");
 

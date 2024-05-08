@@ -25,14 +25,11 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    center: {
-      lat: 40.181389,
-      lon: 44.514444,
-    },
-  },
-  parameters: {
-    viewport: {
-      defaultViewport: "responsive",
-    },
+    points: [
+      {
+        lat: 40.181389,
+        lon: 44.514444,
+      },
+    ],
   },
 };

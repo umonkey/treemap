@@ -1,4 +1,10 @@
-import { IComment, ISpecies, ITreeDetails, ITreeInfo } from "@/types";
+import {
+  IComment,
+  ISpecies,
+  ITreeDefaults,
+  ITreeDetails,
+  ITreeInfo,
+} from "@/types";
 
 export const SAMPLE_TREES = [
   {
@@ -280,3 +286,12 @@ export const SAMPLE_SPECIES_SEARCH = [
     local: "Sycamore maple",
   },
 ] as ISpecies[];
+
+export const SAMPLE_DEFAULTS = {
+  "species": "Ulmus",
+  "height": 0.0,
+  "circumference": 0.0,
+  "diameter": 0.0,
+  "notes": null,
+  "state": "healthy",
+} as ITreeDefaults;

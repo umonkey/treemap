@@ -5,12 +5,12 @@ import { toast } from "react-hot-toast";
 
 // Project imports.
 import { treeMapService } from "@/services/api";
-import { IAddTreeRequest, ILatLng } from "@/types";
+import { IAddTreesRequest } from "@/types";
 import { routes } from "@/utils";
+import { mainBus } from "@/bus";
 
-interface IProps {
-  center: ILatLng;
-}
+// Local imports.
+import { IProps } from "./types";
 
 export const useAddTreeDialog = (props: IProps) => {
   const [species, setSpecies] = useState<string>("");
@@ -26,6 +26,10 @@ export const useAddTreeDialog = (props: IProps) => {
 
   const isSaveEnabled = (): boolean => {
     if (species.length === 0) {
+      return false;
+    }
+
+    if (props.points.length === 0) {
       return false;
     }
 
@@ -62,20 +66,25 @@ export const useAddTreeDialog = (props: IProps) => {
     setError(null);
 
     try {
-      const res = await treeMapService.addMarker({
-        lat: props.center.lat,
-        lon: props.center.lon,
+      const res = await treeMapService.addTrees({
+        points: props.points,
         species,
         height,
         circumference,
         diameter,
         state,
         notes: notes || null,
-      } as IAddTreeRequest);
+      } as IAddTreesRequest);
 
-      console.debug(`Tree added with id ${res.id}, showing details page.`);
+      console.debug(`Added ${res.length} trees.`);
 
-      toast.success("Tree added successfully.");
+      if (res.length === 1) {
+        toast.success("Tree added successfully.");
+      } else {
+        toast.success("Trees added successfully.");
+      }
+
+      mainBus.emit("reload_map");
 
       navigate(routes.add());
     } catch (e) {

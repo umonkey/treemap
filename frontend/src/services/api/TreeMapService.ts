@@ -1,6 +1,21 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 
-import { IApiError, IAddTreeRequest, IComment, ILatLng, ISpecies, ITreeInfo, ITreeDetails, IUploadTicket, IUserInfo, ITreeDefaults, IFileUploadResponse, IFileStatusResponse } from "@/types";
+import {
+  IAddTreesRequest,
+  IApiError,
+  IComment,
+  IFileStatusResponse,
+  IFileUploadResponse,
+  ILatLng,
+  ISpecies,
+  ITreeDefaults,
+  ITreeDetails,
+  ITreeInfo,
+  IUpdateTreeRequest,
+  IUploadTicket,
+  IUserInfo,
+} from "@/types";
+
 import { getApiRoot } from "@/utils/env";
 
 export interface ITreesResponse {
@@ -50,18 +65,18 @@ export class TreeMapService {
   /**
    * Add a new tree to the map.
    */
-  public async addMarker(props: IAddTreeRequest): Promise<ITreeDetails> {
-    const res = await this.post<ITreeDetails>("/v1/trees", props, {
+  public async addTrees(props: IAddTreesRequest): Promise<ITreeInfo[]> {
+    const res = await this.post<ITreesResponse>("/v1/trees", props, {
       headers: this.get_auth_headers(),
     });
 
-    return res;
+    return res.trees;
   }
 
   /**
    * Update an existing tree.
    */
-  public async updateTree(id: string, props: IAddTreeRequest): Promise<ITreeInfo> {
+  public async updateTree(id: string, props: IUpdateTreeRequest): Promise<ITreeInfo> {
     const res = await this.put<ITreeInfo>(`/v1/trees/${id}`, props, {
       headers: this.get_auth_headers(),
     });
