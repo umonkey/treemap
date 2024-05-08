@@ -35,10 +35,7 @@ export const MapBase = (props: IProps) => {
   });
 
   return (
-    <div ref={ref} style={{
-      height: "100%",
-      width: "100%",
-    }}>
+    <div className="MapBase" ref={ref}>
       <MapContainer
         ref={mapRef}
         center={[props.center.lat, props.center.lon]}

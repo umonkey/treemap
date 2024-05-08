@@ -1,6 +1,19 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 
-import { IApiError, IAddTreeRequest, IComment, ILatLng, ISpecies, ITreeInfo, ITreeDetails, IUploadTicket, IUserInfo, ITreeDefaults, IFileUploadResponse, IFileStatusResponse } from "@/types";
+import {
+  IAddTreeRequest,
+  IApiError,
+  IComment,
+  IFileStatusResponse,
+  IFileUploadResponse,
+  ILatLng,
+  ISpecies,
+  ITreeDefaults,
+  ITreeDetails,
+  ITreeInfo,
+  IUploadTicket,
+  IUserInfo,
+} from "@/types";
 import { getApiRoot } from "@/utils/env";
 
 export interface ITreesResponse {

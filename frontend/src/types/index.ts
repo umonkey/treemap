@@ -68,6 +68,20 @@ export interface IAddTreeRequest {
   state: string;
 }
 
+export interface IAddRowRequest {
+  lat1: number;
+  lon1: number;
+  lat2: number;
+  lon2: number;
+  species: string;
+  number: number;
+  notes: string | null;
+  height: number | null;
+  circumference: number | null;
+  diameter: number | null;
+  state: string;
+}
+
 /**
  * This is used to save and restore the state of a map view.
  */

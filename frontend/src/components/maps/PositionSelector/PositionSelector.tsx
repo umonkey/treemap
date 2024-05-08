@@ -16,6 +16,7 @@ import "./styles.scss";
 
 export const PositionSelector = (props: IProps) => {
   const {
+    center,
     dots,
     handleNumberChange,
     handleRowChange,
@@ -39,7 +40,7 @@ export const PositionSelector = (props: IProps) => {
 
         {number > 1 && (
           <RowSelector
-            center={mapState.center}
+            center={center}
             onChange={handleRowChange}
           />
         )}

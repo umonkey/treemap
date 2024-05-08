@@ -4,7 +4,13 @@ import { MemoryRouter } from "react-router-dom";
 
 // Project imports.
 import { IComment, ISpecies, ITreeInfo, ITreeDetails } from "@/types";
-import { SAMPLE_COMMENTS, SAMPLE_TREES, SAMPLE_TREE, SAMPLE_SPECIES_SEARCH } from "@/sample-data";
+import {
+  SAMPLE_COMMENTS,
+  SAMPLE_DEFAULTS,
+  SAMPLE_SPECIES_SEARCH,
+  SAMPLE_TREE,
+  SAMPLE_TREES,
+} from "@/sample-data";
 
 // Local imports.
 import { StoryWrapper } from "./StoryWrapper";
@@ -85,6 +91,13 @@ const preview: Preview = {
             lon: 44.514444,
             name: "New Tree",
           } as ITreeInfo,
+          delay: 2000,
+        },
+        {
+          url: "/v1/trees/defaults",
+          method: "GET",
+          status: 200,
+          response: SAMPLE_DEFAULTS,
           delay: 2000,
         },
         {

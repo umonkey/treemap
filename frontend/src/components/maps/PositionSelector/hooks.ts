@@ -30,6 +30,7 @@ export const rowBuilder = (a: ILatLng, b: ILatLng, n: number): ILatLng[] => {
 
 export const usePositionSelector = (props: IProps) => {
   const { mapState } = useMapState();
+  const [center, setCenter] = useState<ILatLng>(mapState.center);
   const [number, setNumber] = useState(0);
   const [singlePosition, setSinglePosition] = useState<ILatLng>(mapState.center);
   const [rowStart, setRowStart] = useState<ILatLng>(mapState.center);
@@ -54,6 +55,9 @@ export const usePositionSelector = (props: IProps) => {
 
   const handleSinglePositionChange = (position: ILatLng) => {
     setSinglePosition(position);
+
+    // Reset row center.
+    setCenter(position);
   };
 
   const handleRowChange = (a: ILatLng, b: ILatLng) => {
@@ -62,6 +66,7 @@ export const usePositionSelector = (props: IProps) => {
   };
 
   return {
+    center,
     dots,
     handleNumberChange,
     handleRowChange,
