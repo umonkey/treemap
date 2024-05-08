@@ -1,13 +1,8 @@
 // Global imports.
 import { useState, useEffect, useMemo, useRef } from "react";
 
-// Project imports.
-import { ILatLng } from "@/types";
-
-interface IProps {
-  center: ILatLng;
-  onChange: (center: ILatLng) => void;
-}
+// Local imports.
+import { IProps } from "./types";
 
 export const useDraggableMarker = (props: IProps) => {
   const [center, setCenter] = useState(props.center);

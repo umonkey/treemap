@@ -1,16 +1,9 @@
 // Global imports.
 import { Marker } from "react-leaflet";
 
-// Project imports.
-import { ILatLng } from "@/types";
-
 // Local imports.
 import { useDraggableMarker } from "./hooks";
-
-interface IProps {
-  center: ILatLng;
-  onChange: (center: ILatLng) => void;
-}
+import { IProps } from "./types";
 
 export const DraggableMarker = (props: IProps) => {
   const { center, eventHandlers, ref } = useDraggableMarker(props);
