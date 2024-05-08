@@ -57,7 +57,17 @@ export interface ITreeDetails {
   files?: IFileInfo[];
 }
 
-export interface IAddTreeRequest {
+export interface IAddTreesRequest {
+  points: ILatLng[];
+  species: string;
+  notes: string | null;
+  height: number | null;
+  circumference: number | null;
+  diameter: number | null;
+  state: string;
+}
+
+export interface IUpdateTreeRequest {
   lat: number;
   lon: number;
   species: string;
