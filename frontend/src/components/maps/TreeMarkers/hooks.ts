@@ -48,6 +48,20 @@ export const useMarkers = () => {
     setBounds(updated);
   }, []);
 
+  useEffect(() => {
+    const handler = () => {
+      reload({
+        north: bounds[0],
+        east: bounds[1],
+        south: bounds[2],
+        west: bounds[3],
+      });
+    };
+
+    mainBus.on("reload_map", () => handler);
+    return () => mainBus.off("reload_map", handler);
+  });
+
   const fetchMarkers = useCallback(async () => {
     const res = await treeMapService.getMarkers({
       north: bounds[0],

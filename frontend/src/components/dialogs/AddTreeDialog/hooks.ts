@@ -7,6 +7,7 @@ import { toast } from "react-hot-toast";
 import { treeMapService } from "@/services/api";
 import { IAddTreesRequest } from "@/types";
 import { routes } from "@/utils";
+import { mainBus } from "@/bus";
 
 // Local imports.
 import { IProps } from "./types";
@@ -82,6 +83,8 @@ export const useAddTreeDialog = (props: IProps) => {
       } else {
         toast.success("Trees added successfully.");
       }
+
+      mainBus.emit("reload_map");
 
       navigate(routes.add());
     } catch (e) {
