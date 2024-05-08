@@ -7,7 +7,14 @@
 
 // Project imports.
 import { Marker } from "react-leaflet";
-import { GreenCircleIcon, LocationPicker, MapBase, RowSelector, TreeCountSelector } from "@/components";
+import {
+  GreenCircleIcon,
+  LocationPicker,
+  MapBase,
+  RowSelector,
+  TreeCountSelector,
+  TreeMarkers,
+} from "@/components";
 
 // Local imports.
 import { usePositionSelector } from "./hooks";
@@ -52,6 +59,8 @@ export const PositionSelector = (props: IProps) => {
             icon={GreenCircleIcon}
           />
         ))}
+
+        <TreeMarkers />
       </MapBase>
 
     </div>
