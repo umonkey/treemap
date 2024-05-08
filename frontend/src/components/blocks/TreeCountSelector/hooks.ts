@@ -7,7 +7,7 @@ interface IProps {
 
 export const useTreeCountSelector = (props: IProps) => {
   const [mode, setMode] = useState<string>("single");
-  const [number, setNumber] = useState<number>(2);
+  const [number, setNumber] = useState<number>(5);
 
   useEffect(() => {
     props.onChange(number);
