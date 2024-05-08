@@ -66,11 +66,11 @@ export class TreeMapService {
    * Add a new tree to the map.
    */
   public async addTrees(props: IAddTreesRequest): Promise<ITreeInfo[]> {
-    const res = await this.post<ITreeInfo[]>("/v1/trees", props, {
+    const res = await this.post<ITreesResponse>("/v1/trees", props, {
       headers: this.get_auth_headers(),
     });
 
-    return res;
+    return res.trees;
   }
 
   /**

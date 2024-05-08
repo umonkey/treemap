@@ -56,7 +56,6 @@ impl Trees {
             trees.push(tree);
         }
 
-
         Ok(trees)
     }
 
@@ -207,7 +206,10 @@ mod tests {
 
         let trees = service
             .add_trees(AddTreeRequest {
-                points: vec![LatLon { lat: 12.34, lon: 56.78 }],
+                points: vec![LatLon {
+                    lat: 12.34,
+                    lon: 56.78,
+                }],
                 species: "Oak".to_string(),
                 notes: None,
                 height: None,
@@ -250,7 +252,10 @@ mod tests {
 
         let trees = service
             .add_trees(AddTreeRequest {
-                points: vec![LatLon { lat: 12.34, lon: 56.78 }],
+                points: vec![LatLon {
+                    lat: 12.34,
+                    lon: 56.78,
+                }],
                 species: "Quercus".to_string(),
                 notes: Some("Oak".to_string()),
                 height: Some(12.3),
