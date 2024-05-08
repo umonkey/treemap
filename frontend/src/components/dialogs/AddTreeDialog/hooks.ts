@@ -75,9 +75,9 @@ export const useAddTreeDialog = (props: IProps) => {
         notes: notes || null,
       } as IAddTreesRequest);
 
-      console.debug(`Added ${res.length} trees.`);
+      console.debug(`Added ${res.trees.length} trees.`);
 
-      if (res.length === 1) {
+      if (res.trees.length === 1) {
         toast.success("Tree added successfully.");
       } else {
         toast.success("Trees added successfully.");
