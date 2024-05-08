@@ -40,8 +40,8 @@ impl AppState {
         })
     }
 
-    pub async fn add_tree(&self, req: AddTreeRequest) -> Result<TreeRecord> {
-        self.trees.add_tree(req).await
+    pub async fn add_trees(&self, req: AddTreeRequest) -> Result<Vec<TreeRecord>> {
+        self.trees.add_trees(req).await
     }
 
     pub async fn update_tree(&self, req: UpdateTreeRequest) -> Result<TreeRecord> {

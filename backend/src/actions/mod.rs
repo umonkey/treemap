@@ -1,6 +1,6 @@
 mod add_comment;
 mod add_file;
-mod add_tree;
+mod add_trees;
 mod create_upload_ticket;
 mod get_comments;
 mod get_file;
@@ -17,7 +17,7 @@ mod update_tree;
 
 pub use self::add_comment::*;
 pub use self::add_file::*;
-pub use self::add_tree::*;
+pub use self::add_trees::*;
 pub use self::create_upload_ticket::*;
 pub use self::get_comments::*;
 pub use self::get_file::*;
