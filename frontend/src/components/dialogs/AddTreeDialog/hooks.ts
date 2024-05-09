@@ -78,15 +78,15 @@ export const useAddTreeDialog = (props: IProps) => {
 
       console.debug(`Added ${res.length} trees.`);
 
-      if (res.length === 1) {
-        toast.success("Tree added successfully.");
-      } else {
-        toast.success("Trees added successfully.");
-      }
-
       mainBus.emit("reload_map");
 
-      navigate(routes.add());
+      if (res.length === 1) {
+        toast.success("Tree added successfully.");
+        navigate(routes.treeDetails(res[0].id));
+      } else {
+        toast.success("Trees added successfully.");
+        navigate(routes.home());
+      }
     } catch (e) {
       console.error("Error adding a tree.", e);
       setError("Error adding tree, please try again later.");
