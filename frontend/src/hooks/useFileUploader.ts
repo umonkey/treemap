@@ -19,9 +19,7 @@ export const useFileUploader = () => {
   // Deliver upload finished notifications.
   useEffect(() => {
     const handler = () => {
-      toast.success("Files uploaded successfully.", {
-        duration: 5000,
-      });
+      toast.success("Files uploaded successfully.");
     };
 
     mainBus.on("upload_finished", handler);

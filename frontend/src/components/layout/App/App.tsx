@@ -1,12 +1,11 @@
 // Global imports.
-import { Toaster } from "react-hot-toast";
 import { HashRouter } from "react-router-dom";
 import "@fontsource/roboto";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
 // Project imports.
-import { ProgressBar, RouterComponent } from "@/components";
+import { ProgressBar, RouterComponent, Toaster } from "@/components";
 
 // Local imports.
 import "./styles.scss";
@@ -17,7 +16,7 @@ export const App = () => {
 
   return (
     <HashRouter>
-      <Toaster position="bottom-center" />
+      <Toaster />
       <RouterComponent />
       <ProgressBar />
     </HashRouter>

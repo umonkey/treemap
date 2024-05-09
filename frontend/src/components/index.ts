@@ -39,6 +39,7 @@ export { SearchBar } from "./elements/SearchBar";
 export { SelectLocationDialog } from "./dialogs/SelectLocationDialog";
 export { SideBar } from "./layout/SideBar";
 export { SpeciesSelector } from "./elements/SpeciesSelector";
+export { Toaster } from "./layout/Toaster";
 export { TreeComments } from "./blocks/TreeComments";
 export { TreeCountSelector } from "./blocks/TreeCountSelector";
 export { TreeDetails } from "./blocks/TreeDetails";
