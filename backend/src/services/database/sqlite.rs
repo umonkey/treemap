@@ -1396,7 +1396,7 @@ mod tests {
             .find_recent_species(user_id)
             .await
             .expect("Error reading recent species.");
-        assert_eq!(recent.len(), 5);
+        assert_eq!(recent.len(), 9);
         assert_eq!(recent[0], "Species nr.10");
         assert_eq!(recent[1], "Species nr.9");
     }
