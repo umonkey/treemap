@@ -17,6 +17,7 @@ pub struct SearchQuery {
     pub dead: bool,
     pub deformed: bool,
     pub healthy: bool,
+    pub gone: bool,
 }
 
 impl SearchQuery {
@@ -30,6 +31,7 @@ impl SearchQuery {
         let mut deformed = false;
         let mut healthy = false;
         let mut incomplete = false;
+        let mut gone = false;
 
         for word in query.to_lowercase().split_whitespace() {
             if word.contains("nometric") {
@@ -48,6 +50,8 @@ impl SearchQuery {
                 healthy = true;
             } else if word.contains("incomplete") {
                 incomplete = true;
+            } else if word.contains("gone") {
+                gone = true;
             } else {
                 words.push(word.to_string().to_lowercase());
             }
@@ -63,6 +67,7 @@ impl SearchQuery {
             deformed,
             healthy,
             incomplete,
+            gone,
         }
     }
 
@@ -76,6 +81,7 @@ impl SearchQuery {
             && !self.deformed
             && !self.healthy
             && !self.incomplete
+            && !self.gone
     }
 
     pub fn r#match(&self, tree: &TreeRecord) -> bool {
@@ -117,6 +123,10 @@ impl SearchQuery {
 
         if self.incomplete && Self::is_tree_incomplete(tree) {
             return true;
+        }
+
+        if self.gone && tree.state != "gone" {
+            return false;
         }
 
         true
@@ -381,6 +391,27 @@ mod tests {
             false,
             query.r#match(&TreeRecord {
                 state: "sick".to_string(),
+                ..default_tree()
+            })
+        );
+    }
+
+    #[test]
+    fn test_gone() {
+        let query = SearchQuery::from_string("gone");
+
+        assert_eq!(
+            true,
+            query.r#match(&TreeRecord {
+                state: "gone".to_string(),
+                ..default_tree()
+            })
+        );
+
+        assert_eq!(
+            false,
+            query.r#match(&TreeRecord {
+                state: "healthy".to_string(),
                 ..default_tree()
             })
         );
