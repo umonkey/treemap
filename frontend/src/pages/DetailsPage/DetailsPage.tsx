@@ -83,7 +83,7 @@ export const DetailsPage = (props: IProps) => {
           )}
 
           {uploadFinished && (
-            <div className="message">Upload OK, the photos will show up soon.</div>
+            <div className="message">Files accepted, you can continue your work while they are being uploaded.</div>
           )}
 
           {isDesktop && (
