@@ -105,10 +105,7 @@ impl Trees {
 
         if let Some(search) = &request.search {
             let query = SearchQuery::from_string(search);
-
-            if !query.is_empty() {
-                trees.retain(|t| query.r#match(t));
-            }
+            trees.retain(|t| query.r#match(t));
         }
 
         Ok(TreeList::from_trees(trees))

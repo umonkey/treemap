@@ -71,19 +71,6 @@ impl SearchQuery {
         }
     }
 
-    pub fn is_empty(&self) -> bool {
-        self.words.is_empty()
-            && !self.nometrics
-            && !self.nocirc
-            && !self.noimages
-            && !self.sick
-            && !self.dead
-            && !self.deformed
-            && !self.healthy
-            && !self.incomplete
-            && !self.gone
-    }
-
     pub fn r#match(&self, tree: &TreeRecord) -> bool {
         if !self.match_text(tree) {
             return false;
@@ -105,6 +92,10 @@ impl SearchQuery {
             return false;
         }
 
+        if !self.sick && !self.dead && !self.deformed && !self.healthy && !self.gone && tree.state == "gone" {
+            return false;
+        }
+
         if self.sick && tree.state != "sick" {
             return false;
         }
@@ -121,12 +112,12 @@ impl SearchQuery {
             return false;
         }
 
-        if self.incomplete && Self::is_tree_incomplete(tree) {
-            return true;
-        }
-
         if self.gone && tree.state != "gone" {
             return false;
+        }
+
+        if self.incomplete && Self::is_tree_incomplete(tree) {
+            return true;
         }
 
         true
@@ -226,7 +217,6 @@ mod tests {
         assert_eq!(query.words.len(), 0);
         assert_eq!(query.nometrics, false);
         assert_eq!(query.noimages, false);
-        assert_eq!(query.is_empty(), true);
     }
 
     #[test]
@@ -410,6 +400,27 @@ mod tests {
 
         assert_eq!(
             false,
+            query.r#match(&TreeRecord {
+                state: "healthy".to_string(),
+                ..default_tree()
+            })
+        );
+    }
+
+    #[test]
+    fn test_non_gone() {
+        let query = SearchQuery::from_string("");
+
+        assert_eq!(
+            false,
+            query.r#match(&TreeRecord {
+                state: "gone".to_string(),
+                ..default_tree()
+            })
+        );
+
+        assert_eq!(
+            true,
             query.r#match(&TreeRecord {
                 state: "healthy".to_string(),
                 ..default_tree()
