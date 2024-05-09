@@ -26,7 +26,7 @@ export const useSpeciesSelector = (props: IProps) => {
     (async () => {
       try {
         const res = await treeMapService.suggestSpecies();
-        setRecent(res);
+        setRecent([...res.slice(0, 9), "Unknown"]);
       } catch (e) {
         console.error("Error reading recent species.", e);
         setRecent([]);
