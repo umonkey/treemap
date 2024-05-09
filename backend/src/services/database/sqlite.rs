@@ -1046,7 +1046,7 @@ impl Database for SqliteDatabase {
         let since = get_timestamp() - SUGGEST_WINDOW;
 
         let items = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT species, COUNT(1) AS use_count FROM trees WHERE added_by = ? AND added_at >= ? GROUP BY species ORDER BY use_count DESC LIMIT 5") {
+            let mut stmt = match conn.prepare("SELECT species, COUNT(1) AS use_count FROM trees WHERE added_by = ? AND added_at >= ? GROUP BY species ORDER BY use_count DESC LIMIT 10") {
                 Ok(value) => value,
 
                 Err(e) => {

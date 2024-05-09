@@ -41,7 +41,7 @@ export const SpeciesSelector = (props: IProps) => {
       />
 
       {recent.length > 0 && (
-        <div className="recent">Recent species: {recent.slice(0, 3).map((n, idx) => {
+        <div className="recent">Recent species: {recent.slice(0, 10).map((n, idx) => {
           const items = [];
 
           if (idx > 0) {
