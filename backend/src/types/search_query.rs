@@ -18,6 +18,7 @@ pub struct SearchQuery {
     pub deformed: bool,
     pub healthy: bool,
     pub gone: bool,
+    pub all: bool,
 }
 
 impl SearchQuery {
@@ -32,6 +33,7 @@ impl SearchQuery {
         let mut healthy = false;
         let mut incomplete = false;
         let mut gone = false;
+        let mut all = false;
 
         for word in query.to_lowercase().split_whitespace() {
             if word.contains("nometric") {
@@ -52,6 +54,8 @@ impl SearchQuery {
                 incomplete = true;
             } else if word.contains("gone") {
                 gone = true;
+            } else if word.contains("all") {
+                all = true;
             } else {
                 words.push(word.to_string().to_lowercase());
             }
@@ -68,6 +72,7 @@ impl SearchQuery {
             healthy,
             incomplete,
             gone,
+            all,
         }
     }
 
@@ -92,28 +97,36 @@ impl SearchQuery {
             return false;
         }
 
-        if !self.sick && !self.dead && !self.deformed && !self.healthy && !self.gone && tree.state == "gone" {
-            return false;
-        }
+        if !self.all {
+            if !self.sick
+                && !self.dead
+                && !self.deformed
+                && !self.healthy
+                && !self.gone
+                && tree.state == "gone"
+            {
+                return false;
+            }
 
-        if self.sick && tree.state != "sick" {
-            return false;
-        }
+            if self.sick && tree.state != "sick" {
+                return false;
+            }
 
-        if self.dead && tree.state != "dead" {
-            return false;
-        }
+            if self.dead && tree.state != "dead" {
+                return false;
+            }
 
-        if self.deformed && tree.state != "deformed" {
-            return false;
-        }
+            if self.deformed && tree.state != "deformed" {
+                return false;
+            }
 
-        if self.healthy && tree.state != "healthy" {
-            return false;
-        }
+            if self.healthy && tree.state != "healthy" {
+                return false;
+            }
 
-        if self.gone && tree.state != "gone" {
-            return false;
+            if self.gone && tree.state != "gone" {
+                return false;
+            }
         }
 
         if self.incomplete && Self::is_tree_incomplete(tree) {
@@ -413,6 +426,27 @@ mod tests {
 
         assert_eq!(
             false,
+            query.r#match(&TreeRecord {
+                state: "gone".to_string(),
+                ..default_tree()
+            })
+        );
+
+        assert_eq!(
+            true,
+            query.r#match(&TreeRecord {
+                state: "healthy".to_string(),
+                ..default_tree()
+            })
+        );
+    }
+
+    #[test]
+    fn test_all() {
+        let query = SearchQuery::from_string("all");
+
+        assert_eq!(
+            true,
             query.r#match(&TreeRecord {
                 state: "gone".to_string(),
                 ..default_tree()
