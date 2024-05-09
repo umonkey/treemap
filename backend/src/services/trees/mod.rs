@@ -37,7 +37,7 @@ impl Trees {
                 species: req.species.clone(),
                 notes: req.notes.clone(),
                 height: req.height,
-                circumference: req.circumference,
+                circumference: Self::fix_circumference(req.circumference),
                 diameter: req.diameter,
                 state: req.state.to_string(),
                 added_at: now,
@@ -72,7 +72,7 @@ impl Trees {
             species: req.species,
             notes: req.notes,
             height: req.height,
-            circumference: req.circumference,
+            circumference: Self::fix_circumference(req.circumference),
             diameter: req.diameter,
             state: req.state,
             added_at: old.added_at,
@@ -127,6 +127,19 @@ impl Trees {
     pub async fn get_last_tree_by_user(&self, user_id: u64) -> Result<Option<TreeRecord>> {
         debug!("Getting last tree for user {}.", user_id);
         self.db.get_last_tree_by_user(user_id).await
+    }
+
+    fn fix_circumference(value: Option<f64>) -> Option<f64> {
+        let mut value: f64 = match value {
+            Some(v) => v,
+            None => return None,
+        };
+
+        if value.fract() == 0.0 && value > 3.0 {
+            value /= 100.0;
+        }
+
+        Some(value)
     }
 }
 
@@ -283,5 +296,56 @@ mod tests {
         assert_eq!(tree.diameter.expect("diameter not set"), 15.0);
         assert_eq!(tree.state, "healthy");
         assert_eq!(tree.added_by, 3);
+    }
+
+    #[tokio::test]
+    async fn test_keep_circumference() {
+        let service = setup(None).await.expect("Error initializing the service");
+
+        let trees = service
+            .add_trees(AddTreeRequest {
+                points: vec![LatLon {
+                    lat: 12.34,
+                    lon: 56.78,
+                }],
+                species: "Quercus".to_string(),
+                notes: Some("Oak".to_string()),
+                height: Some(12.3),
+                circumference: Some(2.0),
+                diameter: Some(15.0),
+                state: "healthy".to_string(),
+                user_id: 3,
+            })
+            .await
+            .expect("Error adding tree");
+
+        assert_eq!(2.0, trees[0].circumference.unwrap());
+    }
+
+    /**
+     * When circumference is a whole number greater than 3, it is assumed to be in cm.
+     */
+    #[tokio::test]
+    async fn test_convert_circumference() {
+        let service = setup(None).await.expect("Error initializing the service");
+
+        let trees = service
+            .add_trees(AddTreeRequest {
+                points: vec![LatLon {
+                    lat: 12.34,
+                    lon: 56.78,
+                }],
+                species: "Quercus".to_string(),
+                notes: Some("Oak".to_string()),
+                height: Some(12.3),
+                circumference: Some(123.0),
+                diameter: Some(15.0),
+                state: "healthy".to_string(),
+                user_id: 3,
+            })
+            .await
+            .expect("Error adding tree");
+
+        assert_eq!(1.23, trees[0].circumference.unwrap());
     }
 }
