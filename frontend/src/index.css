@@ -1,5 +1,6 @@
 :root {
   --background-color: #e4f0e2;
+  --gap: 20px;
 
   font-family: Roboto, Arial, sans-serif;
   font-size: 16px;
@@ -16,6 +17,10 @@
   -moz-osx-font-smoothing: grayscale;
 
   height: 100%;
+}
+
+.phone {
+  --gap: 10px;
 }
 
 a {

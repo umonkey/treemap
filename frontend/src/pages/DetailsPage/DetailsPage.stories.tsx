@@ -8,7 +8,7 @@ const meta = {
   title: 'Pages/DetailsPage',
   component: DetailsPage,
   parameters: {
-    layout: 'padded', // centered
+    layout: "fullscreen",
   },
   args: { },
 } satisfies Meta<typeof DetailsPage>;

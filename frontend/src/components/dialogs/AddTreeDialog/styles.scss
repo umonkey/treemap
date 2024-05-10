@@ -1,6 +1,6 @@
 .AddTreeDialog {
   .group {
-    margin-bottom: 20px;
+    margin-bottom: calc(var(--gap) * 2);
   }
 
   .wide .MuiFormControl-root {

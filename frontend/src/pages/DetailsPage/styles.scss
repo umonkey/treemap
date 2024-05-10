@@ -3,7 +3,7 @@
     height: 450px;
     max-height: 40vh;
     width: 100%;
-    margin: 10px 0 20px;
+    margin: var(--gap) 0;
   }
 
   .TreeDetails, .MapWithMarker {
@@ -12,7 +12,7 @@
   }
 
   .MuiButtonGroup-root {
-    margin: 20px 0;
+    margin: var(--gap) 0;
   }
 
   .message {
@@ -20,11 +20,11 @@
   }
 
   .Gallery {
-    margin: 20px 0;
+    margin: var(--gap) 0;
   }
 
   .toolbar {
-    margin: 20px 0;
+    margin: var(--gap) 0;
 
     .MuiButtonGroup-root {
       margin: 0;
@@ -39,7 +39,7 @@
 
 @media screen and (max-width: 600px) {
   .DetailsPage {
-    padding: 10px 10px 60px;
+    padding: var(--gap) var(--gap) 60px;
 
     .toolbar {
       margin: 0;
