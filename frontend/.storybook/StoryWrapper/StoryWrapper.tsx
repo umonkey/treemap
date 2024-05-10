@@ -1,14 +1,19 @@
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { getGoogleClientId } from "@/utils/env";
 
+// Project imports.
+import { useDeviceType } from "@/hooks";
+
 interface IProps {
   children: React.ReactNode | React.ReactNode[];
 }
 
 export const StoryWrapper = (props: IProps) => {
+  const { className } = useDeviceType();
+
   return (
     <GoogleOAuthProvider clientId={getGoogleClientId()}>
-      <div className="StoryWrapper" style={{
+      <div id="root" className="StoryWrapper" style={{
         height: "100%",
         width: "100%",
       }}>
