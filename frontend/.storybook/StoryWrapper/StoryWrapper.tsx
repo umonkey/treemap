@@ -3,6 +3,7 @@ import { getGoogleClientId } from "@/utils/env";
 
 // Project imports.
 import { useDeviceType } from "@/hooks";
+import "@/index.css";
 
 interface IProps {
   children: React.ReactNode | React.ReactNode[];
