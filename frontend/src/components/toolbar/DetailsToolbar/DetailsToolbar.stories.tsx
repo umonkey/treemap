@@ -1,17 +1,17 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { PreviewToolbar } from "./PreviewToolbar";
+import { DetailsToolbar } from "./DetailsToolbar";
 
 const meta = {
-  title: 'Toolbar/PreviewToolbar',
-  component: PreviewToolbar,
+  title: 'Toolbar/DetailsToolbar',
+  component: DetailsToolbar,
   parameters: {
     layout: "fullscreen",
     viewport: {
       defaultViewport: "mobile1",
     },
   },
-} satisfies Meta<typeof PreviewToolbar>;
+} satisfies Meta<typeof DetailsToolbar>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

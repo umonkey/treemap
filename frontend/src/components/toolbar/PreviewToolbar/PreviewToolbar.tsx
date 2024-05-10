@@ -1,9 +1,5 @@
-// Global imports.
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCamera } from "@fortawesome/free-solid-svg-icons";
-
 // Project imports.
-import { EditToolbarButton, InfoToolbarButton, MoveToolbarButton, ShareToolbarButton } from "@/components";
+import { EditToolbarButton, InfoToolbarButton, MoveToolbarButton, PhotoToolbarButton, ShareToolbarButton, Toolbar } from "@/components";
 
 // Local imports.
 import { IProps } from "./types";
@@ -14,19 +10,12 @@ export const PreviewToolbar = (props: IProps) => {
   usePreviewToolbar(props);
 
   return (
-    <div className="PreviewToolbar">
+    <Toolbar className="PreviewToolbar">
       <InfoToolbarButton id={props.id} />
       <EditToolbarButton id={props.id} />
-
-      <button>
-        <div className="icon">
-          <FontAwesomeIcon icon={faCamera} />
-        </div>
-        <div className="label">Photo</div>
-      </button>
-
+      <PhotoToolbarButton id={props.id} />
       <MoveToolbarButton id={props.id} />
       <ShareToolbarButton id={props.id} />
-    </div>
+    </Toolbar>
   );
 };
