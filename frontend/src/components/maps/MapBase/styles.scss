@@ -1,6 +1,15 @@
 .MapBase {
   width: 100%;
   height: 100%;
+
+  /**
+   * Phone users are used to pinch the map, no need for buttons.
+   */
+  .phone & {
+    .leaflet-control-zoom {
+      display: none;
+    }
+  }
 }
 
 .map {

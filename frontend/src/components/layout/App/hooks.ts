@@ -4,10 +4,12 @@ import { useEffect } from "react";
 // Project imports.
 import { treeMapService, fileUploader } from "@/services";
 import { useStore } from "@/store";
+import { useDeviceType } from "@/hooks";
 
 export const useApp = () => {
   const userInfo = useStore((state) => state.userInfo);
   const setUserInfo = useStore((state) => state.setUserInfo);
+  const { className } = useDeviceType();
 
   // Run the background file uploader.
   useEffect(() => {
@@ -38,4 +40,8 @@ export const useApp = () => {
       }
     })();
   });
+
+  return {
+    className,
+  };
 };

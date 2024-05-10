@@ -1,10 +1,10 @@
+// Global imports.
 import { ScaleControl, ZoomControl } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
 
+// Project imports.
 import { ILatLng } from "@/types";
 import { AddTreeControl, LocateControl, MapBase } from "@/components";
-import { useMobileDevice } from "./hooks";
-
-import "leaflet/dist/leaflet.css";
 
 interface IProps {
   center: ILatLng;
@@ -13,13 +13,9 @@ interface IProps {
 }
 
 export const MapControl = (props: IProps) => {
-  const isMobile = useMobileDevice();
-
   return (
     <MapBase center={props.center} zoom={props.zoom}>
-      {!isMobile && (
-        <ZoomControl position="bottomright" />
-      )}
+      <ZoomControl position="bottomright" />
 
       <LocateControl position="bottomright" />
       <ScaleControl position="bottomleft" />
