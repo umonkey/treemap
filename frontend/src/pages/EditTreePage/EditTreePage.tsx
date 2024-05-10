@@ -45,9 +45,7 @@ export const EditTreePage = (props: IProps) => {
     }
 
     return (
-      <NarrowPage className="EditTreePage">
-        <h1>Update tree details</h1>
-
+      <>
         <MapWithMarker
           center={{
             lat: tree.lat,
@@ -63,13 +61,14 @@ export const EditTreePage = (props: IProps) => {
           onCancel={props.onCancel}
         />
 
-      </NarrowPage>
+      </>
     );
   };
 
   return (
-    <div className="EditTreePage Page">
+    <NarrowPage className="EditTreePage">
+      <h1>Update tree details</h1>
       {render()}
-    </div>
+    </NarrowPage>
   );
 };
