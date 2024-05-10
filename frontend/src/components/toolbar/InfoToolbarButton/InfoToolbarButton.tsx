@@ -14,7 +14,7 @@ export const InfoToolbarButton = (props: IProps) => {
       <div className="icon">
         <FontAwesomeIcon icon={faCircleInfo} />
       </div>
-      <div className="label">Info</div>
+      <div className="label">Details</div>
     </button>
   );
 };
