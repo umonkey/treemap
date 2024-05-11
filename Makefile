@@ -21,7 +21,7 @@ build:
 	make -C frontend build
 
 build-image:
-	docker build --ulimit nofile=5000:5000 --tag treemap:$(VERSION) --file container/Dockerfile .
+	docker build --ulimit nofile=5000:5000 --tag treemap:$(VERSION) --network=host --file container/Dockerfile .
 
 lint:
 	make -C backend lint
@@ -46,8 +46,8 @@ publish-image:
 	docker push ghcr.io/$(CR_USER)/treemap:latest
 
 serve:
-	docker run -it --rm -v $(PWD)/var:/app/var -p 8000:8000 ghcr.io/$(CR_USER)/treemap:$(VERSION)
+	docker run -it --rm -v $(PWD)/var:/app/var -p 8001:8000 ghcr.io/$(CR_USER)/treemap:$(VERSION)
 
 serve-local:
 	mkdir -p var
-	docker run -it --rm -v $(PWD)/var:/app/var -p 8000:8000 treemap:$(VERSION)
+	docker run -it --rm -v $(PWD)/var:/app/var -p 8001:8000 treemap:$(VERSION)
