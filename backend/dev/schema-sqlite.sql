@@ -1,5 +1,6 @@
 -- SQLite database schema for the tree map.
 -- Use `make sqlite-schema` to apply.
+-- See this page for docs: https://github.com/umonkey/treemap/wiki/Database-structure
 
 CREATE TABLE IF NOT EXISTS trees (
     `id` INT NOT NULL,
