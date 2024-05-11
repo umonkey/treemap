@@ -27,6 +27,7 @@
 
     .icon, .label {
       display: inline-block;
+      color: var(--toolbar-text-color);
     }
 
     .icon {
@@ -111,6 +112,12 @@
       .label {
         display: none;
       }
+    }
+  }
+
+  .desktop & {
+    button .label {
+      text-transform: uppercase;
     }
   }
 

@@ -2,9 +2,10 @@
   --background-color: #e4f0e2;
   --gap: 20px;
 
-  --toolbar-background-color: #a7c5a6;
-  --toolbar-center-color: #080;
-  --toolbar-hover-color: #88a587;
+  --toolbar-background-color: #1976d2;
+  --toolbar-center-color: #1565c0;
+  --toolbar-hover-color: #1565c0;
+  --toolbar-text-color: #fff;
 
   font-family: Roboto, Arial, sans-serif;
   font-size: 16px;
