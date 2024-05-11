@@ -15,7 +15,7 @@ export const LayerSelector = () => {
     <LayersControl position="topright">
       <LayersControl.BaseLayer checked={mapLayer === "MapTiler (vector)"} name="MapTiler (vector)">
         <VectorTileLayer
-          attribution='&copy; <a href="https://github.com/umonkey/treemap/wiki/Data-contribution" target="_blank">Tree Map</a> contributors'
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OSM</a> &amp; <a href="https://github.com/umonkey/treemap/wiki/Data-contribution" target="_blank">Tree Map</a> contributors'
           styleUrl={`https://api.maptiler.com/maps/streets-v2/style.json?key=${mapTilerKey}`}
           accessToken={mapTilerKey}
         />
@@ -23,7 +23,7 @@ export const LayerSelector = () => {
 
       <LayersControl.BaseLayer checked={mapLayer === "OpenStreetMap"} name="OpenStreetMap">
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OSM</a> &amp; <a href="https://github.com/umonkey/treemap/wiki/Data-contribution" target="_blank">Tree Map</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           maxZoom={25}
           maxNativeZoom={19}
@@ -32,7 +32,7 @@ export const LayerSelector = () => {
 
       <LayersControl.BaseLayer checked={mapLayer === "Google Maps"} name="Google Maps">
         <TileLayer
-          attribution='&copy; Google Maps'
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OSM</a> &amp; Google &amp; <a href="https://github.com/umonkey/treemap/wiki/Data-contribution" target="_blank">Tree Map</a> contributors'
           url="http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
           subdomains={["mt0", "mt1", "mt2", "mt3"]}
           maxZoom={25}
@@ -42,7 +42,7 @@ export const LayerSelector = () => {
 
       <LayersControl.BaseLayer checked={mapLayer === "MapTiler (raster)"} name="MapTiler (raster)">
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OSM</a> &amp; MapTiler &amp; <a href="https://github.com/umonkey/treemap/wiki/Data-contribution" target="_blank">Tree Map</a> contributors'
           url={`https://api.maptiler.com/maps/basic-v2/{z}/{x}/{y}.png?key=${mapTilerKey}`}
           maxZoom={25}
           maxNativeZoom={19}
