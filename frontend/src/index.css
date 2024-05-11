@@ -2,6 +2,11 @@
   --background-color: #e4f0e2;
   --gap: 20px;
 
+  --toolbar-background-color: #1976d2;
+  --toolbar-center-color: #1565c0;
+  --toolbar-hover-color: #1565c0;
+  --toolbar-text-color: #fff;
+
   font-family: Roboto, Arial, sans-serif;
   font-size: 16px;
   line-height: 1.5;

@@ -1,8 +1,12 @@
-import { Button, ButtonGroup } from "@mui/material";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faPencil, faUpDownLeftRight, faCamera, faShareNodes } from "@fortawesome/free-solid-svg-icons";
-
-import { GalleryLoader, MapWithMarker, MoveTreeButton, NarrowPage, TreeComments, TreeDetails, TreeMarkers, ImagePicker } from "@/components";
+import {
+  DetailsToolbar,
+  GalleryLoader,
+  MapWithMarker,
+  NarrowPage,
+  TreeComments,
+  TreeDetails,
+  TreeMarkers,
+} from "@/components";
 
 import { useDetailsPage } from "./hooks";
 import "./styles.scss";
@@ -13,15 +17,7 @@ interface IProps {
 
 export const DetailsPage = (props: IProps) => {
   const {
-    canShare,
     error,
-    handleBack,
-    handleEdit,
-    handleImageUpload,
-    handleMove,
-    handleShare,
-    isDesktop,
-    isPhone,
     loading,
     tree,
     uploadError,
@@ -43,27 +39,7 @@ export const DetailsPage = (props: IProps) => {
         <>
           <TreeDetails tree={tree} />
 
-          {isPhone && (
-            <div className="toolbar">
-              <ButtonGroup variant="contained">
-                <Button onClick={handleBack}>
-                  <FontAwesomeIcon icon={faArrowLeft} />
-                </Button>
-                <Button onClick={handleEdit}>
-                  <FontAwesomeIcon icon={faPencil} />
-                </Button>
-                <Button onClick={handleMove}>
-                  <FontAwesomeIcon icon={faUpDownLeftRight} />
-                </Button>
-                <ImagePicker disabled={uploading} onChange={handleImageUpload}>
-                  <FontAwesomeIcon icon={faCamera} />
-                </ImagePicker>
-                <Button disabled={!canShare} onClick={handleShare}>
-                  <FontAwesomeIcon icon={faShareNodes} />
-                </Button>
-              </ButtonGroup>
-            </div>
-          )}
+          <DetailsToolbar id={tree.id} />
 
           <MapWithMarker center={{
             lat: tree.lat,
@@ -84,15 +60,6 @@ export const DetailsPage = (props: IProps) => {
 
           {uploadFinished && (
             <div className="message">Files accepted, you can continue your work while they are being uploaded.</div>
-          )}
-
-          {isDesktop && (
-            <ButtonGroup variant="contained">
-              <Button variant="contained" color="success" onClick={handleEdit}>Edit this tree</Button>
-              <MoveTreeButton id={tree.id} />
-              <ImagePicker disabled={uploading} onChange={handleImageUpload}>Add photos</ImagePicker>
-              <Button onClick={handleBack}>Back to map</Button>
-            </ButtonGroup>
           )}
 
           <TreeComments id={tree.id} />

@@ -7,7 +7,7 @@ RUN cd /app && cargo build --release
 # (2) Build the frontend static files.
 FROM docker.io/node:20-alpine3.18 as node-builder
 COPY frontend /app
-RUN cd /app && npm install && npm run build
+RUN cd /app && npm install --loglevel verbose && npm run build
 
 # (3) Build the target image.
 FROM alpine:3.18

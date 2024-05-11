@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRulerCombined, faCircleInfo, faX } from "@fortawesome/free-solid-svg-icons";
 
 // Project imports.
-import { GalleryLoader, TreePreviewButtons, ExternalTreeLinks } from "@/components";
+import { PreviewToolbar, GalleryLoader, ExternalTreeLinks } from "@/components";
 import { ITreeDetails } from "@/types";
 
 // Local imports.
@@ -27,7 +27,7 @@ export const TreeSidePane = (props: IProps) => {
 
       <ExternalTreeLinks tree={tree} />
 
-      <TreePreviewButtons id={tree.id} />
+      <PreviewToolbar id={tree.id} />
 
       <ul className="props">
         <li className="status"><FontAwesomeIcon icon={faCircleInfo} /> {status}</li>

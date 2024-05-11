@@ -1,6 +1,7 @@
 // Global imports.
 import { HashRouter } from "react-router-dom";
 import "@fontsource/roboto";
+import "@fontsource/roboto/100.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
