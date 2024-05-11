@@ -4,7 +4,7 @@
 
 The application is heavily inspired by the [New York City Street Tree Map](https://tree-map.nycgovparks.org/) (870k trees), which is a great example of how tree mapping can be done, and [Treezilla](https://www.treezilla.org/) (1M trees), which is a similar project in the UK.  There might be other similar projects, but none that you can run easily and use in your own city, as far as I know.
 
-[About](https://github.com/umonkey/treemap/wiki/Home) - [Screenshots](https://github.com/umonkey/treemap/wiki/Screenshots) - [API Documentation](https://github.com/umonkey/treemap/wiki/API) - [TODO](https://github.com/umonkey/treemap/wiki/TODO) - [Demo](https://treemap.umonkey.net/)
+[About](https://github.com/umonkey/treemap/wiki/Home) - [Screenshots](https://github.com/umonkey/treemap/wiki/Screenshots) - [API Documentation](https://github.com/umonkey/treemap/wiki/API) - [TODO](https://github.com/umonkey/treemap/issues) - [Demo](https://treemap.umonkey.net/)
 
 
 ## Current status
