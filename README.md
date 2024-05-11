@@ -6,8 +6,6 @@ The application is heavily inspired by the [New York City Street Tree Map](https
 
 [About](https://github.com/umonkey/treemap/wiki/Home) - [Screenshots](https://github.com/umonkey/treemap/wiki/Screenshots) - [API Documentation](https://github.com/umonkey/treemap/wiki/API) - [TODO](https://github.com/umonkey/treemap/wiki/TODO) - [Demo](https://treemap.umonkey.net/)
 
-![image](https://github.com/umonkey/treemap/assets/16797/7ee07ee4-c297-42b9-8ced-6e135071aa60)
-
 
 ## Current status
 
