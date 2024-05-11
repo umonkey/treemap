@@ -8,7 +8,9 @@ interface IProps {
 export const Toolbar = (props: IProps) => {
   return (
     <div className={`Toolbar ${props.className}`}>
-      {props.children}
+      <div className="buttons">
+        {props.children}
+      </div>
     </div>
   );
 };
