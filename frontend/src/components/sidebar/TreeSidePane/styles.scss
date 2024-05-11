@@ -77,5 +77,10 @@
 
   .phone.portrait & {
     min-height: 200px;
+
+    /**
+     * Compensate for the toolbar.
+     **/
+    padding-bottom: 40px;
   }
 }
