@@ -21,7 +21,7 @@ build:
 	make -C frontend build
 
 build-image:
-	docker build --ulimit nofile=5000:5000 --tag treemap:$(VERSION) --network=host --file container/Dockerfile .
+	docker build --ulimit nofile=5000:5000 --tag treemap:$(VERSION) --build-arg SENTRY_AUTH_TOKEN=$(SENTRY_AUTH_TOKEN) --network=host --file container/Dockerfile .
 
 lint:
 	make -C backend lint
