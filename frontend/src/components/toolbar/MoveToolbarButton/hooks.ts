@@ -8,7 +8,7 @@ export const useMoveToolbarButton = (props: IProps) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(routes.editTree(props.id));
+    navigate(routes.moveTree(props.id));
   };
 
   return {
