@@ -37,7 +37,7 @@ export const TreeCountSelector = (props: IProps) => {
           type="number"
           value={number}
           onChange={handleNumberChange}
-          inputProps={{ min: 2, max: 100 }}
+          inputProps={{ min: 0, max: 100 }}
         />
       )}
     </div>

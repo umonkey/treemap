@@ -7,16 +7,12 @@ interface IProps {
 
 export const useTreeCountSelector = (props: IProps) => {
   const [mode, setMode] = useState<string>("single");
-  const [number, setNumber] = useState<number>(5);
-
-  useEffect(() => {
-    props.onChange(number);
-  }, [number, props]);
+  const [number, setNumber] = useState<number | null>(5);
 
   useEffect(() => {
     if (mode === "single") {
       props.onChange(1);
-    } else {
+    } else if (number && number >= 2) {
       props.onChange(number);
     }
   }, [mode, number, props]);
@@ -32,7 +28,11 @@ export const useTreeCountSelector = (props: IProps) => {
   const handleNumberChange = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    setNumber(parseInt(event.target.value || "2"));
+    if (event.target.value) {
+      setNumber(parseInt(event.target.value));
+    } else {
+      setNumber(null);
+    }
   };
 
   return {
