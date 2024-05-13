@@ -56,9 +56,7 @@ export const useMapBase = (props: IProps) => {
 
     const resizeObserver = new ResizeObserver(() => {
       console.debug("Map resized, invalidating size.");
-
-      // @ts-expect-error TS18047
-      mapRef.current.invalidateSize();
+      mapRef.current?.invalidateSize();
     });
 
     resizeObserver.observe(ref.current);
