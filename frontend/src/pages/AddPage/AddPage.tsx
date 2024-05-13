@@ -2,6 +2,7 @@ import {
   AddTreeDialog,
   NarrowPage,
   PositionSelector,
+  WithAuth,
 } from "@/components";
 
 // Local imports.
@@ -15,14 +16,16 @@ export const AddPage = () => {
   } = useAddPage();
 
   return (
-    <NarrowPage className="AddPage">
-      <h1>Adding new trees</h1>
+    <WithAuth>
+      <NarrowPage className="AddPage">
+        <h1>Adding new trees</h1>
 
-      <PositionSelector
-        onChange={handlePointsChange}
-      />
+        <PositionSelector
+          onChange={handlePointsChange}
+        />
 
-      <AddTreeDialog points={points} />
-    </NarrowPage>
+        <AddTreeDialog points={points} />
+      </NarrowPage>
+    </WithAuth>
   );
 };
