@@ -50,7 +50,7 @@ export const setUserInfo = (value: IUserInfo | null) => {
 };
 
 export const getMapLayer = (): string => {
-  return readValue<string>(MAP_LAYER_KEY) || "MapTiler (vector)";
+  return readValue<string>(MAP_LAYER_KEY) || "OpenStreetMap";
 };
 
 export const setMapLayer = (value: string) => {
