@@ -10,7 +10,7 @@ use log::{debug, info};
 use std::time::Duration;
 
 use self::actions::*;
-use self::services::{AppState, OsmReaderService, QueueConsumer};
+use self::services::{AppState, OsmReaderService, QueueConsumer, S3Service};
 use self::types::Result;
 use self::utils::{get_payload_size, get_server_addr, get_server_port, get_workers};
 
@@ -38,6 +38,10 @@ fn is_queue_consumer() -> bool {
 
 fn is_osm_reader() -> bool {
     has_cli_arg("--osm-pull")
+}
+
+fn is_upload_files() -> bool {
+    has_cli_arg("--upload-files")
 }
 
 #[actix_web::main]
@@ -70,6 +74,17 @@ async fn main() -> std::io::Result<()> {
             .match_trees()
             .await
             .expect("Error matching OSM trees to local.");
+
+        return Ok(());
+    }
+
+    if is_upload_files() {
+        let service = S3Service::new().await.expect("Error creating S3 service.");
+
+        service
+            .upload_all()
+            .await
+            .expect("Error uploading files to S3.");
 
         return Ok(());
     }

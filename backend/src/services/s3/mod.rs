@@ -1,7 +1,9 @@
 use aws_config::{BehaviorVersion, Region};
 use aws_sdk_s3::presigning::PresigningConfig;
+use aws_sdk_s3::primitives::ByteStream;
+use aws_sdk_s3::types::ObjectCannedAcl;
 use aws_sdk_s3::Client;
-use log::{debug, error};
+use log::{debug, error, info};
 use std::time::Duration;
 
 use crate::types::{Error, Result};
@@ -21,12 +23,19 @@ impl S3Service {
         let endpoint = get_s3_endpoint()?;
 
         let config = aws_config::defaults(BehaviorVersion::latest())
-            .region(Region::new(region))
-            .endpoint_url(endpoint)
+            .region(Region::new(region.to_string()))
+            .endpoint_url(endpoint.to_string())
             .load()
             .await;
 
         let client = Client::new(&config);
+
+        info!(
+            "S3 client initialized, bucket={} region={} endpoint={}.",
+            bucket.to_string(),
+            region.to_string(),
+            endpoint.to_string()
+        );
 
         Ok(Self { client, bucket })
     }
@@ -63,6 +72,73 @@ impl S3Service {
                 Err(Error::FileUpload)
             }
         }
+    }
+
+    /**
+     * Uploads all local files older than 1 hour to S3.
+     */
+    pub async fn upload_all(&self) -> Result<()> {
+        for entry in glob::glob("var/files/*").expect("Error listing files.") {
+            match entry {
+                Ok(path) => {
+                    let name = path
+                        .file_name()
+                        .expect("Error extracting file name.")
+                        .to_str()
+                        .expect("Error converting file name to string.");
+                    let id = name.parse::<u64>().expect("Error parsing file name.");
+                    self.upload_file(id).await.expect("Error uploading file.");
+                }
+
+                Err(e) => {
+                    error!("Error listing files: {}", e);
+                }
+            }
+        }
+
+        Ok(())
+    }
+
+    pub async fn upload_file(&self, id: u64) -> Result<()> {
+        let local_path = format!("var/files/{}", id);
+
+        if !std::path::Path::new(&local_path).exists() {
+            error!("File not found, cannot upload: {}", id);
+            return Err(Error::FileNotFound);
+        }
+
+        let body = match ByteStream::from_path(local_path.clone()).await {
+            Ok(value) => value,
+
+            Err(e) => {
+                error!("Error reading file: {}", e);
+                return Err(Error::FileUpload);
+            }
+        };
+
+        let res = self
+            .client
+            .put_object()
+            .bucket(&self.bucket)
+            .key(id.to_string())
+            .body(body)
+            .acl(ObjectCannedAcl::PublicRead)
+            .content_type("image/jpeg")
+            .send()
+            .await;
+
+        if let Err(e) = res {
+            error!("Error uploading file {} to S3: {}", id, e);
+            return Err(Error::FileUpload);
+        }
+
+        if let Err(e) = std::fs::remove_file(local_path) {
+            error!("Error deleting file {}: {}", id, e);
+            return Err(Error::FileUpload);
+        }
+
+        info!("File {} moved to S3.", id);
+        Ok(())
     }
 }
 
