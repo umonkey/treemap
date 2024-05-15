@@ -1058,7 +1058,7 @@ impl Database for SqliteDatabase {
         let items = self.pool.conn(move |conn| {
             conn.create_collation("case_insensitive", Self::case_insensitive_collation)?;
 
-            let mut stmt = match conn.prepare("SELECT species, COUNT(1) AS use_count FROM trees WHERE added_by = ? AND added_at >= ? GROUP BY species COLLATE case_insensitive ORDER BY use_count DESC LIMIT 10") {
+            let mut stmt = match conn.prepare("SELECT species, COUNT(1) AS use_count FROM trees WHERE added_by = ? AND added_at >= ? AND LOWER(species) <> 'unknown' GROUP BY species COLLATE case_insensitive ORDER BY use_count DESC LIMIT 10") {
                 Ok(value) => value,
 
                 Err(e) => {
@@ -1489,7 +1489,7 @@ mod tests {
         let now = get_timestamp();
         let user_id = 1;
 
-        let names = vec!["клён", "Клён", "КЛЁН"];
+        let names = vec!["клён", "Клён", "Unknown", "КЛЁН"];
 
         for name in names {
             db.add_tree(&TreeRecord {
