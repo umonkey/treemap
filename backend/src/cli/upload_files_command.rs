@@ -31,19 +31,26 @@ fn find_file_ids() -> Result<Vec<u64>> {
     Ok(res)
 }
 
-pub async fn upload_files_command() -> Result<()> {
+pub async fn upload_files_command() {
     let local: Arc<dyn FileStorageInterface> = Arc::new(LocalFileStorage::new());
-    let remote: Arc<dyn FileStorageInterface> = Arc::new(S3FileStorage::new().await?);
 
-    let files = find_file_ids()?;
+    let remote: Arc<dyn FileStorageInterface> = Arc::new(
+        S3FileStorage::new()
+            .await
+            .expect("Error creating S3 client"),
+    );
+
+    let files = find_file_ids().expect("Error finding files.");
+
     let count = files.len();
 
     for id in files.into_iter() {
-        let data = local.read_file(id).await?;
-        remote.write_file(id, &data).await?;
+        let data = local.read_file(id).await.expect("Error reading files.");
+        remote
+            .write_file(id, &data)
+            .await
+            .expect("Error writing files.");
     }
 
     info!("Copied {} files.", count);
-
-    Ok(())
 }
