@@ -68,7 +68,8 @@ impl S3Service {
             }
         };
 
-        let req = self.get_client()?
+        let req = self
+            .get_client()?
             .put_object()
             .bucket(&self.bucket)
             .key(key)
@@ -85,34 +86,6 @@ impl S3Service {
             Err(e) => {
                 error!("Error creating presigned URL: {}", e);
                 Err(Error::FileUpload)
-            }
-        }
-    }
-
-    pub async fn get_file(&self, id: u64) -> Result<Option<Vec<u8>>> {
-        let res = self.get_client()?
-            .get_object()
-            .bucket(&self.bucket)
-            .key(id.to_string())
-            .send()
-            .await;
-
-        match res {
-            Ok(res) => {
-                let body = res.body.collect().await;
-                match body {
-                    Ok(body) => Ok(Some(body.into_bytes().to_vec())),
-
-                    Err(e) => {
-                        error!("Error reading file from S3: {}", e);
-                        Err(Error::FileDownload)
-                    }
-                }
-            }
-
-            Err(e) => {
-                error!("Error downloading file from S3: {}", e);
-                Err(Error::FileDownload)
             }
         }
     }
@@ -159,7 +132,8 @@ impl S3Service {
             }
         };
 
-        let res = self.get_client()?
+        let res = self
+            .get_client()?
             .put_object()
             .bucket(&self.bucket)
             .key(id.to_string())

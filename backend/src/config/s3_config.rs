@@ -3,10 +3,9 @@
  *
  * Read more: https://github.com/umonkey/treemap/wiki/Configuration#s3
  */
-
+use log::warn;
 use std::env;
 use std::env::VarError;
-use log::warn;
 
 use crate::types::{Error, Result};
 
@@ -30,17 +29,27 @@ impl S3Config {
 
     fn get_string(key: &str) -> Result<String> {
         match env::var(key) {
-            Ok(v) => Ok(v),
+            Ok(v) => {
+                if v.is_empty() {
+                    warn!("Environment variable {} is empty, unable to use S3. Read more at <https://github.com/umonkey/treemap/wiki/Configuration#s3>", key);
+                    return Err(Error::EnvNotSet);
+                }
+
+                Ok(v)
+            }
 
             Err(VarError::NotPresent) => {
                 warn!("Environment variable {} not set, unable to use S3. Read more at <https://github.com/umonkey/treemap/wiki/Configuration#s3>", key);
                 Err(Error::EnvNotSet)
-            },
+            }
 
             Err(VarError::NotUnicode(_)) => {
-                warn!("Environment variable {} has incorrect value, unable to use S3.", key);
+                warn!(
+                    "Environment variable {} has incorrect value, unable to use S3.",
+                    key
+                );
                 Err(Error::EnvNotSet)
-            },
+            }
         }
     }
 }

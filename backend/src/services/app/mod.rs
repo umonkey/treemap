@@ -5,7 +5,8 @@ use std::sync::Arc;
 use crate::services::database::get_database;
 use crate::services::trees::Trees;
 use crate::services::{
-    CommentsService, Database, FileService, GoogleAuth, S3Service, TokenService, UploadService,
+    get_file_storage, CommentsService, Database, FileService, GoogleAuth, TokenService,
+    UploadService,
 };
 use crate::types::{
     AddCommentRequest, AddFileRequest, AddTreeRequest, Error, FileStatusResponse,
@@ -28,12 +29,12 @@ impl AppState {
     pub async fn new() -> Result<Self> {
         let db = get_database().await?;
         let token = TokenService::new();
-        let s3 = Arc::new(S3Service::new().await?);
+        let storage = get_file_storage().await?;
 
         Ok(Self {
             db: db.clone(),
             comments: CommentsService::new(&db),
-            files: FileService::new(&db, &s3)?,
+            files: FileService::new(&db, &storage)?,
             gauth: GoogleAuth::new(&db, &token).await,
             tokens: token,
             trees: Trees::new(&db).await,

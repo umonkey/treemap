@@ -1,33 +1,28 @@
 use log::{debug, error, info};
 use std::sync::Arc;
-use tokio::fs;
 
-use crate::services::{Database, QueueService, S3Service, ThumbnailerService};
+use crate::services::{Database, FileStorageInterface, QueueService, ThumbnailerService};
 use crate::types::{
     AddFileRequest, Error, FileRecord, FileStatusResponse, ResizeImageMessage, Result,
 };
-use crate::utils::{get_file_folder, get_timestamp, get_unique_id};
+use crate::utils::{get_timestamp, get_unique_id};
 
 const SMALL_SIZE: u32 = 1000;
 const LARGE_SIZE: u32 = 2000;
 
 pub struct FileService {
     db: Arc<dyn Database>,
-    folder: String,
     thumbnailer: ThumbnailerService,
     queue: QueueService,
-    s3: Arc<S3Service>,
+    storage: Arc<dyn FileStorageInterface>,
 }
 
 impl FileService {
-    pub fn new(db: &Arc<dyn Database>, s3: &Arc<S3Service>) -> Result<Self> {
-        let folder = get_file_folder();
-
+    pub fn new(db: &Arc<dyn Database>, storage: &Arc<dyn FileStorageInterface>) -> Result<Self> {
         Ok(Self {
             db: db.clone(),
-            folder,
             queue: QueueService::new(db)?,
-            s3: s3.clone(),
+            storage: storage.clone(),
             thumbnailer: ThumbnailerService::new(),
         })
     }
@@ -114,33 +109,7 @@ impl FileService {
      * Read file contents from the local file system or remote.
      */
     pub async fn get_file(&self, id: u64) -> Result<Vec<u8>> {
-        let file_path = format!("{}/{}", self.folder, id);
-
-        match fs::read(file_path).await {
-            Ok(value) => {
-                debug!("File {} read from local storage, {} bytes..", id, value.len());
-                return Ok(value);
-            },
-            Err(ref e) if e.kind() == std::io::ErrorKind::NotFound => { },
-            Err(e) => {
-                error!("Error reading file {}: {:?}", id, e);
-                return Err(Error::FileDownload);
-            }
-        };
-
-        match self.s3.get_file(id).await {
-            Ok(Some(value)) => {
-                debug!("File {} read from S3, {} bytes.", id, value.len());
-                return Ok(value);
-            },
-            Ok(None) => {},
-            Err(e) => {
-                error!("Error downloading file {}: {:?}", id, e);
-                return Err(Error::FileDownload);
-            }
-        }
-
-        Err(Error::FileDownload)
+        self.storage.read_file(id).await
     }
 
     pub async fn get_status(&self, id: u64) -> Result<FileStatusResponse> {
@@ -156,28 +125,12 @@ impl FileService {
      * Note that the id is only allocated, file info is not yet
      * stored in the database.
      */
-    async fn write_file(&self, data: &Vec<u8>) -> Result<u64> {
+    async fn write_file(&self, data: &[u8]) -> Result<u64> {
         let id = get_unique_id()?;
-        let file_path = format!("{}/{}", self.folder, id);
 
-        debug!("Writing file to: {}", file_path);
-
-        match fs::create_dir_all(&self.folder).await {
-            Ok(()) => (),
-
-            Err(e) => {
-                error!("Error creating folder: {:?}", e);
-                return Err(Error::FileUpload);
-            }
-        };
-
-        match fs::write(file_path, data).await {
-            Ok(()) => Ok(id),
-
-            Err(e) => {
-                error!("Error writing file: {:?}", e);
-                Err(Error::FileUpload)
-            }
+        match self.storage.write_file(id, data).await {
+            Ok(_) => Ok(id),
+            Err(_) => Err(Error::FileUpload),
         }
     }
 
@@ -193,7 +146,7 @@ impl FileService {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::services::get_database;
+    use crate::services::{get_database, LocalFileStorage};
     use env_logger;
     use std::env;
     use std::path::Path;
@@ -201,15 +154,16 @@ mod tests {
     async fn setup() -> Result<FileService> {
         env::set_var("FILE_FOLDER", "var/test-files");
         env::set_var("TREEMAP_SQLITE_PATH", ":memory:");
+        env::set_var("AWS_ACCESS_KEY_ID", "");
 
         if let Err(_) = env_logger::try_init() {
             debug!("env_logger already initialized.");
         };
 
         let db = get_database().await.expect("Error creating the database");
-        let s3 = Arc::new(S3Service::new().await.expect("Error creating the S3 service"));
+        let storage: Arc<dyn FileStorageInterface> = Arc::new(LocalFileStorage::new());
 
-        FileService::new(&db, &s3)
+        FileService::new(&db, &storage)
     }
 
     #[tokio::test]
