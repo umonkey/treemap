@@ -55,7 +55,11 @@ impl FileStorageInterface for S3FileStorage {
             Ok(res) => {
                 let body = res.body.collect().await;
                 match body {
-                    Ok(body) => Ok(body.into_bytes().to_vec()),
+                    Ok(body) => {
+                        let body = body.into_bytes();
+                        info!("File {} read, {} bytes.", id, body.len());
+                        return Ok(body.to_vec());
+                    },
 
                     Err(e) => {
                         error!("Error reading file: {}", e);
