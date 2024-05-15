@@ -20,6 +20,7 @@ clean:
 
 lint:
 	cargo clippy -- -D warnings
+	cargo fmt --check
 
 format:
 	cargo fmt
