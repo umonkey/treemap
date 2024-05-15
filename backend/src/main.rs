@@ -1,4 +1,5 @@
 mod actions;
+mod config;
 mod services;
 mod types;
 mod utils;
@@ -80,6 +81,10 @@ async fn main() -> std::io::Result<()> {
 
     if is_upload_files() {
         let service = S3Service::new().await.expect("Error creating S3 service.");
+
+        if !service.is_enabled() {
+            return Ok(());
+        }
 
         service
             .upload_all()

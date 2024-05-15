@@ -2,7 +2,7 @@ use log::{debug, error, info};
 use std::sync::Arc;
 use tokio::fs;
 
-use crate::services::{Database, QueueService, ThumbnailerService};
+use crate::services::{Database, QueueService, S3Service, ThumbnailerService};
 use crate::types::{
     AddFileRequest, Error, FileRecord, FileStatusResponse, ResizeImageMessage, Result,
 };
@@ -16,16 +16,18 @@ pub struct FileService {
     folder: String,
     thumbnailer: ThumbnailerService,
     queue: QueueService,
+    s3: Arc<S3Service>,
 }
 
 impl FileService {
-    pub fn new(db: &Arc<dyn Database>) -> Result<Self> {
+    pub fn new(db: &Arc<dyn Database>, s3: &Arc<S3Service>) -> Result<Self> {
         let folder = get_file_folder();
 
         Ok(Self {
             db: db.clone(),
             folder,
             queue: QueueService::new(db)?,
+            s3: s3.clone(),
             thumbnailer: ThumbnailerService::new(),
         })
     }
@@ -108,17 +110,37 @@ impl FileService {
         self.db.find_files_by_tree(tree_id).await
     }
 
+    /**
+     * Read file contents from the local file system or remote.
+     */
     pub async fn get_file(&self, id: u64) -> Result<Vec<u8>> {
         let file_path = format!("{}/{}", self.folder, id);
 
         match fs::read(file_path).await {
-            Ok(b) => Ok(b),
-
+            Ok(value) => {
+                debug!("File {} read from local storage, {} bytes..", id, value.len());
+                return Ok(value);
+            },
+            Err(ref e) if e.kind() == std::io::ErrorKind::NotFound => { },
             Err(e) => {
-                error!("Error reading file: {:?}", e);
-                Err(Error::FileDownload)
+                error!("Error reading file {}: {:?}", id, e);
+                return Err(Error::FileDownload);
+            }
+        };
+
+        match self.s3.get_file(id).await {
+            Ok(Some(value)) => {
+                debug!("File {} read from S3, {} bytes.", id, value.len());
+                return Ok(value);
+            },
+            Ok(None) => {},
+            Err(e) => {
+                error!("Error downloading file {}: {:?}", id, e);
+                return Err(Error::FileDownload);
             }
         }
+
+        Err(Error::FileDownload)
     }
 
     pub async fn get_status(&self, id: u64) -> Result<FileStatusResponse> {
@@ -185,8 +207,9 @@ mod tests {
         };
 
         let db = get_database().await.expect("Error creating the database");
+        let s3 = Arc::new(S3Service::new().await.expect("Error creating the S3 service"));
 
-        FileService::new(&db)
+        FileService::new(&db, &s3)
     }
 
     #[tokio::test]

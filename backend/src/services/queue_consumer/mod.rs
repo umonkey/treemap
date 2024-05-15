@@ -6,9 +6,10 @@
  */
 use log::{debug, error, info};
 use std::time::Duration;
+use std::sync::Arc;
 
 use crate::services::database::get_database;
-use crate::services::{FileService, QueueService};
+use crate::services::{FileService, QueueService, S3Service};
 use crate::types::{QueueCommand, Result};
 
 // Seconds to wait for a new message.
@@ -22,9 +23,10 @@ pub struct QueueConsumer {
 impl QueueConsumer {
     pub async fn new() -> Result<Self> {
         let db = get_database().await?;
+        let s3 = Arc::new(S3Service::new().await?);
 
         Ok(Self {
-            files: FileService::new(&db)?,
+            files: FileService::new(&db, &s3)?,
             queue: QueueService::new(&db)?,
         })
     }

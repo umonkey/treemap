@@ -6,38 +6,54 @@ use aws_sdk_s3::Client;
 use log::{debug, error, info};
 use std::time::Duration;
 
+use crate::config::S3Config;
 use crate::types::{Error, Result};
-use crate::utils::{get_s3_bucket, get_s3_endpoint, get_s3_region};
 
 const UPLOAD_TTL: u64 = 3600;
 
 pub struct S3Service {
-    client: Client,
+    client: Option<Client>,
     bucket: String,
 }
 
 impl S3Service {
     pub async fn new() -> Result<Self> {
-        let bucket = get_s3_bucket()?;
-        let region = get_s3_region()?;
-        let endpoint = get_s3_endpoint()?;
+        let config = match S3Config::from_env() {
+            Ok(value) => value,
 
-        let config = aws_config::defaults(BehaviorVersion::latest())
-            .region(Region::new(region.to_string()))
-            .endpoint_url(endpoint.to_string())
+            Err(Error::EnvNotSet) => {
+                return Ok(Self {
+                    client: None,
+                    bucket: "".to_string(),
+                });
+            }
+
+            Err(e) => return Err(e),
+        };
+
+        let s3_config = aws_config::defaults(BehaviorVersion::latest())
+            .region(Region::new(config.region.to_string()))
+            .endpoint_url(config.endpoint.to_string())
             .load()
             .await;
 
-        let client = Client::new(&config);
+        let client = Client::new(&s3_config);
 
         info!(
             "S3 client initialized, bucket={} region={} endpoint={}.",
-            bucket.to_string(),
-            region.to_string(),
-            endpoint.to_string()
+            config.bucket.to_string(),
+            config.region.to_string(),
+            config.endpoint.to_string()
         );
 
-        Ok(Self { client, bucket })
+        Ok(Self {
+            client: Some(client),
+            bucket: config.bucket.to_string(),
+        })
+    }
+
+    pub fn is_enabled(&self) -> bool {
+        self.client.is_some()
     }
 
     pub async fn get_upload_url(&self, key: &str) -> Result<String> {
@@ -52,8 +68,7 @@ impl S3Service {
             }
         };
 
-        let req = self
-            .client
+        let req = self.get_client()?
             .put_object()
             .bucket(&self.bucket)
             .key(key)
@@ -70,6 +85,34 @@ impl S3Service {
             Err(e) => {
                 error!("Error creating presigned URL: {}", e);
                 Err(Error::FileUpload)
+            }
+        }
+    }
+
+    pub async fn get_file(&self, id: u64) -> Result<Option<Vec<u8>>> {
+        let res = self.get_client()?
+            .get_object()
+            .bucket(&self.bucket)
+            .key(id.to_string())
+            .send()
+            .await;
+
+        match res {
+            Ok(res) => {
+                let body = res.body.collect().await;
+                match body {
+                    Ok(body) => Ok(Some(body.into_bytes().to_vec())),
+
+                    Err(e) => {
+                        error!("Error reading file from S3: {}", e);
+                        Err(Error::FileDownload)
+                    }
+                }
+            }
+
+            Err(e) => {
+                error!("Error downloading file from S3: {}", e);
+                Err(Error::FileDownload)
             }
         }
     }
@@ -116,8 +159,7 @@ impl S3Service {
             }
         };
 
-        let res = self
-            .client
+        let res = self.get_client()?
             .put_object()
             .bucket(&self.bucket)
             .key(id.to_string())
@@ -140,6 +182,13 @@ impl S3Service {
         info!("File {} moved to S3.", id);
         Ok(())
     }
+
+    fn get_client(&self) -> Result<&Client> {
+        match &self.client {
+            Some(client) => Ok(client),
+            None => Err(Error::S3Disabled),
+        }
+    }
 }
 
 #[cfg(test)]
@@ -151,9 +200,9 @@ mod tests {
     async fn setup() -> Result<S3Service> {
         env::set_var("AWS_ACCESS_KEY_ID", "test");
         env::set_var("AWS_SECRET_ACCESS_KEY", "secret");
-        env::set_var("TREEMAP_S3_BUCKET", "tree-files");
-        env::set_var("TREEMAP_S3_REGION", "moon");
-        env::set_var("TREEMAP_S3_ENDPOINT", "https://moon.digitaloceanspaces.com");
+        env::set_var("S3_BUCKET", "tree-files");
+        env::set_var("S3_REGION", "moon");
+        env::set_var("S3_ENDPOINT", "https://moon.digitaloceanspaces.com");
 
         if let Err(_) = env_logger::try_init() {
             debug!("env_logger already initialized.");
