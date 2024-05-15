@@ -98,4 +98,8 @@ impl FileStorageInterface for S3FileStorage {
 
         Ok(())
     }
+
+    async fn find_files(&self) -> Result<Vec<u64>> {
+        Ok(Vec::new())
+    }
 }

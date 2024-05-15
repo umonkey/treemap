@@ -11,7 +11,7 @@ use log::{debug, info};
 use std::time::Duration;
 
 use self::actions::*;
-use self::services::{AppState, OsmReaderService, QueueConsumer, S3Service};
+use self::services::{migrate_local_to_remote, AppState, OsmReaderService, QueueConsumer};
 use self::types::Result;
 use self::utils::{get_payload_size, get_server_addr, get_server_port, get_workers};
 
@@ -80,17 +80,9 @@ async fn main() -> std::io::Result<()> {
     }
 
     if is_upload_files() {
-        let service = S3Service::new().await.expect("Error creating S3 service.");
-
-        if !service.is_enabled() {
-            return Ok(());
-        }
-
-        service
-            .upload_all()
+        migrate_local_to_remote()
             .await
-            .expect("Error uploading files to S3.");
-
+            .expect("Error migrating files.");
         return Ok(());
     }
 

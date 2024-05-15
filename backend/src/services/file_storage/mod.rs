@@ -2,10 +2,12 @@
  * This module defines file storage backends.
  */
 mod local_storage;
+mod migrate;
 mod s3_storage;
 mod r#trait;
 
 pub use self::local_storage::*;
+pub use self::migrate::*;
 pub use self::r#trait::*;
 pub use self::s3_storage::*;
 
