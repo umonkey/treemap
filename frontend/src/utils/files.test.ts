@@ -19,6 +19,6 @@ describe("utils/files", () => {
 
   test("image links with an API root", () => {
     import.meta.env.VITE_API_ROOT = "https://example.net";
-    expect(getFileURL("123")).toBe("https://example.net/v1/files/123");
+    expect(getFileURL("123")).toBe("https://example.net/v1/files/123.jpg");
   });
 });

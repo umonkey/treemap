@@ -12,5 +12,5 @@ export const getFileURL = (id: string): string => {
   }
 
   const root = getApiRoot();
-  return `${root}/v1/files/${id}`;
+  return `${root}/v1/files/${id}.jpg`;
 };
