@@ -44,6 +44,7 @@ pub async fn serve_command() {
             .service(add_trees)
             .service(create_upload_ticket)
             .service(get_comments)
+            .service(get_file_jpg)
             .service(get_file)
             .service(get_file_status)
             .service(get_me)

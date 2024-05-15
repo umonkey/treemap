@@ -11,11 +11,10 @@ pub struct PathInfo {
     pub id: u64,
 }
 
-#[get("/v1/files/{id}")]
-pub async fn get_file(state: Data<AppState>, path: Path<PathInfo>) -> Result<HttpResponse> {
-    let file = state.get_file(path.id).await?;
+async fn get_file_real(state: Data<AppState>, id: u64) -> Result<HttpResponse> {
+    let file = state.get_file(id).await?;
 
-    let etag = ETag(EntityTag::new_strong(path.id.to_string()));
+    let etag = ETag(EntityTag::new_strong(id.to_string()));
 
     let cache_control = CacheControl(vec![
         CacheDirective::Public,
@@ -33,4 +32,14 @@ pub async fn get_file(state: Data<AppState>, path: Path<PathInfo>) -> Result<Htt
         .body(file);
 
     Ok(res)
+}
+
+#[get("/v1/files/{id}")]
+pub async fn get_file(state: Data<AppState>, path: Path<PathInfo>) -> Result<HttpResponse> {
+    get_file_real(state, path.id).await
+}
+
+#[get("/v1/files/{id}.jpg")]
+pub async fn get_file_jpg(state: Data<AppState>, path: Path<PathInfo>) -> Result<HttpResponse> {
+    get_file_real(state, path.id).await
 }
