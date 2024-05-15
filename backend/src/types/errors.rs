@@ -21,6 +21,7 @@ pub enum Error {
     MissingAuthorizationHeader,
     OsmExchange,
     Queue,
+    S3Disabled,
     TreeNotFound,
     UniqueId,
     UserNotFound,
@@ -71,6 +72,9 @@ impl Error {
             Error::Queue => {
                 r#"{"error":{"code":"Queue","description":"Error processing queue request."}}"#
             }
+            Error::S3Disabled => {
+                r#"{"error":{"code":"S3Disabled","description":"S3 integration not enabled."}}"#
+            }
             Error::TreeNotFound => {
                 r#"{"error":{"code":"TreeNotFound","description":"The specified tree does not exist in the database."}}"#
             }
@@ -119,6 +123,7 @@ impl ResponseError for Error {
             Error::MissingAuthorizationHeader => StatusCode::UNAUTHORIZED,
             Error::OsmExchange => StatusCode::INTERNAL_SERVER_ERROR,
             Error::Queue => StatusCode::INTERNAL_SERVER_ERROR,
+            Error::S3Disabled => StatusCode::SERVICE_UNAVAILABLE,
             Error::TreeNotFound => StatusCode::NOT_FOUND,
             Error::UniqueId => StatusCode::INTERNAL_SERVER_ERROR,
             Error::UserNotFound => StatusCode::UNAUTHORIZED,
@@ -143,6 +148,7 @@ impl fmt::Display for Error {
             Error::MissingAuthorizationHeader => write!(f, "MissingAuthorizationHeader"),
             Error::OsmExchange => write!(f, "OsmExchange"),
             Error::Queue => write!(f, "Queue"),
+            Error::S3Disabled => write!(f, "S3Disabled"),
             Error::TreeNotFound => write!(f, "TreeNotFound"),
             Error::UniqueId => write!(f, "UniqueId"),
             Error::UserNotFound => write!(f, "UserNotFound"),

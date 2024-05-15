@@ -20,12 +20,13 @@ clean:
 
 lint:
 	cargo clippy -- -D warnings
+	cargo fmt --check
 
 format:
 	cargo fmt
 
 serve:
-	cargo run
+	cargo run -- serve
 
 sqlite:
 	sqlite3 $(DATABASE)

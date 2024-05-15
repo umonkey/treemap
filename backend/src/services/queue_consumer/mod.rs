@@ -8,7 +8,7 @@ use log::{debug, error, info};
 use std::time::Duration;
 
 use crate::services::database::get_database;
-use crate::services::{FileService, QueueService};
+use crate::services::{get_file_storage, FileService, QueueService};
 use crate::types::{QueueCommand, Result};
 
 // Seconds to wait for a new message.
@@ -22,9 +22,10 @@ pub struct QueueConsumer {
 impl QueueConsumer {
     pub async fn new() -> Result<Self> {
         let db = get_database().await?;
+        let storage = get_file_storage().await?;
 
         Ok(Self {
-            files: FileService::new(&db)?,
+            files: FileService::new(&db, &storage)?,
             queue: QueueService::new(&db)?,
         })
     }

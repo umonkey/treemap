@@ -1,34 +1,53 @@
 use aws_config::{BehaviorVersion, Region};
 use aws_sdk_s3::presigning::PresigningConfig;
 use aws_sdk_s3::Client;
-use log::{debug, error};
+use log::{debug, error, info};
 use std::time::Duration;
 
+use crate::config::S3Config;
 use crate::types::{Error, Result};
-use crate::utils::{get_s3_bucket, get_s3_endpoint, get_s3_region};
 
 const UPLOAD_TTL: u64 = 3600;
 
 pub struct S3Service {
-    client: Client,
+    client: Option<Client>,
     bucket: String,
 }
 
 impl S3Service {
     pub async fn new() -> Result<Self> {
-        let bucket = get_s3_bucket()?;
-        let region = get_s3_region()?;
-        let endpoint = get_s3_endpoint()?;
+        let config = match S3Config::from_env() {
+            Ok(value) => value,
 
-        let config = aws_config::defaults(BehaviorVersion::latest())
-            .region(Region::new(region))
-            .endpoint_url(endpoint)
+            Err(Error::EnvNotSet) => {
+                return Ok(Self {
+                    client: None,
+                    bucket: "".to_string(),
+                });
+            }
+
+            Err(e) => return Err(e),
+        };
+
+        let s3_config = aws_config::defaults(BehaviorVersion::latest())
+            .region(Region::new(config.region.to_string()))
+            .endpoint_url(config.endpoint.to_string())
             .load()
             .await;
 
-        let client = Client::new(&config);
+        let client = Client::new(&s3_config);
 
-        Ok(Self { client, bucket })
+        info!(
+            "S3 client initialized, bucket={} region={} endpoint={}.",
+            config.bucket.to_string(),
+            config.region.to_string(),
+            config.endpoint.to_string()
+        );
+
+        Ok(Self {
+            client: Some(client),
+            bucket: config.bucket.to_string(),
+        })
     }
 
     pub async fn get_upload_url(&self, key: &str) -> Result<String> {
@@ -44,7 +63,7 @@ impl S3Service {
         };
 
         let req = self
-            .client
+            .get_client()?
             .put_object()
             .bucket(&self.bucket)
             .key(key)
@@ -64,6 +83,13 @@ impl S3Service {
             }
         }
     }
+
+    fn get_client(&self) -> Result<&Client> {
+        match &self.client {
+            Some(client) => Ok(client),
+            None => Err(Error::S3Disabled),
+        }
+    }
 }
 
 #[cfg(test)]
@@ -75,9 +101,9 @@ mod tests {
     async fn setup() -> Result<S3Service> {
         env::set_var("AWS_ACCESS_KEY_ID", "test");
         env::set_var("AWS_SECRET_ACCESS_KEY", "secret");
-        env::set_var("TREEMAP_S3_BUCKET", "tree-files");
-        env::set_var("TREEMAP_S3_REGION", "moon");
-        env::set_var("TREEMAP_S3_ENDPOINT", "https://moon.digitaloceanspaces.com");
+        env::set_var("S3_BUCKET", "tree-files");
+        env::set_var("S3_REGION", "moon");
+        env::set_var("S3_ENDPOINT", "https://moon.digitaloceanspaces.com");
 
         if let Err(_) = env_logger::try_init() {
             debug!("env_logger already initialized.");
