@@ -11,6 +11,7 @@
 use async_sqlite::{JournalMode, Pool, PoolBuilder};
 use async_trait::async_trait;
 use log::{debug, error, info};
+use std::cmp::Ordering;
 
 use crate::services::database::r#trait::Database;
 use crate::types::{
@@ -230,6 +231,15 @@ impl SqliteDatabase {
             name: row.get(2)?,
             picture: row.get(3)?,
         })
+    }
+
+    /**
+     * Custom case-insensitive collation for SQLite.
+     *
+     * Unlike the LOWER() function, this supports Unicode.
+     */
+    fn case_insensitive_collation(a: &str, b: &str) -> Ordering {
+        a.to_lowercase().cmp(&b.to_lowercase())
     }
 }
 
@@ -1046,7 +1056,9 @@ impl Database for SqliteDatabase {
         let since = get_timestamp() - SUGGEST_WINDOW;
 
         let items = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT species, COUNT(1) AS use_count FROM trees WHERE added_by = ? AND added_at >= ? GROUP BY species ORDER BY use_count DESC LIMIT 10") {
+            conn.create_collation("case_insensitive", Self::case_insensitive_collation)?;
+
+            let mut stmt = match conn.prepare("SELECT species, COUNT(1) AS use_count FROM trees WHERE added_by = ? AND added_at >= ? AND LOWER(species) <> 'unknown' GROUP BY species COLLATE case_insensitive ORDER BY use_count DESC LIMIT 10") {
                 Ok(value) => value,
 
                 Err(e) => {
@@ -1468,5 +1480,44 @@ mod tests {
             .expect("Error reading recent species.");
 
         assert_eq!(recent.len(), 0);
+    }
+
+    #[tokio::test]
+    async fn test_suggest_case_insensitive() {
+        let db = setup().await;
+
+        let now = get_timestamp();
+        let user_id = 1;
+
+        let names = vec!["клён", "Клён", "Unknown", "КЛЁН"];
+
+        for name in names {
+            db.add_tree(&TreeRecord {
+                id: get_unique_id().expect("Error generating tree id."),
+                osm_id: None,
+                lat: 0.0,
+                lon: 0.0,
+                species: name.to_string(),
+                notes: None,
+                height: None,
+                circumference: None,
+                diameter: None,
+                state: "healthy".to_string(),
+                added_at: now,
+                added_by: user_id,
+                updated_at: now,
+                thumbnail_id: None,
+            })
+            .await
+            .expect("Error adding tree.");
+        }
+
+        let recent = db
+            .find_recent_species(user_id)
+            .await
+            .expect("Error reading recent species.");
+
+        assert_eq!(recent.len(), 1);
+        assert_eq!(recent[0], "клён");
     }
 }
