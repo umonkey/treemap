@@ -1,4 +1,5 @@
 mod actions;
+mod cli;
 mod config;
 mod services;
 mod types;
@@ -11,7 +12,8 @@ use log::{debug, info};
 use std::time::Duration;
 
 use self::actions::*;
-use self::services::{migrate_local_to_remote, AppState, OsmReaderService, QueueConsumer};
+use self::cli::*;
+use self::services::{AppState, OsmReaderService, QueueConsumer};
 use self::types::Result;
 use self::utils::{get_payload_size, get_server_addr, get_server_port, get_workers};
 
@@ -80,9 +82,9 @@ async fn main() -> std::io::Result<()> {
     }
 
     if is_upload_files() {
-        migrate_local_to_remote()
+        upload_files_command()
             .await
-            .expect("Error migrating files.");
+            .expect("Error uploading files.");
         return Ok(());
     }
 

@@ -65,30 +65,4 @@ impl FileStorageInterface for LocalFileStorage {
             }
         }
     }
-
-    async fn find_files(&self) -> Result<Vec<u64>> {
-        let mut res: Vec<u64> = Vec::new();
-        let pattern = format!("{}/[0-9]*", self.folder);
-
-        for entry in glob::glob(pattern.as_str()).expect("Error listing files.") {
-            match entry {
-                Ok(path) => {
-                    let name = path
-                        .file_name()
-                        .expect("Error extracting file name.")
-                        .to_str()
-                        .expect("Error converting file name to string.");
-
-                    let id = name.parse::<u64>().expect("Error parsing file name.");
-                    res.push(id);
-                }
-
-                Err(e) => {
-                    error!("Error listing files: {}", e);
-                }
-            }
-        }
-
-        Ok(res)
-    }
 }
