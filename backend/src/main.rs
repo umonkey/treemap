@@ -35,13 +35,13 @@ async fn main() -> std::io::Result<()> {
         _ => {}
     };
 
-    print!("Usage: treemap command\n");
-    print!("\n");
-    print!("Commands:\n");
-    print!("  osm-pull       -- get new trees from OpenStreetMap\n");
-    print!("  queue-consumer -- run the queue consumer daemon\n");
-    print!("  serve          -- run the web server\n");
-    print!("  upload-files   -- move local files to S3\n");
+    println!("Usage: treemap command");
+    println!();
+    println!("Commands:");
+    println!("  osm-pull       -- get new trees from OpenStreetMap");
+    println!("  queue-consumer -- run the queue consumer daemon");
+    println!("  serve          -- run the web server");
+    println!("  upload-files   -- move local files to S3");
 
     Ok(())
 }

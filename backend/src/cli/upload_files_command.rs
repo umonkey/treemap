@@ -1,4 +1,4 @@
-use log::{error, info};
+use log::{error, info, warn};
 use std::sync::Arc;
 
 use crate::services::{FileStorageInterface, LocalFileStorage, S3FileStorage};
@@ -18,8 +18,13 @@ fn find_file_ids() -> Result<Vec<u64>> {
                     .to_str()
                     .expect("Error converting file name to string.");
 
-                let id = name.parse::<u64>().expect("Error parsing file name.");
-                res.push(id);
+                match name.parse::<u64>() {
+                    Ok(id) => res.push(id),
+
+                    Err(e) => {
+                        warn!("Error parsing file name: {}", e);
+                    }
+                }
             }
 
             Err(e) => {
