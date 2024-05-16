@@ -13,6 +13,7 @@ type MainBusEvents = {
   upload_finished: void;
   upload_ready: IFileReadyEvent;
   reload_map: void;
+  search: string;
 };
 
 type BusType = Emitter<MainBusEvents>;

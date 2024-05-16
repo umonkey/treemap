@@ -14,6 +14,7 @@ export const useHeader = () => {
   const handleSearch = (query: string) => {
     console.debug(`Searching for: ${query}`);
     mainBus.emit("before_search");
+    mainBus.emit("search", query);
 
     setSearchQuery(query);
     navigate(routes.search(query));

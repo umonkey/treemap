@@ -56,3 +56,11 @@ export const getMapLayer = (): string => {
 export const setMapLayer = (value: string) => {
   writeValue<string>(MAP_LAYER_KEY, value);
 };
+
+export const getDebug = (): boolean => {
+  return readValue<boolean>("debug") || false;
+}
+
+export const setDebug = (value: boolean) => {
+  writeValue<boolean>("debug", value);
+}

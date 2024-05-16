@@ -27,8 +27,11 @@
  * an "upload_ready" signal to the main bus.
  */
 
+import { toast } from "react-hot-toast";
+
 import { IFileUploadRequest, IFileUploadResponse } from "@/types";
 import { treeMapService } from "@/services";
+import { getDebug, setDebug } from "@/utils/storage";
 import { mainBus } from "@/bus";
 
 class FileUploader {
@@ -37,6 +40,9 @@ class FileUploader {
   // Make sure we only run one queue processor thread.
   private running: boolean = false;
 
+  // Enabled on certain search requests.
+  private debug: boolean = false;
+
   private totalSize: number = 0;
   private totalSent: number = 0;
   private currentSent: number = 0;
@@ -44,6 +50,9 @@ class FileUploader {
   public constructor() {
     console.debug("[upload] File uploader initialized.");
     mainBus.on("upload_image", (req: IFileUploadRequest) => this.add(req));
+    mainBus.on("search", (query: string) => this.search(query));
+
+    this.debug = getDebug();
   }
 
   public finish() {
@@ -52,10 +61,23 @@ class FileUploader {
   }
 
   public add(req: IFileUploadRequest) {
-    console.debug(`[upload] File added to queue, tree=${req.tree}, size=${req.file.size}.`);
+    this.debugMessage(`File ${req.file.name} added to queue.`);
+
     this.totalSize += req.file.size;
     this.queue.push(req);
     this.reportProgress();
+  }
+
+  public search(query: string) {
+    if (query.toLowerCase().includes("nodebug")) {
+      this.debug = false;
+      this.debugMessage("Debug mode enabled.");
+    } else if (query.toLowerCase().includes("debug")) {
+      this.debug = true;
+      this.debugMessage("Debug mode enabled.");
+    }
+
+    setDebug(this.debug);
   }
 
   public async run() {
@@ -72,6 +94,8 @@ class FileUploader {
 
       if (req) {
         try {
+          this.debugMessage(`Uploading ${req.file.name} to tree ${req.tree}.`);
+
           const res = await this.uploadSingleFile(req);
           this.checkFile(res.id, req.tree);
 
@@ -89,7 +113,10 @@ class FileUploader {
             mainBus.emit("upload_finished");
           }
         } catch (e) {
+          this.debugMessage(`Error uploading file: ${e}, will retry in 5 seconds.`);
+
           console.error(`[upload] Error uploading file: ${e}, will retry in 5 seconds.`);
+
           this.queue.push(req);
 
           await this.sleep(5000);
@@ -128,7 +155,7 @@ class FileUploader {
 
   private async uploadSingleFile(req: IFileUploadRequest): Promise<IFileUploadResponse> {
     this.currentSent = 0;
-    
+
     const res = await treeMapService.uploadImage({
       tree_id: req.tree,
       file: req.file,
@@ -141,10 +168,12 @@ class FileUploader {
 
     this.totalSent += req.file.size;
     this.currentSent = 0;
-    
+
     this.reportProgress();
 
     console.info(`[upload] File added to tree ${req.tree} successfully.`);
+
+    this.debugMessage(`File ${req.file.name} uploaded successfully.`);
 
     return res;
   }
@@ -172,6 +201,14 @@ class FileUploader {
 
     const sent = this.totalSent + this.currentSent;
     return Math.max(1, sent * 100 / this.totalSize);
+  }
+
+  private debugMessage(msg: string) {
+    console.debug(msg);
+
+    this.debug && toast(msg, {
+      icon: '🔍',
+    });
   }
 }
 
