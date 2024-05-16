@@ -20,9 +20,6 @@ export const DetailsPage = (props: IProps) => {
     error,
     loading,
     tree,
-    uploadError,
-    uploadFinished,
-    uploading,
   } = useDetailsPage(props.id);
 
   return (
@@ -49,18 +46,6 @@ export const DetailsPage = (props: IProps) => {
           </MapWithMarker>
 
           <GalleryLoader id={tree.id} />
-
-          {uploadError && (
-            <div className="message">{uploadError}</div>
-          )}
-
-          {uploading && (
-            <div className="message">Uploading files, please wait...</div>
-          )}
-
-          {uploadFinished && (
-            <div className="message">Files accepted, you can continue your work while they are being uploaded.</div>
-          )}
 
           <TreeComments id={tree.id} />
         </>

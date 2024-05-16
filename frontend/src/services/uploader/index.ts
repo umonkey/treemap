@@ -8,6 +8,23 @@
  * [x] Checks file upload status.
  * [x] When the file is ready, notifies the UI that a tree has new files.
  * [ ] Uses IndexedDB to keep the upload queue between sessions (app crashes etc).
+ *
+ * How this works.
+ *
+ * (0) The application (App class) loads this file, which initializes the FileUploader class
+ * by creating the queue and initializing the progress tracker.  It then calls the run() method
+ * to start the queue processor.
+ *
+ * (1) Some UI element, like the photo upload button, uses the useFileUploader() hook
+ * to send files to the queue.  That is done by sending the "upload_image" signal
+ * to the main event bus.
+ *
+ * (2) An event handler in the FileUploader class picks up the signal and adds the file to the queue.
+ * The queue processing loop, which runs asynchronously, picks that file up and sends it to the API.
+ *
+ * After the file is uploaded, the API returns a file id.  We then check that files's status for up to
+ * 10 seconds, to see if it is ready (like finished resizing).  When it is, we notify the UI by sending
+ * an "upload_ready" signal to the main bus.
  */
 
 import { IFileUploadRequest, IFileUploadResponse } from "@/types";

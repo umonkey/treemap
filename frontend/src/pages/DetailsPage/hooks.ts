@@ -12,7 +12,7 @@ export const useDetailsPage = (id: string) => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const { uploadFiles, error: uploadError, uploading, uploadFinished } = useFileUploader();
+  const { uploadFiles } = useFileUploader();
 
   const { isPhone, isDesktop } = useDeviceType();
 
@@ -81,8 +81,5 @@ export const useDetailsPage = (id: string) => {
     isPhone,
     loading,
     tree,
-    uploadError,
-    uploadFinished,
-    uploading,
   };
 };
