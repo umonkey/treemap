@@ -117,11 +117,6 @@ export interface IApiError {
   message: string;
 }
 
-export interface IUploadTicket {
-  id: string;
-  upload_url: string;
-}
-
 export interface IGalleryImage {
   small: string;
   large: string;

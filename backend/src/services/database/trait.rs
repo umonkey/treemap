@@ -2,7 +2,7 @@ use async_trait::async_trait;
 
 use crate::types::{
     Bounds, CommentRecord, FileRecord, OsmTreeRecord, QueueMessage, Result, SpeciesRecord,
-    TreeRecord, UploadTicketRecord, UserRecord,
+    TreeRecord, UserRecord,
 };
 
 #[async_trait]
@@ -29,8 +29,6 @@ pub trait Database {
     async fn add_user(&self, user: &UserRecord) -> Result<()>;
     async fn get_user(&self, id: u64) -> Result<Option<UserRecord>>;
 
-    async fn add_upload_ticket(&self, ticket: &UploadTicketRecord) -> Result<()>;
-    async fn get_upload_ticket(&self, id: u64) -> Result<Option<UploadTicketRecord>>;
     async fn add_file(&self, file: &FileRecord) -> Result<()>;
     async fn find_files_by_tree(&self, tree_id: u64) -> Result<Vec<FileRecord>>;
     async fn get_file(&self, id: u64) -> Result<Option<FileRecord>>;

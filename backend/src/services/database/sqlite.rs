@@ -16,7 +16,7 @@ use std::cmp::Ordering;
 use crate::services::database::r#trait::Database;
 use crate::types::{
     Bounds, CommentRecord, Error, FileRecord, OsmTreeRecord, QueueMessage, Result, SpeciesRecord,
-    TreeRecord, UploadTicketRecord, UserRecord,
+    TreeRecord, UserRecord,
 };
 use crate::utils::{get_sqlite_path, get_timestamp, get_unique_id};
 
@@ -581,56 +581,6 @@ impl Database for SqliteDatabase {
         Ok(user)
     }
 
-    async fn add_upload_ticket(&self, ticket: &UploadTicketRecord) -> Result<()> {
-        let id = ticket.id;
-        let created_at = ticket.created_at;
-        let created_by = ticket.created_by;
-        let upload_url = ticket.upload_url.to_string();
-
-        self.pool
-            .conn(move |conn| {
-                conn.execute(
-                    "INSERT INTO upload_tickets (id, created_at, created_by, upload_url) VALUES (?, ?, ?, ?)",
-                    (id, created_at, created_by, upload_url),
-                )?;
-
-                Ok(())
-            })
-            .await?;
-
-        debug!("Upload ticket {} added to the database.", id);
-
-        Ok(())
-    }
-
-    async fn get_upload_ticket(&self, id: u64) -> Result<Option<UploadTicketRecord>> {
-        let ticket = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, created_at, created_by, upload_url FROM upload_tickets WHERE id = ?") {
-                Ok(value) => value,
-
-                Err(e) => {
-                    error!("Error preparing SQL statement: {}", e);
-                    return Err(e);
-                },
-            };
-
-            let mut rows = stmt.query([id])?;
-
-            if let Some(row) = rows.next()? {
-                return Ok(Some(UploadTicketRecord {
-                    id: row.get(0)?,
-                    created_at: row.get(1)?,
-                    created_by: row.get(2)?,
-                    upload_url: row.get(3)?,
-                }));
-            }
-
-            Ok(None)
-        }).await?;
-
-        Ok(ticket)
-    }
-
     async fn add_queue_message(&self, msg: &QueueMessage) -> Result<()> {
         let id = msg.id;
         let added_at = msg.added_at;
@@ -1190,36 +1140,6 @@ mod tests {
         assert_eq!(tree.updated_at, 23456, "wrong updated_at");
         assert_eq!(tree.added_by, 7, "wrong added_by");
         assert_eq!(tree.thumbnail_id, Some(8), "wrong thumbnail_id");
-    }
-
-    #[tokio::test]
-    async fn test_create_upload_ticket() -> Result<()> {
-        let db = setup().await;
-
-        let before = db.get_upload_ticket(123).await?;
-        assert!(before.is_none());
-
-        let ticket = UploadTicketRecord {
-            id: 123,
-            created_at: 123,
-            created_by: 456,
-            upload_url: "https://example.com".to_string(),
-        };
-
-        db.add_upload_ticket(&ticket)
-            .await
-            .expect("Error adding upload ticket");
-
-        let after = db
-            .get_upload_ticket(123)
-            .await?
-            .expect("Ticket not created.");
-        assert_eq!(after.id, 123);
-        assert_eq!(after.created_at, 123);
-        assert_eq!(after.created_by, 456);
-        assert_eq!(after.upload_url, "https://example.com");
-
-        Ok(())
     }
 
     #[tokio::test]

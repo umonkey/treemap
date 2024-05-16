@@ -6,13 +6,12 @@ use crate::services::database::get_database;
 use crate::services::trees::Trees;
 use crate::services::{
     get_file_storage, CommentsService, Database, FileService, GoogleAuth, TokenService,
-    UploadService,
 };
 use crate::types::{
     AddCommentRequest, AddFileRequest, AddTreeRequest, Error, FileStatusResponse,
     FileUploadResponse, GetTreesRequest, LoginGoogleRequest, LoginResponse, MeResponse,
     MoveTreeRequest, NewTreeDefaultsResponse, PublicCommentInfo, PublicSpeciesInfo, Result,
-    TreeDetails, TreeList, TreeRecord, UpdateTreeRequest, UploadTicketRecord,
+    TreeDetails, TreeList, TreeRecord, UpdateTreeRequest,
 };
 
 pub struct AppState {
@@ -22,7 +21,6 @@ pub struct AppState {
     gauth: GoogleAuth,
     tokens: TokenService,
     trees: Trees,
-    uploads: UploadService,
 }
 
 impl AppState {
@@ -38,7 +36,6 @@ impl AppState {
             gauth: GoogleAuth::new(&db, &token).await,
             tokens: token,
             trees: Trees::new(&db).await,
-            uploads: UploadService::new(&db).await?,
         })
     }
 
@@ -137,13 +134,6 @@ impl AppState {
             name: user.name,
             picture: user.picture,
         })
-    }
-
-    /**
-     * Creates an upload ticket for the specified user.
-     */
-    pub async fn create_upload_ticket(&self, user_id: u64) -> Result<UploadTicketRecord> {
-        self.uploads.create_ticket(user_id).await
     }
 
     pub async fn add_file(&self, req: AddFileRequest) -> Result<FileUploadResponse> {

@@ -12,7 +12,6 @@ import {
   ITreeDetails,
   ITreeInfo,
   IUpdateTreeRequest,
-  IUploadTicket,
   IUserInfo,
 } from "@/types";
 
@@ -121,15 +120,6 @@ export class TreeMapService {
 
   public async getUserInfo(): Promise<IUserInfo> {
     return await this.get<IUserInfo>("/v1/me", {
-      headers: this.get_auth_headers(),
-    });
-  }
-
-  /**
-   * Request an upload ticket for uploading images.
-   */
-  public async createUploadTicket(): Promise<IUploadTicket> {
-    return await this.post<IUploadTicket>("/v1/uploads", { }, {
       headers: this.get_auth_headers(),
     });
   }
