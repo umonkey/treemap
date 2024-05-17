@@ -14,8 +14,12 @@ import { mainBus } from "@/bus";
 export const useFileUploader = () => {
   // Deliver upload finished notifications.
   useEffect(() => {
+    console.debug("Bus set up.");
+
     const handler = () => {
-      toast.success("Files uploaded successfully.");
+      toast("Files uploaded successfully.", {
+        icon: '📷',
+      });
     };
 
     mainBus.on("upload_finished", handler);

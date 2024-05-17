@@ -63,7 +63,6 @@ export const useDeviceType = () => {
   }, [handleResize]);
 
   useEffect(() => {
-    console.debug("CLASS NAME CHANGE", className);
     document.getElementById("root")!.className = className;
   }, [className]);
 
