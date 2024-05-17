@@ -81,10 +81,16 @@ export const useAddTreeDialog = (props: IProps) => {
       mainBus.emit("reload_map");
 
       if (res.length === 1) {
-        toast.success("Tree added successfully.");
+        toast("Tree added successfully.", {
+          icon: "🌲",
+        });
+
         navigate(routes.treeDetails(res[0].id));
       } else {
-        toast.success("Trees added successfully.");
+        toast("Trees added successfully.", {
+          icon: "🌲",
+        });
+
         navigate(routes.home());
       }
     } catch (e) {
