@@ -139,7 +139,7 @@ export interface IMarkerClickEvent {
 }
 
 export interface ITreeDefaults {
-  species: string;
+  species: string | null;
   notes: string | null;
   height: number | null;
   circumference: number | null;

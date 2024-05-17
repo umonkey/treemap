@@ -119,7 +119,7 @@ export const useAddTreeDialog = (props: IProps) => {
     (async () => {
       try {
         const res = await treeMapService.getTreeDefaults();
-        setSpecies(res.species); // not working
+        setSpecies(res.species || ""); // not working
         setHeight(res.height || 0.0);
         setCircumference(res.circumference || 0.0);
         setDiameter(res.diameter || 0.0);
