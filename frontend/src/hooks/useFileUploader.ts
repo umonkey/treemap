@@ -14,7 +14,7 @@ import { mainBus } from "@/bus";
 export const useFileUploader = () => {
   // Deliver upload finished notifications.
   useEffect(() => {
-    console.debug("Bus set up.");
+    console.debug("File notifications installed.");
 
     const handler = () => {
       toast("Files uploaded successfully.", {
@@ -23,7 +23,11 @@ export const useFileUploader = () => {
     };
 
     mainBus.on("upload_finished", handler);
-    return () => mainBus.off("upload_finished", handler);
+
+    return () => {
+      console.debug("File notifications uninstalled.");
+      mainBus.off("upload_finished", handler);
+    };
   });
 
   const uploadFiles = async (tree_id: string, files: FileList) => {
