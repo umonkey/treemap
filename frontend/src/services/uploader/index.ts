@@ -66,6 +66,8 @@ class FileUploader {
     this.totalSize += req.file.size;
     this.queue.push(req);
     this.reportProgress();
+
+    this.run();
   }
 
   public search(query: string) {
@@ -82,48 +84,18 @@ class FileUploader {
 
   public async run() {
     if (this.running) {
-      console.warn("[upload] Queue handler already running.");
+      console.debug("[upload] Queue handler already running.");
       return;
     }
 
     this.running = true;
     console.info("[upload] Queue handler started.");
 
-    for (;;) {
-      const req = this.queue.shift();
-
-      if (req) {
-        try {
-          this.debugMessage(`Uploading ${req.file.name} to tree ${req.tree}.`);
-
-          const res = await this.uploadSingleFile(req);
-          this.checkFile(res.id, req.tree);
-
-          // Finished all processing?
-          if (this.queue.length === 0) {
-            this.totalSent = this.totalSize;
-            this.reportProgress();
-
-            await this.sleep(1000);
-
-            this.totalSize = 0;
-            this.totalSent = 0;
-            this.reportProgress();
-
-            mainBus.emit("upload_finished");
-          }
-        } catch (e) {
-          this.debugMessage(`Error uploading file: ${e}, will retry in 5 seconds.`);
-
-          console.error(`[upload] Error uploading file: ${e}, will retry in 5 seconds.`);
-
-          this.queue.push(req);
-
-          await this.sleep(5000);
-        }
-      } else {
-        await this.sleep(1000);
-      }
+    try {
+      await this.run_loop();
+    } finally {
+      this.running = false;
+      console.info("[upload] Queue handler stopped.");
     }
   }
 
@@ -176,6 +148,45 @@ class FileUploader {
     this.debugMessage(`File ${req.file.name} uploaded successfully.`);
 
     return res;
+  }
+
+  private async run_loop() {
+    for (;;) {
+      const req = this.queue.shift();
+
+      if (req) {
+        try {
+          this.debugMessage(`Uploading ${req.file.name} to tree ${req.tree}.`);
+
+          const res = await this.uploadSingleFile(req);
+          this.checkFile(res.id, req.tree);
+
+          // Finished all processing?
+          if (this.queue.length === 0) {
+            this.totalSent = this.totalSize;
+            this.reportProgress();
+
+            await this.sleep(1000);
+
+            this.totalSize = 0;
+            this.totalSent = 0;
+            this.reportProgress();
+
+            mainBus.emit("upload_finished");
+          }
+        } catch (e) {
+          this.debugMessage(`Error uploading file: ${e}, will retry in 5 seconds.`);
+
+          console.error(`[upload] Error uploading file: ${e}, will retry in 5 seconds.`);
+
+          this.queue.push(req);
+
+          await this.sleep(5000);
+        }
+      } else {
+        await this.sleep(1000);
+      }
+    }
   }
 
   private sleep(time: number) {
