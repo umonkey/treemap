@@ -17,31 +17,36 @@ export const MapEventHandler = (props: IProps) => {
   const [initialized, setInitialized] = useState(false);
 
   const reportViewChange = () => {
-    const bounds = map.getBounds();
-    const center = map.getCenter();
+    try {
+      const bounds = map.getBounds();
+      const center = map.getCenter();
 
-    props.onBoundsChange && props.onBoundsChange({
-      north: bounds.getNorth(),
-      east: bounds.getEast(),
-      south: bounds.getSouth(),
-      west: bounds.getWest(),
-    });
-
-    const view = {
-      center: {
-        lat: center.lat,
-        lon: center.lng,
-      },
-      zoom: map.getZoom(),
-      bounds: {
+      props.onBoundsChange && props.onBoundsChange({
         north: bounds.getNorth(),
         east: bounds.getEast(),
         south: bounds.getSouth(),
         west: bounds.getWest(),
-      },
-    } as IMapView;
+      });
 
-    props.onViewChange && props.onViewChange(view);
+      const view = {
+        center: {
+          lat: center.lat,
+          lon: center.lng,
+        },
+        zoom: map.getZoom(),
+        bounds: {
+          north: bounds.getNorth(),
+          east: bounds.getEast(),
+          south: bounds.getSouth(),
+          west: bounds.getWest(),
+        },
+      } as IMapView;
+
+      props.onViewChange && props.onViewChange(view);
+    } catch (e) {
+      console.error("Error getting map bounds or center.", e);
+      return;
+    }
   };
 
   const map = useMapEvents({
@@ -58,7 +63,6 @@ export const MapEventHandler = (props: IProps) => {
 
     zoomend: () => {
       reportViewChange();
-      console.debug(`Map zoom changed to ${map.getZoom()}.`);
     },
 
     moveend: () => {
