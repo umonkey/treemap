@@ -8,7 +8,7 @@ export const MarkerCluster = (props: IProps) => {
   return (
     <MarkerClusterGroup
       maxClusterRadius={20}
-      disableClusteringAtZoom={20}
+      disableClusteringAtZoom={19}
     >{props.children}</MarkerClusterGroup>
   );
 }
