@@ -2,7 +2,7 @@
 import { create } from "zustand";
 
 // Project imports.
-import { ITreeInfo, ITreeInfoMap, IUserInfo } from "@/types";
+import { ITreeInfo, ITreeStats, ITreeInfoMap, IUserInfo } from "@/types";
 import { getUserInfo, setUserInfo, getMapLayer, setMapLayer } from "@/utils";
 import { treeMapService } from "@/services/api";
 
@@ -19,6 +19,9 @@ interface IStore {
 
   mapLayer: string;
   setMapLayer: (value: string) => void;
+
+  stats: ITreeStats;
+  setStats: (value: ITreeStats) => void;
 }
 
 export const useStore = create<IStore>((set) => ({
@@ -79,4 +82,12 @@ export const useStore = create<IStore>((set) => ({
       mapLayer: value,
     });
   },
+
+  stats: {
+    count: 0,
+  } as ITreeStats,
+
+  setStats: (value: ITreeStats) => set({
+    stats: value,
+  }),
 }));

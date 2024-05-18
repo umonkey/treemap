@@ -2,6 +2,7 @@ import { styled, alpha } from "@mui/material/styles";
 import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
 
+import { IProps } from "./types";
 import { useSearchBar } from "./hooks";
 
 const Search = styled("div")(({ theme }) => ({
@@ -44,13 +45,8 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-interface IProps {
-  searchQuery: string;
-  onChange: (query: string) => void;
-}
-
 export const SearchBar = (props: IProps) => {
-  const { text, handleChange, handleKeyDown } = useSearchBar(props);
+  const { placeholder, text, handleChange, handleKeyDown } = useSearchBar(props);
 
   return (
     <div className="SearchBar">
@@ -60,7 +56,7 @@ export const SearchBar = (props: IProps) => {
         </SearchIconWrapper>
 
         <StyledInputBase
-          placeholder="Search trees..."
+          placeholder={placeholder}
           inputProps={{
             "aria-label": "search",
           }}

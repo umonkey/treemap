@@ -10,6 +10,7 @@ mod public_species_info;
 mod tree_details;
 mod tree_list;
 mod tree_list_item;
+mod tree_stats;
 
 pub use self::file_status_response::*;
 pub use self::file_upload_response::*;
@@ -23,3 +24,4 @@ pub use self::public_species_info::*;
 pub use self::tree_details::*;
 pub use self::tree_list::*;
 pub use self::tree_list_item::*;
+pub use self::tree_stats::*;

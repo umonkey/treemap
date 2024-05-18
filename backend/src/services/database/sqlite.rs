@@ -427,6 +427,42 @@ impl Database for SqliteDatabase {
     }
 
     /**
+     * Count all trees that still exist.
+     */
+    async fn count_trees(&self) -> Result<u64> {
+        let count: u64 = self
+            .pool
+            .conn(move |conn| {
+                let mut stmt =
+                    match conn.prepare("SELECT COUNT(1) FROM trees WHERE state <> 'gone'") {
+                        Ok(value) => value,
+
+                        Err(e) => {
+                            error!("Error preparing SQL statement: {}", e);
+                            return Err(e);
+                        }
+                    };
+
+                let mut rows = match stmt.query([]) {
+                    Ok(value) => value,
+
+                    Err(e) => {
+                        error!("Error executing SQL statement: {}", e);
+                        return Err(e);
+                    }
+                };
+
+                match rows.next()? {
+                    Some(row) => row.get(0),
+                    None => Ok(0),
+                }
+            })
+            .await?;
+
+        Ok(count)
+    }
+
+    /**
      * Find the closest tree to the given coordinates.
      */
     async fn find_closest_trees(
@@ -1439,5 +1475,17 @@ mod tests {
 
         assert_eq!(recent.len(), 1);
         assert_eq!(recent[0], "клён");
+    }
+
+    #[tokio::test]
+    async fn test_count() {
+        let db = setup().await;
+
+        db.execute(include_str!("./fixtures/test_count.sql").to_string())
+            .await
+            .expect("Error setting up data.");
+
+        let count = db.count_trees().await.expect("Error counting trees.");
+        assert_eq!(count, 2); // 1 dead + 1 healthy - 1 gone
     }
 }

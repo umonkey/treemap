@@ -48,6 +48,7 @@ pub async fn serve_command() {
             .service(get_file_status)
             .service(get_me)
             .service(get_tree_defaults)
+            .service(get_tree_stats)
             .service(get_tree)
             .service(get_trees)
             .service(login_google)

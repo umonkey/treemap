@@ -3,8 +3,12 @@ import { useEffect } from "react";
 
 // Project imports.
 import { treeMapService, fileUploader } from "@/services";
+import { mainBus } from "@/bus";
 import { useStore } from "@/store";
 import { useDeviceType } from "@/hooks";
+
+// Initialize services.
+import { statsService } from "@/services";
 
 export const useApp = () => {
   const userInfo = useStore((state) => state.userInfo);
@@ -14,7 +18,14 @@ export const useApp = () => {
   // Run the background file uploader.
   useEffect(() => {
     fileUploader.run();
-    return () => fileUploader.finish();
+    statsService.start();
+
+    mainBus.emit("initialize");
+
+    return () => {
+      fileUploader.finish();
+      statsService.stop();
+    };
   });
 
   useEffect(() => {

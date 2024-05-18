@@ -10,7 +10,7 @@ use std::sync::Arc;
 use crate::services::Database;
 use crate::types::{
     AddTreeRequest, Error, GetTreesRequest, MoveTreeRequest, Result, SearchQuery, TreeList,
-    TreeRecord, UpdateTreeRequest,
+    TreeRecord, TreeStats, UpdateTreeRequest,
 };
 use crate::utils::{get_timestamp, get_unique_id};
 
@@ -119,6 +119,12 @@ impl Trees {
 
             None => Err(Error::TreeNotFound),
         }
+    }
+
+    pub async fn get_tree_stats(&self) -> Result<TreeStats> {
+        Ok(TreeStats {
+            count: self.db.count_trees().await?,
+        })
     }
 
     pub async fn get_last_tree_by_user(&self, user_id: u64) -> Result<Option<TreeRecord>> {

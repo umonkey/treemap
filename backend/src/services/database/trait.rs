@@ -14,6 +14,8 @@ pub trait Database {
     async fn get_tree(&self, id: u64) -> Result<Option<TreeRecord>>;
     async fn get_tree_by_osm_id(&self, osm_id: u64) -> Result<Option<TreeRecord>>;
     async fn get_last_tree_by_user(&self, user_id: u64) -> Result<Option<TreeRecord>>;
+    async fn count_trees(&self) -> Result<u64>;
+
     async fn find_closest_trees(
         &self,
         lat: f64,

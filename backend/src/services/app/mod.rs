@@ -11,7 +11,7 @@ use crate::types::{
     AddCommentRequest, AddFileRequest, AddTreeRequest, Error, FileStatusResponse,
     FileUploadResponse, GetTreesRequest, LoginGoogleRequest, LoginResponse, MeResponse,
     MoveTreeRequest, NewTreeDefaultsResponse, PublicCommentInfo, PublicSpeciesInfo, Result,
-    TreeDetails, TreeList, TreeRecord, UpdateTreeRequest,
+    TreeDetails, TreeList, TreeRecord, TreeStats, UpdateTreeRequest,
 };
 
 pub struct AppState {
@@ -110,6 +110,10 @@ impl AppState {
         let files = self.files.find_files_by_tree(id).await?;
 
         Ok(TreeDetails::from_tree(&tree, &files))
+    }
+
+    pub async fn get_tree_stats(&self) -> Result<TreeStats> {
+        self.trees.get_tree_stats().await
     }
 
     pub async fn get_file(&self, id: u64) -> Result<Vec<u8>> {

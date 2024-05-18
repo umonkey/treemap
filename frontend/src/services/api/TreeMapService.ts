@@ -11,6 +11,7 @@ import {
   ITreeDefaults,
   ITreeDetails,
   ITreeInfo,
+  ITreeStats,
   IUpdateTreeRequest,
   IUserInfo,
 } from "@/types";
@@ -85,6 +86,10 @@ export class TreeMapService {
 
   public async getTreeDetails(id: string): Promise<ITreeDetails> {
     return await this.get<ITreeDetails>(`/v1/trees/${id}`);
+  }
+
+  public async getTreeStats(): Promise<ITreeStats> {
+    return await this.get<ITreeStats>("/v1/trees/stats");
   }
 
   public async updateTreePosition(id: string, position: ILatLng) {

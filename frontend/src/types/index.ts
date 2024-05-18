@@ -165,6 +165,10 @@ export interface IFileReadyEvent {
   tree_id: string;
 }
 
+export interface ITreeStats {
+  count: number;
+}
+
 export enum SideBarMode {
   DEFAULT = "default",
   ADD_TREE = "add_tree",
