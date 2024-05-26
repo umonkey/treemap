@@ -46,6 +46,7 @@ export { SearchBar } from "./elements/SearchBar";
 export { SelectLocationDialog } from "./dialogs/SelectLocationDialog";
 export { ShareToolbarButton } from "./toolbar/ShareToolbarButton";
 export { SideBar } from "./layout/SideBar";
+export { SpeciesSearchBar } from "./elements/SpeciesSearchBar";
 export { SpeciesSelector } from "./elements/SpeciesSelector";
 export { Toaster } from "./layout/Toaster";
 export { Toolbar } from "./toolbar/Toolbar";

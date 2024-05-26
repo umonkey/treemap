@@ -6,6 +6,10 @@
   --toolbar-center-color: #1565c0;
   --toolbar-hover-color: #1565c0;
   --toolbar-text-color: #fff;
+  --input-color: #000;
+  --input-background-color: #fff;
+  --input-border-color: #888;
+  --input-height: 40px;
 
   font-family: Roboto, Arial, sans-serif;
   font-size: 16px;
