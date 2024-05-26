@@ -24,7 +24,7 @@ export const DetailsPage = (props: IProps) => {
 
   return (
     <NarrowPage className="DetailsPage">
-      {loading && (
+      {loading && !tree && (
         <p>Loading...</p>
       )}
 
