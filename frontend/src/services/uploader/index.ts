@@ -128,6 +128,8 @@ class FileUploader {
   private async uploadSingleFile(req: IFileUploadRequest): Promise<IFileUploadResponse> {
     this.currentSent = 0;
 
+    this.debugMessage('Starting to upload a file.');
+
     const res = await treeMapService.uploadImage({
       tree_id: req.tree,
       file: req.file,
