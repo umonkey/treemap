@@ -16,11 +16,11 @@ impl NewTreeDefaultsResponse {
     pub fn from_tree(tree: &TreeRecord) -> Self {
         Self {
             species: Some(tree.species.clone()),
-            notes: tree.notes.clone(),
-            height: tree.height,
-            circumference: tree.circumference,
-            diameter: tree.diameter,
-            state: tree.state.to_string(),
+            notes: None,
+            height: None,
+            circumference: None,
+            diameter: None,
+            state: "healthy".to_string(),
         }
     }
 }
