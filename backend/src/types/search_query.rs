@@ -17,6 +17,7 @@ pub struct SearchQuery {
     pub dead: bool,
     pub deformed: bool,
     pub healthy: bool,
+    pub stomp: bool,
     pub gone: bool,
     pub all: bool,
 }
@@ -32,6 +33,7 @@ impl SearchQuery {
         let mut deformed = false;
         let mut healthy = false;
         let mut incomplete = false;
+        let mut stomp = false;
         let mut gone = false;
         let mut all = false;
 
@@ -54,6 +56,8 @@ impl SearchQuery {
                 incomplete = true;
             } else if word.contains("gone") {
                 gone = true;
+            } else if word.contains("stomp") {
+                stomp = true;
             } else if word.contains("all") {
                 all = true;
             } else {
@@ -71,6 +75,7 @@ impl SearchQuery {
             deformed,
             healthy,
             incomplete,
+            stomp,
             gone,
             all,
         }
@@ -102,6 +107,7 @@ impl SearchQuery {
                 && !self.dead
                 && !self.deformed
                 && !self.healthy
+                && !self.stomp
                 && !self.gone
                 && tree.state == "gone"
             {
@@ -125,6 +131,10 @@ impl SearchQuery {
             }
 
             if self.gone && tree.state != "gone" {
+                return false;
+            }
+
+            if self.stomp && tree.state != "stomp" {
                 return false;
             }
         }
@@ -434,6 +444,27 @@ mod tests {
 
         assert_eq!(
             true,
+            query.r#match(&TreeRecord {
+                state: "healthy".to_string(),
+                ..default_tree()
+            })
+        );
+    }
+
+    #[test]
+    fn test_stomp() {
+        let query = SearchQuery::from_string("stomp");
+
+        assert_eq!(
+            true,
+            query.r#match(&TreeRecord {
+                state: "stomp".to_string(),
+                ..default_tree()
+            })
+        );
+
+        assert_eq!(
+            false,
             query.r#match(&TreeRecord {
                 state: "healthy".to_string(),
                 ..default_tree()

@@ -30,6 +30,7 @@ export const TreeStateSelector = (props: IProps) => {
         <MenuItem value="deformed">Deformed</MenuItem>
         <MenuItem value="sick">Sick</MenuItem>
         <MenuItem value="dead">Dead</MenuItem>
+        <MenuItem value="stomp">Stomp</MenuItem>
         <MenuItem value="gone">Gone</MenuItem>
       </Select>
     </FormControl>
