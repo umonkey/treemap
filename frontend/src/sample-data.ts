@@ -228,6 +228,9 @@ export const SAMPLE_TREE = {
   "height": 18.5,
   "circumference": 1.2,
   "diameter": 7,
+  "state": "healthy",
+  "created_at": 1714505048,
+  "updated_at": 1714505048,
   "files": [
     {
       id: "1",

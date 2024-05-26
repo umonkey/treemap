@@ -24,6 +24,7 @@ export const useTreeSidePane = (tree: ITreeDetails) => {
     });
 
     setStatus(formatStatusLine(tree.state, tree.updated_at));
+
     setDimensions(formatTreeDimensions(tree));
   }, [tree]);
 
