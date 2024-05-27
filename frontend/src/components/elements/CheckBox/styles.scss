@@ -1,0 +1,26 @@
+.CheckBox {
+  --size: 25px;
+
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+
+  label {
+    height: var(--size);
+    line-height: var(--size);
+    display: block;
+    cursor: pointer;
+  }
+
+  button {
+    background-color: var(--input-background-color);
+    border: solid 1px var(--input-border-color);
+    color: var(--input-color);
+    padding: 0;
+    font-size: calc(var(--size) * 0.8);
+    width: var(--size);
+    height: var(--size);
+    line-height: var(--size);
+    border-radius: 4px
+  }
+}

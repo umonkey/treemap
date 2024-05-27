@@ -4,6 +4,7 @@ export { AddTreeControl } from "./maps/AddTreeControl";
 export { AddTreeDialog } from "./dialogs/AddTreeDialog";
 export { App } from "./layout/App";
 export { BlackCircleIcon } from "./maps/BlackCircleIcon";
+export { CheckBox } from "./elements/CheckBox";
 export { ConfirmCancelButtons } from "./blocks/ConfirmCancelButtons";
 export { DefaultMarker } from "./maps/DefaultMarker";
 export { DetailsToolbar } from "./toolbar/DetailsToolbar";
