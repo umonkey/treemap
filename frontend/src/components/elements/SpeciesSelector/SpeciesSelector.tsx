@@ -1,6 +1,9 @@
 // Global imports.
 import { Autocomplete, TextField } from '@mui/material';
 
+// Project imports.
+import { locale } from "@/locale";
+
 // Local imports.
 import { useSpeciesSelector } from "./hooks";
 import "./styles.scss";
@@ -20,7 +23,6 @@ export const SpeciesSelector = (props: IProps) => {
   });
 
   const handleHintClick = (hint: string) => {
-    console.debug(`Hint clicked: ${hint}`);
     setCurrentValue(hint);
   };
 
@@ -33,7 +35,7 @@ export const SpeciesSelector = (props: IProps) => {
         filterOptions={(x) => x}
         id="species-selector"
         options={options}
-        renderInput={(params) => <TextField {...params} label="Species" required={!!required} />}
+        renderInput={(params) => <TextField {...params} label={locale.species()} required={!!required} />}
         renderOption={renderOption}
         onChange={handleChange}
         onInputChange={handleInputChange}
@@ -41,7 +43,7 @@ export const SpeciesSelector = (props: IProps) => {
       />
 
       {recent.length > 0 && (
-        <div className="recent">Recent species: {recent.slice(0, 10).map((n, idx) => {
+        <div className="recent">{locale.speciesRecent()}: {recent.slice(0, 10).map((n, idx) => {
           const items = [];
 
           if (idx > 0) {

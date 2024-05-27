@@ -8,6 +8,7 @@ import { Box, FormHelperText, TextField } from "@mui/material";
 
 // Project imports.
 import { ConfirmCancelButtons, SpeciesSelector, TreeStateSelector } from "@/components";
+import { locale } from "@/locale";
 
 // Local imports.
 import { useAddTreeDialog } from "./hooks";
@@ -43,17 +44,17 @@ export const AddTreeDialog = (props: IProps) => {
 
         <div className="row">
           <div className="group short">
-            <TextField id="height" label="Height, m" variant="standard" type="number" value={height} onChange={handleHeightChange} />
+            <TextField id="height" label={locale.height()} variant="standard" type="number" value={height} onChange={handleHeightChange} />
           </div>
 
           <div className="group short">
-            <TextField id="circumference" label="Circumference, m" variant="standard" type="number" value={circumference} onChange={handleCircumferenceChange} />
+            <TextField id="circumference" label={locale.circumference()} variant="standard" type="number" value={circumference} onChange={handleCircumferenceChange} />
           </div>
         </div>
 
         <div className="row">
           <div className="group short">
-            <TextField id="diameter" label="Canopy ⌀, m" variant="standard" type="number" value={diameter} onChange={handleDiameterChange} />
+            <TextField id="diameter" label={locale.canopy()} variant="standard" type="number" value={diameter} onChange={handleDiameterChange} />
           </div>
 
           <div className="short">
@@ -62,8 +63,8 @@ export const AddTreeDialog = (props: IProps) => {
         </div>
 
         <div className="group wide">
-          <TextField id="notes" label="Notes" variant="standard" value={notes} onChange={handleNotesChange} />
-          <FormHelperText>Add for notable trees, like: Queen's Oak.</FormHelperText>
+          <TextField id="notes" label={locale.notes()} variant="standard" value={notes} onChange={handleNotesChange} />
+          <FormHelperText>{locale.notesHint()}</FormHelperText>
         </div>
 
         {error && (
