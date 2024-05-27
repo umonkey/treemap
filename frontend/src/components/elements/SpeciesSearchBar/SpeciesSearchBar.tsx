@@ -19,7 +19,7 @@ export const SpeciesSearchBar = (props: IProps) => {
   } = useSpeciesSearchBar(props);
 
   return (
-    <div className="SpeciesSearchBar">
+    <div className="Control SpeciesSearchBar">
       <input
         type="text"
         placeholder="Search for trees..."

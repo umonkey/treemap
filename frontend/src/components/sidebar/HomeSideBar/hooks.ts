@@ -1,4 +1,5 @@
 // Global imports.
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 // Project imports.
@@ -7,6 +8,8 @@ import { routes } from "@/utils/routes";
 import { mainBus } from "@/bus";
 
 export const useHomeSideBar = () => {
+  const [my, setMy] = useState<boolean>(false);
+
   // Remember search query across sessions.
   const { searchQuery, setSearchQuery } = useSearchQuery();
 
@@ -21,7 +24,12 @@ export const useHomeSideBar = () => {
     navigate(routes.search(query));
   };
 
+  const handleMyChange = (value: boolean) => {
+    setMy(value);
+  };
+
   return {
+    handleMyChange,
     handleSearch,
     searchQuery,
   };

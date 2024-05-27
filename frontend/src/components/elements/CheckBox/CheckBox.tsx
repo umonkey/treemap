@@ -17,7 +17,7 @@ export const CheckBox = (props: IProps) => {
   } = useCheckBox(props);
 
   return (
-    <div className="CheckBox">
+    <div className="Control CheckBox">
       <button onClick={handleClick}>{tick}</button>
       <label onClick={handleClick}>{label}</label>
     </div>
