@@ -6,6 +6,7 @@
 
 // Project imports.
 import { Gallery } from "@/components";
+import { locale } from "@/locale";
 
 // Local imports.
 import { useGalleryLoader } from "./hooks";
@@ -28,7 +29,7 @@ export const GalleryLoader = (props: IProps) => {
       )}
 
       {!error && !images && loading && (
-        <div className="message">Loading...</div>
+        <div className="message">{locale.loading()}</div>
       )}
     </div>
   );

@@ -19,12 +19,32 @@ class EnglishLocale {
     return "Height, m";
   }
 
+  public loading() {
+    return "Loading...";
+  }
+
+  public loadingComments() {
+    return "Loading comments...";
+  }
+
+  public logInToComment() {
+    return "You need to log in to add a comment.";
+  }
+
+  public noComments() {
+    return "No comments for this tree yet, be the first.";
+  }
+
   public notes() {
     return "Notes";
   }
 
   public notesHint() {
     return "For famous trees, like: Alien Shaped Pine.";
+  }
+
+  public numberOfTrees() {
+    return "Number of trees";
   }
 
   public species() {
@@ -85,12 +105,32 @@ class RussianLocale extends EnglishLocale {
     return "Высота, м";
   }
 
+  public loading() {
+    return "Загрузка...";
+  }
+
+  public loadingComments() {
+    return "Загружаю комментарии...";
+  }
+
+  public logInToComment() {
+    return "Нужно залогиниться чтобы оставить комментарий.";
+  }
+
+  public noComments() {
+    return "Нет комментариев к этому дереву, будь первым.";
+  }
+
   public notes() {
     return "Примечания";
   }
 
   public notesHint() {
     return "Что-нибудь интересное, например: есть гнездо совы.";
+  }
+
+  public numberOfTrees() {
+    return "Сколько деревьев";
   }
 
   public species() {

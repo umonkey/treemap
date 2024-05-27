@@ -5,6 +5,9 @@
 // Global imports.
 import { ToggleButton, ToggleButtonGroup, TextField } from "@mui/material";
 
+// Project imports.
+import { locale } from "@/locale";
+
 // Local imports.
 import { useTreeCountSelector } from "./hooks";
 import "./styles.scss";
@@ -32,7 +35,7 @@ export const TreeCountSelector = (props: IProps) => {
       {mode === "row" && (
         <TextField
           id="number"
-          label="Number of trees"
+          label={locale.numberOfTrees()}
           variant="standard"
           type="number"
           value={number}
