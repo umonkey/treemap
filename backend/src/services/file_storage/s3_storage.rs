@@ -3,7 +3,7 @@ use aws_config::{BehaviorVersion, Region};
 use aws_sdk_s3::primitives::ByteStream;
 use aws_sdk_s3::types::ObjectCannedAcl;
 use aws_sdk_s3::Client;
-use log::{error, info};
+use log::{debug, error, info};
 
 use crate::config::S3Config;
 use crate::services::FileStorageInterface;
@@ -43,6 +43,8 @@ impl S3FileStorage {
 #[async_trait]
 impl FileStorageInterface for S3FileStorage {
     async fn read_file(&self, id: u64) -> Result<Vec<u8>> {
+        debug!("Reading file {} from S3.", id);
+
         let res = self
             .client
             .get_object()
@@ -76,6 +78,8 @@ impl FileStorageInterface for S3FileStorage {
     }
 
     async fn write_file(&self, id: u64, bytes: &[u8]) -> Result<()> {
+        debug!("Writing file {} to S3.", id);
+
         let body = ByteStream::from(bytes.to_vec());
 
         let res = self

@@ -15,6 +15,8 @@ impl ThumbnailerService {
     }
 
     pub fn resize(&self, data: &Vec<u8>, size: u32) -> Result<Vec<u8>> {
+        debug!("Reading an image to resize it to {} px.", size);
+
         let img = Reader::new(Cursor::new(data))
             .with_guessed_format()
             .map_err(|e| {
@@ -26,6 +28,8 @@ impl ThumbnailerService {
                 error!("Error decoding image: {:?}", e);
                 Error::BadImage
             })?;
+
+        debug!("Image read, size is {}x{}", img.width(), img.height());
 
         if img.width() <= size && img.height() <= size {
             return Ok(data.clone());
@@ -43,6 +47,8 @@ impl ThumbnailerService {
                 error!("Error writing image: {:?}", e);
                 Error::ImageResize
             })?;
+
+        debug!("Resize successful.");
 
         Ok(buf)
     }

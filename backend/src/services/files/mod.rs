@@ -60,6 +60,8 @@ impl FileService {
     }
 
     pub async fn resize_images(&self, file_id: u64) -> Result<()> {
+        debug!("Going to resize images for file {}.", file_id);
+
         match self.db.get_file(file_id).await {
             Ok(Some(file)) => {
                 let body = self.get_file(file.id).await?;
@@ -69,6 +71,8 @@ impl FileService {
 
                 let large = self.thumbnailer.resize(&body, LARGE_SIZE)?;
                 let large_id = self.write_file(&large).await?;
+
+                debug!("Updating file {} with new image ids.", file_id);
 
                 let updated = FileRecord {
                     small_id,
@@ -109,6 +113,7 @@ impl FileService {
      * Read file contents from the local file system or remote.
      */
     pub async fn get_file(&self, id: u64) -> Result<Vec<u8>> {
+        debug!("Reading file {} from storage.", id);
         self.storage.read_file(id).await
     }
 
