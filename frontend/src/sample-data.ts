@@ -231,6 +231,7 @@ export const SAMPLE_TREE = {
   "state": "healthy",
   "created_at": 1714505048,
   "updated_at": 1714505048,
+  "thumbnail_id": null,
   "files": [
     {
       id: "1",
