@@ -4,6 +4,7 @@
 use image::{imageops, io::Reader, DynamicImage};
 use log::{debug, error};
 use std::io::Cursor;
+use std::panic;
 
 use crate::types::{Error, Result};
 
@@ -17,17 +18,36 @@ impl ThumbnailerService {
     pub fn resize(&self, data: &Vec<u8>, size: u32) -> Result<Vec<u8>> {
         debug!("Reading an image to resize it to {} px.", size);
 
-        let img = Reader::new(Cursor::new(data))
-            .with_guessed_format()
-            .map_err(|e| {
+        debug!("Creating a reader.");
+        let reader = Reader::new(Cursor::new(data));
+
+        debug!("Guessing image format.");
+        let format = match reader.with_guessed_format() {
+            Ok(value) => value,
+            Err(e) => {
                 error!("Error guessing image format: {:?}", e);
-                Error::BadImage
-            })?
-            .decode()
-            .map_err(|e| {
+                return Err(Error::BadImage);
+            }
+        };
+
+        debug!("Decoding image.");
+
+        let v1 = match panic::catch_unwind(|| format.decode()) {
+            Ok(value) => value,
+
+            Err(e) => {
+                error!("Panic during decoding an image: {:?}.", e);
+                return Err(Error::BadImage);
+            }
+        };
+
+        let img = match v1 {
+            Ok(value) => value,
+            Err(e) => {
                 error!("Error decoding image: {:?}", e);
-                Error::BadImage
-            })?;
+                return Err(Error::BadImage);
+            }
+        };
 
         debug!("Image read, size is {}x{}", img.width(), img.height());
 
@@ -175,5 +195,15 @@ mod tests {
 
         assert_eq!(image.width(), 45);
         assert_eq!(image.height(), 100);
+    }
+
+    #[test]
+    fn test_broken_image() {
+        let thumbnailer = setup();
+
+        let data = include_bytes!("test/broken.jpg");
+        let resized = thumbnailer.resize(&data.to_vec(), 100);
+
+        assert!(resized.is_err());
     }
 }
