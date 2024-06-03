@@ -17,6 +17,17 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Cache temporary folders
+      uses: actions/cache@v2
+      with:
+        path: |
+          backend/target
+          frontend/node_modules
+          .registry
+        key: ${{ runner.os }}-build-${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-build-
+
     - name: Log in to the container registry
       run: make cr-login
       env:

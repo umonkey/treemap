@@ -1,17 +1,8 @@
-# (1) Build the backend binary.
-FROM docker.io/rust:1.76-alpine3.18 as rust-builder
-RUN apk add --no-cache musl-dev openssl openssl-dev openssl-libs-static
-COPY backend /app
-RUN cd /app && cargo build --release
+# Build the target deployment image.
+#
+# Note that the image is compiled from pre-build binaries and static files.
+# There are separate build steps to produce those, se commends below.
 
-# (2) Build the frontend static files.
-FROM docker.io/node:20-alpine3.18 as node-builder
-ARG SENTRY_AUTH_TOKEN
-ENV SENTRY_AUTH_TOKEN $SENTRY_AUTH_TOKEN
-COPY frontend /app
-RUN cd /app && npm install --loglevel verbose && npm run build
-
-# (3) Build the target image.
 FROM alpine:3.18
 LABEL maintainer="hex@umonkey.net"
 LABEL org.opencontainers.image.source=https://github.com/umonkey/treemap
@@ -20,10 +11,15 @@ LABEL org.opencontainers.image.description="A simple self-container backend and 
 RUN apk add --no-cache sqlite supervisor
 
 WORKDIR /app
-COPY --from=rust-builder /app/target/release/treemap /app/bin/
-COPY --from=rust-builder /app/dev/schema-sqlite.sql /app/schema-sqlite.sql
-COPY --from=rust-builder /app/dev/species.sql /app/species.sql
-COPY --from=node-builder /app/dist /app/static
+
+# These files are made with: make build-frontend-docker
+COPY frontend/dist /app/static
+
+# These files are made with: make build-backend-docker
+COPY backend/target/release/treemap /app/bin/treemap
+COPY backend/dev/schema-sqlite.sql /app/schema-sqlite.sql
+COPY backend/dev/species.sql /app/species.sql
+
 COPY container/rootfs/ /
 
 ENV RUST_LOG info,treemap=debug

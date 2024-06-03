@@ -1,3 +1,4 @@
+/.cache
 /backend/database.*
 /backend/target
 /frontend/node_modules

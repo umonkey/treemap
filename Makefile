@@ -5,23 +5,37 @@ CR_USER=umonkey
 help:
 	@echo "Development steps:"
 	@echo ""
-	@echo "make build         -- compile backend and frontend"
-	@echo "make lint          -- run linters for both backend and frontend"
-	@echo "make serve         -- run the remote Docker image"
-	@echo "make serve-local   -- run the local Docker image"
+	@echo "make build                 -- compile backend and frontend"
+	@echo "make build-backend-docker  -- build the backend image"
+	@echo "make lint                  -- run linters for both backend and frontend"
+	@echo "make serve                 -- run the remote Docker image"
+	@echo "make serve-local           -- run the local Docker image"
 	@echo ""
 	@echo "Release steps:"
 	@echo ""
-	@echo "make build-image   -- build the Docker image"
-	@echo "make cr-login      -- log in to the container repository"
-	@echo "make publish-image -- publish the Docker image at ghcr.io"
+	@echo "make build-image           -- build the Docker image"
+	@echo "make cr-login              -- log in to the container repository"
+	@echo "make publish-image         -- publish the Docker image at ghcr.io"
 
 build:
 	make -C backend build
 	make -C frontend build
 
-build-image:
-	docker build --ulimit nofile=5000:5000 --tag treemap:$(VERSION) --build-arg SENTRY_AUTH_TOKEN=$(SENTRY_AUTH_TOKEN) --network=host --file container/Dockerfile .
+# Build the backend binary using a dockerized build environment.
+# This is useful for CI/CD pipelines, letting us cache the intermediate
+# files between builds.  If we used a single dockerfile for building,
+# we'd have to start the build process from scratch every time, which
+# takes a lot of time.
+build-backend-docker:
+	mkdir -p .cache/rust-registry
+	docker run -it --rm -v $(PWD)/backend:/app -v $(PWD)/.cache/rust-registry:/usr/local/cargo/registry -w /app docker.io/rust:1.76-alpine3.18 sh dev/docker-build.sh
+
+build-frontend-docker:
+	mkdir -p .cache/npm
+	docker run -it --rm -v $(PWD)/frontend:/app -v $(PWD)/.cache/npm:/root/.npm -w /app -e SENTRY_AUTH_TOKEN=$(SENTRY_AUTH_TOKEN) --network=host --ulimit nofile=5000:5000 node:20-alpine3.18 sh docker-build.sh
+
+build-image: build-backend-docker build-frontend-docker
+	docker build --tag treemap:$(VERSION) --file container/Dockerfile .
 
 lint:
 	make -C backend lint
