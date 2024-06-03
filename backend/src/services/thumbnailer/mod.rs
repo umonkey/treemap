@@ -202,8 +202,7 @@ mod tests {
         let thumbnailer = setup();
 
         let data = include_bytes!("test/broken.jpg");
-        let resized = thumbnailer
-            .resize(&data.to_vec(), 100);
+        let resized = thumbnailer.resize(&data.to_vec(), 100);
 
         assert!(resized.is_err());
     }
