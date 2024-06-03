@@ -12,7 +12,11 @@ use crate::services::Database;
 use crate::types::{QueueMessage, Result};
 use crate::utils::{get_timestamp, get_unique_id};
 
-const DELAY: u64 = 600;
+/**
+ * Message delay in seconds per failed attempts.
+ * Each new failure increases the delay: 60 seconds first time, 120 second time, etc.
+ */
+const DELAY: u64 = 60;
 
 pub struct QueueService {
     db: Arc<dyn Database>,
@@ -36,6 +40,7 @@ impl QueueService {
             added_at: now,
             available_at: now,
             payload: payload.to_string(),
+            attempts: 0,
         };
 
         self.db.add_queue_message(&msg).await?;
@@ -71,7 +76,7 @@ impl QueueService {
     async fn delay_message(&self, msg: &QueueMessage) -> Result<()> {
         let now = get_timestamp();
         self.db
-            .delay_queue_message(msg.id, now + self.delay)
+            .delay_queue_message(msg.id, now + self.delay * (msg.attempts + 1))
             .await?;
         debug!("Message {} delayed for {} seconds.", msg.id, self.delay);
         Ok(())

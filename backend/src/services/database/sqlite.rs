@@ -622,12 +622,13 @@ impl Database for SqliteDatabase {
         let added_at = msg.added_at;
         let available_at = msg.available_at;
         let payload = msg.payload.clone();
+        let attempts = msg.attempts;
 
         self.pool
             .conn(move |conn| {
                 conn.execute(
-                    "INSERT INTO queue_messages (id, added_at, available_at, payload) VALUES (?, ?, ?, ?)",
-                    (id, added_at, available_at, payload),
+                    "INSERT INTO queue_messages (id, added_at, available_at, payload, attempts) VALUES (?, ?, ?, ?, ?)",
+                    (id, added_at, available_at, payload, attempts),
                 )?;
 
                 Ok(())
@@ -643,7 +644,7 @@ impl Database for SqliteDatabase {
         let now = get_timestamp();
 
         let message = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, added_at, available_at, payload FROM queue_messages WHERE available_at <= ? ORDER BY id LIMIT 1") {
+            let mut stmt = match conn.prepare("SELECT id, added_at, available_at, payload, attempts FROM queue_messages WHERE available_at <= ? AND attempts < 10 ORDER BY id LIMIT 1") {
                 Ok(value) => value,
 
                 Err(e) => {
@@ -655,12 +656,7 @@ impl Database for SqliteDatabase {
             let mut rows = stmt.query([now])?;
 
             if let Some(row) = rows.next()? {
-                return Ok(Some(QueueMessage {
-                    id: row.get(0)?,
-                    added_at: row.get(1)?,
-                    available_at: row.get(2)?,
-                    payload: row.get(3)?,
-                }));
+                return Ok(Some(QueueMessage::from_sqlite(row)?));
             }
 
             Ok(None)
@@ -673,7 +669,7 @@ impl Database for SqliteDatabase {
         self.pool
             .conn(move |conn| {
                 match conn.execute(
-                    "UPDATE queue_messages SET available_at = ? WHERE id = ?",
+                    "UPDATE queue_messages SET available_at = ?, attempts = attempts + 1 WHERE id = ?",
                     (available_at, id),
                 ) {
                     Ok(_) => (),
@@ -1188,6 +1184,7 @@ mod tests {
             added_at: now,
             available_at: now,
             payload: "it works".to_string(),
+            attempts: 0,
         };
 
         db.add_queue_message(&msg)
@@ -1211,6 +1208,7 @@ mod tests {
             added_at: now,
             available_at: now + 10,
             payload: "it works".to_string(),
+            attempts: 0,
         };
 
         db.add_queue_message(&msg)
@@ -1234,6 +1232,7 @@ mod tests {
             added_at: now,
             available_at: now,
             payload: "it works".to_string(),
+            attempts: 0,
         };
 
         db.add_queue_message(&msg)

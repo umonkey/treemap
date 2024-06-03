@@ -99,10 +99,12 @@ CREATE TABLE IF NOT EXISTS queue_messages (
     `added_at` INT NOT NULL,
     `available_at` INT NOT NULL,
     `payload` TEXT NOT NULL,
+    `attempts` INT NOT NULL DEFAULT '0',
     PRIMARY KEY(`id`)
 );
 CREATE INDEX IF NOT EXISTS queue_messages_added_at ON queue_messages (added_at);
 CREATE INDEX IF NOT EXISTS queue_messages_available_at ON queue_messages (available_at);
+CREATE INDEX IF NOT EXISTS queue_messages_attempts ON queue_messages (attempts);
 
 
 CREATE TABLE IF NOT EXISTS species (
