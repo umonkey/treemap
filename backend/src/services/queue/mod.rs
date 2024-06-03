@@ -12,7 +12,7 @@ use crate::services::Database;
 use crate::types::{QueueMessage, Result};
 use crate::utils::{get_timestamp, get_unique_id};
 
-const DELAY: u64 = 60;
+const DELAY: u64 = 600;
 
 pub struct QueueService {
     db: Arc<dyn Database>,
@@ -46,18 +46,15 @@ impl QueueService {
     }
 
     pub async fn pop(&self) -> Result<Option<QueueMessage>> {
-        let now = get_timestamp();
         let msg = self.db.pick_queue_message().await?;
 
         match msg {
             Some(msg) => {
-                self.db
-                    .delay_queue_message(msg.id, now + self.delay)
-                    .await?;
                 debug!(
                     "Message {} popped from queue, payload: {}",
                     msg.id, msg.payload
                 );
+                self.delay_message(&msg).await?;
                 Ok(Some(msg))
             }
 
@@ -68,6 +65,15 @@ impl QueueService {
     pub async fn delete(&self, msg: &QueueMessage) -> Result<()> {
         self.db.delete_queue_message(msg.id).await?;
         debug!("Message {} deleted from queue.", msg.id);
+        Ok(())
+    }
+
+    async fn delay_message(&self, msg: &QueueMessage) -> Result<()> {
+        let now = get_timestamp();
+        self.db
+            .delay_queue_message(msg.id, now + self.delay)
+            .await?;
+        debug!("Message {} delayed for {} seconds.", msg.id, self.delay);
         Ok(())
     }
 }
