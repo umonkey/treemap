@@ -17,17 +17,26 @@ impl ThumbnailerService {
     pub fn resize(&self, data: &Vec<u8>, size: u32) -> Result<Vec<u8>> {
         debug!("Reading an image to resize it to {} px.", size);
 
-        let img = Reader::new(Cursor::new(data))
-            .with_guessed_format()
-            .map_err(|e| {
+        debug!("Creating a reader.");
+        let reader = Reader::new(Cursor::new(data));
+
+        debug!("Guessing image format.");
+        let format = match reader.with_guessed_format() {
+            Ok(value) => value,
+            Err(e) => {
                 error!("Error guessing image format: {:?}", e);
-                Error::BadImage
-            })?
-            .decode()
-            .map_err(|e| {
+                return Err(Error::BadImage);
+            },
+        };
+
+        debug!("Decoding image.");
+        let img = match format.decode() {
+            Ok(value) => value,
+            Err(e) => {
                 error!("Error decoding image: {:?}", e);
-                Error::BadImage
-            })?;
+                return Err(Error::BadImage);
+            },
+        };
 
         debug!("Image read, size is {}x{}", img.width(), img.height());
 
@@ -167,6 +176,21 @@ mod tests {
         let thumbnailer = setup();
 
         let data = include_bytes!("test/rotated.jpg");
+        let resized = thumbnailer
+            .resize(&data.to_vec(), 100)
+            .expect("Error resizing image.");
+
+        let image = read_image(resized);
+
+        assert_eq!(image.width(), 45);
+        assert_eq!(image.height(), 100);
+    }
+
+    #[test]
+    fn test_broken() {
+        let thumbnailer = setup();
+
+        let data = include_bytes!("test/broken.jpg");
         let resized = thumbnailer
             .resize(&data.to_vec(), 100)
             .expect("Error resizing image.");

@@ -12,7 +12,7 @@ use crate::services::Database;
 use crate::types::{QueueMessage, Result};
 use crate::utils::{get_timestamp, get_unique_id};
 
-const DELAY: u64 = 60;
+const DELAY: u64 = 600;
 
 pub struct QueueService {
     db: Arc<dyn Database>,
