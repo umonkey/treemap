@@ -7,5 +7,5 @@ pub struct GoogleUserinfoResponse {
     pub verified_email: bool,
     pub name: String,
     pub picture: String,
-    pub locale: String,
+    pub locale: Option<String>,
 }

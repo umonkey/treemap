@@ -70,15 +70,26 @@ impl GoogleAuth {
     async fn get_google_userinfo(&self, req: LoginGoogleRequest) -> Result<GoogleUserinfoResponse> {
         let client = reqwest::Client::new();
 
+        let headers = match self.get_login_headers(&req) {
+            Ok(value) => value,
+
+            Err(e) => {
+                debug!("Failed to get login headers: {:?}", e);
+                return Err(Error::GoogleUserInfo);
+            }
+        };
+
         let req = client
             .get("https://www.googleapis.com/oauth2/v1/userinfo")
-            .headers(self.get_login_headers(req)?);
+            .headers(headers);
+
+        debug!("Request: {:?}", req);
 
         let res = match req.send().await {
             Ok(res) => res,
 
             Err(e) => {
-                debug!("Failed to get use info from Google: {}", e);
+                debug!("Failed to get user info from Google: {:?}", e);
                 return Err(Error::GoogleUserInfo);
             }
         };
@@ -87,13 +98,13 @@ impl GoogleAuth {
             Ok(u) => Ok(u),
 
             Err(e) => {
-                debug!("Failed to parse Google response: {}", e);
+                debug!("Failed to parse Google response: {:?}", e);
                 Err(Error::GoogleUserInfo)
             }
         }
     }
 
-    fn get_login_headers(&self, req: LoginGoogleRequest) -> Result<HeaderMap> {
+    fn get_login_headers(&self, req: &LoginGoogleRequest) -> Result<HeaderMap> {
         let auth_header = match HeaderValue::from_str(format!("Bearer {}", req.token).as_str()) {
             Ok(h) => h,
 

@@ -37,6 +37,9 @@ build-frontend-docker:
 build-image: build-backend-docker build-frontend-docker
 	docker build --tag treemap:$(VERSION) --file container/Dockerfile .
 
+image-shell:
+	docker run -it --rm -w /app treemap:$(VERSION) sh
+
 lint:
 	make -C backend lint
 	make -C frontend lint
