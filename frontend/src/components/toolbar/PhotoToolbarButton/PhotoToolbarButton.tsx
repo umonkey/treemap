@@ -2,6 +2,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCamera } from "@fortawesome/free-solid-svg-icons";
 
+import { locale } from "@/locale";
 import { usePhotoToolbarButton } from "./hooks";
 import { IProps } from "./types";
 import "./styles.scss";
@@ -18,7 +19,7 @@ export const PhotoToolbarButton = (props: IProps) => {
       <div className="icon">
         <FontAwesomeIcon icon={faCamera} />
       </div>
-      <div className="label">Photo</div>
+      <div className="label">{locale.photoButton()}</div>
       <input ref={ref} type="file" accept="image/jpeg,text/plain" multiple onChange={handleFileChange} />
     </button>
   );

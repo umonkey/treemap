@@ -1,6 +1,9 @@
 // Global imports.
 import { toast } from "react-hot-toast";
 
+// Project imports.
+import { locale } from "@/locale";
+
 // Local imports.
 import { IProps } from "./types";
 
@@ -9,18 +12,18 @@ export const useShareToolbarButton = (props: IProps) => {
     console.debug(`Sharing tree ${props.id}`);
 
     if (!navigator.share) {
-      toast.error("Your browser does not support sharing.");
+      toast.error(locale.sharingNotSupported());
       return;
     }
 
     try {
       await navigator.share({
-        title: "Check out this tree on the Tree Map!",
+        title: locale.shareTitle(),
         url: window.location.href,
       });
     } catch (e) {
       console.error("Error sharing tree", e);
-      toast.error("Error sharing tree.");
+      toast.error(locale.sharingError());
     }
   };
 

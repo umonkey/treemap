@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
 
+import { locale } from "@/locale";
 import { useEditToolbarButton } from "./hooks";
 import { IProps } from "./types";
 
@@ -14,7 +15,7 @@ export const EditToolbarButton = (props: IProps) => {
       <div className="icon">
         <FontAwesomeIcon icon={faPencil} />
       </div>
-      <div className="label">Edit</div>
+      <div className="label">{locale.editButton()}</div>
     </button>
   );
 };

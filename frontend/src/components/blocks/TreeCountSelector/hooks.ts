@@ -1,6 +1,9 @@
 // Global imports.
 import { useEffect, useState } from "react";
 
+// Project imports.
+import { locale } from "@/locale";
+
 interface IProps {
   onChange: (value: number) => void;
 }
@@ -40,6 +43,6 @@ export const useTreeCountSelector = (props: IProps) => {
     number,
     handleModeChange,
     handleNumberChange,
-    singleLabel: mode === "single" ? "Single tree" : "Single",
+    singleLabel: mode === "single" ? locale.singleTreeLabel() : locale.singleTreeShortLabel(),
   };
 };

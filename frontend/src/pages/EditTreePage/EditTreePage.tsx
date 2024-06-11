@@ -3,8 +3,10 @@ import { useState } from "react";
 import { EditTreeDialog, MapWithMarker, NarrowPage } from "@/components";
 import { ITreeDetails } from "@/types";
 import { treeMapService } from "@/services/api";
-import { useTreeInfo } from "./hooks";
 import { formatErrorMessage } from "@/utils";
+import { locale } from "@/locale";
+
+import { useTreeInfo } from "./hooks";
 import "./styles.scss";
 
 interface IProps {
@@ -33,7 +35,7 @@ export const EditTreePage = (props: IProps) => {
 
   const render = () => {
     if (loading) {
-      return <p>Loading...</p>;
+      return <p>{locale.loading()}</p>;
     }
 
     if (error) {
@@ -67,7 +69,7 @@ export const EditTreePage = (props: IProps) => {
 
   return (
     <NarrowPage className="EditTreePage">
-      <h1>Update tree details</h1>
+      <h1>{locale.updateTreeDetails()}</h1>
       {render()}
     </NarrowPage>
   );

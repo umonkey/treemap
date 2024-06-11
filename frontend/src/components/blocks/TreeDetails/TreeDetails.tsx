@@ -1,6 +1,7 @@
 import { ExternalTreeLinks } from "@/components";
 import { ITreeDetails } from "@/types";
 import { getFileURL } from "@/utils";
+import { locale } from "@/locale";
 
 import "./styles.scss";
 
@@ -13,10 +14,10 @@ export const TreeDetails = (props: IProps) => {
 
   const format = (value: number | null) => {
     if (!value) {
-      return "no data";
+      return locale.noData();
     }
 
-    return `${value} m`;
+    return locale.sizeMeters(value);
   };
 
   const image_id = props.tree.thumbnail_id;
@@ -28,7 +29,7 @@ export const TreeDetails = (props: IProps) => {
       )}
 
       <div className="inside">
-        <h2>{props.tree.species}</h2>
+        <h2>{locale.speciesTitle(props.tree.species)}</h2>
 
         <div className="treeId">#{props.tree.id}</div>
 
@@ -37,10 +38,10 @@ export const TreeDetails = (props: IProps) => {
         )}
 
         <div className="props">
-          <div>Height: {format(props.tree.height)}</div>
-          <div>Circumference: {format(props.tree.circumference)}</div>
-          <div>Canopy: {format(props.tree.diameter)}</div>
-          <div>State: {state}</div>
+          <div>{locale.height()}: {format(props.tree.height)}</div>
+          <div>{locale.circumference()}: {format(props.tree.circumference)}</div>
+          <div>{locale.canopy()}: {format(props.tree.diameter)}</div>
+          <div>{locale.state()}: {locale.stateValue(state)}</div>
         </div>
 
         <ExternalTreeLinks tree={props.tree} />

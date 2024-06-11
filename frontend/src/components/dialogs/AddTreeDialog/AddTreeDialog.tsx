@@ -44,17 +44,17 @@ export const AddTreeDialog = (props: IProps) => {
 
         <div className="row">
           <div className="group short">
-            <TextField id="height" label={locale.height()} variant="standard" type="number" value={height} onChange={handleHeightChange} />
+            <TextField id="height" label={locale.heightLabel()} variant="standard" type="number" value={height} onChange={handleHeightChange} />
           </div>
 
           <div className="group short">
-            <TextField id="circumference" label={locale.circumference()} variant="standard" type="number" value={circumference} onChange={handleCircumferenceChange} />
+            <TextField id="circumference" label={locale.circumferenceLabel()} variant="standard" type="number" value={circumference} onChange={handleCircumferenceChange} />
           </div>
         </div>
 
         <div className="row">
           <div className="group short">
-            <TextField id="diameter" label={locale.canopy()} variant="standard" type="number" value={diameter} onChange={handleDiameterChange} />
+            <TextField id="diameter" label={locale.canopyLabel()} variant="standard" type="number" value={diameter} onChange={handleDiameterChange} />
           </div>
 
           <div className="short">

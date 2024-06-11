@@ -29,7 +29,7 @@ export const TreeCountSelector = (props: IProps) => {
     <div className="TreeCountSelector">
       <ToggleButtonGroup exclusive value={mode} onChange={handleModeChange} aria-label="number of trees">
         <ToggleButton color="primary" value="single" aria-label="single">{singleLabel}</ToggleButton>
-        <ToggleButton value="row" aria-label="row">Row</ToggleButton>
+        <ToggleButton value="row" aria-label="row">{locale.treeRowLabel()}</ToggleButton>
       </ToggleButtonGroup>
 
       {mode === "row" && (

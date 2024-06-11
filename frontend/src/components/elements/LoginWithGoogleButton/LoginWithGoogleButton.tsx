@@ -5,6 +5,7 @@
  */
 
 import { Button } from "@mui/material";
+import { locale } from "@/locale";
 import { useGoogleAuth } from "./hooks";
 
 interface IProps {
@@ -20,6 +21,6 @@ export const LoginWithGoogleButton = (props: IProps) => {
   });
 
   return (
-    <Button variant="contained" color="success" disabled={props.disabled} onClick={loginFunction}>Log In with Google</Button>
+    <Button variant="contained" color="success" disabled={props.disabled} onClick={loginFunction}>{locale.logInWithGoogle()}</Button>
   );
 };

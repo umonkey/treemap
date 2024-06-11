@@ -6,9 +6,11 @@ import { useNavigate } from "react-router-dom";
 import { ITreeDetails } from "@/types";
 import { routes, formatTreeDimensions, formatDate } from "@/utils";
 import { mainBus } from "@/bus";
+import { locale } from "@/locale";
 
 const formatStatusLine = (state: string, updatedAt: number): string => {
-  return `${state.charAt(0).toUpperCase() + state.slice(1)}, checked on ${formatDate(updatedAt)}.`;
+  const date = formatDate(updatedAt);
+  return locale.formatStatusLine(state, date);
 };
 
 export const useTreeSidePane = (tree: ITreeDetails) => {

@@ -1,6 +1,7 @@
 import { ILatLng } from "@/types";
 
 import { ConfirmCancelButtons } from "@/components";
+import { locale } from "@/locale";
 
 import "./styles.scss";
 
@@ -25,8 +26,8 @@ export const MoveTreeDialog = (props: IProps) => {
 
   return (
     <div className="MoveTreeDialog Dialog">
-      <h2>Where to move the tree?</h2>
-      <p>Move the map to select tree correct location for the tree.</p>
+      <h2>{locale.moveTitle()}</h2>
+      <p>{locale.moveDescription()}</p>
 
       {props.error && (
         <p className="error">{props.error}</p>
