@@ -23,7 +23,7 @@ jobs:
         path: |
           backend/target
           frontend/node_modules
-          .registry
+          .cache
         key: ${{ runner.os }}-build-${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
           ${{ runner.os }}-build-
