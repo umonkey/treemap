@@ -7,6 +7,7 @@ import {
   TreeDetails,
   TreeMarkers,
 } from "@/components";
+import { locale } from "@/locale";
 
 import { useDetailsPage } from "./hooks";
 import "./styles.scss";
@@ -25,7 +26,7 @@ export const DetailsPage = (props: IProps) => {
   return (
     <NarrowPage className="DetailsPage">
       {loading && !tree && (
-        <p>Loading...</p>
+        <p>{locale.loading()}</p>
       )}
 
       {error && (

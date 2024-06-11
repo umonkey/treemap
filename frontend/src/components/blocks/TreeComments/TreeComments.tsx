@@ -3,6 +3,7 @@ import { AddCommentForm, LoginWithGoogleButton } from "@/components";
 import { IComment } from "@/types";
 import { formatDate } from "@/utils";
 import { useUserInfo } from "@/hooks";
+import { locale } from "@/locale";
 
 // Local imports.
 import { useComments } from "./hooks";
@@ -19,7 +20,6 @@ export const TreeComments = (props: IProps) => {
 
   const handleCommentSent = () => {
     (async () => {
-      console.debug("Comment sent, reloading the list.");
       reloadComments(props.id);
     })();
   };
@@ -27,7 +27,7 @@ export const TreeComments = (props: IProps) => {
   return (
     <div className="TreeComments">
       {loading && (
-        <div className="message">Loading comments...</div>
+        <div className="message">{locale.loadingComments()}</div>
       )}
 
       {error && (
@@ -44,14 +44,14 @@ export const TreeComments = (props: IProps) => {
           ))}
 
           {comments.length === 0 && (
-            <p>No comments for this tree yet, be the first.</p>
+            <p>{locale.noComments()}</p>
           )}
         </>
       )}
 
       {!userInfo && (
         <>
-          <p>You need to log in to add a comment.</p>
+          <p>{locale.logInToComment()}</p>
           <LoginWithGoogleButton onError={handleLoginFailed} onSuccess={handleLoginSuccess} />
         </>
       )}

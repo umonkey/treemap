@@ -3,7 +3,11 @@
  * https://mui.com/material-ui/react-select/
  */
 
+// Global imports.
 import { FormControl, InputLabel, Select, MenuItem, SelectChangeEvent } from "@mui/material";
+
+// Project imports.
+import { locale } from "@/locale";
 
 interface IProps {
   state: string;
@@ -17,7 +21,7 @@ export const TreeStateSelector = (props: IProps) => {
 
   return (
     <FormControl variant="standard">
-      <InputLabel id="tree-state-label">State</InputLabel>
+      <InputLabel id="tree-state-label">{locale.state()}</InputLabel>
       <Select
         data-testid="tree-state-select"
         labelId="tree-state-label"
@@ -26,12 +30,12 @@ export const TreeStateSelector = (props: IProps) => {
         onChange={handleChange}
         label="State"
       >
-        <MenuItem data-testid="healthy-state" value="healthy">Healthy</MenuItem>
-        <MenuItem value="deformed">Deformed</MenuItem>
-        <MenuItem value="sick">Sick</MenuItem>
-        <MenuItem value="dead">Dead</MenuItem>
-        <MenuItem value="stomp">Stomp</MenuItem>
-        <MenuItem value="gone">Gone</MenuItem>
+        <MenuItem data-testid="healthy-state" value="healthy">{locale.stateHealthy()}</MenuItem>
+        <MenuItem value="deformed">{locale.stateDeformed()}</MenuItem>
+        <MenuItem value="sick">{locale.stateSick()}</MenuItem>
+        <MenuItem value="dead">{locale.stateDead()}</MenuItem>
+        <MenuItem value="stomp">{locale.stateStomp()}</MenuItem>
+        <MenuItem value="gone">{locale.stateGone()}</MenuItem>
       </Select>
     </FormControl>
   );

@@ -2,6 +2,8 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { LocationPicker, MoveTreeDialog, MapWithMarker, SideBar, TreeMarkers, WithAuth, WithHeader, WithSidebar } from "@/components";
 import { routes } from "@/utils/routes";
+import { locale } from "@/locale";
+
 import { useMoveTree } from "./hooks";
 import "./styles.scss";
 
@@ -19,7 +21,7 @@ export const MoveTreePage = (props: IProps) => {
 
   const render = () => {
     if (loading) {
-      return <p>Loading...</p>;
+      return <p>{locale.loading()}</p>;
     }
 
     if (loadingError) {

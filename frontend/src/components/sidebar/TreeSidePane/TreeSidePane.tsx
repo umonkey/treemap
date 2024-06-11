@@ -5,6 +5,7 @@ import { faRulerCombined, faCircleInfo, faX } from "@fortawesome/free-solid-svg-
 // Project imports.
 import { PreviewToolbar, GalleryLoader, ExternalTreeLinks } from "@/components";
 import { ITreeDetails } from "@/types";
+import { locale } from "@/locale";
 
 // Local imports.
 import { useTreeSidePane } from "./hooks";
@@ -19,7 +20,7 @@ export const TreeSidePane = (props: IProps) => {
 
   return (
     <div className="TreeSidePane">
-      <h2>{tree.species}</h2>
+      <h2>{locale.speciesTitle(tree.species)}</h2>
 
       {tree.notes && (
         <div className="notes">{tree.notes}</div>

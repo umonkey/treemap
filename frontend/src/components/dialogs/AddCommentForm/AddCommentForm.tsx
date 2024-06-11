@@ -1,5 +1,7 @@
 import { Button, TextField } from "@mui/material";
 
+import { locale } from "@/locale";
+
 import { useCommentForm } from "./hooks";
 
 interface IProps {
@@ -23,8 +25,8 @@ export const AddCommentForm = (props: IProps) => {
         <div className="message">{error}</div>
       )}
 
-      <TextField multiline minRows={3} placeholder="Add your comment..." value={text} onChange={handleTextChange} />
-      <Button variant="contained" disabled={!canSend} onClick={handleSendComment}>Send comment</Button>
+      <TextField multiline minRows={3} placeholder={locale.commentFieldPlaceholder()} value={text} onChange={handleTextChange} />
+      <Button variant="contained" disabled={!canSend} onClick={handleSendComment}>{locale.sendComment()}</Button>
     </div>
   );
 };
