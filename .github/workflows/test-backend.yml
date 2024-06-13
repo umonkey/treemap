@@ -17,8 +17,16 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    # Adds cache with some defaults, see https://github.com/marketplace/actions/rust-cache
-    - uses: Swatinem/rust-cache@v2
+    - name: Cache temporary folders
+      uses: actions/cache@v4
+      with:
+        path: |
+          backend/target
+        key: ${{ runner.os }}
+
+    - name: Inspect environment
+      run: |
+        du -kshc backend/target $HOME/.cargo/*
 
     - name: Run Clippy
       run: |
@@ -30,3 +38,7 @@ jobs:
       run: |
         cd backend
         cargo test --verbose
+
+    - name: Inspect results
+      run: |
+        du -kshc backend/target $HOME/.cargo/*

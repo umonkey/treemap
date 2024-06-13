@@ -2,6 +2,10 @@ VERSION=0.1.3
 
 CR_USER=umonkey
 
+# Build configuration
+RUST_BUILDER_IMAGE=docker.io/rust:1.76-alpine3.18
+
+
 help:
 	@echo "Development steps:"
 	@echo ""
@@ -28,7 +32,7 @@ build:
 # takes a lot of time.
 build-backend-docker:
 	mkdir -p .cache/rust-registry
-	docker run --rm -v $(PWD)/backend:/app -v $(PWD)/.cache/rust-registry:/usr/local/cargo/registry -w /app docker.io/rust:1.76-alpine3.18 sh dev/docker-build.sh
+	docker run --rm -v $(PWD)/backend:/app -v $(PWD)/.cache/rust-registry:/usr/local/cargo/registry -w /app $(RUST_BUILDER_IMAGE) sh dev/docker-build.sh
 
 build-frontend-docker:
 	mkdir -p .cache/npm
