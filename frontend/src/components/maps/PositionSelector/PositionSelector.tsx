@@ -38,7 +38,7 @@ export const PositionSelector = (props: IProps) => {
         onChange={handleNumberChange}
       />
 
-      <MapBase center={mapState.center} zoom={mapState.zoom}>
+      <MapBase center={mapState.center} zoom={mapState.zoom} fullscreenControl>
         {number === 1 && (
           <LocationPicker
             onChange={handleSinglePositionChange}

@@ -7,7 +7,9 @@
 
 // Global imports.
 import { MapContainer } from "react-leaflet";
+import { FullscreenControl } from "react-leaflet-fullscreen";
 import "leaflet/dist/leaflet.css";
+import "react-leaflet-fullscreen/styles.css";
 
 // Project imports.
 import { MapEventHandler, LayerSelector } from "@/components";
@@ -21,6 +23,7 @@ interface IProps {
   center: ILatLng;
   zoom: number;
   children?: React.ReactNode | React.ReactNode[];
+  fullscreenControl?: boolean;
 }
 
 export const MapBase = (props: IProps) => {
@@ -47,6 +50,10 @@ export const MapBase = (props: IProps) => {
       >
         <MapEventHandler onViewChange={handleViewChange} />
         <LayerSelector />
+
+        {props.fullscreenControl && (
+          <FullscreenControl />
+        )}
 
         {props.children}
       </MapContainer>

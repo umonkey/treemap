@@ -15,4 +15,12 @@
 .map {
   width: 100%;
   height: 100%;
+
+  /**
+   * The header has z-index 800, so we need to make it a little higher
+   * to overlap the header, otherwise won't be able to zoom out back.
+   */
+  &.leaflet-pseudo-fullscreen {
+    z-index: 900;
+  }
 }

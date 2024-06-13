@@ -22,7 +22,7 @@ const { zoom } = useMapWithMarker();
 
   return (
     <div className="MapWithMarker">
-      <MapBase center={props.center} zoom={zoom}>
+      <MapBase center={props.center} zoom={zoom} fullscreenControl>
         <DefaultMarker center={props.center} />
         {props.children}
       </MapBase>
