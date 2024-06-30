@@ -1,4 +1,5 @@
 export { AddPage } from "./AddPage";
+export { AddedTreesPage } from "./AddedTreesPage";
 export { DetailsPage } from "./DetailsPage";
 export { DetailsPageWrapper } from "./DetailsPageWrapper";
 export { EditTreePage } from "./EditTreePage";

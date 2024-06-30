@@ -21,6 +21,7 @@ export interface ITreeInfo {
   circumference: number | null;
   diameter: number | null;
   state: string;
+  added_at: number;
   updated_at: number;
   thumbnail_id: string | null;
 }
@@ -52,6 +53,7 @@ export interface ITreeDetails {
   circumference: number | null;
   diameter: number | null;
   state: string;
+  added_at: number;
   updated_at: number;
   thumbnail_id: string | null;
   files?: IFileInfo[];

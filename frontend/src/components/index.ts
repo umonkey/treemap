@@ -52,6 +52,7 @@ export { Toolbar } from "./toolbar/Toolbar";
 export { TreeComments } from "./blocks/TreeComments";
 export { TreeCountSelector } from "./blocks/TreeCountSelector";
 export { TreeDetails } from "./blocks/TreeDetails";
+export { TreeListItem } from "./blocks/TreeListItem";
 export { TreeMarker } from "./maps/TreeMarker";
 export { TreeMarkers } from "./maps/TreeMarkers";
 export { TreePopup } from "./maps/TreePopup";
