@@ -2,8 +2,8 @@
 import { create } from "zustand";
 
 // Project imports.
-import { ITreeInfo, ITreeStats, ITreeInfoMap, IUserInfo } from "@/types";
-import { getUserInfo, setUserInfo, getMapLayer, setMapLayer } from "@/utils";
+import { ITreeInfo, ITreeStats, ITreeInfoMap, ILoginInfo } from "@/types";
+import { getLoginInfo, setLoginInfo, getMapLayer, setMapLayer } from "@/utils";
 import { treeMapService } from "@/services/api";
 
 interface IStore {
@@ -11,8 +11,8 @@ interface IStore {
   addTrees: (trees: ITreeInfo[]) => void;
   resetTrees: () => void;
 
-  userInfo: IUserInfo | null;
-  setUserInfo: (value: IUserInfo | null) => void;
+  loginInfo: ILoginInfo | null;
+  setLoginInfo: (value: ILoginInfo | null) => void;
 
   uploadProgress: number;
   setUploadProgress: (value: number) => void;
@@ -50,8 +50,8 @@ export const useStore = create<IStore>((set) => ({
     set({ trees: {} });
   },
 
-  userInfo: (() => {
-    const info = getUserInfo();
+  loginInfo: (() => {
+    const info = getLoginInfo();
 
     if (info !== null) {
       treeMapService.setToken(info.token);
@@ -60,11 +60,11 @@ export const useStore = create<IStore>((set) => ({
     return info;
   })(),
 
-  setUserInfo: (value: IUserInfo | null) => {
-    setUserInfo(value);
+  setLoginInfo: (value: ILoginInfo | null) => {
+    setLoginInfo(value);
 
     set(() => {
-      return { userInfo: value };
+      return { loginInfo: value };
     });
   },
 

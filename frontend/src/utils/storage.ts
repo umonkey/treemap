@@ -1,5 +1,5 @@
 // Project imports.
-import { IMapState, IUserInfo } from "@/types";
+import { IMapState, ILoginInfo } from "@/types";
 import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM, HOME_PAGE_MAP_KEY, USER_INFO_KEY, MAP_LAYER_KEY } from "@/utils/config";
 
 export const DEFAULT_MAP_STATE = {
@@ -41,12 +41,12 @@ export const setMapState = (value: IMapState) => {
   writeValue<IMapState>(HOME_PAGE_MAP_KEY, value);
 }
 
-export const getUserInfo = (): IUserInfo | null => {
-  return readValue<IUserInfo>(USER_INFO_KEY);
+export const getLoginInfo = (): ILoginInfo | null => {
+  return readValue<ILoginInfo>(USER_INFO_KEY);
 };
 
-export const setUserInfo = (value: IUserInfo | null) => {
-  writeValue<IUserInfo>(USER_INFO_KEY, value);
+export const setLoginInfo = (value: ILoginInfo | null) => {
+  writeValue<ILoginInfo>(USER_INFO_KEY, value);
 };
 
 export const getMapLayer = (): string => {

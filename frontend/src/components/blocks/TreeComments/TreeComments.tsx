@@ -2,7 +2,7 @@
 import { AddCommentForm, LoginWithGoogleButton } from "@/components";
 import { IComment } from "@/types";
 import { formatDate } from "@/utils";
-import { useUserInfo } from "@/hooks";
+import { useLoginInfo } from "@/hooks";
 import { locale } from "@/locale";
 
 // Local imports.
@@ -16,7 +16,7 @@ interface IProps {
 export const TreeComments = (props: IProps) => {
   const { comments, loading, error, reloadComments, handleLoginFailed, handleLoginSuccess } = useComments(props.id);
 
-  const { userInfo } = useUserInfo();
+  const { loginInfo } = useLoginInfo();
 
   const handleCommentSent = () => {
     (async () => {
@@ -49,14 +49,14 @@ export const TreeComments = (props: IProps) => {
         </>
       )}
 
-      {!userInfo && (
+      {!loginInfo && (
         <>
           <p>{locale.logInToComment()}</p>
           <LoginWithGoogleButton onError={handleLoginFailed} onSuccess={handleLoginSuccess} />
         </>
       )}
 
-      {userInfo && (
+      {loginInfo && (
         <AddCommentForm id={props.id} onSuccess={handleCommentSent} />
       )}
     </div>

@@ -1,4 +1,4 @@
-import { getUserInfo, setUserInfo } from "./storage";
+import { getLoginInfo, setLoginInfo } from "./storage";
 
 describe("utils/storage", () => {
   beforeEach(() => {
@@ -6,7 +6,7 @@ describe("utils/storage", () => {
   });
 
   test("get empty user info", () => {
-    const value = getUserInfo();
+    const value = getLoginInfo();
     expect(value).toBeNull();
   });
 
@@ -17,9 +17,9 @@ describe("utils/storage", () => {
       token: "foobar",
     };
 
-    setUserInfo(info);
+    setLoginInfo(info);
 
-    const value = getUserInfo();
+    const value = getLoginInfo();
     expect(value).toEqual(info);
   });
 });

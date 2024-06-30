@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { LoginWithGoogleButton } from "@/components";
-import { useUserInfo } from "@/hooks";
+import { useLoginInfo } from "@/hooks";
 import "./style.css";
 
 interface IProps {
@@ -10,7 +10,7 @@ interface IProps {
 export const WithAuth = (props: IProps) => {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<boolean>(false);
-  const { userInfo } = useUserInfo();
+  const { loginInfo } = useLoginInfo();
 
   const handleSuccess = () => {
     setSuccess(true);
@@ -20,7 +20,7 @@ export const WithAuth = (props: IProps) => {
     setError(true);
   };
 
-  if (userInfo || success) {
+  if (loginInfo || success) {
     return props.children;
   }
 

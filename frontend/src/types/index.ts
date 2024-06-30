@@ -31,8 +31,14 @@ export interface ITreeInfoMap {
   [id: string]: ITreeInfo;
 }
 
-export interface IUserInfo {
+export interface ILoginInfo {
   token: string;
+  name: string;
+  picture: string;
+}
+
+export interface IUserInfo {
+  id: string;
   name: string;
   picture: string;
 }

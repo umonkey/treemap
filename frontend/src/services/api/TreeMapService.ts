@@ -7,6 +7,7 @@ import {
   IFileStatusResponse,
   IFileUploadResponse,
   ILatLng,
+  ILoginInfo,
   ISpecies,
   ITreeDefaults,
   ITreeDetails,
@@ -103,6 +104,10 @@ export class TreeMapService {
     return await this.get<ITreeStats>("/v1/trees/stats");
   }
 
+  public async getUser(id: string): Promise<IUserInfo> {
+    return await this.get<IUserInfo>(`/v1/users/${id}`);
+  }
+
   public async updateTreePosition(id: string, position: ILatLng) {
     await this.put(`/v1/trees/${id}/position`, {
       lat: position.lat,
@@ -124,8 +129,8 @@ export class TreeMapService {
    * Exchanges a Google OAuth token for a local user token.
    * Creates a new user account if necessary.
    */
-  public async loginGoogle(token: string): Promise<IUserInfo> {
-    const res = await this.post<IUserInfo>("/v1/login/google", {
+  public async loginGoogle(token: string): Promise<ILoginInfo> {
+    const res = await this.post<ILoginInfo>("/v1/login/google", {
       token,
     });
 
