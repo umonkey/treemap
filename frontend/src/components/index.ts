@@ -36,6 +36,7 @@ export { MoveTreeDialog } from "./dialogs/MoveTreeDialog";
 export { NarrowPage } from "./layout/NarrowPage";
 export { PhotoToolbarButton } from "./toolbar/PhotoToolbarButton";
 export { PositionSelector } from "./maps/PositionSelector";
+export { PrevNextNavigation } from "./blocks/PrevNextNavigation";
 export { PreviewToolbar } from "./toolbar/PreviewToolbar";
 export { ProfileHeaderButton } from "./elements/ProfileHeaderButton";
 export { ProgressBar } from "./elements/ProgressBar";
