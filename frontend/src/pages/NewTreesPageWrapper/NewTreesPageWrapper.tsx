@@ -1,14 +1,14 @@
-import { useParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 import { NewTreesPage } from "@/pages";
 
 export const NewTreesPageWrapper = () => {
-  const { count, skip } = useParams();
+  const [params] = useSearchParams();
 
   return (
     <NewTreesPage
-      count={parseInt(count || "50")}
-      skip={parseInt(skip || "0")}
+      count={parseInt(params.get("count") || "50")}
+      skip={parseInt(params.get("skip") || "0")}
     />
   );
 };

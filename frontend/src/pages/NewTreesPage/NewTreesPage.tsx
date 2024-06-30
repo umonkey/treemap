@@ -1,4 +1,4 @@
-import { NarrowPage, TreeListItem } from "@/components";
+import { NarrowPage, TreeListItem, PrevNextNavigation } from "@/components";
 import { locale } from "@/locale";
 
 import { useNewTreesPage } from "./hooks";
@@ -6,7 +6,7 @@ import { IProps } from "./types";
 import "./styles.scss";
 
 export const NewTreesPage = (props: IProps) => {
-  const { error, loading, trees } = useNewTreesPage(props);
+  const { error, loading, trees, prev, next } = useNewTreesPage(props);
 
   return (
     <NarrowPage className="NewTreesPage">
@@ -21,14 +21,21 @@ export const NewTreesPage = (props: IProps) => {
       )}
 
       {trees && !error && (
-        <div className="items">
-          {trees.map((tree, index) => (
-            <TreeListItem
-              key={index}
-              tree={tree}
-            />
-          ))}
-        </div>
+        <>
+          <div className="items">
+            {trees.map((tree, index) => (
+              <TreeListItem
+                key={index}
+                tree={tree}
+              />
+            ))}
+          </div>
+
+          <PrevNextNavigation
+            prev={prev}
+            next={next}
+          />
+        </>
       )}
     </NarrowPage>
   );
