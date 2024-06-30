@@ -2,11 +2,11 @@ import type { Meta, StoryObj } from '@storybook/react';
 
 import { SAMPLE_TREES } from "@/sample-data";
 
-import { AddedTreesPage } from "./AddedTreesPage";
+import { NewTreesPage } from "./NewTreesPage";
 
 const meta = {
-  title: 'Pages/AddedTreesPage',
-  component: AddedTreesPage,
+  title: 'Pages/NewTreesPage',
+  component: NewTreesPage,
   parameters: {
     layout: "fullscreen",
     mockData: [
@@ -22,7 +22,7 @@ const meta = {
     ],
   },
   args: { },
-} satisfies Meta<typeof AddedTreesPage>;
+} satisfies Meta<typeof NewTreesPage>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

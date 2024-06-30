@@ -63,7 +63,7 @@ export class TreeMapService {
     return res.trees;
   }
 
-  public async getAddedTrees(count: number, skip: number): Promise<ITreeInfo[]> {
+  public async getNewTrees(count: number, skip: number): Promise<ITreeInfo[]> {
     const res = await this.get<ITreesResponse>("/v1/trees/new", {
       params: {
         count,

@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-import { formatDate, routes } from "@/utils";
+import { formatDate, formatTreeDimensions, routes } from "@/utils";
 
 import { IProps } from "./types";
 import { useTreeListItem } from "./hooks";
@@ -14,7 +14,8 @@ export const TreeListItem = (props: IProps) => {
       <div className="species">
         <Link to={routes.treeDetails(tree.id.toString())}>{tree.species}</Link>
       </div>
-      <div className="meta">{formatDate(tree.added_at)} by {user?.name || "unknown user"}</div>
+      <div className="added">{formatDate(tree.added_at)} by {user?.name || "unknown user"}</div>
+      <div className="params">{formatTreeDimensions(tree)}</div>
     </div>
   );
 };

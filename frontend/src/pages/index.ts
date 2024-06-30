@@ -1,10 +1,10 @@
 export { AddPage } from "./AddPage";
-export { AddedTreesPage } from "./AddedTreesPage";
 export { DetailsPage } from "./DetailsPage";
 export { DetailsPageWrapper } from "./DetailsPageWrapper";
 export { EditTreePage } from "./EditTreePage";
 export { EditTreePageWrapper } from "./EditTreePageWrapper";
 export { HomePage } from "./HomePage";
 export { MoveTreePage, MoveTreePageWrapper } from "./MoveTreePage";
+export { NewTreesPage } from "./NewTreesPage";
 export { PreviewPage } from "./PreviewPage";
 export { PreviewPageWrapper } from "./PreviewPageWrapper";

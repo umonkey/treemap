@@ -5,7 +5,7 @@ import { ITreeInfo } from "@/types";
 import { IProps } from "./types";
 import { treeMapService } from "@/services/api";
 
-export const useAddedTreesPage = (props: IProps) => {
+export const useNewTreesPage = (props: IProps) => {
   const [ trees, setTrees ] = useState<ITreeInfo[]>([]);
   const [ error, setError ] = useState<string | null>(null);
   const [ loading, setLoading ] = useState<boolean>(true);
@@ -14,7 +14,7 @@ export const useAddedTreesPage = (props: IProps) => {
     (async () => {
       try {
         setLoading(true);
-        const res = await treeMapService.getAddedTrees(props.count, props.skip);
+        const res = await treeMapService.getNewTrees(props.count, props.skip);
         console.debug(`Found ${res.length} trees.`);
         setTrees(res);
       } catch (e) {
