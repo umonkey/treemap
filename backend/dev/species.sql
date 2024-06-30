@@ -3,6 +3,7 @@ INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Acer negundo',
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Acer pseudoplatanus', 'Sycamore maple', 'клён белый;явор;немецкий;maple;sycamore', 'Q156944');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Acer', 'Maple', 'клён', 'Q42292');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Aesculus hippocastanum', 'Horse chestnut', 'каштан;конский;buckeye;conker', 'Q26899');
+INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Ailanthus altissima', 'Tree of heaven', 'айлант;высочайший', 'Q159570');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Betula', 'Birch', 'берёза;береза', 'Q25243');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Catalpa', 'Catalpa', 'катальпа', 'Q158072');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Cercis siliquastrum', 'Judas tree', 'багряник европейский', 'Q29488');
@@ -17,13 +18,16 @@ INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Pinus', 'Pine'
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Platanus orientalis', 'Oriental plane', 'sycamore;платан;чинар', 'Q161105');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Populus alba', 'White poplar', 'тополь;белый;silver', 'Q146269');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Populus', 'Poplar', 'тополь;aspen', 'Q25356');
+INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Prunus avium', 'Sweet cherry', 'черешня', 'Q165137');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Quercus robur', 'Pedunculate oak', 'дуб;черешчатый', 'Q165145');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Quercus rubra', 'Northern red oak', 'дуб;красный', 'Q147525');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Quercus', 'Oak', 'дуб', 'Q12004');
+INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Robinia pseudoacacia', 'Locust', 'акация;белая;acacia', 'Q157417');
+INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Sakura', 'Sakura', 'сакура;cherry blossom', 'Q871991');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Salix', 'Willow', 'ива;sallow;osier', 'Q36050');
+INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Syringa', 'Lilac', 'сирень', 'Q157449');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Thuja', 'Cedar', 'туя;биота;cedar', 'Q147255');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Tilia', 'Linden', 'липа;basswood;lime', 'Q127849');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Ulmus glabra', 'Wych elm', 'вяз;шершавый;scots', 'Q147498');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Ulmus parvifolia', 'Lacebark elm', 'вяз;мелколистный;карагач;chinese;sieboldii', 'Q1074099');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Ulmus', 'Elm', 'вяз;карагач', 'Q131113');
-INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Sakura', 'Sakura', 'сакура;cherry blossom', 'Q871991');
