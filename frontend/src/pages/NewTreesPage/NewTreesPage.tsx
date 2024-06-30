@@ -10,7 +10,7 @@ export const NewTreesPage = (props: IProps) => {
 
   return (
     <NarrowPage className="NewTreesPage">
-      <h1>Recently Added Trees</h1>
+      <h1>{locale.newTreesHeader()}</h1>
 
       {loading && !trees && (
         <p>{locale.loading()}</p>
