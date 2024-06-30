@@ -17,3 +17,13 @@ impl From<UserRecord> for UserResponse {
         }
     }
 }
+
+impl From<&UserRecord> for UserResponse {
+    fn from(record: &UserRecord) -> Self {
+        UserResponse {
+            id: record.id.to_string(),
+            name: record.name.clone(),
+            picture: record.picture.clone(),
+        }
+    }
+}

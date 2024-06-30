@@ -31,6 +31,7 @@ pub trait Database {
     async fn find_user_by_email(&self, email: &str) -> Result<Option<UserRecord>>;
     async fn add_user(&self, user: &UserRecord) -> Result<()>;
     async fn get_user(&self, id: u64) -> Result<Option<UserRecord>>;
+    async fn get_users(&self, ids: &[u64]) -> Result<Vec<UserRecord>>;
 
     async fn add_file(&self, file: &FileRecord) -> Result<()>;
     async fn find_files_by_tree(&self, tree_id: u64) -> Result<Vec<FileRecord>>;

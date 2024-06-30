@@ -5,7 +5,7 @@ use serde::Serialize;
 
 use crate::types::TreeRecord;
 
-#[derive(Debug, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct TreeListItem {
     pub id: String,
     pub lat: f64,

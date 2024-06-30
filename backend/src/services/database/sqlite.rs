@@ -649,6 +649,20 @@ impl Database for SqliteDatabase {
         Ok(user)
     }
 
+    async fn get_users(&self, ids: &[u64]) -> Result<Vec<UserRecord>> {
+        let mut users: Vec<UserRecord> = Vec::new();
+
+        for id in ids {
+            let user = self.get_user(*id).await?;
+
+            if let Some(user) = user {
+                users.push(user);
+            }
+        }
+
+        Ok(users)
+    }
+
     async fn add_queue_message(&self, msg: &QueueMessage) -> Result<()> {
         let id = msg.id;
         let added_at = msg.added_at;
