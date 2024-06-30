@@ -36,7 +36,7 @@ export const useApp = () => {
 
     (async () => {
       try {
-        await treeMapService.getUserInfo();
+        await treeMapService.getCurrentUserInfo();
         console.debug("[app] User token is OK.");
       } catch (e) {
         // @ts-expect-error TS18046

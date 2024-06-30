@@ -139,7 +139,7 @@ export class TreeMapService {
     return res;
   }
 
-  public async getUserInfo(): Promise<IUserInfo> {
+  public async getCurrentUserInfo(): Promise<IUserInfo> {
     return await this.get<IUserInfo>("/v1/me", {
       headers: this.get_auth_headers(),
     });
