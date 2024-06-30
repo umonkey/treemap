@@ -2,7 +2,7 @@
 import { create } from "zustand";
 
 // Project imports.
-import { ITreeInfo, ITreeStats, ITreeInfoMap, ILoginInfo } from "@/types";
+import { ITreeInfo, ITreeStats, ITreeInfoMap, IUserInfo, ILoginInfo } from "@/types";
 import { getLoginInfo, setLoginInfo, getMapLayer, setMapLayer } from "@/utils";
 import { treeMapService } from "@/services/api";
 
@@ -22,6 +22,10 @@ interface IStore {
 
   stats: ITreeStats;
   setStats: (value: ITreeStats) => void;
+
+  // Cached user map.
+  users: Map<string, IUserInfo>;
+  addUsers: (value: IUserInfo[]) => void;
 }
 
 export const useStore = create<IStore>((set) => ({
@@ -90,4 +94,19 @@ export const useStore = create<IStore>((set) => ({
   setStats: (value: ITreeStats) => set({
     stats: value,
   }),
+
+  users: new Map(),
+
+  // Add new users to the cache.
+  addUsers: (value: IUserInfo[]) => {
+    set((state) => {
+      const updated = new Map(state.users);
+
+      value.forEach((user) => {
+        updated.set(user.id, user);
+      });
+
+      return { users: updated };
+    });
+  },
 }));
