@@ -11,7 +11,7 @@ use crate::types::{
     AddCommentRequest, AddFileRequest, AddTreeRequest, Error, FileStatusResponse,
     FileUploadResponse, GetTreesRequest, LoginGoogleRequest, LoginResponse, MeResponse,
     MoveTreeRequest, NewTreeDefaultsResponse, PublicCommentInfo, PublicSpeciesInfo, Result,
-    TreeDetails, TreeList, TreeRecord, TreeStats, UpdateTreeRequest,
+    TreeDetails, TreeList, TreeRecord, TreeStats, UpdateTreeRequest, UserResponse,
 };
 
 pub struct AppState {
@@ -57,6 +57,16 @@ impl AppState {
 
     pub async fn get_trees(&self, request: &GetTreesRequest) -> Result<TreeList> {
         self.trees.get_trees(request).await
+    }
+
+    pub async fn get_user(&self, id: u64) -> Result<UserResponse> {
+        let record = match self.db.get_user(id).await? {
+            Some(value) => value,
+
+            None => return Err(Error::UserNotFound),
+        };
+
+        Ok(UserResponse::from(record))
     }
 
     pub async fn get_new_trees(&self, count: u64, skip: u64) -> Result<TreeList> {

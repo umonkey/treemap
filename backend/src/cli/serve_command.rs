@@ -57,6 +57,7 @@ pub async fn serve_command() {
             .service(search_species)
             .service(suggest_species)
             .service(update_tree)
+            .service(get_user)
             .service(
                 Files::new("/", "./static")
                     .prefer_utf8(true)
