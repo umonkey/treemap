@@ -7,6 +7,7 @@ export const routes = {
   editTree: (id: string) => `/tree/${id}/edit`,
   home: () => "/",
   moveTree: (id: string) => `/tree/${id}/move`,
+  newTrees: () => "/trees/new",
   search: (query: string) => `/?search=${query}`,
   treeDetails: (id: string) => `/tree/${id}`,
   treePreview: (id: string) => `/tree/${id}/preview`,
