@@ -10,6 +10,8 @@ import {
   SAMPLE_SPECIES_SEARCH,
   SAMPLE_TREE,
   SAMPLE_TREES,
+  SAMPLE_USER1,
+  SAMPLE_USER2,
 } from "@/sample-data";
 
 // Local imports.
@@ -160,6 +162,20 @@ const preview: Preview = {
           status: 200,
           delay: 500,
           response: ["Acer", "Ulmus", "Unknown tree"],
+        },
+        {
+          url: "/v1/users/user1",
+          method: "GET",
+          status: 200,
+          delay: 100,
+          response: SAMPLE_USER1,
+        },
+        {
+          url: "/v1/users/user2",
+          method: "GET",
+          status: 200,
+          delay: 100,
+          response: SAMPLE_USER2,
         },
       ],
     },
