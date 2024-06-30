@@ -10,6 +10,11 @@ export interface ILatLng {
   lon: number;
 }
 
+export interface ITreeList {
+  trees: ITreeInfo[];
+  users: IUserInfo[];
+}
+
 export interface ITreeInfo {
   id: string;
   lat: number;

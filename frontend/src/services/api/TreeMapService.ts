@@ -12,6 +12,7 @@ import {
   ITreeDefaults,
   ITreeDetails,
   ITreeInfo,
+  ITreeList,
   ITreeStats,
   IUpdateTreeRequest,
   IUserInfo,
@@ -63,15 +64,13 @@ export class TreeMapService {
     return res.trees;
   }
 
-  public async getNewTrees(count: number, skip: number): Promise<ITreeInfo[]> {
-    const res = await this.get<ITreesResponse>("/v1/trees/new", {
+  public async getNewTrees(count: number, skip: number): Promise<ITreeList> {
+    return await this.get<ITreeList>("/v1/trees/new", {
       params: {
         count,
         skip,
       }
     });
-
-    return res.trees;
   }
 
   /**
