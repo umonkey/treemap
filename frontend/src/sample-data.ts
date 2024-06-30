@@ -19,6 +19,7 @@ export const SAMPLE_TREES = [
     "notes": null,
     "state": "healthy",
     "added_at": 1714505048,
+    "added_by": "user1",
     "updated_at": 1714505048,
     "thumbnail_id": null,
   },
@@ -35,6 +36,7 @@ export const SAMPLE_TREES = [
     "state": "healthy",
     "thumbnail_id": null,
     "added_at": 1714505048,
+    "added_by": "user1",
     "updated_at": 1714505048,
   },
   {
@@ -50,6 +52,7 @@ export const SAMPLE_TREES = [
     "state": "healthy",
     "thumbnail_id": null,
     "added_at": 1714505048,
+    "added_by": "user1",
     "updated_at": 1714505048,
   },
   {
@@ -65,6 +68,7 @@ export const SAMPLE_TREES = [
     "state": "healthy",
     "thumbnail_id": null,
     "added_at": 1714505048,
+    "added_by": "user1",
     "updated_at": 1714505048,
   },
   {
@@ -80,6 +84,7 @@ export const SAMPLE_TREES = [
     "state": "healthy",
     "thumbnail_id": null,
     "added_at": 1714505048,
+    "added_by": "user1",
     "updated_at": 1714505048,
   },
   {
@@ -95,6 +100,7 @@ export const SAMPLE_TREES = [
     "state": "healthy",
     "thumbnail_id": null,
     "added_at": 1714505048,
+    "added_by": "user1",
     "updated_at": 1714505048,
   },
   {
@@ -110,6 +116,7 @@ export const SAMPLE_TREES = [
     "state": "healthy",
     "thumbnail_id": null,
     "added_at": 1714505048,
+    "added_by": "user1",
     "updated_at": 1714505048,
   },
   {
@@ -125,6 +132,7 @@ export const SAMPLE_TREES = [
     "state": "healthy",
     "thumbnail_id": null,
     "added_at": 1714505048,
+    "added_by": "user1",
     "updated_at": 1714505048,
   },
   {
@@ -140,6 +148,7 @@ export const SAMPLE_TREES = [
     "state": "healthy",
     "thumbnail_id": null,
     "added_at": 1714505048,
+    "added_by": "user1",
     "updated_at": 1714505048,
   },
   {
@@ -155,6 +164,7 @@ export const SAMPLE_TREES = [
     "state": "healthy",
     "thumbnail_id": null,
     "added_at": 1714505048,
+    "added_by": "user1",
     "updated_at": 1714505048,
   },
   {
@@ -170,6 +180,7 @@ export const SAMPLE_TREES = [
     "state": "healthy",
     "thumbnail_id": null,
     "added_at": 1714505048,
+    "added_by": "user1",
     "updated_at": 1714505048,
   },
   {
@@ -185,6 +196,7 @@ export const SAMPLE_TREES = [
     "state": "healthy",
     "thumbnail_id": null,
     "added_at": 1714505048,
+    "added_by": "user1",
     "updated_at": 1714505048,
   },
   {
@@ -200,6 +212,7 @@ export const SAMPLE_TREES = [
     "state": "healthy",
     "thumbnail_id": null,
     "added_at": 1714505048,
+    "added_by": "user1",
     "updated_at": 1714505048,
   },
   {
@@ -215,6 +228,7 @@ export const SAMPLE_TREES = [
     "state": "healthy",
     "thumbnail_id": null,
     "added_at": 1714505048,
+    "added_by": "user1",
     "updated_at": 1714505048,
   }
 ] as ITreeInfo[];

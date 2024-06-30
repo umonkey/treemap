@@ -13,7 +13,7 @@ export const TreeListItem = (props: IProps) => {
       <div className="species">
         <Link to={routes.treeDetails(tree.id.toString())}>{tree.species}</Link>
       </div>
-      <div className="meta">{formatDate(tree.added_at)}</div>
+      <div className="meta">{formatDate(tree.added_at)} by {tree.added_by}</div>
     </div>
   );
 };
