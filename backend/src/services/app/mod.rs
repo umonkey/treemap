@@ -59,6 +59,10 @@ impl AppState {
         self.trees.get_trees(request).await
     }
 
+    pub async fn get_new_trees(&self, count: u64, skip: u64) -> Result<TreeList> {
+        self.trees.get_new_trees(count, skip).await
+    }
+
     pub async fn get_tree_defaults(&self, user_id: u64) -> Result<NewTreeDefaultsResponse> {
         match self.trees.get_last_tree_by_user(user_id).await? {
             Some(tree) => Ok(NewTreeDefaultsResponse::from_tree(&tree)),

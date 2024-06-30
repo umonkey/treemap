@@ -111,6 +111,11 @@ impl Trees {
         Ok(TreeList::from_trees(trees))
     }
 
+    pub async fn get_new_trees(&self, count: u64, skip: u64) -> Result<TreeList> {
+        let trees = self.db.get_new_trees(count, skip).await?;
+        Ok(TreeList::from_trees(trees))
+    }
+
     pub async fn get_tree(&self, id: u64) -> Result<TreeRecord> {
         debug!("Getting details for tree {}.", id);
 
