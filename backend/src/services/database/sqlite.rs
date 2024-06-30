@@ -426,6 +426,38 @@ impl Database for SqliteDatabase {
         Ok(trees)
     }
 
+    async fn get_new_trees(&self, count: u64, skip: u64) -> Result<Vec<TreeRecord>> {
+        let trees = self.pool.conn(move |conn| {
+            let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id FROM trees ORDER BY added_at DESC LIMIT ?, ?") {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error preparing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut rows = match stmt.query([skip, count]) {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error executing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut trees: Vec<TreeRecord> = Vec::new();
+
+            while let Some(row) = rows.next()? {
+                trees.push(Self::tree_from_row(row)?);
+            }
+
+            Ok(trees)
+        }).await?;
+
+        Ok(trees)
+    }
+
     /**
      * Count all trees that still exist.
      */
@@ -615,6 +647,20 @@ impl Database for SqliteDatabase {
             .await?;
 
         Ok(user)
+    }
+
+    async fn get_users(&self, ids: &[u64]) -> Result<Vec<UserRecord>> {
+        let mut users: Vec<UserRecord> = Vec::new();
+
+        for id in ids {
+            let user = self.get_user(*id).await?;
+
+            if let Some(user) = user {
+                users.push(user);
+            }
+        }
+
+        Ok(users)
     }
 
     async fn add_queue_message(&self, msg: &QueueMessage) -> Result<()> {

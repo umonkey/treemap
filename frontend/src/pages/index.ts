@@ -5,5 +5,7 @@ export { EditTreePage } from "./EditTreePage";
 export { EditTreePageWrapper } from "./EditTreePageWrapper";
 export { HomePage } from "./HomePage";
 export { MoveTreePage, MoveTreePageWrapper } from "./MoveTreePage";
+export { NewTreesPage } from "./NewTreesPage";
+export { NewTreesPageWrapper } from "./NewTreesPageWrapper";
 export { PreviewPage } from "./PreviewPage";
 export { PreviewPageWrapper } from "./PreviewPageWrapper";

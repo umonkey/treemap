@@ -11,8 +11,8 @@ import { useDeviceType } from "@/hooks";
 import { statsService } from "@/services";
 
 export const useApp = () => {
-  const userInfo = useStore((state) => state.userInfo);
-  const setUserInfo = useStore((state) => state.setUserInfo);
+  const loginInfo = useStore((state) => state.loginInfo);
+  const setLoginInfo = useStore((state) => state.setLoginInfo);
   const { className } = useDeviceType();
 
   // Run the background file uploader.
@@ -29,14 +29,14 @@ export const useApp = () => {
   });
 
   useEffect(() => {
-    if (userInfo === null) {
+    if (loginInfo === null) {
       treeMapService.setToken(null);
       return;
     }
 
     (async () => {
       try {
-        await treeMapService.getUserInfo();
+        await treeMapService.getCurrentUserInfo();
         console.debug("[app] User token is OK.");
       } catch (e) {
         // @ts-expect-error TS18046
@@ -44,7 +44,7 @@ export const useApp = () => {
 
         if (status === 401) {
           console.warn("[app] User token expired, logging out.");
-          setUserInfo(null);
+          setLoginInfo(null);
         } else {
           console.error("[app] Error checking user token.", e);
         }

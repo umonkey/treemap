@@ -10,6 +10,11 @@ export interface ILatLng {
   lon: number;
 }
 
+export interface ITreeList {
+  trees: ITreeInfo[];
+  users: IUserInfo[];
+}
+
 export interface ITreeInfo {
   id: string;
   lat: number;
@@ -21,6 +26,8 @@ export interface ITreeInfo {
   circumference: number | null;
   diameter: number | null;
   state: string;
+  added_at: number;
+  added_by: string;
   updated_at: number;
   thumbnail_id: string | null;
 }
@@ -29,8 +36,14 @@ export interface ITreeInfoMap {
   [id: string]: ITreeInfo;
 }
 
-export interface IUserInfo {
+export interface ILoginInfo {
   token: string;
+  name: string;
+  picture: string;
+}
+
+export interface IUserInfo {
+  id: string;
   name: string;
   picture: string;
 }
@@ -52,6 +65,8 @@ export interface ITreeDetails {
   circumference: number | null;
   diameter: number | null;
   state: string;
+  added_at: number;
+  added_by: string;
   updated_at: number;
   thumbnail_id: string | null;
   files?: IFileInfo[];

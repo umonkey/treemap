@@ -4,7 +4,20 @@ import {
   ITreeDefaults,
   ITreeDetails,
   ITreeInfo,
+  IUserInfo,
 } from "@/types";
+
+export const SAMPLE_USER1 = {
+  id: "user1",
+  name: "Rachel Green",
+  picture: "https://upload.wikimedia.org/wikipedia/en/e/ec/Jennifer_Aniston_as_Rachel_Green.jpg",
+} as IUserInfo;
+
+export const SAMPLE_USER2 = {
+  id: "user2",
+  name: "Ross Geller",
+  picture: "https://upload.wikimedia.org/wikipedia/en/6/6f/David_Schwimmer_as_Ross_Geller.jpg",
+} as IUserInfo;
 
 export const SAMPLE_TREES = [
   {
@@ -18,6 +31,8 @@ export const SAMPLE_TREES = [
     "diameter": 7,
     "notes": null,
     "state": "healthy",
+    "added_at": 1714505048,
+    "added_by": "user1",
     "updated_at": 1714505048,
     "thumbnail_id": null,
   },
@@ -33,6 +48,8 @@ export const SAMPLE_TREES = [
     "notes": "A big tree",
     "state": "healthy",
     "thumbnail_id": null,
+    "added_at": 1714505048,
+    "added_by": "user1",
     "updated_at": 1714505048,
   },
   {
@@ -47,6 +64,8 @@ export const SAMPLE_TREES = [
     "notes": "A big tree",
     "state": "healthy",
     "thumbnail_id": null,
+    "added_at": 1714505048,
+    "added_by": "user1",
     "updated_at": 1714505048,
   },
   {
@@ -61,6 +80,8 @@ export const SAMPLE_TREES = [
     "notes": "A big tree",
     "state": "healthy",
     "thumbnail_id": null,
+    "added_at": 1714505048,
+    "added_by": "user1",
     "updated_at": 1714505048,
   },
   {
@@ -75,6 +96,8 @@ export const SAMPLE_TREES = [
     "notes": "A big tree",
     "state": "healthy",
     "thumbnail_id": null,
+    "added_at": 1714505048,
+    "added_by": "user1",
     "updated_at": 1714505048,
   },
   {
@@ -89,6 +112,8 @@ export const SAMPLE_TREES = [
     "notes": "A big tree",
     "state": "healthy",
     "thumbnail_id": null,
+    "added_at": 1714505048,
+    "added_by": "user1",
     "updated_at": 1714505048,
   },
   {
@@ -103,6 +128,8 @@ export const SAMPLE_TREES = [
     "notes": "A big tree",
     "state": "healthy",
     "thumbnail_id": null,
+    "added_at": 1714505048,
+    "added_by": "user1",
     "updated_at": 1714505048,
   },
   {
@@ -117,6 +144,8 @@ export const SAMPLE_TREES = [
     "notes": "A big tree",
     "state": "healthy",
     "thumbnail_id": null,
+    "added_at": 1714505048,
+    "added_by": "user1",
     "updated_at": 1714505048,
   },
   {
@@ -131,6 +160,8 @@ export const SAMPLE_TREES = [
     "notes": "A big tree",
     "state": "healthy",
     "thumbnail_id": null,
+    "added_at": 1714505048,
+    "added_by": "user1",
     "updated_at": 1714505048,
   },
   {
@@ -145,6 +176,8 @@ export const SAMPLE_TREES = [
     "notes": "A big tree",
     "state": "healthy",
     "thumbnail_id": null,
+    "added_at": 1714505048,
+    "added_by": "user1",
     "updated_at": 1714505048,
   },
   {
@@ -159,6 +192,8 @@ export const SAMPLE_TREES = [
     "notes": "A big tree",
     "state": "healthy",
     "thumbnail_id": null,
+    "added_at": 1714505048,
+    "added_by": "user1",
     "updated_at": 1714505048,
   },
   {
@@ -173,6 +208,8 @@ export const SAMPLE_TREES = [
     "notes": "A big tree",
     "state": "healthy",
     "thumbnail_id": null,
+    "added_at": 1714505048,
+    "added_by": "user1",
     "updated_at": 1714505048,
   },
   {
@@ -187,6 +224,8 @@ export const SAMPLE_TREES = [
     "notes": "A big tree",
     "state": "healthy",
     "thumbnail_id": null,
+    "added_at": 1714505048,
+    "added_by": "user1",
     "updated_at": 1714505048,
   },
   {
@@ -201,6 +240,8 @@ export const SAMPLE_TREES = [
     "notes": "A big tree",
     "state": "healthy",
     "thumbnail_id": null,
+    "added_at": 1714505048,
+    "added_by": "user1",
     "updated_at": 1714505048,
   }
 ] as ITreeInfo[];
@@ -229,7 +270,7 @@ export const SAMPLE_TREE = {
   "circumference": 1.2,
   "diameter": 7,
   "state": "healthy",
-  "created_at": 1714505048,
+  "added_at": 1714505048,
   "updated_at": 1714505048,
   "thumbnail_id": null,
   "files": [

@@ -11,6 +11,7 @@ pub trait Database {
     async fn update_tree(&self, tree: &TreeRecord) -> Result<()>;
     async fn move_tree(&self, id: u64, lat: f64, lon: f64) -> Result<()>;
     async fn get_trees(&self, bounds: Bounds) -> Result<Vec<TreeRecord>>;
+    async fn get_new_trees(&self, count: u64, skip: u64) -> Result<Vec<TreeRecord>>;
     async fn get_tree(&self, id: u64) -> Result<Option<TreeRecord>>;
     async fn get_tree_by_osm_id(&self, osm_id: u64) -> Result<Option<TreeRecord>>;
     async fn get_last_tree_by_user(&self, user_id: u64) -> Result<Option<TreeRecord>>;
@@ -30,6 +31,7 @@ pub trait Database {
     async fn find_user_by_email(&self, email: &str) -> Result<Option<UserRecord>>;
     async fn add_user(&self, user: &UserRecord) -> Result<()>;
     async fn get_user(&self, id: u64) -> Result<Option<UserRecord>>;
+    async fn get_users(&self, ids: &[u64]) -> Result<Vec<UserRecord>>;
 
     async fn add_file(&self, file: &FileRecord) -> Result<()>;
     async fn find_files_by_tree(&self, tree_id: u64) -> Result<Vec<FileRecord>>;

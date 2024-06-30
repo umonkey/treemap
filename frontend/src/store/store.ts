@@ -2,8 +2,8 @@
 import { create } from "zustand";
 
 // Project imports.
-import { ITreeInfo, ITreeStats, ITreeInfoMap, IUserInfo } from "@/types";
-import { getUserInfo, setUserInfo, getMapLayer, setMapLayer } from "@/utils";
+import { ITreeInfo, ITreeStats, ITreeInfoMap, IUserInfo, ILoginInfo } from "@/types";
+import { getLoginInfo, setLoginInfo, getMapLayer, setMapLayer } from "@/utils";
 import { treeMapService } from "@/services/api";
 
 interface IStore {
@@ -11,8 +11,8 @@ interface IStore {
   addTrees: (trees: ITreeInfo[]) => void;
   resetTrees: () => void;
 
-  userInfo: IUserInfo | null;
-  setUserInfo: (value: IUserInfo | null) => void;
+  loginInfo: ILoginInfo | null;
+  setLoginInfo: (value: ILoginInfo | null) => void;
 
   uploadProgress: number;
   setUploadProgress: (value: number) => void;
@@ -22,6 +22,10 @@ interface IStore {
 
   stats: ITreeStats;
   setStats: (value: ITreeStats) => void;
+
+  // Cached user map.
+  users: Map<string, IUserInfo>;
+  addUsers: (value: IUserInfo[]) => void;
 }
 
 export const useStore = create<IStore>((set) => ({
@@ -50,8 +54,8 @@ export const useStore = create<IStore>((set) => ({
     set({ trees: {} });
   },
 
-  userInfo: (() => {
-    const info = getUserInfo();
+  loginInfo: (() => {
+    const info = getLoginInfo();
 
     if (info !== null) {
       treeMapService.setToken(info.token);
@@ -60,11 +64,11 @@ export const useStore = create<IStore>((set) => ({
     return info;
   })(),
 
-  setUserInfo: (value: IUserInfo | null) => {
-    setUserInfo(value);
+  setLoginInfo: (value: ILoginInfo | null) => {
+    setLoginInfo(value);
 
     set(() => {
-      return { userInfo: value };
+      return { loginInfo: value };
     });
   },
 
@@ -90,4 +94,19 @@ export const useStore = create<IStore>((set) => ({
   setStats: (value: ITreeStats) => set({
     stats: value,
   }),
+
+  users: new Map(),
+
+  // Add new users to the cache.
+  addUsers: (value: IUserInfo[]) => {
+    set((state) => {
+      const updated = new Map(state.users);
+
+      value.forEach((user) => {
+        updated.set(user.id, user);
+      });
+
+      return { users: updated };
+    });
+  },
 }));

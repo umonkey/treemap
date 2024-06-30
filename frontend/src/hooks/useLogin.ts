@@ -3,7 +3,7 @@ import { useGoogleLogin } from "@react-oauth/google";
 
 // Project imports.
 import { treeMapService } from "@/services/api";
-import { useUserInfo } from "@/hooks";
+import { useLoginInfo } from "@/hooks";
 
 interface IProps {
   onError: () => void;
@@ -11,7 +11,7 @@ interface IProps {
 }
 
 export const useLogin = (props: IProps) => {
-  const { setUserInfo } = useUserInfo();
+  const { setLoginInfo } = useLoginInfo();
 
   const login = useGoogleLogin({
     onSuccess: async (response) => {
@@ -23,7 +23,7 @@ export const useLogin = (props: IProps) => {
         const res = await treeMapService.loginGoogle(token);
         console.info("Logged in with Google.");
 
-        setUserInfo(res);
+        setLoginInfo(res);
 
         props.onSuccess();
       } catch (e) {
@@ -34,7 +34,7 @@ export const useLogin = (props: IProps) => {
 
     onError: (error) => {
       console.error("Error logging in with Google:", error);
-      setUserInfo(null);
+      setLoginInfo(null);
       props.onError();
     },
   });
@@ -45,7 +45,7 @@ export const useLogin = (props: IProps) => {
   };
 
   const logoutFunction = () => {
-    setUserInfo(null);
+    setLoginInfo(null);
   };
 
   return {

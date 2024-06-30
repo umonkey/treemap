@@ -202,6 +202,10 @@ class EnglishLocale {
   public treeRowLabel(): string {
     return "Row";
   }
+
+  public newTreesHeader(): string {
+    return "New Trees";
+  }
 }
 
 class RussianLocale extends EnglishLocale {
@@ -409,6 +413,10 @@ class RussianLocale extends EnglishLocale {
 
   public treeRowLabel(): string {
     return "Ряд";
+  }
+
+  public newTreesHeader(): string {
+    return "Новые деревья";
   }
 }
 

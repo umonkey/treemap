@@ -7,10 +7,12 @@ import {
   IFileStatusResponse,
   IFileUploadResponse,
   ILatLng,
+  ILoginInfo,
   ISpecies,
   ITreeDefaults,
   ITreeDetails,
   ITreeInfo,
+  ITreeList,
   ITreeStats,
   IUpdateTreeRequest,
   IUserInfo,
@@ -62,6 +64,15 @@ export class TreeMapService {
     return res.trees;
   }
 
+  public async getNewTrees(count: number, skip: number): Promise<ITreeList> {
+    return await this.get<ITreeList>("/v1/trees/new", {
+      params: {
+        count,
+        skip,
+      }
+    });
+  }
+
   /**
    * Add a new tree to the map.
    */
@@ -92,6 +103,10 @@ export class TreeMapService {
     return await this.get<ITreeStats>("/v1/trees/stats");
   }
 
+  public async getUser(id: string): Promise<IUserInfo> {
+    return await this.get<IUserInfo>(`/v1/users/${id}`);
+  }
+
   public async updateTreePosition(id: string, position: ILatLng) {
     await this.put(`/v1/trees/${id}/position`, {
       lat: position.lat,
@@ -113,8 +128,8 @@ export class TreeMapService {
    * Exchanges a Google OAuth token for a local user token.
    * Creates a new user account if necessary.
    */
-  public async loginGoogle(token: string): Promise<IUserInfo> {
-    const res = await this.post<IUserInfo>("/v1/login/google", {
+  public async loginGoogle(token: string): Promise<ILoginInfo> {
+    const res = await this.post<ILoginInfo>("/v1/login/google", {
       token,
     });
 
@@ -123,7 +138,7 @@ export class TreeMapService {
     return res;
   }
 
-  public async getUserInfo(): Promise<IUserInfo> {
+  public async getCurrentUserInfo(): Promise<IUserInfo> {
     return await this.get<IUserInfo>("/v1/me", {
       headers: this.get_auth_headers(),
     });

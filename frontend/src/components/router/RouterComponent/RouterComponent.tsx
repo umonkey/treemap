@@ -7,6 +7,7 @@ import {
   EditTreePageWrapper,
   HomePage,
   MoveTreePageWrapper,
+  NewTreesPageWrapper,
   PreviewPageWrapper,
 } from "@/pages";
 
@@ -19,6 +20,7 @@ export const RouterComponent = () => {
       <Route path={routes.editTree(":id")} element={<EditTreePageWrapper />} />
       <Route path={routes.moveTree(":id")} element={<MoveTreePageWrapper />} />
       <Route path={routes.treePreview(":id")} element={<PreviewPageWrapper />} />
+      <Route path={routes.newTrees()} element={<NewTreesPageWrapper />} />
     </Routes>
   );
 };

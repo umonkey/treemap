@@ -1,7 +1,7 @@
-import { useLogin, useUserInfo } from "@/hooks";
+import { useLogin, useLoginInfo } from "@/hooks";
 
 export const useProfileHeaderButton = () => {
-  const { userInfo } = useUserInfo();
+  const { loginInfo } = useLoginInfo();
 
   const handleSuccess = () => {
     // ignore for now
@@ -17,7 +17,7 @@ export const useProfileHeaderButton = () => {
   });
 
   return {
-    isLoggedIn: !!userInfo,
+    isLoggedIn: !!loginInfo,
     loginFunction,
     logoutFunction,
   };
