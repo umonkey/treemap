@@ -1,0 +1,1 @@
+export { SpeciesSearchBar } from "./SpeciesSearchBar";
