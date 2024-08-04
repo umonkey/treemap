@@ -22,7 +22,7 @@ export const TreeMarker = (props: IProps) => {
   const navigate = useNavigate();
 
   const getIcon = (state: string | null) => {
-    if (state === "dead" || state === "gone") {
+    if (state === "dead" || state === "gone" || state === "stomp") {
       return BlackCircleIcon;
     }
 
