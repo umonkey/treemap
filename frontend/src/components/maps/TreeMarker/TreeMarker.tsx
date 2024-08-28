@@ -9,7 +9,7 @@ import { Marker } from "react-leaflet";
 import { useNavigate } from "react-router-dom";
 
 // Project imports.
-import { GreenCircleIcon, RedCircleIcon, BlackCircleIcon } from "@/components";
+import { GreenCircleIcon, RedCircleIcon, BlackCircleIcon, YellowCircleIcon } from "@/components";
 import { IMarkerClickEvent, ITreeInfo } from "@/types";
 import { mainBus } from "@/bus";
 import { routes } from "@/utils";
@@ -28,6 +28,10 @@ export const TreeMarker = (props: IProps) => {
 
     if (state === "sick") {
       return RedCircleIcon;
+    }
+
+    if (state === "deformed") {
+      return YellowCircleIcon;
     }
 
     return GreenCircleIcon;
