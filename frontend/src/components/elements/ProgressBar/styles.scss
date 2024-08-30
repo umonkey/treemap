@@ -14,6 +14,18 @@
     top: 0;
     height: 100%;
     width: 50%;
-    background-color: #484;
+    // background-color: #ffe11e;
+    background-image: linear-gradient(
+      45deg,
+      #b1cda4 25%,
+      #94887e 25%,
+      #94887e 50%,
+      #b1cda4 50%,
+      #b1cda4 75%,
+      #94887e 75%,
+      #94887e 100%
+    );
+    background-size: 40px 40px;
+    animation: stripes 1s linear infinite;
   }
 }
