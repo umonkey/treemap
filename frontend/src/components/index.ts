@@ -63,3 +63,4 @@ export { TreeStateSelector } from "./elements/TreeStateSelector";
 export { WithAuth } from "./helpers/WithAuth";
 export { WithHeader } from "./layout/WithHeader";
 export { WithSidebar } from "./layout/WithSidebar";
+export { YellowCircleIcon } from "./maps/YellowCircleIcon";

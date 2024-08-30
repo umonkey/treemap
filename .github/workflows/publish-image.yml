@@ -11,8 +11,9 @@ env:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
 
     steps:
     - uses: actions/checkout@v4
@@ -31,7 +32,8 @@ jobs:
     - name: Log in to the container registry
       run: make cr-login
       env:
-        CR_PAT: ${{ secrets.CR_PAT }}
+        CR_USER: ${{ github.actor }}
+        CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Test the backend
       run: make -C backend lint test

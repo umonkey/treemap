@@ -1,6 +1,6 @@
 VERSION=0.1.3
 
-CR_USER=umonkey
+CR_USER ?= umonkey
 
 help:
 	@echo "Development steps:"
@@ -50,10 +50,10 @@ lint:
 # Get your personal GitHub token (classic) here:
 # https://github.com/settings/tokens
 cr-login:
-ifeq (,$(CR_PAT))
-	$(error CR_PAT is not set.)
+ifeq (,$(CR_TOKEN))
+	$(error CR_TOKEN is not set.)
 else
-	echo $$CR_PAT | docker login ghcr.io -u $(CR_USER) --password-stdin
+	echo $$CR_TOKEN | docker login ghcr.io -u $(CR_USER) --password-stdin
 endif
 
 publish-image:
