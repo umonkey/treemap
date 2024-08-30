@@ -71,9 +71,9 @@ impl Trees {
             lon: old.lon,
             species: req.species,
             notes: req.notes,
-            height: req.height,
+            height: Self::fix_height(req.height),
             circumference: Self::fix_circumference(req.circumference),
-            diameter: req.diameter,
+            diameter: Self::fix_diameter(req.diameter),
             state: req.state,
             added_at: old.added_at,
             updated_at: now,
@@ -132,13 +132,42 @@ impl Trees {
         self.db.get_last_tree_by_user(user_id).await
     }
 
+    fn fix_height(value: Option<f64>) -> Option<f64> {
+        let mut value: f64 = match value {
+            Some(v) => v,
+            None => return None,
+        };
+
+        // contemporary max alive: https://en.wikipedia.org/wiki/List_of_superlative_trees#Tallest
+        if value.fract() == 0.0 && value > 116.07 {
+            value /= 100.0;
+        }
+
+        Some(value)
+    }
+
     fn fix_circumference(value: Option<f64>) -> Option<f64> {
         let mut value: f64 = match value {
             Some(v) => v,
             None => return None,
         };
 
-        if value.fract() == 0.0 && value > 3.0 {
+        // contemporary max alive: https://en.wikipedia.org/wiki/List_of_superlative_trees#Stoutest
+        if value.fract() == 0.0 && value > 36.2 {
+            value /= 100.0;
+        }
+
+        Some(value)
+    }
+
+    fn fix_diameter(value: Option<f64>) -> Option<f64> {
+        let mut value: f64 = match value {
+            Some(v) => v,
+            None => return None,
+        };
+
+        // contemporary max alive: https://en.wikipedia.org/wiki/List_of_superlative_trees#Broadest excluding banyan
+        if value.fract() == 0.0 && value > 72.8 {
             value /= 100.0;
         }
 
