@@ -36,9 +36,9 @@ impl Trees {
                 lon: point.lon,
                 species: req.species.clone(),
                 notes: req.notes.clone(),
-                height: req.height,
-                circumference: Self::fix_circumference(req.circumference),
-                diameter: req.diameter,
+                height: Self::scale_cm_to_m(req.height),
+                circumference: Self::scale_cm_to_m(req.circumference),
+                diameter: Self::scale_cm_to_m(req.diameter),
                 state: req.state.to_string(),
                 added_at: now,
                 updated_at: now,
@@ -71,9 +71,9 @@ impl Trees {
             lon: old.lon,
             species: req.species,
             notes: req.notes,
-            height: Self::fix_height(req.height),
-            circumference: Self::fix_circumference(req.circumference),
-            diameter: Self::fix_diameter(req.diameter),
+            height: Self::scale_cm_to_m(req.height),
+            circumference: Self::scale_cm_to_m(req.circumference),
+            diameter: Self::scale_cm_to_m(req.diameter),
             state: req.state,
             added_at: old.added_at,
             updated_at: now,
@@ -132,42 +132,16 @@ impl Trees {
         self.db.get_last_tree_by_user(user_id).await
     }
 
-    fn fix_height(value: Option<f64>) -> Option<f64> {
+    fn scale_cm_to_m(value: Option<f64>) -> Option<f64> {
         let mut value: f64 = match value {
             Some(v) => v,
             None => return None,
         };
 
-        // contemporary max alive: https://en.wikipedia.org/wiki/List_of_superlative_trees#Tallest
-        if value.fract() == 0.0 && value > 116.07 {
-            value /= 100.0;
-        }
-
-        Some(value)
-    }
-
-    fn fix_circumference(value: Option<f64>) -> Option<f64> {
-        let mut value: f64 = match value {
-            Some(v) => v,
-            None => return None,
-        };
-
-        // contemporary max alive: https://en.wikipedia.org/wiki/List_of_superlative_trees#Stoutest
-        if value.fract() == 0.0 && value > 36.2 {
-            value /= 100.0;
-        }
-
-        Some(value)
-    }
-
-    fn fix_diameter(value: Option<f64>) -> Option<f64> {
-        let mut value: f64 = match value {
-            Some(v) => v,
-            None => return None,
-        };
-
-        // contemporary max alive: https://en.wikipedia.org/wiki/List_of_superlative_trees#Broadest excluding banyan
-        if value.fract() == 0.0 && value > 72.8 {
+        // contemporary max alive 116.07m: https://en.wikipedia.org/wiki/List_of_superlative_trees#Tallest
+        // contemporary max alive 36.2m: https://en.wikipedia.org/wiki/List_of_superlative_trees#Stoutest
+        // contemporary max alive 72.8: https://en.wikipedia.org/wiki/List_of_superlative_trees#Broadest excluding banyan
+        if value.fract() == 0.0 && value > 9 {
             value /= 100.0;
         }
 
