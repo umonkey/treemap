@@ -159,7 +159,7 @@ export interface ITreeDefaults {
   height: number | null;
   circumference: number | null;
   diameter: number | null;
-  state: string;
+  state: string | null;
 }
 
 export interface IFileUploadRequest {

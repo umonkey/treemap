@@ -36,6 +36,7 @@ export const TreeStateSelector = (props: IProps) => {
         <MenuItem value="dead">{locale.stateDead()}</MenuItem>
         <MenuItem value="stomp">{locale.stateStomp()}</MenuItem>
         <MenuItem value="gone">{locale.stateGone()}</MenuItem>
+        <MenuItem value="unknown">{locale.stateUnknown()}</MenuItem>
       </Select>
     </FormControl>
   );
