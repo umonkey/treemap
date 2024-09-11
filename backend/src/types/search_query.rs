@@ -19,6 +19,7 @@ pub struct SearchQuery {
     pub healthy: bool,
     pub stomp: bool,
     pub gone: bool,
+    pub unknown: bool,
     pub all: bool,
 }
 
@@ -35,6 +36,7 @@ impl SearchQuery {
         let mut incomplete = false;
         let mut stomp = false;
         let mut gone = false;
+        let mut unknown = false;
         let mut all = false;
 
         for word in query.to_lowercase().split_whitespace() {
@@ -44,20 +46,22 @@ impl SearchQuery {
                 nocirc = true;
             } else if word.contains("noimage") || word.contains("nophoto") {
                 noimages = true;
+            } else if word.contains("healthy") {
+                healthy = true;
+            } else if word.contains("deformed") {
+                deformed = true;
             } else if word.contains("sick") {
                 sick = true;
             } else if word.contains("dead") {
                 dead = true;
-            } else if word.contains("deformed") {
-                deformed = true;
-            } else if word.contains("healthy") {
-                healthy = true;
-            } else if word.contains("incomplete") {
-                incomplete = true;
-            } else if word.contains("gone") {
-                gone = true;
             } else if word.contains("stomp") {
                 stomp = true;
+            } else if word.contains("gone") {
+                gone = true;
+            } else if word.contains("unknown") {
+                unknown = true;
+            } else if word.contains("incomplete") {
+                incomplete = true;
             } else if word.contains("all") {
                 all = true;
             } else {
@@ -77,6 +81,7 @@ impl SearchQuery {
             incomplete,
             stomp,
             gone,
+            unknown,
             all,
         }
     }
@@ -109,8 +114,17 @@ impl SearchQuery {
                 && !self.healthy
                 && !self.stomp
                 && !self.gone
+                && !self.unknown
                 && tree.state == "gone"
             {
+                return false;
+            }
+
+            if self.healthy && tree.state != "healthy" {
+                return false;
+            }
+
+            if self.deformed && tree.state != "deformed" {
                 return false;
             }
 
@@ -122,11 +136,7 @@ impl SearchQuery {
                 return false;
             }
 
-            if self.deformed && tree.state != "deformed" {
-                return false;
-            }
-
-            if self.healthy && tree.state != "healthy" {
+            if self.stomp && tree.state != "stomp" {
                 return false;
             }
 
@@ -134,9 +144,10 @@ impl SearchQuery {
                 return false;
             }
 
-            if self.stomp && tree.state != "stomp" {
+            if self.unknown && tree.state != "unknown" {
                 return false;
             }
+
         }
 
         if self.incomplete && Self::is_tree_incomplete(tree) {
@@ -163,7 +174,8 @@ impl SearchQuery {
     }
 
     fn is_tree_incomplete(tree: &TreeRecord) -> bool {
-        tree.height.is_none()
+        tree.state.is_none()
+            || tree.height.is_none()
             || tree.circumference.is_none()
             || tree.diameter.is_none()
             || tree.thumbnail_id.is_none()
@@ -196,7 +208,7 @@ mod tests {
             height: None,
             circumference: None,
             diameter: None,
-            state: "healthy".to_string(),
+            state: None,
             added_at: 0,
             updated_at: 0,
             added_by: 0,
@@ -326,6 +338,48 @@ mod tests {
     }
 
     #[test]
+    fn test_healthy() {
+        let query = SearchQuery::from_string("healthy");
+
+        assert_eq!(
+            true,
+            query.r#match(&TreeRecord {
+                state: "healthy".to_string(),
+                ..default_tree()
+            })
+        );
+
+        assert_eq!(
+            false,
+            query.r#match(&TreeRecord {
+                state: "sick".to_string(),
+                ..default_tree()
+            })
+        );
+    }
+
+    #[test]
+    fn test_deformed() {
+        let query = SearchQuery::from_string("deformed");
+
+        assert_eq!(
+            true,
+            query.r#match(&TreeRecord {
+                state: "deformed".to_string(),
+                ..default_tree()
+            })
+        );
+
+        assert_eq!(
+            false,
+            query.r#match(&TreeRecord {
+                state: "healthy".to_string(),
+                ..default_tree()
+            })
+        );
+    }
+
+    #[test]
     fn test_sick() {
         let query = SearchQuery::from_string("Sick");
 
@@ -368,13 +422,13 @@ mod tests {
     }
 
     #[test]
-    fn test_deformed() {
-        let query = SearchQuery::from_string("deformed");
+    fn test_stomp() {
+        let query = SearchQuery::from_string("stomp");
 
         assert_eq!(
             true,
             query.r#match(&TreeRecord {
-                state: "deformed".to_string(),
+                state: "stomp".to_string(),
                 ..default_tree()
             })
         );
@@ -383,27 +437,6 @@ mod tests {
             false,
             query.r#match(&TreeRecord {
                 state: "healthy".to_string(),
-                ..default_tree()
-            })
-        );
-    }
-
-    #[test]
-    fn test_healthy() {
-        let query = SearchQuery::from_string("healthy");
-
-        assert_eq!(
-            true,
-            query.r#match(&TreeRecord {
-                state: "healthy".to_string(),
-                ..default_tree()
-            })
-        );
-
-        assert_eq!(
-            false,
-            query.r#match(&TreeRecord {
-                state: "sick".to_string(),
                 ..default_tree()
             })
         );
@@ -452,13 +485,13 @@ mod tests {
     }
 
     #[test]
-    fn test_stomp() {
-        let query = SearchQuery::from_string("stomp");
+    fn test_unknown() {
+        let query = SearchQuery::from_string("unknown");
 
         assert_eq!(
             true,
             query.r#match(&TreeRecord {
-                state: "stomp".to_string(),
+                state: "unknown".to_string(),
                 ..default_tree()
             })
         );
