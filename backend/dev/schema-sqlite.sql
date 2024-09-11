@@ -7,12 +7,12 @@ CREATE TABLE IF NOT EXISTS trees (
     `osm_id` INT NULL,
     `lat` REAL NOT NULL,
     `lon` REAL NOT NULL,
-    `species` TEXT NOT NULL, -- latin name
+    `species` TEXT NULL, -- latin name
     `notes` TEXT NULL,
     `height` REAL NULL,
     `circumference` REAL NULL,
     `diameter` REAL NULL,
-    `state` TEXT NOT NULL DEFAULT "healthy",
+    `state` TEXT NULL,
     `added_at` INT NOT NULL,
     `updated_at` INT NOT NULL,
     `added_by` INT NOT NULL,
@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS trees_props (
     `id` INT NOT NULL,
     `tree_id` INT NOT NULL,
     `added_at` INT NOT NULL,
+    `added_by` TEXT NOT NULL, -- for future compatibility not only with human `user_id`, but also with other "workers" like OSM itself and 
     `name` TEXT NOT NULL,
     `value` TEXT NOT NULL,
     PRIMARY KEY(`id`)
@@ -51,7 +52,7 @@ CREATE TABLE IF NOT EXISTS files (
     `id` INT NOT NULL,
     `tree_id` INT NOT NULL,
     `added_at` INT NOT NULL,
-    `added_by` INT NOT NULL,
+    `added_by` INT NOT NULL, -- simirarly, to TEXT? But I know change of type for existing column can be challenging  
     `small_id` INT NOT NULL,
     `large_id` INT NOT NULL,
     PRIMARY KEY(`id`)
@@ -65,7 +66,7 @@ CREATE INDEX IF NOT EXISTS files_tree_id ON files (tree_id);
 CREATE TABLE IF NOT EXISTS upload_tickets (
     `id` INT NOT NULL,
     `created_at` INT NOT NULL,
-    `created_by` INT NOT NULL,
+    `created_by` INT NOT NULL, -- TODO?: simirarly, to TEXT?
     `upload_url` TEXT NOT NULL,
     PRIMARY KEY(`id`)
 );
@@ -86,7 +87,7 @@ CREATE TABLE IF NOT EXISTS comments (
     `id` INT NOT NULL,
     `tree_id` INT NOT NULL,
     `added_at` INT NOT NULL,
-    `added_by` INT NOT NULL,
+    `added_by` INT NOT NULL, -- TODO?: simirarly, to TEXT?
     `message` TEXT NOT NULL,
     PRIMARY KEY(`id`)
 );

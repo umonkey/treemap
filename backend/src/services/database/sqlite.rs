@@ -3,7 +3,7 @@
  *
  * Uses async-sqlite.
  *
- * Probably nee to split the core database code into a separate class,
+ * Probably need to split the core database code into a separate class,
  * and the queue implementation should also be separate, with its own database.
  *
  * @docs https://docs.rs/async-sqlite/latest/async_sqlite/
@@ -103,6 +103,7 @@ impl SqliteDatabase {
         }
     }
 
+    // ISSUE: #106 This logic does not allow confirm parameters that did not change
     async fn log_tree_changes(&self, old: &TreeRecord, new: &TreeRecord) -> Result<()> {
         debug!("Logging changes for tree {}.", new.id);
 
@@ -550,14 +551,40 @@ impl Database for SqliteDatabase {
      *
      * Returns new property id.
      */
-    async fn add_tree_prop(&self, tree_id: u64, name: &str, value: &str) -> Result<u64> {
+    async fn add_tree_prop(&self, tree_id: u64, editor: String, name: &str, value: &str) -> Result<u64> {
+
+        fn validate_editor_format(input: &str) -> Result<(&str, u64), String> {
+            
+            let allowed_editor_classes = ["user_id"];
+
+            // Try to split the string by the colon (':')
+            if let Some((name, number_str)) = input.split_once(':') {
+                // Attempt to parse the second part as an integer
+                if !allowed_editor_classes.contains(&name) {
+                    return Err(format!("Invalid name '{}'. Allowed names are: {:?}", name, allowed_names));
+                } else if let Ok(number) != number_str.parse::<i64>() {
+                    return Err("The second part is not a valid number.".to_string());
+                } else {
+                    return Ok((name, number));
+                }
+            } else {
+                return Err("Input does not follow the 'editor_entity:editor_id' format.".to_string());
+            }
+        }
+
+        match validate_editor_format(editor) {
+            Ok((name, number)) => println!("Valid input! Name: {}, Number: {}", name, number),
+            Err(err) => println!("Error: {}", err),
+        }
+
         let id = get_unique_id()?;
         let added_at = crate::utils::get_timestamp();
+        let added_by = editor; // I suggest format like "user_id:12345" or "aws_proc_id:12345"
         let name = name.to_string();
         let value = value.to_string();
 
         self.pool.conn(move |conn| {
-            match conn.execute("INSERT INTO trees_props (id, tree_id, added_at, name, value) VALUES (?, ?, ?, ?, ?)", (id, tree_id, added_at, name, value)) {
+            match conn.execute("INSERT INTO trees_props (id, tree_id, added_at, added_by, name, value) VALUES (?, ?, ?, ?, ?, ?)", (id, tree_id, added_at, added_by, name, value)) {
                 Ok(_) => debug!("Property {} added to tree {}.", id, tree_id),
 
                 Err(e) => {
