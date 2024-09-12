@@ -147,7 +147,6 @@ impl SearchQuery {
             if self.unknown && tree.state != "unknown" {
                 return false;
             }
-
         }
 
         if self.incomplete && Self::is_tree_incomplete(tree) {
@@ -174,7 +173,7 @@ impl SearchQuery {
     }
 
     fn is_tree_incomplete(tree: &TreeRecord) -> bool {
-        tree.state.is_none()
+        tree.state == "unknown"
             || tree.height.is_none()
             || tree.circumference.is_none()
             || tree.diameter.is_none()
@@ -208,7 +207,7 @@ mod tests {
             height: None,
             circumference: None,
             diameter: None,
-            state: None,
+            state: "unknown".to_string(),
             added_at: 0,
             updated_at: 0,
             added_by: 0,
