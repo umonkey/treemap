@@ -83,7 +83,7 @@ impl AppState {
                 height: Some(0.0),
                 circumference: Some(0.0),
                 diameter: Some(0.0),
-                state: "healthy".to_string(),
+                state: Some("healthy".to_string()),
             }),
         }
     }

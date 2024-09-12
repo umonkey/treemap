@@ -9,7 +9,7 @@ pub struct NewTreeDefaultsResponse {
     pub height: Option<f64>,
     pub circumference: Option<f64>,
     pub diameter: Option<f64>,
-    pub state: String,
+    pub state: Option<String>,
 }
 
 impl NewTreeDefaultsResponse {
@@ -20,7 +20,7 @@ impl NewTreeDefaultsResponse {
             height: None,
             circumference: None,
             diameter: None,
-            state: "healthy".to_string(),
+            state: None,
         }
     }
 }

@@ -95,6 +95,10 @@ class EnglishLocale {
     return "Gone";
   }
 
+  public stateUnknown(): string {
+    return "State is not known";
+  }
+
   public searchTreesPlaceholder(count: number): string {
     if (count === 0) {
       return "Search trees...";
@@ -303,6 +307,10 @@ class RussianLocale extends EnglishLocale {
 
   public stateGone(): string {
     return "Исчезло";
+  }
+
+  public stateUnknown(): string {
+    return "Состояние не определено";
   }
 
   public searchTreesPlaceholder(count: number) {
