@@ -56,7 +56,7 @@ export const LayerSelector = () => {
         />
       </LayersControl.BaseLayer>
 
-      <LayersControl.Overlay checked={true} name="Drone">
+      <LayersControl.Overlay checked={true} name="Drone (50%)">
         <TileLayer
           attribution=""
           tms={true}
@@ -66,6 +66,19 @@ export const LayerSelector = () => {
           maxNativeZoom={21}
           zIndex={10}
           opacity={0.5}
+        />
+      </LayersControl.Overlay>
+
+      <LayersControl.Overlay name="Drone (90%)">
+        <TileLayer
+          attribution=""
+          tms={true}
+          url={`https://treemap-tiles.fra1.digitaloceanspaces.com/{z}/{x}/{y}.png`}
+          minZoom={15}
+          maxZoom={25}
+          maxNativeZoom={21}
+          zIndex={12}
+          opacity={0.9}
         />
       </LayersControl.Overlay>
 
