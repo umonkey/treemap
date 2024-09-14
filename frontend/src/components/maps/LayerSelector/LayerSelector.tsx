@@ -12,12 +12,13 @@ export const LayerSelector = () => {
   } = useLayerSelector();
 
   return (
-    <LayersControl position="topright">
+    <LayersControl position="topright" autoZIndex={false}>
       <LayersControl.BaseLayer checked={mapLayer === "MapTiler (vector)"} name="MapTiler (vector)">
         <VectorTileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OSM</a> &amp; <a href="https://github.com/umonkey/treemap/wiki/Data-contribution" target="_blank">Tree Map</a> contributors'
           styleUrl={`https://api.maptiler.com/maps/streets-v2/style.json?key=${mapTilerKey}`}
           accessToken={mapTilerKey}
+          zIndex={5}
         />
       </LayersControl.BaseLayer>
 
@@ -27,6 +28,7 @@ export const LayerSelector = () => {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           maxZoom={25}
           maxNativeZoom={19}
+          zIndex={5}
         />
       </LayersControl.BaseLayer>
 
@@ -37,6 +39,7 @@ export const LayerSelector = () => {
           subdomains={["mt0", "mt1", "mt2", "mt3"]}
           maxZoom={25}
           maxNativeZoom={22}
+          zIndex={5}
         />
       </LayersControl.BaseLayer>
 
@@ -49,8 +52,22 @@ export const LayerSelector = () => {
           tileSize={512}
           zoomOffset={-1}
           crossOrigin={true}
+          zIndex={5}
         />
       </LayersControl.BaseLayer>
+
+      <LayersControl.Overlay checked={true} name="Drone">
+        <TileLayer
+          attribution=""
+          tms={true}
+          url={`https://treemap-tiles.fra1.digitaloceanspaces.com/{z}/{x}/{y}.png`}
+          minZoom={15}
+          maxZoom={25}
+          maxNativeZoom={21}
+          zIndex={10}
+          opacity={0.5}
+        />
+      </LayersControl.Overlay>
 
     </LayersControl>
   );
