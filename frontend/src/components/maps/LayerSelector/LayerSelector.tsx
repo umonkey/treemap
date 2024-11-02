@@ -9,6 +9,7 @@ export const LayerSelector = () => {
   const {
     mapTilerKey,
     mapLayer,
+    droneOverlay,
   } = useLayerSelector();
 
   return (
@@ -56,20 +57,7 @@ export const LayerSelector = () => {
         />
       </LayersControl.BaseLayer>
 
-      <LayersControl.Overlay checked={true} name="Drone (50%)">
-        <TileLayer
-          attribution=""
-          tms={true}
-          url={`https://treemap-tiles.fra1.digitaloceanspaces.com/{z}/{x}/{y}.png`}
-          minZoom={15}
-          maxZoom={25}
-          maxNativeZoom={21}
-          zIndex={10}
-          opacity={0.5}
-        />
-      </LayersControl.Overlay>
-
-      <LayersControl.Overlay name="Drone (90%)">
+      <LayersControl.Overlay checked={droneOverlay} name="Drone">
         <TileLayer
           attribution=""
           tms={true}

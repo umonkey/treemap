@@ -1,6 +1,7 @@
 // Project imports.
 import { IMapState, ILoginInfo } from "@/types";
 import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM, HOME_PAGE_MAP_KEY, USER_INFO_KEY, MAP_LAYER_KEY } from "@/utils/config";
+import { DRONE_OVERLAY_KEY } from "@/utils/config";
 
 export const DEFAULT_MAP_STATE = {
   center: DEFAULT_MAP_CENTER,
@@ -55,6 +56,14 @@ export const getMapLayer = (): string => {
 
 export const setMapLayer = (value: string) => {
   writeValue<string>(MAP_LAYER_KEY, value);
+};
+
+export const getDroneOverlay = (): boolean=> {
+  return readValue<boolean>(DRONE_OVERLAY_KEY) || false;
+};
+
+export const setDroneOverlay = (value: boolean) => {
+  writeValue<boolean>(DRONE_OVERLAY_KEY, value);
 };
 
 export const getDebug = (): boolean => {

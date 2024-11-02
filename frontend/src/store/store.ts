@@ -4,6 +4,7 @@ import { create } from "zustand";
 // Project imports.
 import { ITreeInfo, ITreeStats, ITreeInfoMap, IUserInfo, ILoginInfo } from "@/types";
 import { getLoginInfo, setLoginInfo, getMapLayer, setMapLayer } from "@/utils";
+import { getDroneOverlay, setDroneOverlay } from "@/utils";
 import { treeMapService } from "@/services/api";
 
 interface IStore {
@@ -19,6 +20,9 @@ interface IStore {
 
   mapLayer: string;
   setMapLayer: (value: string) => void;
+
+  droneOverlay: boolean;
+  setDroneOverlay: (value: boolean) => void;
 
   stats: ITreeStats;
   setStats: (value: ITreeStats) => void;
@@ -84,6 +88,15 @@ export const useStore = create<IStore>((set) => ({
     setMapLayer(value);
     set({
       mapLayer: value,
+    });
+  },
+
+  droneOverlay: getDroneOverlay(),
+
+  setDroneOverlay: (value: boolean) => {
+    setDroneOverlay(value);
+    set({
+      droneOverlay: value,
     });
   },
 
