@@ -17,7 +17,7 @@ export const useAddTreeDialog = (props: IProps) => {
   const [height, setHeight] = useState<number>(0);
   const [circumference, setCircumference] = useState<number>(0);
   const [diameter, setDiameter] = useState<number>(0);
-  const [state, setState] = useState<string>("healthy");
+  const [state, setState] = useState<string>("unknown");
   const [notes, setNotes] = useState<string>("");
   const [busy, setBusy] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
