@@ -37,9 +37,9 @@ impl Trees {
                 lon: point.lon,
                 species: req.species.clone(),
                 notes: req.notes.clone(),
-                height: req.height,
-                circumference: Self::fix_circumference(req.circumference),
-                diameter: req.diameter,
+                height: Self::scale_to_meters(req.height, 2),
+                circumference: Self::scale_to_meters(req.circumference, 1),
+                diameter: Self::scale_to_meters(req.diameter, 1),
                 state: req.state.to_string(),
                 added_at: now,
                 updated_at: now,
@@ -72,9 +72,9 @@ impl Trees {
             lon: old.lon,
             species: req.species,
             notes: req.notes,
-            height: req.height,
-            circumference: Self::fix_circumference(req.circumference),
-            diameter: req.diameter,
+            height: Self::scale_to_meters(req.height, 2),
+            circumference: Self::scale_to_meters(req.circumference, 1),
+            diameter: Self::scale_to_meters(req.diameter, 1),
             state: req.state,
             added_at: old.added_at,
             updated_at: now,
@@ -126,7 +126,6 @@ impl Trees {
 
         match self.db.get_tree(id).await? {
             Some(tree) => Ok(tree),
-
             None => Err(Error::TreeNotFound),
         }
     }
@@ -142,14 +141,31 @@ impl Trees {
         self.db.get_last_tree_by_user(user_id).await
     }
 
-    fn fix_circumference(value: Option<f64>) -> Option<f64> {
+    // fn truncate_excessive_decimal_places(value: Option<f64>, decimal_precicion: i32) -> Option<f64> {
+    //     let value: f64 = match value {
+    //         Some(value) => (value * 10_f64.powi(decimal_precicion)).round() / 10_f64.powi(decimal_precicion),
+    //         None => return None,
+    //     };
+        
+    //     Some(value)
+    // }
+
+    fn scale_to_meters(value: Option<f64>, scale_power: i32) -> Option<f64> {
+        assert!(scale_power >= 0);
+
         let mut value: f64 = match value {
             Some(v) => v,
             None => return None,
         };
 
-        if value.fract() == 0.0 && value > 3.0 {
-            value /= 100.0;
+        // contemporary max alive:
+        // height - 116.07m: https://en.wikipedia.org/wiki/List_of_superlative_trees#Tallest
+        // trunk circumference - 36.2m: https://en.wikipedia.org/wiki/List_of_superlative_trees#Stoutest
+        // crown diameter - 72.8: https://en.wikipedia.org/wiki/List_of_superlative_trees#Broadest excluding banyan
+
+        let threshold = 10.0_f64.powi(scale_power)
+        if value >= threshold && value.fract() == 0.0 {
+            value /= threshold;
         }
 
         Some(value)
