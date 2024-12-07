@@ -20,8 +20,8 @@
 
 <style>
 	.tabs {
-		padding: 0 var(--gap);
 		border-bottom: solid 1px var(--sep-color);
+		font-size: 16px;
 
 		ul {
 			list-style-type: none;
@@ -29,24 +29,31 @@
 			padding: 0;
 			display: flex;
 			flex-direction: row;
-			gap: calc(2 * var(--gap));
 
 			li {
-				border-bottom: 3px solid transparent;
 				line-height: 40px;
 				cursor: pointer;
 				color: var(--text-color-inactive);
 				font-weight: 600;
+				padding: 0 calc(1.5 * var(--gap));
 
 				a {
+					display: block;
 					text-decoration: none;
 					color: inherit;
+					border-bottom: 3px solid transparent;
+				}
+
+				&:hover {
+					background-color: var(--tab-hover-color);
 				}
 			}
 
 			li.active {
-				border-bottom-color: var(--tab-color);
-				color: var(--text-color);
+				a {
+					border-bottom-color: var(--tab-color);
+					color: var(--text-color);
+				}
 			}
 		}
 	}
