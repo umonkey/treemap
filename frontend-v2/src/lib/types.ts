@@ -23,6 +23,10 @@ export interface ITree {
 	files: ITreeFile[];
 }
 
+export interface IMarkers {
+	trees: ITree[];
+}
+
 export interface IStats {
 	count: number;
 }
