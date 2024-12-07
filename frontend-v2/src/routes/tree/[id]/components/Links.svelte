@@ -1,7 +1,7 @@
 <ul class="links">
-    <li><a href="https://example.com/">OSM</a></li>
     <li><a href="https://example.com/">Wikipedia</a></li>
     <li><a href="https://example.com/">Wikidata</a></li>
+    <li><a href="https://example.com/">OSM</a></li>
 </ul>
 
 <style>
