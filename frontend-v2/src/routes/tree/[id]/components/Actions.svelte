@@ -3,13 +3,11 @@
     import ChatIcon from '$lib/icons/ChatIcon.svelte';
     import ShareIcon from '$lib/icons/ShareIcon.svelte';
     import SaveIcon from '$lib/icons/SaveIcon.svelte';
-    import MapIcon from '$lib/icons/MapIcon.svelte';
 </script>
 
 <div class="actions">
     <div><HeartIcon class="icon" /></div>
     <div><ChatIcon class="icon" /></div>
-    <div><MapIcon class="icon" /></div>
     <div><ShareIcon class="icon" /></div>
     <div class="sep"></div>
     <div><SaveIcon class="icon" /></div>
