@@ -24,7 +24,7 @@
 		:root {
 			--gap: 10px;
 
-			font-size: 18px;
+			font-size: 15px;
 			font-family: 'Inter Variable', sans-serif;
 
 			/* Colors */
