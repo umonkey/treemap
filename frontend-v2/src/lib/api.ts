@@ -1,4 +1,4 @@
-import type { IStats, ITree } from '$lib/types';
+import type { IMarkers, IStats, ITree } from '$lib/types';
 
 interface Response<T> {
 	status: number;
@@ -21,6 +21,22 @@ export class ApiClient {
 	public async getStats(): Promise<Response<IStats>> {
 		console.debug(`[api] Getting stats`);
 		return await this.request('GET', 'v1/trees/stats');
+	}
+
+	public async getMarkers(
+		n: number,
+		e: number,
+		s: number,
+		w: number
+	): Promise<Response<IMarkers[]>> {
+		const search = new URLSearchParams({
+			n: n.toString(),
+			e: e.toString(),
+			s: s.toString(),
+			w: w.toString()
+		});
+
+		return await this.request('GET', 'v1/trees?' + search.toString());
 	}
 
 	private async request<T>(method: string, path: string): Promise<Response<T>> {

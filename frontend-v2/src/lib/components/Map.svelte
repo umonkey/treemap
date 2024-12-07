@@ -1,6 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import 'leaflet/dist/leaflet.css';
+	import { onMapMoveEnd } from '$lib/handlers/mapEvents';
 
 	export let center = [51.505, -0.09];
 
@@ -18,6 +19,8 @@
 		}).addTo(map);
 
 		map.attributionControl.setPrefix('Kanach Yerevan');
+
+		map.on('moveend', () => onMapMoveEnd(map));
 	});
 </script>
 
