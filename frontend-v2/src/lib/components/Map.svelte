@@ -13,10 +13,11 @@
 
 		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 			attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-			maxZoom: 19
+			maxZoom: 25,
+			maxNativeZoom: 19
 		}).addTo(map);
 
-		map.attributionControl.setPrefix('github.com/umonkey');
+		map.attributionControl.setPrefix('Kanach Yerevan');
 	});
 </script>
 
