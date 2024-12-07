@@ -1,5 +1,8 @@
 <script>
 	import { routes } from '$lib/routes';
+
+	const { data } = $props();
+	const { totalCount } = data;
 </script>
 
 <svelte:head>
@@ -8,7 +11,9 @@
 
 <div class="home">
 	<h1>Tree Map of Yerevan</h1>
-	<p>Welcome to the map of trees in Yerevan.</p>
+	<p>
+		Welcome to the map of trees in Yerevan.<br />We have <strong>{totalCount} trees</strong> in our database.
+	</p>
 
 	<p>
 		Don't know what to do? Find trees around you that are <a href={routes.searchQuery('incomplete')}

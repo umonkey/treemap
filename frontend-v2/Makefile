@@ -11,7 +11,7 @@ lint:
 	npm run lint
 
 serve:
-	VITE_API_ROOT=https://yerevan.treemaps.app/v1/ npm run dev
+	VITE_API_ROOT=https://yerevan.treemaps.app/ npm run dev
 
 test:
 	npm run test:unit -- run
