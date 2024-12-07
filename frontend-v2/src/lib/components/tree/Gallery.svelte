@@ -36,9 +36,9 @@
 		top: var(--gap);
 		background-color: rgba(0, 0, 0, 0.85);
 		color: #fff;
-		border-radius: 6px;
+		border-radius: 9px;
 		font-size: 14px;
-		padding: 2px 4px;
+		padding: 2px 8px;
 		z-index: 2;
 	}
 

@@ -1,5 +1,6 @@
 <script>
 	import '@fontsource-variable/inter';
+	import MobileNav from '$lib/components/MobileNav.svelte';
 
 	let { children } = $props();
 </script>
@@ -7,9 +8,13 @@
 <div class="layout">
 	<aside class="left">Left sidebar</aside>
 
-	<article>
-		{@render children()}
-	</article>
+	<main>
+		<article>
+			{@render children()}
+		</article>
+
+		<MobileNav />
+	</main>
 
 	<aside class="right">Right sidebar</aside>
 </div>
@@ -85,7 +90,7 @@
 			}
 		}
 
-		article {
+		main {
 			width: 100%;
 			max-width: 600px;
 		}
@@ -96,6 +101,10 @@
 			aside {
 				display: none;
 			}
+		}
+
+		article {
+			padding-bottom: 50px;
 		}
 	}
 </style>
