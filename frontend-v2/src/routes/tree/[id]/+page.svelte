@@ -1,4 +1,4 @@
-<script type="ts">
+<script>
 	import Actions from './components/Actions.svelte';
 	import Description from './components/Description.svelte';
 	import Gallery from './components/Gallery.svelte';
