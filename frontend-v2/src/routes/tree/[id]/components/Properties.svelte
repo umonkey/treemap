@@ -12,7 +12,7 @@
 		<dd>{tree.diameter} m</dd>
 	</dl>
 	<dl>
-		<dt>Circumference</dt>
+		<dt>Trunk</dt>
 		<dd>{tree.circumference} m</dd>
 	</dl>
 	<dl>
@@ -30,16 +30,17 @@
 		columns: 2;
 		gap: 20px;
 		margin: var(--gap) 0;
-		padding: 0 var(--gap);
 
 		border-top: 1px solid var(--sep-color);
 		padding-top: var(--gap);
+		box-sizing: border-box;
 	}
 
 	dl {
 		display: flex;
 		flex-direction: row;
 		margin: 0 0 5px;
+		padding: 0 var(--gap);
 	}
 
 	dt {
