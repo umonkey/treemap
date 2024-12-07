@@ -13,9 +13,10 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: var(--gap);
+    padding: 0 var(--gap);
     border-bottom: 1px solid var(--sep-color);
     font-weight: 800;
+    height: 40px;
 
     .icon {
         flex-basis: 30px;
