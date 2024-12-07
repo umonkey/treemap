@@ -1,13 +1,18 @@
 import type { Load } from '@sveltejs/kit';
-import { Tree } from '$lib/samples';
+import { error } from '@sveltejs/kit';
+import { apiClient } from '$lib/api';
 
 export const prerender = true;
 
-export const load: Load = async (xyz) => {
-	const { params } = xyz;
+export const load: Load = async ({ params }) => {
+	const res = await apiClient.getTree(params.id);
+
+	if (res.status !== 200) {
+		error(404);
+	}
 
 	return {
 		id: params.id,
-		tree: Tree,
+		tree: res.data
 	};
 };

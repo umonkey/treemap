@@ -1,4 +1,4 @@
-import { ITree } from '$lib/types';
+import type { ITree } from '$lib/types';
 
 interface Response<T> {
 	status: number;
