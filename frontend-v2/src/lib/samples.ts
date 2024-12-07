@@ -1,4 +1,4 @@
-import { ITree } from '$lib/types';
+import type { ITree } from '$lib/types';
 
 export const Tree: ITree = {
 	id: '166246555156877316',
@@ -18,6 +18,6 @@ export const Tree: ITree = {
 	files: [
 		{ id: '166248541323399172', small_id: '166248547979759616', large_id: '166248552803209216' },
 		{ id: '166248530393042948', small_id: '166248536013410304', large_id: '166248540404846592' },
-		{ id: '166248510298132484', small_id: '166248514928644096', large_id: '166248520364462080' },
+		{ id: '166248510298132484', small_id: '166248514928644096', large_id: '166248520364462080' }
 	]
 };
