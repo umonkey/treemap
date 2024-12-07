@@ -2,6 +2,7 @@
 	import Header from '$lib/components/tree/Header.svelte';
 	import Tabs from '$lib/components/tree/Tabs.svelte';
 	import Title from '$lib/components/tree/Title.svelte';
+	import Map from '$lib/components/Map.svelte';
 
 	const { data } = $props();
 	const tree = data.tree;
@@ -14,4 +15,5 @@
 <Header />
 <Title title={tree.species} />
 <Tabs tree={tree.id} active="map" />
-<p>Here will be the map with the tree pinned.</p>
+
+<Map center={[tree.lat, tree.lon]} />
