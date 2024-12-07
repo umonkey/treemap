@@ -26,6 +26,7 @@
 
     .icon {
         flex-basis: 25px;
+        color: var(--icon-color-secondary);
     }
 }
 </style>
