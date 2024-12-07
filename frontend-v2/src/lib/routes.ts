@@ -1,6 +1,7 @@
 export const routes = {
-	treeDetails: (id: string) => `/tree/${id}/`,
-	treeMap: (id: string) => `/tree/${id}/map`,
+	file: (id: string) => `https://yerevan.treemaps.app/v1/files/${id}.jpg`,
 	treeComments: (id: string) => `/tree/${id}/comments`,
-	treeHistory: (id: string) => `/tree/${id}/history`
+	treeDetails: (id: string) => `/tree/${id}/`,
+	treeHistory: (id: string) => `/tree/${id}/history`,
+	treeMap: (id: string) => `/tree/${id}/map`
 };
