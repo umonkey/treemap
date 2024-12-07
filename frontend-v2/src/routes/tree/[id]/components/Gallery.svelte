@@ -2,21 +2,69 @@
 	<div class="imgno">2/10</div>
 	<div class="slides">
 		<div>
-			<img src="https://yerevan.treemaps.app/v1/files/157235005582610432.jpg" />
+			<img
+				src="https://yerevan.treemaps.app/v1/files/157235005582610432.jpg"
+				alt="see how good it is"
+			/>
 			<div class="date">
 				29.10.2019 &middot; umonkey You can just change the file extension to .svelte and import an
 				SVG as a normal component.
 			</div>
 		</div>
-		<div><img src="https://yerevan.treemaps.app/v1/files/157234999588950016.jpg" /></div>
-		<div><img src="https://yerevan.treemaps.app/v1/files/157235134158999552.jpg" /></div>
-		<div><img src="https://yerevan.treemaps.app/v1/files/157235145743667200.jpg" /></div>
-		<div><img src="https://yerevan.treemaps.app/v1/files/157235424761352192.jpg" /></div>
-		<div><img src="https://yerevan.treemaps.app/v1/files/157235430486577152.jpg" /></div>
-		<div><img src="https://yerevan.treemaps.app/v1/files/157235418578948096.jpg" /></div>
-		<div><img src="https://yerevan.treemaps.app/v1/files/157235595687628800.jpg" /></div>
-		<div><img src="https://yerevan.treemaps.app/v1/files/157235721479000064.jpg" /></div>
-		<div><img src="https://yerevan.treemaps.app/v1/files/157235709017722880.jpg" /></div>
+		<div>
+			<img
+				src="https://yerevan.treemaps.app/v1/files/157234999588950016.jpg"
+				alt="see how good it is"
+			/>
+		</div>
+		<div>
+			<img
+				src="https://yerevan.treemaps.app/v1/files/157235134158999552.jpg"
+				alt="see how good it is"
+			/>
+		</div>
+		<div>
+			<img
+				src="https://yerevan.treemaps.app/v1/files/157235145743667200.jpg"
+				alt="see how good it is"
+			/>
+		</div>
+		<div>
+			<img
+				src="https://yerevan.treemaps.app/v1/files/157235424761352192.jpg"
+				alt="see how good it is"
+			/>
+		</div>
+		<div>
+			<img
+				src="https://yerevan.treemaps.app/v1/files/157235430486577152.jpg"
+				alt="see how good it is"
+			/>
+		</div>
+		<div>
+			<img
+				src="https://yerevan.treemaps.app/v1/files/157235418578948096.jpg"
+				alt="see how good it is"
+			/>
+		</div>
+		<div>
+			<img
+				src="https://yerevan.treemaps.app/v1/files/157235595687628800.jpg"
+				alt="see how good it is"
+			/>
+		</div>
+		<div>
+			<img
+				src="https://yerevan.treemaps.app/v1/files/157235721479000064.jpg"
+				alt="see how good it is"
+			/>
+		</div>
+		<div>
+			<img
+				src="https://yerevan.treemaps.app/v1/files/157235709017722880.jpg"
+				alt="see how good it is"
+			/>
+		</div>
 	</div>
 </div>
 

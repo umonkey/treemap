@@ -1,4 +1,4 @@
-<script type="ts">
+<script>
 	import HeartIcon from '$lib/icons/HeartIcon.svelte';
 	import ChatIcon from '$lib/icons/ChatIcon.svelte';
 	import ShareIcon from '$lib/icons/ShareIcon.svelte';
