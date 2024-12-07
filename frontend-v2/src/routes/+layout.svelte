@@ -1,4 +1,6 @@
 <script>
+    import '@fontsource-variable/inter';
+
     let { children } = $props();
 </script>
 
@@ -6,7 +8,9 @@
 :global {
     :root {
         --gap: 10px;
+
         font-size: 16px;
+        font-family: 'Inter Variable', sans-serif;
 
         /* Colors */
         --background-color: #fff;
@@ -20,7 +24,6 @@
     body {
         background-color: var(--background-color);
         color: var(--text-color);
-        font-family: InterVariable, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Liberation Sans", Helvetica, Arial, sans-serif;
         padding: 0;
         margin: 0;
     }
