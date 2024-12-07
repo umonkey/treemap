@@ -4,8 +4,6 @@
 </script>
 
 <div class="search">
-	<h1>Search</h1>
-
 	<SearchBar />
 
 	<p>Some interesting searches:</p>
@@ -31,6 +29,7 @@
 
 <style>
 	.search {
+		margin-top: var(--gap);
 		padding: 0 var(--gap);
 	}
 
