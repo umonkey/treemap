@@ -19,7 +19,7 @@
 <Header />
 <Title title={tree.species} />
 <Tabs tree={tree.id} active="details" />
-<Gallery />
+<Gallery files={tree.files} />
 <Actions />
 <Properties {tree} />
 <Links />
