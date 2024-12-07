@@ -1,12 +1,14 @@
 <script>
 	import '@fontsource-variable/inter';
 	import MobileNav from '$lib/components/MobileNav.svelte';
+	import LeftSideBar from '$lib/components/LeftSideBar.svelte';
+	import RightSideBar from '$lib/components/RightSideBar.svelte';
 
 	let { children } = $props();
 </script>
 
 <div class="layout">
-	<aside class="left">Left sidebar</aside>
+	<LeftSideBar />
 
 	<main>
 		<article>
@@ -16,7 +18,7 @@
 		<MobileNav />
 	</main>
 
-	<aside class="right">Right sidebar</aside>
+	<RightSideBar />
 </div>
 
 <style>
@@ -73,36 +75,15 @@
 		display: flex;
 		flex-direction: row;
 		margin: 0 auto;
-		max-width: 1100px;
+		max-width: calc(600px + 2 * 300px);
 		box-sizing: border-box;
-
-		aside {
-			width: 250px;
-			max-width: 250px;
-			text-align: center;
-
-			&.left {
-				border-right: 1px solid var(--sep-color);
-			}
-
-			&.right {
-				border-left: 1px solid var(--sep-color);
-			}
-		}
 
 		main {
 			width: 100%;
-			max-width: 600px;
 		}
 	}
 
 	@media (max-width: 400px) {
-		.layout {
-			aside {
-				display: none;
-			}
-		}
-
 		article {
 			padding-bottom: 50px;
 		}
