@@ -7,6 +7,8 @@
 	import Properties from './components/Properties.svelte';
 	import Tabs from './components/Tabs.svelte';
 	import Title from './components/Title.svelte';
+
+	export let data;
 </script>
 
 <svelte:head>
@@ -15,9 +17,9 @@
 
 <Header />
 <Title />
-<Tabs tree="134372280418570240" />
+<Tabs tree={data.tree.id} active="details" />
 <Gallery />
 <Actions />
 <Properties />
 <Links />
-<Description />
+<Description text={data.tree.notes} />
