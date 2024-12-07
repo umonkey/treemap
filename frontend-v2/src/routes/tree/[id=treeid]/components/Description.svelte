@@ -3,7 +3,14 @@
 </script>
 
 <div class="description">
-	<p>{text}</p>
+	{#if text}
+		<p>{text}</p>
+	{:else}
+		<p>
+			There is no description for this tree. You can leave a comment to let us know about something
+			interesting.
+		</p>
+	{/if}
 </div>
 
 <style>
