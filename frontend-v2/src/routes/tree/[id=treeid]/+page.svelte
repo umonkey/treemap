@@ -1,19 +1,19 @@
 <script>
-	import Actions from './components/Actions.svelte';
-	import Description from './components/Description.svelte';
-	import Gallery from './components/Gallery.svelte';
-	import Header from './components/Header.svelte';
-	import Links from './components/Links.svelte';
-	import Properties from './components/Properties.svelte';
-	import Tabs from './components/Tabs.svelte';
-	import Title from './components/Title.svelte';
+	import Actions from '$lib/components/tree/Actions.svelte';
+	import Description from '$lib/components/tree/Description.svelte';
+	import Gallery from '$lib/components/tree/Gallery.svelte';
+	import Header from '$lib/components/tree/Header.svelte';
+	import Links from '$lib/components/tree/Links.svelte';
+	import Properties from '$lib/components/tree/Properties.svelte';
+	import Tabs from '$lib/components/tree/Tabs.svelte';
+	import Title from '$lib/components/tree/Title.svelte';
 
 	const { data } = $props();
 	const tree = data.tree;
 </script>
 
 <svelte:head>
-	<title>{tree.species}</title>
+	<title>{tree.species} - Details</title>
 </svelte:head>
 
 <Header />
