@@ -44,8 +44,6 @@
     white-space: nowrap;
     scroll-snap-type: x mandatory;
 
-    border-radius: 4px;
-
     & > div {
         display: block;
         position: relative;
