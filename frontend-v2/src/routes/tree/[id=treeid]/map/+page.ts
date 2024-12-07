@@ -2,6 +2,8 @@ import type { Load } from '@sveltejs/kit';
 import { error } from '@sveltejs/kit';
 import { apiClient } from '$lib/api';
 
+export const prerender = false;
+
 export const load: Load = async ({ params }) => {
 	const res = await apiClient.getTree(params.id);
 
