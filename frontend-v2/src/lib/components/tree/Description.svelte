@@ -4,12 +4,9 @@
 
 <div class="description">
 	{#if text}
-		<p>{text}</p>
+		<p class="formatted">{text}</p>
 	{:else}
-		<p>
-			There is no description for this tree. You can leave a comment to let us know about something
-			interesting.
-		</p>
+		<p>There is no description for this tree. You can leave a comment to let us know about something interesting.</p>
 	{/if}
 </div>
 
@@ -18,7 +15,7 @@
 		padding: 0 var(--gap);
 		border-top: 1px solid var(--sep-color);
 
-		p {
+		p.formatted {
 			white-space: pre-wrap;
 		}
 	}
