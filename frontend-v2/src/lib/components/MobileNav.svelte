@@ -7,11 +7,11 @@
 </script>
 
 <nav class="mobile">
-	<a href="#"><div><HomeIcon /></div></a>
-	<a href="#"><div><SearchIcon /></div></a>
-	<a href="#"><div><MapIcon /></div></a>
-	<a href="#"><div><BellIcon /></div></a>
-	<a href="#"><div><UserIcon /></div></a>
+	<a href="/"><div><HomeIcon /></div></a>
+	<a href="/search"><div><SearchIcon /></div></a>
+	<a href="/map"><div><MapIcon /></div></a>
+	<a href="/updates"><div><BellIcon /></div></a>
+	<a href="/profile"><div><UserIcon /></div></a>
 </nav>
 
 <style>
