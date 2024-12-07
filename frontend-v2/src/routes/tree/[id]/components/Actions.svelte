@@ -24,9 +24,9 @@
     padding: 0 var(--gap);
 
     & > div {
-        width: 24px;
-        height: 24px;
-        color: var(--color-text);
+        width: 20px;
+        height: 20px;
+        color: var(--icon-color-secondary);
         text-align: center;
     }
 
