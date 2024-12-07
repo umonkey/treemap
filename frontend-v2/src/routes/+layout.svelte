@@ -16,8 +16,9 @@
     body {
         background-color: var(--background-color);
         color: var(--text-color);
-
         font-family: InterVariable, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Liberation Sans", Helvetica, Arial, sans-serif;
+        padding: 0;
+        margin: 0;
     }
 
     a {
