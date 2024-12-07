@@ -27,6 +27,7 @@
     right: var(--gap);
     top: var(--gap);
     background-color: rgba(0, 0, 0, 0.85);
+    color: #fff;
     border-radius: 6px;
     font-size: 14px;
     padding: 2px 4px;
@@ -71,6 +72,7 @@
         bottom: var(--gap);
         left: var(--gap);
         background-color: rgba(0, 0, 0, 0.75);
+        color: #fff;
         font-size: 14px;
         padding: 2px 4px;
 
