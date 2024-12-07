@@ -25,7 +25,10 @@
 .properties {
     columns: 2;
     gap: 20px;
-    margin: 20px 0;
+    margin: var(--gap) 0;
+
+    border-top: 1px solid var(--sep-color);
+    padding-top: var(--gap);
 }
 
 dl {
