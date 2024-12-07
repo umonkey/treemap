@@ -17,6 +17,7 @@
         --icon-color-secondary: #6f869f;
         --link-color: #1083fe;
         --sep-color: #d4dbe2;
+        --tab-color: #1083fe;
         --text-color-inactive: #42576c;
         --text-color: #0b0f14;
     }
@@ -44,6 +45,7 @@
             --icon-color-secondary: #788ea5;
             --link-color: #208bfe;
             --sep-color: #2e4052;
+            --tab-color: #208bfe;
             --text-color-inactive: #aebbc9;
             --text-color: #f1f3f5;
         }
