@@ -9,11 +9,13 @@
     import Header from './components/Header.svelte';
     import Links from './components/Links.svelte';
     import Properties from './components/Properties.svelte';
+    import Tabs from './components/Tabs.svelte';
     import Title from './components/Title.svelte';
 </script>
 
 <Header />
 <Title />
+<Tabs />
 <Gallery />
 <Actions />
 <Properties />
