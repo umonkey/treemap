@@ -22,3 +22,7 @@ export interface ITree {
 	added_by: string;
 	files: ITreeFile[];
 }
+
+export interface IStats {
+	count: number;
+}
