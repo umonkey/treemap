@@ -3,13 +3,19 @@
 </svelte:head>
 
 <script type="ts">
+    import Actions from './components/Actions.svelte';
+    import Description from './components/Description.svelte';
     import Gallery from './components/Gallery.svelte';
-    import Properties from './components/Properties.svelte';
+    import Header from './components/Header.svelte';
     import Links from './components/Links.svelte';
+    import Properties from './components/Properties.svelte';
+    import Title from './components/Title.svelte';
 </script>
 
-<h1>Quercus rubra</h1>
-
+<Header />
+<Title />
 <Gallery />
+<Actions />
 <Properties />
 <Links />
+<Description />

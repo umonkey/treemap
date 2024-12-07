@@ -7,7 +7,7 @@
 <style>
 .links {
     display: flex;
-    gap: 20px;
+    gap: var(--gap);
     list-style: none;
     padding: 0;
 }
