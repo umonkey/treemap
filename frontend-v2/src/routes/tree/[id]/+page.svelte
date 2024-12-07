@@ -15,7 +15,7 @@
 
 <Header />
 <Title />
-<Tabs tree="134372280418570240" active="details" />
+<Tabs tree="134372280418570240" />
 <Gallery />
 <Actions />
 <Properties />

@@ -1,39 +1,44 @@
 <script type="ts">
+    import { routes } from "$lib/routes";
+
+    export let tree;
+    export let active;
+
     const tabs = [
         {
             id: "details",
             title: "Details",
-            url: "/details",
+            url: routes.treeDetails(tree),
         },
         {
             id: "map",
             title: "Map",
-            url: "/map",
+            url: routes.treeMap(tree),
         },
         {
             id: "comments",
             title: "Comments",
-            url: "/comments",
+            url: routes.treeComments(tree),
         },
         {
             id: "history",
             title: "History",
-            url: "/history",
+            url: routes.treeHistory(tree),
         },
     ];
 
-    export let tree;
-    export let active = tabs[0].id;
+    // In case tab id was not provided, default to the first tab.
+    const activeTab = active ?? tabs[0].id;
 
     const cls = (tab) => {
-        return tab == active;
+        return tab == activeTab;
     };
 </script>
 
 <nav class="tabs">
     <ul>
         {#each tabs as tab}
-            <li class:active={cls(tab.id)}><a href="#">{tab.title}</a></li>
+            <li class:active={cls(tab.id)}><a href={tab.url}>{tab.title}</a></li>
         {/each}
     </ul>
 </nav>
