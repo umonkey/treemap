@@ -28,7 +28,7 @@ build:
 # takes a lot of time.
 build-backend-docker:
 	mkdir -p .cache/rust-registry
-	docker run --rm -v $(PWD)/backend:/app -v $(PWD)/.cache/rust-registry:/usr/local/cargo/registry -w /app docker.io/rust:1.76-alpine3.18 sh dev/docker-build.sh
+	docker run --rm -v $(PWD)/backend:/app -v $(PWD)/.cache/rust-registry:/usr/local/cargo/registry -w /app docker.io/rust:1.83-alpine3.20 sh dev/docker-build.sh
 
 build-frontend-docker:
 	mkdir -p .cache/npm
