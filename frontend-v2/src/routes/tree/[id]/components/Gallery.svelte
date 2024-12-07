@@ -87,8 +87,8 @@
 
 	.slides {
 		display: flex;
-		max-width: 500px;
-		max-height: 500px;
+		max-width: 100%;
+		aspect-ratio: 1/1;
 
 		overflow-x: auto;
 		overflow-y: hidden;
