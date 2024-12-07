@@ -9,6 +9,6 @@
     display: flex;
     gap: var(--gap);
     list-style: none;
-    padding: 0;
+    padding: 0 var(--gap);
 }
 </style>

@@ -26,6 +26,7 @@
     columns: 2;
     gap: 20px;
     margin: var(--gap) 0;
+    padding: 0 var(--gap);
 
     border-top: 1px solid var(--sep-color);
     padding-top: var(--gap);
