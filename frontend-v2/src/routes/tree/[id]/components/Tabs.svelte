@@ -1,9 +1,40 @@
+<script type="ts">
+    const tabs = [
+        {
+            id: "details",
+            title: "Details",
+            url: "/details",
+        },
+        {
+            id: "map",
+            title: "Map",
+            url: "/map",
+        },
+        {
+            id: "comments",
+            title: "Comments",
+            url: "/comments",
+        },
+        {
+            id: "history",
+            title: "History",
+            url: "/history",
+        },
+    ];
+
+    export let tree;
+    export let active = tabs[0].id;
+
+    const cls = (tab) => {
+        return tab == active;
+    };
+</script>
+
 <nav class="tabs">
     <ul>
-        <li class="active">Details</li>
-        <li>Map</li>
-        <li>Comments</li>
-        <li>History</li>
+        {#each tabs as tab}
+            <li class:active={cls(tab.id)}><a href="#">{tab.title}</a></li>
+        {/each}
     </ul>
 </nav>
 
@@ -26,6 +57,11 @@
             cursor: pointer;
             color: var(--text-color-inactive);
             font-weight: 600;
+
+            a {
+                text-decoration: none;
+                color: inherit;
+            }
         }
 
         li.active {
