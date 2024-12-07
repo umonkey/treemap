@@ -1,4 +1,4 @@
-<script type="ts">
+<script>
 	import DotsIcon from '$lib/icons/DotsIcon.svelte';
 </script>
 

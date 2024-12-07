@@ -1,4 +1,4 @@
-<script type="ts">
+<script>
 	import { routes } from '$lib/routes';
 	import TabRenderer from '$lib/components/TabRenderer.svelte';
 
