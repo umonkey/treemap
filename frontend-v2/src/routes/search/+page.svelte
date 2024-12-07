@@ -10,20 +10,23 @@
 
 	<ul>
 		<li>
-			<a href={routes.search('sick')}>Sick</a> or <a href={routes.search('dead')}>dead</a> or
-			<a href={routes.search('gone')}>gone</a>
-			trees, or <a href={routes.search('stomp')}>stomps</a>
+			<a href={routes.searchQuery('sick')}>Sick</a> or <a href={routes.searchQuery('dead')}>dead</a>
+			or
+			<a href={routes.searchQuery('gone')}>gone</a>
+			trees, or <a href={routes.searchQuery('stomp')}>stomps</a>
 		</li>
 		<li>
-			<a href={routes.search('quercus')}>Oaks</a> or <a href={routes.search('acer')}>maples</a> or
-			<a href={routes.search('fraxinus')}>ashes</a>
-			or <a href={routes.search('elm')}>elms</a>
+			<a href={routes.searchQuery('oak')}>Oaks</a> or
+			<a href={routes.searchQuery('maple')}>maples</a>
+			or
+			<a href={routes.searchQuery('ash')}>ashes</a>
+			or <a href={routes.searchQuery('elm')}>elms</a>
 		</li>
 		<li>
-			With <a href={routes.search('noimage')}>no images</a> or
-			<a href={routes.search('unknown')}>no species</a>
+			With <a href={routes.searchQuery('noimage')}>no images</a> or
+			<a href={routes.searchQuery('unknown')}>no species</a>
 		</li>
-		<li><a href={routes.search('incomplete')}>Missing some data</a></li>
+		<li><a href={routes.searchQuery('incomplete')}>Missing some data</a></li>
 	</ul>
 </div>
 

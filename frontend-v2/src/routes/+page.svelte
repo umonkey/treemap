@@ -11,10 +11,10 @@
 	<p>Welcome to the map of trees in Yerevan.</p>
 
 	<p>
-		Don't know what to do? Find trees around you that are <a href={routes.search('incomplete')}
+		Don't know what to do? Find trees around you that are <a href={routes.searchQuery('incomplete')}
 			>missing some data</a
 		>
-		or <a href={routes.search('noimage')}>missing photos</a> and help us out!
+		or <a href={routes.searchQuery('noimage')}>missing photos</a> and help us out!
 	</p>
 
 	<p>Please use the navigation bar to access areas of the application.</p>
