@@ -69,6 +69,7 @@
 		flex-direction: row;
 		margin: 0 auto;
 		max-width: 1100px;
+		box-sizing: border-box;
 
 		aside {
 			width: 250px;
@@ -77,9 +78,18 @@
 		}
 
 		article {
+			width: 100%;
 			max-width: 600px;
 			border-left: 1px solid var(--sep-color);
 			border-right: 1px solid var(--sep-color);
+		}
+	}
+
+	@media (max-width: 400px) {
+		.layout {
+			aside {
+				display: none;
+			}
 		}
 	}
 </style>
