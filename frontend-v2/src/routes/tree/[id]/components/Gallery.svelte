@@ -71,6 +71,7 @@
 <style>
 	.gallery {
 		position: relative;
+		box-sizing: border-box;
 	}
 
 	.imgno {
