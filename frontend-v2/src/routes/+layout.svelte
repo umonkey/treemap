@@ -31,6 +31,8 @@
 
 			/* Colors */
 			--background-color: #fff;
+			--form-background: #f1f3f5;
+			--form-border: #1083fe;
 			--icon-color-secondary: #6f869f;
 			--link-color: #1083fe;
 			--sep-color: #d4dbe2;
@@ -60,13 +62,15 @@
 		:global {
 			:root {
 				--background-color: #14191f;
+				--form-background: #1e2936;
+				--form-border: #208bfe;
 				--icon-color-secondary: #788ea5;
 				--link-color: #208bfe;
 				--sep-color: #2e4052;
 				--tab-color: #208bfe;
+				--tab-hover-color: #1e2936;
 				--text-color-inactive: #aebbc9;
 				--text-color: #f1f3f5;
-				--tab-hover-color: #1e2936;
 			}
 		}
 	}
