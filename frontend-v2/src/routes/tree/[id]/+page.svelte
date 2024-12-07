@@ -8,18 +8,19 @@
 	import Tabs from './components/Tabs.svelte';
 	import Title from './components/Title.svelte';
 
-	export let data;
+	const { data } = $props();
+	const tree = data.tree;
 </script>
 
 <svelte:head>
-	<title>Quercus rubra</title>
+	<title>{tree.species}</title>
 </svelte:head>
 
 <Header />
-<Title />
-<Tabs tree={data.tree.id} active="details" />
+<Title title={tree.species} />
+<Tabs tree={tree.id} active="details" />
 <Gallery />
 <Actions />
-<Properties />
+<Properties {tree} />
 <Links />
-<Description text={data.tree.notes} />
+<Description text={tree.notes} />
