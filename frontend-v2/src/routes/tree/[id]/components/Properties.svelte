@@ -1,19 +1,23 @@
+<script>
+	const { tree } = $props();
+</script>
+
 <div class="properties">
 	<dl>
 		<dt>Height</dt>
-		<dd>17 m</dd>
+		<dd>{tree.height} m</dd>
 	</dl>
 	<dl>
 		<dt>Canopy</dt>
-		<dd>4.5 m</dd>
+		<dd>{tree.diameter} m</dd>
 	</dl>
 	<dl>
 		<dt>Circumference</dt>
-		<dd>4.5 m</dd>
+		<dd>{tree.circumference} m</dd>
 	</dl>
 	<dl>
 		<dt>State</dt>
-		<dd>sick, deformed</dd>
+		<dd>{tree.state}</dd>
 	</dl>
 	<dl>
 		<dt>Year</dt>
