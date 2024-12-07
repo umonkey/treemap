@@ -29,7 +29,7 @@
         }
 
         li.active {
-            border-bottom-color: #208bfe;
+            border-bottom-color: var(--tab-color);
             color: var(--text-color);
         }
     }
