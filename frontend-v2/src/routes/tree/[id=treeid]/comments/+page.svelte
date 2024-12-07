@@ -16,3 +16,9 @@
 <Tabs tree={tree.id} active="comments" />
 
 <p>No comments for this tree yet.</p>
+
+<style>
+p {
+	padding: 0 var(--gap);
+}
+</style>
