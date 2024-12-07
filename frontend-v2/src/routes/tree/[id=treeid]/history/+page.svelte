@@ -16,3 +16,9 @@
 <Tabs tree={tree.id} active="history" />
 
 <p>No history of changes for this tree yet.</p>
+
+<style>
+p {
+	padding: 0 var(--gap);
+}
+</style>
