@@ -6,7 +6,10 @@
 	{#if text}
 		<p class="formatted">{text}</p>
 	{:else}
-		<p>There is no description for this tree. You can leave a comment to let us know about something interesting.</p>
+		<p>
+			There is no description for this tree. You can leave a comment to let us know about something
+			interesting.
+		</p>
 	{/if}
 </div>
 
