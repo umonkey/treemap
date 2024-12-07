@@ -5,13 +5,13 @@
 </script>
 
 <div class="layout">
-	<aside>Left sidebar</aside>
+	<aside class="left">Left sidebar</aside>
 
 	<article>
 		{@render children()}
 	</article>
 
-	<aside>Right sidebar</aside>
+	<aside class="right">Right sidebar</aside>
 </div>
 
 <style>
@@ -75,13 +75,19 @@
 			width: 250px;
 			max-width: 250px;
 			text-align: center;
+
+			&.left {
+				border-right: 1px solid var(--sep-color);
+			}
+
+			&.right {
+				border-left: 1px solid var(--sep-color);
+			}
 		}
 
 		article {
 			width: 100%;
 			max-width: 600px;
-			border-left: 1px solid var(--sep-color);
-			border-right: 1px solid var(--sep-color);
 		}
 	}
 
