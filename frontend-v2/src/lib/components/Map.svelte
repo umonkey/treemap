@@ -10,6 +10,7 @@
 
 	onMount(async () => {
 		L = await import('leaflet');
+
 		map = L.map('map').setView(center, 18);
 
 		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -20,7 +21,7 @@
 
 		map.attributionControl.setPrefix('Kanach Yerevan');
 
-		new Markers(map);
+		new Markers(map, L);
 	});
 </script>
 
