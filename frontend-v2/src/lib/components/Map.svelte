@@ -18,9 +18,11 @@
 			maxNativeZoom: 19
 		}).addTo(map);
 
+		const geoJSON = L.geoJSON().addTo(map);
+
 		map.attributionControl.setPrefix('Kanach Yerevan');
 
-		map.on('moveend', () => onMapMoveEnd(map));
+		map.on('moveend', () => onMapMoveEnd(map, geoJSON));
 	});
 </script>
 
