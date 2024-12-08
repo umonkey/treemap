@@ -19,6 +19,8 @@ type MarkerMap = {
 	[key: string]: Marker;
 };
 
+type onChangeFn = (tree: ITree) => void;
+
 export class Markers {
 	private map;
 
@@ -28,6 +30,8 @@ export class Markers {
 	private yellowIcon;
 	private redIcon;
 	private blackIcon;
+
+	public changeHandler: onChangeFn = null;
 
 	constructor(map: Map) {
 		this.map = map;
@@ -57,6 +61,10 @@ export class Markers {
 		});
 
 		map.on('moveend', () => this.onMoveEnd());
+	}
+
+	public onChange(handler: onChangeFn) {
+		this.changeHandler = handler;
 	}
 
 	private async onMoveEnd() {
@@ -89,10 +97,12 @@ export class Markers {
 					icon: this.getTreeIcon(tree)
 				});
 
-				point.bindPopup('Hello, <b>world</b>.');
-
 				point.addTo(this.map).on('click', () => {
 					this.map.panTo([tree.lat, tree.lon]);
+
+					if (this.changeHandler) {
+						this.changeHandler(tree);
+					}
 				});
 
 				this.markerMap[tree.id] = point;

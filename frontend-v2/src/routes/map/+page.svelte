@@ -2,6 +2,10 @@
 	import Header from '$lib/components/tree/Header.svelte';
 	import Map from '$lib/components/Map.svelte';
 	import { DEFAULT_MAP_CENTER } from '$lib/constants';
+
+	const onChange = (tree) => {
+		console.debug('TREE SELECTED', tree);
+	};
 </script>
 
 <svelte:head>
@@ -10,4 +14,4 @@
 
 <Header />
 
-<Map center={DEFAULT_MAP_CENTER} />
+<Map center={DEFAULT_MAP_CENTER} {onChange} />
