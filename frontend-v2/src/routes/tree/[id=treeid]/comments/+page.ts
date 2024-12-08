@@ -3,14 +3,21 @@ import { error } from '@sveltejs/kit';
 import { apiClient } from '$lib/api';
 
 export const load: Load = async ({ params }) => {
-	const res = await apiClient.getTree(params.id);
+	const treeId = params.id;
+
+	if (!treeId) {
+		error(404);
+		return;
+	}
+
+	const res = await apiClient.getTree(treeId);
 
 	if (res.status !== 200) {
 		error(404);
 	}
 
 	return {
-		id: params.id,
+		id: treeId,
 		tree: res.data
 	};
 };

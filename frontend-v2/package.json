@@ -9,7 +9,7 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"format": "prettier --write .",
-		"lint": "prettier --check . && eslint .",
+		"lint": "eslint . --report-unused-disable-directives --max-warnings 0 --color && prettier --check .",
 		"test:unit": "vitest",
 		"test": "npm run test:unit -- --run"
 	},
@@ -33,6 +33,7 @@
 	},
 	"dependencies": {
 		"@fontsource-variable/inter": "^5.1.0",
+		"@types/leaflet": "^1.9.15",
 		"leaflet": "^1.9.4"
 	}
 }
