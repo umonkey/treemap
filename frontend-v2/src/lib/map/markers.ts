@@ -1,14 +1,113 @@
+import L from 'leaflet';
+import type { ITree } from '$lib/types';
 import type { Map } from 'leaflet';
+import { apiClient } from '$lib/api';
+
+import BlackIcon from '$lib/map/icons/dot-black.svg';
+import GreenIcon from '$lib/map/icons/dot-green.svg';
+import RedIcon from '$lib/map/icons/dot-red.svg';
+import YellorIcon from '$lib/map/icons/dot-yellow.svg';
+
+type MarkerMap = {
+	[key: string]: Marker;
+};
 
 export class Markers {
 	private map;
 
+	private markerMap: MarkerMap = {};
+
+	private greenIcon;
+	private yellowIcon;
+	private redIcon;
+	private blackIcon;
+
 	constructor(map: Map) {
 		this.map = map;
+
+		this.greenIcon = L.icon({
+			iconUrl: GreenIcon,
+			iconSize: [20, 20],
+			iconAnchor: [10, 10]
+		});
+
+		this.yellowIcon = L.icon({
+			iconUrl: YellorIcon,
+			iconSize: [20, 20],
+			iconAnchor: [10, 10]
+		});
+
+		this.redIcon = L.icon({
+			iconUrl: RedIcon,
+			iconSize: [20, 20],
+			iconAnchor: [10, 10]
+		});
+
+		this.blackIcon = L.icon({
+			iconUrl: BlackIcon,
+			iconSize: [20, 20],
+			iconAnchor: [10, 10]
+		});
+
 		map.on('moveend', () => this.onMoveEnd());
 	}
 
-	private onMoveEnd() {
-		console.log('MOVE END', this.map.getBounds());
+	private async onMoveEnd() {
+		const bounds = this.map.getBounds();
+		const n = bounds.getNorth();
+		const e = bounds.getEast();
+		const s = bounds.getSouth();
+		const w = bounds.getWest();
+
+		const res = await apiClient.getMarkers(n, e, s, w);
+
+		if (res.status === 200) {
+			this.addMarkers(res.data.trees);
+		}
+	}
+
+	private addMarkers(markers: ITree) {
+		const oldKeys = Object.keys(this.markerMap);
+		const newKeys = markers.map((m) => m.id);
+
+		// Add new markers.
+		for (const marker of markers) {
+			if (!oldKeys.includes(marker.id)) {
+				const point = L.marker([marker.lat, marker.lon], {
+					icon: this.getTreeIcon(marker)
+				});
+
+				point.addTo(this.map).on('click', () => {
+					console.debug('[map] Marker clicked.', marker);
+				});
+
+				this.markerMap[marker.id] = point;
+				oldKeys.push(marker.id);
+			}
+		}
+
+		// Remove gone markers.
+		for (const key of oldKeys) {
+			if (!newKeys.includes(key)) {
+				this.markerMap[key].remove();
+				delete this.markerMap[key];
+			}
+		}
+	}
+
+	private getTreeIcon(tree: ITree) {
+		if (tree.status === 'deat' || tree.status === 'gone' || tree.status === 'stomp') {
+			return this.blackIcon;
+		}
+
+		if (tree.status === 'sick') {
+			return this.redIcon;
+		}
+
+		if (tree.status === 'deformed') {
+			return this.yellowIcon;
+		}
+
+		return this.greenIcon;
 	}
 }
