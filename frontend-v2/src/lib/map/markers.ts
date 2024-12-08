@@ -1,3 +1,10 @@
+/**
+ * Wrap the very low-level logic of Leaflet markers.
+ *
+ * TODO:
+ * - Change marker size based on zoom level, https://gis.stackexchange.com/questions/216558/leaflet-resize-markers-in-layer-when-zoom-in
+ */
+
 import L from 'leaflet';
 import type { ITree } from '$lib/types';
 import type { Map } from 'leaflet';
@@ -62,11 +69,16 @@ export class Markers {
 		const res = await apiClient.getMarkers(n, e, s, w);
 
 		if (res.status === 200) {
-			this.addMarkers(res.data.trees);
+			this.replaceMarkers(res.data.trees);
 		}
 	}
 
-	private addMarkers(markers: ITree) {
+	/**
+	 * Replaces the current markers with the given markers.
+	 *
+	 * Leaflet cannot track duplicates so we have to do this on our side.
+	 */
+	private replaceMarkers(markers: ITree) {
 		const oldKeys = Object.keys(this.markerMap);
 		const newKeys = markers.map((m) => m.id);
 
@@ -78,7 +90,8 @@ export class Markers {
 				});
 
 				point.addTo(this.map).on('click', () => {
-					console.debug('[map] Marker clicked.', marker);
+					console.log(`[map] Marker clicked, id=${marker.id}.`);
+					this.map.panTo([marker.lat, marker.lon]);
 				});
 
 				this.markerMap[marker.id] = point;
