@@ -3,7 +3,7 @@
 	import 'leaflet/dist/leaflet.css';
 	import { Markers } from '$lib/map/markers';
 
-	export let center = [51.505, -0.09];
+	const { center, onChange } = $props();
 
 	let map;
 	let L;
@@ -21,7 +21,8 @@
 
 		map.attributionControl.setPrefix('Kanach Yerevan');
 
-		new Markers(map, L);
+		const markers = new Markers(map, L);
+		markers.onChange(onChange);
 	});
 </script>
 
