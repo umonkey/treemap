@@ -78,24 +78,25 @@ export class Markers {
 	 *
 	 * Leaflet cannot track duplicates so we have to do this on our side.
 	 */
-	private replaceMarkers(markers: ITree) {
+	private replaceMarkers(trees: ITree) {
 		const oldKeys = Object.keys(this.markerMap);
-		const newKeys = markers.map((m) => m.id);
+		const newKeys = trees.map((m) => m.id);
 
 		// Add new markers.
-		for (const marker of markers) {
-			if (!oldKeys.includes(marker.id)) {
-				const point = L.marker([marker.lat, marker.lon], {
-					icon: this.getTreeIcon(marker)
+		for (const tree of trees) {
+			if (!oldKeys.includes(tree.id)) {
+				const point = L.marker([tree.lat, tree.lon], {
+					icon: this.getTreeIcon(tree)
 				});
+
+				point.bindPopup('Hello, <b>world</b>.');
 
 				point.addTo(this.map).on('click', () => {
-					console.log(`[map] Marker clicked, id=${marker.id}.`);
-					this.map.panTo([marker.lat, marker.lon]);
+					this.map.panTo([tree.lat, tree.lon]);
 				});
 
-				this.markerMap[marker.id] = point;
-				oldKeys.push(marker.id);
+				this.markerMap[tree.id] = point;
+				oldKeys.push(tree.id);
 			}
 		}
 
