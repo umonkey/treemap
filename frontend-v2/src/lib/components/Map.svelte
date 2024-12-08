@@ -1,7 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import 'leaflet/dist/leaflet.css';
-	import { onMapMoveEnd } from '$lib/handlers/mapEvents';
+	import { Markers } from '$lib/map/markers';
 
 	export let center = [51.505, -0.09];
 
@@ -18,11 +18,9 @@
 			maxNativeZoom: 19
 		}).addTo(map);
 
-		const geoJSON = L.geoJSON().addTo(map);
-
 		map.attributionControl.setPrefix('Kanach Yerevan');
 
-		map.on('moveend', () => onMapMoveEnd(map, geoJSON));
+		new Markers(map);
 	});
 </script>
 
