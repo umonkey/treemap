@@ -31,6 +31,7 @@
 <style>
 	#map {
 		height: calc(100vh - 41px);
+		z-index: 2;
 	}
 
 	@media (max-width: 480px) {
