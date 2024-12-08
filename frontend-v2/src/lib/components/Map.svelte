@@ -29,6 +29,12 @@
 
 <style>
 	#map {
-		height: 400px;
+		height: calc(100vh - 41px);
+	}
+
+	@media (max-width: 480px) {
+		#map {
+			height: calc(100vh - 91px);
+		}
 	}
 </style>
