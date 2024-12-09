@@ -1,5 +1,6 @@
 <script>
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
+	import { shortDetails } from '$lib/utils/trees';
 
 	export let tree;
 	export let onClose;
@@ -11,7 +12,7 @@
 			<div class="title">{tree.species}</div>
 			<button class="close" on:click={onClose}><CloseIcon /></button>
 		</div>
-		<div class="props">H=4m D=15m C=120cm</div>
+		<div class="props">{shortDetails(tree)}</div>
 	</div>
 {/if}
 
