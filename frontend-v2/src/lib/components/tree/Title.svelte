@@ -1,11 +1,11 @@
 <script>
 	import DotsIcon from '$lib/icons/DotsIcon.svelte';
 
-	const { title } = $props();
+	const { title, address } = $props();
 </script>
 
 <div class="title">
-	<h1><strong>{title}</strong> &middot; Manukyan str</h1>
+	<h1><strong>{title}</strong>{#if address} &middot; {address}{/if}</h1>
 	<div class="icon">
 		<DotsIcon />
 	</div>

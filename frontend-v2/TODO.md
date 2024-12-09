@@ -10,6 +10,7 @@ Blockers:
 - Edit trees.
 - Map: save state.
 - Map: toggle OSM vs Sat.
+- Map: dark mode tiles.
 
 Enhancements:
 
@@ -18,3 +19,4 @@ Enhancements:
 - Meta hints on the map, total tree count etc.
 - Animated preview on the map.
 - Lazy image loading, fade in.
+- Phone body class.
