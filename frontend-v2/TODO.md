@@ -7,10 +7,13 @@ Blockers:
 
 - Details: back button.
 - Details: map position.
+- Details: external links.
+- Details: (...) menu with edit, share.
 - Edit trees.
 - Map: save state.
 - Map: toggle OSM vs Sat.
 - Map: dark mode tiles.
+- Gallery: navigation.
 
 Enhancements:
 
@@ -20,3 +23,4 @@ Enhancements:
 - Animated preview on the map.
 - Lazy image loading, fade in.
 - Phone body class.
+- Details: full screen photos.
