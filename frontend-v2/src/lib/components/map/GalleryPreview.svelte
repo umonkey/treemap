@@ -37,8 +37,14 @@
 		flex-direction: row;
 		gap: var(--gap);
 
+		scroll-snap-type: x mandatory;
+		scrollbar-width: none;
+
 		a {
 			display: block;
+
+			scroll-snap-align: start;
+			scroll-snap-stop: always;
 
 			img {
 				display: block;
