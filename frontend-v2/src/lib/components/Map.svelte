@@ -3,7 +3,7 @@
 	import 'leaflet/dist/leaflet.css';
 	import { Markers } from '$lib/map/markers';
 
-	const { center, onChange, className } = $props();
+	const { center, onChange, className, marker, zoom } = $props();
 
 	let map;
 	let L;
@@ -11,7 +11,7 @@
 	onMount(async () => {
 		L = await import('leaflet');
 
-		map = L.map('map').setView(center, 18);
+		map = L.map('map').setView(center, zoom ?? 15);
 
 		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 			attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
@@ -20,6 +20,11 @@
 		}).addTo(map);
 
 		map.attributionControl.setPrefix('Kanach Yerevan');
+
+		// Highlight the current tree.
+		if (marker) {
+			L.marker(marker).addTo(map);
+		}
 
 		const markers = new Markers(map, L);
 		markers.onChange(onChange);

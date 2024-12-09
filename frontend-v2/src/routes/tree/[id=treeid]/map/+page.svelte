@@ -16,4 +16,4 @@
 <Title title={tree.species} />
 <Tabs tree={tree.id} active="map" />
 
-<Map center={[tree.lat, tree.lon]} className="treeTab" />
+<Map center={[tree.lat, tree.lon]} marker={[tree.lat, tree.lon]} zoom={18} className="treeTab" />
