@@ -14,7 +14,7 @@ Blockers:
 - Map: save state.
 - Map: toggle OSM vs Sat.
 - Map: dark mode tiles.
-- Gallery: navigation.
+- Gallery: navigation buttons, left/right.
 - Logging in.
 
 Enhancements:
