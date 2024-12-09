@@ -16,6 +16,7 @@
 <Tabs tree={tree.id} active="comments" />
 
 <p>No comments for this tree yet.</p>
+<p>(This area is under construction.)</p>
 
 <style>
 	p {
