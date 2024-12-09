@@ -3,7 +3,7 @@ export const routes = {
 	search: '/search',
 	searchQuery: (query: string) => `/map?q=${query}`,
 	treeComments: (id: string) => `/tree/${id}/comments`,
-	treeDetails: (id: string) => `/tree/${id}/`,
+	treeDetails: (id: string) => `/tree/${id}`,
 	treeHistory: (id: string) => `/tree/${id}/history`,
 	treeMap: (id: string) => `/tree/${id}/map`
 };

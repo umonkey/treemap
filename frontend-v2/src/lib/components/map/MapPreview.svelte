@@ -1,6 +1,7 @@
 <script>
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
 	import { shortDetails } from '$lib/utils/trees';
+	import { routes } from '$lib/routes';
 
 	export let tree;
 	export let onClose;
@@ -9,7 +10,7 @@
 {#if tree}
 	<div class="preview">
 		<div class="header">
-			<div class="title">{tree.species}</div>
+			<div class="title"><a href={routes.treeDetails(tree.id)}>{tree.species}</a></div>
 			<button class="close" on:click={onClose}><CloseIcon /></button>
 		</div>
 		<div class="props">{shortDetails(tree)}</div>
