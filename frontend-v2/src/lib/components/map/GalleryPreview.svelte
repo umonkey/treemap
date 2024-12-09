@@ -39,7 +39,6 @@
 
 		a {
 			display: block;
-			color: inherit;
 
 			img {
 				display: block;
