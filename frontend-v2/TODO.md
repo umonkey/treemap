@@ -6,7 +6,6 @@ Alternative icon packs:
 Blockers:
 
 - Details: back button.
-- Details: map position.
 - Details: external links.
 - Details: (...) menu with edit, share.
 - Edit trees.
