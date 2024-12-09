@@ -1,9 +1,13 @@
 <script>
 	import BackIcon from '$lib/icons/BackIcon.svelte';
+
+	const onBack = () => {
+		history.back();
+	};
 </script>
 
 <div class="header">
-	<div class="icon"><div><BackIcon /></div></div>
+	<button class="icon" on:click={onBack}><BackIcon /></button>
 	<div>Tree</div>
 	<div class="icon"></div>
 </div>
@@ -18,19 +22,20 @@
 		font-weight: 800;
 		height: 40px;
 
+		button {
+			background: transparent;
+			border: none;
+			color: var(--text-color);
+			display: block;
+			cursor: pointer;
+		}
+
 		.icon {
 			flex-basis: 30px;
 			flex-grow: 0;
 			flex-shrink: 0;
 			height: 30px;
 			align-content: center;
-
-			& > div {
-				width: 20px;
-				height: 20px;
-				padding: 5px;
-				cursor: pointer;
-			}
 		}
 	}
 </style>
