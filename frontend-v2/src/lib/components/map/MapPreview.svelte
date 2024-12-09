@@ -1,7 +1,8 @@
 <script>
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
-	import { shortDetails } from '$lib/utils/trees';
+	import GalleryPreview from '$lib/components/map/GalleryPreview.svelte';
 	import { routes } from '$lib/routes';
+	import { shortDetails } from '$lib/utils/trees';
 
 	export let tree;
 	export let onClose;
@@ -14,6 +15,7 @@
 			<button class="close" on:click={onClose}><CloseIcon /></button>
 		</div>
 		<div class="props">{shortDetails(tree)}</div>
+		<GalleryPreview {tree} />
 	</div>
 {/if}
 
