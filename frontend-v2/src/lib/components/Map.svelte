@@ -3,7 +3,7 @@
 	import 'leaflet/dist/leaflet.css';
 	import { Markers } from '$lib/map/markers';
 
-	const { center, onChange } = $props();
+	const { center, onChange, className } = $props();
 
 	let map;
 	let L;
@@ -26,7 +26,7 @@
 	});
 </script>
 
-<div id="map"></div>
+<div id="map" class={className}></div>
 
 <style>
 	#map {
@@ -37,6 +37,10 @@
 	@media (max-width: 480px) {
 		#map {
 			height: calc(100vh - 91px);
+		}
+
+		#map.treeTab {
+			height: calc(100vh - 185px);
 		}
 	}
 </style>
