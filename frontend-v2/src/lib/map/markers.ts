@@ -61,6 +61,8 @@ export class Markers {
 		});
 
 		map.on('moveend', () => this.onMoveEnd());
+
+		this.onMoveEnd();
 	}
 
 	public onChange(handler: onChangeFn) {
