@@ -11,11 +11,11 @@
 </script>
 
 <div class="gallery">
-	<div class="imgno">1/{files.length}</div>
 	<div class="slides">
-		{#each files as file}
+		{#each files as file, idx}
 			<div>
 				<img src={routes.file(file.small_id)} alt="See how good is this tree." />
+				<div class="imgno">{idx + 1}/{files.length}</div>
 				{#if file.added_at}
 					<div class="date">{added_at(file)}</div>
 				{/if}
@@ -50,11 +50,15 @@
 		overflow-x: auto;
 		overflow-y: hidden;
 		white-space: nowrap;
+
 		scroll-snap-type: x mandatory;
+		scrollbar-width: none;
 
 		& > div {
 			display: block;
 			position: relative;
+			scroll-snap-align: center;
+			scroll-snap-stop: always;
 
 			min-height: 100%;
 			min-width: 100%;
