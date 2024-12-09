@@ -16,4 +16,4 @@
 <Title title={tree.species} />
 <Tabs tree={tree.id} active="map" />
 
-<Map center={[tree.lat, tree.lon]} />
+<Map center={[tree.lat, tree.lon]} className="treeTab" />
