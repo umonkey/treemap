@@ -21,5 +21,8 @@ export const shortDetails = (tree: ITree): string => {
 		parts.push('C=?');
 	}
 
+	parts.push('·');
+	parts.push(tree.state);
+
 	return parts.join(' ');
 };
