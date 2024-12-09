@@ -5,7 +5,10 @@
 </script>
 
 <div class="title">
-	<h1><strong>{title}</strong>{#if address} &middot; {address}{/if}</h1>
+	<h1>
+		<strong>{title}</strong>{#if address}
+			&middot; {address}{/if}
+	</h1>
 	<div class="icon">
 		<DotsIcon />
 	</div>
