@@ -42,19 +42,23 @@
 			width: 30px;
 			height: 30px;
 			cursor: pointer;
+
+			background-color: transparent;
+			border: none;
+			color: var(--sep-color);
 		}
 	}
 
 	@media (max-width: 480px) {
 		.preview {
 			position: fixed;
-			bottom: 50px;
+			bottom: 0px;
 
 			z-index: 5;
 
 			width: 100%;
 			box-sizing: border-box;
-			background-color: #000;
+			background-color: var(--form-background);
 			border-top-left-radius: 8px;
 			border-top-right-radius: 8px;
 
