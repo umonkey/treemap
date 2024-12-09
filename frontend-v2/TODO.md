@@ -8,11 +8,14 @@ Blockers:
 - Details: back button.
 - Details: external links.
 - Details: (...) menu with edit, share.
+- Details: add comments.
+- Details: like, share, save buttons.
 - Edit trees.
 - Map: save state.
 - Map: toggle OSM vs Sat.
 - Map: dark mode tiles.
 - Gallery: navigation.
+- Logging in.
 
 Enhancements:
 
