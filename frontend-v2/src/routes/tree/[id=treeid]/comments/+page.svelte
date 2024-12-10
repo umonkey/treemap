@@ -3,6 +3,7 @@
 	import Tabs from '$lib/components/tree/Tabs.svelte';
 	import Title from '$lib/components/tree/Title.svelte';
 	import TreeMenu from '$lib/components/tree/Menu.svelte';
+	import CommentForm from '$lib/components/forms/CommentForm.svelte';
 
 	const { data } = $props();
 	const tree = data.tree;
@@ -17,11 +18,13 @@
 <Tabs tree={tree.id} active="comments" />
 <TreeMenu id={tree.id} />
 
-<p>No comments for this tree yet.</p>
-<p>(This area is under construction.)</p>
+<div class="container">
+	<p>No comments for this tree yet.</p>
+	<CommentForm />
+</div>
 
 <style>
-	p {
+	.container {
 		padding: 0 var(--gap);
 	}
 </style>
