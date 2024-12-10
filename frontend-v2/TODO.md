@@ -5,7 +5,6 @@ Alternative icon packs:
 
 Blockers:
 
-- Details: external links.
 - Details: (...) menu with edit, share.
 - Details: add comments.
 - Details: like, share, save buttons.
