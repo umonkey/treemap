@@ -1,4 +1,4 @@
-import type { IMarkers, IStats, ITree } from '$lib/types';
+import type { ILoginResponse, IMarkers, IStats, ITree } from '$lib/types';
 
 interface Response<T> {
 	status: number;
@@ -39,11 +39,33 @@ export class ApiClient {
 		return await this.request('GET', 'v1/trees?' + search.toString());
 	}
 
-	private async request<T>(method: string, path: string): Promise<Response<T>> {
+	public async loginWithGoogle(token: string): Promise<Response<ILoginResponse>> {
+		console.debug(`[api] Logging in with Google, token=${token}`);
+
+		return await this.request('POST', 'v2/login/google', {
+			token,
+			body: JSON.stringify({ token }),
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
+	}
+
+	/**
+	 * Send a raw request to the API.
+	 *
+	 * @docs https://developer.mozilla.org/en-US/docs/Web/API/RequestInit
+	 */
+	private async request<T>(
+		method: string,
+		path: string,
+		options?: RequestInit
+	): Promise<Response<T>> {
 		console.debug(`[api] Requesting ${method} ${this.root}${path}`);
 
 		const request = new Request(this.root + path, {
-			method
+			method,
+			...options
 		});
 
 		const response = await fetch(request);
