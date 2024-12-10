@@ -138,8 +138,18 @@ impl AppState {
         self.files.get_status(id).await
     }
 
+    /**
+     * Deprecated.
+     */
     pub async fn login_google(&self, req: LoginGoogleRequest) -> Result<LoginResponse> {
         self.gauth.login(req).await
+    }
+
+    /**
+     * Use the new signin API.
+     */
+    pub async fn login_google_v2(&self, req: LoginGoogleRequest) -> Result<LoginResponse> {
+        self.gauth.login_v2(req).await
     }
 
     pub async fn get_user_info(&self, user_id: u64) -> Result<MeResponse> {
