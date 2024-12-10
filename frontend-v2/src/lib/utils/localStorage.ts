@@ -18,10 +18,15 @@ class LocalStorage {
 		}
 	}
 
-	public write<T>(key: string, value: T): void {
+	public write<T>(key: string, value: T | null): void {
 		try {
-			localStorage.setItem(key, JSON.stringify(value));
-			console.debug(`[storage] Wrote ${key}`);
+			if (value === undefined || value === null) {
+				localStorage.removeItem(key);
+				console.debug(`[storage] Removed ${key}`);
+			} else {
+				localStorage.setItem(key, JSON.stringify(value));
+				console.debug(`[storage] Wrote ${key}`);
+			}
 		} catch (e) {
 			console.error(`[storage] Error writing ${key}: ${e}`);
 		}
