@@ -1,14 +1,16 @@
 <script>
 	import BackIcon from '$lib/icons/BackIcon.svelte';
 
+	const { title } = $props();
+
 	const onBack = () => {
 		history.back();
 	};
 </script>
 
 <div class="header">
-	<button class="icon" on:click={onBack}><BackIcon /></button>
-	<div>Tree</div>
+	<button class="icon" onClick={onBack}><BackIcon /></button>
+	<div>{title}</div>
 	<div class="icon"></div>
 </div>
 

@@ -13,6 +13,7 @@
 	import AddressInput from '$lib/components/forms/AddressInput.svelte';
 	import NotesInput from '$lib/components/forms/NotesInput.svelte';
 	import Button from '$lib/components/forms/Button.svelte';
+	import Header from '$lib/components/tree/Header.svelte';
 
 	const { data } = $props();
 	const treeId = data.id;
@@ -63,9 +64,9 @@
 	};
 </script>
 
-<div class="form">
-	<h1>Edit tree</h1>
+<Header title="Edit tree" />
 
+<div class="form">
 	<AuthWrapper>
 		<SpeciesInput bind:value={species} />
 		<HeightInput bind:value={height} />
@@ -84,7 +85,7 @@
 
 <style>
 	.form {
-		padding: 0 var(--gap);
+		padding: 0 var(--gap) var(--gap);
 	}
 
 	.buttons {

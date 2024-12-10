@@ -26,7 +26,7 @@
 	<title>Map</title>
 </svelte:head>
 
-<Header />
+<Header title="Tree" />
 
 <Map center={$mapCenter} zoom={$mapZoom} {onChange} {onMove} />
 
