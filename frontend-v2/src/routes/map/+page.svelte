@@ -2,7 +2,7 @@
 	import Header from '$lib/components/tree/Header.svelte';
 	import Map from '$lib/components/Map.svelte';
 	import MapPreview from '$lib/components/map/MapPreview.svelte';
-	import { DEFAULT_MAP_CENTER } from '$lib/constants';
+	import { mapState, mapCenter, mapZoom } from '$lib/stores/map';
 
 	let selectedTree = $state(null);
 
@@ -13,6 +13,13 @@
 	const onClosePreview = () => {
 		selectedTree = null;
 	};
+
+	const onMove = (center, zoom) => {
+		mapState.set({
+			center,
+			zoom
+		});
+	};
 </script>
 
 <svelte:head>
@@ -21,6 +28,6 @@
 
 <Header />
 
-<Map center={DEFAULT_MAP_CENTER} {onChange} />
+<Map center={$mapCenter} zoom={$mapZoom} {onChange} {onMove} />
 
 <MapPreview tree={selectedTree} onClose={onClosePreview} />
