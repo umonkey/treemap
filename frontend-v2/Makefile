@@ -17,7 +17,7 @@ serve-dev:
 	VITE_API_ROOT=http://127.0.0.1:8000/ npm run dev -- --host
 
 serve-live:
-	VITE_API_ROOT=https://yrevan.treemaps.app/ npm run dev -- --host
+	VITE_API_ROOT=https://yerevan.treemaps.app/ npm run dev -- --host
 
 test:
 	npm run test:unit -- run
