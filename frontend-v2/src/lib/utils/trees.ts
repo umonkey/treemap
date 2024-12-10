@@ -26,3 +26,23 @@ export const shortDetails = (tree: ITree): string => {
 
 	return parts.join(' ');
 };
+
+export const formatLinks = (tree: ITree): string => {
+	const parts = [];
+
+	if (tree.species) {
+		parts.push({
+			text: 'Wikipedia',
+			url: `https://en.wikipedia.org/wiki/${tree.species}`
+		});
+	}
+
+	if (tree.osm_id) {
+		parts.push({
+			text: 'OSM',
+			url: `https://www.openstreetmap.org/node/${tree.osm_id}`
+		});
+	}
+
+	return parts;
+};
