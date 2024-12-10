@@ -5,15 +5,13 @@ Alternative icon packs:
 
 Blockers:
 
+- Map: save state.
+- Logging in.
 - Details: (...) menu with edit, share.
 - Details: add comments.
 - Details: like, share, save buttons.
 - Edit trees.
-- Map: save state.
 - Map: toggle OSM vs Sat.
-- Map: dark mode tiles.
-- Gallery: navigation buttons, left/right.
-- Logging in.
 
 Enhancements:
 
@@ -24,3 +22,5 @@ Enhancements:
 - Lazy image loading, fade in.
 - Phone body class.
 - Details: full screen photos.
+- Gallery: navigation buttons, left/right.
+- Map: dark mode tiles.
