@@ -37,3 +37,15 @@ export interface ILoginResponse {
 	name: string;
 	picture: string;
 }
+
+export interface ITreeUpdatePayload {
+	lat?: number;
+	lon?: number;
+	address?: string;
+	species?: string;
+	notes?: string;
+	height?: number;
+	circumference?: number;
+	diameter?: number;
+	state?: string;
+}
