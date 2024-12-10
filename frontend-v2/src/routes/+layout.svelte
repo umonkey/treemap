@@ -3,6 +3,7 @@
 	import MobileNav from '$lib/components/MobileNav.svelte';
 	import LeftSideBar from '$lib/components/LeftSideBar.svelte';
 	import RightSideBar from '$lib/components/RightSideBar.svelte';
+	import { SvelteToast } from '@zerodevx/svelte-toast';
 
 	let { children } = $props();
 </script>
@@ -20,6 +21,8 @@
 
 	<RightSideBar />
 </div>
+
+<SvelteToast />
 
 <style>
 	:global {

@@ -2,6 +2,7 @@
 	import { apiClient } from '$lib/api';
 	import { goto } from '$app/navigation';
 	import { routes } from '$lib/routes';
+	import { toast } from '@zerodevx/svelte-toast';
 
 	import SpeciesInput from '$lib/components/forms/SpeciesInput.svelte';
 	import HeightInput from '$lib/components/forms/HeightInput.svelte';
@@ -47,10 +48,12 @@
 					goto(routes.treeDetails(treeId));
 				} else {
 					console.error(`Error ${res.status} updating tree.`);
+					toast.push('Error updating tree.');
 				}
 			})
 			.catch((e) => {
 				console.error(`Error updating tree: ${e}.`);
+				toast.push('Error updating tree.');
 			});
 	};
 
