@@ -21,7 +21,7 @@
 <Title title={tree.species} />
 <Tabs tree={tree.id} active="details" />
 <Gallery files={tree.files} />
-<Actions />
+<Actions tree={tree.id} />
 <Properties {tree} />
 <Links {tree} />
 <Description text={tree.notes} />
