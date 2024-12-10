@@ -40,7 +40,7 @@ export class ApiClient {
 	}
 
 	public async loginWithGoogle(token: string): Promise<Response<ILoginResponse>> {
-		console.debug(`[api] Logging in with Google, token=${token}`);
+		console.debug('[api] Logging in with Google');
 
 		return await this.request('POST', 'v2/login/google', {
 			token,
