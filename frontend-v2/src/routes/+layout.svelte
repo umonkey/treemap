@@ -40,6 +40,11 @@
 			--tab-hover-color: #f1f3f5;
 			--text-color-inactive: #42576c;
 			--text-color: #0b0f14;
+
+			/* Z-indexes */
+			--z-map: 2;
+			--z-map-preview: 3;
+			--z-menu: 6;
 		}
 
 		body {

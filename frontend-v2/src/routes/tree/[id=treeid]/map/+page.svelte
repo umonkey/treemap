@@ -3,6 +3,7 @@
 	import Tabs from '$lib/components/tree/Tabs.svelte';
 	import Title from '$lib/components/tree/Title.svelte';
 	import Map from '$lib/components/Map.svelte';
+	import TreeMenu from '$lib/components/tree/Menu.svelte';
 
 	const { data } = $props();
 	const tree = data.tree;
@@ -15,5 +16,6 @@
 <Header />
 <Title title={tree.species} />
 <Tabs tree={tree.id} active="map" />
+<TreeMenu id={tree.id} />
 
 <Map center={[tree.lat, tree.lon]} marker={[tree.lat, tree.lon]} zoom={18} className="treeTab" />

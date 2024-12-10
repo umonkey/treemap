@@ -2,6 +2,7 @@
 	import Header from '$lib/components/tree/Header.svelte';
 	import Tabs from '$lib/components/tree/Tabs.svelte';
 	import Title from '$lib/components/tree/Title.svelte';
+	import TreeMenu from '$lib/components/tree/Menu.svelte';
 
 	const { data } = $props();
 	const tree = data.tree;
@@ -14,6 +15,7 @@
 <Header />
 <Title title={tree.species} />
 <Tabs tree={tree.id} active="comments" />
+<TreeMenu id={tree.id} />
 
 <p>No comments for this tree yet.</p>
 <p>(This area is under construction.)</p>
