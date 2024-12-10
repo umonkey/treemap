@@ -94,7 +94,7 @@
 
 	@media (max-width: 400px) {
 		article {
-			padding-bottom: 50px;
+			padding-bottom: 60px;
 		}
 	}
 </style>
