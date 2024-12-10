@@ -1,0 +1,66 @@
+<script>
+	import SpeciesInput from '$lib/components/forms/SpeciesInput.svelte';
+	import HeightInput from '$lib/components/forms/HeightInput.svelte';
+	import CanopyInput from '$lib/components/forms/CanopyInput.svelte';
+	import CircumferenceInput from '$lib/components/forms/CircumferenceInput.svelte';
+	import StateInput from '$lib/components/forms/StateInput.svelte';
+	import AddressInput from '$lib/components/forms/AddressInput.svelte';
+	import NotesInput from '$lib/components/forms/NotesInput.svelte';
+	import Button from '$lib/components/forms/Button.svelte';
+
+	const { data } = $props();
+
+	let species = $state(data.tree.species ?? '');
+	let height = $state(data.tree.height ?? 0);
+	let canopy = $state(data.tree.canopy ?? 0);
+	let circumference = $state(data.tree.circumference ?? 0);
+	let state = $state(data.tree.state ?? '');
+	let address = $state('');
+	let notes = $state(data.tree.notes ?? '');
+
+	$effect(() => {
+		console.debug('Species changed to:', species);
+	});
+
+	$effect(() => {
+		console.debug('Address changed to:', address);
+	});
+
+	const onSave = () => {
+		console.debug('Save');
+	};
+
+	const onCancel = () => {
+		history.back();
+	};
+</script>
+
+<div class="form">
+	<h1>Edit tree</h1>
+
+	<SpeciesInput bind:value={species} />
+	<HeightInput bind:value={height} />
+	<CanopyInput bind:value={canopy} />
+	<CircumferenceInput bind:value={circumference} />
+	<StateInput bind:value={state} />
+	<AddressInput bind:value={address} />
+	<NotesInput bind:value={notes} />
+
+	<div class="buttons">
+		<Button type="submit" label="Save changes" onClick={onSave} />
+		<Button type="cancel" label="Cancel" onClick={onCancel} />
+	</div>
+</div>
+
+<style>
+	.form {
+		padding: 0 var(--gap);
+	}
+
+	.buttons {
+		display: flex;
+		flex-direction: row;
+		gap: var(--gap);
+		margin-top: var(--gap);
+	}
+</style>
