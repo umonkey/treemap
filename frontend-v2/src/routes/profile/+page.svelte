@@ -34,6 +34,7 @@
 
 <style>
 	img.header {
+		width: 100%;
 		height: 40vw;
 		object-position: center;
 		object-fit: cover;
