@@ -17,7 +17,7 @@
 	<title>{tree.species} - Details</title>
 </svelte:head>
 
-<Header />
+<Header title="Tree" />
 <Title title={tree.species} />
 <Tabs tree={tree.id} active="details" />
 <Gallery files={tree.files} />
