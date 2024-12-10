@@ -4,6 +4,7 @@
 	import MapIcon from '$lib/icons/MapIcon.svelte';
 	import SearchIcon from '$lib/icons/SearchIcon.svelte';
 	import UserIcon from '$lib/icons/UserIcon.svelte';
+	import { authState } from '$lib/stores/auth';
 </script>
 
 <nav class="mobile">
@@ -11,7 +12,15 @@
 	<a href="/search"><div><SearchIcon /></div></a>
 	<a href="/map"><div><MapIcon /></div></a>
 	<a href="/updates"><div><BellIcon /></div></a>
-	<a href="/profile"><div><UserIcon /></div></a>
+	<a href="/profile"
+		><div>
+			{#if authState}
+				<img src={$authState.picture} alt="userpic" />
+			{:else}
+				<UserIcon />
+			{/if}
+		</div></a
+	>
 </nav>
 
 <style>
@@ -46,6 +55,12 @@
 			width: 24px;
 			height: 24px;
 		}
+	}
+
+	img {
+		width: 24px;
+		height: 24px;
+		border-radius: 50%;
 	}
 
 	@media (min-width: 400px) {

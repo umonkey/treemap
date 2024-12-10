@@ -5,10 +5,13 @@ Alternative icon packs:
 
 Blockers:
 
-- Logging in.
 - Details: (...) menu with edit, share.
 - Details: add comments.
 - Details: like, share, save buttons.
+- Profile: log out.
+- Profile: hide picture.
+- Profile: change name.
+- Profile: hide name.
 - Edit trees.
 - Map: toggle OSM vs Sat.
 
