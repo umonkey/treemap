@@ -1,4 +1,6 @@
-import type { ILoginResponse, IMarkers, IStats, ITree } from '$lib/types';
+import type { ILoginResponse, IMarkers, IStats, ITree, ITreeUpdatePayload } from '$lib/types';
+import { isAuthenticated, authState } from '$lib/stores/auth';
+import { get } from 'svelte/store';
 
 interface Response<T> {
 	status: number;
@@ -51,6 +53,16 @@ export class ApiClient {
 		});
 	}
 
+	public async updateTree(id: string, props: ITreeUpdatePayload): Promise<Response<ITree>> {
+		return await this.request('PUT', `v1/trees/${id}`, {
+			body: JSON.stringify(props),
+			headers: {
+				'Content-Type': 'application/json',
+				...this.getAuthHeaders()
+			}
+		});
+	}
+
 	/**
 	 * Send a raw request to the API.
 	 *
@@ -74,6 +86,18 @@ export class ApiClient {
 			status: response.status,
 			data: await response.json()
 		};
+	}
+
+	private getAuthHeaders() {
+		if (get(isAuthenticated)) {
+			const token = get(authState).token;
+
+			return {
+				Authorization: `Bearer ${token}`
+			};
+		}
+
+		return {};
 	}
 }
 
