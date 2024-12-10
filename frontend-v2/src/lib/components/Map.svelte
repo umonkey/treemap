@@ -3,10 +3,12 @@
 	import 'leaflet/dist/leaflet.css';
 	import { Markers } from '$lib/map/markers';
 
-	const { center, onChange, className, marker, zoom } = $props();
+	const { center, onChange, onMove, className, marker, zoom } = $props();
 
 	let map;
 	let L;
+
+	console.debug(`[map] center=${center}, zoom=${zoom}`);
 
 	onMount(async () => {
 		L = await import('leaflet');
@@ -28,6 +30,12 @@
 
 		const markers = new Markers(map, L);
 		markers.onChange(onChange);
+
+		map.on('moveend', () => {
+			if (onMove) {
+				onMove(map.getCenter(), map.getZoom());
+			}
+		});
 	});
 </script>
 
