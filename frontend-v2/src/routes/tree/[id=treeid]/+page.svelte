@@ -7,6 +7,7 @@
 	import Properties from '$lib/components/tree/Properties.svelte';
 	import Tabs from '$lib/components/tree/Tabs.svelte';
 	import Title from '$lib/components/tree/Title.svelte';
+	import TreeMenu from '$lib/components/tree/Menu.svelte';
 
 	const { data } = $props();
 	const tree = data.tree;
@@ -24,3 +25,4 @@
 <Properties {tree} />
 <Links {tree} />
 <Description text={tree.notes} />
+<TreeMenu id={tree.id} />

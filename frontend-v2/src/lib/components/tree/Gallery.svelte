@@ -20,10 +20,10 @@
 					<div class="date">{added_at(file)}</div>
 				{/if}
 			</div>
-			{:else}
-				<div>
-					<img src="/tree.jpg" />
-				</div>
+		{:else}
+			<div>
+				<img src="/tree.jpg" alt="no photos of this tree" />
+			</div>
 		{/each}
 	</div>
 </div>
@@ -78,6 +78,7 @@
 				object-fit: cover;
 				height: 100%;
 				width: 100%;
+				z-index: 1;
 			}
 		}
 
