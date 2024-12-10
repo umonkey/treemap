@@ -22,5 +22,5 @@
 <Gallery files={tree.files} />
 <Actions />
 <Properties {tree} />
-<Links />
+<Links {tree} />
 <Description text={tree.notes} />

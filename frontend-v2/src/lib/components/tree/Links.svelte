@@ -1,8 +1,17 @@
-<ul class="links">
-	<li><a href="https://example.com/">Wikipedia</a></li>
-	<li><a href="https://example.com/">Wikidata</a></li>
-	<li><a href="https://example.com/">OSM</a></li>
-</ul>
+<script>
+	import { formatLinks } from '$lib/utils/trees';
+
+	const { tree } = $props();
+	const links = formatLinks(tree);
+</script>
+
+{#if links.length > 0}
+	<ul class="links">
+		{#each links as link}
+			<li><a href={link.url} target="_blank">{link.text}</a></li>
+		{/each}
+	</ul>
+{/if}
 
 <style>
 	.links {
