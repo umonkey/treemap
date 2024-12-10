@@ -20,6 +20,10 @@
 					<div class="date">{added_at(file)}</div>
 				{/if}
 			</div>
+			{:else}
+				<div>
+					<img src="/tree.jpg" />
+				</div>
 		{/each}
 	</div>
 </div>
