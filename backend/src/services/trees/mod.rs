@@ -70,12 +70,27 @@ impl Trees {
             osm_id: old.osm_id,
             lat: old.lat,
             lon: old.lon,
-            species: req.species,
-            notes: req.notes,
-            height: req.height,
-            circumference: Self::fix_circumference(req.circumference),
-            diameter: req.diameter,
-            state: req.state,
+            species: req.species.unwrap_or(old.species),
+            notes: match req.notes {
+                Some(value) => Some(value),
+                None => old.notes,
+            },
+            height: match req.height {
+                Some(value) => Some(value),
+                None => old.height,
+            },
+            circumference: match Self::fix_circumference(req.circumference) {
+                Some(value) => Some(value),
+                None => old.circumference,
+            },
+            diameter: match req.diameter {
+                Some(value) => Some(value),
+                None => old.diameter,
+            },
+            state: match req.state {
+                Some(value) => value,
+                None => old.state,
+            },
             added_at: old.added_at,
             updated_at: now,
             added_by: old.added_by,

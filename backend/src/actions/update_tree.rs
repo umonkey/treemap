@@ -11,14 +11,14 @@ pub struct PathInfo {
 
 #[derive(Debug, Deserialize)]
 struct RequestPayload {
-    pub lat: f64,
-    pub lon: f64,
-    pub species: String,
+    pub lat: Option<f64>,
+    pub lon: Option<f64>,
+    pub species: Option<String>,
     pub notes: Option<String>,
     pub height: Option<f64>,
     pub circumference: Option<f64>,
     pub diameter: Option<f64>,
-    pub state: String,
+    pub state: Option<String>,
 }
 
 #[put("/v1/trees/{id}")]
