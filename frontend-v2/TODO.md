@@ -14,7 +14,6 @@ Blockers:
 
 Enhancements:
 
-- Photo preview in map previews.
 - Search bar on the map.
 - Meta hints on the map, total tree count etc.
 - Animated preview on the map.
