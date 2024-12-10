@@ -1,4 +1,8 @@
 <script>
+	import { apiClient } from '$lib/api';
+	import { goto } from '$app/navigation';
+	import { routes } from '$lib/routes';
+
 	import SpeciesInput from '$lib/components/forms/SpeciesInput.svelte';
 	import HeightInput from '$lib/components/forms/HeightInput.svelte';
 	import CanopyInput from '$lib/components/forms/CanopyInput.svelte';
@@ -9,6 +13,7 @@
 	import Button from '$lib/components/forms/Button.svelte';
 
 	const { data } = $props();
+	const treeId = data.id;
 
 	let species = $state(data.tree.species ?? '');
 	let height = $state(data.tree.height ?? 0);
@@ -27,7 +32,26 @@
 	});
 
 	const onSave = () => {
-		console.debug('Save');
+		apiClient
+			.updateTree(treeId, {
+				species,
+				height,
+				canopy,
+				circumference,
+				state,
+				address,
+				notes
+			})
+			.then((res) => {
+				if (res.status >= 200 && res.status < 400) {
+					goto(routes.treeDetails(treeId));
+				} else {
+					console.error(`Error ${res.status} updating tree.`);
+				}
+			})
+			.catch((e) => {
+				console.error(`Error updating tree: ${e}.`);
+			});
 	};
 
 	const onCancel = () => {
