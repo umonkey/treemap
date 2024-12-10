@@ -1,7 +1,12 @@
 <script>
 	import DotsIcon from '$lib/icons/DotsIcon.svelte';
+	import { menuState } from '$lib/stores/treeMenu';
 
 	const { title, address } = $props();
+
+	const onMenu = () => {
+		menuState.update((value) => !value);
+	};
 </script>
 
 <div class="title">
@@ -9,9 +14,9 @@
 		<strong>{title}</strong>{#if address}
 			&middot; {address}{/if}
 	</h1>
-	<div class="icon">
+	<button class="edit" onclick={onMenu}>
 		<DotsIcon />
-	</div>
+	</button>
 </div>
 
 <style>
@@ -29,8 +34,11 @@
 			margin: 0;
 		}
 
-		.icon {
+		.edit {
 			flex-basis: 25px;
+			border: none;
+			background-color: transparent;
+			cursor: pointer;
 			color: var(--icon-color-secondary);
 		}
 	}

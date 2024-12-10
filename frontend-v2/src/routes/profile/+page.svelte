@@ -38,7 +38,7 @@
 		height: 40vw;
 		object-position: center;
 		object-fit: cover;
-		z-index: 4;
+		z-index: 1;
 	}
 
 	.container {
@@ -55,7 +55,7 @@
 		border-radius: 50%;
 		display: block;
 		box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 1);
-		z-index: 5;
+		z-index: 2;
 	}
 
 	h1 {
