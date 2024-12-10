@@ -5,7 +5,6 @@ Alternative icon packs:
 
 Blockers:
 
-- Map: save state.
 - Logging in.
 - Details: (...) menu with edit, share.
 - Details: add comments.
@@ -24,3 +23,4 @@ Enhancements:
 - Details: full screen photos.
 - Gallery: navigation buttons, left/right.
 - Map: dark mode tiles.
+- Map: persist state
