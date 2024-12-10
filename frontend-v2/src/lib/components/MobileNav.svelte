@@ -4,7 +4,7 @@
 	import MapIcon from '$lib/icons/MapIcon.svelte';
 	import SearchIcon from '$lib/icons/SearchIcon.svelte';
 	import UserIcon from '$lib/icons/UserIcon.svelte';
-	import { authState } from '$lib/stores/auth';
+	import { isAuthenticated, authState } from '$lib/stores/auth';
 </script>
 
 <nav class="mobile">
@@ -14,7 +14,7 @@
 	<a href="/updates"><div><BellIcon /></div></a>
 	<a href="/profile"
 		><div>
-			{#if authState}
+			{#if $isAuthenticated}
 				<img src={$authState.picture} alt="userpic" />
 			{:else}
 				<UserIcon />
