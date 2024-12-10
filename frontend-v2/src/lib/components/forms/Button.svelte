@@ -1,10 +1,8 @@
 <script>
-	export let label = 'Submit';
-	export let type = 'button';
-	export let onClick = () => {};
+	const { label, type, onClick, disabled } = $props();
 </script>
 
-<button type="button" class={type} onclick={onClick}>{label}</button>
+<button type="button" disabled={!!disabled} class={type} onclick={onClick}>{label}</button>
 
 <style>
 	button {
@@ -20,5 +18,9 @@
 	button.cancel {
 		background-color: transparent;
 		color: var(--form-border);
+	}
+
+	button:disabled {
+		opacity: 0.5;
 	}
 </style>

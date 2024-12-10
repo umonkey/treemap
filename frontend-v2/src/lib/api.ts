@@ -63,6 +63,16 @@ export class ApiClient {
 		});
 	}
 
+	public async addComment(id: string, message: string): Promise<Response<void>> {
+		return await this.request('POST', `v1/trees/${id}/comments`, {
+			body: JSON.stringify({ message }),
+			headers: {
+				'Content-Type': 'application/json',
+				...this.getAuthHeaders()
+			}
+		});
+	}
+
 	/**
 	 * Send a raw request to the API.
 	 *
@@ -81,10 +91,11 @@ export class ApiClient {
 		});
 
 		const response = await fetch(request);
+		const data = response.status == 202 ? undefined : await response.json();
 
 		return {
 			status: response.status,
-			data: await response.json()
+			data
 		};
 	}
 
