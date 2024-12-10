@@ -2,10 +2,17 @@
 	import { isAuthenticated, authState } from '$lib/stores/auth';
 	import SignIn from '$lib/components/auth/SignIn.svelte';
 	import SignOut from '$lib/components/auth/SignOut.svelte';
+	import BackIcon from '$lib/icons/BackIcon.svelte';
+
+	const onBack = () => {
+		history.back();
+	};
 </script>
 
 {#if $isAuthenticated}
 	<img class="header" src="/header.jpg" alt="header background" />
+
+	<button class="back" on:click={onBack}><BackIcon width="20px" height="20px" /></button>
 
 	<div class="container signedIn">
 		<img class="userpic" src={$authState.picture} alt="userpic" />
@@ -63,5 +70,17 @@
 
 	.actions {
 		margin-top: var(--gap);
+	}
+
+	button.back {
+		width: 30px;
+		height: 30px;
+		border: none;
+		position: absolute;
+		top: var(--gap);
+		left: var(--gap);
+		border-radius: 50%;
+		background-color: var(--form-background);
+		cursor: pointer;
 	}
 </style>
