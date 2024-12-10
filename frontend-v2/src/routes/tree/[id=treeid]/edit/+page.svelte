@@ -4,6 +4,7 @@
 	import { routes } from '$lib/routes';
 	import { toast } from '@zerodevx/svelte-toast';
 
+	import AuthWrapper from '$lib/components/auth/AuthWrapper.svelte';
 	import SpeciesInput from '$lib/components/forms/SpeciesInput.svelte';
 	import HeightInput from '$lib/components/forms/HeightInput.svelte';
 	import CanopyInput from '$lib/components/forms/CanopyInput.svelte';
@@ -65,18 +66,20 @@
 <div class="form">
 	<h1>Edit tree</h1>
 
-	<SpeciesInput bind:value={species} />
-	<HeightInput bind:value={height} />
-	<CanopyInput bind:value={canopy} />
-	<CircumferenceInput bind:value={circumference} />
-	<StateInput bind:value={state} />
-	<AddressInput bind:value={address} />
-	<NotesInput bind:value={notes} />
+	<AuthWrapper>
+		<SpeciesInput bind:value={species} />
+		<HeightInput bind:value={height} />
+		<CanopyInput bind:value={canopy} />
+		<CircumferenceInput bind:value={circumference} />
+		<StateInput bind:value={state} />
+		<AddressInput bind:value={address} />
+		<NotesInput bind:value={notes} />
 
-	<div class="buttons">
-		<Button type="submit" label="Save changes" onClick={onSave} />
-		<Button type="cancel" label="Cancel" onClick={onCancel} />
-	</div>
+		<div class="buttons">
+			<Button type="submit" label="Save changes" onClick={onSave} />
+			<Button type="cancel" label="Cancel" onClick={onCancel} />
+		</div>
+	</AuthWrapper>
 </div>
 
 <style>
