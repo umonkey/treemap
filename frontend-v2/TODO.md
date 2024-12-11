@@ -22,3 +22,4 @@ Enhancements:
 - Details: full screen photos.
 - Gallery: navigation buttons, left/right.
 - Map: dark mode tiles.
+- Map preview: gallery not scrollable.
