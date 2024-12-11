@@ -9,7 +9,7 @@
 </script>
 
 <div class="header">
-	<button class="icon" onClick={onBack}><BackIcon /></button>
+	<button type="button" class="icon" onclick={onBack}><BackIcon /></button>
 	<div>{title}</div>
 	<div class="icon"></div>
 </div>
