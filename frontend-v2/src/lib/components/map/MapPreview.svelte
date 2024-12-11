@@ -54,7 +54,7 @@
 			position: fixed;
 			bottom: 0px;
 
-			z-index: 5;
+			z-index: var(--z-map-preview);
 
 			width: 100%;
 			box-sizing: border-box;
