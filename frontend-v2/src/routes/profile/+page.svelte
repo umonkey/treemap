@@ -22,7 +22,6 @@
 	</div>
 {:else}
 	<div class="container signedOut">
-		<h1>Profile</h1>
 		<p>You need to sign in to access your profile.</p>
 		<SignIn />
 	</div>
