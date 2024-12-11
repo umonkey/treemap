@@ -1,7 +1,11 @@
 <script>
-	import SearchBar from '$lib/components/SearchBar.svelte';
 	import { routes } from '$lib/routes';
+
+	import Header from '$lib/components/tree/Header.svelte';
+	import SearchBar from '$lib/components/SearchBar.svelte';
 </script>
+
+<Header title="Search" />
 
 <div class="search">
 	<SearchBar />
