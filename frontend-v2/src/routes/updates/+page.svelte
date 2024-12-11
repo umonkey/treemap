@@ -1,10 +1,11 @@
 <script>
 	import AuthWrapper from '$lib/components/auth/AuthWrapper.svelte';
+	import Header from '$lib/components/tree/Header.svelte';
 </script>
 
-<div class="padded">
-	<h1>Recent updates</h1>
+<Header title="Updates" />
 
+<div class="padded">
 	<AuthWrapper>
 		<p>This page is under construction. Please come back later.</p>
 	</AuthWrapper>
