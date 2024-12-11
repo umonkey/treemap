@@ -46,8 +46,9 @@
 
 			/* Z-indexes */
 			--z-map: 2;
-			--z-map-preview: 3;
 			--z-menu: 6;
+			--z-mobile-nav: 7;
+			--z-map-preview: 8;
 		}
 
 		body {
