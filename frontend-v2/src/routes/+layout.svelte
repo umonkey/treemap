@@ -95,6 +95,11 @@
 		}
 	}
 
+	:global(.padded) {
+		padding-left: var(--gap);
+		padding-right: var(--gap);
+	}
+
 	@media (max-width: 400px) {
 		article {
 			padding-bottom: 50px;
