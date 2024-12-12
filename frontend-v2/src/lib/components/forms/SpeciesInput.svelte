@@ -3,4 +3,4 @@
 	export let value = '';
 </script>
 
-<TextInput label="Species" bind:value placeholder="Enter the name of the tree" />
+<TextInput label="Species" bind:value placeholder="Enter the name of the tree" hint="Please use latin names when possible." />
