@@ -12,8 +12,12 @@
 <div class="home">
 	<h1>Tree Map of Yerevan</h1>
 	<p>
-		Welcome to the map of trees in Yerevan.<br />We have <strong>{totalCount} trees</strong> in our database.<br/>
-		You can read about this app <a href="https://github.com/KanachYerevan/kb/wiki/Mobile-Application" target="_blank">in our wiki</a>.
+		Welcome to the map of trees in Yerevan.<br />We have <strong>{totalCount} trees</strong> in our
+		database.<br />
+		You can read about this app
+		<a href="https://github.com/KanachYerevan/kb/wiki/Mobile-Application" target="_blank"
+			>in our wiki</a
+		>.
 	</p>
 
 	<p>
