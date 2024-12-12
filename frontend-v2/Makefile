@@ -2,13 +2,16 @@ autofix:
 	npm run format
 
 build:
-	npm run build
+	VITE_API_ROOT=https://yerevan.treemaps.app/ npm run build
 
 clean:
 	rm -rf node_modules
 
 lint:
 	npm run lint
+
+preview:
+	npm run preview
 
 serve: serve-dev
 	VITE_API_ROOT=$(API_ROOT) npm run dev -- --host
