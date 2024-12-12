@@ -50,7 +50,7 @@
 
 	dd {
 		flex-basis: 50%;
-		flex-shring: 1;
+		flex-shrink: 1;
 		flex-grow: 1;
 		text-align: right;
 		margin: 0;
