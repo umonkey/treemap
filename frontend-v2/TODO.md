@@ -8,7 +8,6 @@ Blockers:
 - Profile: hide picture.
 - Profile: change name.
 - Profile: hide name.
-- Edit trees.
 - Map: toggle OSM vs Sat.
 - Edit: state selection.
 - Edit: species selection.
@@ -24,5 +23,4 @@ Enhancements:
 - Phone body class.
 - Details: full screen photos.
 - Gallery: navigation buttons, left/right.
-- Map: dark mode tiles.
 - Map preview: gallery not scrollable.

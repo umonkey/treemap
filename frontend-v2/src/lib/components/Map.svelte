@@ -10,12 +10,20 @@
 
 	console.debug(`[map] center=${center}, zoom=${zoom}`);
 
+	const getTiles = () => {
+		if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+			return 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png';
+		} else {
+			return 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+		}
+	};
+
 	onMount(async () => {
 		L = await import('leaflet');
 
 		map = L.map('map').setView(center, zoom ?? 15);
 
-		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		L.tileLayer(getTiles(), {
 			attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
 			maxZoom: 25,
 			maxNativeZoom: 19
@@ -54,6 +62,12 @@
 
 		#map.treeTab {
 			height: calc(100vh - 185px);
+		}
+	}
+
+	@media (prefers-color-scheme: dark) {
+		#map {
+			background-color: #000;
 		}
 	}
 </style>
