@@ -5,14 +5,14 @@ Alternative icon packs:
 
 Blockers:
 
-- Profile: hide picture.
-- Profile: change name.
-- Profile: hide name.
 - Map: toggle OSM vs Sat.
 - Edit: state selection.
 - Edit: species selection.
 - Edit: species history.
 - Add a new tree.
+- Profile: hide picture.
+- Profile: change name.
+- Profile: hide name.
 
 Enhancements:
 
@@ -24,3 +24,6 @@ Enhancements:
 - Details: full screen photos.
 - Gallery: navigation buttons, left/right.
 - Map preview: gallery not scrollable.
+- Home: stats by species.
+- Map: jump to self.
+- Translation.
