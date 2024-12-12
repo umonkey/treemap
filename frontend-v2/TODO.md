@@ -5,7 +5,6 @@ Alternative icon packs:
 
 Blockers:
 
-- Details: like, save buttons.
 - Profile: hide picture.
 - Profile: change name.
 - Profile: hide name.
