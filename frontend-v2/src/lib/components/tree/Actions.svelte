@@ -1,10 +1,10 @@
 <script>
 	import { routes } from '$lib/routes';
 
-	import HeartIcon from '$lib/icons/HeartIcon.svelte';
 	import ChatIcon from '$lib/icons/ChatIcon.svelte';
-	import ShareIcon from '$lib/icons/ShareIcon.svelte';
+	import HeartIcon from '$lib/icons/HeartIcon.svelte';
 	import SaveIcon from '$lib/icons/SaveIcon.svelte';
+	import ShareButton from '$lib/components/tree/ShareButton.svelte';
 
 	const { tree } = $props();
 </script>
@@ -12,7 +12,7 @@
 <div class="actions">
 	<div><HeartIcon class="icon" /></div>
 	<div><a href={routes.treeComments(tree)}><ChatIcon class="icon" /></a></div>
-	<div><ShareIcon class="icon" /></div>
+	<div><ShareButton /></div>
 	<div class="sep"></div>
 	<div><SaveIcon class="icon" /></div>
 </div>
