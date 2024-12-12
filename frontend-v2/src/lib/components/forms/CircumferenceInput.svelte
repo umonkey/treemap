@@ -3,4 +3,4 @@
 	export let value = '';
 </script>
 
-<TextInput label="Trunk circumference, cm" bind:value type="number" />
+<TextInput label="Trunk circumference, cm" bind:value type="number" hint="Measure at chest level, aka 120 cm from the ground." />
