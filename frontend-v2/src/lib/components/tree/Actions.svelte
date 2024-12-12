@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { routes } from '$lib/routes';
+	import { FEATURES } from '$lib/features';
 
 	import ChatIcon from '$lib/icons/ChatIcon.svelte';
 	import HeartIcon from '$lib/icons/HeartIcon.svelte';
@@ -10,15 +11,15 @@
 </script>
 
 <div class="actions">
-	<!--
-	<div><HeartIcon class="icon" /></div>
-	-->
+	{#if FEATURES.likes}
+		<div><HeartIcon class="icon" /></div>
+	{/if}
 	<div><a href={routes.treeComments(tree)}><ChatIcon class="icon" /></a></div>
 	<div><ShareButton /></div>
-	<!--
-	<div class="sep"></div>
-	<div><SaveIcon class="icon" /></div>
-	-->
+	{#if FEATURES.bookmarks}
+		<div class="sep"></div>
+		<div><SaveIcon class="icon" /></div>
+	{/if}
 </div>
 
 <style>
