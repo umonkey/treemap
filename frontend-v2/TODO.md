@@ -6,7 +6,6 @@ Alternative icon packs:
 Blockers:
 
 - Map: toggle OSM vs Sat.
-- Edit: state selection.
 - Edit: species selection.
 - Edit: species history.
 - Add a new tree.
