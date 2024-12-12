@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { routes } from '$lib/routes';
 
 	import ChatIcon from '$lib/icons/ChatIcon.svelte';
@@ -10,11 +10,15 @@
 </script>
 
 <div class="actions">
+	<!--
 	<div><HeartIcon class="icon" /></div>
+	-->
 	<div><a href={routes.treeComments(tree)}><ChatIcon class="icon" /></a></div>
 	<div><ShareButton /></div>
+	<!--
 	<div class="sep"></div>
 	<div><SaveIcon class="icon" /></div>
+	-->
 </div>
 
 <style>
