@@ -8,6 +8,13 @@ build:
 clean:
 	rm -rf node_modules
 
+deploy: build
+	rm -rf ../../umonkey.github.io/*
+	cp -r build/* ../../umonkey.github.io/
+	git -C ../../umonkey.github.io/ add .
+	git -C ../../umonkey.github.io/ commit -m "Deploy"
+	git -C ../../umonkey.github.io/ push
+
 install:
 	npm ci
 
