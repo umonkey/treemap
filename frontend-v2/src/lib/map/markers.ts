@@ -7,7 +7,7 @@
 
 import L from 'leaflet';
 import type { ITree } from '$lib/types';
-import type { Map } from 'leaflet';
+import type { Map, Marker } from 'leaflet';
 import { apiClient } from '$lib/api';
 
 import BlackIcon from '$lib/map/icons/dot-black.svg';
@@ -31,7 +31,7 @@ export class Markers {
 	private redIcon;
 	private blackIcon;
 
-	public changeHandler: onChangeFn = null;
+	public changeHandler: onChangeFn|null = null;
 
 	constructor(map: Map) {
 		this.map = map;
@@ -88,7 +88,7 @@ export class Markers {
 	 *
 	 * Leaflet cannot track duplicates so we have to do this on our side.
 	 */
-	private replaceMarkers(trees: ITree) {
+	private replaceMarkers(trees: ITree[]) {
 		const oldKeys = Object.keys(this.markerMap);
 		const newKeys = trees.map((m) => m.id);
 
@@ -122,15 +122,15 @@ export class Markers {
 	}
 
 	private getTreeIcon(tree: ITree) {
-		if (tree.status === 'deat' || tree.status === 'gone' || tree.status === 'stomp') {
+		if (tree.state === 'dead' || tree.state === 'gone' || tree.state === 'stomp') {
 			return this.blackIcon;
 		}
 
-		if (tree.status === 'sick') {
+		if (tree.state === 'sick') {
 			return this.redIcon;
 		}
 
-		if (tree.status === 'deformed') {
+		if (tree.state === 'deformed') {
 			return this.yellowIcon;
 		}
 

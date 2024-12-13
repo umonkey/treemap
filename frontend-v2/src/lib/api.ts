@@ -30,7 +30,7 @@ export class ApiClient {
 		e: number,
 		s: number,
 		w: number
-	): Promise<Response<IMarkers[]>> {
+	): Promise<Response<IMarkers>> {
 		const search = new URLSearchParams({
 			n: n.toString(),
 			e: e.toString(),
@@ -45,7 +45,6 @@ export class ApiClient {
 		console.debug('[api] Logging in with Google');
 
 		return await this.request('POST', 'v2/login/google', {
-			token,
 			body: JSON.stringify({ token }),
 			headers: {
 				'Content-Type': 'application/json'
@@ -64,12 +63,14 @@ export class ApiClient {
 	}
 
 	public async addComment(id: string, message: string): Promise<Response<void>> {
+		const headers: HeadersInit = {
+			'Content-Type': 'application/json',
+			...this.getAuthHeaders()
+		};
+
 		return await this.request('POST', `v1/trees/${id}/comments`, {
 			body: JSON.stringify({ message }),
-			headers: {
-				'Content-Type': 'application/json',
-				...this.getAuthHeaders()
-			}
+			headers,
 		});
 	}
 
@@ -99,13 +100,15 @@ export class ApiClient {
 		};
 	}
 
-	private getAuthHeaders() {
+	private getAuthHeaders(): HeadersInit {
 		if (get(isAuthenticated)) {
-			const token = get(authState).token;
+			const token = get(authState)?.token;
 
-			return {
-				Authorization: `Bearer ${token}`
-			};
+			if (token) {
+				return {
+					Authorization: `Bearer ${token}`
+				};
+			}
 		}
 
 		return {};

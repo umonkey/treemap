@@ -11,9 +11,9 @@
 	<img class="header" src="/header.jpg" alt="header background" />
 
 	<div class="container signedIn">
-		<img class="userpic" src={$authState.picture} alt="userpic" />
+		<img class="userpic" src={$authState?.picture} alt="userpic" />
 
-		<h1>{$authState.name}</h1>
+		<h1>{$authState?.name ?? "Unknown user"}</h1>
 		<div class="stats"><em>75</em> trees, <em>14</em> edits, <em>295</em> photos</div>
 
 		<div class="actions">

@@ -14,7 +14,7 @@
 	<a href="/updates"><div><BellIcon /></div></a>
 	<a href="/profile"
 		><div>
-			{#if $isAuthenticated}
+			{#if $isAuthenticated && $authState?.picture}
 				<img src={$authState.picture} alt="userpic" />
 			{:else}
 				<UserIcon />

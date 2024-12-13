@@ -11,7 +11,7 @@
 		<p>We are sorry, but this page does not exist.</p>
 	{:else}
 		<h1>Error {$page.status}</h1>
-		<p>{$page.error.message}</p>
+		<p>{$page.error?.message ?? "The error message is unavailable."}</p>
 	{/if}
 </div>
 
