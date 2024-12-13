@@ -31,7 +31,7 @@ jobs:
 
     - name: Deploy the site
       run: |
-        git checkout git@github.com:umonkey/umonkey.github.io.git
+        git clone git@github.com:umonkey/umonkey.github.io.git
         rm -rf umonkey.github.io/_app/*
         cp -R frontend-v2/build/* umonkey.github.io/
         git add umonkey.github.io
