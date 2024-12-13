@@ -1,20 +1,21 @@
-<script>
+<script lang="ts">
 	import Header from '$lib/components/tree/Header.svelte';
 	import Map from '$lib/components/Map.svelte';
 	import MapPreview from '$lib/components/map/MapPreview.svelte';
 	import { mapState, mapCenter, mapZoom } from '$lib/stores/map';
+	import type { ITree } from '$lib/types';
 
-	let selectedTree = $state(null);
+	let selectedTree: ITree|undefined = $state();
 
-	const onChange = (tree) => {
+	const onChange = (tree: ITree) => {
 		selectedTree = tree;
 	};
 
 	const onClosePreview = () => {
-		selectedTree = null;
+		selectedTree = undefined;
 	};
 
-	const onMove = (center, zoom) => {
+	const onMove = (center: number[], zoom: number) => {
 		mapState.set({
 			center,
 			zoom

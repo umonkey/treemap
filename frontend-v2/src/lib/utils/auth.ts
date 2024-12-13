@@ -1,7 +1,7 @@
 import { apiClient } from '$lib/api';
 import { authState } from '$lib/stores/auth';
 
-export const googleCallbackHandler = async (user) => {
+export const googleCallbackHandler = async (user: any) => {
 	console.debug('GAUTH', user);
 
 	const token = user.credential;

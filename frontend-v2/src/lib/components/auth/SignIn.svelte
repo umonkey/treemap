@@ -1,5 +1,6 @@
 <script>
 	import { googleCallbackHandler } from '$lib/utils/auth';
+
 	window.onSignIn = googleCallbackHandler;
 </script>
 

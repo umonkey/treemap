@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { apiClient } from '$lib/api';
 	import { goto } from '$app/navigation';
 	import { routes } from '$lib/routes';
@@ -13,7 +13,7 @@
 	const { data } = $props();
 	const tree = data.tree;
 
-	const onSubmit = (message) => {
+	const onSubmit = (message: string) => {
 		apiClient
 			.addComment(tree.id, message)
 			.then((res) => {
