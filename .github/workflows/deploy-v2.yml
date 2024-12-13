@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       packages: write
+      contents: write
 
     steps:
     - uses: actions/checkout@v4
@@ -30,8 +31,15 @@ jobs:
       run: make -C frontend-v2 install build
 
     - name: Clone pages
+      uses: actions/checkout@v4
+      with:
+        repository: umonkey/umonkey.github.io
+        path: v2
+
+    - name: Update pages
       run: |
-        gh repo clone umonkey/umonkey.github.io v2
+        git config --global user.email "hex@umonkey.net"
+        git config --global user.name "GitHub Actions"
         rm -rf v2/*
         cp -R frontend-v2/build/* v2/
         cd v2
