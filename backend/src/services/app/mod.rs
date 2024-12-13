@@ -138,8 +138,18 @@ impl AppState {
         self.files.get_status(id).await
     }
 
+    /**
+     * Deprecated.
+     */
     pub async fn login_google(&self, req: LoginGoogleRequest) -> Result<LoginResponse> {
         self.gauth.login(req).await
+    }
+
+    /**
+     * Use the new signin API.
+     */
+    pub async fn login_google_v2(&self, req: LoginGoogleRequest) -> Result<LoginResponse> {
+        self.gauth.login_v2(req).await
     }
 
     pub async fn get_user_info(&self, user_id: u64) -> Result<MeResponse> {
@@ -177,5 +187,15 @@ impl AppState {
 
     pub async fn suggest_species(&self, user_id: u64) -> Result<Vec<String>> {
         self.db.find_recent_species(user_id).await
+    }
+
+    pub async fn like_tree(&self, tree_id: u64, user_id: u64) -> Result<()> {
+        self.db.like_tree(tree_id, user_id).await?;
+        Ok(())
+    }
+
+    pub async fn unlike_tree(&self, tree_id: u64, user_id: u64) -> Result<()> {
+        self.db.unlike_tree(tree_id, user_id).await?;
+        Ok(())
     }
 }

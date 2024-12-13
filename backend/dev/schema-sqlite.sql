@@ -128,3 +128,12 @@ CREATE TABLE IF NOT EXISTS osm_trees (
     `diameter_crown` REAL NULL,
     PRIMARY KEY(`id`)
 );
+
+CREATE TABLE IF NOT EXISTS likes (
+    `tree_id` INT NOT NULL,
+    `user_id` INT NOT NULL,
+    `state` INT NOT NULL DEFAULT '0',
+    `updated_at` INT UNSIGNED NOT NULL,
+    PRIMARY KEY(`tree_id`, `user_id`)
+);
+CREATE INDEX IF NOT EXISTS likes_state ON likes (state);

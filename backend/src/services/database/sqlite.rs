@@ -1115,6 +1115,54 @@ impl Database for SqliteDatabase {
 
         Ok(items)
     }
+
+    async fn like_tree(&self, tree_id: u64, user_id: u64) -> Result<()> {
+        let updated_at = crate::utils::get_timestamp();
+
+        self.pool
+            .conn(move |conn| {
+                match conn.execute(
+                    "REPLACE INTO likes (tree_id, user_id, state, updated_at) VALUES (?, ?, 1, ?)",
+                    (tree_id, user_id, updated_at),
+                ) {
+                    Ok(_) => debug!("Tree {} liked by user {}.", tree_id, user_id),
+
+                    Err(e) => {
+                        error!("Error liking a tree: {}", e);
+                        return Err(e);
+                    }
+                }
+
+                Ok(())
+            })
+            .await?;
+
+        Ok(())
+    }
+
+    async fn unlike_tree(&self, tree_id: u64, user_id: u64) -> Result<()> {
+        let updated_at = crate::utils::get_timestamp();
+
+        self.pool
+            .conn(move |conn| {
+                match conn.execute(
+                    "REPLACE INTO likes (tree_id, user_id, state, updated_at) VALUES (?, ?, 0, ?)",
+                    (tree_id, user_id, updated_at),
+                ) {
+                    Ok(_) => debug!("Tree {} liked by user {}.", tree_id, user_id),
+
+                    Err(e) => {
+                        error!("Error liking a tree: {}", e);
+                        return Err(e);
+                    }
+                }
+
+                Ok(())
+            })
+            .await?;
+
+        Ok(())
+    }
 }
 
 impl Clone for SqliteDatabase {
