@@ -29,14 +29,14 @@ jobs:
     - name: Build the site
       run: make -C frontend-v2 install build
 
-    - name: Deploy the site
-      uses: actions/checkout@v4
-      with:
-        repository: umonkey/umonkey.github.io
-        path: v2
-      run:
+    - name: Clone pages
+      run: |
+        gh repo clone umonkey/umonkey.github.io v2
         rm -rf v2/*
         cp -R frontend-v2/build/* v2/
-        git add v2
+        cd v2
+        git add .
         git commit -m "Deploy frontend-v2 to GitHub Pages"
         git push
+      env:
+        GH_TOKEN: ${{ github.token }}
