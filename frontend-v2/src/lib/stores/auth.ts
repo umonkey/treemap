@@ -4,9 +4,9 @@ import { ls } from '$lib/utils/localStorage';
 
 const STORAGE_KEY = 'auth_state';
 
-export const authState = writable<ILoginResponse|undefined>(ls.read(STORAGE_KEY));
+export const authState = writable<ILoginResponse | undefined>(ls.read(STORAGE_KEY));
 
-authState.subscribe((value: ILoginResponse|undefined) => {
+authState.subscribe((value: ILoginResponse | undefined) => {
 	ls.write(STORAGE_KEY, value);
 });
 

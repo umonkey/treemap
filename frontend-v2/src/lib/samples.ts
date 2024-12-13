@@ -4,7 +4,7 @@ export const Tree: ITree = {
 	id: '166246555156877316',
 	lat: 40.18151662367526,
 	lon: 44.51097650919111,
-	address: "Manukyan str",
+	address: 'Manukyan str',
 	osm_id: null,
 	species: 'Fraxinus',
 	notes: '',

@@ -27,7 +27,9 @@ export const shortDetails = (tree: ITree): string => {
 	return parts.join(' ');
 };
 
-export const formatLinks = (tree: ITree): {
+export const formatLinks = (
+	tree: ITree
+): {
 	text: string;
 	url: string;
 }[] => {

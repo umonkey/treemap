@@ -13,7 +13,7 @@ export const load: Load = async ({ params }): Promise<Response> => {
 
 	if (!treeId) {
 		error(400, {
-			message: "Tree id not specified.",
+			message: 'Tree id not specified.'
 		});
 	}
 
@@ -21,7 +21,7 @@ export const load: Load = async ({ params }): Promise<Response> => {
 
 	if (res.status !== 200) {
 		error(404, {
-			message: "Error fetching tree.",
+			message: 'Error fetching tree.'
 		});
 	}
 

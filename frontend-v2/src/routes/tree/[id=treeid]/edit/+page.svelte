@@ -19,9 +19,9 @@
 	const treeId = data.id;
 
 	let species = $state(data.tree.species ?? '');
-	let height = $state(data.tree.height?.toString() ?? "0");
-	let diameter = $state(data.tree.diameter?.toString() ?? "0");
-	let circumference = $state(data.tree.circumference?.toString() ?? "0");
+	let height = $state(data.tree.height?.toString() ?? '0');
+	let diameter = $state(data.tree.diameter?.toString() ?? '0');
+	let circumference = $state(data.tree.circumference?.toString() ?? '0');
 	let treeState = $state(data.tree.state ?? '');
 	let address = $state('');
 	let notes = $state(data.tree.notes ?? '');
