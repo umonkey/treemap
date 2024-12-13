@@ -27,7 +27,7 @@ jobs:
           ${{ runner.os }}-build-
 
     - name: Build the site
-      run: make -C frontend-v2 build
+      run: make -C frontend-v2 install build
 
     - name: Deploy the site
       run: |
