@@ -8,6 +8,9 @@ build:
 clean:
 	rm -rf node_modules
 
+install:
+	npm ci
+
 lint:
 	npm run lint
 
