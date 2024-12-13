@@ -1,0 +1,39 @@
+name: deploy-v2
+
+on:
+  push:
+    branches:
+      - tree-page-2
+
+env:
+  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Cache temporary folders
+      uses: actions/cache@v4
+      with:
+        path: |
+          frontend-v2/node_modules
+        key: ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-build-
+
+    - name: Build the site
+      run: make -C frontend-v2 build
+
+    - name: Deploy the site
+      run: |
+        git checkout git@github.com:umonkey/umonkey.github.io.git
+        rm -rf umonkey.github.io/_app/*
+        cp -R frontend-v2/build/* umonkey.github.io/
+        git add umonkey.github.io
+        git commit -m "Deploy frontend-v2 to GitHub Pages"
+        git push
