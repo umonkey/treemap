@@ -5,7 +5,7 @@
 	import { mapState, mapCenter, mapZoom } from '$lib/stores/map';
 	import type { ITree } from '$lib/types';
 
-	let selectedTree: ITree|undefined = $state();
+	let selectedTree: ITree | undefined = $state();
 
 	const onChange = (tree: ITree) => {
 		selectedTree = tree;

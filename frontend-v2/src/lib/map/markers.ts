@@ -31,7 +31,7 @@ export class Markers {
 	private redIcon;
 	private blackIcon;
 
-	public changeHandler: onChangeFn|null = null;
+	public changeHandler: onChangeFn | null = null;
 
 	constructor(map: Map) {
 		this.map = map;

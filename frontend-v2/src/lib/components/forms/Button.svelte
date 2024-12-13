@@ -1,5 +1,5 @@
 <script>
-	const { label, type = "submit", onClick, disabled = false } = $props();
+	const { label, type = 'submit', onClick, disabled = false } = $props();
 </script>
 
 <button type="button" disabled={!!disabled} class={type} onclick={onClick}>{label}</button>

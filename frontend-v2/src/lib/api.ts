@@ -25,12 +25,7 @@ export class ApiClient {
 		return await this.request('GET', 'v1/trees/stats');
 	}
 
-	public async getMarkers(
-		n: number,
-		e: number,
-		s: number,
-		w: number
-	): Promise<Response<IMarkers>> {
+	public async getMarkers(n: number, e: number, s: number, w: number): Promise<Response<IMarkers>> {
 		const search = new URLSearchParams({
 			n: n.toString(),
 			e: e.toString(),
@@ -70,7 +65,7 @@ export class ApiClient {
 
 		return await this.request('POST', `v1/trees/${id}/comments`, {
 			body: JSON.stringify({ message }),
-			headers,
+			headers
 		});
 	}
 

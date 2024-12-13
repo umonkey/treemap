@@ -5,7 +5,16 @@
 	import { Markers } from '$lib/map/markers';
 	import { onMount } from 'svelte';
 
-	const { center, onChange = (tree: ITree) => {}, onMove = () => {}, className = "default", marker = undefined, zoom } = $props();
+	const {
+		center,
+		onChange = (tree: ITree) => {
+			console.debug(`[map] Selected tree ${tree.id}`);
+		},
+		onMove = () => {},
+		className = 'default',
+		marker = undefined,
+		zoom
+	} = $props();
 
 	let map: Map;
 	let L;

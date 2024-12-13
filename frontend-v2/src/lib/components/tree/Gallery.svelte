@@ -5,8 +5,8 @@
 	export let files: ITreeFile[] = [];
 
 	const added_at = (file: ITreeFile) => {
-		const date = '07.11.2024';
-		const author = 'John Doe';
+		const date = file.added_at ?? '07.11.2024';
+		const author = file.added_by ?? 'John Doe';
 		return `${date} by ${author}`;
 	};
 </script>

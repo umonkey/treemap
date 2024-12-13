@@ -10,7 +10,7 @@ declare global {
 	}
 
 	interface Window {
-		onSignIn: (googleUser: any) => void;
+		onSignIn: (googleUser: { credentials: string }) => void;
 	}
 }
 
