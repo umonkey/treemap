@@ -3,6 +3,7 @@ autofix:
 
 build:
 	VITE_API_ROOT=https://yerevan.treemaps.app/ npm run build
+	cp build/index.html build/404.html
 
 clean:
 	rm -rf node_modules
