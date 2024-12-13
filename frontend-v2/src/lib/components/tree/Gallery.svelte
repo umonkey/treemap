@@ -1,9 +1,10 @@
-<script>
+<script lang="ts">
 	import { routes } from '$lib/routes';
+	import type { ITreeFile } from '$lib/types';
 
-	export let files = [];
+	export let files: ITreeFile[] = [];
 
-	const added_at = () => {
+	const added_at = (file: ITreeFile) => {
 		const date = '07.11.2024';
 		const author = 'John Doe';
 		return `${date} by ${author}`;

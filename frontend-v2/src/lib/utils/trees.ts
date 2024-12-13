@@ -27,7 +27,10 @@ export const shortDetails = (tree: ITree): string => {
 	return parts.join(' ');
 };
 
-export const formatLinks = (tree: ITree): string => {
+export const formatLinks = (tree: ITree): {
+	text: string;
+	url: string;
+}[] => {
 	const parts = [];
 
 	if (tree.species) {

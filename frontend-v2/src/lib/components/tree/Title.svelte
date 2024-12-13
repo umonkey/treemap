@@ -2,7 +2,7 @@
 	import DotsIcon from '$lib/icons/DotsIcon.svelte';
 	import { menuState } from '$lib/stores/treeMenu';
 
-	const { title, address } = $props();
+	const { title, address = undefined } = $props();
 
 	const onMenu = () => {
 		menuState.update((value) => !value);

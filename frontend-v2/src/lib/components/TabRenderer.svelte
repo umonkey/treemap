@@ -1,11 +1,11 @@
-<script>
+<script lang="ts">
 	export let active;
 	export let tabs;
 
 	// In case tab id was not provided, default to the first tab.
 	const activeTab = active ?? tabs[0].id;
 
-	const cls = (tab) => {
+	const cls = (tab: string) => {
 		return tab == activeTab;
 	};
 </script>

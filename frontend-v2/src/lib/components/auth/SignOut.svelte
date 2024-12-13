@@ -2,7 +2,7 @@
 	import { authState } from '$lib/stores/auth';
 
 	const onClick = () => {
-		authState.set(null);
+		authState.set(undefined);
 	};
 </script>
 

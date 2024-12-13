@@ -1,11 +1,13 @@
-<script>
-	import { onMount } from 'svelte';
+<script lang="ts">
 	import 'leaflet/dist/leaflet.css';
+	import type { Map } from 'leaflet';
+	import type { ITree } from '$lib/types';
 	import { Markers } from '$lib/map/markers';
+	import { onMount } from 'svelte';
 
-	const { center, onChange, onMove, className, marker, zoom } = $props();
+	const { center, onChange = (tree: ITree) => {}, onMove = () => {}, className = "default", marker = undefined, zoom } = $props();
 
-	let map;
+	let map: Map;
 	let L;
 
 	console.debug(`[map] center=${center}, zoom=${zoom}`);
@@ -36,8 +38,11 @@
 			L.marker(marker).addTo(map);
 		}
 
-		const markers = new Markers(map, L);
-		markers.onChange(onChange);
+		const markers = new Markers(map);
+
+		markers.onChange((tree: ITree) => {
+			onChange(tree);
+		});
 
 		map.on('moveend', () => {
 			if (onMove) {

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { apiClient } from '$lib/api';
 	import { goto } from '$app/navigation';
 	import { routes } from '$lib/routes';
@@ -19,10 +19,10 @@
 	const treeId = data.id;
 
 	let species = $state(data.tree.species ?? '');
-	let height = $state(data.tree.height ?? 0);
-	let canopy = $state(data.tree.canopy ?? 0);
-	let circumference = $state(data.tree.circumference ?? 0);
-	let state = $state(data.tree.state ?? '');
+	let height = $state(data.tree.height?.toString() ?? "0");
+	let diameter = $state(data.tree.diameter?.toString() ?? "0");
+	let circumference = $state(data.tree.circumference?.toString() ?? "0");
+	let treeState = $state(data.tree.state ?? '');
 	let address = $state('');
 	let notes = $state(data.tree.notes ?? '');
 
@@ -38,10 +38,10 @@
 		apiClient
 			.updateTree(treeId, {
 				species,
-				height,
-				canopy,
-				circumference,
-				state,
+				height: parseFloat(height),
+				diameter: parseFloat(diameter),
+				circumference: parseFloat(circumference),
+				state: treeState,
 				address,
 				notes
 			})
@@ -70,9 +70,9 @@
 	<AuthWrapper>
 		<SpeciesInput bind:value={species} />
 		<HeightInput bind:value={height} />
-		<CanopyInput bind:value={canopy} />
+		<CanopyInput bind:value={diameter} />
 		<CircumferenceInput bind:value={circumference} />
-		<StateInput bind:value={state} />
+		<StateInput bind:value={treeState} />
 		<AddressInput bind:value={address} />
 		<NotesInput bind:value={notes} />
 

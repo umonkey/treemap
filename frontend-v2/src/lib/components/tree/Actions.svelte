@@ -12,13 +12,13 @@
 
 <div class="actions">
 	{#if FEATURES.likes}
-		<div><HeartIcon class="icon" /></div>
+		<div><HeartIcon /></div>
 	{/if}
-	<div><a href={routes.treeComments(tree)}><ChatIcon class="icon" /></a></div>
+	<div><a href={routes.treeComments(tree)}><ChatIcon /></a></div>
 	<div><ShareButton /></div>
 	{#if FEATURES.bookmarks}
 		<div class="sep"></div>
-		<div><SaveIcon class="icon" /></div>
+		<div><SaveIcon /></div>
 	{/if}
 </div>
 
