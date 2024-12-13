@@ -30,10 +30,13 @@ jobs:
       run: make -C frontend-v2 install build
 
     - name: Deploy the site
-      run: |
-        git clone git@github.com:umonkey/umonkey.github.io.git
-        rm -rf umonkey.github.io/_app/*
-        cp -R frontend-v2/build/* umonkey.github.io/
-        git add umonkey.github.io
+      uses: actions/checkout@v4
+      with:
+        repository: umonkey/umonkey.github.io
+        path: v2
+      run:
+        rm -rf v2/*
+        cp -R frontend-v2/build/* v2/
+        git add v2
         git commit -m "Deploy frontend-v2 to GitHub Pages"
         git push
