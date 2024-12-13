@@ -3,7 +3,9 @@ import { error } from '@sveltejs/kit';
 import { apiClient } from '$lib/api';
 import type { ITree } from '$lib/types';
 
-export const load: Load = async ({ params }): Promise<{
+export const load: Load = async ({
+	params
+}): Promise<{
 	id: string;
 	tree: ITree;
 }> => {
