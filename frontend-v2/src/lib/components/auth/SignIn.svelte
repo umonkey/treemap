@@ -5,7 +5,7 @@
 
 	const getUxMode = (): string => {
 		if (window.matchMedia('(display-mode: standalone)').matches) {
-			return 'redirect';
+			return 'popup'; // should be 'redirect' but isn't working atm
 		}
 
 		return 'popup';
