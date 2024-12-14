@@ -10,7 +10,7 @@ import { SAMPLE_TREE } from "@/sample-data";
 import { TreeSidePane } from "./TreeSidePane";
 
 const meta = {
-  title: 'Dialogs/TreeSidePane',
+  title: 'Sidebar/TreeSidePane',
   component: TreeSidePane,
   parameters: {
     layout: 'fullscreen',
