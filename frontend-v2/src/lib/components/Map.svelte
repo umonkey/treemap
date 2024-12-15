@@ -2,6 +2,7 @@
 	import 'leaflet/dist/leaflet.css';
 	import type { Map } from 'leaflet';
 	import type { ITree } from '$lib/types';
+	import { addLayerSelection } from '$lib/map/baseLayerSelector';
 	import { Markers } from '$lib/map/markers';
 	import { onMount } from 'svelte';
 
@@ -21,26 +22,14 @@
 
 	console.debug(`[map] center=${center}, zoom=${zoom}`);
 
-	const getTiles = () => {
-		if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-			return 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png';
-		} else {
-			return 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-		}
-	};
-
 	onMount(async () => {
 		L = await import('leaflet');
 
 		map = L.map('map').setView(center, zoom ?? 15);
 
-		L.tileLayer(getTiles(), {
-			attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-			maxZoom: 25,
-			maxNativeZoom: 19
-		}).addTo(map);
+		addLayerSelection(map);
 
-		map.attributionControl.setPrefix('Kanach Yerevan');
+		map.attributionControl.setPrefix('');
 
 		// Highlight the current tree.
 		if (marker) {
