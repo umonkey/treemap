@@ -6,11 +6,4 @@
 	};
 </script>
 
-<button class="btn" on:click={onClick}>Sign out</button>
-
-<style>
-	.btn {
-		padding: 10px 20px;
-		cursor: pointer;
-	}
-</style>
+<button class="button" on:click={onClick}>Sign out</button>

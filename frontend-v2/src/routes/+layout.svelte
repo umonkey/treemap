@@ -5,6 +5,9 @@
 	import RightSideBar from '$lib/components/RightSideBar.svelte';
 	import { SvelteToast } from '@zerodevx/svelte-toast';
 
+	import '$lib/styles/variables.css';
+	import '$lib/styles/forms.css';
+
 	let { children } = $props();
 </script>
 
@@ -31,24 +34,6 @@
 
 			font-size: 15px;
 			font-family: 'Inter Variable', sans-serif;
-
-			/* Colors */
-			--background-color: #fff;
-			--form-background: #f1f3f5;
-			--form-border: #1083fe;
-			--icon-color-secondary: #6f869f;
-			--link-color: #1083fe;
-			--sep-color: #d4dbe2;
-			--tab-color: #1083fe;
-			--tab-hover-color: #f1f3f5;
-			--text-color-inactive: #42576c;
-			--text-color: #0b0f14;
-
-			/* Z-indexes */
-			--z-map: 2;
-			--z-menu: 6;
-			--z-mobile-nav: 7;
-			--z-map-preview: 8;
 		}
 
 		body {
@@ -64,23 +49,6 @@
 
 		p {
 			line-height: 1.5em;
-		}
-	}
-
-	@media (prefers-color-scheme: dark) {
-		:global {
-			:root {
-				--background-color: #14191f;
-				--form-background: #1e2936;
-				--form-border: #208bfe;
-				--icon-color-secondary: #788ea5;
-				--link-color: #208bfe;
-				--sep-color: #2e4052;
-				--tab-color: #208bfe;
-				--tab-hover-color: #1e2936;
-				--text-color-inactive: #aebbc9;
-				--text-color: #f1f3f5;
-			}
 		}
 	}
 
