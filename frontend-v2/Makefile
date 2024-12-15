@@ -1,5 +1,5 @@
 API_ROOT ?= http://127.0.0.1:8000/
-AUTH_CALLBACK ?= http://127.0.0.1:8000/v3/login/google
+AUTH_CALLBACK ?= $(API_ROOT)v3/login/google
 
 autofix:
 	npm run format
