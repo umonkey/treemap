@@ -14,13 +14,14 @@
 		onMove = () => {},
 		className = 'default',
 		marker = undefined,
-		zoom
+		zoom,
+		searchQuery = undefined
 	} = $props();
 
 	let map: Map;
 	let L;
 
-	console.debug(`[map] center=${center}, zoom=${zoom}`);
+	console.debug(`[map] center=${center}, zoom=${zoom} search=${searchQuery}`);
 
 	onMount(async () => {
 		L = await import('leaflet');
@@ -42,7 +43,7 @@
 			}).addTo(map);
 		}
 
-		const markers = new Markers(map);
+		const markers = new Markers(map, searchQuery);
 
 		markers.onChange((tree: ITree) => {
 			onChange(tree);

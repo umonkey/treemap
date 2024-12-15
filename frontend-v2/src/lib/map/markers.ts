@@ -7,7 +7,7 @@
 
 import L from 'leaflet';
 import type { ITree } from '$lib/types';
-import type { Map, Marker } from 'leaflet';
+import type { Map, Marker, LatLngBounds } from 'leaflet';
 import { apiClient } from '$lib/api';
 
 import BlackIcon from '$lib/map/icons/dot-black.svg';
@@ -25,6 +25,8 @@ export class Markers {
 	private map;
 
 	private markerMap: MarkerMap = {};
+	private searchQuery: string | undefined = undefined;
+	private bounds: LatLngBounds | undefined = undefined;
 
 	private greenIcon;
 	private yellowIcon;
@@ -33,8 +35,9 @@ export class Markers {
 
 	public changeHandler: onChangeFn | null = null;
 
-	constructor(map: Map) {
+	constructor(map: Map, searchQuery: string | undefined) {
 		this.map = map;
+		this.searchQuery = searchQuery;
 
 		this.greenIcon = L.icon({
 			iconUrl: GreenIcon,
@@ -65,22 +68,41 @@ export class Markers {
 		this.onMoveEnd();
 	}
 
+	public setSearchQuery(query: string | undefined) {
+		this.searchQuery = query;
+		this.reload();
+	}
+
 	public onChange(handler: onChangeFn) {
 		this.changeHandler = handler;
 	}
 
 	private async onMoveEnd() {
-		const bounds = this.map.getBounds();
-		const n = bounds.getNorth();
-		const e = bounds.getEast();
-		const s = bounds.getSouth();
-		const w = bounds.getWest();
+		this.bounds = this.map.getBounds();
+		this.reload();
+	}
 
-		const res = await apiClient.getMarkers(n, e, s, w);
-
-		if (res.status === 200) {
-			this.replaceMarkers(res.data.trees);
+	/**
+	 * Reload markers after a change in parameters.
+	 */
+	private reload() {
+		if (!this.bounds) {
+			console.debug('[map] Not reloading -- bounds not set.');
+			return;
 		}
+
+		const n = this.bounds.getNorth();
+		const e = this.bounds.getEast();
+		const s = this.bounds.getSouth();
+		const w = this.bounds.getWest();
+
+		apiClient.getMarkers(n, e, s, w, this.searchQuery).then((res) => {
+			if (res.status == 200) {
+				const trees = res.data.trees;
+				console.debug(`[map] Received ${trees.length} trees, search=${this.searchQuery}.`);
+				this.replaceMarkers(trees);
+			}
+		});
 	}
 
 	/**

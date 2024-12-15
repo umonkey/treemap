@@ -25,15 +25,25 @@ export class ApiClient {
 		return await this.request('GET', 'v1/trees/stats');
 	}
 
-	public async getMarkers(n: number, e: number, s: number, w: number): Promise<Response<IMarkers>> {
-		const search = new URLSearchParams({
+	public async getMarkers(
+		n: number,
+		e: number,
+		s: number,
+		w: number,
+		search?: string | undefined
+	): Promise<Response<IMarkers>> {
+		const params = new URLSearchParams({
 			n: n.toString(),
 			e: e.toString(),
 			s: s.toString(),
 			w: w.toString()
 		});
 
-		return await this.request('GET', 'v1/trees?' + search.toString());
+		if (search) {
+			params.set('search', search);
+		}
+
+		return await this.request('GET', 'v1/trees?' + params.toString());
 	}
 
 	public async loginWithGoogle(token: string): Promise<Response<ILoginResponse>> {
