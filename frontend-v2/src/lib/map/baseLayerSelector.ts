@@ -1,5 +1,5 @@
 import L from 'leaflet';
-import { baseLayerState, baseLayer } from '$lib/stores/baseLayerStore';
+import { mapLayerStore, baseLayer, droneLayer } from '$lib/stores/mapLayerStore';
 import { get } from 'svelte/store';
 
 const getDefaultLayer = (): string => {
@@ -33,10 +33,23 @@ export const addLayerSelection = (map: L.Map) => {
 		maxNativeZoom: 22
 	});
 
+	const drone = L.tileLayer('https://treemap-tiles.fra1.digitaloceanspaces.com/{z}/{x}/{y}.png', {
+		attribution: '&copy; <a href="https://myga.am/">Kanach Yerevan</a>',
+		maxZoom: 25,
+		maxNativeZoom: 21,
+		minZoom: 15,
+		tms: true,
+		opaque: 0.9
+	});
+
 	const baseMaps = {
 		'OSM Dark': osmDark,
 		'OSM Light': osmLight,
 		Satellite: google
+	};
+
+	const overlays = {
+		Drone: drone
 	};
 
 	const currentLayer = get(baseLayer) ?? getDefaultLayer();
@@ -49,10 +62,34 @@ export const addLayerSelection = (map: L.Map) => {
 		osmLight.addTo(map);
 	}
 
-	L.control.layers(baseMaps).addTo(map);
+	if (get(droneLayer)) {
+		drone.addTo(map);
+	}
+
+	L.control.layers(baseMaps, overlays).addTo(map);
 
 	map.on('baselayerchange', (event) => {
-		console.info(`[map] Changing base layer to ${event.name}`);
-		baseLayerState.set(event.name);
+		mapLayerStore.update((value) => {
+			value.base = event.name;
+			return value;
+		});
+	});
+
+	map.on('overlayadd', (event) => {
+		if (event.name === 'Drone') {
+			mapLayerStore.update((value) => {
+				value.drone = true;
+				return value;
+			});
+		}
+	});
+
+	map.on('overlayremove', (event) => {
+		if (event.name === 'Drone') {
+			mapLayerStore.update((value) => {
+				value.drone = false;
+				return value;
+			});
+		}
 	});
 };
