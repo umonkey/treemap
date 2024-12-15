@@ -1,6 +1,14 @@
-import type { ILoginResponse, IMarkers, IStats, ITree, ITreeUpdatePayload } from '$lib/types';
+import type {
+	ILoginResponse,
+	IMeResponse,
+	IMarkers,
+	IStats,
+	ITree,
+	ITreeUpdatePayload
+} from '$lib/types';
 import { isAuthenticated, authState } from '$lib/stores/auth';
 import { get } from 'svelte/store';
+import { API_ROOT } from '$lib/env';
 
 interface Response<T> {
 	status: number;
@@ -11,7 +19,7 @@ export class ApiClient {
 	private root: string;
 
 	constructor() {
-		this.root = import.meta.env.VITE_API_ROOT;
+		this.root = API_ROOT;
 		console.debug(`[api] Root: ${this.root}`);
 	}
 
@@ -23,6 +31,15 @@ export class ApiClient {
 	public async getStats(): Promise<Response<IStats>> {
 		console.debug(`[api] Getting stats`);
 		return await this.request('GET', 'v1/trees/stats');
+	}
+
+	public async getMe(token: string): Promise<Response<IMeResponse>> {
+		return await this.request('GET', 'v1/me', {
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`
+			}
+		});
 	}
 
 	public async getMarkers(
