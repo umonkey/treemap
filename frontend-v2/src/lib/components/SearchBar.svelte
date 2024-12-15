@@ -2,11 +2,18 @@
 	import SearchIcon from '$lib/icons/SearchIcon.svelte';
 
 	export let value = '';
+	export let onSearch = () => {};
+
+	const handleKeyDown = (event: KeyboardEvent) => {
+		if (event.key === 'Enter') {
+			onSearch();
+		}
+	};
 </script>
 
 <div class="search">
 	<div class="icon"><SearchIcon width="20px" height="20px" /></div>
-	<input type="search" placeholder="Search" bind:value />
+	<input type="search" placeholder="Search" bind:value on:keydown={handleKeyDown} />
 </div>
 
 <style>
