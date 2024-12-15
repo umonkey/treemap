@@ -1,14 +1,33 @@
 <script lang="ts">
+	/**
+	 * This uses Google's Sign-In HTML interface.
+	 *
+	 * We need to specify the call-back URI for this to work.
+	 */
 	import { googleCallbackHandler } from '$lib/utils/auth';
+	import { AUTH_CALLBACK, AUTH_CLIENT_ID } from '$lib/env';
 
 	window.onSignIn = googleCallbackHandler;
 
-	const getUxMode = (): string => {
-		if (window.matchMedia('(display-mode: standalone)').matches) {
-			return 'popup'; // should be 'redirect' but isn't working atm
-		}
+	const onSignIn = () => {
+		const qs = new URLSearchParams({
+			client_id: AUTH_CLIENT_ID,
+			scope: 'openid email profile',
+			response_type: 'token',
+			redirect_uri: AUTH_CALLBACK,
+			response_mode: 'form_post',
+			state: window.location.href
 
-		return 'popup';
+			/*
+			gsiwebsdk: 'gis_attributes',
+			prompt: 'select_account',
+			service: 'lso',
+			flowName: 'GeneralOAuthFlow',
+			*/
+		});
+
+		const url = `https://accounts.google.com/o/oauth2/auth?${qs.toString()}`;
+		window.location = url;
 	};
 </script>
 
@@ -16,13 +35,25 @@
 	<script src="https://accounts.google.com/gsi/client" async></script>
 </svelte:head>
 
+<button type="button" on:click={onSignIn}>Sign In with Google</button>
+
+<p>
+	<a
+		href="https://accounts.google.com/o/oauth2/auth?service=lso&o2v=1&ddm=1&flowName=GeneralOAuthFlow"
+		>Sign In with Google</a
+	>
+</p>
+
 <div
 	id="g_id_onload"
-	data-client_id="999312923392-6k26jala2pe5dk9u7o63o8nvts3a7f1f.apps.googleusercontent.com"
+	data-client_id={AUTH_CLIENT_ID}
 	data-context="signin"
-	data-ux_mode={getUxMode()}
+	data-ux_mode="redirect"
+	data-redirect_uri={AUTH_CALLBACK}
 	data-callback="onSignIn"
 	data-itp_support="true"
+	data-state="HAHA"
+	data-locale="en_US"
 ></div>
 
 <div

@@ -49,3 +49,8 @@ export interface ITreeUpdatePayload {
 	diameter?: number;
 	state?: string;
 }
+
+export interface IMeResponse {
+	name: string;
+	picture: string;
+}

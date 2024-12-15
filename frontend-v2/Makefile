@@ -1,8 +1,11 @@
+API_ROOT ?= http://127.0.0.1:8000/
+AUTH_CALLBACK ?= http://127.0.0.1:8000/v3/login/google
+
 autofix:
 	npm run format
 
 build:
-	VITE_API_ROOT=https://yerevan.treemaps.app/ npm run build
+	npm run build
 	cp build/index.html build/404.html
 
 clean:
@@ -24,17 +27,8 @@ lint:
 preview:
 	npm run preview
 
-serve: serve-dev
-	VITE_API_ROOT=$(API_ROOT) npm run dev -- --host
-
-serve-dev:
-	VITE_API_ROOT=http://127.0.0.1:8000/ npm run dev -- --host
-
-serve-live:
-	VITE_API_ROOT=https://yerevan.treemaps.app/ npm run dev -- --host
-
-serve-lan:
-	VITE_API_ROOT=http://192.168.1.31:8000/ npm run dev -- --host
+serve:
+	VITE_API_ROOT=$(API_ROOT) VITE_AUTH_CALLBACK=$(AUTH_CALLBACK) npm run dev -- --host
 
 test:
 	npm run test:unit -- run
