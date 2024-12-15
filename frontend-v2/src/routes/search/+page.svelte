@@ -1,16 +1,23 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { routes } from '$lib/routes';
 
 	import Header from '$lib/components/tree/Header.svelte';
 	import SearchBar from '$lib/components/SearchBar.svelte';
 
 	let query = '';
+
+	const onSearch = () => {
+		if (query) {
+			goto(routes.searchQuery(query));
+		}
+	};
 </script>
 
 <Header title="Search" />
 
 <div class="search">
-	<SearchBar bind:value={query} />
+	<SearchBar bind:value={query} {onSearch} />
 
 	{#if query}
 		<p><a href={routes.searchQuery(query)}>Search the map for "{query}"</a></p>
