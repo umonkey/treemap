@@ -1,14 +1,21 @@
-<script>
+<script lang="ts">
 	import { routes } from '$lib/routes';
 
 	import Header from '$lib/components/tree/Header.svelte';
 	import SearchBar from '$lib/components/SearchBar.svelte';
+
+	let query = '';
 </script>
 
 <Header title="Search" />
 
 <div class="search">
-	<SearchBar />
+	<SearchBar bind:value={query} />
+
+	{#if query}
+		<p><a href={routes.searchQuery(query)}>Search the map for "{query}"</a></p>
+		<hr />
+	{/if}
 
 	<p>Some interesting searches:</p>
 
@@ -42,5 +49,12 @@
 
 	li {
 		margin: 0 0 var(--gap);
+	}
+
+	hr {
+		border: none;
+		border-top: 1px solid var(--sep-color);
+		height: 0;
+		margin: var(--gap) 0;
 	}
 </style>

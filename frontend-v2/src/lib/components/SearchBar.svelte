@@ -1,10 +1,12 @@
-<script>
+<script lang="ts">
 	import SearchIcon from '$lib/icons/SearchIcon.svelte';
+
+	export let value = '';
 </script>
 
 <div class="search">
 	<div class="icon"><SearchIcon width="20px" height="20px" /></div>
-	<input type="search" placeholder="Search" />
+	<input type="search" placeholder="Search" bind:value />
 </div>
 
 <style>
