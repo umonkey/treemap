@@ -5,13 +5,14 @@ autofix:
 	npm run format
 
 build:
-	npm run build
+	VITE_API_ROOT=$(API_ROOT) VITE_AUTH_CALLBACK=$(AUTH_CALLBACK) npm run build
 	cp build/index.html build/404.html
 
 clean:
 	rm -rf node_modules
 
-deploy: build
+deploy:
+	API_ROOT=https://yerevan.treemaps.app/ $(MAKE) build
 	rm -rf ../../umonkey.github.io/*
 	cp -r build/* ../../umonkey.github.io/
 	git -C ../../umonkey.github.io/ add .

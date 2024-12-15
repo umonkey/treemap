@@ -24,9 +24,3 @@
 	<p>You need to be authenticated to add comments.</p>
 	<SignIn />
 {/if}
-
-<style>
-	.buttons {
-		margin-top: var(--gap);
-	}
-</style>

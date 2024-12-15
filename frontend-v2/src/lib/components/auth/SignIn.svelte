@@ -23,8 +23,4 @@
 	};
 </script>
 
-<svelte:head>
-	<script src="https://accounts.google.com/gsi/client" async></script>
-</svelte:head>
-
 <button class="button" type="button" on:click={onSignIn}>Sign In with Google</button>
