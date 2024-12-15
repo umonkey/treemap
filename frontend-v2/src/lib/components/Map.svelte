@@ -44,7 +44,13 @@
 
 		// Highlight the current tree.
 		if (marker) {
-			L.marker(marker).addTo(map);
+			L.marker(marker, {
+				icon: L.icon({
+					iconUrl: '/icons/marker-icon-2x.png',
+					iconSize: [25, 41],
+					iconAnchor: [12, 41]
+				})
+			}).addTo(map);
 		}
 
 		const markers = new Markers(map);
