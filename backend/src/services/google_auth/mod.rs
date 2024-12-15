@@ -202,7 +202,10 @@ impl GoogleAuth {
             .origin()
             .unicode_serialization();
 
-        debug!("Auth callback: origin={}, token={}, target={}", origin, token, target);
+        debug!(
+            "Auth callback: origin={}, token={}, target={}",
+            origin, token, target
+        );
 
         let callback = format!("{}/auth?token={}&state={}", origin, token, target);
         Ok(callback)
