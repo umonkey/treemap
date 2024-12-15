@@ -87,11 +87,4 @@
 	.form {
 		padding: 0 var(--gap) var(--gap);
 	}
-
-	.buttons {
-		display: flex;
-		flex-direction: row;
-		gap: var(--gap);
-		margin-top: var(--gap);
-	}
 </style>
