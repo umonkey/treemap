@@ -4,11 +4,12 @@ use log::{debug, error, info};
 use reqwest::header::{HeaderMap, HeaderValue};
 use serde::Deserialize;
 use std::sync::Arc;
+use url::Url;
 
 use crate::services::{Database, TokenService};
 use crate::types::{
-    Error, GoogleUserinfoResponse, LoginGoogleRequest, LoginResponse, Result, TokenClaims,
-    UserRecord,
+    Error, GoogleAuthCallbackPayload, GoogleUserinfoResponse, LoginGoogleRequest, LoginResponse,
+    Result, TokenClaims, UserRecord,
 };
 use crate::utils::{get_timestamp, get_unique_id};
 
@@ -37,7 +38,7 @@ impl GoogleAuth {
     pub async fn login(&self, req: LoginGoogleRequest) -> Result<LoginResponse> {
         debug!("Authenticating a Google user.");
 
-        let userinfo = self.get_google_userinfo(req).await?;
+        let userinfo = self.get_google_userinfo(req.token).await?;
         let user = self.get_user(&userinfo).await?;
 
         let token = self.tokens.encode(&TokenClaims {
@@ -111,6 +112,21 @@ impl GoogleAuth {
         })
     }
 
+    pub async fn login_v3(&self, req: GoogleAuthCallbackPayload) -> Result<String> {
+        debug!("Authenticating a Google user (v3).");
+
+        let userinfo = self.get_google_userinfo(req.access_token).await?;
+        let user = self.get_user(&userinfo).await?;
+
+        let token = self.tokens.encode(&TokenClaims {
+            exp: get_timestamp() + TOKEN_TTL,
+            sub: user.id.to_string(),
+        })?;
+
+        let redirect = self.get_redirect_url(&req.state, &token)?;
+        Ok(redirect)
+    }
+
     async fn get_user(&self, userinfo: &GoogleUserinfoResponse) -> Result<UserRecord> {
         if let Some(user) = self.db.find_user_by_email(&userinfo.email).await? {
             debug!("Found a user with email {}.", userinfo.email);
@@ -136,17 +152,9 @@ impl GoogleAuth {
         Ok(user)
     }
 
-    async fn get_google_userinfo(&self, req: LoginGoogleRequest) -> Result<GoogleUserinfoResponse> {
+    async fn get_google_userinfo(&self, access_token: String) -> Result<GoogleUserinfoResponse> {
         let client = reqwest::Client::new();
-
-        let headers = match self.get_login_headers(&req) {
-            Ok(value) => value,
-
-            Err(e) => {
-                debug!("Failed to get login headers: {:?}", e);
-                return Err(Error::GoogleUserInfo);
-            }
-        };
+        let headers = self.get_login_headers(&access_token)?;
 
         let req = client
             .get("https://www.googleapis.com/oauth2/v1/userinfo")
@@ -173,8 +181,8 @@ impl GoogleAuth {
         }
     }
 
-    fn get_login_headers(&self, req: &LoginGoogleRequest) -> Result<HeaderMap> {
-        let auth_header = match HeaderValue::from_str(format!("Bearer {}", req.token).as_str()) {
+    fn get_login_headers(&self, token: &str) -> Result<HeaderMap> {
+        let auth_header = match HeaderValue::from_str(format!("Bearer {}", token).as_str()) {
             Ok(h) => h,
 
             Err(e) => {
@@ -186,5 +194,17 @@ impl GoogleAuth {
         let mut headers = HeaderMap::new();
         headers.insert("Authorization", auth_header);
         Ok(headers)
+    }
+
+    fn get_redirect_url(&self, target: &str, token: &str) -> Result<String> {
+        let origin = Url::parse(target)
+            .map_err(|_| Error::BadCallback)?
+            .origin()
+            .unicode_serialization();
+
+        debug!("Auth callback: origin={}, token={}, target={}", origin, token, target);
+
+        let callback = format!("{}/auth?token={}&state={}", origin, token, target);
+        Ok(callback)
     }
 }

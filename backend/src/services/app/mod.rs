@@ -9,9 +9,10 @@ use crate::services::{
 };
 use crate::types::{
     AddCommentRequest, AddFileRequest, AddTreeRequest, Error, FileStatusResponse,
-    FileUploadResponse, GetTreesRequest, LoginGoogleRequest, LoginResponse, MeResponse,
-    MoveTreeRequest, NewTreeDefaultsResponse, PublicCommentInfo, PublicSpeciesInfo, Result,
-    TreeDetails, TreeList, TreeRecord, TreeStats, UpdateTreeRequest, UserResponse,
+    FileUploadResponse, GetTreesRequest, GoogleAuthCallbackPayload, LoginGoogleRequest,
+    LoginResponse, MeResponse, MoveTreeRequest, NewTreeDefaultsResponse, PublicCommentInfo,
+    PublicSpeciesInfo, Result, TreeDetails, TreeList, TreeRecord, TreeStats, UpdateTreeRequest,
+    UserResponse,
 };
 
 pub struct AppState {
@@ -150,6 +151,13 @@ impl AppState {
      */
     pub async fn login_google_v2(&self, req: LoginGoogleRequest) -> Result<LoginResponse> {
         self.gauth.login_v2(req).await
+    }
+
+    /**
+     * Use the new signin API.
+     */
+    pub async fn login_google_v3(&self, req: GoogleAuthCallbackPayload) -> Result<String> {
+        self.gauth.login_v3(req).await
     }
 
     pub async fn get_user_info(&self, user_id: u64) -> Result<MeResponse> {

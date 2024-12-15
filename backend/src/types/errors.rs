@@ -9,6 +9,7 @@ use async_sqlite::Error as SqliteError;
 pub enum Error {
     BadAuthToken,
     BadAuthorizationHeader,
+    BadCallback,
     BadImage,
     DatabaseConnect,
     DatabaseQuery,
@@ -34,6 +35,9 @@ impl Error {
             }
             Error::BadAuthorizationHeader => {
                 r#"{"error":{"code":"BadAuthorizationHeader","description":"Bad authorization header."}}"#
+            }
+            Error::BadCallback => {
+                r#"{"error":{"code":"BadCallback","description":"Bad callback URL, unable to authenticate."}}"#
             }
             Error::BadImage => {
                 r#"{"error":{"code":"BadImage","description":"Bad image file, cannot work with it."}}"#
@@ -107,6 +111,7 @@ impl ResponseError for Error {
         match self {
             Error::BadAuthToken => StatusCode::UNAUTHORIZED,
             Error::BadAuthorizationHeader => StatusCode::BAD_REQUEST,
+            Error::BadCallback => StatusCode::BAD_REQUEST,
             Error::BadImage => StatusCode::BAD_REQUEST,
             Error::DatabaseConnect => StatusCode::INTERNAL_SERVER_ERROR,
             Error::DatabaseQuery => StatusCode::INTERNAL_SERVER_ERROR,
@@ -131,6 +136,7 @@ impl fmt::Display for Error {
         match self {
             Error::BadAuthToken => write!(f, "BadAuthToken"),
             Error::BadAuthorizationHeader => write!(f, "BadAuthorizationHeader"),
+            Error::BadCallback => write!(f, "BadCallback"),
             Error::BadImage => write!(f, "BadImage"),
             Error::DatabaseConnect => write!(f, "DatabaseConnect"),
             Error::DatabaseQuery => write!(f, "DatabaseQuery"),

@@ -56,6 +56,7 @@ pub async fn serve_command() {
             .service(unlike_tree)
             .service(login_google)
             .service(login_google_v2)
+            .service(login_google_v3)
             .service(move_tree)
             .service(search_species)
             .service(suggest_species)
