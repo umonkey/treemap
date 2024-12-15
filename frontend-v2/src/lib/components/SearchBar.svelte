@@ -13,7 +13,8 @@
 
 <div class="search">
 	<div class="icon"><SearchIcon width="20px" height="20px" /></div>
-	<input type="search" placeholder="Search" bind:value on:keydown={handleKeyDown} />
+	<!-- svelte-ignore a11y-autofocus -->
+	<input type="search" placeholder="Search" autofocus bind:value on:keydown={handleKeyDown} />
 </div>
 
 <style>
