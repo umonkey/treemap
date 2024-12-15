@@ -6,7 +6,6 @@ Alternative icon packs:
 Blockers:
 
 - Build static site: https://svelte.dev/docs/kit/single-page-apps
-- Map: toggle OSM vs Sat.
 - Map: search button.
 - Edit: species selection.
 - Edit: species history.
