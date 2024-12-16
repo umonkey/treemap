@@ -6,5 +6,6 @@ export const routes = {
 	treeDetails: (id: string) => `/tree/${id}`,
 	treeEdit: (id: string) => `/tree/${id}/edit`,
 	treeHistory: (id: string) => `/tree/${id}/history`,
-	treeMap: (id: string) => `/tree/${id}/map`
+	treeMap: (id: string) => `/tree/${id}/map`,
+	treeUploadPhotos: (id: string) => `/tree/${id}/upload`
 };
