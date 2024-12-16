@@ -2,6 +2,8 @@
 	import { routes } from '$lib/routes';
 	import type { ITreeFile } from '$lib/types';
 	import { formatDate } from '$lib/utils/strings';
+	import { getUser } from '$lib/stores/userStore';
+	import { get } from 'svelte/store';
 
 	export let files: ITreeFile[] = [];
 
@@ -10,9 +12,14 @@
 			return '';
 		}
 
+		const user = get(getUser)(file.added_by);
+
+		if (user === undefined) {
+			return '';
+		}
+
 		const date = formatDate(file.added_at);
-		const author = file.added_by ?? 'John Doe';
-		return `${date} by ${author}`;
+		return `${date} by ${user.name}`;
 	};
 </script>
 
