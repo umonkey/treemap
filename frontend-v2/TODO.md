@@ -12,7 +12,6 @@ Blockers:
 - Profile: hide picture.
 - Profile: change name.
 - Profile: hide name.
-- Tree: upload photos.
 
 Enhancements:
 

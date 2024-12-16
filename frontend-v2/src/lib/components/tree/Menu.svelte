@@ -16,6 +16,7 @@
 		<div class="menu">
 			<ul>
 				<li><a href={routes.treeEdit(id)}>Edit this tree</a></li>
+				<li><a href={routes.treeUploadPhotos(id)}>Upload photos</a></li>
 			</ul>
 		</div>
 	</div>
@@ -45,7 +46,7 @@
 		ul {
 			list-style-type: none;
 			margin: 0;
-			padding: 0;
+			padding: var(--gap) 0;
 		}
 
 		li {
@@ -55,8 +56,8 @@
 
 		a {
 			display: block;
-			line-height: 30px;
-			padding: 10px 30px;
+			line-height: 20px;
+			padding: 10px 20px;
 		}
 	}
 </style>
