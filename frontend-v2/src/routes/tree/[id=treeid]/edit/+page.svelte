@@ -64,6 +64,10 @@
 	};
 </script>
 
+<svelte:head>
+	<title>Edit tree</title>
+</svelte:head>
+
 <Header title="Edit tree" />
 
 <div class="form">
