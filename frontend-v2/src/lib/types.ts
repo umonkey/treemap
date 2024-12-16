@@ -6,6 +6,12 @@ export interface ITreeFile {
 	added_by?: string;
 }
 
+export interface IUser {
+	id: string;
+	name: string;
+	picture: string;
+}
+
 export interface ITree {
 	id: string;
 	lat: number;
@@ -22,6 +28,7 @@ export interface ITree {
 	updated_at: number;
 	added_by: string;
 	files: ITreeFile[];
+	users: IUser[];
 }
 
 export interface IMarkers {
