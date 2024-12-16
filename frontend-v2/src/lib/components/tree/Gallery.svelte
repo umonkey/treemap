@@ -1,11 +1,16 @@
 <script lang="ts">
 	import { routes } from '$lib/routes';
 	import type { ITreeFile } from '$lib/types';
+	import { formatDate } from '$lib/utils/strings';
 
 	export let files: ITreeFile[] = [];
 
 	const added_at = (file: ITreeFile) => {
-		const date = file.added_at ?? '07.11.2024';
+		if (!file.added_at || !file.added_by) {
+			return '';
+		}
+
+		const date = formatDate(file.added_at);
 		const author = file.added_by ?? 'John Doe';
 		return `${date} by ${author}`;
 	};
