@@ -12,6 +12,7 @@ Blockers:
 - Profile: hide picture.
 - Profile: change name.
 - Profile: hide name.
+- Tree: upload photos.
 
 Enhancements:
 
@@ -26,3 +27,4 @@ Enhancements:
 - Home: stats by species.
 - Map: jump to self.
 - Translation.
+- Tree: manage photos.
