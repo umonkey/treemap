@@ -1,19 +1,21 @@
 <script>
+	import { formatMeters, formatCentimeters } from '$lib/utils/trees';
+
 	const { tree } = $props();
 </script>
 
 <div class="properties">
 	<dl>
 		<dt>Height</dt>
-		<dd>{tree.height} m</dd>
+		<dd>{formatMeters(tree.height)}</dd>
 	</dl>
 	<dl>
 		<dt>Canopy</dt>
-		<dd>{tree.diameter} m</dd>
+		<dd>{formatMeters(tree.diameter)}</dd>
 	</dl>
 	<dl>
 		<dt>Trunk</dt>
-		<dd>{tree.circumference} m</dd>
+		<dd>{formatCentimeters(tree.circumference)}</dd>
 	</dl>
 	<dl>
 		<dt>State</dt>
