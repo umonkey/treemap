@@ -7,6 +7,7 @@ import type {
 	ITreeUpdatePayload
 } from '$lib/types';
 import { isAuthenticated, authState } from '$lib/stores/auth';
+import { addUsers } from '$lib/stores/userStore';
 import { get } from 'svelte/store';
 import { API_ROOT } from '$lib/env';
 
@@ -25,7 +26,13 @@ export class ApiClient {
 
 	public async getTree(id: string): Promise<Response<ITree>> {
 		console.debug(`[api] Getting tree ${id}`);
-		return await this.request('GET', `v1/trees/${id}`);
+		const res = await this.request('GET', `v1/trees/${id}`);
+
+		if (res.status === 200) {
+			addUsers(res.data.users);
+		}
+
+		return res;
 	}
 
 	public async getStats(): Promise<Response<IStats>> {
