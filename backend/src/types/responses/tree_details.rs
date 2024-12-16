@@ -1,9 +1,5 @@
-/**
- * This is how a single tree is returned to the API client.
- */
+use crate::types::{FileRecord, PublicFileInfo, TreeRecord, UserResponse};
 use serde::Serialize;
-
-use crate::types::{FileRecord, PublicFileInfo, TreeRecord};
 
 #[derive(Debug, Serialize)]
 pub struct TreeDetails {
@@ -22,10 +18,15 @@ pub struct TreeDetails {
     pub added_by: String,
     pub thumbnail_id: Option<String>,
     pub files: Vec<PublicFileInfo>,
+    pub users: Vec<UserResponse>,
 }
 
 impl TreeDetails {
-    pub fn from_tree(tree: &TreeRecord, files: &[FileRecord]) -> TreeDetails {
+    pub fn from_tree(
+        tree: &TreeRecord,
+        files: &[FileRecord],
+        users: &[UserResponse],
+    ) -> TreeDetails {
         let thumbnail_id = tree.thumbnail_id.map(|value| value.to_string());
 
         TreeDetails {
@@ -44,6 +45,7 @@ impl TreeDetails {
             added_by: tree.added_by.to_string(),
             thumbnail_id,
             files: files.iter().map(PublicFileInfo::from_file).collect(),
+            users: users.to_vec(),
         }
     }
 }

@@ -1,19 +1,19 @@
-use actix_web::HttpRequest;
-use log::info;
-use std::sync::Arc;
-
 use crate::services::database::get_database;
 use crate::services::trees::Trees;
 use crate::services::{
     get_file_storage, CommentsService, Database, FileService, GoogleAuth, TokenService,
 };
 use crate::types::{
-    AddCommentRequest, AddFileRequest, AddTreeRequest, Error, FileStatusResponse,
+    AddCommentRequest, AddFileRequest, AddTreeRequest, Error, FileRecord, FileStatusResponse,
     FileUploadResponse, GetTreesRequest, GoogleAuthCallbackPayload, LoginGoogleRequest,
     LoginResponse, MeResponse, MoveTreeRequest, NewTreeDefaultsResponse, PublicCommentInfo,
     PublicSpeciesInfo, Result, TreeDetails, TreeList, TreeRecord, TreeStats, UpdateTreeRequest,
     UserResponse,
 };
+use actix_web::HttpRequest;
+use log::info;
+use std::collections::HashSet;
+use std::sync::Arc;
 
 pub struct AppState {
     db: Arc<dyn Database>,
@@ -123,8 +123,9 @@ impl AppState {
     pub async fn get_tree(&self, id: u64) -> Result<TreeDetails> {
         let tree = self.trees.get_tree(id).await?;
         let files = self.files.find_files_by_tree(id).await?;
+        let users = self.collect_users(&tree, &files).await?;
 
-        Ok(TreeDetails::from_tree(&tree, &files))
+        Ok(TreeDetails::from_tree(&tree, &files, &users))
     }
 
     pub async fn get_tree_stats(&self) -> Result<TreeStats> {
@@ -205,5 +206,29 @@ impl AppState {
     pub async fn unlike_tree(&self, tree_id: u64, user_id: u64) -> Result<()> {
         self.db.unlike_tree(tree_id, user_id).await?;
         Ok(())
+    }
+
+    async fn collect_users(
+        &self,
+        tree: &TreeRecord,
+        files: &Vec<FileRecord>,
+    ) -> Result<Vec<UserResponse>> {
+        let mut user_ids = HashSet::new();
+
+        user_ids.insert(tree.added_by);
+
+        for file in files {
+            user_ids.insert(file.added_by);
+        }
+
+        let mut users = Vec::new();
+
+        for id in user_ids {
+            if let Ok(Some(user)) = self.db.get_user(id).await {
+                users.push(UserResponse::from(user));
+            };
+        }
+
+        Ok(users)
     }
 }

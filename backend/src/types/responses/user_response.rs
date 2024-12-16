@@ -1,7 +1,7 @@
 use crate::types::database::UserRecord;
 use serde::Serialize;
 
-#[derive(Debug, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct UserResponse {
     pub id: String,
     pub name: String,
