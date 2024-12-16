@@ -51,3 +51,19 @@ export const formatLinks = (
 
 	return parts;
 };
+
+export const formatMeters = (value: number | undefined | null): string => {
+	if (value === undefined || value === null) {
+		return '???';
+	}
+
+	return `${value.toFixed(1)} m`;
+};
+
+export const formatCentimeters = (value: number | undefined | null): string => {
+	if (value === undefined || value === null) {
+		return '???';
+	}
+
+	return `${Math.round(value * 100)} cm`;
+};
