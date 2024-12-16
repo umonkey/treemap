@@ -5,7 +5,6 @@ Alternative icon packs:
 
 Blockers:
 
-- Build static site: https://svelte.dev/docs/kit/single-page-apps
 - Edit: species selection.
 - Edit: species history.
 - Add a new tree.
