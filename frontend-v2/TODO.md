@@ -11,6 +11,8 @@ Blockers:
 - Profile: hide picture.
 - Profile: change name.
 - Profile: hide name.
+- Nav: cache userpics.
+- Desktop: sidebars.
 
 Enhancements:
 
