@@ -96,6 +96,21 @@ export class ApiClient {
 		});
 	}
 
+	public async uploadFile(tree: string, file: File): Promise<Response<void>> {
+		const headers: HeadersInit = {
+			'Content-Type': 'application/json',
+			...this.getAuthHeaders()
+		};
+
+		const buffer = await file.arrayBuffer();
+		const body = new Blob([buffer], { type: file.type });
+
+		return await this.request('POST', `v1/trees/${tree}/files`, {
+			body,
+			headers
+		});
+	}
+
 	/**
 	 * Send a raw request to the API.
 	 *
