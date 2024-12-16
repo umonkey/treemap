@@ -53,7 +53,7 @@ export const formatLinks = (
 };
 
 export const formatMeters = (value: number | undefined | null): string => {
-	if (value === undefined || value === null) {
+	if (!value) {
 		return '???';
 	}
 
@@ -61,7 +61,7 @@ export const formatMeters = (value: number | undefined | null): string => {
 };
 
 export const formatCentimeters = (value: number | undefined | null): string => {
-	if (value === undefined || value === null) {
+	if (!value) {
 		return '???';
 	}
 
