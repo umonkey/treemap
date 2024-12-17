@@ -4,16 +4,17 @@
 	import { routes } from '$lib/routes';
 	import { toast } from '@zerodevx/svelte-toast';
 
+	import AddressInput from '$lib/components/forms/AddressInput.svelte';
 	import AuthWrapper from '$lib/components/auth/AuthWrapper.svelte';
-	import SpeciesInput from '$lib/components/forms/SpeciesInput.svelte';
-	import HeightInput from '$lib/components/forms/HeightInput.svelte';
+	import Button from '$lib/components/forms/Button.svelte';
 	import CanopyInput from '$lib/components/forms/CanopyInput.svelte';
 	import CircumferenceInput from '$lib/components/forms/CircumferenceInput.svelte';
-	import StateInput from '$lib/components/forms/StateInput.svelte';
-	import AddressInput from '$lib/components/forms/AddressInput.svelte';
-	import NotesInput from '$lib/components/forms/NotesInput.svelte';
-	import Button from '$lib/components/forms/Button.svelte';
 	import Header from '$lib/components/tree/Header.svelte';
+	import HeightInput from '$lib/components/forms/HeightInput.svelte';
+	import LocationInput from '$lib/components/forms/LocationInput.svelte';
+	import NotesInput from '$lib/components/forms/NotesInput.svelte';
+	import SpeciesInput from '$lib/components/forms/SpeciesInput.svelte';
+	import StateInput from '$lib/components/forms/StateInput.svelte';
 
 	const { data } = $props();
 	const treeId = data.id;
@@ -25,6 +26,7 @@
 	let treeState = $state(data.tree.state ?? '');
 	let address = $state('');
 	let notes = $state(data.tree.notes ?? '');
+	let location = $state([data.tree.lat, data.tree.lon]);
 
 	$effect(() => {
 		console.debug('Species changed to:', species);
@@ -77,6 +79,7 @@
 		<CanopyInput bind:value={diameter} />
 		<CircumferenceInput bind:value={circumference} />
 		<StateInput bind:value={treeState} />
+		<LocationInput value={location} />
 		<AddressInput bind:value={address} />
 		<NotesInput bind:value={notes} />
 
