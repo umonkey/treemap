@@ -140,7 +140,13 @@ export interface IGalleryImage {
 export interface IComment {
   id: string;
   added_at: number;
+  added_by: number;
   message: string;
+}
+
+export interface ICommentList {
+  comments: IComment[];
+  users: IUserInfo[];
 }
 
 export interface ISpecies {

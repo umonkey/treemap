@@ -4,11 +4,11 @@ use crate::services::{
     get_file_storage, CommentsService, Database, FileService, GoogleAuth, TokenService,
 };
 use crate::types::{
-    AddCommentRequest, AddFileRequest, AddTreeRequest, Error, FileRecord, FileStatusResponse,
-    FileUploadResponse, GetTreesRequest, GoogleAuthCallbackPayload, LoginGoogleRequest,
-    LoginResponse, MeResponse, MoveTreeRequest, NewTreeDefaultsResponse, PublicCommentInfo,
-    PublicSpeciesInfo, Result, TreeDetails, TreeList, TreeRecord, TreeStats, UpdateTreeRequest,
-    UserResponse,
+    AddCommentRequest, AddFileRequest, AddTreeRequest, CommentList, Error, FileRecord,
+    FileStatusResponse, FileUploadResponse, GetTreesRequest, GoogleAuthCallbackPayload,
+    LoginGoogleRequest, LoginResponse, MeResponse, MoveTreeRequest, NewTreeDefaultsResponse,
+    PublicCommentInfo, PublicSpeciesInfo, Result, TreeDetails, TreeList, TreeRecord, TreeStats,
+    UpdateTreeRequest, UserResponse,
 };
 use actix_web::HttpRequest;
 use log::info;
@@ -182,10 +182,14 @@ impl AppState {
         self.comments.add_comment(&req).await
     }
 
-    pub async fn get_comments(&self, tree_id: u64) -> Result<Vec<PublicCommentInfo>> {
+    pub async fn get_comments(&self, tree_id: u64) -> Result<CommentList> {
         let records = self.comments.get_comments(tree_id).await?;
         let comments = records.iter().map(PublicCommentInfo::from_record).collect();
-        Ok(comments)
+
+        let user_ids: Vec<u64> = records.iter().map(|r| r.added_by).collect();
+        let users = self.load_users(&user_ids).await?;
+
+        Ok(CommentList { comments, users })
     }
 
     pub async fn find_species(&self, query: &str) -> Result<Vec<PublicSpeciesInfo>> {
@@ -213,13 +217,19 @@ impl AppState {
         tree: &TreeRecord,
         files: &Vec<FileRecord>,
     ) -> Result<Vec<UserResponse>> {
-        let mut user_ids = HashSet::new();
+        let mut user_ids = Vec::new();
 
-        user_ids.insert(tree.added_by);
+        user_ids.push(tree.added_by);
 
         for file in files {
-            user_ids.insert(file.added_by);
+            user_ids.push(file.added_by);
         }
+
+        self.load_users(&user_ids).await
+    }
+
+    async fn load_users(&self, user_ids: &[u64]) -> Result<Vec<UserResponse>> {
+        let user_ids = HashSet::<u64>::from_iter(user_ids.iter().copied());
 
         let mut users = Vec::new();
 

@@ -15,9 +15,9 @@ export const useComments = (tree_id: string) => {
 
     try {
       const comments = await treeMapService.getComments(tree_id);
-      console.debug(`Fetched ${comments.length} comments for tree ${tree_id}.`);
+      console.debug(`Fetched ${comments.comments.length} comments for tree ${tree_id}.`);
 
-      setComments(comments);
+      setComments(comments.comments);
     } catch (e) {
       console.error("Error fetching comments:", e);
       setError("Error loading comments, please try again later.");

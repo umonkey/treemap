@@ -1,8 +1,7 @@
+use crate::services::AppState;
+use crate::types::{CommentList, Result};
 use actix_web::{get, web::Data, web::Json, web::Path};
 use serde::Deserialize;
-
-use crate::services::AppState;
-use crate::types::{PublicCommentInfo, Result};
 
 #[derive(Debug, Deserialize)]
 pub struct PathInfo {
@@ -13,7 +12,7 @@ pub struct PathInfo {
 pub async fn get_comments(
     state: Data<AppState>,
     path: Path<PathInfo>,
-) -> Result<Json<Vec<PublicCommentInfo>>> {
+) -> Result<Json<CommentList>> {
     let comments = state.get_comments(path.id).await?;
     Ok(Json(comments))
 }

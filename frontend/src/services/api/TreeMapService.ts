@@ -4,6 +4,7 @@ import {
   IAddTreesRequest,
   IApiError,
   IComment,
+  ICommentList,
   IFileStatusResponse,
   IFileUploadResponse,
   ILatLng,
@@ -172,7 +173,7 @@ export class TreeMapService {
     return await this.get(`/v1/files/${file_id}/status`);
   }
 
-  public async addComment(tree_id: string, text: string): Promise<IComment[]> {
+  public async addComment(tree_id: string, text: string): Promise<IComment> {
     return await this.post(`/v1/trees/${tree_id}/comments`, {
       message: text,
     }, {
@@ -180,8 +181,8 @@ export class TreeMapService {
     });
   }
 
-  public async getComments(tree_id: string): Promise<IComment[]> {
-    return await this.get<IComment[]>(`/v1/trees/${tree_id}/comments`);
+  public async getComments(tree_id: string): Promise<ICommentList> {
+    return await this.get<ICommentList>(`/v1/trees/${tree_id}/comments`);
   }
 
   public async searchSpecies(query: string): Promise<ISpecies[]> {

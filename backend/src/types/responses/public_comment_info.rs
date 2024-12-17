@@ -5,6 +5,7 @@ use serde::Serialize;
 pub struct PublicCommentInfo {
     pub id: String,
     pub added_at: u64,
+    pub added_by: String,
     pub message: String,
 }
 
@@ -13,6 +14,7 @@ impl PublicCommentInfo {
         Self {
             id: record.id.to_string(),
             added_at: record.added_at,
+            added_by: record.added_by.to_string(),
             message: record.message.clone(),
         }
     }
