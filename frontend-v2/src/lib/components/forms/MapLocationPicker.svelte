@@ -10,7 +10,7 @@
 </script>
 
 <div class="mapContainer">
-	<Map {center} crosshair={true} onMove={handleMove} />
+	<Map {center} zoom={19} crosshair={true} onMove={handleMove} />
 </div>
 
 <style>

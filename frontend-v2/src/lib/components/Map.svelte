@@ -14,7 +14,7 @@
 		onMove = () => {},
 		className = 'default',
 		marker = undefined,
-		zoom,
+		zoom = 15,
 		searchQuery = undefined,
 		crosshair = false
 	} = $props();
@@ -22,12 +22,10 @@
 	let map: Map;
 	let L;
 
-	console.debug(`[map] center=${center}, zoom=${zoom} search=${searchQuery}`);
-
 	onMount(async () => {
 		L = await import('leaflet');
 
-		map = L.map('map').setView(center, zoom ?? 15);
+		map = L.map('map').setView(center, zoom);
 
 		addLayerSelection(map);
 

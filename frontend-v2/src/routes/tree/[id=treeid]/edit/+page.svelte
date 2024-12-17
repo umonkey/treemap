@@ -34,7 +34,9 @@
 				diameter: parseFloat(diameter),
 				circumference: parseFloat(circumference),
 				state: treeState,
-				notes
+				notes,
+				lat: location[0],
+				lon: location[1]
 			})
 			.then((res) => {
 				if (res.status >= 200 && res.status < 400) {
