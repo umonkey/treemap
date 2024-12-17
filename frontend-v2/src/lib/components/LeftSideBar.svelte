@@ -1,13 +1,44 @@
+<script lang="ts">
+	import BellIcon from '$lib/icons/BellIcon.svelte';
+	import HomeIcon from '$lib/icons/HomeIcon.svelte';
+	import MapIcon from '$lib/icons/MapIcon.svelte';
+	import SearchIcon from '$lib/icons/SearchIcon.svelte';
+	import UserIcon from '$lib/icons/UserIcon.svelte';
+</script>
+
 <aside class="left">
-	<div class="meta">
-		<a href="/">Feedback</a>
-		<span>&middot;</span>
-		<a href="/">Privacy</a>
-		<span>&middot;</span>
-		<a href="/">Terms</a>
-		<span>&middot;</span>
-		<a href="/">Help</a>
-	</div>
+	<ul>
+		<li>
+			<a href="/">
+				<span class="icon"><HomeIcon /></span>
+				<span>Home</span>
+			</a>
+		</li>
+		<li>
+			<a href="/search">
+				<span class="icon"><SearchIcon /></span>
+				<span>Search</span>
+			</a>
+		</li>
+		<li>
+			<a href="/map">
+				<span class="icon"><MapIcon /></span>
+				<span>Explore Map</span>
+			</a>
+		</li>
+		<li>
+			<a href="/updates">
+				<span class="icon"><BellIcon /></span>
+				<span>Recent updates</span>
+			</a>
+		</li>
+		<li>
+			<a href="/profile">
+				<span class="icon"><UserIcon /></span>
+				<span>Profile</span>
+			</a>
+		</li>
+	</ul>
 </aside>
 
 <style>
@@ -20,11 +51,32 @@
 		box-sizing: border-box;
 		border-right: 1px solid var(--sep-color);
 
-		text-align: center;
+		text-align: left;
+		font-size: 18px;
+
+		color: var(--text-color);
 	}
 
-	.meta {
-		font-size: 14px;
+	ul {
+		list-style-type: none;
+	}
+
+	a {
+		display: flex;
+		flex-direction: row;
+		gap: var(--gap);
+		line-height: 24px;
+		color: inherit;
+		text-decoration: none;
+		padding: 10px 0;
+		margin-bottom: 10px;
+	}
+
+	.icon {
+		flex-basis: 30px;
+		flex-shrink: 0;
+		flex-grow: 0;
+		height: 24px;
 	}
 
 	@media (max-width: 400px) {
