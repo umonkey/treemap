@@ -1,7 +1,8 @@
 <script lang="ts">
-	const { value, hint = undefined } = $props();
 	import MapIcon from '$lib/icons/MapIcon.svelte';
 	import MapLocationPicker from '$lib/components/forms/MapLocationPicker.svelte';
+
+	const { value, hint = undefined } = $props();
 
 	let showMap = $state(false);
 
@@ -24,7 +25,7 @@
 		</div>
 
 		{#if showMap}
-			<MapLocationPicker />
+			<MapLocationPicker center={value} />
 		{/if}
 	</label>
 

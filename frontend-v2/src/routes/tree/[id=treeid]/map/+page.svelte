@@ -18,4 +18,14 @@
 <Tabs tree={tree.id} active="map" />
 <TreeMenu id={tree.id} />
 
-<Map center={[tree.lat, tree.lon]} marker={[tree.lat, tree.lon]} zoom={18} className="treeTab" />
+<div class="mapContainer">
+	<Map center={[tree.lat, tree.lon]} marker={[tree.lat, tree.lon]} zoom={18} className="treeTab" />
+</div>
+
+<style>
+	@media (max-width: 480px) {
+		.mapContainer {
+			height: calc(100vh - 185px);
+		}
+	}
+</style>

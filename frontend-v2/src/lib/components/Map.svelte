@@ -61,18 +61,9 @@
 
 <style>
 	#map {
-		height: calc(100vh - 41px);
-		z-index: var(--z-map);
-	}
-
-	@media (max-width: 480px) {
-		#map {
-			height: calc(100vh - 91px);
-		}
-
-		#map.treeTab {
-			height: calc(100vh - 185px);
-		}
+		height: 100%;
+		width: 100%;
+		z-index: 1;
 	}
 
 	@media (prefers-color-scheme: dark) {
