@@ -1,18 +1,23 @@
 <script lang="ts">
+	import HelpButton from '$lib/components/forms/HelpButton.svelte';
+
 	export let value = '';
 </script>
 
 <div class="input">
 	<label>
 		<span>State</span>
-		<select bind:value>
-			<option value="">(unknown)</option>
-			<option value="healthy">healthy</option>
-			<option value="sick">sick</option>
-			<option value="deformed">deformed</option>
-			<option value="gone">gone</option>
-			<option value="stomp">stomp</option>
-		</select>
+		<div class="group">
+			<select bind:value>
+				<option value="">(unknown)</option>
+				<option value="healthy">healthy</option>
+				<option value="sick">sick</option>
+				<option value="deformed">deformed</option>
+				<option value="gone">gone</option>
+				<option value="stomp">stomp</option>
+			</select>
+			<HelpButton help="https://github.com/KanachYerevan/kb/wiki/Understanding-tree-state" />
+		</div>
 	</label>
 </div>
 
@@ -39,5 +44,11 @@
 		color: var(--form-color);
 		outline: none;
 		line-height: 1.25em;
+	}
+
+	.group {
+		display: flex;
+		flex-direction: row;
+		gap: var(--gap);
 	}
 </style>

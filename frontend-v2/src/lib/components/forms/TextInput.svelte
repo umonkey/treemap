@@ -1,10 +1,13 @@
 <script lang="ts">
+	import HelpButton from '$lib/components/forms/HelpButton.svelte';
+
 	export let value = '';
 	export let placeholder = '';
 	export let label = '';
 	export let type = 'text';
 	export let multiline = false;
 	export let hint = '';
+	export let help = undefined;
 </script>
 
 <div class="input">
@@ -13,7 +16,10 @@
 		{#if multiline}
 			<textarea bind:value {placeholder}>{value}</textarea>
 		{:else}
-			<input class="form" {type} bind:value {placeholder} />
+			<div class="group">
+				<input class="form" {type} bind:value {placeholder} />
+				<HelpButton {help} />
+			</div>
 		{/if}
 	</label>
 
@@ -21,3 +27,11 @@
 		<div class="hint">{hint}</div>
 	{/if}
 </div>
+
+<style>
+	.group {
+		display: flex;
+		flex-direction: row;
+		gap: var(--gap);
+	}
+</style>
