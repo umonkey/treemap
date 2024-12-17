@@ -1,5 +1,5 @@
 import type {
-	IComment,
+	ICommentList,
 	ILoginResponse,
 	IMeResponse,
 	IMarkers,
@@ -125,7 +125,7 @@ export class ApiClient {
 		return await this.request('GET', `v1/species/search?${params}`);
 	}
 
-	public async getTreeComments(id: string): Promise<Response<IComment[]>> {
+	public async getTreeComments(id: string): Promise<Response<ICommentList>> {
 		return await this.request('GET', `v1/trees/${id}/comments`);
 	}
 
