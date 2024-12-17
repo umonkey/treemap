@@ -42,7 +42,7 @@
 <style>
 	.mapContainer {
 		height: calc(100vh - 41px);
-		z-index: var(--z-map);
+		z-index: var(--z-map-preview);
 		position: relative;
 	}
 
