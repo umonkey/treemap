@@ -43,6 +43,7 @@
 	.mapContainer {
 		height: calc(100vh - 41px);
 		z-index: var(--z-map);
+		position: relative;
 	}
 
 	@media (max-width: 480px) {
