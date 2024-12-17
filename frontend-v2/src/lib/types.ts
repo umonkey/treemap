@@ -61,3 +61,8 @@ export interface IMeResponse {
 	name: string;
 	picture: string;
 }
+
+export interface ISpecies {
+	name: string;
+	local: string;
+}

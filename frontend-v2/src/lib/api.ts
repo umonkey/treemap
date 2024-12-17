@@ -2,6 +2,7 @@ import type {
 	ILoginResponse,
 	IMeResponse,
 	IMarkers,
+	ISpecies,
 	IStats,
 	ITree,
 	ITreeUpdatePayload
@@ -116,6 +117,11 @@ export class ApiClient {
 			body,
 			headers
 		});
+	}
+
+	public async searchSpecies(query: string): Promise<Response<ISpecies>> {
+		const params = new URLSearchParams({ query });
+		return await this.request('GET', `v1/species/search?${params}`);
 	}
 
 	/**

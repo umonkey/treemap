@@ -5,7 +5,6 @@ Alternative icon packs:
 
 Blockers:
 
-- Edit: species selection.
 - Edit: species history.
 - Add a new tree.
 - Profile: hide picture.
