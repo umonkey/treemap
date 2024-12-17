@@ -1,13 +1,15 @@
 <aside class="right">
-	<div class="meta">
-		<a href="/">Feedback</a>
-		<span>&middot;</span>
-		<a href="/">Privacy</a>
-		<span>&middot;</span>
-		<a href="/">Terms</a>
-		<span>&middot;</span>
-		<a href="/">Help</a>
-	</div>
+	{#if false}
+		<div class="meta">
+			<a href="/">Feedback</a>
+			<span>&middot;</span>
+			<a href="/">Privacy</a>
+			<span>&middot;</span>
+			<a href="/">Terms</a>
+			<span>&middot;</span>
+			<a href="/">Help</a>
+		</div>
+	{/if}
 </aside>
 
 <style>
