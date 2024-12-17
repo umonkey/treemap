@@ -34,6 +34,20 @@
 
 <Header {title} />
 
-<Map center={$mapCenter} zoom={$mapZoom} {onChange} {onMove} {searchQuery} />
+<div class="mapContainer">
+	<Map center={$mapCenter} zoom={$mapZoom} {onChange} {onMove} {searchQuery} />
+	<MapPreview tree={selectedTree} onClose={onClosePreview} />
+</div>
 
-<MapPreview tree={selectedTree} onClose={onClosePreview} />
+<style>
+	.mapContainer {
+		height: calc(100vh - 41px);
+		z-index: var(--z-map);
+	}
+
+	@media (max-width: 480px) {
+		.mapContainer {
+			height: calc(100vh - 91px);
+		}
+	}
+</style>
