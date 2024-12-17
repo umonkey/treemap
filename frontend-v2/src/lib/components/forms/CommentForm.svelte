@@ -16,9 +16,12 @@
 
 {#if $isAuthenticated}
 	<p>Would you like to add a comment?</p>
-	<CommentInput bind:value={message} />
-	<div class="buttons">
-		<Button onClick={onButtonClicked} label="Submit comment" disabled={!message} />
+	<div class="form">
+		<CommentInput bind:value={message} />
+
+		<div class="buttons">
+			<Button onClick={onButtonClicked} label="Submit comment" disabled={!message} />
+		</div>
 	</div>
 {:else}
 	<p>You need to be authenticated to add comments.</p>
