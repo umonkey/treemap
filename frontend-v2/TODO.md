@@ -27,4 +27,8 @@ Enhancements:
 - Map: jump to self.
 - Translation.
 - Tree: manage photos.
-- Glogal comment form.
+- Glogal comment list.
+
+Features:
+
+- Get street address using Nominatim, e.g.: https://nominatim.openstreetmap.org/reverse?format=json&lat=40.1847936&lon=44.5142039&zoom=18&addressdetails=1
