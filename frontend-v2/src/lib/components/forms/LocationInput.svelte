@@ -48,7 +48,7 @@
 	button {
 		background: transparent;
 		border: none;
-		color: var(--text-color);
+		color: var(--icon-color-secondary);
 		width: 30px;
 		display: block;
 		cursor: pointer;
