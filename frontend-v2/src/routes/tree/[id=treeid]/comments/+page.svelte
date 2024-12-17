@@ -9,9 +9,11 @@
 	import Title from '$lib/components/tree/Title.svelte';
 	import TreeMenu from '$lib/components/tree/Menu.svelte';
 	import CommentForm from '$lib/components/forms/CommentForm.svelte';
+	import Comment from '$lib/components/tree/Comment.svelte';
 
 	const { data } = $props();
 	const tree = data.tree;
+	const comments = data.comments;
 
 	const onSubmit = (message: string) => {
 		apiClient
@@ -42,7 +44,14 @@
 <TreeMenu id={tree.id} />
 
 <div class="container">
-	<p>No comments for this tree yet.</p>
+	{#if comments.length > 0}
+		{#each comments as comment}
+			<Comment {comment} />
+		{/each}
+	{:else}
+		<p>No comments for this tree yet.</p>
+	{/if}
+
 	<CommentForm {onSubmit} />
 </div>
 
