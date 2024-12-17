@@ -23,6 +23,10 @@
 </div>
 
 <style>
+	.mapContainer {
+		position: relative;
+	}
+
 	@media (max-width: 480px) {
 		.mapContainer {
 			height: calc(100vh - 185px);

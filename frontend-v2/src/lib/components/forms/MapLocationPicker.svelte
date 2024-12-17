@@ -1,18 +1,24 @@
 <script lang="ts">
 	import Map from '$lib/components/Map.svelte';
+	import { LatLng } from 'leaflet';
 
-	const { center } = $props();
+	const { center, onMove } = $props();
+
+	const handleMove = (center: LatLng) => {
+		onMove([center.lat, center.lng]);
+	};
 </script>
 
-<div class="map">
-	<Map {center} />
+<div class="mapContainer">
+	<Map {center} crosshair={true} onMove={handleMove} />
 </div>
 
 <style>
-	.map {
+	.mapContainer {
 		background-color: var(--form-background);
 		width: 100%;
 		aspect-ratio: 4/3;
 		margin: var(--gap) 0;
+		position: relative;
 	}
 </style>

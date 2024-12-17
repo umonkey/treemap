@@ -15,7 +15,8 @@
 		className = 'default',
 		marker = undefined,
 		zoom,
-		searchQuery = undefined
+		searchQuery = undefined,
+		crosshair = false
 	} = $props();
 
 	let map: Map;
@@ -59,6 +60,10 @@
 
 <div id="map" class={className}></div>
 
+{#if crosshair}
+	<img src="/icons/crosshair.svg" class="crosshair" alt="" />
+{/if}
+
 <style>
 	#map {
 		height: 100%;
@@ -70,5 +75,15 @@
 		#map {
 			background-color: #000;
 		}
+	}
+
+	.crosshair {
+		width: 30px;
+		height: 30px;
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		z-index: 50;
+		transform: translate(-50%, -50%);
 	}
 </style>

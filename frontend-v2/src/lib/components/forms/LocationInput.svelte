@@ -2,16 +2,20 @@
 	import MapIcon from '$lib/icons/MapIcon.svelte';
 	import MapLocationPicker from '$lib/components/forms/MapLocationPicker.svelte';
 
-	const { value, hint = undefined } = $props();
+	let { value = $bindable([]), hint = undefined } = $props();
 
 	let showMap = $state(false);
 
 	const formatLocation = (value: number[]): string => {
-		return value.join(', ');
+		return `${value[0]}, ${value[1]}`;
 	};
 
 	const toggleMap = () => {
 		showMap = !showMap;
+	};
+
+	const handleMove = (center: number[]) => {
+		value = center;
 	};
 </script>
 
@@ -25,7 +29,7 @@
 		</div>
 
 		{#if showMap}
-			<MapLocationPicker center={value} />
+			<MapLocationPicker center={value} onMove={handleMove} />
 		{/if}
 	</label>
 
