@@ -1,4 +1,5 @@
 import type {
+	IComment,
 	ILoginResponse,
 	IMeResponse,
 	IMarkers,
@@ -122,6 +123,10 @@ export class ApiClient {
 	public async searchSpecies(query: string): Promise<Response<ISpecies>> {
 		const params = new URLSearchParams({ query });
 		return await this.request('GET', `v1/species/search?${params}`);
+	}
+
+	public async getTreeComments(id: string): Promise<Response<IComment[]>> {
+		return await this.request('GET', `v1/trees/${id}/comments`);
 	}
 
 	/**
