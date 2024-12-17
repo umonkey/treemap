@@ -27,3 +27,4 @@ Enhancements:
 - Map: jump to self.
 - Translation.
 - Tree: manage photos.
+- Glogal comment form.
