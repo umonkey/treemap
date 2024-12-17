@@ -23,6 +23,15 @@
 	.preview {
 		padding: var(--gap);
 		line-height: 1.5em;
+		z-index: var(--z-map-preview);
+
+		width: 100%;
+		box-sizing: border-box;
+		background-color: var(--form-background);
+		border-top-left-radius: 8px;
+		border-top-right-radius: 8px;
+
+		padding: var(--gap);
 	}
 
 	.header {
@@ -53,16 +62,14 @@
 		.preview {
 			position: fixed;
 			bottom: 0px;
+		}
+	}
 
-			z-index: var(--z-map-preview);
-
-			width: 100%;
-			box-sizing: border-box;
-			background-color: var(--form-background);
-			border-top-left-radius: 8px;
-			border-top-right-radius: 8px;
-
-			padding: var(--gap);
+	@media (min-width: 481px) {
+		.preview {
+			position: absolute;
+			bottom: 0;
+			left: 0;
 		}
 	}
 </style>
