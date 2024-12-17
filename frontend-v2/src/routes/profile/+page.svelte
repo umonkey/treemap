@@ -29,8 +29,9 @@
 
 <style>
 	img.header {
+		display: block;
+		position: relative;
 		width: 100%;
-		height: 40vw;
 		object-position: center;
 		object-fit: cover;
 		z-index: 1;
@@ -38,6 +39,8 @@
 
 	.container {
 		padding: 0 var(--gap);
+		position: relative;
+		z-index: 2;
 
 		&.signedIn {
 			margin-top: -45px;
@@ -48,6 +51,8 @@
 		width: 90px;
 		height: 90px;
 		border-radius: 50%;
+		background-color: #000;
+		color: transparent; /* hide alt */
 		display: block;
 		box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 1);
 		z-index: 2;
@@ -66,5 +71,17 @@
 
 	.actions {
 		margin-top: var(--gap);
+	}
+
+	@media (max-width: 480px) {
+		img.header {
+			height: 40vw;
+		}
+	}
+
+	@media (min-width: 481px) {
+		img.header {
+			height: 200px;
+		}
 	}
 </style>
