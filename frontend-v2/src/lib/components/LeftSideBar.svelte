@@ -2,6 +2,7 @@
 	import BellIcon from '$lib/icons/BellIcon.svelte';
 	import HomeIcon from '$lib/icons/HomeIcon.svelte';
 	import MapIcon from '$lib/icons/MapIcon.svelte';
+	import PlusIcon from '$lib/icons/PlusIcon.svelte';
 	import SearchIcon from '$lib/icons/SearchIcon.svelte';
 	import UserIcon from '$lib/icons/UserIcon.svelte';
 </script>
@@ -36,6 +37,12 @@
 			<a href="/profile">
 				<span class="icon"><UserIcon /></span>
 				<span>Profile</span>
+			</a>
+		</li>
+		<li>
+			<a href="/add">
+				<span class="icon"><PlusIcon /></span>
+				<span>Add a tree</span>
 			</a>
 		</li>
 	</ul>

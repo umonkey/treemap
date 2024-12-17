@@ -4,6 +4,7 @@
 	import MapIcon from '$lib/icons/MapIcon.svelte';
 	import SearchIcon from '$lib/icons/SearchIcon.svelte';
 	import UserIcon from '$lib/icons/UserIcon.svelte';
+	import MobileAddButton from '$lib/components/MobileAddButton.svelte';
 	import { isAuthenticated, authState } from '$lib/stores/auth';
 </script>
 
@@ -22,6 +23,8 @@
 		</div></a
 	>
 </nav>
+
+<MobileAddButton />
 
 <style>
 	nav {
@@ -65,7 +68,7 @@
 		border-radius: 50%;
 	}
 
-	@media (min-width: 400px) {
+	@media (min-width: 480px) {
 		nav {
 			display: none;
 		}
