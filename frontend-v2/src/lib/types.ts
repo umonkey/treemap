@@ -27,6 +27,7 @@ export interface ITree {
 	added_at: number;
 	updated_at: number;
 	added_by: string;
+	year?: number | null;
 	files: ITreeFile[];
 	users: IUser[];
 }

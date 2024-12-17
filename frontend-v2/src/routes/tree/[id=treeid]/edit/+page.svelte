@@ -14,6 +14,7 @@
 	import NotesInput from '$lib/components/forms/NotesInput.svelte';
 	import SpeciesInput from '$lib/components/forms/SpeciesInput.svelte';
 	import StateInput from '$lib/components/forms/StateInput.svelte';
+	import YearInput from '$lib/components/forms/YearInput.svelte';
 
 	const { data } = $props();
 	const treeId = data.id;
@@ -25,18 +26,33 @@
 	let treeState = $state(data.tree.state ?? '');
 	let notes = $state(data.tree.notes ?? '');
 	let location = $state([data.tree.lat, data.tree.lon]);
+	let year = $state(data.tree.year ?? '');
+
+	const numeric = (value: string): number | null => {
+		if (value === '') {
+			return null;
+		}
+
+		if (value === '0') {
+			return null;
+		}
+
+		const num = parseFloat(value);
+		return isNaN(num) ? null : num;
+	};
 
 	const onSave = () => {
 		apiClient
 			.updateTree(treeId, {
 				species,
-				height: parseFloat(height),
-				diameter: parseFloat(diameter),
-				circumference: parseFloat(circumference),
+				height: numeric(height),
+				diameter: numeric(diameter),
+				circumference: numeric(circumference),
 				state: treeState,
 				notes,
 				lat: location[0],
-				lon: location[1]
+				lon: location[1],
+				year: numeric(year)
 			})
 			.then((res) => {
 				if (res.status >= 200 && res.status < 400) {
@@ -70,6 +86,7 @@
 		<CanopyInput bind:value={diameter} />
 		<CircumferenceInput bind:value={circumference} />
 		<StateInput bind:value={treeState} />
+		<YearInput bind:value={year} />
 		<LocationInput bind:value={location} />
 		<NotesInput bind:value={notes} />
 
