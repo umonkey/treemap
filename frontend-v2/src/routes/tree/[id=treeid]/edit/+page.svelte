@@ -79,7 +79,7 @@
 		<CanopyInput bind:value={diameter} />
 		<CircumferenceInput bind:value={circumference} />
 		<StateInput bind:value={treeState} />
-		<LocationInput value={location} />
+		<LocationInput bind:value={location} />
 		<AddressInput bind:value={address} />
 		<NotesInput bind:value={notes} />
 
