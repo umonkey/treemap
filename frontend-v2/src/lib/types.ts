@@ -66,3 +66,10 @@ export interface ISpecies {
 	name: string;
 	local: string;
 }
+
+export interface IComment {
+	id: string;
+	added_at: number;
+	added_by: string;
+	message: string;
+}
