@@ -73,3 +73,8 @@ export interface IComment {
 	added_by: string;
 	message: string;
 }
+
+export interface ICommentList {
+	comments: IComment[];
+	users: IUser[];
+}

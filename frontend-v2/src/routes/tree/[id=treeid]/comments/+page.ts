@@ -23,7 +23,9 @@ const loadComments = async (id: string): Promise<IComment[]> => {
 		error(404);
 	}
 
-	return res.data;
+	addUsers(res.data.users);
+
+	return res.data.comments;
 };
 
 export const load: Load = async ({
