@@ -32,4 +32,10 @@
 			height: calc(100vh - 185px);
 		}
 	}
+
+	@media (min-width: 481px) {
+		.mapContainer {
+			height: calc(100vh - 41px);
+		}
+	}
 </style>
