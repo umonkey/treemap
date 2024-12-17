@@ -8,4 +8,5 @@
 	bind:value
 	type="number"
 	hint="Measure at chest level, aka 120 cm from the ground."
+	help="https://github.com/KanachYerevan/kb/wiki/Measuring-trunk-circumference"
 />

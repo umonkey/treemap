@@ -3,4 +3,9 @@
 	export let value = '';
 </script>
 
-<TextInput label="Canopy diameter, m" bind:value type="number" />
+<TextInput
+	label="Canopy diameter, m"
+	bind:value
+	type="number"
+	help="https://github.com/KanachYerevan/kb/wiki/Measuring-tree-crown"
+/>
