@@ -1,7 +1,7 @@
 button.button {
 	background-color: var(--form-border);
 	border: 1px solid var(--form-border);
-	color: var(--form-color);
+	color: var(--form-background);
 	outline: none;
 	padding: 0.5rem 1rem;
 	cursor: pointer;
