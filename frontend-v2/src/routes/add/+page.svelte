@@ -9,7 +9,7 @@
 </div>
 
 <style>
-.container {
-	padding: 0 var(--gap);
-}
+	.container {
+		padding: 0 var(--gap);
+	}
 </style>
