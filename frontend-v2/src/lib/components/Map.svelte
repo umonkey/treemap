@@ -17,7 +17,8 @@
 		marker = undefined,
 		zoom = 15,
 		searchQuery = undefined,
-		crosshair = false
+		crosshair = false,
+		canAdd = false
 	} = $props();
 
 	let map: Map;
@@ -29,7 +30,10 @@
 		map = L.map('map').setView(center, zoom);
 
 		addLayerSelection(map);
-		addTreeButton(map);
+
+		if (canAdd) {
+			addTreeButton(map);
+		}
 
 		map.attributionControl.setPrefix('');
 
