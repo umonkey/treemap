@@ -19,7 +19,13 @@
 <TreeMenu id={tree.id} />
 
 <div class="mapContainer">
-	<Map center={[tree.lat, tree.lon]} marker={[tree.lat, tree.lon]} zoom={18} className="treeTab" />
+	<Map
+		center={[tree.lat, tree.lon]}
+		marker={[tree.lat, tree.lon]}
+		zoom={18}
+		className="treeTab"
+		canAdd={true}
+	/>
 </div>
 
 <style>

@@ -35,7 +35,7 @@
 <Header {title} />
 
 <div class="mapContainer">
-	<Map center={$mapCenter} zoom={$mapZoom} {onChange} {onMove} {searchQuery} />
+	<Map center={$mapCenter} zoom={$mapZoom} {onChange} {onMove} {searchQuery} canAdd={true} />
 	<MapPreview tree={selectedTree} onClose={onClosePreview} />
 </div>
 
