@@ -1,4 +1,5 @@
 import type {
+	IAddTreesRequest,
 	ICommentList,
 	ILoginResponse,
 	IMeResponse,
@@ -37,6 +38,11 @@ export class ApiClient {
 		return res;
 	}
 
+	public async getTreeDefaults(): Promise<Response<ITreeDefaults>> {
+		console.debug(`[api] Getting tree defaults`);
+		return await this.request('GET', 'v1/trees/defaults');
+	}
+
 	public async getStats(): Promise<Response<IStats>> {
 		console.debug(`[api] Getting stats`);
 		return await this.request('GET', 'v1/trees/stats');
@@ -70,6 +76,16 @@ export class ApiClient {
 		}
 
 		return await this.request('GET', 'v1/trees?' + params.toString());
+	}
+
+	public async addTree(props: IAddTreesRequest): Promise<Response<ITree>> {
+		return await this.request('POST', 'v1/trees', {
+			body: JSON.stringify(props),
+			headers: {
+				'Content-Type': 'application/json',
+				...this.getAuthHeaders()
+			}
+		});
 	}
 
 	public async loginWithGoogle(token: string): Promise<Response<ILoginResponse>> {

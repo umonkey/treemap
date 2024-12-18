@@ -2,7 +2,7 @@
 	import MapIcon from '$lib/icons/MapIcon.svelte';
 	import MapLocationPicker from '$lib/components/forms/MapLocationPicker.svelte';
 
-	let { value = $bindable([]), hint = undefined } = $props();
+	let { value = $bindable([]), hint = undefined, label = 'Location' } = $props();
 
 	let showMap = $state(false);
 
@@ -21,7 +21,7 @@
 
 <div class="input">
 	<label>
-		<span>Location</span>
+		<span>{label}</span>
 
 		<div class="group">
 			<input type="text" value={formatLocation(value)} />
