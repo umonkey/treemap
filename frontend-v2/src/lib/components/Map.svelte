@@ -3,6 +3,7 @@
 	import type { Map } from 'leaflet';
 	import type { ITree } from '$lib/types';
 	import { addLayerSelection } from '$lib/map/baseLayerSelector';
+	import { addTreeButton } from '$lib/map/addTreeButton';
 	import { Markers } from '$lib/map/markers';
 	import { onMount } from 'svelte';
 
@@ -28,6 +29,7 @@
 		map = L.map('map').setView(center, zoom);
 
 		addLayerSelection(map);
+		addTreeButton(map);
 
 		map.attributionControl.setPrefix('');
 
