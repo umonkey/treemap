@@ -79,3 +79,19 @@ export interface ICommentList {
 	comments: IComment[];
 	users: IUser[];
 }
+
+export interface ILatLon {
+	lat: number;
+	lon: number;
+}
+
+export interface IAddTreesRequest {
+	points: ILatLon[];
+	species: string;
+	notes: string | null;
+	height: number | null;
+	circumference: number | null;
+	diameter: number | null;
+	year: number | null;
+	state: string;
+}
