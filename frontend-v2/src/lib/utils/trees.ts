@@ -1,5 +1,13 @@
 import type { ITree } from '$lib/types';
 
+export const formatState = (value: string | null): string => {
+	if (!value) {
+		return 'unknown state';
+	}
+
+	return value;
+};
+
 export const shortDetails = (tree: ITree): string => {
 	const parts = [];
 
@@ -22,7 +30,7 @@ export const shortDetails = (tree: ITree): string => {
 	}
 
 	parts.push('·');
-	parts.push(tree.state);
+	parts.push(formatState(tree.state));
 
 	return parts.join(' ');
 };
@@ -66,4 +74,12 @@ export const formatCentimeters = (value: number | undefined | null): string => {
 	}
 
 	return `${Math.round(value * 100)} cm`;
+};
+
+export const formatSpecies = (value: string | null): string => {
+	if (!value) {
+		return 'Unknown species';
+	}
+
+	return value;
 };

@@ -1,8 +1,8 @@
-<script>
+<script lang="ts">
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
 	import GalleryPreview from '$lib/components/map/GalleryPreview.svelte';
 	import { routes } from '$lib/routes';
-	import { shortDetails } from '$lib/utils/trees';
+	import { shortDetails, formatSpecies } from '$lib/utils/trees';
 
 	export let tree;
 	export let onClose;
@@ -11,7 +11,9 @@
 {#if tree}
 	<div class="preview">
 		<div class="header">
-			<div class="title"><a href={routes.treeDetails(tree.id)}>{tree.species}</a></div>
+			<div class="title">
+				<a href={routes.treeDetails(tree.id)}>{formatSpecies(tree.species)}</a>
+			</div>
 			<button class="close" on:click={onClose}><CloseIcon /></button>
 		</div>
 		<div class="props">{shortDetails(tree)}</div>
