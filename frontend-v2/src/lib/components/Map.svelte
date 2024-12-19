@@ -4,6 +4,7 @@
 	import type { ITree } from '$lib/types';
 	import { addLayerSelection } from '$lib/map/baseLayerSelector';
 	import { addTreeButton } from '$lib/map/addTreeButton';
+	import { addResizeObserver } from '$lib/map/resizeObserver';
 	import { Markers } from '$lib/map/markers';
 	import { onMount } from 'svelte';
 
@@ -30,6 +31,7 @@
 		map = L.map('map').setView(center, zoom);
 
 		addLayerSelection(map);
+		addResizeObserver(map);
 
 		if (canAdd) {
 			addTreeButton(map);
