@@ -41,14 +41,14 @@
 
 <style>
 	.mapContainer {
-		height: calc(100vh - 41px);
+		height: calc(100dvh - 41px);
 		z-index: var(--z-map-preview);
 		position: relative;
 	}
 
 	@media (max-width: 480px) {
 		.mapContainer {
-			height: calc(100vh - 91px);
+			height: calc(100dvh - 91px);
 		}
 	}
 </style>

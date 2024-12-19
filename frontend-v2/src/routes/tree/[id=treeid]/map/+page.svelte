@@ -35,13 +35,13 @@
 
 	@media (max-width: 480px) {
 		.mapContainer {
-			height: calc(100vh - 185px);
+			height: calc(100dvh - 185px);
 		}
 	}
 
 	@media (min-width: 481px) {
 		.mapContainer {
-			height: calc(100vh - 41px);
+			height: calc(100dvh - 41px);
 		}
 	}
 </style>
