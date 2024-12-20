@@ -33,8 +33,13 @@ impl CommentsService {
         Ok(())
     }
 
-    pub async fn get_comments(&self, tree_id: u64) -> Result<Vec<CommentRecord>> {
+    pub async fn get_tree_comments(&self, tree_id: u64) -> Result<Vec<CommentRecord>> {
         let comments = self.db.find_comments_by_tree(tree_id).await?;
+        Ok(comments)
+    }
+
+    pub async fn get_recent_comments(&self, limit: u64) -> Result<Vec<CommentRecord>> {
+        let comments = self.db.find_recent_comments(limit).await?;
         Ok(comments)
     }
 }
@@ -79,7 +84,7 @@ mod tests {
             .expect("Error adding comment.");
 
         let comments = service
-            .get_comments(tree_id)
+            .get_tree_comments(tree_id)
             .await
             .expect("Error getting comments.");
 

@@ -45,6 +45,7 @@ pub trait Database {
 
     async fn add_comment(&self, comment: &CommentRecord) -> Result<()>;
     async fn find_comments_by_tree(&self, tree_id: u64) -> Result<Vec<CommentRecord>>;
+    async fn find_recent_comments(&self, count: u64) -> Result<Vec<CommentRecord>>;
 
     async fn find_species(&self, query: &str) -> Result<Vec<SpeciesRecord>>;
 

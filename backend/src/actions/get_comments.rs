@@ -1,18 +1,9 @@
 use crate::services::AppState;
 use crate::types::{CommentList, Result};
-use actix_web::{get, web::Data, web::Json, web::Path};
-use serde::Deserialize;
+use actix_web::{get, web::Data, web::Json};
 
-#[derive(Debug, Deserialize)]
-pub struct PathInfo {
-    pub id: u64,
-}
-
-#[get("/v1/trees/{id}/comments")]
-pub async fn get_comments(
-    state: Data<AppState>,
-    path: Path<PathInfo>,
-) -> Result<Json<CommentList>> {
-    let comments = state.get_comments(path.id).await?;
+#[get("/v1/comments")]
+pub async fn get_comments(state: Data<AppState>) -> Result<Json<CommentList>> {
+    let comments = state.get_recent_comments(100).await?;
     Ok(Json(comments))
 }

@@ -946,6 +946,36 @@ impl Database for SqliteDatabase {
         Ok(comments)
     }
 
+    async fn find_recent_comments(&self, count: u64) -> Result<Vec<CommentRecord>> {
+        let comments = self.pool.conn(move |conn| {
+            let mut stmt = match conn.prepare("SELECT id, tree_id, added_at, added_by, message FROM comments ORDER BY added_at DESC LIMIT ?") {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error preparing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut rows = stmt.query([count])?;
+            let mut comments: Vec<CommentRecord> = Vec::new();
+
+            while let Some(row) = rows.next()? {
+                comments.push(CommentRecord {
+                    id: row.get(0)?,
+                    tree_id: row.get(1)?,
+                    added_at: row.get(2)?,
+                    added_by: row.get(3)?,
+                    message: row.get(4)?,
+                });
+            }
+
+            Ok(comments)
+        }).await?;
+
+        Ok(comments)
+    }
+
     async fn find_species(&self, query: &str) -> Result<Vec<SpeciesRecord>> {
         let pattern = format!("%{}%", query.trim().to_lowercase());
 

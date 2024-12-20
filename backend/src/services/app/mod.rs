@@ -4,11 +4,11 @@ use crate::services::{
     get_file_storage, CommentsService, Database, FileService, GoogleAuth, TokenService,
 };
 use crate::types::{
-    AddCommentRequest, AddFileRequest, AddTreeRequest, CommentList, Error, FileRecord,
-    FileStatusResponse, FileUploadResponse, GetTreesRequest, GoogleAuthCallbackPayload,
+    AddCommentRequest, AddFileRequest, AddTreeRequest, CommentList, CommentRecord, Error,
+    FileRecord, FileStatusResponse, FileUploadResponse, GetTreesRequest, GoogleAuthCallbackPayload,
     LoginGoogleRequest, LoginResponse, MeResponse, MoveTreeRequest, NewTreeDefaultsResponse,
-    PublicCommentInfo, PublicSpeciesInfo, Result, TreeDetails, TreeList, TreeRecord, TreeStats,
-    UpdateTreeRequest, UserResponse,
+    PublicSpeciesInfo, Result, TreeDetails, TreeList, TreeRecord, TreeStats, UpdateTreeRequest,
+    UserRecord, UserResponse,
 };
 use actix_web::HttpRequest;
 use log::info;
@@ -182,14 +182,24 @@ impl AppState {
         self.comments.add_comment(&req).await
     }
 
-    pub async fn get_comments(&self, tree_id: u64) -> Result<CommentList> {
-        let records = self.comments.get_comments(tree_id).await?;
-        let comments = records.iter().map(PublicCommentInfo::from_record).collect();
+    pub async fn get_recent_comments(&self, limit: u64) -> Result<CommentList> {
+        let records = self.comments.get_recent_comments(limit).await?;
+        self.format_comment_list(&records).await
+    }
 
-        let user_ids: Vec<u64> = records.iter().map(|r| r.added_by).collect();
+    pub async fn get_tree_comments(&self, tree_id: u64) -> Result<CommentList> {
+        let records = self.comments.get_tree_comments(tree_id).await?;
+        self.format_comment_list(&records).await
+    }
+
+    async fn format_comment_list(&self, comments: &[CommentRecord]) -> Result<CommentList> {
+        let user_ids: Vec<u64> = comments.iter().map(|r| r.added_by).collect();
         let users = self.load_users(&user_ids).await?;
 
-        Ok(CommentList { comments, users })
+        let tree_ids: Vec<u64> = comments.iter().map(|r| r.tree_id).collect();
+        let trees = self.load_trees(&tree_ids).await?;
+
+        Ok(CommentList::from_records(comments, &users, &trees))
     }
 
     pub async fn find_species(&self, query: &str) -> Result<Vec<PublicSpeciesInfo>> {
@@ -225,20 +235,37 @@ impl AppState {
             user_ids.push(file.added_by);
         }
 
-        self.load_users(&user_ids).await
+        let users = self.load_users(&user_ids).await?;
+        let users = users.iter().map(UserResponse::from).collect();
+
+        Ok(users)
     }
 
-    async fn load_users(&self, user_ids: &[u64]) -> Result<Vec<UserResponse>> {
+    async fn load_users(&self, user_ids: &[u64]) -> Result<Vec<UserRecord>> {
         let user_ids = HashSet::<u64>::from_iter(user_ids.iter().copied());
 
         let mut users = Vec::new();
 
         for id in user_ids {
             if let Ok(Some(user)) = self.db.get_user(id).await {
-                users.push(UserResponse::from(user));
+                users.push(user);
             };
         }
 
         Ok(users)
+    }
+
+    async fn load_trees(&self, tree_ids: &[u64]) -> Result<Vec<TreeRecord>> {
+        let tree_ids = HashSet::<u64>::from_iter(tree_ids.iter().copied());
+
+        let mut trees = Vec::new();
+
+        for id in tree_ids {
+            if let Ok(Some(tree)) = self.db.get_tree(id).await {
+                trees.push(tree);
+            };
+        }
+
+        Ok(trees)
     }
 }
