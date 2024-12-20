@@ -145,6 +145,10 @@ export class ApiClient {
 		return await this.request('GET', `v1/trees/${id}/comments`);
 	}
 
+	public async getRecentComments(): Promise<Response<ICommentList>> {
+		return await this.request('GET', `v1/comments`);
+	}
+
 	/**
 	 * Send a raw request to the API.
 	 *

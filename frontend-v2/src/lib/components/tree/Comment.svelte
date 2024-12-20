@@ -12,7 +12,9 @@
 
 <div class="comment">
 	<blockquote>{comment.message}</blockquote>
-	<div class="meta">{date} · {user.name}</div>
+	<div class="meta">
+		{date} · {#if user}{user.name}{:else}unknown user{/if}
+	</div>
 </div>
 
 <style>

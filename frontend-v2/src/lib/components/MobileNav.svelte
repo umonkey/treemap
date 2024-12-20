@@ -5,13 +5,14 @@
 	import SearchIcon from '$lib/icons/SearchIcon.svelte';
 	import UserIcon from '$lib/icons/UserIcon.svelte';
 	import { isAuthenticated, authState } from '$lib/stores/auth';
+	import { routes } from '$lib/routes';
 </script>
 
 <nav class="mobile">
 	<a href="/"><div><HomeIcon /></div></a>
 	<a href="/search"><div><SearchIcon /></div></a>
 	<a href="/map"><div><MapIcon /></div></a>
-	<a href="/updates"><div><BellIcon /></div></a>
+	<a href={routes.comments()}><div><BellIcon /></div></a>
 	<a href="/profile"
 		><div>
 			{#if $isAuthenticated && $authState?.picture}
