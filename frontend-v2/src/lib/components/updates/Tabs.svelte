@@ -7,12 +7,12 @@
 	const tabs = [
 		{
 			id: 'new',
-			title: 'New Trees',
+			title: 'Added',
 			url: routes.newTrees()
 		},
 		{
 			id: 'changes',
-			title: 'Changes',
+			title: 'Edited',
 			url: routes.changedTrees()
 		},
 		{
