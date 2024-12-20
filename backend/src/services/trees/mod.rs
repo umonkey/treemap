@@ -5,13 +5,12 @@
  * to be able to track changes over time.
  */
 use log::debug;
-use std::collections::HashSet;
 use std::sync::Arc;
 
 use crate::services::Database;
 use crate::types::{
     AddTreeRequest, Error, GetTreesRequest, MoveTreeRequest, Result, SearchQuery, TreeList,
-    TreeRecord, TreeStats, UpdateTreeRequest, UserRecord,
+    TreeRecord, TreeStats, UpdateTreeRequest,
 };
 use crate::utils::{get_timestamp, get_unique_id};
 
@@ -127,15 +126,6 @@ impl Trees {
         Ok(TreeList::from_trees(trees))
     }
 
-    pub async fn get_new_trees(&self, count: u64, skip: u64) -> Result<TreeList> {
-        let trees = self.db.get_new_trees(count, skip).await?;
-        let users = self.get_trees_users(&trees).await?;
-
-        let list = TreeList::from_trees(trees).with_users(&users);
-
-        Ok(list)
-    }
-
     pub async fn get_tree(&self, id: u64) -> Result<TreeRecord> {
         debug!("Getting details for tree {}.", id);
 
@@ -168,24 +158,6 @@ impl Trees {
         }
 
         Some(value)
-    }
-
-    /**
-     * Get ids of users who created the trees, load those users from the database.
-     */
-    async fn get_trees_users(&self, trees: &[TreeRecord]) -> Result<Vec<UserRecord>> {
-        let ids = trees
-            .iter()
-            .map(|t| t.added_by)
-            .collect::<HashSet<u64>>()
-            .into_iter()
-            .collect::<Vec<u64>>();
-
-        debug!("Found user ids: {:?}", ids);
-
-        let users = self.db.get_users(&ids).await?;
-
-        Ok(users)
     }
 }
 

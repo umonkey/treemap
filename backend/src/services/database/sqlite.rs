@@ -1,3 +1,10 @@
+use crate::services::database::r#trait::Database;
+use crate::services::{Locatable, Locator};
+use crate::types::{
+    Bounds, CommentRecord, Error, FileRecord, OsmTreeRecord, QueueMessage, Result, SpeciesRecord,
+    TreeRecord, UserRecord,
+};
+use crate::utils::{get_sqlite_path, get_timestamp, get_unique_id};
 /**
  * Database client implementation for SQLite.
  *
@@ -12,13 +19,6 @@ use async_sqlite::{JournalMode, Pool, PoolBuilder};
 use async_trait::async_trait;
 use log::{debug, error, info};
 use std::cmp::Ordering;
-
-use crate::services::database::r#trait::Database;
-use crate::types::{
-    Bounds, CommentRecord, Error, FileRecord, OsmTreeRecord, QueueMessage, Result, SpeciesRecord,
-    TreeRecord, UserRecord,
-};
-use crate::utils::{get_sqlite_path, get_timestamp, get_unique_id};
 
 const SUGGEST_WINDOW: u64 = 3600 * 24; // 24 hours
 
@@ -243,6 +243,12 @@ impl SqliteDatabase {
     }
 }
 
+impl Locatable for SqliteDatabase {
+    fn create(_locator: &Locator) -> Result<Self> {
+        futures::executor::block_on(Self::new())
+    }
+}
+
 #[async_trait]
 impl Database for SqliteDatabase {
     async fn add_tree(&self, tree: &TreeRecord) -> Result<()> {
@@ -429,6 +435,38 @@ impl Database for SqliteDatabase {
     async fn get_new_trees(&self, count: u64, skip: u64) -> Result<Vec<TreeRecord>> {
         let trees = self.pool.conn(move |conn| {
             let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id FROM trees ORDER BY added_at DESC LIMIT ?, ?") {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error preparing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut rows = match stmt.query([skip, count]) {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error executing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut trees: Vec<TreeRecord> = Vec::new();
+
+            while let Some(row) = rows.next()? {
+                trees.push(Self::tree_from_row(row)?);
+            }
+
+            Ok(trees)
+        }).await?;
+
+        Ok(trees)
+    }
+
+    async fn get_updated_trees(&self, count: u64, skip: u64) -> Result<Vec<TreeRecord>> {
+        let trees = self.pool.conn(move |conn| {
+            let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id FROM trees WHERE added_at <> updated_at ORDER BY updated_at DESC LIMIT ?, ?") {
                 Ok(value) => value,
 
                 Err(e) => {

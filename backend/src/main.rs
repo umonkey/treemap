@@ -1,6 +1,7 @@
 mod actions;
 mod cli;
 mod config;
+mod handlers;
 mod services;
 mod types;
 mod utils;

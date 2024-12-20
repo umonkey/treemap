@@ -1,5 +1,7 @@
+use crate::handlers::*;
 use crate::services::database::get_database;
 use crate::services::trees::Trees;
+use crate::services::Locator;
 use crate::services::{
     get_file_storage, CommentsService, Database, FileService, GoogleAuth, TokenService,
 };
@@ -22,10 +24,14 @@ pub struct AppState {
     gauth: GoogleAuth,
     tokens: TokenService,
     trees: Trees,
+    pub get_new_trees_handler: Arc<GetNewTreesHandler>,
+    pub get_updated_trees_handler: Arc<GetUpdatedTreesHandler>,
 }
 
 impl AppState {
     pub async fn new() -> Result<Self> {
+        let locator = Locator::new();
+
         let db = get_database().await?;
         let token = TokenService::new();
         let storage = get_file_storage().await?;
@@ -37,6 +43,8 @@ impl AppState {
             gauth: GoogleAuth::new(&db, &token).await,
             tokens: token,
             trees: Trees::new(&db).await,
+            get_new_trees_handler: locator.get::<GetNewTreesHandler>()?,
+            get_updated_trees_handler: locator.get::<GetUpdatedTreesHandler>()?,
         })
     }
 
@@ -68,10 +76,6 @@ impl AppState {
         };
 
         Ok(UserResponse::from(record))
-    }
-
-    pub async fn get_new_trees(&self, count: u64, skip: u64) -> Result<TreeList> {
-        self.trees.get_new_trees(count, skip).await
     }
 
     pub async fn get_tree_defaults(&self, user_id: u64) -> Result<NewTreeDefaultsResponse> {

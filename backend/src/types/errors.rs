@@ -13,6 +13,7 @@ pub enum Error {
     BadImage,
     DatabaseConnect,
     DatabaseQuery,
+    DependencyLoad,
     EnvNotSet,
     FileDownload,
     FileNotFound,
@@ -47,6 +48,9 @@ impl Error {
             }
             Error::DatabaseQuery => {
                 r#"{"error":{"code":"DatabaseQuery","description":"There was a database error while processing your request."}}"#
+            }
+            Error::DependencyLoad => {
+                r#"{"error":{"code":"DependencyLoad","description":"Error loading a dependency."}}"#
             }
             Error::EnvNotSet => {
                 r#"{"error":{"code":"EnvNotSet","description":"Environment variable not set."}}"#
@@ -115,6 +119,7 @@ impl ResponseError for Error {
             Error::BadImage => StatusCode::BAD_REQUEST,
             Error::DatabaseConnect => StatusCode::INTERNAL_SERVER_ERROR,
             Error::DatabaseQuery => StatusCode::INTERNAL_SERVER_ERROR,
+            Error::DependencyLoad => StatusCode::INTERNAL_SERVER_ERROR,
             Error::EnvNotSet => StatusCode::INTERNAL_SERVER_ERROR,
             Error::FileDownload => StatusCode::NOT_FOUND,
             Error::FileNotFound => StatusCode::NOT_FOUND,
@@ -140,6 +145,7 @@ impl fmt::Display for Error {
             Error::BadImage => write!(f, "BadImage"),
             Error::DatabaseConnect => write!(f, "DatabaseConnect"),
             Error::DatabaseQuery => write!(f, "DatabaseQuery"),
+            Error::DependencyLoad => write!(f, "DependencyLoad"),
             Error::EnvNotSet => write!(f, "EnvNotSet"),
             Error::FileDownload => write!(f, "FileDownload"),
             Error::FileNotFound => write!(f, "FileNotFound"),
