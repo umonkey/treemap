@@ -85,7 +85,7 @@ export const formatCentimeters = (value: number | undefined | null): string => {
 };
 
 export const formatSpecies = (value: string | null): string => {
-	if (!value) {
+	if (!value || value === 'Unknown') {
 		return 'Unknown species';
 	}
 
