@@ -17,7 +17,6 @@
 	};
 
 	const handleLoad = () => {
-		console.debug('IMAGE LOADED');
 		img.style.opacity = '1';
 	};
 </script>

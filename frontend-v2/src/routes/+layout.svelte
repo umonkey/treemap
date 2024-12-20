@@ -9,6 +9,12 @@
 	import '$lib/styles/forms.css';
 
 	let { children } = $props();
+
+	window.addEventListener('beforeinstallprompt', (e) => {
+		e.preventDefault();
+		window.deferredPrompt = e;
+		alert('Please install the application.');
+	});
 </script>
 
 <div class="layout">
