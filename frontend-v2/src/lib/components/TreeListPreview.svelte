@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { getTree } from '$lib/stores/treeStore';
+	import { formatSpecies } from '$lib/utils/trees';
 	import { get } from 'svelte/store';
+	import { getTree } from '$lib/stores/treeStore';
 	import { routes } from '$lib/routes';
 
 	import LazyTreeThumbnail from '$lib/components/LazyTreeThumbnail.svelte';
@@ -17,7 +18,7 @@
 	</div>
 
 	<div class="species">
-		<strong>{tree.species}</strong>{#if tree.address}
+		<strong>{formatSpecies(tree.species)}</strong>{#if tree.address}
 			- {tree.address}{/if}
 	</div>
 </div>

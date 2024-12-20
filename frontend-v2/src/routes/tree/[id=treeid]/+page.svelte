@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { formatSpecies } from '$lib/utils/trees';
+
 	import Actions from '$lib/components/tree/Actions.svelte';
 	import Description from '$lib/components/tree/Description.svelte';
 	import Gallery from '$lib/components/tree/Gallery.svelte';
@@ -14,11 +16,11 @@
 </script>
 
 <svelte:head>
-	<title>{tree.species} - Details</title>
+	<title>{formatSpecies(tree.species)} - Details</title>
 </svelte:head>
 
 <Header title="Tree" />
-<Title title={tree.species} />
+<Title title={formatSpecies(tree.species)} />
 <Tabs tree={tree.id} active="details" />
 <Gallery files={tree.files} />
 <Actions tree={tree.id} />
