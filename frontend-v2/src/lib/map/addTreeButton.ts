@@ -36,6 +36,4 @@ export const addTreeButton = (map: Map) => {
 
 	const control = new L.Control.TreeButton();
 	control.addTo(map);
-
-	console.debug('ADDED', control);
 };
