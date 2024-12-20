@@ -25,7 +25,9 @@
 		<div class="address">
 			{#if tree.address}{tree.address}{:else}Unknown address{/if}
 		</div>
-		<div class="added">{date} &middot; {#if user}{user.name}{:else}Unknown user{/if}</div>
+		<div class="added">
+			{date} &middot; {#if user}{user.name}{:else}Unknown user{/if}
+		</div>
 	</div>
 </div>
 
