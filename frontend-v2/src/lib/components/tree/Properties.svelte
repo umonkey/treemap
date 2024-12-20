@@ -1,5 +1,5 @@
 <script>
-	import { formatMeters, formatCentimeters } from '$lib/utils/trees';
+	import { formatMeters, formatCentimeters, formatYear } from '$lib/utils/trees';
 
 	const { tree } = $props();
 </script>
@@ -23,7 +23,7 @@
 	</dl>
 	<dl>
 		<dt>Year</dt>
-		<dd>???</dd>
+		<dd>{formatYear(tree.year)}</dd>
 	</dl>
 </div>
 

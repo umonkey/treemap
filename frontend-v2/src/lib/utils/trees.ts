@@ -8,6 +8,14 @@ export const formatState = (value: string | null): string => {
 	return value;
 };
 
+export const formatYear = (value: number | null): string => {
+	if (!value) {
+		return 'no data';
+	}
+
+	return value;
+};
+
 export const shortDetails = (tree: ITree): string => {
 	const parts = [];
 
