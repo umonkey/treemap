@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { getTree } from '$lib/stores/treeStore';
 	import { get } from 'svelte/store';
+	import { routes } from '$lib/routes';
 
 	import LazyTreeThumbnail from '$lib/components/LazyTreeThumbnail.svelte';
 
@@ -10,7 +11,9 @@
 
 <div class="tree">
 	<div class="thumbnail">
-		<LazyTreeThumbnail {tree} />
+		<a href={routes.treeDetails(tree.id)}>
+			<LazyTreeThumbnail {tree} />
+		</a>
 	</div>
 
 	<div class="species">
