@@ -6,11 +6,9 @@ Alternative icon packs:
 Blockers:
 
 - Edit: species history.
-- Add a new tree.
 - Profile: hide picture.
 - Profile: change name.
 - Profile: hide name.
-- Nav: cache userpics.
 
 Enhancements:
 
@@ -27,6 +25,7 @@ Enhancements:
 - Translation.
 - Tree: manage photos.
 - Glogal comment list.
+- Nav: cache userpics.
 
 Features:
 
