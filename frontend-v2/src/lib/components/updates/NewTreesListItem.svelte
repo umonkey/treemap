@@ -4,23 +4,18 @@
 	import { getUser } from '$lib/stores/userStore';
 	import { routes } from '$lib/routes';
 
+	import LazyTreeThumbnail from '$lib/components/LazyTreeThumbnail.svelte';
+	import LazyImage from '$lib/components/LazyImage.svelte';
+
 	const { tree } = $props();
 
 	const user = get(getUser)(tree.added_by);
 	const date = formatDate(tree.added_at);
-
-	const thumbnail = (id: string | undefined): string => {
-		if (id) {
-			return routes.file(id);
-		}
-
-		return '/tree.jpg';
-	};
 </script>
 
 <div class="tree">
 	<a href={routes.treeDetails(tree.id)} class="thumbnail">
-		<img src={thumbnail(tree.thumbnail_id)} alt={tree.species} />
+		<LazyTreeThumbnail {tree} />
 	</a>
 
 	<div class="details">
@@ -37,7 +32,7 @@
 
 	<div class="userpic">
 		{#if user.picture}
-			<img class="userpic" src={user.picture} alt={user.name} />
+			<LazyImage src={routes.file(user.picture)} alt={user.name} fallback="/user.png" />
 		{/if}
 	</div>
 </div>
@@ -57,21 +52,8 @@
 		flex-grow: 0;
 	}
 
-	img {
-		width: 100%;
-		object-fit: cover;
-		object-position: center;
-		aspect-ratio: 1/1;
-		display: block;
-	}
-
 	.details {
 		line-height: 150%;
 		flex-grow: 1;
-	}
-
-	.userpic img {
-		border-radius: 50%;
-		overflow: hidden;
 	}
 </style>

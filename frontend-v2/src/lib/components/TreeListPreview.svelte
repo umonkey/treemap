@@ -1,22 +1,18 @@
 <script lang="ts">
-	import { routes } from '$lib/routes';
 	import { getTree } from '$lib/stores/treeStore';
 	import { get } from 'svelte/store';
 
+	import LazyTreeThumbnail from '$lib/components/LazyTreeThumbnail.svelte';
+
 	const { id } = $props();
 	const tree = get(getTree)(id);
-
-	const thumbnail = (id: string | undefined): string => {
-		if (id) {
-			return routes.file(id);
-		}
-
-		return '/tree.jpg';
-	};
 </script>
 
 <div class="tree">
-	<img src={thumbnail(tree.thumbnail_id)} alt={tree.species} />
+	<div class="thumbnail">
+		<LazyTreeThumbnail {tree} />
+	</div>
+
 	<div class="species">
 		<strong>{tree.species}</strong>{#if tree.address}
 			- {tree.address}{/if}
@@ -33,7 +29,7 @@
 		line-height: 50px;
 	}
 
-	img {
+	.thumbnail {
 		flex-basis: 50px;
 
 		width: 100%;

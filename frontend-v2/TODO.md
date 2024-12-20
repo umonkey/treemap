@@ -15,7 +15,6 @@ Enhancements:
 - Search bar on the map.
 - Meta hints on the map, total tree count etc.
 - Animated preview on the map.
-- Lazy image loading, fade in.
 - Phone body class.
 - Details: full screen photos.
 - Gallery: navigation buttons, left/right.
