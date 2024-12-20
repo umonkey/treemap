@@ -95,3 +95,8 @@ export interface IAddTreesRequest {
 	year: number | null;
 	state: string;
 }
+
+export interface ITreeList {
+	trees: ITree[];
+	users: IUser[];
+}
