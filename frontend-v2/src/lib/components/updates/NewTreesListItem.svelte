@@ -34,6 +34,12 @@
 		</div>
 		<div class="added">{date} &middot; {user.name}</div>
 	</div>
+
+	<div class="userpic">
+		{#if user.picture}
+			<img class="userpic" src={user.picture} alt={user.name} />
+		{/if}
+	</div>
 </div>
 
 <style>
@@ -44,7 +50,8 @@
 		margin-bottom: var(--gap);
 	}
 
-	.thumbnail {
+	.thumbnail,
+	.userpic {
 		flex-basis: 75px;
 		flex-shrink: 0;
 		flex-grow: 0;
@@ -60,5 +67,11 @@
 
 	.details {
 		line-height: 150%;
+		flex-grow: 1;
+	}
+
+	.userpic img {
+		border-radius: 50%;
+		overflow: hidden;
 	}
 </style>

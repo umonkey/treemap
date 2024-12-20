@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { routes } from '$lib/routes';
+
 	import BellIcon from '$lib/icons/BellIcon.svelte';
 	import HomeIcon from '$lib/icons/HomeIcon.svelte';
 	import MapIcon from '$lib/icons/MapIcon.svelte';
@@ -28,7 +30,7 @@
 			</a>
 		</li>
 		<li>
-			<a href="/updates">
+			<a href={routes.newTrees()}>
 				<span class="icon"><BellIcon /></span>
 				<span>Recent updates</span>
 			</a>
