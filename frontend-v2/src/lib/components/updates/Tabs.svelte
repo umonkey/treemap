@@ -11,6 +11,11 @@
 			url: routes.newTrees()
 		},
 		{
+			id: 'changes',
+			title: 'Changes',
+			url: routes.changedTrees()
+		},
+		{
 			id: 'comments',
 			title: 'Comments',
 			url: routes.comments()

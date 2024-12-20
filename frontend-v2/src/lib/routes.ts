@@ -1,5 +1,8 @@
 export const routes = {
+	changedTrees: () => '/updates/changes',
+	comments: () => '/updates/comments',
 	file: (id: string) => `https://yerevan.treemaps.app/v1/files/${id}.jpg`,
+	newTrees: () => '/updates/new',
 	search: '/search',
 	searchQuery: (query: string) => `/map?q=${query}`,
 	treeAdd: (lat: number, lng: number) => `/add?lat=${lat}&lng=${lng}`,
@@ -8,7 +11,5 @@ export const routes = {
 	treeEdit: (id: string) => `/tree/${id}/edit`,
 	treeHistory: (id: string) => `/tree/${id}/history`,
 	treeMap: (id: string) => `/tree/${id}/map`,
-	treeUploadPhotos: (id: string) => `/tree/${id}/upload`,
-	comments: () => '/updates/comments',
-	newTrees: () => '/updates/new'
+	treeUploadPhotos: (id: string) => `/tree/${id}/upload`
 };
