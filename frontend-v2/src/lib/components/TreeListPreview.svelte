@@ -11,7 +11,7 @@
 			return routes.file(id);
 		}
 
-		return '/icons/tree.png';
+		return '/tree.jpg';
 	};
 </script>
 
