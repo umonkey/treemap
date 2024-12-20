@@ -153,6 +153,10 @@ export class ApiClient {
 		return await this.request('GET', `v1/trees/new`);
 	}
 
+	public async getUpdatedTrees(): Promise<Response<ITreeList>> {
+		return await this.request('GET', `v1/trees/updated`);
+	}
+
 	/**
 	 * Send a raw request to the API.
 	 *

@@ -5,7 +5,6 @@
 	import { routes } from '$lib/routes';
 
 	import LazyTreeThumbnail from '$lib/components/LazyTreeThumbnail.svelte';
-	import LazyImage from '$lib/components/LazyImage.svelte';
 
 	const { tree } = $props();
 
@@ -29,12 +28,6 @@
 		</div>
 		<div class="added">{date} &middot; {user.name}</div>
 	</div>
-
-	<div class="userpic">
-		{#if user.picture}
-			<LazyImage src={routes.file(user.picture)} alt={user.name} fallback="/user.png" />
-		{/if}
-	</div>
 </div>
 
 <style>
@@ -45,8 +38,7 @@
 		margin-bottom: var(--gap);
 	}
 
-	.thumbnail,
-	.userpic {
+	.thumbnail {
 		flex-basis: 75px;
 		flex-shrink: 0;
 		flex-grow: 0;

@@ -9,10 +9,10 @@ export const load: Load = async (): Promise<{
 	trees: ITree[];
 	users: IUser[];
 }> => {
-	const res = await apiClient.getNewTrees();
+	const res = await apiClient.getUpdatedTrees();
 
 	if (res.status !== 200) {
-		error('Failed to load new trees');
+		error('Failed to load changes');
 	}
 
 	addTrees(res.data.trees);
