@@ -3,7 +3,7 @@
  */
 use serde::Serialize;
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Default, Serialize)]
 pub struct TreeRecord {
     pub id: u64,
     pub osm_id: Option<u64>,
@@ -19,4 +19,5 @@ pub struct TreeRecord {
     pub updated_at: u64,
     pub added_by: u64,
     pub thumbnail_id: Option<u64>,
+    pub year: Option<i64>,
 }

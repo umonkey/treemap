@@ -13,6 +13,7 @@ struct RequestPayload {
     pub circumference: Option<f64>,
     pub diameter: Option<f64>,
     pub state: String,
+    pub year: Option<i64>,
 }
 
 #[post("/v1/trees")]
@@ -32,6 +33,7 @@ pub async fn add_trees(
         diameter: payload.diameter,
         state: payload.state.clone(),
         user_id,
+        year: payload.year,
     };
 
     let trees = state.add_trees(req).await?;

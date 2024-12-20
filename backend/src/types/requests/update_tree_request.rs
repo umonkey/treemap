@@ -12,4 +12,5 @@ pub struct UpdateTreeRequest {
     pub diameter: Option<f64>,
     pub state: Option<String>,
     pub user_id: u64,
+    pub year: Option<i64>,
 }

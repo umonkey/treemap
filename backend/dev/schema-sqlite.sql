@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS trees (
     `updated_at` INT NOT NULL,
     `added_by` INT NOT NULL,
     `thumbnail_id` INT NULL,
+    `year` INT NULL,
     PRIMARY KEY(`id`)
 );
 

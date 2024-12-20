@@ -44,6 +44,7 @@ impl Trees {
                 updated_at: now,
                 added_by: req.user_id,
                 thumbnail_id: None,
+                year: req.year,
             };
 
             debug!(
@@ -94,6 +95,10 @@ impl Trees {
             updated_at: now,
             added_by: old.added_by,
             thumbnail_id: old.thumbnail_id,
+            year: match req.year {
+                Some(value) => Some(value),
+                None => old.year,
+            },
         };
 
         debug!("Updating tree: {:?}", new);
@@ -248,6 +253,7 @@ mod tests {
                 diameter: None,
                 state: "healthy".to_string(),
                 user_id: 3,
+                year: None,
             })
             .await
             .expect("Error adding tree");
@@ -294,6 +300,7 @@ mod tests {
                 diameter: Some(15.0),
                 state: "healthy".to_string(),
                 user_id: 3,
+                year: None,
             })
             .await
             .expect("Error adding tree");
@@ -333,6 +340,7 @@ mod tests {
                 diameter: Some(15.0),
                 state: "healthy".to_string(),
                 user_id: 3,
+                year: None,
             })
             .await
             .expect("Error adding tree");
@@ -360,6 +368,7 @@ mod tests {
                 diameter: Some(15.0),
                 state: "healthy".to_string(),
                 user_id: 3,
+                year: None,
             })
             .await
             .expect("Error adding tree");

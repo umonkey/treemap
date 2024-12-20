@@ -212,6 +212,7 @@ mod tests {
             updated_at: 0,
             added_by: 0,
             thumbnail_id: None,
+            year: None,
         }
     }
 

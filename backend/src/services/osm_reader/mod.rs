@@ -151,6 +151,7 @@ impl OsmReaderService {
             updated_at: now,
             added_by: 0,
             thumbnail_id: None,
+            year: None,
         };
 
         self.db.add_tree(&tree).await?;

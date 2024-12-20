@@ -5,7 +5,7 @@ use serde::Serialize;
 
 use crate::types::TreeRecord;
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Default, Serialize)]
 pub struct TreeListItem {
     pub id: String,
     pub lat: f64,
@@ -20,6 +20,7 @@ pub struct TreeListItem {
     pub added_by: String,
     pub updated_at: u64,
     pub thumbnail_id: Option<String>,
+    pub year: Option<i64>,
 }
 
 impl TreeListItem {
@@ -40,6 +41,7 @@ impl TreeListItem {
             added_by: tree.added_by.to_string(),
             updated_at: tree.updated_at,
             thumbnail_id,
+            year: tree.year,
         }
     }
 }
