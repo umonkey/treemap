@@ -1,5 +1,6 @@
 import { apiClient } from '$lib/api';
 import { authState } from '$lib/stores/auth';
+import { error } from '@sveltejs/kit';
 
 export const load: Load = async ({
 	url
