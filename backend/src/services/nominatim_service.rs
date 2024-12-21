@@ -11,7 +11,6 @@ const ACCEPT_LANGUAGE: &str = "en-US,en;q=0.5";
 #[derive(Debug, Deserialize)]
 pub struct AddressInfo {
     road: Option<String>,
-    suburb: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -60,11 +59,7 @@ impl NominatimService {
             }
         };
 
-        if let Some(value) = json.address.road {
-            return Ok(Some(value));
-        }
-
-        Ok(json.address.suburb)
+        Ok(json.address.road)
     }
 }
 
