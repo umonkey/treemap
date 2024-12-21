@@ -1,32 +1,29 @@
-/**
- * This code reads messages from the queue and processes them,
- * by decoding parameters and calling the appropriate service.
- *
- * Runs in an infinite loop.
- */
+/// This code reads messages from the queue and processes them,
+/// by decoding parameters and calling the appropriate service.
+///
+/// Runs in an infinite loop.
+use crate::handlers::*;
+use crate::services::*;
+use crate::types::*;
 use log::{debug, error, info};
+use std::sync::Arc;
 use std::time::Duration;
-
-use crate::services::database::get_database;
-use crate::services::{get_file_storage, FileService, QueueService};
-use crate::types::{QueueCommand, Result};
 
 // Seconds to wait for a new message.
 const DELAY: u64 = 1;
 
 pub struct QueueConsumer {
-    files: FileService,
-    queue: QueueService,
+    queue: Arc<QueueService>,
+    resize_image_handler: Arc<ResizeImageHandler>,
 }
 
 impl QueueConsumer {
     pub async fn new() -> Result<Self> {
-        let db = get_database().await?;
-        let storage = get_file_storage().await?;
+        let locator = Locator::new();
 
         Ok(Self {
-            files: FileService::new(&db, &storage)?,
-            queue: QueueService::new(&db)?,
+            queue: locator.get::<QueueService>()?,
+            resize_image_handler: locator.get::<ResizeImageHandler>()?,
         })
     }
 
@@ -66,7 +63,7 @@ impl QueueConsumer {
     async fn process_message(&self, msg: &str) -> Result<()> {
         match QueueCommand::decode(msg) {
             Ok(Some(QueueCommand::ResizeImage(message))) => {
-                self.files.resize_images(message.id).await?;
+                self.resize_image_handler.handle(message.id).await?;
             }
 
             Ok(None) => {

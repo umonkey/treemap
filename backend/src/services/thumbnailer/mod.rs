@@ -1,12 +1,9 @@
-/**
- * This module contains image resizing code.
- */
+use crate::services::{Locatable, Locator};
+use crate::types::*;
 use image::{imageops, io::Reader, DynamicImage};
 use log::{debug, error};
 use std::io::Cursor;
 use std::panic;
-
-use crate::types::{Error, Result};
 
 pub struct ThumbnailerService;
 
@@ -116,6 +113,12 @@ impl ThumbnailerService {
                 Ok(None)
             }
         }
+    }
+}
+
+impl Locatable for ThumbnailerService {
+    fn create(_locator: &Locator) -> Result<Self> {
+        Ok(Self::new())
     }
 }
 

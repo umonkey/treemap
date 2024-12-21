@@ -1,17 +1,15 @@
-use crate::services::Database;
-use crate::services::SqliteDatabase;
-use crate::services::{Locatable, Locator};
+use crate::services::*;
 use crate::types::*;
 use crate::utils::{fix_circumference, get_timestamp, get_unique_id};
 use log::debug;
 use std::sync::Arc;
 
 pub struct AddTreesHandler {
-    db: Arc<dyn Database + Send + Sync>,
+    db: Arc<dyn DatabaseInterface>,
 }
 
 impl AddTreesHandler {
-    pub fn new(db: Arc<SqliteDatabase>) -> Self {
+    pub fn new(db: Arc<dyn DatabaseInterface>) -> Self {
         Self { db }
     }
 

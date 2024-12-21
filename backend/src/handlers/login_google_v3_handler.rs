@@ -9,15 +9,11 @@ use url::Url;
 const TOKEN_TTL: u64 = 30 * 86400; // 30 days
 
 pub struct LoginGoogleV3Handler {
-    db: Arc<dyn Database + Send + Sync>,
+    db: Arc<dyn DatabaseInterface>,
     tokens: Arc<TokenService>,
 }
 
 impl LoginGoogleV3Handler {
-    pub fn new(db: Arc<SqliteDatabase>, tokens: Arc<TokenService>) -> Self {
-        Self { db, tokens }
-    }
-
     pub async fn handle(&self, req: GoogleAuthCallbackPayload) -> Result<String> {
         debug!("Authenticating a Google user (v3).");
 
@@ -120,8 +116,8 @@ impl LoginGoogleV3Handler {
 
 impl Locatable for LoginGoogleV3Handler {
     fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<SqliteDatabase>()?;
+        let db = locator.get::<PreferredDatabase>()?.driver();
         let tokens = locator.get::<TokenService>()?;
-        Ok(Self::new(db, tokens))
+        Ok(Self { db, tokens })
     }
 }

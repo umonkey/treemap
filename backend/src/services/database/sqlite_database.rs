@@ -1,20 +1,15 @@
-use crate::services::database::r#trait::Database;
-use crate::services::{Locatable, Locator};
-use crate::types::{
-    Bounds, CommentRecord, Error, FileRecord, OsmTreeRecord, QueueMessage, Result, SpeciesRecord,
-    TreeRecord, UserRecord,
-};
+//! Database client implementation for SQLite.
+//!
+//! Uses async-sqlite.
+//!
+//! Probably nee to split the core database code into a separate class,
+//! and the queue implementation should also be separate, with its own database.
+//!
+//! @docs https://docs.rs/async-sqlite/latest/async_sqlite/
+
+use crate::services::*;
+use crate::types::*;
 use crate::utils::{get_sqlite_path, get_timestamp, get_unique_id};
-/**
- * Database client implementation for SQLite.
- *
- * Uses async-sqlite.
- *
- * Probably nee to split the core database code into a separate class,
- * and the queue implementation should also be separate, with its own database.
- *
- * @docs https://docs.rs/async-sqlite/latest/async_sqlite/
- */
 use async_sqlite::{JournalMode, Pool, PoolBuilder};
 use async_trait::async_trait;
 use log::{debug, error, info};
@@ -251,7 +246,7 @@ impl Locatable for SqliteDatabase {
 }
 
 #[async_trait]
-impl Database for SqliteDatabase {
+impl DatabaseInterface for SqliteDatabase {
     async fn add_tree(&self, tree: &TreeRecord) -> Result<()> {
         let tree = tree.clone();
 

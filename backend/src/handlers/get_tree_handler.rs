@@ -1,18 +1,12 @@
-use crate::services::Database;
-use crate::services::SqliteDatabase;
-use crate::services::{Locatable, Locator};
+use crate::services::*;
 use crate::types::*;
 use std::sync::Arc;
 
 pub struct GetTreeHandler {
-    db: Arc<dyn Database + Send + Sync>,
+    db: Arc<dyn DatabaseInterface>,
 }
 
 impl GetTreeHandler {
-    pub fn new(db: Arc<SqliteDatabase>) -> Self {
-        Self { db }
-    }
-
     pub async fn handle(&self, id: u64) -> Result<SingleTreeResponse> {
         let tree = match self.db.get_tree(id).await? {
             Some(value) => value,
@@ -42,7 +36,7 @@ impl GetTreeHandler {
 
 impl Locatable for GetTreeHandler {
     fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<SqliteDatabase>()?;
-        Ok(Self::new(db))
+        let db = locator.get::<PreferredDatabase>()?.driver();
+        Ok(Self { db })
     }
 }

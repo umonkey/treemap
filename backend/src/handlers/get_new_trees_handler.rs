@@ -1,6 +1,4 @@
-use crate::services::Database;
-use crate::services::SqliteDatabase;
-use crate::services::{Locatable, Locator};
+use crate::services::*;
 use crate::types::Result;
 use crate::types::TreeList;
 use crate::types::UserRecord;
@@ -8,14 +6,10 @@ use std::collections::HashSet;
 use std::sync::Arc;
 
 pub struct GetNewTreesHandler {
-    db: Arc<dyn Database + Send + Sync>,
+    db: Arc<dyn DatabaseInterface>,
 }
 
 impl GetNewTreesHandler {
-    pub fn new(db: Arc<SqliteDatabase>) -> Self {
-        Self { db }
-    }
-
     pub async fn handle(&self, count: u64, skip: u64) -> Result<TreeList> {
         let trees = self.db.get_new_trees(count, skip).await?;
 
@@ -35,7 +29,7 @@ impl GetNewTreesHandler {
 
 impl Locatable for GetNewTreesHandler {
     fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<SqliteDatabase>()?;
-        Ok(Self::new(db))
+        let db = locator.get::<PreferredDatabase>()?.driver();
+        Ok(Self { db })
     }
 }

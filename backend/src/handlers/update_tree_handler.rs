@@ -1,20 +1,14 @@
-use crate::services::Database;
-use crate::services::SqliteDatabase;
-use crate::services::{Locatable, Locator};
+use crate::services::*;
 use crate::types::*;
 use crate::utils::{fix_circumference, get_timestamp};
 use log::info;
 use std::sync::Arc;
 
 pub struct UpdateTreeHandler {
-    db: Arc<dyn Database + Send + Sync>,
+    db: Arc<dyn DatabaseInterface>,
 }
 
 impl UpdateTreeHandler {
-    pub fn new(db: Arc<SqliteDatabase>) -> Self {
-        Self { db }
-    }
-
     pub async fn handle(&self, req: UpdateTreeRequest) -> Result<TreeRecord> {
         let now = get_timestamp();
 
@@ -69,7 +63,7 @@ impl UpdateTreeHandler {
 
 impl Locatable for UpdateTreeHandler {
     fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<SqliteDatabase>()?;
-        Ok(Self::new(db))
+        let db = locator.get::<PreferredDatabase>()?.driver();
+        Ok(Self { db })
     }
 }

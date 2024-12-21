@@ -1,13 +1,13 @@
+use super::file_storage_interface::FileStorageInterface;
+use crate::config::S3Config;
+use crate::services::{Locatable, Locator};
+use crate::types::*;
 use async_trait::async_trait;
 use aws_config::{BehaviorVersion, Region};
 use aws_sdk_s3::primitives::ByteStream;
 use aws_sdk_s3::types::ObjectCannedAcl;
 use aws_sdk_s3::Client;
 use log::{debug, error, info};
-
-use crate::config::S3Config;
-use crate::services::FileStorageInterface;
-use crate::types::{Error, Result};
 
 pub struct S3FileStorage {
     client: Client,
@@ -37,6 +37,13 @@ impl S3FileStorage {
             client,
             bucket: config.bucket.to_string(),
         })
+    }
+}
+
+impl Locatable for S3FileStorage {
+    fn create(_locator: &Locator) -> Result<Self> {
+        let svc = futures::executor::block_on(Self::new())?;
+        Ok(svc)
     }
 }
 

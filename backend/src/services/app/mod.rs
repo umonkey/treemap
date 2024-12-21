@@ -1,14 +1,13 @@
 use crate::handlers::*;
-use crate::services::database::get_database;
 use crate::services::Locator;
-use crate::services::{get_file_storage, FileService, TokenService};
+use crate::services::{FileService, TokenService};
 use crate::types::*;
 use actix_web::HttpRequest;
 use std::sync::Arc;
 
 pub struct AppState {
-    files: FileService,
-    tokens: TokenService,
+    files: Arc<FileService>,
+    tokens: Arc<TokenService>,
     pub add_comment_handler: Arc<AddCommentHandler>,
     pub add_trees_handler: Arc<AddTreesHandler>,
     pub get_file_status_handler: Arc<GetFileStatusHandler>,
@@ -37,13 +36,9 @@ impl AppState {
     pub async fn new() -> Result<Self> {
         let locator = Locator::new();
 
-        let db = get_database().await?;
-        let token = TokenService::new();
-        let storage = get_file_storage().await?;
-
         Ok(Self {
-            files: FileService::new(&db, &storage)?,
-            tokens: token,
+            files: locator.get::<FileService>()?,
+            tokens: locator.get::<TokenService>()?,
             add_comment_handler: locator.get::<AddCommentHandler>()?,
             add_trees_handler: locator.get::<AddTreesHandler>()?,
             get_file_status_handler: locator.get::<GetFileStatusHandler>()?,

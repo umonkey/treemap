@@ -1,30 +1,16 @@
-use log::{debug, error, info};
-use std::sync::Arc;
-
-use crate::services::{Database, FileStorageInterface, QueueService, ThumbnailerService};
+use crate::services::*;
 use crate::types::*;
 use crate::utils::{get_timestamp, get_unique_id};
-
-const SMALL_SIZE: u32 = 1000;
-const LARGE_SIZE: u32 = 2000;
+use log::{debug, info};
+use std::sync::Arc;
 
 pub struct FileService {
-    db: Arc<dyn Database>,
-    thumbnailer: ThumbnailerService,
-    queue: QueueService,
+    db: Arc<dyn DatabaseInterface>,
+    queue: Arc<QueueService>,
     storage: Arc<dyn FileStorageInterface>,
 }
 
 impl FileService {
-    pub fn new(db: &Arc<dyn Database>, storage: &Arc<dyn FileStorageInterface>) -> Result<Self> {
-        Ok(Self {
-            db: db.clone(),
-            queue: QueueService::new(db)?,
-            storage: storage.clone(),
-            thumbnailer: ThumbnailerService::new(),
-        })
-    }
-
     /**
      * Add a file to the tree.
      *
@@ -55,52 +41,6 @@ impl FileService {
         );
 
         Ok(file_record)
-    }
-
-    pub async fn resize_images(&self, file_id: u64) -> Result<()> {
-        debug!("Going to resize images for file {}.", file_id);
-
-        match self.db.get_file(file_id).await {
-            Ok(Some(file)) => {
-                let body = self.get_file(file.id).await?;
-
-                let small = self.thumbnailer.resize(&body, SMALL_SIZE)?;
-                let small_id = self.write_file(&small).await?;
-
-                let large = self.thumbnailer.resize(&body, LARGE_SIZE)?;
-                let large_id = self.write_file(&large).await?;
-
-                debug!("Updating file {} with new image ids.", file_id);
-
-                let updated = FileRecord {
-                    small_id,
-                    large_id,
-                    ..file
-                };
-
-                self.db.update_file(&updated).await?;
-                self.db
-                    .update_tree_thumbnail(file.tree_id, small_id)
-                    .await?;
-
-                self.db
-                    .add_tree_prop(file.tree_id, "thumbnail_id", small_id.to_string().as_str())
-                    .await?;
-
-                info!("Resized images for file {}, tree {}", file_id, file.tree_id);
-                Ok(())
-            }
-
-            Ok(None) => {
-                error!("File {} not found, cannot resize images.", file_id);
-                Ok(())
-            }
-
-            Err(e) => {
-                error!("Error resizing images for file {}: {:?}", file_id, e);
-                Ok(())
-            }
-        }
     }
 
     /**
@@ -135,15 +75,23 @@ impl FileService {
     }
 }
 
+impl Locatable for FileService {
+    fn create(locator: &Locator) -> Result<Self> {
+        let db = locator.get::<PreferredDatabase>()?.driver();
+        let storage = locator.get::<FileStorageSelector>()?.driver();
+        let queue = locator.get::<QueueService>()?;
+        Ok(Self { db, storage, queue })
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::services::{get_database, LocalFileStorage};
     use env_logger;
     use std::env;
     use std::path::Path;
 
-    async fn setup() -> Result<FileService> {
+    async fn setup() -> Result<Arc<FileService>> {
         env::set_var("FILE_FOLDER", "var/test-files");
         env::set_var("TREEMAP_SQLITE_PATH", ":memory:");
         env::set_var("AWS_ACCESS_KEY_ID", "");
@@ -152,10 +100,8 @@ mod tests {
             debug!("env_logger already initialized.");
         };
 
-        let db = get_database().await.expect("Error creating the database");
-        let storage: Arc<dyn FileStorageInterface> = Arc::new(LocalFileStorage::new());
-
-        FileService::new(&db, &storage)
+        let locator = Locator::new();
+        locator.get::<FileService>()
     }
 
     #[tokio::test]

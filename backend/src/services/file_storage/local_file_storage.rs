@@ -1,10 +1,10 @@
+use super::file_storage_interface::FileStorageInterface;
+use crate::services::{Locatable, Locator};
+use crate::types::*;
+use crate::utils::get_file_folder;
 use async_trait::async_trait;
 use log::{debug, error, info};
 use tokio::fs;
-
-use crate::services::FileStorageInterface;
-use crate::types::{Error, Result};
-use crate::utils::get_file_folder;
 
 pub struct LocalFileStorage {
     folder: String,
@@ -15,6 +15,12 @@ impl LocalFileStorage {
         Self {
             folder: get_file_folder(),
         }
+    }
+}
+
+impl Locatable for LocalFileStorage {
+    fn create(_locator: &Locator) -> Result<Self> {
+        Ok(Self::new())
     }
 }
 

@@ -1,16 +1,14 @@
-/**
- * Simple message queue implementation.
- *
- * Messages are stored in the database table, queue_messages.
- * This class only adds, retrieves and removes text messages,
- * parsing and processing happens outside.
- */
+//! Simple message queue implementation.
+//!
+//! Messages are stored in the database table, queue_messages.
+//! This class only adds, retrieves and removes text messages,
+//! parsing and processing happens outside.
+
+use crate::services::*;
+use crate::types::*;
+use crate::utils::{get_timestamp, get_unique_id};
 use log::debug;
 use std::sync::Arc;
-
-use crate::services::Database;
-use crate::types::{QueueMessage, Result};
-use crate::utils::{get_timestamp, get_unique_id};
 
 /**
  * Message delay in seconds per failed attempts.
@@ -19,16 +17,13 @@ use crate::utils::{get_timestamp, get_unique_id};
 const DELAY: u64 = 60;
 
 pub struct QueueService {
-    db: Arc<dyn Database>,
+    db: Arc<dyn DatabaseInterface>,
     delay: u64,
 }
 
 impl QueueService {
-    pub fn new(db: &Arc<dyn Database>) -> Result<Self> {
-        Ok(Self {
-            db: db.clone(),
-            delay: DELAY,
-        })
+    pub fn new(db: Arc<dyn DatabaseInterface>) -> Result<Self> {
+        Ok(Self { db, delay: DELAY })
     }
 
     pub async fn push(&self, payload: &str) -> Result<QueueMessage> {
@@ -83,26 +78,29 @@ impl QueueService {
     }
 }
 
+impl Locatable for QueueService {
+    fn create(locator: &Locator) -> Result<Self> {
+        let db = locator.get::<PreferredDatabase>()?.driver();
+        Self::new(db)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::services::database::SqliteDatabase;
     use env_logger;
     use std::env;
 
-    async fn setup() -> QueueService {
+    async fn setup() -> Arc<QueueService> {
         env::set_var("TREEMAP_SQLITE_PATH", ":memory:");
 
         if let Err(_) = env_logger::try_init() {
             debug!("env_logger already initialized.");
         };
 
-        let db = SqliteDatabase::new()
-            .await
-            .expect("Error initializing database.");
-        let dbh: Arc<dyn Database> = Arc::new(db);
-
-        QueueService::new(&dbh).expect("Error creating queue service.")
+        Locator::new()
+            .get::<QueueService>()
+            .expect("Error creating queue service.")
     }
 
     #[tokio::test]

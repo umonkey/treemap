@@ -1,18 +1,12 @@
-use crate::services::Database;
-use crate::services::SqliteDatabase;
-use crate::services::{Locatable, Locator};
+use crate::services::*;
 use crate::types::*;
 use std::sync::Arc;
 
 pub struct GetUserHandler {
-    db: Arc<dyn Database + Send + Sync>,
+    db: Arc<dyn DatabaseInterface>,
 }
 
 impl GetUserHandler {
-    pub fn new(db: Arc<SqliteDatabase>) -> Self {
-        Self { db }
-    }
-
     pub async fn handle(&self, user_id: u64) -> Result<UserResponse> {
         let user = match self.db.get_user(user_id).await? {
             Some(u) => u,
@@ -29,7 +23,7 @@ impl GetUserHandler {
 
 impl Locatable for GetUserHandler {
     fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<SqliteDatabase>()?;
-        Ok(Self::new(db))
+        let db = locator.get::<PreferredDatabase>()?.driver();
+        Ok(Self { db })
     }
 }

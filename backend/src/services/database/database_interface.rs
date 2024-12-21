@@ -1,12 +1,8 @@
+use crate::types::*;
 use async_trait::async_trait;
 
-use crate::types::{
-    Bounds, CommentRecord, FileRecord, OsmTreeRecord, QueueMessage, Result, SpeciesRecord,
-    TreeRecord, UserRecord,
-};
-
 #[async_trait]
-pub trait Database {
+pub trait DatabaseInterface: Send + Sync {
     async fn add_tree(&self, tree: &TreeRecord) -> Result<()>;
     async fn update_tree(&self, tree: &TreeRecord) -> Result<()>;
     async fn move_tree(&self, id: u64, lat: f64, lon: f64) -> Result<()>;

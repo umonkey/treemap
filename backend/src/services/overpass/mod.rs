@@ -1,11 +1,11 @@
 mod node_parser;
 
+use crate::services::*;
+use crate::types::*;
+use crate::utils::{get_overpass_endpoint, get_overpass_query};
 use log::{debug, error};
 use serde_json::Value;
 use url::Url;
-
-use crate::types::{Error, OsmTreeRecord, Result};
-use crate::utils::{get_overpass_endpoint, get_overpass_query};
 
 use self::node_parser::NodeParser;
 
@@ -91,5 +91,11 @@ impl OverpassClient {
                 Err(Error::OsmExchange)
             }
         }
+    }
+}
+
+impl Locatable for OverpassClient {
+    fn create(_locator: &Locator) -> Result<Self> {
+        Ok(Self::new())
     }
 }

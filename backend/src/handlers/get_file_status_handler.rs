@@ -1,11 +1,9 @@
-use crate::services::Database;
-use crate::services::SqliteDatabase;
-use crate::services::{Locatable, Locator};
+use crate::services::*;
 use crate::types::*;
 use std::sync::Arc;
 
 pub struct GetFileStatusHandler {
-    db: Arc<dyn Database + Send + Sync>,
+    db: Arc<dyn DatabaseInterface>,
 }
 
 impl GetFileStatusHandler {

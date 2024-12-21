@@ -8,15 +8,11 @@ use std::sync::Arc;
 const TOKEN_TTL: u64 = 30 * 86400; // 30 days
 
 pub struct LoginGoogleHandler {
-    db: Arc<dyn Database + Send + Sync>,
+    db: Arc<dyn DatabaseInterface>,
     tokens: Arc<TokenService>,
 }
 
 impl LoginGoogleHandler {
-    pub fn new(db: Arc<SqliteDatabase>, tokens: Arc<TokenService>) -> Self {
-        Self { db, tokens }
-    }
-
     pub async fn handle(&self, req: LoginGoogleRequest) -> Result<LoginResponse> {
         debug!("Authenticating a Google user.");
 
@@ -107,8 +103,8 @@ impl LoginGoogleHandler {
 
 impl Locatable for LoginGoogleHandler {
     fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<SqliteDatabase>()?;
+        let db = locator.get::<PreferredDatabase>()?.driver();
         let tokens = locator.get::<TokenService>()?;
-        Ok(Self::new(db, tokens))
+        Ok(Self { db, tokens })
     }
 }

@@ -1,8 +1,10 @@
-use crate::services::OsmReaderService;
+use crate::services::*;
 
 pub async fn osm_pull_command() {
-    let service = OsmReaderService::new()
-        .await
+    let locator = Locator::new();
+
+    let service = locator
+        .get::<OsmReaderService>()
         .expect("Error creating OSM reader service.");
 
     service

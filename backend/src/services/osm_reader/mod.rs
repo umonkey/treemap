@@ -1,44 +1,33 @@
-/**
- * This module reads data from OSM and puts it into the database.
- *
- * The workflow is the following:
- *
- * 1. Query OSM for data.
- * 2. Parse the data.
- * 3. Filter out the data that is not trees.
- * 4. Add the data to the database.
- *
- * When adding nodes to the database, the workflow is the following:
- *
- * 1. Add the node to the osm_trees table.
- * 2. Check if there is a local tree with that node id.
- * 3. If not found, find a tree within 10 meters and link them.
- * 4. If a local tree is found, update it.
- */
+//! This module reads data from OSM and puts it into the database.
+//!
+//! The workflow is the following:
+//!
+//! 1. Query OSM for data.
+//! 2. Parse the data.
+//! 3. Filter out the data that is not trees.
+//! 4. Add the data to the database.
+//!
+//! When adding nodes to the database, the workflow is the following:
+//!
+//! 1. Add the node to the osm_trees table.
+//! 2. Check if there is a local tree with that node id.
+//! 3. If not found, find a tree within 10 meters and link them.
+//! 4. If a local tree is found, update it.
+
+use crate::services::*;
+use crate::types::*;
+use crate::utils::{get_timestamp, get_unique_id};
 use log::{error, info};
 use std::sync::Arc;
-
-use crate::services::{get_database, Database, OverpassClient};
-use crate::types::{Error, OsmTreeRecord, Result, TreeRecord};
-use crate::utils::{get_timestamp, get_unique_id};
 
 const DEFAULT_STATE: &str = "healthy";
 
 pub struct OsmReaderService {
-    db: Arc<dyn Database>,
-    overpass_client: OverpassClient,
+    db: Arc<dyn DatabaseInterface>,
+    overpass_client: Arc<OverpassClient>,
 }
 
 impl OsmReaderService {
-    pub async fn new() -> Result<Self> {
-        let db = get_database().await?;
-
-        Ok(Self {
-            db: db.clone(),
-            overpass_client: OverpassClient::new(),
-        })
-    }
-
     /**
      * Pull new nodes from the OSM database and add them to the local database.
      */
@@ -169,5 +158,17 @@ impl OsmReaderService {
         }
 
         Ok(None)
+    }
+}
+
+impl Locatable for OsmReaderService {
+    fn create(locator: &Locator) -> Result<Self> {
+        let db = locator.get::<PreferredDatabase>()?.driver();
+        let overpass_client = locator.get::<OverpassClient>()?;
+
+        Ok(Self {
+            db,
+            overpass_client,
+        })
     }
 }

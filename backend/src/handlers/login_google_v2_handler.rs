@@ -17,15 +17,11 @@ pub struct GoogleIdToken {
 }
 
 pub struct LoginGoogleV2Handler {
-    db: Arc<dyn Database + Send + Sync>,
+    db: Arc<dyn DatabaseInterface>,
     tokens: Arc<TokenService>,
 }
 
 impl LoginGoogleV2Handler {
-    pub fn new(db: Arc<SqliteDatabase>, tokens: Arc<TokenService>) -> Self {
-        Self { db, tokens }
-    }
-
     pub async fn handle(&self, req: LoginGoogleRequest) -> Result<LoginResponse> {
         debug!("Authenticating a Google user (v2).");
 
@@ -113,8 +109,8 @@ impl LoginGoogleV2Handler {
 
 impl Locatable for LoginGoogleV2Handler {
     fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<SqliteDatabase>()?;
+        let db = locator.get::<PreferredDatabase>()?.driver();
         let tokens = locator.get::<TokenService>()?;
-        Ok(Self::new(db, tokens))
+        Ok(Self { db, tokens })
     }
 }
