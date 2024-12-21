@@ -1,5 +1,4 @@
 mod app;
-mod comments;
 mod database;
 mod file_storage;
 mod files;
@@ -14,7 +13,6 @@ mod thumbnailer;
 mod tokens;
 mod trees;
 pub use app::*;
-pub use comments::*;
 pub use database::*;
 pub use file_storage::*;
 pub use files::*;

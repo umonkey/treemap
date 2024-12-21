@@ -13,6 +13,6 @@ pub async fn get_tree_comments(
     state: Data<AppState>,
     path: Path<PathInfo>,
 ) -> Result<Json<CommentList>> {
-    let comments = state.get_tree_comments(path.id).await?;
+    let comments = state.get_tree_comments_handler.handle(path.id).await?;
     Ok(Json(comments))
 }

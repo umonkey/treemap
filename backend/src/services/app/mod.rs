@@ -2,15 +2,12 @@ use crate::handlers::*;
 use crate::services::database::get_database;
 use crate::services::trees::Trees;
 use crate::services::Locator;
-use crate::services::{
-    get_file_storage, CommentsService, Database, FileService, GoogleAuth, TokenService,
-};
+use crate::services::{get_file_storage, Database, FileService, GoogleAuth, TokenService};
 use crate::types::{
-    AddFileRequest, AddTreeRequest, CommentList, CommentRecord, Error, FileRecord,
-    FileStatusResponse, FileUploadResponse, GetTreesRequest, GoogleAuthCallbackPayload,
-    LoginGoogleRequest, LoginResponse, MeResponse, MoveTreeRequest, NewTreeDefaultsResponse,
-    PublicSpeciesInfo, Result, TreeDetails, TreeList, TreeRecord, TreeStats, UpdateTreeRequest,
-    UserRecord, UserResponse,
+    AddFileRequest, AddTreeRequest, Error, FileRecord, FileStatusResponse, FileUploadResponse,
+    GetTreesRequest, GoogleAuthCallbackPayload, LoginGoogleRequest, LoginResponse, MeResponse,
+    MoveTreeRequest, NewTreeDefaultsResponse, PublicSpeciesInfo, Result, TreeDetails, TreeList,
+    TreeRecord, TreeStats, UpdateTreeRequest, UserRecord, UserResponse,
 };
 use actix_web::HttpRequest;
 use log::info;
@@ -19,7 +16,6 @@ use std::sync::Arc;
 
 pub struct AppState {
     db: Arc<dyn Database>,
-    comments: CommentsService,
     files: FileService,
     gauth: GoogleAuth,
     tokens: TokenService,
@@ -27,6 +23,7 @@ pub struct AppState {
     pub add_comment_handler: Arc<AddCommentHandler>,
     pub get_new_trees_handler: Arc<GetNewTreesHandler>,
     pub get_new_comments_handler: Arc<GetNewCommentsHandler>,
+    pub get_tree_comments_handler: Arc<GetTreeCommentsHandler>,
     pub get_updated_trees_handler: Arc<GetUpdatedTreesHandler>,
 }
 
@@ -40,7 +37,6 @@ impl AppState {
 
         Ok(Self {
             db: db.clone(),
-            comments: CommentsService::new(&db),
             files: FileService::new(&db, &storage)?,
             gauth: GoogleAuth::new(&db, &token).await,
             tokens: token,
@@ -48,6 +44,7 @@ impl AppState {
             add_comment_handler: locator.get::<AddCommentHandler>()?,
             get_new_trees_handler: locator.get::<GetNewTreesHandler>()?,
             get_new_comments_handler: locator.get::<GetNewCommentsHandler>()?,
+            get_tree_comments_handler: locator.get::<GetTreeCommentsHandler>()?,
             get_updated_trees_handler: locator.get::<GetUpdatedTreesHandler>()?,
         })
     }
@@ -186,21 +183,6 @@ impl AppState {
         Ok(FileUploadResponse::from_file(&file))
     }
 
-    pub async fn get_tree_comments(&self, tree_id: u64) -> Result<CommentList> {
-        let records = self.comments.get_tree_comments(tree_id).await?;
-        self.format_comment_list(&records).await
-    }
-
-    async fn format_comment_list(&self, comments: &[CommentRecord]) -> Result<CommentList> {
-        let user_ids: Vec<u64> = comments.iter().map(|r| r.added_by).collect();
-        let users = self.load_users(&user_ids).await?;
-
-        let tree_ids: Vec<u64> = comments.iter().map(|r| r.tree_id).collect();
-        let trees = self.load_trees(&tree_ids).await?;
-
-        Ok(CommentList::from_records(comments, &users, &trees))
-    }
-
     pub async fn find_species(&self, query: &str) -> Result<Vec<PublicSpeciesInfo>> {
         let records = self.db.find_species(query).await?;
         let species = records.iter().map(PublicSpeciesInfo::from_record).collect();
@@ -252,19 +234,5 @@ impl AppState {
         }
 
         Ok(users)
-    }
-
-    async fn load_trees(&self, tree_ids: &[u64]) -> Result<Vec<TreeRecord>> {
-        let tree_ids = HashSet::<u64>::from_iter(tree_ids.iter().copied());
-
-        let mut trees = Vec::new();
-
-        for id in tree_ids {
-            if let Ok(Some(tree)) = self.db.get_tree(id).await {
-                trees.push(tree);
-            };
-        }
-
-        Ok(trees)
     }
 }
