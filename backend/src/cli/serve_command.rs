@@ -59,7 +59,7 @@ pub async fn serve_command() {
             .service(login_google)
             .service(login_google_v2)
             .service(login_google_v3)
-            .service(move_tree)
+            .service(move_tree_action)
             .service(search_species)
             .service(suggest_species)
             .service(update_tree)

@@ -5,7 +5,6 @@ use crate::services::Locator;
 use crate::services::{get_file_storage, Database, FileService, GoogleAuth, TokenService};
 use crate::types::*;
 use actix_web::HttpRequest;
-use log::info;
 use std::sync::Arc;
 
 pub struct AppState {
@@ -28,6 +27,7 @@ pub struct AppState {
     pub get_updated_trees_handler: Arc<GetUpdatedTreesHandler>,
     pub get_user_handler: Arc<GetUserHandler>,
     pub like_tree_handler: Arc<LikeTreeHandler>,
+    pub move_tree_handler: Arc<MoveTreeHandler>,
     pub unlike_tree_handler: Arc<UnlikeTreeHandler>,
 }
 
@@ -59,20 +59,13 @@ impl AppState {
             get_updated_trees_handler: locator.get::<GetUpdatedTreesHandler>()?,
             get_user_handler: locator.get::<GetUserHandler>()?,
             like_tree_handler: locator.get::<LikeTreeHandler>()?,
+            move_tree_handler: locator.get::<MoveTreeHandler>()?,
             unlike_tree_handler: locator.get::<UnlikeTreeHandler>()?,
         })
     }
 
     pub async fn update_tree(&self, req: UpdateTreeRequest) -> Result<TreeRecord> {
         self.trees.update_tree(req).await
-    }
-
-    pub async fn move_tree(&self, req: MoveTreeRequest) -> Result<()> {
-        self.trees.move_tree(&req).await?;
-
-        info!("Tree {} moved to ({},{})", req.id, req.lat, req.lon);
-
-        Ok(())
     }
 
     pub fn get_user_id(&self, req: &HttpRequest) -> Result<u64> {

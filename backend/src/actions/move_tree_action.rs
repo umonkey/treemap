@@ -1,8 +1,7 @@
+use crate::services::AppState;
+use crate::types::*;
 use actix_web::{put, web::Data, web::Json, web::Path, HttpRequest, HttpResponse};
 use serde::Deserialize;
-
-use crate::services::AppState;
-use crate::types::{MoveTreeRequest, Result};
 
 #[derive(Debug, Deserialize)]
 pub struct PathInfo {
@@ -16,7 +15,7 @@ struct RequestPayload {
 }
 
 #[put("/v1/trees/{id}/position")]
-pub async fn move_tree(
+pub async fn move_tree_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
     payload: Json<RequestPayload>,
@@ -24,14 +23,15 @@ pub async fn move_tree(
 ) -> Result<HttpResponse> {
     let user_id = state.get_user_id(&req)?;
 
-    let req = MoveTreeRequest {
-        id: path.id,
-        lat: payload.lat,
-        lon: payload.lon,
-        user_id,
-    };
-
-    state.move_tree(req).await?;
+    state
+        .move_tree_handler
+        .handle(MoveTreeRequest {
+            id: path.id,
+            lat: payload.lat,
+            lon: payload.lon,
+            user_id,
+        })
+        .await?;
 
     Ok(HttpResponse::Accepted()
         .content_type("application/json")

@@ -68,18 +68,6 @@ impl Trees {
         Ok(new)
     }
 
-    pub async fn move_tree(&self, req: &MoveTreeRequest) -> Result<()> {
-        let id = req.id;
-        let lat = req.lat;
-        let lon = req.lon;
-
-        debug!("Moving tree {} to ({}, {}).", id, lat, lon);
-
-        self.db.move_tree(id, lat, lon).await?;
-
-        Ok(())
-    }
-
     pub async fn get_tree(&self, id: u64) -> Result<TreeRecord> {
         debug!("Getting details for tree {}.", id);
 
