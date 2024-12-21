@@ -35,24 +35,6 @@ impl GoogleAuth {
         }
     }
 
-    pub async fn login(&self, req: LoginGoogleRequest) -> Result<LoginResponse> {
-        debug!("Authenticating a Google user.");
-
-        let userinfo = self.get_google_userinfo(req.token).await?;
-        let user = self.get_user(&userinfo).await?;
-
-        let token = self.tokens.encode(&TokenClaims {
-            exp: get_timestamp() + TOKEN_TTL,
-            sub: user.id.to_string(),
-        })?;
-
-        Ok(LoginResponse {
-            token,
-            name: user.name,
-            picture: user.picture,
-        })
-    }
-
     pub async fn login_v2(&self, req: LoginGoogleRequest) -> Result<LoginResponse> {
         debug!("Authenticating a Google user (v2).");
 

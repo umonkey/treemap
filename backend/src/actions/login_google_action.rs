@@ -4,14 +4,16 @@ use crate::services::AppState;
 use crate::types::{LoginGoogleRequest, LoginResponse, Result};
 
 #[post("/v1/login/google")]
-pub async fn login_google(
+pub async fn login_google_action(
     state: Data<AppState>,
     payload: Json<LoginGoogleRequest>,
 ) -> Result<Json<LoginResponse>> {
-    let req = LoginGoogleRequest {
-        token: payload.token.clone(),
-    };
+    let login = state
+        .login_google_handler
+        .handle(LoginGoogleRequest {
+            token: payload.token.clone(),
+        })
+        .await?;
 
-    let login = state.login_google(req).await?;
     Ok(Json(login))
 }

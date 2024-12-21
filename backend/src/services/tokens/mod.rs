@@ -1,8 +1,8 @@
+use crate::services::{Locatable, Locator};
+use crate::types::*;
+use crate::utils::get_jwt_secret;
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
 use log::{debug, error};
-
-use crate::types::{Result, TokenClaims};
-use crate::utils::get_jwt_secret;
 
 #[derive(Clone)]
 pub struct TokenService {
@@ -36,5 +36,11 @@ impl TokenService {
                 Err(e.into())
             }
         }
+    }
+}
+
+impl Locatable for TokenService {
+    fn create(_locator: &Locator) -> Result<Self> {
+        Ok(Self::new())
     }
 }

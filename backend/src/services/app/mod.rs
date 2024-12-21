@@ -24,6 +24,7 @@ pub struct AppState {
     pub get_updated_trees_handler: Arc<GetUpdatedTreesHandler>,
     pub get_user_handler: Arc<GetUserHandler>,
     pub like_tree_handler: Arc<LikeTreeHandler>,
+    pub login_google_handler: Arc<LoginGoogleHandler>,
     pub move_tree_handler: Arc<MoveTreeHandler>,
     pub search_species_handler: Arc<SearchSpeciesHandler>,
     pub suggest_species_handler: Arc<SuggestSpeciesHandler>,
@@ -57,6 +58,7 @@ impl AppState {
             get_updated_trees_handler: locator.get::<GetUpdatedTreesHandler>()?,
             get_user_handler: locator.get::<GetUserHandler>()?,
             like_tree_handler: locator.get::<LikeTreeHandler>()?,
+            login_google_handler: locator.get::<LoginGoogleHandler>()?,
             move_tree_handler: locator.get::<MoveTreeHandler>()?,
             search_species_handler: locator.get::<SearchSpeciesHandler>()?,
             suggest_species_handler: locator.get::<SuggestSpeciesHandler>()?,
@@ -98,13 +100,6 @@ impl AppState {
 
     pub async fn get_file(&self, id: u64) -> Result<Vec<u8>> {
         self.files.get_file(id).await
-    }
-
-    /**
-     * Deprecated.
-     */
-    pub async fn login_google(&self, req: LoginGoogleRequest) -> Result<LoginResponse> {
-        self.gauth.login(req).await
     }
 
     /**
