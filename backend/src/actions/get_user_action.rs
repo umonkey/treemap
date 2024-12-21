@@ -10,7 +10,10 @@ pub struct PathInfo {
 }
 
 #[get("/v1/users/{id}")]
-pub async fn get_user(state: Data<AppState>, path: Path<PathInfo>) -> Result<Json<UserResponse>> {
-    let user = state.get_user(path.id).await?;
+pub async fn get_user_action(
+    state: Data<AppState>,
+    path: Path<PathInfo>,
+) -> Result<Json<UserResponse>> {
+    let user = state.get_user_handler.handle(path.id).await?;
     Ok(Json(user))
 }

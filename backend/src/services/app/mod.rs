@@ -16,11 +16,13 @@ pub struct AppState {
     trees: Trees,
     pub add_comment_handler: Arc<AddCommentHandler>,
     pub add_trees_handler: Arc<AddTreesHandler>,
+    pub get_me_handler: Arc<GetMeHandler>,
     pub get_new_comments_handler: Arc<GetNewCommentsHandler>,
     pub get_new_trees_handler: Arc<GetNewTreesHandler>,
     pub get_tree_comments_handler: Arc<GetTreeCommentsHandler>,
     pub get_tree_handler: Arc<GetTreeHandler>,
     pub get_updated_trees_handler: Arc<GetUpdatedTreesHandler>,
+    pub get_user_handler: Arc<GetUserHandler>,
 }
 
 impl AppState {
@@ -39,11 +41,13 @@ impl AppState {
             trees: Trees::new(&db).await,
             add_comment_handler: locator.get::<AddCommentHandler>()?,
             add_trees_handler: locator.get::<AddTreesHandler>()?,
+            get_me_handler: locator.get::<GetMeHandler>()?,
             get_new_comments_handler: locator.get::<GetNewCommentsHandler>()?,
             get_new_trees_handler: locator.get::<GetNewTreesHandler>()?,
             get_tree_comments_handler: locator.get::<GetTreeCommentsHandler>()?,
             get_tree_handler: locator.get::<GetTreeHandler>()?,
             get_updated_trees_handler: locator.get::<GetUpdatedTreesHandler>()?,
+            get_user_handler: locator.get::<GetUserHandler>()?,
         })
     }
 
@@ -61,16 +65,6 @@ impl AppState {
 
     pub async fn get_trees(&self, request: &GetTreesRequest) -> Result<TreeList> {
         self.trees.get_trees(request).await
-    }
-
-    pub async fn get_user(&self, id: u64) -> Result<UserResponse> {
-        let record = match self.db.get_user(id).await? {
-            Some(value) => value,
-
-            None => return Err(Error::UserNotFound),
-        };
-
-        Ok(UserResponse::from(record))
     }
 
     pub async fn get_tree_defaults(&self, user_id: u64) -> Result<NewTreeDefaultsResponse> {
@@ -150,18 +144,6 @@ impl AppState {
      */
     pub async fn login_google_v3(&self, req: GoogleAuthCallbackPayload) -> Result<String> {
         self.gauth.login_v3(req).await
-    }
-
-    pub async fn get_user_info(&self, user_id: u64) -> Result<MeResponse> {
-        let user = match self.db.get_user(user_id).await? {
-            Some(u) => u,
-            None => return Err(Error::UserNotFound),
-        };
-
-        Ok(MeResponse {
-            name: user.name,
-            picture: user.picture,
-        })
     }
 
     pub async fn add_file(&self, req: AddFileRequest) -> Result<FileUploadResponse> {

@@ -47,7 +47,7 @@ pub async fn serve_command() {
             .service(get_file_jpg)
             .service(get_file)
             .service(get_file_status)
-            .service(get_me)
+            .service(get_me_action)
             .service(get_new_trees_action)
             .service(get_updated_trees_action)
             .service(get_tree_defaults)
@@ -63,7 +63,7 @@ pub async fn serve_command() {
             .service(search_species)
             .service(suggest_species)
             .service(update_tree)
-            .service(get_user)
+            .service(get_user_action)
             .service(
                 Files::new("/", "./static")
                     .prefer_utf8(true)
