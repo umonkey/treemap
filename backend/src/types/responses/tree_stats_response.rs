@@ -1,6 +1,6 @@
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]
-pub struct TreeStats {
+pub struct TreeStatsResponse {
     pub count: u64,
 }

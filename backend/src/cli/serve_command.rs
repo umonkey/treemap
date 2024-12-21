@@ -51,7 +51,7 @@ pub async fn serve_command() {
             .service(get_new_trees_action)
             .service(get_updated_trees_action)
             .service(get_tree_defaults_action)
-            .service(get_tree_stats)
+            .service(get_tree_stats_action)
             .service(get_tree_action)
             .service(get_trees)
             .service(like_tree)

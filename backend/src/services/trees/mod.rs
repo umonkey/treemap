@@ -8,10 +8,7 @@ use log::debug;
 use std::sync::Arc;
 
 use crate::services::Database;
-use crate::types::{
-    Error, GetTreesRequest, MoveTreeRequest, Result, SearchQuery, TreeList, TreeRecord, TreeStats,
-    UpdateTreeRequest,
-};
+use crate::types::*;
 use crate::utils::{fix_circumference, get_timestamp};
 
 pub struct Trees {
@@ -102,12 +99,6 @@ impl Trees {
 
             None => Err(Error::TreeNotFound),
         }
-    }
-
-    pub async fn get_tree_stats(&self) -> Result<TreeStats> {
-        Ok(TreeStats {
-            count: self.db.count_trees().await?,
-        })
     }
 }
 

@@ -23,6 +23,7 @@ pub struct AppState {
     pub get_tree_comments_handler: Arc<GetTreeCommentsHandler>,
     pub get_tree_defaults_handler: Arc<GetTreeDefaultsHandler>,
     pub get_tree_handler: Arc<GetTreeHandler>,
+    pub get_tree_stats_handler: Arc<GetTreeStatsHandler>,
     pub get_updated_trees_handler: Arc<GetUpdatedTreesHandler>,
     pub get_user_handler: Arc<GetUserHandler>,
 }
@@ -50,6 +51,7 @@ impl AppState {
             get_tree_comments_handler: locator.get::<GetTreeCommentsHandler>()?,
             get_tree_defaults_handler: locator.get::<GetTreeDefaultsHandler>()?,
             get_tree_handler: locator.get::<GetTreeHandler>()?,
+            get_tree_stats_handler: locator.get::<GetTreeStatsHandler>()?,
             get_updated_trees_handler: locator.get::<GetUpdatedTreesHandler>()?,
             get_user_handler: locator.get::<GetUserHandler>()?,
         })
@@ -100,10 +102,6 @@ impl AppState {
         // TODO: check if user exists.
 
         Ok(user_id)
-    }
-
-    pub async fn get_tree_stats(&self) -> Result<TreeStats> {
-        self.trees.get_tree_stats().await
     }
 
     pub async fn get_file(&self, id: u64) -> Result<Vec<u8>> {
