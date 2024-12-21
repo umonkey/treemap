@@ -1,6 +1,7 @@
 <script>
 	import DotsIcon from '$lib/icons/DotsIcon.svelte';
 	import { menuState } from '$lib/stores/treeMenu';
+	import { routes } from '$lib/routes';
 
 	const { title, address = undefined } = $props();
 
@@ -13,7 +14,7 @@
 	<h1>
 		<strong>{title}</strong>
 		{#if address}
-			&middot; {address}{/if}
+			&middot; <a href={routes.searchQuery(address)}>{address}</a>{/if}
 	</h1>
 	<button class="edit" onclick={onMenu}>
 		<DotsIcon />
