@@ -9,10 +9,10 @@ use std::sync::Arc;
 
 use crate::services::Database;
 use crate::types::{
-    AddTreeRequest, Error, GetTreesRequest, MoveTreeRequest, Result, SearchQuery, TreeList,
-    TreeRecord, TreeStats, UpdateTreeRequest,
+    Error, GetTreesRequest, MoveTreeRequest, Result, SearchQuery, TreeList, TreeRecord, TreeStats,
+    UpdateTreeRequest,
 };
-use crate::utils::{get_timestamp, get_unique_id};
+use crate::utils::{fix_circumference, get_timestamp};
 
 pub struct Trees {
     db: Arc<dyn Database>,
@@ -21,43 +21,6 @@ pub struct Trees {
 impl Trees {
     pub async fn new(db: &Arc<dyn Database>) -> Self {
         Self { db: db.clone() }
-    }
-
-    pub async fn add_trees(&self, req: AddTreeRequest) -> Result<Vec<TreeRecord>> {
-        let now = get_timestamp();
-
-        let mut trees: Vec<TreeRecord> = Vec::new();
-
-        for point in req.points {
-            let tree = TreeRecord {
-                id: get_unique_id()?,
-                osm_id: None,
-                lat: point.lat,
-                lon: point.lon,
-                species: req.species.clone(),
-                notes: req.notes.clone(),
-                height: req.height,
-                circumference: Self::fix_circumference(req.circumference),
-                diameter: req.diameter,
-                state: req.state.to_string(),
-                added_at: now,
-                updated_at: now,
-                added_by: req.user_id,
-                thumbnail_id: None,
-                year: req.year,
-            };
-
-            debug!(
-                "Adding tree at ({}, {}) with species '{}'.",
-                tree.lat, tree.lon, tree.species
-            );
-
-            self.db.add_tree(&tree).await?;
-
-            trees.push(tree);
-        }
-
-        Ok(trees)
     }
 
     pub async fn update_tree(&self, req: UpdateTreeRequest) -> Result<TreeRecord> {
@@ -79,7 +42,7 @@ impl Trees {
                 Some(value) => Some(value),
                 None => old.height,
             },
-            circumference: match Self::fix_circumference(req.circumference) {
+            circumference: match fix_circumference(req.circumference) {
                 Some(value) => Some(value),
                 None => old.circumference,
             },
@@ -151,26 +114,12 @@ impl Trees {
         debug!("Getting last tree for user {}.", user_id);
         self.db.get_last_tree_by_user(user_id).await
     }
-
-    fn fix_circumference(value: Option<f64>) -> Option<f64> {
-        let mut value: f64 = match value {
-            Some(v) => v,
-            None => return None,
-        };
-
-        if value.fract() == 0.0 && value > 3.0 {
-            value /= 100.0;
-        }
-
-        Some(value)
-    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::services::database::SqliteDatabase;
-    use crate::types::LatLon;
     use env_logger;
     use std::env;
 
@@ -234,145 +183,5 @@ mod tests {
         assert_eq!(trees.trees.len(), 3);
 
         Ok(())
-    }
-
-    #[tokio::test]
-    async fn test_add_tree_minimal() {
-        let service = setup(None).await.expect("Error initializing the service");
-
-        let trees = service
-            .add_trees(AddTreeRequest {
-                points: vec![LatLon {
-                    lat: 12.34,
-                    lon: 56.78,
-                }],
-                species: "Oak".to_string(),
-                notes: None,
-                height: None,
-                circumference: None,
-                diameter: None,
-                state: "healthy".to_string(),
-                user_id: 3,
-                year: None,
-            })
-            .await
-            .expect("Error adding tree");
-
-        assert_eq!(trees.len(), 1);
-
-        let tree = &trees[0];
-
-        debug!("Tree added: {:?}", tree);
-
-        let tree = service
-            .get_tree(tree.id)
-            .await
-            .expect("Error reading a tree that was just added");
-
-        assert_eq!(tree.lat, 12.34);
-        assert_eq!(tree.lon, 56.78);
-        assert_eq!(tree.species, "Oak");
-        assert!(tree.notes.is_none(), "notes should be empty");
-        assert!(tree.height.is_none(), "height should be empty");
-        assert!(
-            tree.circumference.is_none(),
-            "circumference should be empty"
-        );
-        assert!(tree.diameter.is_none(), "diameter should be empty");
-        assert_eq!(tree.state, "healthy");
-        assert_eq!(tree.added_by, 3);
-    }
-
-    #[tokio::test]
-    async fn test_add_tree_full() {
-        let service = setup(None).await.expect("Error initializing the service");
-
-        let trees = service
-            .add_trees(AddTreeRequest {
-                points: vec![LatLon {
-                    lat: 12.34,
-                    lon: 56.78,
-                }],
-                species: "Quercus".to_string(),
-                notes: Some("Oak".to_string()),
-                height: Some(12.3),
-                circumference: Some(3.4),
-                diameter: Some(15.0),
-                state: "healthy".to_string(),
-                user_id: 3,
-                year: None,
-            })
-            .await
-            .expect("Error adding tree");
-
-        assert_eq!(trees.len(), 1);
-
-        let tree = service
-            .get_tree(trees[0].id)
-            .await
-            .expect("Error reading a tree that was just added");
-
-        assert_eq!(tree.lat, 12.34);
-        assert_eq!(tree.lon, 56.78);
-        assert_eq!(tree.species, "Quercus");
-        assert_eq!(tree.notes.expect("notes not set"), "Oak");
-        assert_eq!(tree.height.expect("height not set"), 12.3);
-        assert_eq!(tree.circumference.expect("circumference not set"), 3.4);
-        assert_eq!(tree.diameter.expect("diameter not set"), 15.0);
-        assert_eq!(tree.state, "healthy");
-        assert_eq!(tree.added_by, 3);
-    }
-
-    #[tokio::test]
-    async fn test_keep_circumference() {
-        let service = setup(None).await.expect("Error initializing the service");
-
-        let trees = service
-            .add_trees(AddTreeRequest {
-                points: vec![LatLon {
-                    lat: 12.34,
-                    lon: 56.78,
-                }],
-                species: "Quercus".to_string(),
-                notes: Some("Oak".to_string()),
-                height: Some(12.3),
-                circumference: Some(2.0),
-                diameter: Some(15.0),
-                state: "healthy".to_string(),
-                user_id: 3,
-                year: None,
-            })
-            .await
-            .expect("Error adding tree");
-
-        assert_eq!(2.0, trees[0].circumference.unwrap());
-    }
-
-    /**
-     * When circumference is a whole number greater than 3, it is assumed to be in cm.
-     */
-    #[tokio::test]
-    async fn test_convert_circumference() {
-        let service = setup(None).await.expect("Error initializing the service");
-
-        let trees = service
-            .add_trees(AddTreeRequest {
-                points: vec![LatLon {
-                    lat: 12.34,
-                    lon: 56.78,
-                }],
-                species: "Quercus".to_string(),
-                notes: Some("Oak".to_string()),
-                height: Some(12.3),
-                circumference: Some(123.0),
-                diameter: Some(15.0),
-                state: "healthy".to_string(),
-                user_id: 3,
-                year: None,
-            })
-            .await
-            .expect("Error adding tree");
-
-        assert_eq!(1.23, trees[0].circumference.unwrap());
     }
 }

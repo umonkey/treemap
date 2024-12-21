@@ -24,18 +24,20 @@ pub async fn add_trees(
 ) -> Result<Json<TreeList>> {
     let user_id = state.get_user_id(&req)?;
 
-    let req = AddTreeRequest {
-        points: payload.points.clone(),
-        species: payload.species.clone(),
-        notes: payload.notes.clone(),
-        height: payload.height,
-        circumference: payload.circumference,
-        diameter: payload.diameter,
-        state: payload.state.clone(),
-        user_id,
-        year: payload.year,
-    };
+    let trees = state
+        .add_trees_handler
+        .handle(AddTreeRequest {
+            points: payload.points.clone(),
+            species: payload.species.clone(),
+            notes: payload.notes.clone(),
+            height: payload.height,
+            circumference: payload.circumference,
+            diameter: payload.diameter,
+            state: payload.state.clone(),
+            user_id,
+            year: payload.year,
+        })
+        .await?;
 
-    let trees = state.add_trees(req).await?;
     Ok(Json(TreeList::from_trees(trees)))
 }

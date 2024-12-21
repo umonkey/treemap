@@ -4,10 +4,10 @@ use crate::services::trees::Trees;
 use crate::services::Locator;
 use crate::services::{get_file_storage, Database, FileService, GoogleAuth, TokenService};
 use crate::types::{
-    AddFileRequest, AddTreeRequest, Error, FileRecord, FileStatusResponse, FileUploadResponse,
-    GetTreesRequest, GoogleAuthCallbackPayload, LoginGoogleRequest, LoginResponse, MeResponse,
-    MoveTreeRequest, NewTreeDefaultsResponse, PublicSpeciesInfo, Result, TreeDetails, TreeList,
-    TreeRecord, TreeStats, UpdateTreeRequest, UserRecord, UserResponse,
+    AddFileRequest, Error, FileRecord, FileStatusResponse, FileUploadResponse, GetTreesRequest,
+    GoogleAuthCallbackPayload, LoginGoogleRequest, LoginResponse, MeResponse, MoveTreeRequest,
+    NewTreeDefaultsResponse, PublicSpeciesInfo, Result, TreeDetails, TreeList, TreeRecord,
+    TreeStats, UpdateTreeRequest, UserRecord, UserResponse,
 };
 use actix_web::HttpRequest;
 use log::info;
@@ -21,6 +21,7 @@ pub struct AppState {
     tokens: TokenService,
     trees: Trees,
     pub add_comment_handler: Arc<AddCommentHandler>,
+    pub add_trees_handler: Arc<AddTreesHandler>,
     pub get_new_trees_handler: Arc<GetNewTreesHandler>,
     pub get_new_comments_handler: Arc<GetNewCommentsHandler>,
     pub get_tree_comments_handler: Arc<GetTreeCommentsHandler>,
@@ -42,15 +43,12 @@ impl AppState {
             tokens: token,
             trees: Trees::new(&db).await,
             add_comment_handler: locator.get::<AddCommentHandler>()?,
+            add_trees_handler: locator.get::<AddTreesHandler>()?,
             get_new_trees_handler: locator.get::<GetNewTreesHandler>()?,
             get_new_comments_handler: locator.get::<GetNewCommentsHandler>()?,
             get_tree_comments_handler: locator.get::<GetTreeCommentsHandler>()?,
             get_updated_trees_handler: locator.get::<GetUpdatedTreesHandler>()?,
         })
-    }
-
-    pub async fn add_trees(&self, req: AddTreeRequest) -> Result<Vec<TreeRecord>> {
-        self.trees.add_trees(req).await
     }
 
     pub async fn update_tree(&self, req: UpdateTreeRequest) -> Result<TreeRecord> {
