@@ -28,6 +28,7 @@ pub struct AppState {
     pub get_updated_trees_handler: Arc<GetUpdatedTreesHandler>,
     pub get_user_handler: Arc<GetUserHandler>,
     pub like_tree_handler: Arc<LikeTreeHandler>,
+    pub unlike_tree_handler: Arc<UnlikeTreeHandler>,
 }
 
 impl AppState {
@@ -58,6 +59,7 @@ impl AppState {
             get_updated_trees_handler: locator.get::<GetUpdatedTreesHandler>()?,
             get_user_handler: locator.get::<GetUserHandler>()?,
             like_tree_handler: locator.get::<LikeTreeHandler>()?,
+            unlike_tree_handler: locator.get::<UnlikeTreeHandler>()?,
         })
     }
 
@@ -142,10 +144,5 @@ impl AppState {
 
     pub async fn suggest_species(&self, user_id: u64) -> Result<Vec<String>> {
         self.db.find_recent_species(user_id).await
-    }
-
-    pub async fn unlike_tree(&self, tree_id: u64, user_id: u64) -> Result<()> {
-        self.db.unlike_tree(tree_id, user_id).await?;
-        Ok(())
     }
 }
