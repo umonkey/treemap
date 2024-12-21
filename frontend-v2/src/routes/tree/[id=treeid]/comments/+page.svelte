@@ -40,7 +40,7 @@
 </svelte:head>
 
 <Header title="Tree" />
-<Title title={formatSpecies(tree.species)} />
+<Title title={formatSpecies(tree.species)} address={tree.address} />
 <Tabs tree={tree.id} active="comments" />
 <TreeMenu id={tree.id} />
 
