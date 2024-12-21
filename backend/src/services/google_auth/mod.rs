@@ -1,16 +1,11 @@
-use jsonwebtoken::{decode, decode_header, Algorithm, TokenData, Validation};
-use jwks::Jwks;
-use log::{debug, error, info};
+use log::{debug, info};
 use reqwest::header::{HeaderMap, HeaderValue};
 use serde::Deserialize;
 use std::sync::Arc;
 use url::Url;
 
 use crate::services::{Database, TokenService};
-use crate::types::{
-    Error, GoogleAuthCallbackPayload, GoogleUserinfoResponse, LoginGoogleRequest, LoginResponse,
-    Result, TokenClaims, UserRecord,
-};
+use crate::types::*;
 use crate::utils::{get_timestamp, get_unique_id};
 
 const TOKEN_TTL: u64 = 30 * 86400; // 30 days
@@ -33,65 +28,6 @@ impl GoogleAuth {
             db: db.clone(),
             tokens: tokens.clone(),
         }
-    }
-
-    pub async fn login_v2(&self, req: LoginGoogleRequest) -> Result<LoginResponse> {
-        debug!("Authenticating a Google user (v2).");
-
-        let header = decode_header(&req.token)?;
-        let kid = header.kid.as_ref().ok_or(Error::BadAuthToken)?;
-
-        let jwks_url = "https://www.googleapis.com/oauth2/v3/certs";
-
-        let jwks = match Jwks::from_jwks_url(jwks_url).await {
-            Ok(value) => value,
-            Err(e) => {
-                error!("Error fetching JWKS: {:?}", e);
-                return Err(Error::BadAuthToken);
-            }
-        };
-
-        let jwk = match jwks.keys.get(kid).ok_or(Error::BadAuthToken) {
-            Ok(value) => value,
-            Err(e) => {
-                error!("Error fetching JWKS key: {:?}", e);
-                return Err(Error::BadAuthToken);
-            }
-        };
-
-        let mut validation = Validation::new(Algorithm::RS256);
-        validation.validate_aud = false;
-
-        let decoded_token: TokenData<GoogleIdToken> =
-            match decode::<GoogleIdToken>(&req.token, &jwk.decoding_key, &validation) {
-                Ok(value) => value,
-                Err(e) => {
-                    error!("Error decoding token: {:?}", e);
-                    return Err(Error::BadAuthToken);
-                }
-            };
-
-        let user_info = GoogleUserinfoResponse {
-            id: "unused".to_string(),
-            email: decoded_token.claims.email.clone(),
-            verified_email: true,
-            name: decoded_token.claims.name.clone(),
-            picture: decoded_token.claims.picture.clone(),
-            locale: None,
-        };
-
-        let user = self.get_user(&user_info).await?;
-
-        let token = self.tokens.encode(&TokenClaims {
-            exp: get_timestamp() + TOKEN_TTL,
-            sub: user.id.to_string(),
-        })?;
-
-        Ok(LoginResponse {
-            token,
-            name: user.name,
-            picture: user.picture,
-        })
     }
 
     pub async fn login_v3(&self, req: GoogleAuthCallbackPayload) -> Result<String> {
