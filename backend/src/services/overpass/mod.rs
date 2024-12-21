@@ -1,13 +1,12 @@
 mod node_parser;
 
+use self::node_parser::NodeParser;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::{get_overpass_endpoint, get_overpass_query};
 use log::{debug, error};
 use serde_json::Value;
 use url::Url;
-
-use self::node_parser::NodeParser;
 
 pub struct OverpassClient {
     client: reqwest::Client,

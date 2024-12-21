@@ -213,6 +213,7 @@ mod tests {
             added_by: 0,
             thumbnail_id: None,
             year: None,
+            address: None,
         }
     }
 

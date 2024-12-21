@@ -7,6 +7,7 @@ use async_sqlite::Error as SqliteError;
 
 #[derive(Debug)]
 pub enum Error {
+    AddressNotFound,
     BadAuthToken,
     BadAuthorizationHeader,
     BadCallback,
@@ -31,6 +32,9 @@ pub enum Error {
 impl Error {
     fn payload(&self) -> &str {
         match self {
+            Error::AddressNotFound => {
+                r#"{"error":{"code":"AddressNotFound","description":"Could not find an address for the given coordinates."}}"#
+            }
             Error::BadAuthToken => {
                 r#"{"error":{"code":"BadAuthToken","description":"Bad authentication token."}}"#
             }
@@ -113,6 +117,7 @@ impl ResponseError for Error {
 
     fn status_code(&self) -> StatusCode {
         match self {
+            Error::AddressNotFound => StatusCode::NOT_FOUND,
             Error::BadAuthToken => StatusCode::UNAUTHORIZED,
             Error::BadAuthorizationHeader => StatusCode::BAD_REQUEST,
             Error::BadCallback => StatusCode::BAD_REQUEST,
@@ -139,6 +144,7 @@ impl ResponseError for Error {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
+            Error::AddressNotFound => write!(f, "AddressNotFound"),
             Error::BadAuthToken => write!(f, "BadAuthToken"),
             Error::BadAuthorizationHeader => write!(f, "BadAuthorizationHeader"),
             Error::BadCallback => write!(f, "BadCallback"),

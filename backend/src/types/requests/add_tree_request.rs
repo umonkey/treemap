@@ -13,4 +13,5 @@ pub struct AddTreeRequest {
     pub state: String,
     pub user_id: u64,
     pub year: Option<i64>,
+    pub address: Option<String>,
 }

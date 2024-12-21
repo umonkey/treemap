@@ -13,4 +13,5 @@ pub struct UpdateTreeRequest {
     pub state: Option<String>,
     pub user_id: u64,
     pub year: Option<i64>,
+    pub address: Option<String>,
 }

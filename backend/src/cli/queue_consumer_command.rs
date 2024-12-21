@@ -1,8 +1,10 @@
-use crate::services::QueueConsumer;
+use crate::services::*;
 
 pub async fn queue_consumer_command() {
-    let consumer = QueueConsumer::new()
-        .await
+    let locator = Locator::new();
+
+    let consumer = locator
+        .get::<QueueConsumer>()
         .expect("Error creating queue consumer.");
 
     consumer.run().await;

@@ -20,6 +20,7 @@ struct RequestPayload {
     pub diameter: Option<f64>,
     pub state: Option<String>,
     pub year: Option<i64>,
+    pub address: Option<String>,
 }
 
 #[put("/v1/trees/{id}")]
@@ -45,6 +46,7 @@ pub async fn update_tree_action(
             state: payload.state.clone(),
             user_id,
             year: payload.year,
+            address: payload.address.clone(),
         })
         .await?;
 

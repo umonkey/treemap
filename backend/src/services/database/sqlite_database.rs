@@ -199,6 +199,7 @@ impl SqliteDatabase {
             added_by: row.get(12)?,
             thumbnail_id: row.get(13)?,
             year: row.get(14)?,
+            address: row.get(15)?,
         })
     }
 
@@ -330,7 +331,7 @@ impl DatabaseInterface for SqliteDatabase {
      */
     async fn get_tree(&self, id: u64) -> Result<Option<TreeRecord>> {
         let tree = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id, year FROM trees WHERE id = ? LIMIT 1") {
+            let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id, year, address FROM trees WHERE id = ? LIMIT 1") {
                 Ok(value) => value,
 
                 Err(e) => {
@@ -363,7 +364,7 @@ impl DatabaseInterface for SqliteDatabase {
      */
     async fn get_tree_by_osm_id(&self, osm_id: u64) -> Result<Option<TreeRecord>> {
         let tree = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id, year FROM trees WHERE osm_id = ? LIMIT 1") {
+            let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id, year, address FROM trees WHERE osm_id = ? LIMIT 1") {
                 Ok(value) => value,
 
                 Err(e) => {
@@ -398,7 +399,7 @@ impl DatabaseInterface for SqliteDatabase {
      */
     async fn get_trees(&self, bounds: Bounds) -> Result<Vec<TreeRecord>> {
         let trees = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id, year FROM trees WHERE lat <= ? AND lat >= ? AND lon <= ? AND lon >= ?") {
+            let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id, year, address FROM trees WHERE lat <= ? AND lat >= ? AND lon <= ? AND lon >= ?") {
                 Ok(value) => value,
 
                 Err(e) => {
@@ -444,7 +445,7 @@ impl DatabaseInterface for SqliteDatabase {
 
     async fn get_new_trees(&self, count: u64, skip: u64) -> Result<Vec<TreeRecord>> {
         let trees = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id, year FROM trees ORDER BY added_at DESC LIMIT ?, ?") {
+            let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id, year, address FROM trees ORDER BY added_at DESC LIMIT ?, ?") {
                 Ok(value) => value,
 
                 Err(e) => {
@@ -476,7 +477,7 @@ impl DatabaseInterface for SqliteDatabase {
 
     async fn get_updated_trees(&self, count: u64, skip: u64) -> Result<Vec<TreeRecord>> {
         let trees = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id, year FROM trees WHERE added_at <> updated_at ORDER BY updated_at DESC LIMIT ?, ?") {
+            let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id, year, address FROM trees WHERE added_at <> updated_at ORDER BY updated_at DESC LIMIT ?, ?") {
                 Ok(value) => value,
 
                 Err(e) => {
@@ -565,7 +566,7 @@ impl DatabaseInterface for SqliteDatabase {
 
     async fn get_last_tree_by_user(&self, user_id: u64) -> Result<Option<TreeRecord>> {
         let tree = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id, year FROM trees WHERE added_by = ? ORDER BY id DESC") {
+            let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id, year, address FROM trees WHERE added_by = ? ORDER BY id DESC") {
                 Ok(value) => value,
 
                 Err(e) => {
@@ -1321,6 +1322,7 @@ mod tests {
             added_by: 7,
             thumbnail_id: Some(8),
             year: None,
+            address: None,
         })
         .await
         .expect("Error adding tree");
@@ -1527,6 +1529,7 @@ mod tests {
                     updated_at: now,
                     thumbnail_id: None,
                     year: None,
+                    address: None,
                 })
                 .await
                 .expect("Error adding tree.");
@@ -1565,6 +1568,7 @@ mod tests {
             updated_at: now,
             thumbnail_id: None,
             year: None,
+            address: None,
         })
         .await
         .expect("Error adding tree");
@@ -1601,6 +1605,7 @@ mod tests {
             updated_at: now,
             thumbnail_id: None,
             year: None,
+            address: None,
         })
         .await
         .expect("Error adding tree");
@@ -1639,6 +1644,7 @@ mod tests {
                 updated_at: now,
                 thumbnail_id: None,
                 year: None,
+                address: None,
             })
             .await
             .expect("Error adding tree.");

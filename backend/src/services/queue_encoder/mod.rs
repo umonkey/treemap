@@ -1,6 +1,5 @@
+use crate::types::*;
 use log::error;
-
-use crate::types::{Error, QueueCommand, ResizeImageMessage, Result};
 
 impl QueueCommand {
     pub fn decode(json: &str) -> Result<Option<Self>> {
@@ -33,6 +32,17 @@ impl QueueCommand {
                 })?;
 
                 Ok(Some(QueueCommand::ResizeImage(ResizeImageMessage { id })))
+            }
+
+            "UpdateTreeAddress" => {
+                let id = params["id"].as_u64().ok_or("missing id").map_err(|e| {
+                    error!("Error extracting tree id: {}, payload={}", e, json);
+                    Error::Queue
+                })?;
+
+                Ok(Some(QueueCommand::UpdateTreeAddress(
+                    UpdateTreeAddressMessage { id },
+                )))
             }
 
             _ => {

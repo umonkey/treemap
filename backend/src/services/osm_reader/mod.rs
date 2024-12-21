@@ -25,6 +25,7 @@ const DEFAULT_STATE: &str = "healthy";
 pub struct OsmReaderService {
     db: Arc<dyn DatabaseInterface>,
     overpass_client: Arc<OverpassClient>,
+    queue: Arc<QueueService>,
 }
 
 impl OsmReaderService {
@@ -141,9 +142,11 @@ impl OsmReaderService {
             added_by: 0,
             thumbnail_id: None,
             year: None,
+            address: None,
         };
 
         self.db.add_tree(&tree).await?;
+        self.schedule_address_update(tree.id).await?;
 
         info!("Tree {} added from OSM node {}.", tree.id, node.id);
 
@@ -159,16 +162,27 @@ impl OsmReaderService {
 
         Ok(None)
     }
+
+    async fn schedule_address_update(&self, tree_id: u64) -> Result<()> {
+        let msg = UpdateTreeAddressMessage { id: tree_id };
+        self.queue.push(&msg.encode()).await?;
+
+        info!("Scheduled address update for tree {}", tree_id);
+
+        Ok(())
+    }
 }
 
 impl Locatable for OsmReaderService {
     fn create(locator: &Locator) -> Result<Self> {
         let db = locator.get::<PreferredDatabase>()?.driver();
         let overpass_client = locator.get::<OverpassClient>()?;
+        let queue = locator.get::<QueueService>()?;
 
         Ok(Self {
             db,
             overpass_client,
+            queue,
         })
     }
 }

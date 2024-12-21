@@ -20,4 +20,5 @@ pub struct TreeRecord {
     pub added_by: u64,
     pub thumbnail_id: Option<u64>,
     pub year: Option<i64>,
+    pub address: Option<String>,
 }

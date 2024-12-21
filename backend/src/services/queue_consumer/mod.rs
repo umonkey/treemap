@@ -1,7 +1,8 @@
-/// This code reads messages from the queue and processes them,
-/// by decoding parameters and calling the appropriate service.
-///
-/// Runs in an infinite loop.
+//! This code reads messages from the queue and processes them,
+//! by decoding parameters and calling the appropriate service.
+//!
+//! Runs in an infinite loop.
+
 use crate::handlers::*;
 use crate::services::*;
 use crate::types::*;
@@ -15,18 +16,10 @@ const DELAY: u64 = 1;
 pub struct QueueConsumer {
     queue: Arc<QueueService>,
     resize_image_handler: Arc<ResizeImageHandler>,
+    update_tree_address_handler: Arc<UpdateTreeAddressHandler>,
 }
 
 impl QueueConsumer {
-    pub async fn new() -> Result<Self> {
-        let locator = Locator::new();
-
-        Ok(Self {
-            queue: locator.get::<QueueService>()?,
-            resize_image_handler: locator.get::<ResizeImageHandler>()?,
-        })
-    }
-
     pub async fn run(&self) {
         info!("Running queue consumer.");
 
@@ -66,6 +59,10 @@ impl QueueConsumer {
                 self.resize_image_handler.handle(message.id).await?;
             }
 
+            Ok(Some(QueueCommand::UpdateTreeAddress(message))) => {
+                self.update_tree_address_handler.handle(message.id).await?;
+            }
+
             Ok(None) => {
                 debug!("Unknown message: {}", msg);
             }
@@ -76,5 +73,19 @@ impl QueueConsumer {
         }
 
         Ok(())
+    }
+}
+
+impl Locatable for QueueConsumer {
+    fn create(locator: &Locator) -> Result<Self> {
+        let queue = locator.get::<QueueService>()?;
+        let resize_image_handler = locator.get::<ResizeImageHandler>()?;
+        let update_tree_address_handler = locator.get::<UpdateTreeAddressHandler>()?;
+
+        Ok(Self {
+            queue,
+            resize_image_handler,
+            update_tree_address_handler,
+        })
     }
 }

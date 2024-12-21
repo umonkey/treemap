@@ -35,6 +35,7 @@ impl AddTreesHandler {
                 added_by: req.user_id,
                 thumbnail_id: None,
                 year: req.year,
+                address: req.address.clone(),
             };
 
             debug!(

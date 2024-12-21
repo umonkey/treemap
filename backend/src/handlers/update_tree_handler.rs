@@ -6,6 +6,7 @@ use std::sync::Arc;
 
 pub struct UpdateTreeHandler {
     db: Arc<dyn DatabaseInterface>,
+    queue: Arc<QueueService>,
 }
 
 impl UpdateTreeHandler {
@@ -51,19 +52,37 @@ impl UpdateTreeHandler {
                 Some(value) => Some(value),
                 None => old.year,
             },
+            address: match req.address {
+                Some(value) => Some(value),
+                None => old.address,
+            },
         };
 
         info!("Updating tree: {:?}", new);
 
         self.db.update_tree(&new).await?;
 
+        if new.address.is_none() {
+            self.schedule_address_update(new.id).await?;
+        }
+
         Ok(new)
+    }
+
+    async fn schedule_address_update(&self, tree_id: u64) -> Result<()> {
+        let msg = UpdateTreeAddressMessage { id: tree_id };
+        self.queue.push(&msg.encode()).await?;
+
+        info!("Scheduled address update for tree {}", tree_id);
+
+        Ok(())
     }
 }
 
 impl Locatable for UpdateTreeHandler {
     fn create(locator: &Locator) -> Result<Self> {
         let db = locator.get::<PreferredDatabase>()?.driver();
-        Ok(Self { db })
+        let queue = locator.get::<QueueService>()?;
+        Ok(Self { db, queue })
     }
 }
