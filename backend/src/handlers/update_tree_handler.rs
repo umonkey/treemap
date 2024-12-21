@@ -1,29 +1,27 @@
-/**
- * The tree service performs updates to the trees database.
- *
- * Reading is straight-forward, updates also log individual property changes
- * to be able to track changes over time.
- */
-use log::debug;
-use std::sync::Arc;
-
 use crate::services::Database;
+use crate::services::SqliteDatabase;
+use crate::services::{Locatable, Locator};
 use crate::types::*;
 use crate::utils::{fix_circumference, get_timestamp};
+use log::info;
+use std::sync::Arc;
 
-pub struct Trees {
-    db: Arc<dyn Database>,
+pub struct UpdateTreeHandler {
+    db: Arc<dyn Database + Send + Sync>,
 }
 
-impl Trees {
-    pub async fn new(db: &Arc<dyn Database>) -> Self {
-        Self { db: db.clone() }
+impl UpdateTreeHandler {
+    pub fn new(db: Arc<SqliteDatabase>) -> Self {
+        Self { db }
     }
 
-    pub async fn update_tree(&self, req: UpdateTreeRequest) -> Result<TreeRecord> {
+    pub async fn handle(&self, req: UpdateTreeRequest) -> Result<TreeRecord> {
         let now = get_timestamp();
 
-        let old = self.get_tree(req.id).await?;
+        let old = match self.db.get_tree(req.id).await? {
+            Some(tree) => tree,
+            None => return Err(Error::TreeNotFound),
+        };
 
         let new = TreeRecord {
             id: req.id,
@@ -61,20 +59,17 @@ impl Trees {
             },
         };
 
-        debug!("Updating tree: {:?}", new);
+        info!("Updating tree: {:?}", new);
 
         self.db.update_tree(&new).await?;
 
         Ok(new)
     }
+}
 
-    pub async fn get_tree(&self, id: u64) -> Result<TreeRecord> {
-        debug!("Getting details for tree {}.", id);
-
-        match self.db.get_tree(id).await? {
-            Some(tree) => Ok(tree),
-
-            None => Err(Error::TreeNotFound),
-        }
+impl Locatable for UpdateTreeHandler {
+    fn create(locator: &Locator) -> Result<Self> {
+        let db = locator.get::<SqliteDatabase>()?;
+        Ok(Self::new(db))
     }
 }

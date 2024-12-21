@@ -1,6 +1,5 @@
 use crate::handlers::*;
 use crate::services::database::get_database;
-use crate::services::trees::Trees;
 use crate::services::Locator;
 use crate::services::{get_file_storage, Database, FileService, GoogleAuth, TokenService};
 use crate::types::*;
@@ -12,7 +11,6 @@ pub struct AppState {
     files: FileService,
     gauth: GoogleAuth,
     tokens: TokenService,
-    trees: Trees,
     pub add_comment_handler: Arc<AddCommentHandler>,
     pub add_trees_handler: Arc<AddTreesHandler>,
     pub get_file_status_handler: Arc<GetFileStatusHandler>,
@@ -29,6 +27,7 @@ pub struct AppState {
     pub like_tree_handler: Arc<LikeTreeHandler>,
     pub move_tree_handler: Arc<MoveTreeHandler>,
     pub unlike_tree_handler: Arc<UnlikeTreeHandler>,
+    pub update_tree_handler: Arc<UpdateTreeHandler>,
 }
 
 impl AppState {
@@ -44,7 +43,6 @@ impl AppState {
             files: FileService::new(&db, &storage)?,
             gauth: GoogleAuth::new(&db, &token).await,
             tokens: token,
-            trees: Trees::new(&db).await,
             add_comment_handler: locator.get::<AddCommentHandler>()?,
             add_trees_handler: locator.get::<AddTreesHandler>()?,
             get_file_status_handler: locator.get::<GetFileStatusHandler>()?,
@@ -61,11 +59,8 @@ impl AppState {
             like_tree_handler: locator.get::<LikeTreeHandler>()?,
             move_tree_handler: locator.get::<MoveTreeHandler>()?,
             unlike_tree_handler: locator.get::<UnlikeTreeHandler>()?,
+            update_tree_handler: locator.get::<UpdateTreeHandler>()?,
         })
-    }
-
-    pub async fn update_tree(&self, req: UpdateTreeRequest) -> Result<TreeRecord> {
-        self.trees.update_tree(req).await
     }
 
     pub fn get_user_id(&self, req: &HttpRequest) -> Result<u64> {

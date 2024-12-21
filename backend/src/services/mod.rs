@@ -11,7 +11,6 @@ mod queue_consumer;
 mod queue_encoder;
 mod thumbnailer;
 mod tokens;
-mod trees;
 pub use app::*;
 pub use database::*;
 pub use file_storage::*;

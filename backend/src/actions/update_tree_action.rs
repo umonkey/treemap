@@ -23,7 +23,7 @@ struct RequestPayload {
 }
 
 #[put("/v1/trees/{id}")]
-pub async fn update_tree(
+pub async fn update_tree_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
     payload: Json<RequestPayload>,
@@ -31,20 +31,22 @@ pub async fn update_tree(
 ) -> Result<Json<TreeRecord>> {
     let user_id = state.get_user_id(&req)?;
 
-    let req = UpdateTreeRequest {
-        id: path.id,
-        lat: payload.lat,
-        lon: payload.lon,
-        species: payload.species.clone(),
-        notes: payload.notes.clone(),
-        height: payload.height,
-        circumference: payload.circumference,
-        diameter: payload.diameter,
-        state: payload.state.clone(),
-        user_id,
-        year: payload.year,
-    };
+    let tree = state
+        .update_tree_handler
+        .handle(UpdateTreeRequest {
+            id: path.id,
+            lat: payload.lat,
+            lon: payload.lon,
+            species: payload.species.clone(),
+            notes: payload.notes.clone(),
+            height: payload.height,
+            circumference: payload.circumference,
+            diameter: payload.diameter,
+            state: payload.state.clone(),
+            user_id,
+            year: payload.year,
+        })
+        .await?;
 
-    let tree = state.update_tree(req).await?;
     Ok(Json(tree))
 }

@@ -62,7 +62,7 @@ pub async fn serve_command() {
             .service(move_tree_action)
             .service(search_species)
             .service(suggest_species)
-            .service(update_tree)
+            .service(update_tree_action)
             .service(get_user_action)
             .service(
                 Files::new("/", "./static")
