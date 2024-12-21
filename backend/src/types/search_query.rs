@@ -188,6 +188,10 @@ impl SearchQuery {
             words.push(value.to_lowercase());
         }
 
+        if let Some(value) = &tree.address {
+            words.push(value.to_lowercase());
+        }
+
         words.join(" ")
     }
 }
