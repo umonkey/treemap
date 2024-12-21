@@ -6,8 +6,8 @@ use crate::services::{
     get_file_storage, CommentsService, Database, FileService, GoogleAuth, TokenService,
 };
 use crate::types::{
-    AddCommentRequest, AddFileRequest, AddTreeRequest, CommentList, CommentRecord, Error,
-    FileRecord, FileStatusResponse, FileUploadResponse, GetTreesRequest, GoogleAuthCallbackPayload,
+    AddFileRequest, AddTreeRequest, CommentList, CommentRecord, Error, FileRecord,
+    FileStatusResponse, FileUploadResponse, GetTreesRequest, GoogleAuthCallbackPayload,
     LoginGoogleRequest, LoginResponse, MeResponse, MoveTreeRequest, NewTreeDefaultsResponse,
     PublicSpeciesInfo, Result, TreeDetails, TreeList, TreeRecord, TreeStats, UpdateTreeRequest,
     UserRecord, UserResponse,
@@ -24,6 +24,7 @@ pub struct AppState {
     gauth: GoogleAuth,
     tokens: TokenService,
     trees: Trees,
+    pub add_comment_handler: Arc<AddCommentHandler>,
     pub get_new_trees_handler: Arc<GetNewTreesHandler>,
     pub get_updated_trees_handler: Arc<GetUpdatedTreesHandler>,
 }
@@ -43,6 +44,7 @@ impl AppState {
             gauth: GoogleAuth::new(&db, &token).await,
             tokens: token,
             trees: Trees::new(&db).await,
+            add_comment_handler: locator.get::<AddCommentHandler>()?,
             get_new_trees_handler: locator.get::<GetNewTreesHandler>()?,
             get_updated_trees_handler: locator.get::<GetUpdatedTreesHandler>()?,
         })
@@ -180,10 +182,6 @@ impl AppState {
     pub async fn add_file(&self, req: AddFileRequest) -> Result<FileUploadResponse> {
         let file = self.files.add_file(req).await?;
         Ok(FileUploadResponse::from_file(&file))
-    }
-
-    pub async fn add_comment(&self, req: AddCommentRequest) -> Result<()> {
-        self.comments.add_comment(&req).await
     }
 
     pub async fn get_recent_comments(&self, limit: u64) -> Result<CommentList> {

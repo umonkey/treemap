@@ -1,11 +1,7 @@
-/**
- * Receive a comment from the user, attach to a tree.
- */
-use actix_web::{post, web::Data, web::Json, web::Path, HttpRequest, HttpResponse};
-use serde::Deserialize;
-
 use crate::services::AppState;
 use crate::types::{AddCommentRequest, Result};
+use actix_web::{post, web::Data, web::Json, web::Path, HttpRequest, HttpResponse};
+use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
 pub struct PathInfo {
@@ -26,13 +22,14 @@ pub async fn add_comment(
 ) -> Result<HttpResponse> {
     let user_id = state.get_user_id(&req)?;
 
-    let req = AddCommentRequest {
-        tree_id: path.id,
-        message: payload.message.to_string(),
-        user_id,
-    };
-
-    state.add_comment(req).await?;
+    state
+        .add_comment_handler
+        .handle(AddCommentRequest {
+            tree_id: path.id,
+            message: payload.message.to_string(),
+            user_id,
+        })
+        .await?;
 
     Ok(HttpResponse::Accepted().finish())
 }
