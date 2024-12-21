@@ -24,6 +24,7 @@ pub struct AppState {
     pub get_tree_defaults_handler: Arc<GetTreeDefaultsHandler>,
     pub get_tree_handler: Arc<GetTreeHandler>,
     pub get_tree_stats_handler: Arc<GetTreeStatsHandler>,
+    pub get_trees_handler: Arc<GetTreesHandler>,
     pub get_updated_trees_handler: Arc<GetUpdatedTreesHandler>,
     pub get_user_handler: Arc<GetUserHandler>,
 }
@@ -52,6 +53,7 @@ impl AppState {
             get_tree_defaults_handler: locator.get::<GetTreeDefaultsHandler>()?,
             get_tree_handler: locator.get::<GetTreeHandler>()?,
             get_tree_stats_handler: locator.get::<GetTreeStatsHandler>()?,
+            get_trees_handler: locator.get::<GetTreesHandler>()?,
             get_updated_trees_handler: locator.get::<GetUpdatedTreesHandler>()?,
             get_user_handler: locator.get::<GetUserHandler>()?,
         })
@@ -67,10 +69,6 @@ impl AppState {
         info!("Tree {} moved to ({},{})", req.id, req.lat, req.lon);
 
         Ok(())
-    }
-
-    pub async fn get_trees(&self, request: &GetTreesRequest) -> Result<TreeList> {
-        self.trees.get_trees(request).await
     }
 
     pub fn get_user_id(&self, req: &HttpRequest) -> Result<u64> {

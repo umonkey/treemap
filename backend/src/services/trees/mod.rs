@@ -80,17 +80,6 @@ impl Trees {
         Ok(())
     }
 
-    pub async fn get_trees(&self, request: &GetTreesRequest) -> Result<TreeList> {
-        let mut trees = self.db.get_trees(request.bounds()).await?;
-
-        if let Some(search) = &request.search {
-            let query = SearchQuery::from_string(search);
-            trees.retain(|t| query.r#match(t));
-        }
-
-        Ok(TreeList::from_trees(trees))
-    }
-
     pub async fn get_tree(&self, id: u64) -> Result<TreeRecord> {
         debug!("Getting details for tree {}.", id);
 
@@ -99,75 +88,5 @@ impl Trees {
 
             None => Err(Error::TreeNotFound),
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::services::database::SqliteDatabase;
-    use env_logger;
-    use std::env;
-
-    async fn setup(data: Option<String>) -> Result<Trees> {
-        env::set_var("TREEMAP_SQLITE_PATH", ":memory:");
-
-        let db = SqliteDatabase::new().await?;
-        db.execute(include_str!("./fixtures/init.sql").to_string())
-            .await?;
-
-        if let Some(init_script) = data {
-            db.execute(init_script).await?;
-        }
-
-        if let Err(_) = env_logger::try_init() {
-            debug!("env_logger already initialized.");
-        };
-
-        let dbh: Arc<dyn Database> = Arc::new(db);
-        Ok(Trees::new(&dbh).await)
-    }
-
-    #[tokio::test]
-    async fn test_get_no_trees() -> Result<()> {
-        let service = setup(None).await?;
-
-        let trees = service
-            .get_trees(&GetTreesRequest {
-                n: 90.0,
-                e: 180.0,
-                s: -90.0,
-                w: -180.0,
-                search: None,
-            })
-            .await?;
-
-        assert_eq!(trees.trees.len(), 0);
-
-        Ok(())
-    }
-
-    #[tokio::test]
-    async fn test_get_some_trees() -> Result<()> {
-        let script = include_str!("./fixtures/some-trees.sql");
-
-        let service = setup(Some(script.to_string()))
-            .await
-            .expect("Error initializing database");
-
-        let trees = service
-            .get_trees(&GetTreesRequest {
-                n: 90.0,
-                e: 180.0,
-                s: -90.0,
-                w: -180.0,
-                search: None,
-            })
-            .await
-            .expect("Error getting trees");
-
-        assert_eq!(trees.trees.len(), 3);
-
-        Ok(())
     }
 }

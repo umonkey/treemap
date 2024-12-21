@@ -53,7 +53,7 @@ pub async fn serve_command() {
             .service(get_tree_defaults_action)
             .service(get_tree_stats_action)
             .service(get_tree_action)
-            .service(get_trees)
+            .service(get_trees_action)
             .service(like_tree)
             .service(unlike_tree)
             .service(login_google)
