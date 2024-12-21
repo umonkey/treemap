@@ -9,7 +9,7 @@ pub struct PathInfo {
 }
 
 #[get("/v1/trees/{id}/comments")]
-pub async fn get_tree_comments(
+pub async fn get_tree_comments_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
 ) -> Result<Json<CommentList>> {

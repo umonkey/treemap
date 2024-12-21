@@ -14,7 +14,7 @@ struct RequestPayload {
 }
 
 #[post("/v1/trees/{id}/comments")]
-pub async fn add_comment(
+pub async fn add_comment_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
     payload: Json<RequestPayload>,

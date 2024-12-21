@@ -17,7 +17,7 @@ struct RequestPayload {
 }
 
 #[post("/v1/trees")]
-pub async fn add_trees(
+pub async fn add_trees_action(
     state: Data<AppState>,
     payload: Json<RequestPayload>,
     req: HttpRequest,
