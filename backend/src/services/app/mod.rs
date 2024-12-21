@@ -1,14 +1,13 @@
 use crate::handlers::*;
 use crate::services::database::get_database;
 use crate::services::Locator;
-use crate::services::{get_file_storage, FileService, GoogleAuth, TokenService};
+use crate::services::{get_file_storage, FileService, TokenService};
 use crate::types::*;
 use actix_web::HttpRequest;
 use std::sync::Arc;
 
 pub struct AppState {
     files: FileService,
-    gauth: GoogleAuth,
     tokens: TokenService,
     pub add_comment_handler: Arc<AddCommentHandler>,
     pub add_trees_handler: Arc<AddTreesHandler>,
@@ -26,6 +25,7 @@ pub struct AppState {
     pub like_tree_handler: Arc<LikeTreeHandler>,
     pub login_google_handler: Arc<LoginGoogleHandler>,
     pub login_google_v2_handler: Arc<LoginGoogleV2Handler>,
+    pub login_google_v3_handler: Arc<LoginGoogleV3Handler>,
     pub move_tree_handler: Arc<MoveTreeHandler>,
     pub search_species_handler: Arc<SearchSpeciesHandler>,
     pub suggest_species_handler: Arc<SuggestSpeciesHandler>,
@@ -43,7 +43,6 @@ impl AppState {
 
         Ok(Self {
             files: FileService::new(&db, &storage)?,
-            gauth: GoogleAuth::new(&db, &token).await,
             tokens: token,
             add_comment_handler: locator.get::<AddCommentHandler>()?,
             add_trees_handler: locator.get::<AddTreesHandler>()?,
@@ -61,6 +60,7 @@ impl AppState {
             like_tree_handler: locator.get::<LikeTreeHandler>()?,
             login_google_handler: locator.get::<LoginGoogleHandler>()?,
             login_google_v2_handler: locator.get::<LoginGoogleV2Handler>()?,
+            login_google_v3_handler: locator.get::<LoginGoogleV3Handler>()?,
             move_tree_handler: locator.get::<MoveTreeHandler>()?,
             search_species_handler: locator.get::<SearchSpeciesHandler>()?,
             suggest_species_handler: locator.get::<SuggestSpeciesHandler>()?,
@@ -102,13 +102,6 @@ impl AppState {
 
     pub async fn get_file(&self, id: u64) -> Result<Vec<u8>> {
         self.files.get_file(id).await
-    }
-
-    /**
-     * Use the new signin API.
-     */
-    pub async fn login_google_v3(&self, req: GoogleAuthCallbackPayload) -> Result<String> {
-        self.gauth.login_v3(req).await
     }
 
     pub async fn add_file(&self, req: AddFileRequest) -> Result<FileUploadResponse> {

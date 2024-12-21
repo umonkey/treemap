@@ -3,12 +3,13 @@ use crate::types::{GoogleAuthCallbackPayload, Result};
 use actix_web::{post, web::Data, web::Form, web::Redirect};
 
 #[post("/v3/login/google")]
-pub async fn login_google_v3(
+pub async fn login_google_v3_action(
     state: Data<AppState>,
     payload: Form<GoogleAuthCallbackPayload>,
 ) -> Result<Redirect> {
     let redirect = state
-        .login_google_v3(GoogleAuthCallbackPayload {
+        .login_google_v3_handler
+        .handle(GoogleAuthCallbackPayload {
             access_token: payload.access_token.clone(),
             state: payload.state.clone(),
         })

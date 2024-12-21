@@ -1,36 +1,24 @@
+use crate::services::*;
+use crate::types::*;
+use crate::utils::{get_timestamp, get_unique_id};
 use log::{debug, info};
 use reqwest::header::{HeaderMap, HeaderValue};
-use serde::Deserialize;
 use std::sync::Arc;
 use url::Url;
 
-use crate::services::{Database, TokenService};
-use crate::types::*;
-use crate::utils::{get_timestamp, get_unique_id};
-
 const TOKEN_TTL: u64 = 30 * 86400; // 30 days
 
-#[derive(Debug, Deserialize)]
-pub struct GoogleIdToken {
-    pub email: String,
-    pub name: String,
-    pub picture: String,
+pub struct LoginGoogleV3Handler {
+    db: Arc<dyn Database + Send + Sync>,
+    tokens: Arc<TokenService>,
 }
 
-pub struct GoogleAuth {
-    db: Arc<dyn Database>,
-    tokens: TokenService,
-}
-
-impl GoogleAuth {
-    pub async fn new(db: &Arc<dyn Database>, tokens: &TokenService) -> Self {
-        Self {
-            db: db.clone(),
-            tokens: tokens.clone(),
-        }
+impl LoginGoogleV3Handler {
+    pub fn new(db: Arc<SqliteDatabase>, tokens: Arc<TokenService>) -> Self {
+        Self { db, tokens }
     }
 
-    pub async fn login_v3(&self, req: GoogleAuthCallbackPayload) -> Result<String> {
+    pub async fn handle(&self, req: GoogleAuthCallbackPayload) -> Result<String> {
         debug!("Authenticating a Google user (v3).");
 
         let userinfo = self.get_google_userinfo(req.access_token).await?;
@@ -68,6 +56,21 @@ impl GoogleAuth {
         );
 
         Ok(user)
+    }
+
+    fn get_redirect_url(&self, target: &str, token: &str) -> Result<String> {
+        let origin = Url::parse(target)
+            .map_err(|_| Error::BadCallback)?
+            .origin()
+            .unicode_serialization();
+
+        debug!(
+            "Auth callback: origin={}, token={}, target={}",
+            origin, token, target
+        );
+
+        let callback = format!("{}/auth?token={}&state={}", origin, token, target);
+        Ok(callback)
     }
 
     async fn get_google_userinfo(&self, access_token: String) -> Result<GoogleUserinfoResponse> {
@@ -113,19 +116,12 @@ impl GoogleAuth {
         headers.insert("Authorization", auth_header);
         Ok(headers)
     }
+}
 
-    fn get_redirect_url(&self, target: &str, token: &str) -> Result<String> {
-        let origin = Url::parse(target)
-            .map_err(|_| Error::BadCallback)?
-            .origin()
-            .unicode_serialization();
-
-        debug!(
-            "Auth callback: origin={}, token={}, target={}",
-            origin, token, target
-        );
-
-        let callback = format!("{}/auth?token={}&state={}", origin, token, target);
-        Ok(callback)
+impl Locatable for LoginGoogleV3Handler {
+    fn create(locator: &Locator) -> Result<Self> {
+        let db = locator.get::<SqliteDatabase>()?;
+        let tokens = locator.get::<TokenService>()?;
+        Ok(Self::new(db, tokens))
     }
 }

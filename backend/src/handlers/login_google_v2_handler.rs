@@ -4,9 +4,17 @@ use crate::utils::{get_timestamp, get_unique_id};
 use jsonwebtoken::{decode, decode_header, Algorithm, TokenData, Validation};
 use jwks::Jwks;
 use log::{debug, error, info};
+use serde::Deserialize;
 use std::sync::Arc;
 
 const TOKEN_TTL: u64 = 30 * 86400; // 30 days
+
+#[derive(Debug, Deserialize)]
+pub struct GoogleIdToken {
+    pub email: String,
+    pub name: String,
+    pub picture: String,
+}
 
 pub struct LoginGoogleV2Handler {
     db: Arc<dyn Database + Send + Sync>,
