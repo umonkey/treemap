@@ -10,7 +10,8 @@ const ACCEPT_LANGUAGE: &str = "en-US,en;q=0.5";
 
 #[derive(Debug, Deserialize)]
 pub struct AddressInfo {
-    road: String,
+    road: Option<String>,
+    suburb: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -23,7 +24,7 @@ pub struct NominatimService {
 }
 
 impl NominatimService {
-    pub async fn get_street_address(&self, lat: f64, lon: f64) -> Result<String> {
+    pub async fn get_street_address(&self, lat: f64, lon: f64) -> Result<Option<String>> {
         let url = format!(
             "https://nominatim.openstreetmap.org/reverse?format=json&lat={}&lon={}&zoom=18&addressdetails=1",
             lat, lon
@@ -59,7 +60,11 @@ impl NominatimService {
             }
         };
 
-        Ok(json.address.road)
+        if let Some(value) = json.address.road {
+            return Ok(Some(value));
+        }
+
+        Ok(json.address.suburb)
     }
 }
 

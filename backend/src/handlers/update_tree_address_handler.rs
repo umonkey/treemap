@@ -11,7 +11,7 @@ pub struct UpdateTreeAddressHandler {
 impl UpdateTreeAddressHandler {
     pub async fn handle(&self, tree_id: u64) -> Result<()> {
         if let Ok(Some(tree)) = self.db.get_tree(tree_id).await {
-            if let Ok(address) = self.nominatim.get_street_address(tree.lat, tree.lon).await {
+            if let Ok(Some(address)) = self.nominatim.get_street_address(tree.lat, tree.lon).await {
                 info!("Updating tree {} address to: {}", tree_id, address);
 
                 self.db

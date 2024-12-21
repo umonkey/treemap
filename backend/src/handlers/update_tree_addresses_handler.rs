@@ -1,6 +1,6 @@
 use crate::services::*;
 use crate::types::*;
-use log::info;
+use log::{info, warn};
 use std::sync::Arc;
 
 pub struct UpdateTreeAddressesHandler {
@@ -30,10 +30,18 @@ impl UpdateTreeAddressesHandler {
     }
 
     async fn update_tree_address(&self, tree: &TreeRecord) -> Result<()> {
-        let address = self
+        let address = match self
             .nominatim
             .get_street_address(tree.lat, tree.lon)
-            .await?;
+            .await?
+        {
+            Some(value) => value,
+
+            None => {
+                warn!("No address for tree {}.", tree.id);
+                return Ok(());
+            }
+        };
 
         info!("Updating tree {} address to: {}", tree.id, address);
 
