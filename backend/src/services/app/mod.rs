@@ -26,6 +26,7 @@ pub struct AppState {
     trees: Trees,
     pub add_comment_handler: Arc<AddCommentHandler>,
     pub get_new_trees_handler: Arc<GetNewTreesHandler>,
+    pub get_new_comments_handler: Arc<GetNewCommentsHandler>,
     pub get_updated_trees_handler: Arc<GetUpdatedTreesHandler>,
 }
 
@@ -46,6 +47,7 @@ impl AppState {
             trees: Trees::new(&db).await,
             add_comment_handler: locator.get::<AddCommentHandler>()?,
             get_new_trees_handler: locator.get::<GetNewTreesHandler>()?,
+            get_new_comments_handler: locator.get::<GetNewCommentsHandler>()?,
             get_updated_trees_handler: locator.get::<GetUpdatedTreesHandler>()?,
         })
     }
@@ -182,11 +184,6 @@ impl AppState {
     pub async fn add_file(&self, req: AddFileRequest) -> Result<FileUploadResponse> {
         let file = self.files.add_file(req).await?;
         Ok(FileUploadResponse::from_file(&file))
-    }
-
-    pub async fn get_recent_comments(&self, limit: u64) -> Result<CommentList> {
-        let records = self.comments.get_recent_comments(limit).await?;
-        self.format_comment_list(&records).await
     }
 
     pub async fn get_tree_comments(&self, tree_id: u64) -> Result<CommentList> {

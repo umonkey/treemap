@@ -42,7 +42,7 @@ pub async fn serve_command() {
             .service(add_comment)
             .service(add_file)
             .service(add_trees)
-            .service(get_comments)
+            .service(get_new_comments)
             .service(get_tree_comments)
             .service(get_file_jpg)
             .service(get_file)

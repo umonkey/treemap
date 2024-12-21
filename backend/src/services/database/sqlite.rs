@@ -433,6 +433,20 @@ impl Database for SqliteDatabase {
         Ok(trees)
     }
 
+    async fn get_trees_by_ids(&self, ids: &[u64]) -> Result<Vec<TreeRecord>> {
+        let mut trees: Vec<TreeRecord> = Vec::new();
+
+        for id in ids {
+            let tree = self.get_tree(*id).await?;
+
+            if let Some(tree) = tree {
+                trees.push(tree);
+            }
+        }
+
+        Ok(trees)
+    }
+
     async fn get_new_trees(&self, count: u64, skip: u64) -> Result<Vec<TreeRecord>> {
         let trees = self.pool.conn(move |conn| {
             let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id, year FROM trees ORDER BY added_at DESC LIMIT ?, ?") {
