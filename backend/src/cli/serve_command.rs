@@ -54,7 +54,7 @@ pub async fn serve_command() {
             .service(get_tree_stats_action)
             .service(get_tree_action)
             .service(get_trees_action)
-            .service(like_tree)
+            .service(like_tree_action)
             .service(unlike_tree)
             .service(login_google)
             .service(login_google_v2)
