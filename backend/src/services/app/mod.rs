@@ -26,6 +26,7 @@ pub struct AppState {
     pub get_user_handler: Arc<GetUserHandler>,
     pub like_tree_handler: Arc<LikeTreeHandler>,
     pub move_tree_handler: Arc<MoveTreeHandler>,
+    pub search_species_handler: Arc<SearchSpeciesHandler>,
     pub unlike_tree_handler: Arc<UnlikeTreeHandler>,
     pub update_tree_handler: Arc<UpdateTreeHandler>,
 }
@@ -58,6 +59,7 @@ impl AppState {
             get_user_handler: locator.get::<GetUserHandler>()?,
             like_tree_handler: locator.get::<LikeTreeHandler>()?,
             move_tree_handler: locator.get::<MoveTreeHandler>()?,
+            search_species_handler: locator.get::<SearchSpeciesHandler>()?,
             unlike_tree_handler: locator.get::<UnlikeTreeHandler>()?,
             update_tree_handler: locator.get::<UpdateTreeHandler>()?,
         })
@@ -122,12 +124,6 @@ impl AppState {
     pub async fn add_file(&self, req: AddFileRequest) -> Result<FileUploadResponse> {
         let file = self.files.add_file(req).await?;
         Ok(FileUploadResponse::from_file(&file))
-    }
-
-    pub async fn find_species(&self, query: &str) -> Result<Vec<PublicSpeciesInfo>> {
-        let records = self.db.find_species(query).await?;
-        let species = records.iter().map(PublicSpeciesInfo::from_record).collect();
-        Ok(species)
     }
 
     pub async fn suggest_species(&self, user_id: u64) -> Result<Vec<String>> {
