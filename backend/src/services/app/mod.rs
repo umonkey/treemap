@@ -16,6 +16,7 @@ pub struct AppState {
     trees: Trees,
     pub add_comment_handler: Arc<AddCommentHandler>,
     pub add_trees_handler: Arc<AddTreesHandler>,
+    pub get_file_status_handler: Arc<GetFileStatusHandler>,
     pub get_me_handler: Arc<GetMeHandler>,
     pub get_new_comments_handler: Arc<GetNewCommentsHandler>,
     pub get_new_trees_handler: Arc<GetNewTreesHandler>,
@@ -42,6 +43,7 @@ impl AppState {
             trees: Trees::new(&db).await,
             add_comment_handler: locator.get::<AddCommentHandler>()?,
             add_trees_handler: locator.get::<AddTreesHandler>()?,
+            get_file_status_handler: locator.get::<GetFileStatusHandler>()?,
             get_me_handler: locator.get::<GetMeHandler>()?,
             get_new_comments_handler: locator.get::<GetNewCommentsHandler>()?,
             get_new_trees_handler: locator.get::<GetNewTreesHandler>()?,
@@ -106,10 +108,6 @@ impl AppState {
 
     pub async fn get_file(&self, id: u64) -> Result<Vec<u8>> {
         self.files.get_file(id).await
-    }
-
-    pub async fn get_file_status(&self, id: u64) -> Result<FileStatusResponse> {
-        self.files.get_status(id).await
     }
 
     /**

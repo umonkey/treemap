@@ -2,9 +2,7 @@ use log::{debug, error, info};
 use std::sync::Arc;
 
 use crate::services::{Database, FileStorageInterface, QueueService, ThumbnailerService};
-use crate::types::{
-    AddFileRequest, Error, FileRecord, FileStatusResponse, ResizeImageMessage, Result,
-};
+use crate::types::*;
 use crate::utils::{get_timestamp, get_unique_id};
 
 const SMALL_SIZE: u32 = 1000;
@@ -111,13 +109,6 @@ impl FileService {
     pub async fn get_file(&self, id: u64) -> Result<Vec<u8>> {
         debug!("Reading file {} from storage.", id);
         self.storage.read_file(id).await
-    }
-
-    pub async fn get_status(&self, id: u64) -> Result<FileStatusResponse> {
-        match self.db.get_file(id).await? {
-            Some(file) => Ok(FileStatusResponse::from_file(&file)),
-            None => Err(Error::FileNotFound),
-        }
     }
 
     /**

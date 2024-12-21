@@ -10,10 +10,10 @@ pub struct PathInfo {
 }
 
 #[get("/v1/files/{id}/status")]
-pub async fn get_file_status(
+pub async fn get_file_status_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
 ) -> Result<Json<FileStatusResponse>> {
-    let status = state.get_file_status(path.id).await?;
+    let status = state.get_file_status_handler.handle(path.id).await?;
     Ok(Json(status))
 }
