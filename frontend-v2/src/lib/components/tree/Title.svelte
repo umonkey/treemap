@@ -11,7 +11,8 @@
 
 <div class="title">
 	<h1>
-		<strong>{title}</strong>{#if address}
+		<strong>{title}</strong>
+		{#if address}
 			&middot; {address}{/if}
 	</h1>
 	<button class="edit" onclick={onMenu}>
@@ -26,16 +27,23 @@
 		align-items: center;
 		height: 50px;
 		padding: 0 var(--gap);
+		gap: var(--gap);
 
 		h1 {
 			font-size: 1rem;
 			font-weight: 400;
 			line-height: 50px;
 			margin: 0;
+
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
 		}
 
 		.edit {
 			flex-basis: 25px;
+			flex-shrink: 0;
+			flex-grow: 0;
 			border: none;
 			background-color: transparent;
 			cursor: pointer;

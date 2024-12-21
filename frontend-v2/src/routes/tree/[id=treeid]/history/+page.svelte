@@ -15,7 +15,7 @@
 </svelte:head>
 
 <Header title="Tree" />
-<Title title={formatSpecies(tree.species)} />
+<Title title={formatSpecies(tree.species)} address={tree.address} />
 <Tabs tree={tree.id} active="history" />
 <TreeMenu id={tree.id} />
 
