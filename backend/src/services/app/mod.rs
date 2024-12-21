@@ -1,13 +1,12 @@
 use crate::handlers::*;
 use crate::services::database::get_database;
 use crate::services::Locator;
-use crate::services::{get_file_storage, Database, FileService, GoogleAuth, TokenService};
+use crate::services::{get_file_storage, FileService, GoogleAuth, TokenService};
 use crate::types::*;
 use actix_web::HttpRequest;
 use std::sync::Arc;
 
 pub struct AppState {
-    db: Arc<dyn Database>,
     files: FileService,
     gauth: GoogleAuth,
     tokens: TokenService,
@@ -27,6 +26,7 @@ pub struct AppState {
     pub like_tree_handler: Arc<LikeTreeHandler>,
     pub move_tree_handler: Arc<MoveTreeHandler>,
     pub search_species_handler: Arc<SearchSpeciesHandler>,
+    pub suggest_species_handler: Arc<SuggestSpeciesHandler>,
     pub unlike_tree_handler: Arc<UnlikeTreeHandler>,
     pub update_tree_handler: Arc<UpdateTreeHandler>,
 }
@@ -40,7 +40,6 @@ impl AppState {
         let storage = get_file_storage().await?;
 
         Ok(Self {
-            db: db.clone(),
             files: FileService::new(&db, &storage)?,
             gauth: GoogleAuth::new(&db, &token).await,
             tokens: token,
@@ -60,6 +59,7 @@ impl AppState {
             like_tree_handler: locator.get::<LikeTreeHandler>()?,
             move_tree_handler: locator.get::<MoveTreeHandler>()?,
             search_species_handler: locator.get::<SearchSpeciesHandler>()?,
+            suggest_species_handler: locator.get::<SuggestSpeciesHandler>()?,
             unlike_tree_handler: locator.get::<UnlikeTreeHandler>()?,
             update_tree_handler: locator.get::<UpdateTreeHandler>()?,
         })
@@ -124,9 +124,5 @@ impl AppState {
     pub async fn add_file(&self, req: AddFileRequest) -> Result<FileUploadResponse> {
         let file = self.files.add_file(req).await?;
         Ok(FileUploadResponse::from_file(&file))
-    }
-
-    pub async fn suggest_species(&self, user_id: u64) -> Result<Vec<String>> {
-        self.db.find_recent_species(user_id).await
     }
 }
