@@ -283,7 +283,7 @@ impl DatabaseInterface for SqliteDatabase {
         let new = tree.clone();
 
         self.pool.conn(move |conn| {
-            match conn.execute("UPDATE trees SET osm_id = ?, lat = ?, lon = ?, species = ?, notes = ?, height = ?, circumference = ?, diameter = ?, state = ?, updated_at = ? WHERE id = ?", (tree.osm_id, tree.lat, tree.lon, tree.species, tree.notes, tree.height, tree.circumference, tree.diameter, tree.state, tree.updated_at, tree.id)) {
+            match conn.execute("UPDATE trees SET osm_id = ?, lat = ?, lon = ?, species = ?, notes = ?, height = ?, circumference = ?, diameter = ?, state = ?, updated_at = ?, year = ?, address = ? WHERE id = ?", (tree.osm_id, tree.lat, tree.lon, tree.species, tree.notes, tree.height, tree.circumference, tree.diameter, tree.state, tree.updated_at, tree.year, tree.address, tree.id)) {
                 Ok(_) => (),
 
                 Err(e) => {

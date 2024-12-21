@@ -13,6 +13,11 @@ impl UpdateTreeAddressHandler {
         if let Ok(Some(tree)) = self.db.get_tree(tree_id).await {
             if let Ok(address) = self.nominatim.get_street_address(tree.lat, tree.lon).await {
                 info!("Updating tree {} address to: {}", tree_id, address);
+
+                self.db.update_tree(&TreeRecord {
+                    address: Some(address),
+                    ..tree.clone()
+                }).await?;
             };
         }
 

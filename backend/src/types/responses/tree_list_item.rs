@@ -21,6 +21,7 @@ pub struct TreeListItem {
     pub updated_at: u64,
     pub thumbnail_id: Option<String>,
     pub year: Option<i64>,
+    pub address: Option<String>,
 }
 
 impl TreeListItem {
@@ -42,6 +43,7 @@ impl TreeListItem {
             updated_at: tree.updated_at,
             thumbnail_id,
             year: tree.year,
+            address: tree.address.clone(),
         }
     }
 }

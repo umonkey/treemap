@@ -25,6 +25,9 @@ lint:
 format:
 	cargo fmt
 
+queue:
+	cargo run -- queue-consumer
+
 serve:
 	cargo run -- serve
 
