@@ -105,10 +105,6 @@ impl FileService {
         }
     }
 
-    pub async fn find_files_by_tree(&self, tree_id: u64) -> Result<Vec<FileRecord>> {
-        self.db.find_files_by_tree(tree_id).await
-    }
-
     /**
      * Read file contents from the local file system or remote.
      */

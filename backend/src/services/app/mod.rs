@@ -3,15 +3,9 @@ use crate::services::database::get_database;
 use crate::services::trees::Trees;
 use crate::services::Locator;
 use crate::services::{get_file_storage, Database, FileService, GoogleAuth, TokenService};
-use crate::types::{
-    AddFileRequest, Error, FileRecord, FileStatusResponse, FileUploadResponse, GetTreesRequest,
-    GoogleAuthCallbackPayload, LoginGoogleRequest, LoginResponse, MeResponse, MoveTreeRequest,
-    NewTreeDefaultsResponse, PublicSpeciesInfo, Result, TreeDetails, TreeList, TreeRecord,
-    TreeStats, UpdateTreeRequest, UserRecord, UserResponse,
-};
+use crate::types::*;
 use actix_web::HttpRequest;
 use log::info;
-use std::collections::HashSet;
 use std::sync::Arc;
 
 pub struct AppState {
@@ -22,9 +16,10 @@ pub struct AppState {
     trees: Trees,
     pub add_comment_handler: Arc<AddCommentHandler>,
     pub add_trees_handler: Arc<AddTreesHandler>,
-    pub get_new_trees_handler: Arc<GetNewTreesHandler>,
     pub get_new_comments_handler: Arc<GetNewCommentsHandler>,
+    pub get_new_trees_handler: Arc<GetNewTreesHandler>,
     pub get_tree_comments_handler: Arc<GetTreeCommentsHandler>,
+    pub get_tree_handler: Arc<GetTreeHandler>,
     pub get_updated_trees_handler: Arc<GetUpdatedTreesHandler>,
 }
 
@@ -44,9 +39,10 @@ impl AppState {
             trees: Trees::new(&db).await,
             add_comment_handler: locator.get::<AddCommentHandler>()?,
             add_trees_handler: locator.get::<AddTreesHandler>()?,
-            get_new_trees_handler: locator.get::<GetNewTreesHandler>()?,
             get_new_comments_handler: locator.get::<GetNewCommentsHandler>()?,
+            get_new_trees_handler: locator.get::<GetNewTreesHandler>()?,
             get_tree_comments_handler: locator.get::<GetTreeCommentsHandler>()?,
+            get_tree_handler: locator.get::<GetTreeHandler>()?,
             get_updated_trees_handler: locator.get::<GetUpdatedTreesHandler>()?,
         })
     }
@@ -123,14 +119,6 @@ impl AppState {
         Ok(user_id)
     }
 
-    pub async fn get_tree(&self, id: u64) -> Result<TreeDetails> {
-        let tree = self.trees.get_tree(id).await?;
-        let files = self.files.find_files_by_tree(id).await?;
-        let users = self.collect_users(&tree, &files).await?;
-
-        Ok(TreeDetails::from_tree(&tree, &files, &users))
-    }
-
     pub async fn get_tree_stats(&self) -> Result<TreeStats> {
         self.trees.get_tree_stats().await
     }
@@ -199,38 +187,5 @@ impl AppState {
     pub async fn unlike_tree(&self, tree_id: u64, user_id: u64) -> Result<()> {
         self.db.unlike_tree(tree_id, user_id).await?;
         Ok(())
-    }
-
-    async fn collect_users(
-        &self,
-        tree: &TreeRecord,
-        files: &Vec<FileRecord>,
-    ) -> Result<Vec<UserResponse>> {
-        let mut user_ids = Vec::new();
-
-        user_ids.push(tree.added_by);
-
-        for file in files {
-            user_ids.push(file.added_by);
-        }
-
-        let users = self.load_users(&user_ids).await?;
-        let users = users.iter().map(UserResponse::from).collect();
-
-        Ok(users)
-    }
-
-    async fn load_users(&self, user_ids: &[u64]) -> Result<Vec<UserRecord>> {
-        let user_ids = HashSet::<u64>::from_iter(user_ids.iter().copied());
-
-        let mut users = Vec::new();
-
-        for id in user_ids {
-            if let Ok(Some(user)) = self.db.get_user(id).await {
-                users.push(user);
-            };
-        }
-
-        Ok(users)
     }
 }

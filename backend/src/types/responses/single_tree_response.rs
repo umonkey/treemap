@@ -1,8 +1,8 @@
-use crate::types::{FileRecord, PublicFileInfo, TreeRecord, UserResponse};
+use crate::types::*;
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]
-pub struct TreeDetails {
+pub struct SingleTreeResponse {
     pub id: String,
     pub lat: f64,
     pub lon: f64,
@@ -21,15 +21,17 @@ pub struct TreeDetails {
     pub users: Vec<UserResponse>,
 }
 
-impl TreeDetails {
+impl SingleTreeResponse {
     pub fn from_tree(
         tree: &TreeRecord,
         files: &[FileRecord],
-        users: &[UserResponse],
-    ) -> TreeDetails {
+        users: &[UserRecord],
+    ) -> SingleTreeResponse {
         let thumbnail_id = tree.thumbnail_id.map(|value| value.to_string());
 
-        TreeDetails {
+        let users = users.iter().map(UserResponse::from).collect();
+
+        SingleTreeResponse {
             id: tree.id.to_string(),
             lat: tree.lat,
             lon: tree.lon,
@@ -45,7 +47,7 @@ impl TreeDetails {
             added_by: tree.added_by.to_string(),
             thumbnail_id,
             files: files.iter().map(PublicFileInfo::from_file).collect(),
-            users: users.to_vec(),
+            users,
         }
     }
 }
