@@ -1,18 +1,15 @@
 use crate::services::*;
 use crate::types::*;
 use crate::utils::{fix_circumference, get_timestamp, get_unique_id};
-use log::debug;
+use log::{debug, info};
 use std::sync::Arc;
 
 pub struct AddTreesHandler {
     db: Arc<dyn DatabaseInterface>,
+    queue: Arc<QueueService>,
 }
 
 impl AddTreesHandler {
-    pub fn new(db: Arc<dyn DatabaseInterface>) -> Self {
-        Self { db }
-    }
-
     pub async fn handle(&self, req: AddTreeRequest) -> Result<Vec<TreeRecord>> {
         let now = get_timestamp();
 
@@ -44,17 +41,28 @@ impl AddTreesHandler {
             );
 
             self.db.add_tree(&tree).await?;
+            self.schedule_address_update(tree.id).await?;
 
             trees.push(tree);
         }
 
         Ok(trees)
     }
+
+    async fn schedule_address_update(&self, tree_id: u64) -> Result<()> {
+        let msg = UpdateTreeAddressMessage { id: tree_id };
+        self.queue.push(&msg.encode()).await?;
+
+        info!("Scheduled address update for tree {}", tree_id);
+
+        Ok(())
+    }
 }
 
 impl Locatable for AddTreesHandler {
     fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<SqliteDatabase>()?;
-        Ok(Self::new(db))
+        let db = locator.get::<PreferredDatabase>()?.driver();
+        let queue = locator.get::<QueueService>()?;
+        Ok(Self { db, queue })
     }
 }

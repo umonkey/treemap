@@ -1242,6 +1242,38 @@ impl DatabaseInterface for SqliteDatabase {
 
         Ok(())
     }
+
+    async fn find_trees_with_no_address(&self) -> Result<Vec<TreeRecord>> {
+        let trees = self.pool.conn(move |conn| {
+            let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id, year, address FROM trees WHERE address IS NULL ORDER BY added_at DESC") {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error preparing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut rows = match stmt.query([]) {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error executing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut trees: Vec<TreeRecord> = Vec::new();
+
+            while let Some(row) = rows.next()? {
+                trees.push(Self::tree_from_row(row)?);
+            }
+
+            Ok(trees)
+        }).await?;
+
+        Ok(trees)
+    }
 }
 
 impl Clone for SqliteDatabase {

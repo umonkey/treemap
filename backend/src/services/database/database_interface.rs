@@ -52,6 +52,7 @@ pub trait DatabaseInterface: Send + Sync {
     async fn find_osm_trees(&self) -> Result<Vec<OsmTreeRecord>>;
 
     async fn find_recent_species(&self, user_id: u64) -> Result<Vec<String>>;
+    async fn find_trees_with_no_address(&self) -> Result<Vec<TreeRecord>>;
 
     async fn like_tree(&self, tree_id: u64, user_id: u64) -> Result<()>;
     async fn unlike_tree(&self, tree_id: u64, user_id: u64) -> Result<()>;

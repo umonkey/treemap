@@ -25,6 +25,14 @@ async fn main() -> std::io::Result<()> {
             osm_pull_command().await;
             return Ok(());
         }
+        Some("update-tree-address") => {
+            update_tree_address_command().await;
+            return Ok(());
+        }
+        Some("update-tree-addresses") => {
+            update_tree_addresses_command().await;
+            return Ok(());
+        }
         Some("upload-files") => {
             upload_files_command().await;
             return Ok(());
@@ -39,10 +47,12 @@ async fn main() -> std::io::Result<()> {
     println!("Usage: treemap command");
     println!();
     println!("Commands:");
-    println!("  osm-pull       -- get new trees from OpenStreetMap");
-    println!("  queue-consumer -- run the queue consumer daemon");
-    println!("  serve          -- run the web server");
-    println!("  upload-files   -- move local files to S3");
+    println!("  osm-pull              -- get new trees from OpenStreetMap");
+    println!("  queue-consumer        -- run the queue consumer daemon");
+    println!("  serve                 -- run the web server");
+    println!("  update-tree-address N -- update street address for a single tree");
+    println!("  update-tree-addresses -- update street address for all trees");
+    println!("  upload-files          -- move local files to S3");
 
     Ok(())
 }
