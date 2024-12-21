@@ -20,6 +20,7 @@ pub struct AppState {
     pub get_new_comments_handler: Arc<GetNewCommentsHandler>,
     pub get_new_trees_handler: Arc<GetNewTreesHandler>,
     pub get_tree_comments_handler: Arc<GetTreeCommentsHandler>,
+    pub get_tree_defaults_handler: Arc<GetTreeDefaultsHandler>,
     pub get_tree_handler: Arc<GetTreeHandler>,
     pub get_updated_trees_handler: Arc<GetUpdatedTreesHandler>,
     pub get_user_handler: Arc<GetUserHandler>,
@@ -45,6 +46,7 @@ impl AppState {
             get_new_comments_handler: locator.get::<GetNewCommentsHandler>()?,
             get_new_trees_handler: locator.get::<GetNewTreesHandler>()?,
             get_tree_comments_handler: locator.get::<GetTreeCommentsHandler>()?,
+            get_tree_defaults_handler: locator.get::<GetTreeDefaultsHandler>()?,
             get_tree_handler: locator.get::<GetTreeHandler>()?,
             get_updated_trees_handler: locator.get::<GetUpdatedTreesHandler>()?,
             get_user_handler: locator.get::<GetUserHandler>()?,
@@ -65,21 +67,6 @@ impl AppState {
 
     pub async fn get_trees(&self, request: &GetTreesRequest) -> Result<TreeList> {
         self.trees.get_trees(request).await
-    }
-
-    pub async fn get_tree_defaults(&self, user_id: u64) -> Result<NewTreeDefaultsResponse> {
-        match self.trees.get_last_tree_by_user(user_id).await? {
-            Some(tree) => Ok(NewTreeDefaultsResponse::from_tree(&tree)),
-
-            None => Ok(NewTreeDefaultsResponse {
-                species: None,
-                notes: None,
-                height: Some(0.0),
-                circumference: Some(0.0),
-                diameter: Some(0.0),
-                state: Some("healthy".to_string()),
-            }),
-        }
     }
 
     pub fn get_user_id(&self, req: &HttpRequest) -> Result<u64> {
