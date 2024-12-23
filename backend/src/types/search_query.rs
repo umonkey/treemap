@@ -58,7 +58,7 @@ impl SearchQuery {
                 stomp = true;
             } else if word.contains("gone") {
                 gone = true;
-            } else if word.contains("unknown") {
+            } else if word.contains("state:unknown") {
                 unknown = true;
             } else if word.contains("incomplete") {
                 incomplete = true;
