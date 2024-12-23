@@ -51,6 +51,10 @@ export class ApiClient {
 		return await this.request('GET', 'v1/stats/species');
 	}
 
+	public async getSpeciesMismatch(): Promise<Response<IMarkers>> {
+		return await this.request('GET', 'v1/stats/species/mismatch');
+	}
+
 	public async getTopHeight(): Promise<Response<IMarkers>> {
 		return await this.request('GET', 'v1/stats/height');
 	}

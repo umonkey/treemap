@@ -12,6 +12,7 @@ export const routes = {
 	statsDiameter: () => '/stats/diameter',
 	statsCircumference: () => '/stats/circumference',
 	statsStreets: () => '/stats/streets',
+	statsMismatch: () => '/stats/species-mismatch',
 	treeAdd: (lat: number, lng: number) => `/add?lat=${lat}&lng=${lng}`,
 	treeComments: (id: string) => `/tree/${id}/comments`,
 	treeDetails: (id: string) => `/tree/${id}`,

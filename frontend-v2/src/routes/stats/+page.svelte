@@ -22,6 +22,12 @@
 		<li><a href={routes.statsDiameter()}>Top by diameter</a></li>
 		<li><a href={routes.statsCircumference()}>Top by trunk circumference</a></li>
 	</ul>
+
+	<h1>Moderation queue</h1>
+
+	<ul>
+		<li><a href={routes.statsMismatch()}>Trees with unknown species</a></li>
+	</ul>
 </div>
 
 <style>
