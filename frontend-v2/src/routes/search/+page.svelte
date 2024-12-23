@@ -40,6 +40,7 @@
 			<a href={routes.searchQuery('ash')}>ashes</a>
 			or <a href={routes.searchQuery('elm')}>elms</a>
 		</li>
+		<li>With <a href={routes.searchQuery('unknown hasimage')}>unknown species</a> and photos</li>
 		<li>
 			With <a href={routes.searchQuery('noimage')}>no images</a> or
 			<a href={routes.searchQuery('unknown')}>no species</a>
