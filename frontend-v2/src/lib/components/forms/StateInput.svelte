@@ -13,6 +13,7 @@
 				<option value="healthy">healthy</option>
 				<option value="sick">sick</option>
 				<option value="deformed">deformed</option>
+				<option value="dead">dead</option>
 				<option value="gone">gone</option>
 				<option value="stomp">stomp</option>
 			</select>
