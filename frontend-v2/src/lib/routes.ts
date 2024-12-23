@@ -11,6 +11,7 @@ export const routes = {
 	statsHeight: () => '/stats/height',
 	statsDiameter: () => '/stats/diameter',
 	statsCircumference: () => '/stats/circumference',
+	statsStreets: () => '/stats/streets',
 	treeAdd: (lat: number, lng: number) => `/add?lat=${lat}&lng=${lng}`,
 	treeComments: (id: string) => `/tree/${id}/comments`,
 	treeDetails: (id: string) => `/tree/${id}`,

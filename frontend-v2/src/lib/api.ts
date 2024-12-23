@@ -63,6 +63,10 @@ export class ApiClient {
 		return await this.request('GET', 'v1/stats/circumference');
 	}
 
+	public async getTopStreets(): Promise<Response<IStreetStats[]>> {
+		return await this.request('GET', 'v1/stats/streets');
+	}
+
 	public async getMe(token: string): Promise<Response<IMeResponse>> {
 		return await this.request('GET', 'v1/me', {
 			headers: {

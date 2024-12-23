@@ -105,3 +105,8 @@ export interface ISpeciesStats {
 	species: string;
 	count: number;
 }
+
+export interface IStreetStats {
+	address: string;
+	count: number;
+}

@@ -17,6 +17,7 @@
 
 	<ul>
 		<li><a href={routes.statsSpecies()}>Top species</a></li>
+		<li><a href={routes.statsStreets()}>Top streets</a></li>
 		<li><a href={routes.statsHeight()}>Top by height</a></li>
 		<li><a href={routes.statsDiameter()}>Top by diameter</a></li>
 		<li><a href={routes.statsCircumference()}>Top by trunk circumference</a></li>
