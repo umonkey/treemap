@@ -14,6 +14,8 @@ pub enum Error {
     BadImage,
     DatabaseConnect,
     DatabaseQuery,
+    #[allow(unused)]
+    DatabaseStructure,
     DependencyLoad,
     EnvNotSet,
     FileDownload,
@@ -52,6 +54,9 @@ impl Error {
             }
             Error::DatabaseQuery => {
                 r#"{"error":{"code":"DatabaseQuery","description":"There was a database error while processing your request."}}"#
+            }
+            Error::DatabaseStructure => {
+                r#"{"error":{"code":"DatabaseStructure","description":"Database structure error."}}"#
             }
             Error::DependencyLoad => {
                 r#"{"error":{"code":"DependencyLoad","description":"Error loading a dependency."}}"#
@@ -124,6 +129,7 @@ impl ResponseError for Error {
             Error::BadImage => StatusCode::BAD_REQUEST,
             Error::DatabaseConnect => StatusCode::INTERNAL_SERVER_ERROR,
             Error::DatabaseQuery => StatusCode::INTERNAL_SERVER_ERROR,
+            Error::DatabaseStructure => StatusCode::INTERNAL_SERVER_ERROR,
             Error::DependencyLoad => StatusCode::INTERNAL_SERVER_ERROR,
             Error::EnvNotSet => StatusCode::INTERNAL_SERVER_ERROR,
             Error::FileDownload => StatusCode::NOT_FOUND,
@@ -151,6 +157,7 @@ impl fmt::Display for Error {
             Error::BadImage => write!(f, "BadImage"),
             Error::DatabaseConnect => write!(f, "DatabaseConnect"),
             Error::DatabaseQuery => write!(f, "DatabaseQuery"),
+            Error::DatabaseStructure => write!(f, "DatabaseStructure"),
             Error::DependencyLoad => write!(f, "DependencyLoad"),
             Error::EnvNotSet => write!(f, "EnvNotSet"),
             Error::FileDownload => write!(f, "FileDownload"),

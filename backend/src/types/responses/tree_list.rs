@@ -13,7 +13,7 @@ impl TreeList {
         self.trees.len()
     }
 
-    pub fn from_trees(trees: Vec<TreeRecord>) -> Self {
+    pub fn from_trees(trees: &[TreeRecord]) -> Self {
         let items = trees.iter().map(TreeListItem::from_tree).collect();
 
         Self {

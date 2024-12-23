@@ -15,7 +15,7 @@ impl GetTreesHandler {
             trees.retain(|t| query.r#match(t));
         }
 
-        Ok(TreeList::from_trees(trees))
+        Ok(TreeList::from_trees(&trees))
     }
 }
 

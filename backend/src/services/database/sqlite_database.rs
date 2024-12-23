@@ -7,15 +7,20 @@
 //!
 //! @docs https://docs.rs/async-sqlite/latest/async_sqlite/
 
+use crate::common::database::queries::*;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::{get_sqlite_path, get_timestamp, get_unique_id};
 use async_sqlite::{JournalMode, Pool, PoolBuilder};
 use async_trait::async_trait;
 use log::{debug, error, info};
+use rusqlite::params_from_iter;
 use std::cmp::Ordering;
+use std::collections::HashMap;
 
 const SUGGEST_WINDOW: u64 = 3600 * 24; // 24 hours
+
+type Attributes = HashMap<String, rusqlite::types::Value>;
 
 pub struct SqliteDatabase {
     pub pool: Pool,
@@ -180,56 +185,6 @@ impl SqliteDatabase {
         Ok(())
     }
 
-    fn tree_from_row(
-        row: &async_sqlite::rusqlite::Row,
-    ) -> std::result::Result<TreeRecord, async_sqlite::rusqlite::Error> {
-        Ok(TreeRecord {
-            id: row.get(0)?,
-            osm_id: row.get(1)?,
-            lat: row.get(2)?,
-            lon: row.get(3)?,
-            species: row.get(4)?,
-            notes: row.get(5)?,
-            height: row.get(6)?,
-            circumference: row.get(7)?,
-            diameter: row.get(8)?,
-            state: row.get(9)?,
-            added_at: row.get(10)?,
-            updated_at: row.get(11)?,
-            added_by: row.get(12)?,
-            thumbnail_id: row.get(13)?,
-            year: row.get(14)?,
-            address: row.get(15)?,
-        })
-    }
-
-    fn osm_tree_from_row(
-        row: &async_sqlite::rusqlite::Row,
-    ) -> std::result::Result<OsmTreeRecord, async_sqlite::rusqlite::Error> {
-        Ok(OsmTreeRecord {
-            id: row.get(0)?,
-            lat: row.get(1)?,
-            lon: row.get(2)?,
-            genus: row.get(3)?,
-            species: row.get(4)?,
-            species_wikidata: row.get(5)?,
-            height: row.get(6)?,
-            circumference: row.get(7)?,
-            diameter_crown: row.get(8)?,
-        })
-    }
-
-    fn user_from_row(
-        row: &async_sqlite::rusqlite::Row,
-    ) -> std::result::Result<UserRecord, async_sqlite::rusqlite::Error> {
-        Ok(UserRecord {
-            id: row.get(0)?,
-            email: row.get(1)?,
-            name: row.get(2)?,
-            picture: row.get(3)?,
-        })
-    }
-
     /**
      * Custom case-insensitive collation for SQLite.
      *
@@ -237,6 +192,17 @@ impl SqliteDatabase {
      */
     fn case_insensitive_collation(a: &str, b: &str) -> Ordering {
         a.to_lowercase().cmp(&b.to_lowercase())
+    }
+
+    fn pack_record(row: &rusqlite::Row, fields: &Vec<&str>) -> rusqlite::Result<Attributes> {
+        let mut record: Attributes = HashMap::new();
+
+        for field in fields {
+            let value = row.get(*field)?;
+            record.insert(field.to_string(), value);
+        }
+
+        Ok(record)
     }
 }
 
@@ -248,6 +214,101 @@ impl Locatable for SqliteDatabase {
 
 #[async_trait]
 impl DatabaseInterface for SqliteDatabase {
+    async fn get_record(&self, query: SelectQuery) -> Result<Option<Attributes>> {
+        let query = SelectQuery {
+            limit: Some(1),
+            offset: None,
+            ..query
+        };
+
+        let record = self
+            .pool
+            .conn(move |conn| {
+                let (sql, params) = query.build();
+
+                let mut stmt = match conn.prepare(sql.as_str()) {
+                    Ok(value) => value,
+
+                    Err(e) => {
+                        error!("Error preparing SQL statement: {}", e);
+                        return Err(e);
+                    }
+                };
+
+                let mut rows = stmt.query(params_from_iter(params.iter())).map_err(|e| {
+                    error!("Error executing SQL statement: {}", e);
+                    e
+                })?;
+
+                if let Some(row) = rows.next()? {
+                    let fields = row.as_ref().column_names();
+                    let rec = Self::pack_record(row, &fields)?;
+                    Ok(Some(rec))
+                } else {
+                    Ok(None)
+                }
+            })
+            .await?;
+
+        Ok(record)
+    }
+
+    async fn get_records(&self, query: SelectQuery) -> Result<Vec<Attributes>> {
+        let record = self
+            .pool
+            .conn(move |conn| {
+                let (sql, params) = query.build();
+
+                let mut stmt = match conn.prepare(sql.as_str()) {
+                    Ok(value) => value,
+
+                    Err(e) => {
+                        error!("Error preparing SQL statement: {}", e);
+                        return Err(e);
+                    }
+                };
+
+                let mut rows = stmt.query(params_from_iter(params.iter())).map_err(|e| {
+                    error!("Error executing SQL statement: {}", e);
+                    e
+                })?;
+
+                let mut records = Vec::new();
+
+                while let Some(row) = rows.next()? {
+                    let fields = row.as_ref().column_names();
+                    let rec = Self::pack_record(row, &fields)?;
+                    records.push(rec);
+                }
+
+                Ok(records)
+            })
+            .await?;
+
+        Ok(record)
+    }
+
+    async fn add_record(&self, query: InsertQuery) -> Result<()> {
+        self.pool
+            .conn(move |conn| {
+                let (sql, params) = query.build();
+
+                match conn.execute(sql.as_str(), params_from_iter(params)) {
+                    Ok(_) => (),
+
+                    Err(e) => {
+                        error!("Error adding a record to the database: {}", e);
+                        return Err(e);
+                    }
+                };
+
+                Ok(())
+            })
+            .await?;
+
+        Ok(())
+    }
+
     async fn add_tree(&self, tree: &TreeRecord) -> Result<()> {
         let tree = tree.clone();
 
@@ -350,7 +411,7 @@ impl DatabaseInterface for SqliteDatabase {
             };
 
             if let Some(row) = rows.next()? {
-                return Ok(Some(Self::tree_from_row(row)?));
+                return Ok(Some(TreeRecord::from_sqlite_row(row)?));
             }
 
             Ok(None)
@@ -383,7 +444,7 @@ impl DatabaseInterface for SqliteDatabase {
             };
 
             if let Some(row) = rows.next()? {
-                return Ok(Some(Self::tree_from_row(row)?));
+                return Ok(Some(TreeRecord::from_sqlite_row(row)?));
             }
 
             Ok(None)
@@ -420,7 +481,7 @@ impl DatabaseInterface for SqliteDatabase {
             let mut trees: Vec<TreeRecord> = Vec::new();
 
             while let Some(row) = rows.next()? {
-                trees.push(Self::tree_from_row(row)?);
+                trees.push(TreeRecord::from_sqlite_row(row)?);
             }
 
             Ok(trees)
@@ -466,7 +527,7 @@ impl DatabaseInterface for SqliteDatabase {
             let mut trees: Vec<TreeRecord> = Vec::new();
 
             while let Some(row) = rows.next()? {
-                trees.push(Self::tree_from_row(row)?);
+                trees.push(TreeRecord::from_sqlite_row(row)?);
             }
 
             Ok(trees)
@@ -498,7 +559,7 @@ impl DatabaseInterface for SqliteDatabase {
             let mut trees: Vec<TreeRecord> = Vec::new();
 
             while let Some(row) = rows.next()? {
-                trees.push(Self::tree_from_row(row)?);
+                trees.push(TreeRecord::from_sqlite_row(row)?);
             }
 
             Ok(trees)
@@ -585,7 +646,7 @@ impl DatabaseInterface for SqliteDatabase {
             };
 
             if let Some(row) = rows.next()? {
-                return Ok(Some(Self::tree_from_row(row)?));
+                return Ok(Some(TreeRecord::from_sqlite_row(row)?));
             }
 
             Ok(None)
@@ -641,7 +702,7 @@ impl DatabaseInterface for SqliteDatabase {
                 let mut rows = stmt.query([email])?;
 
                 if let Some(row) = rows.next()? {
-                    return Ok(Some(Self::user_from_row(row)?));
+                    return Ok(Some(UserRecord::from_sqlite_row(row)?));
                 }
 
                 Ok(None)
@@ -688,7 +749,7 @@ impl DatabaseInterface for SqliteDatabase {
                 let mut rows = stmt.query([id])?;
 
                 if let Some(row) = rows.next()? {
-                    return Ok(Some(Self::user_from_row(row)?));
+                    return Ok(Some(UserRecord::from_sqlite_row(row)?));
                 }
 
                 Ok(None)
@@ -1085,7 +1146,7 @@ impl DatabaseInterface for SqliteDatabase {
             };
 
             if let Some(row) = rows.next()? {
-                return Ok(Some(Self::osm_tree_from_row(row)?));
+                return Ok(Some(OsmTreeRecord::from_sqlite_row(row)?));
             }
 
             Ok(None)
@@ -1147,7 +1208,7 @@ impl DatabaseInterface for SqliteDatabase {
             let mut trees: Vec<OsmTreeRecord> = Vec::new();
 
             while let Some(row) = rows.next()? {
-                trees.push(Self::osm_tree_from_row(row)?);
+                trees.push(OsmTreeRecord::from_sqlite_row(row)?);
             }
 
             Ok(trees)
@@ -1266,7 +1327,171 @@ impl DatabaseInterface for SqliteDatabase {
             let mut trees: Vec<TreeRecord> = Vec::new();
 
             while let Some(row) = rows.next()? {
-                trees.push(Self::tree_from_row(row)?);
+                trees.push(TreeRecord::from_sqlite_row(row)?);
+            }
+
+            Ok(trees)
+        }).await?;
+
+        Ok(trees)
+    }
+
+    async fn get_species_stats(&self) -> Result<Vec<(String, u64)>> {
+        let res = self.pool.conn(move |conn| {
+            let mut stmt = match conn.prepare("SELECT species, COUNT(1) AS cnt FROM trees WHERE state <> 'gone' GROUP BY species ORDER BY cnt DESC") {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error preparing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut rows = match stmt.query([]) {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error executing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut res = Vec::new();
+
+            while let Some(row) = rows.next()? {
+                let species: String = row.get(0)?;
+                let count: u64 = row.get(1)?;
+                res.push((species, count));
+            }
+
+            Ok(res)
+        }).await?;
+
+        Ok(res)
+    }
+
+    async fn get_top_streets(&self, count: u64) -> Result<Vec<(String, u64)>> {
+        let res = self.pool.conn(move |conn| {
+            let mut stmt = match conn.prepare("SELECT address, COUNT(1) AS cnt FROM trees WHERE state <> 'gone' AND address IS NOT NULL GROUP BY LOWER(address) ORDER BY cnt DESC LIMIT ?") {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error preparing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut rows = match stmt.query([count]) {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error executing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut res = Vec::new();
+
+            while let Some(row) = rows.next()? {
+                let address: String = row.get(0)?;
+                let count: u64 = row.get(1)?;
+                res.push((address, count));
+            }
+
+            Ok(res)
+        }).await?;
+
+        Ok(res)
+    }
+
+    async fn get_top_height(&self, count: u64) -> Result<Vec<TreeRecord>> {
+        let trees = self.pool.conn(move |conn| {
+            let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id, year, address FROM trees WHERE state <> 'gone' AND height IS NOT NULL ORDER BY height DESC LIMIT ?") {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error preparing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut rows = match stmt.query([count]) {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error executing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut trees: Vec<TreeRecord> = Vec::new();
+
+            while let Some(row) = rows.next()? {
+                trees.push(TreeRecord::from_sqlite_row(row)?);
+            }
+
+            Ok(trees)
+        }).await?;
+
+        Ok(trees)
+    }
+
+    async fn get_top_diameter(&self, count: u64) -> Result<Vec<TreeRecord>> {
+        let trees = self.pool.conn(move |conn| {
+            let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id, year, address FROM trees WHERE state <> 'gone' AND diameter IS NOT NULL ORDER BY diameter DESC LIMIT ?") {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error preparing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut rows = match stmt.query([count]) {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error executing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut trees: Vec<TreeRecord> = Vec::new();
+
+            while let Some(row) = rows.next()? {
+                trees.push(TreeRecord::from_sqlite_row(row)?);
+            }
+
+            Ok(trees)
+        }).await?;
+
+        Ok(trees)
+    }
+
+    async fn get_top_circumference(&self, count: u64) -> Result<Vec<TreeRecord>> {
+        let trees = self.pool.conn(move |conn| {
+            let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id, year, address FROM trees WHERE state <> 'gone' AND circumference IS NOT NULL ORDER BY circumference DESC LIMIT ?") {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error preparing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut rows = match stmt.query([count]) {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error executing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut trees: Vec<TreeRecord> = Vec::new();
+
+            while let Some(row) = rows.next()? {
+                trees.push(TreeRecord::from_sqlite_row(row)?);
             }
 
             Ok(trees)

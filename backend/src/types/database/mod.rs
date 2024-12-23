@@ -4,7 +4,6 @@ mod osm_tree_record;
 mod species_record;
 mod tree_record;
 mod user_record;
-
 pub use self::comment_record::*;
 pub use self::file_record::*;
 pub use self::osm_tree_record::*;

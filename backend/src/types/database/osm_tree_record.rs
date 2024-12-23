@@ -25,6 +25,20 @@ impl OsmTreeRecord {
 
         DEFAULT_SPECIES.to_string()
     }
+
+    pub fn from_sqlite_row(row: &rusqlite::Row) -> rusqlite::Result<Self> {
+        Ok(Self {
+            id: row.get(0)?,
+            lat: row.get(1)?,
+            lon: row.get(2)?,
+            genus: row.get(3)?,
+            species: row.get(4)?,
+            species_wikidata: row.get(5)?,
+            height: row.get(6)?,
+            circumference: row.get(7)?,
+            diameter_crown: row.get(8)?,
+        })
+    }
 }
 
 #[cfg(test)]

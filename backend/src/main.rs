@@ -1,5 +1,6 @@
 mod actions;
 mod cli;
+mod common;
 mod config;
 mod handlers;
 mod services;

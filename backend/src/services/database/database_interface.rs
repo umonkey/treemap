@@ -1,8 +1,17 @@
+use crate::common::database::queries::*;
+use crate::common::database::types::Attributes;
 use crate::types::*;
 use async_trait::async_trait;
 
 #[async_trait]
 pub trait DatabaseInterface: Send + Sync {
+    #[allow(unused)]
+    async fn get_record(&self, query: SelectQuery) -> Result<Option<Attributes>>;
+    #[allow(unused)]
+    async fn get_records(&self, query: SelectQuery) -> Result<Vec<Attributes>>;
+    #[allow(unused)]
+    async fn add_record(&self, query: InsertQuery) -> Result<()>;
+
     async fn add_tree(&self, tree: &TreeRecord) -> Result<()>;
     async fn update_tree(&self, tree: &TreeRecord) -> Result<()>;
     async fn move_tree(&self, id: u64, lat: f64, lon: f64) -> Result<()>;
@@ -56,4 +65,10 @@ pub trait DatabaseInterface: Send + Sync {
 
     async fn like_tree(&self, tree_id: u64, user_id: u64) -> Result<()>;
     async fn unlike_tree(&self, tree_id: u64, user_id: u64) -> Result<()>;
+
+    async fn get_species_stats(&self) -> Result<Vec<(String, u64)>>;
+    async fn get_top_height(&self, count: u64) -> Result<Vec<TreeRecord>>;
+    async fn get_top_diameter(&self, count: u64) -> Result<Vec<TreeRecord>>;
+    async fn get_top_circumference(&self, count: u64) -> Result<Vec<TreeRecord>>;
+    async fn get_top_streets(&self, count: u64) -> Result<Vec<(String, u64)>>;
 }

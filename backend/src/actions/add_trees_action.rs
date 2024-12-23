@@ -41,5 +41,5 @@ pub async fn add_trees_action(
         })
         .await?;
 
-    Ok(Json(TreeList::from_trees(trees)))
+    Ok(Json(TreeList::from_trees(&trees)))
 }
