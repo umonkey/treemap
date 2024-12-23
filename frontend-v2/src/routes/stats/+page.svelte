@@ -6,7 +6,7 @@
 </script>
 
 <svelte:head>
-	<title>Trees of Yerevan</title>
+	<title>Stats — Trees of Yerevan</title>
 </svelte:head>
 
 <Header title="Tree Map" />
@@ -17,5 +17,14 @@
 
 	<ul>
 		<li><a href={routes.statsSpecies()}>Top species</a></li>
+		<li><a href={routes.statsHeight()}>Top by height</a></li>
+		<li><a href={routes.statsDiameter()}>Top by diameter</a></li>
+		<li><a href={routes.statsCircumference()}>Top by trunk circumference</a></li>
 	</ul>
 </div>
+
+<style>
+	ul {
+		line-height: 1.5em;
+	}
+</style>

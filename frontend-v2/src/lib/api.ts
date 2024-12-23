@@ -44,13 +44,23 @@ export class ApiClient {
 	}
 
 	public async getStats(): Promise<Response<IStats>> {
-		console.debug(`[api] Getting stats`);
 		return await this.request('GET', 'v1/trees/stats');
 	}
 
 	public async getSpeciesStats(): Promise<Response<ISpeciesStats[]>> {
-		console.debug(`[api] Getting stats`);
 		return await this.request('GET', 'v1/stats/species');
+	}
+
+	public async getTopHeight(): Promise<Response<IMarkers>> {
+		return await this.request('GET', 'v1/stats/height');
+	}
+
+	public async getTopDiameter(): Promise<Response<IMarkers>> {
+		return await this.request('GET', 'v1/stats/diameter');
+	}
+
+	public async getTopCircumference(): Promise<Response<IMarkers>> {
+		return await this.request('GET', 'v1/stats/circumference');
 	}
 
 	public async getMe(token: string): Promise<Response<IMeResponse>> {

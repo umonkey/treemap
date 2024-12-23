@@ -7,7 +7,7 @@
 
 	import LazyTreeThumbnail from '$lib/components/LazyTreeThumbnail.svelte';
 
-	const { tree } = $props();
+	const { tree, extra = undefined } = $props();
 
 	const user = get(getUser)(tree.added_by);
 	const date = formatDate(tree.added_at);
@@ -28,6 +28,12 @@
 		<div class="added">
 			{date} &middot; {#if user}{user.name}{:else}Unknown user{/if}
 		</div>
+	</div>
+
+	<div class="extra">
+		{#if extra}
+			{extra}
+		{/if}
 	</div>
 </div>
 
