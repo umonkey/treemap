@@ -1370,6 +1370,38 @@ impl DatabaseInterface for SqliteDatabase {
         Ok(res)
     }
 
+    async fn get_species_mismatch(&self, count: u64, skip: u64) -> Result<Vec<TreeRecord>> {
+        let res = self.pool.conn(move |conn| {
+            let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id, year, address FROM trees WHERE state <> 'gone' AND species NOT IN (SELECT name FROM species) LIMIT ? OFFSET ?") {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error preparing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut rows = match stmt.query([count, skip]) {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error executing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut res = Vec::new();
+
+            while let Some(row) = rows.next()? {
+                res.push(TreeRecord::from_sqlite_row(row)?);
+            }
+
+            Ok(res)
+        }).await?;
+
+        Ok(res)
+    }
+
     async fn get_top_streets(&self, count: u64) -> Result<Vec<(String, u64)>> {
         let res = self.pool.conn(move |conn| {
             let mut stmt = match conn.prepare("SELECT address, COUNT(1) AS cnt FROM trees WHERE state <> 'gone' AND address IS NOT NULL GROUP BY LOWER(address) ORDER BY cnt DESC, LOWER(address) LIMIT ?") {

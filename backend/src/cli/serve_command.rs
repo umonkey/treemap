@@ -51,6 +51,7 @@ pub async fn serve_command() {
             .service(get_new_trees_action)
             .service(get_updated_trees_action)
             .service(get_species_stats_action)
+            .service(get_species_mismatch_action)
             .service(get_top_circumference_action)
             .service(get_top_diameter_action)
             .service(get_top_height_action)
