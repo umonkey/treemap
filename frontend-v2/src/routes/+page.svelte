@@ -1,8 +1,13 @@
-<script>
+<script lang="ts">
 	import { routes } from '$lib/routes';
+	import { page } from '$app/stores';
+	import { rewriteHash } from '$lib/utils/rewrite';
 
 	const { data } = $props();
 	const { totalCount } = data;
+
+	// Redirect old urls from v1.
+	rewriteHash($page.url.hash);
 </script>
 
 <svelte:head>

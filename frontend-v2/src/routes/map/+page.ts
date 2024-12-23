@@ -7,6 +7,8 @@ export const load: Load = ({
 }> => {
 	const searchQuery = url.searchParams.get('q');
 
+	console.debug(window.location.hash);
+
 	return {
 		searchQuery
 	};
