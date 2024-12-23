@@ -13,6 +13,7 @@ pub struct SearchQuery {
     pub nometrics: bool,
     pub nocirc: bool,
     pub noimages: bool,
+    pub hasimages: bool,
     pub sick: bool,
     pub dead: bool,
     pub deformed: bool,
@@ -29,6 +30,7 @@ impl SearchQuery {
         let mut nometrics = false;
         let mut nocirc = false;
         let mut noimages = false;
+        let mut hasimages = false;
         let mut sick = false;
         let mut dead = false;
         let mut deformed = false;
@@ -46,6 +48,8 @@ impl SearchQuery {
                 nocirc = true;
             } else if word.contains("noimage") || word.contains("nophoto") {
                 noimages = true;
+            } else if word.contains("hasimage") || word.contains("hasphoto") {
+                hasimages = true;
             } else if word.contains("healthy") {
                 healthy = true;
             } else if word.contains("deformed") {
@@ -74,6 +78,7 @@ impl SearchQuery {
             nometrics,
             nocirc,
             noimages,
+            hasimages,
             sick,
             dead,
             deformed,
@@ -92,6 +97,10 @@ impl SearchQuery {
         }
 
         if self.noimages && tree.thumbnail_id.is_some() {
+            return false;
+        }
+
+        if self.hasimages && tree.thumbnail_id.is_none() {
             return false;
         }
 
@@ -491,7 +500,7 @@ mod tests {
 
     #[test]
     fn test_unknown() {
-        let query = SearchQuery::from_string("unknown");
+        let query = SearchQuery::from_string("state:unknown");
 
         assert_eq!(
             true,
