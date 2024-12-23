@@ -100,3 +100,8 @@ export interface ITreeList {
 	trees: ITree[];
 	users: IUser[];
 }
+
+export interface ISpeciesStats {
+	species: string;
+	count: number;
+}
