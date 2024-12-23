@@ -17,6 +17,8 @@
 <div class="trees padded">
 	{#each trees as tree}
 		<NewTreesListItem {tree} />
+	{:else}
+		<p>There are no wongly identified species, all good.</p>
 	{/each}
 </div>
 
