@@ -1338,7 +1338,7 @@ impl DatabaseInterface for SqliteDatabase {
 
     async fn get_species_stats(&self) -> Result<Vec<(String, u64)>> {
         let res = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT species, COUNT(1) AS cnt FROM trees WHERE state <> 'gone' GROUP BY species ORDER BY cnt DESC") {
+            let mut stmt = match conn.prepare("SELECT species, COUNT(1) AS cnt FROM trees WHERE state <> 'gone' GROUP BY species ORDER BY cnt DESC, LOWER(species)") {
                 Ok(value) => value,
 
                 Err(e) => {
@@ -1372,7 +1372,7 @@ impl DatabaseInterface for SqliteDatabase {
 
     async fn get_top_streets(&self, count: u64) -> Result<Vec<(String, u64)>> {
         let res = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT address, COUNT(1) AS cnt FROM trees WHERE state <> 'gone' AND address IS NOT NULL GROUP BY LOWER(address) ORDER BY cnt DESC LIMIT ?") {
+            let mut stmt = match conn.prepare("SELECT address, COUNT(1) AS cnt FROM trees WHERE state <> 'gone' AND address IS NOT NULL GROUP BY LOWER(address) ORDER BY cnt DESC, LOWER(address) LIMIT ?") {
                 Ok(value) => value,
 
                 Err(e) => {
