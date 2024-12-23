@@ -4,6 +4,7 @@ use std::sync::Arc;
 
 pub struct GetTreesHandler {
     db: Arc<dyn DatabaseInterface>,
+    loader: Arc<TreeListLoader>,
 }
 
 impl GetTreesHandler {
@@ -15,13 +16,14 @@ impl GetTreesHandler {
             trees.retain(|t| query.r#match(t));
         }
 
-        Ok(TreeList::from_trees(&trees))
+        self.loader.load(&trees).await
     }
 }
 
 impl Locatable for GetTreesHandler {
     fn create(locator: &Locator) -> Result<Self> {
         let db = locator.get::<PreferredDatabase>()?.driver();
-        Ok(Self { db })
+        let loader = locator.get::<TreeListLoader>()?;
+        Ok(Self { db, loader })
     }
 }

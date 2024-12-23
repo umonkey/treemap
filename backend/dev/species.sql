@@ -70,5 +70,6 @@ INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Ulmus glabra',
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Ulmus parvifolia', 'Lacebark elm', 'вяз;мелколистный;карагач;chinese;sieboldii', 'Q1074099');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Ulmus', 'Elm', 'вяз;карагач', 'Q131113');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Vitis vinifera', 'Grape', 'виноград', 'Q30046');
-INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Yucca', 'Yucca', 'юкка', 'Q156317');
-COMMIT;
+INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Yucca', 'Yucca', 'юкка', 'Q156317
+INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Ligustrum', 'Privet', 'бирючина', 'Q753099');
+COMMITQ156317;
