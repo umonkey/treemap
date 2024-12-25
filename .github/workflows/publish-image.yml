@@ -27,25 +27,8 @@ jobs:
           .cache
         key: ${{ runner.os }}
 
-    - name: Log in to the container registry
-      run: make cr-login
+    - name: Build and publish the image
+      run: container/build-yerevan.sh
       env:
         CR_USER: ${{ github.actor }}
         CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Prepare the Rust builder image
-      run: make rust-builder
-
-    - name: Test the backend
-      run: make test-backend
-
-    - name: Test the frontend
-      run: make -C frontend install lint test
-
-    - name: Build the image
-      run: make build-image
-      env:
-        API_ROOT: "https://yerevan.treemaps.app/"
-
-    - name: Publish the image
-      run: make publish-image
