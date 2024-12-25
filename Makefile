@@ -1,7 +1,7 @@
 VERSION=0.1.3
 
 CR_USER ?= umonkey
-BACKEND = docker run -it --rm -v $(PWD)/backend:/app -v $(PWD)/.cache/rust-registry:/usr/local/cargo/registry -w /app treemap_rust_builder:latest
+BACKEND = docker run --rm -v $(PWD)/backend:/app -v $(PWD)/.cache/rust-registry:/usr/local/cargo/registry -w /app treemap_rust_builder:latest
 
 help:
 	@echo "Development steps:"
