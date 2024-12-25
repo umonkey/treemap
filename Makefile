@@ -32,7 +32,7 @@ build-backend-docker:
 
 build-frontend-docker:
 	mkdir -p .cache/npm
-	docker run --rm -v $(PWD)/frontend:/app -v $(PWD)/.cache/npm:/root/.npm -w /app -e SENTRY_AUTH_TOKEN=$(SENTRY_AUTH_TOKEN) -e API_ROOT=$(API_ROOT) --network=host --ulimit nofile=5000:5000 node:20-alpine3.18 sh docker-build.sh
+	docker run --rm -v $(PWD)/frontend:/app -v $(PWD)/.cache/npm:/root/.npm -w /app -e VITE_SENTRY_AUTH_TOKEN=$(SENTRY_AUTH_TOKEN) -e VITE_API_ROOT=$(API_ROOT) --network=host --ulimit nofile=5000:5000 node:20-alpine3.18 sh docker-build.sh
 
 build-image: build-backend-docker build-frontend-docker
 	docker build --tag treemap:$(VERSION) --file container/Dockerfile .
