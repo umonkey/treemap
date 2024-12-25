@@ -33,6 +33,9 @@ jobs:
         CR_USER: ${{ github.actor }}
         CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Prepare the Rust builder image
+      run: make rust-builder
+
     - name: Test the backend
       run: make test-backend
 
