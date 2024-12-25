@@ -1,6 +1,7 @@
 VERSION=0.1.3
 
 CR_USER ?= umonkey
+BACKEND = docker run -it --rm -v $(PWD)/backend:/app -v $(PWD)/.cache/rust-registry:/usr/local/cargo/registry -w /app treemap_rust_builder:latest
 
 help:
 	@echo "Development steps:"
@@ -21,6 +22,9 @@ build:
 	make -C backend build
 	make -C frontend build
 
+rust-builder:
+	docker build --tag treemap_rust_builder:latest --file container/Dockerfile.rust-builder .
+
 # Build the backend binary using a dockerized build environment.
 # This is useful for CI/CD pipelines, letting us cache the intermediate
 # files between builds.  If we used a single dockerfile for building,
@@ -28,12 +32,8 @@ build:
 # takes a lot of time.
 build-backend-docker:
 	mkdir -p .cache/rust-registry
-	docker run --rm \
-		-v $(PWD)/backend:/app \
-		-v $(PWD)/.cache/rust-registry:/usr/local/cargo/registry \
-		-w /app \
-		docker.io/rust:1.83-alpine3.20 \
-		sh dev/docker-build.sh
+	$(BACKEND) cargo build --release
+	$(BACKEND) chown -R 1000:1000 /usr/local/cargo/registry
 
 build-frontend-docker:
 	mkdir -p .cache/npm
@@ -73,3 +73,8 @@ serve:
 serve-local:
 	mkdir -p var
 	docker run -it --rm -v $(PWD)/var:/app/var -p 8001:8000 treemap:$(VERSION)
+
+test-backend:
+	mkdir -p .cache/rust-registry
+	$(BACKEND) cargo clippy
+	$(BACKEND) cargo test

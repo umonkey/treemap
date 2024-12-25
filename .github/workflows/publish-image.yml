@@ -34,7 +34,7 @@ jobs:
         CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Test the backend
-      run: make -C backend lint test
+      run: make test-backend
 
     - name: Test the frontend
       run: make -C frontend install lint test
