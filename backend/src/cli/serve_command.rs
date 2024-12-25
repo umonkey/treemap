@@ -75,6 +75,7 @@ pub async fn serve_command() {
                     .prefer_utf8(true)
                     .index_file("index.html"),
             )
+            .default_service(actix_web::web::to(default_action))
     })
     .bind((host_addr.as_str(), host_port))
     .expect("Error starting server.")

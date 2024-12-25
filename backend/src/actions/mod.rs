@@ -1,6 +1,7 @@
 mod add_comment_action;
 mod add_file;
 mod add_trees_action;
+mod default_action;
 mod get_file;
 mod get_file_status_action;
 mod get_me_action;
@@ -31,6 +32,7 @@ mod update_tree_action;
 pub use add_comment_action::*;
 pub use add_file::*;
 pub use add_trees_action::*;
+pub use default_action::*;
 pub use get_file::*;
 pub use get_file_status_action::*;
 pub use get_me_action::*;
