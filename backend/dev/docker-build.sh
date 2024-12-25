@@ -8,4 +8,8 @@ export RUSTFLAGS=-Ctarget-feature=-crt-static
 # https://github.com/rust-lang/rust/issues/115450#issuecomment-1717228111
 export OPENSSL_DIR=/usr
 
-exec cargo build --release
+cargo build --release
+
+# Some files are owner by root, which makes the cache GitHub action fail.
+# Fix this by resetting the ownership to something that tar can handle.
+chown -R 1000:1000 /usr/local/cargo/registry

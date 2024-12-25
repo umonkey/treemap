@@ -42,7 +42,7 @@ jobs:
     - name: Build the image
       run: make build-image
       env:
-        API_ROOT: "https://yerevan.treemaps.app"
+        API_ROOT: "https://yerevan.treemaps.app/"
 
     - name: Publish the image
       run: make publish-image
