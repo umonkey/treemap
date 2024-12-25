@@ -13,7 +13,7 @@ RUN apk add --no-cache sqlite supervisor
 WORKDIR /app
 
 # These files are made with: make build-frontend-docker
-COPY frontend/dist /app/static
+COPY frontend/build /app/static
 
 # These files are made with: make build-backend-docker
 COPY backend/target/release/treemap /app/bin/treemap

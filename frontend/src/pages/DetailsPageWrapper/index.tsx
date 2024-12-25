@@ -1,1 +1,0 @@
-export { DetailsPageWrapper } from "./DetailsPageWrapper";

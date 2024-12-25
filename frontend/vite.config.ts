@@ -1,21 +1,22 @@
-import { sentryVitePlugin } from "@sentry/vite-plugin";
-import { defineConfig } from 'vite';
-import { resolve } from 'path';
+import { sentrySvelteKit } from '@sentry/sveltekit';
+/// <reference types="vitest" />
+/// <reference types="vite/client" />
 
-// https://vitejs.dev/config/
+import { defineConfig } from 'vitest/config';
+import { sveltekit } from '@sveltejs/kit/vite';
+
 export default defineConfig({
-  resolve: {
-    alias: {
-      "@": resolve(__dirname, "src"),
-    },
-  },
+	plugins: [
+		sentrySvelteKit({
+			sourceMapsUploadOptions: {
+				org: 'trees-of-yerevan',
+				project: 'treemap-v2'
+			}
+		}),
+		sveltekit()
+	],
 
-  build: {
-    sourcemap: true,
-  },
-
-  plugins: [sentryVitePlugin({
-    org: "trees-of-yerevan",
-    project: "javascript-react"
-  })]
-})
+	test: {
+		include: ['src/**/*.{test,spec}.{js,ts}']
+	}
+});

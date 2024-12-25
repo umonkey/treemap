@@ -1,1 +1,0 @@
-export { NewTreesPage } from "./NewTreesPage";

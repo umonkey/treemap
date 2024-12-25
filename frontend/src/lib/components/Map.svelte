@@ -1,0 +1,95 @@
+<script lang="ts">
+	import 'leaflet/dist/leaflet.css';
+	import type { Map } from 'leaflet';
+	import type { ITree } from '$lib/types';
+	import { addLayerSelection } from '$lib/map/baseLayerSelector';
+	import { addTreeButton } from '$lib/map/addTreeButton';
+	import { addResizeObserver } from '$lib/map/resizeObserver';
+	import { Markers } from '$lib/map/markers';
+	import { onMount } from 'svelte';
+
+	const {
+		center,
+		onChange = (tree: ITree) => {
+			console.debug(`[map] Selected tree ${tree.id}`);
+		},
+		onMove = () => {},
+		className = 'default',
+		marker = undefined,
+		zoom = 15,
+		searchQuery = undefined,
+		crosshair = false,
+		canAdd = false
+	} = $props();
+
+	let map: Map;
+	let L;
+
+	onMount(async () => {
+		L = await import('leaflet');
+
+		map = L.map('map').setView(center, zoom);
+
+		addLayerSelection(map);
+		addResizeObserver(map);
+
+		if (canAdd) {
+			addTreeButton(map);
+		}
+
+		map.attributionControl.setPrefix('');
+
+		// Highlight the current tree.
+		if (marker) {
+			L.marker(marker, {
+				icon: L.icon({
+					iconUrl: '/icons/marker-icon-2x.png',
+					iconSize: [25, 41],
+					iconAnchor: [12, 41]
+				})
+			}).addTo(map);
+		}
+
+		const markers = new Markers(map, searchQuery);
+
+		markers.onChange((tree: ITree) => {
+			onChange(tree);
+		});
+
+		map.on('moveend', () => {
+			if (onMove) {
+				onMove(map.getCenter(), map.getZoom());
+			}
+		});
+	});
+</script>
+
+<div id="map" class={className}></div>
+
+{#if crosshair}
+	<img src="/icons/crosshair.svg" class="crosshair" alt="" />
+{/if}
+
+<style>
+	#map {
+		height: 100%;
+		width: 100%;
+		z-index: 1;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		#map {
+			background-color: #000;
+		}
+	}
+
+	.crosshair {
+		width: 30px;
+		height: 30px;
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		z-index: 50;
+		transform: translate(-50%, -50%);
+	}
+</style>

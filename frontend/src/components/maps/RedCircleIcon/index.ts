@@ -1,1 +1,0 @@
-export { RedCircleIcon } from "./RedCircleIcon";

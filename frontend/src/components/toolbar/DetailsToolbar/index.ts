@@ -1,1 +1,0 @@
-export { DetailsToolbar } from "./DetailsToolbar";

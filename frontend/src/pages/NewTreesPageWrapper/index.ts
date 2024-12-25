@@ -1,1 +1,0 @@
-export { NewTreesPageWrapper } from "./NewTreesPageWrapper";

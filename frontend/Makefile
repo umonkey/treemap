@@ -1,31 +1,36 @@
-help:
-	@echo "make build         -- build the static files"
-	@echo "make install       -- install the dependencies"
-	@echo "make lint          -- run the linter"
-	@echo "make serve         -- run the development server"
-	@echo "make storybook     -- run the storybook server"
-	@echo "make test          -- run the unit tests"
-	@echo "make test-verbose  -- run the unit tests with console.log output"
+API_ROOT ?= http://127.0.0.1:8000/
+
+autofix:
+	npm run format
 
 build:
-	npm run build
+	VITE_API_ROOT=$(API_ROOT) npm run build
+	cp build/index.html build/404.html
+
+clean:
+	rm -rf node_modules
+
+deploy:
+	API_ROOT=https://yerevan.treemaps.app/ $(MAKE) build
+	rm -rf ../../umonkey.github.io/*
+	cp -r build/* ../../umonkey.github.io/
+	git -C ../../umonkey.github.io/ add .
+	git -C ../../umonkey.github.io/ commit -m "Deploy"
+	git -C ../../umonkey.github.io/ push
 
 install:
-	npm install
+	npm ci
 
 lint:
 	npm run lint
 
-serve:
-	VITE_API_ROOT=http://localhost:8000 npm run dev -- --host
+preview:
+	npm run preview
 
-storybook:
-	npm run storybook -- --no-open
+serve:
+	VITE_API_ROOT=$(API_ROOT) npm run dev -- --host
 
 test:
-	npm run test
+	npm run test:unit -- run
 
-test-verbose:
-	npm run test-verbose
-
-.PHONY: lint test
+.PHONY: build

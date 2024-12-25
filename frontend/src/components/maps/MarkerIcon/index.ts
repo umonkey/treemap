@@ -1,1 +1,0 @@
-export { MarkerIcon } from "./MarkerIcon";

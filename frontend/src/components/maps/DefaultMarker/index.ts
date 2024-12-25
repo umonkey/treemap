@@ -1,1 +1,0 @@
-export { DefaultMarker } from "./DefaultMarker";

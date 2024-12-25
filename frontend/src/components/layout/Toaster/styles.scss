@@ -1,9 +1,0 @@
-/**
- * On phones, we have the toolbar sticking to the bottom,
- * so we add some margin to make sure they don't overlap.
- */
-@media screen and (max-width: 600px) {
-  .toaster {
-    margin-bottom: 50px;
-  }
-}
