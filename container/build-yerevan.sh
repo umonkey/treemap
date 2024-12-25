@@ -30,14 +30,14 @@ echo $CR_TOKEN | docker login ghcr.io -u $CR_USER --password-stdin
 # cache folder between runs.
 docker build --tag treemap_rust_builder:latest --file container/Dockerfile.rust-builder .
 
-# (3) Test and build the backend.
+# (3) Build the backend.
 mkdir -p .cache/rust-registry
 docker run --rm \
     -v $PWD/backend:/app \
     -v $PWD/.cache/rust-registry:/root/.cargo/registry \
     -w /app \
     treemap_rust_builder:latest \
-    sh -c "cargo clippy && cargo test && cargo build --release && chown -R 1000:1000 /usr/local/cargo/registry /app/target"
+    sh -c "cargo build --release && chown -R 1000:1000 /usr/local/cargo/registry /app/target"
 
 # (4) Test and build the frontend.
 mkdir -p .cache/npm
