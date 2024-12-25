@@ -1,4 +1,4 @@
-export const API_ROOT = import.meta.env.VITE_API_ROOT;
+export const API_ROOT = import.meta.env.VITE_API_ROOT ?? 'https://yerevan.treemaps.app';
 export const AUTH_CALLBACK = `${API_ROOT}v3/login/google`;
 export const AUTH_CLIENT_ID =
 	import.meta.env.VITE_AUTH_CLIENT_ID ??
