@@ -29,7 +29,7 @@
 		font-size: 14px;
 	}
 
-	@media (max-width: 400px) {
+	@media (max-width: 480px) {
 		aside {
 			display: none;
 		}

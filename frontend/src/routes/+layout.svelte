@@ -73,7 +73,7 @@
 		padding-right: var(--gap);
 	}
 
-	@media (max-width: 400px) {
+	@media (max-width: 480px) {
 		article {
 			padding-bottom: 50px;
 		}
