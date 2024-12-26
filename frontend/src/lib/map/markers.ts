@@ -256,14 +256,14 @@ export class Markers {
 		const buckets = {};
 
 		for (const tree of trees) {
-			const x = Math.round(tree.lat / divider) * divider;
-			const y = Math.round(tree.lon / divider) * divider;
+			const y = Math.round(tree.lat / divider) * divider;
+			const x = Math.round(tree.lon / divider) * divider;
 
 			const id = `${x},${y}`;
 
 			const bucket = buckets[id] || {
-				lat: x,
-				lon: y,
+				lat: y,
+				lon: x,
 				count: 0,
 
 				n: y + divider / 2,
