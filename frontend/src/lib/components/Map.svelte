@@ -92,4 +92,25 @@
 		z-index: 50;
 		transform: translate(-50%, -50%);
 	}
+
+	:global {
+		.cluster-count {
+			background-color: transparent;
+			border: none;
+			box-shadow: none;
+			font-size: 20px;
+			line-height: 40px;
+			text-align: center;
+			padding: 0;
+			color: #040;
+		}
+	}
+
+	@media (max-width: 480px) {
+		:global {
+			.cluster-count {
+				font-size: 14px;
+			}
+		}
+	}
 </style>

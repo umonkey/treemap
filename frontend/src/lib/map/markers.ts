@@ -19,6 +19,18 @@ type MarkerMap = {
 	[key: string]: Marker;
 };
 
+type ClusterGroup = {
+	lat: number;
+	lon: number;
+	count: number;
+
+	// Additional props for panning.
+	n: number;
+	e: number;
+	s: number;
+	w: number;
+};
+
 type onChangeFn = (tree: ITree) => void;
 
 export class Markers {
@@ -34,6 +46,8 @@ export class Markers {
 	private blackIcon;
 
 	public changeHandler: onChangeFn | null = null;
+
+	private oldClusterGroups = [];
 
 	constructor(map: Map, searchQuery: string | undefined) {
 		this.map = map;
@@ -111,35 +125,17 @@ export class Markers {
 	 * Leaflet cannot track duplicates so we have to do this on our side.
 	 */
 	private replaceMarkers(trees: ITree[]) {
-		const oldKeys = Object.keys(this.markerMap);
-		const newKeys = trees.map((m) => m.id);
+		const items = this.getItemsToShow(trees);
 
-		// Add new markers.
-		for (const tree of trees) {
-			if (!oldKeys.includes(tree.id)) {
-				const point = L.marker([tree.lat, tree.lon], {
-					icon: this.getTreeIcon(tree)
-				});
-
-				point.addTo(this.map).on('click', () => {
-					this.map.panTo([tree.lat, tree.lon]);
-
-					if (this.changeHandler) {
-						this.changeHandler(tree);
-					}
-				});
-
-				this.markerMap[tree.id] = point;
-				oldKeys.push(tree.id);
-			}
+		// Remove old items.
+		for (const item of this.oldClusterGroups) {
+			this.map.removeLayer(item);
 		}
 
-		// Remove gone markers.
-		for (const key of oldKeys) {
-			if (!newKeys.includes(key)) {
-				this.markerMap[key].remove();
-				delete this.markerMap[key];
-			}
+		// Add new items.
+		for (const item of items) {
+			this.map.addLayer(item);
+			this.oldClusterGroups.push(item);
 		}
 	}
 
@@ -157,5 +153,135 @@ export class Markers {
 		}
 
 		return this.greenIcon;
+	}
+
+	/**
+	 * Returns individual trees or cluster groups, depending
+	 * on the map zoom level.
+	 */
+	private getItemsToShow(trees: ITree[]) {
+		if (this.map.getZoom() < 18) {
+			return this.getClusterGroupsToShow(trees);
+		} else {
+			return this.getMarkersToShow(trees);
+		}
+	}
+
+	private getMarkersToShow(trees: ITree[]) {
+		const res = [];
+
+		for (const tree of trees) {
+			const point = L.marker([tree.lat, tree.lon], {
+				icon: this.getTreeIcon(tree)
+			});
+
+			point.on('click', () => {
+				this.map.panTo([tree.lat, tree.lon]);
+
+				if (this.changeHandler) {
+					this.changeHandler(tree);
+				}
+			});
+
+			res.push(point);
+		}
+
+		return res;
+	}
+
+	private getClusterGroupsToShow(trees: ITree[]) {
+		const res = [];
+
+		const r = this.getClusterGroupRadius();
+
+		for (const group of this.splitBuckets(trees)) {
+			const onClick = () => {
+				this.map.fitBounds([
+					[group.s, group.w],
+					[group.n, group.e]
+				]);
+			};
+
+			const circle = L.circleMarker([group.lat, group.lon], {
+				color: '#080',
+				fillColor: '#080',
+				fillOpacity: 0.5,
+				radius: r
+			}).on('click', onClick);
+
+			const label = L.divIcon({
+				html: group.count.toString(),
+				className: 'cluster-count',
+				iconSize: [40, 40]
+			});
+
+			const marker = L.marker([group.lat, group.lon], {
+				icon: label
+			}).on('click', onClick);
+
+			res.push(circle);
+			res.push(marker);
+		}
+
+		return res;
+	}
+
+	/**
+	 * Split trees into 100 separate buckets (clustering).
+	 */
+	private splitBuckets(trees: ITree[]): ClusterGroup[] {
+		const bounds = this.map.getBounds();
+		const n = bounds.getNorth();
+		const e = bounds.getEast();
+		const s = bounds.getSouth();
+		const w = bounds.getWest();
+
+		const step_x = (e - w) / 10;
+		const step_y = (n - s) / 10;
+
+		const buckets = {};
+
+		for (const tree of trees) {
+			if (tree.lat > n || tree.lat < s) {
+				continue;
+			}
+
+			if (tree.lon > e || tree.lon < w) {
+				continue;
+			}
+
+			const y = Math.floor((tree.lat - s) / step_y);
+			const x = Math.floor((tree.lon - w) / step_x);
+
+			const id = `${x}-${y}`;
+
+			const bucket = buckets[id] || {
+				lat: s + y * step_y + step_y / 2,
+				lon: w + x * step_x + step_x / 2,
+				count: 0,
+
+				n: s + y * step_y + step_y,
+				e: w + x * step_x + step_x,
+				s: s + y * step_y,
+				w: w + x * step_x
+			};
+
+			bucket.count++;
+
+			buckets[id] = bucket;
+		}
+
+		return Object.values(buckets);
+	}
+
+	private getClusterGroupRadius(): number {
+		const container = this.map.getContainer();
+
+		const width = container.clientWidth;
+		const height = container.clientHeight;
+
+		const min = Math.min(width, height);
+
+		return min / 10 / 2 - 5;
 	}
 }
