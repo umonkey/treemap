@@ -13,6 +13,7 @@ export const addLayerSelection = (map: L.Map) => {
 		{
 			attribution:
 				'&copy; <a href="https://myga.am/">Kanach Yerevan</a> &amp; <a href="https://www.openstreetmap.org/copyright">OSM</a>',
+			minZoom: 9,
 			maxZoom: 25,
 			maxNativeZoom: 19
 		}
@@ -21,6 +22,7 @@ export const addLayerSelection = (map: L.Map) => {
 	const osmLight = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 		attribution:
 			'&copy; <a href="https://myga.am/">Kanach Yerevan</a> &amp; <a href="https://www.openstreetmap.org/copyright">OSM</a>',
+		minZoom: 9,
 		maxZoom: 25,
 		maxNativeZoom: 19
 	});
@@ -29,6 +31,7 @@ export const addLayerSelection = (map: L.Map) => {
 		attribution:
 			'&copy; <a href="https://myga.am/">Kanach Yerevan</a> &amp; <a href="https://maps.google.com/copyright">Google</a>',
 		subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+		minZoom: 9,
 		maxZoom: 25,
 		maxNativeZoom: 22
 	});

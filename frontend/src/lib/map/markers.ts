@@ -19,6 +19,27 @@ type MarkerMap = {
 	[key: string]: Marker;
 };
 
+const CLUSTER_GRID = {
+	1: 26.214,
+	2: 13.107,
+	3: 6.5535,
+	4: 3.2768,
+	5: 1.6384,
+	6: 0.8192,
+	7: 0.4096,
+	8: 0.2048,
+	9: 0.1024,
+	10: 0.0512,
+	11: 0.0256,
+	12: 0.0128,
+	13: 0.0064,
+	14: 0.0032,
+	15: 0.0016,
+	16: 0.0008,
+	17: 0.0004,
+	18: 0.0001220703125
+};
+
 type ClusterGroup = {
 	lat: number;
 	lon: number;
@@ -230,40 +251,25 @@ export class Markers {
 	 * Split trees into 100 separate buckets (clustering).
 	 */
 	private splitBuckets(trees: ITree[]): ClusterGroup[] {
-		const bounds = this.map.getBounds();
-		const n = bounds.getNorth();
-		const e = bounds.getEast();
-		const s = bounds.getSouth();
-		const w = bounds.getWest();
-
-		const step_x = (e - w) / 10;
-		const step_y = (n - s) / 10;
+		const divider = CLUSTER_GRID[this.map.getZoom()];
 
 		const buckets = {};
 
 		for (const tree of trees) {
-			if (tree.lat > n || tree.lat < s) {
-				continue;
-			}
+			const x = Math.round(tree.lat / divider) * divider;
+			const y = Math.round(tree.lon / divider) * divider;
 
-			if (tree.lon > e || tree.lon < w) {
-				continue;
-			}
-
-			const y = Math.floor((tree.lat - s) / step_y);
-			const x = Math.floor((tree.lon - w) / step_x);
-
-			const id = `${x}-${y}`;
+			const id = `${x},${y}`;
 
 			const bucket = buckets[id] || {
-				lat: s + y * step_y + step_y / 2,
-				lon: w + x * step_x + step_x / 2,
+				lat: x,
+				lon: y,
 				count: 0,
 
-				n: s + y * step_y + step_y,
-				e: w + x * step_x + step_x,
-				s: s + y * step_y,
-				w: w + x * step_x
+				n: y + divider / 2,
+				e: x + divider / 2,
+				s: y - divider / 2,
+				w: x - divider / 2
 			};
 
 			bucket.count++;
