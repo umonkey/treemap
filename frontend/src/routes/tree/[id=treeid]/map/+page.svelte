@@ -43,7 +43,7 @@
 
 	@media (min-width: 481px) {
 		.mapContainer {
-			height: calc(100dvh - 41px);
+			height: calc(100dvh - 135px);
 		}
 	}
 </style>
