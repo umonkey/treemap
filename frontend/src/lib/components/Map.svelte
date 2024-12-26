@@ -113,4 +113,12 @@
 			}
 		}
 	}
+
+	@media (prefers-color-scheme: dark) {
+		:global {
+			.cluster-count {
+				color: #fff;
+			}
+		}
+	}
 </style>
