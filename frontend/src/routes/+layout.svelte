@@ -1,9 +1,11 @@
 <script>
 	import '@fontsource-variable/inter';
+	import { SvelteToast } from '@zerodevx/svelte-toast';
+
 	import MobileNav from '$lib/components/MobileNav.svelte';
 	import LeftSideBar from '$lib/components/LeftSideBar.svelte';
 	import RightSideBar from '$lib/components/RightSideBar.svelte';
-	import { SvelteToast } from '@zerodevx/svelte-toast';
+	import MobileSidebar from '$lib/components/MobileSidebar.svelte';
 
 	import '$lib/styles/variables.css';
 	import '$lib/styles/forms.css';
@@ -26,6 +28,7 @@
 </div>
 
 <SvelteToast />
+<MobileSidebar />
 
 <style>
 	:global {

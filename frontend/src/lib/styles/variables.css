@@ -17,6 +17,7 @@
 	--z-mobile-nav: 7;
 	--z-map-preview: 8;
 	--z-add-button: 10;
+	--z-mobile-sidebar: 11;
 }
 
 @media (prefers-color-scheme: dark) {

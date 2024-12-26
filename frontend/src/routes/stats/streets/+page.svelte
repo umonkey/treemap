@@ -2,7 +2,6 @@
 	import { routes } from '$lib/routes';
 
 	import Header from '$lib/components/tree/Header.svelte';
-	import HomeTabs from '$lib/components/HomeTabs.svelte';
 
 	const { data } = $props();
 	console.debug('DATA:', data);
@@ -13,8 +12,6 @@
 </svelte:head>
 
 <Header title="Statistics" />
-
-<HomeTabs active="stats" />
 
 <div class="padded">
 	<h1>Trees by address</h1>

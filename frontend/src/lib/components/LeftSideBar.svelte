@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { routes } from '$lib/routes';
 
+	import ChartIcon from '$lib/icons/ChartIcon.svelte';
 	import BellIcon from '$lib/icons/BellIcon.svelte';
 	import HomeIcon from '$lib/icons/HomeIcon.svelte';
 	import MapIcon from '$lib/icons/MapIcon.svelte';
@@ -33,6 +34,12 @@
 			<a href={routes.newTrees()}>
 				<span class="icon"><BellIcon /></span>
 				<span>Recent updates</span>
+			</a>
+		</li>
+		<li>
+			<a href={routes.stats()}>
+				<span class="icon"><ChartIcon /></span>
+				<span>Data reports</span>
 			</a>
 		</li>
 		<li>

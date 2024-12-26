@@ -4,7 +4,6 @@
 	import { rewriteHash } from '$lib/utils/rewrite';
 
 	import Header from '$lib/components/tree/Header.svelte';
-	import HomeTabs from '$lib/components/HomeTabs.svelte';
 
 	const { data } = $props();
 	const { totalCount } = data;
@@ -18,7 +17,6 @@
 </svelte:head>
 
 <Header title="Tree Map" back={false} />
-<HomeTabs active="welcome" />
 
 <div class="home">
 	<h1>Tree Map of Yerevan</h1>

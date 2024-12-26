@@ -1,7 +1,6 @@
 <script lang="ts">
 	import Header from '$lib/components/tree/Header.svelte';
 	import NewTreesListItem from '$lib/components/updates/NewTreesListItem.svelte';
-	import HomeTabs from '$lib/components/HomeTabs.svelte';
 
 	const { data } = $props();
 	const { trees } = data;
@@ -12,7 +11,6 @@
 </svelte:head>
 
 <Header title="Species mismatches" />
-<HomeTabs active="stats" />
 
 <div class="trees padded">
 	{#each trees as tree}

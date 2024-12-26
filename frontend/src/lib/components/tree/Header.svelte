@@ -1,5 +1,8 @@
 <script lang="ts">
+	import { mobileSidebarStore } from '$lib/stores/mobileSidebarStore';
+
 	import BackIcon from '$lib/icons/BackIcon.svelte';
+	import BarsIcon from '$lib/icons/BarsIcon.svelte';
 
 	const {
 		title,
@@ -12,6 +15,10 @@
 	const onBack = () => {
 		history.back();
 	};
+
+	const onBars = () => {
+		mobileSidebarStore.update((state) => !state);
+	};
 </script>
 
 <div class="header">
@@ -22,7 +29,7 @@
 	</div>
 	<div class="title">{title}</div>
 	<div class="right">
-		<div class="icon"></div>
+		<button type="button" class="icon bars" onclick={onBars}><BarsIcon /></button>
 	</div>
 </div>
 
@@ -60,5 +67,15 @@
 	button.icon {
 		height: 30px;
 		align-content: center;
+	}
+
+	button.bars {
+		display: none;
+	}
+
+	@media (max-width: 480px) {
+		button.bars {
+			display: block;
+		}
 	}
 </style>
