@@ -8,6 +8,7 @@
 	import { Markers } from '$lib/map/markers';
 	import { onMount } from 'svelte';
 	import { baseLayer } from '$lib/stores/mapLayerStore';
+	import { MAX_BOUNDS } from '$lib/constants';
 
 	const {
 		center,
@@ -29,7 +30,9 @@
 	onMount(async () => {
 		L = await import('leaflet');
 
-		map = L.map('map').setView(center, zoom);
+		map = L.map('map', {
+			maxBounds: MAX_BOUNDS
+		}).setView(center, zoom);
 
 		addLayerSelection(map);
 		addResizeObserver(map);
