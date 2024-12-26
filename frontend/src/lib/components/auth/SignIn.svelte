@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { AUTH_CALLBACK, AUTH_CLIENT_ID } from '$lib/env';
+	import { locale } from '$lib/locale';
 
 	const onSignIn = () => {
 		const qs = new URLSearchParams({
@@ -23,4 +24,4 @@
 	};
 </script>
 
-<button class="button" type="button" on:click={onSignIn}>Sign In with Google</button>
+<button class="button" type="button" on:click={onSignIn}>{locale.signInWithGoogle()}</button>

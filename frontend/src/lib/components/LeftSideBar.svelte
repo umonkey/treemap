@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { routes } from '$lib/routes';
+	import { locale } from '$lib/locale';
 
 	import ChartIcon from '$lib/icons/ChartIcon.svelte';
 	import BellIcon from '$lib/icons/BellIcon.svelte';
@@ -15,43 +16,43 @@
 		<li>
 			<a href="/">
 				<span class="icon"><HomeIcon /></span>
-				<span>Home</span>
+				<span>{locale.sideHome()}</span>
 			</a>
 		</li>
 		<li>
 			<a href="/search">
 				<span class="icon"><SearchIcon /></span>
-				<span>Search</span>
+				<span>{locale.sideSearch()}</span>
 			</a>
 		</li>
 		<li>
 			<a href="/map">
 				<span class="icon"><MapIcon /></span>
-				<span>Explore Map</span>
+				<span>{locale.sideExplore()}</span>
 			</a>
 		</li>
 		<li>
 			<a href={routes.newTrees()}>
 				<span class="icon"><BellIcon /></span>
-				<span>Recent updates</span>
+				<span>{locale.sideUpdates()}</span>
 			</a>
 		</li>
 		<li>
 			<a href={routes.stats()}>
 				<span class="icon"><ChartIcon /></span>
-				<span>Data reports</span>
+				<span>{locale.sideReports()}</span>
 			</a>
 		</li>
 		<li>
 			<a href="/profile">
 				<span class="icon"><UserIcon /></span>
-				<span>Profile</span>
+				<span>{locale.sideProfile()}</span>
 			</a>
 		</li>
 		<li>
 			<a href="/add">
 				<span class="icon"><PlusIcon /></span>
-				<span>Add a tree</span>
+				<span>{locale.sideAdd()}</span>
 			</a>
 		</li>
 	</ul>

@@ -2,6 +2,7 @@
 	import { routes } from '$lib/routes';
 	import { page } from '$app/stores';
 	import { rewriteHash } from '$lib/utils/rewrite';
+	import { locale } from '$lib/locale';
 
 	import Header from '$lib/components/tree/Header.svelte';
 
@@ -16,10 +17,10 @@
 	<title>Trees of Yerevan</title>
 </svelte:head>
 
-<Header title="Tree Map" back={false} />
+<Header title={locale.homeTitle()} back={false} />
 
 <div class="home">
-	<h1>Tree Map of Yerevan</h1>
+	<h1>{locale.appTitle()}</h1>
 	<p>
 		Welcome to the community-drive map of trees in Yerevan, Armenia. Here we collect information
 		about trees to protect them. We have <strong>{totalCount} trees</strong> in our database. You

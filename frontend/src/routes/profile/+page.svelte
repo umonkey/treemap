@@ -1,5 +1,6 @@
 <script>
 	import { isAuthenticated, authState } from '$lib/stores/auth';
+	import { locale } from '$lib/locale';
 	import SignIn from '$lib/components/auth/SignIn.svelte';
 	import SignOut from '$lib/components/auth/SignOut.svelte';
 	import Header from '$lib/components/tree/Header.svelte';
@@ -14,7 +15,9 @@
 		<img class="userpic" src={$authState?.picture} alt="userpic" />
 
 		<h1>{$authState?.name ?? 'Unknown user'}</h1>
-		<div class="stats"><em>75</em> trees, <em>14</em> edits, <em>295</em> photos</div>
+		<div class="stats">
+			{locale.profileTrees(75)}, {locale.profileUpdates(14)}, {locale.profilePhotos(295)}
+		</div>
 
 		<div class="actions">
 			<SignOut />
@@ -22,7 +25,7 @@
 	</div>
 {:else}
 	<div class="container signedOut">
-		<p>You need to sign in to access your profile.</p>
+		<p>{locale.profileSignInPrompt()}</p>
 		<SignIn />
 	</div>
 {/if}
@@ -62,11 +65,6 @@
 		font-weight: 800;
 		font-size: 24px;
 		margin: 10px 0 5px;
-	}
-
-	em {
-		font-style: normal;
-		font-weight: 800;
 	}
 
 	.actions {

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { formatSpecies } from '$lib/utils/trees';
+	import { locale } from '$lib/locale';
 
 	import Actions from '$lib/components/tree/Actions.svelte';
 	import Description from '$lib/components/tree/Description.svelte';
@@ -16,10 +17,10 @@
 </script>
 
 <svelte:head>
-	<title>{formatSpecies(tree.species)} - Details</title>
+	<title>{locale.detailsTitle(formatSpecies(tree.species))}</title>
 </svelte:head>
 
-<Header title="Tree" />
+<Header title={locale.treeShortTitle()} />
 <Title title={formatSpecies(tree.species)} address={tree.address} />
 <Tabs tree={tree.id} active="details" />
 <Gallery files={tree.files} />

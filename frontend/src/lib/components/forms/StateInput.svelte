@@ -1,21 +1,22 @@
 <script lang="ts">
 	import HelpButton from '$lib/components/forms/HelpButton.svelte';
+	import { locale } from '$lib/locale';
 
 	export let value = '';
 </script>
 
 <div class="input">
 	<label>
-		<span>State</span>
+		<span>{locale.stateLabel()}</span>
 		<div class="group">
 			<select bind:value>
-				<option value="">(unknown)</option>
-				<option value="healthy">healthy</option>
-				<option value="sick">sick</option>
-				<option value="deformed">deformed</option>
-				<option value="dead">dead</option>
-				<option value="gone">gone</option>
-				<option value="stomp">stomp</option>
+				<option value="">{locale.stateUnknown()}</option>
+				<option value="healthy">{locale.stateHealthy()}</option>
+				<option value="sick">{locale.stateSick()}</option>
+				<option value="deformed">{locale.stateDeformed()}</option>
+				<option value="dead">{locale.stateDead()}</option>
+				<option value="gone">{locale.stateGone()}</option>
+				<option value="stomp">{locale.stateStomp()}</option>
 			</select>
 			<HelpButton help="https://github.com/KanachYerevan/kb/wiki/Understanding-tree-state" />
 		</div>

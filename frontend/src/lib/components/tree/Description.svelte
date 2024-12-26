@@ -1,4 +1,5 @@
-<script>
+<script lang="ts">
+	import { locale } from '$lib/locale';
 	const { text } = $props();
 </script>
 
@@ -6,10 +7,7 @@
 	{#if text}
 		<p class="formatted">{text}</p>
 	{:else}
-		<p>
-			There is no description for this tree. You can leave a comment to let us know about something
-			interesting.
-		</p>
+		<p>{locale.noDescription()}</p>
 	{/if}
 </div>
 

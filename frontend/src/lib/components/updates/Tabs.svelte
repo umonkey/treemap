@@ -1,5 +1,6 @@
 <script>
 	import { routes } from '$lib/routes';
+	import { locale } from '$lib/locale';
 	import TabRenderer from '$lib/components/TabRenderer.svelte';
 
 	const { active } = $props();
@@ -7,17 +8,17 @@
 	const tabs = [
 		{
 			id: 'new',
-			title: 'Added',
+			title: locale.updatesAdded(),
 			url: routes.newTrees()
 		},
 		{
 			id: 'changes',
-			title: 'Edited',
+			title: locale.updatesChanged(),
 			url: routes.changedTrees()
 		},
 		{
 			id: 'comments',
-			title: 'Comments',
+			title: locale.updatesComments(),
 			url: routes.comments()
 		}
 	];

@@ -1,28 +1,29 @@
 <script>
 	import { formatMeters, formatCentimeters, formatYear } from '$lib/utils/trees';
+	import { locale } from '$lib/locale';
 
 	const { tree } = $props();
 </script>
 
 <div class="properties">
 	<dl>
-		<dt>Height</dt>
+		<dt>{locale.propHeight()}</dt>
 		<dd>{formatMeters(tree.height)}</dd>
 	</dl>
 	<dl>
-		<dt>Canopy</dt>
+		<dt>{locale.propCanopy()}</dt>
 		<dd>{formatMeters(tree.diameter)}</dd>
 	</dl>
 	<dl>
-		<dt>Trunk</dt>
+		<dt>{locale.propTrunk()}</dt>
 		<dd>{formatCentimeters(tree.circumference)}</dd>
 	</dl>
 	<dl>
-		<dt>State</dt>
+		<dt>{locale.propState()}</dt>
 		<dd>{tree.state}</dd>
 	</dl>
 	<dl>
-		<dt>Year</dt>
+		<dt>{locale.propYear()}</dt>
 		<dd>{formatYear(tree.year)}</dd>
 	</dl>
 </div>

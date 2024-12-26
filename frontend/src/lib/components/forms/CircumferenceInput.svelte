@@ -1,12 +1,13 @@
 <script>
+	import { locale } from '$lib/locale';
 	import TextInput from '$lib/components/forms/TextInput.svelte';
 	export let value = '';
 </script>
 
 <TextInput
-	label="Trunk circumference, cm"
+	label={locale.circumferenceLabel()}
 	bind:value
 	type="number"
-	hint="Measure at chest level, aka 120 cm from the ground."
+	hint={locale.circumferenceHint()}
 	help="https://github.com/KanachYerevan/kb/wiki/Measuring-trunk-circumference"
 />

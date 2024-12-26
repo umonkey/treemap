@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { locale } from '$lib/locale';
 	import { formatDate } from '$lib/utils/strings';
 	import { formatSpecies } from '$lib/utils/trees';
 	import { get } from 'svelte/store';
@@ -23,10 +24,10 @@
 			<a href={routes.treeDetails(tree.id)}>{formatSpecies(tree.species)}</a>
 		</div>
 		<div class="address">
-			{#if tree.address}{tree.address}{:else}Unknown address{/if}
+			{#if tree.address}{tree.address}{:else}{locale.addressUnknown()}{/if}
 		</div>
 		<div class="added">
-			{date} &middot; {#if user}{user.name}{:else}Unknown user{/if}
+			{date} &middot; {#if user}{user.name}{:else}{locale.userUnknown()}{/if}
 		</div>
 	</div>
 

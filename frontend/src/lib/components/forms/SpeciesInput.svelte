@@ -7,6 +7,7 @@
 
 	import { apiClient } from '$lib/api';
 	import type { ISpecies } from '$lib/types';
+	import { locale } from '$lib/locale';
 
 	let { value = $bindable() } = $props();
 
@@ -38,12 +39,12 @@
 
 <div class="input">
 	<label class:drop={showOptions}>
-		<span>Species</span>
+		<span>{locale.speciesLabel()}</span>
 		<input
 			type="text"
 			autocomplete="off"
 			bind:value
-			placeholder="Type a latin or local name"
+			placeholder={locale.speciesPrompt()}
 			oninput={handleInput}
 			onfocusout={handleFocusOut}
 		/>
@@ -61,7 +62,7 @@
 		{/if}
 	</label>
 
-	<div class="hint">Enter the latin genus of the tree.</div>
+	<div class="hint">{locale.speciesHint()}</div>
 </div>
 
 <style>

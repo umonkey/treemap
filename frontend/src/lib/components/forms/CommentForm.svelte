@@ -1,5 +1,6 @@
 <script>
 	import { isAuthenticated } from '$lib/stores/auth';
+	import { locale } from '$lib/locale';
 
 	import SignIn from '$lib/components/auth/SignIn.svelte';
 	import CommentInput from '$lib/components/forms/CommentInput.svelte';
@@ -15,15 +16,15 @@
 </script>
 
 {#if $isAuthenticated}
-	<p>Would you like to add a comment?</p>
+	<p>{locale.commentPrompt()}</p>
 	<div class="form">
 		<CommentInput bind:value={message} />
 
 		<div class="buttons">
-			<Button onClick={onButtonClicked} label="Submit comment" disabled={!message} />
+			<Button onClick={onButtonClicked} label={locale.commentSubmit()} disabled={!message} />
 		</div>
 	</div>
 {:else}
-	<p>You need to be authenticated to add comments.</p>
+	<p>{locale.commentSignIn()}</p>
 	<SignIn />
 {/if}

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { locale } from '$lib/locale';
 	import SearchIcon from '$lib/icons/SearchIcon.svelte';
 
 	export let value = '';
@@ -14,7 +15,13 @@
 <div class="search">
 	<div class="icon"><SearchIcon width="20px" height="20px" /></div>
 	<!-- svelte-ignore a11y-autofocus -->
-	<input type="search" placeholder="Search" autofocus bind:value on:keydown={handleKeyDown} />
+	<input
+		type="search"
+		placeholder={locale.searchPrompt()}
+		autofocus
+		bind:value
+		on:keydown={handleKeyDown}
+	/>
 </div>
 
 <style>

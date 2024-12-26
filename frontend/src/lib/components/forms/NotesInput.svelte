@@ -1,11 +1,8 @@
 <script>
 	import TextInput from '$lib/components/forms/TextInput.svelte';
+	import { locale } from '$lib/locale';
+
 	export let value = '';
 </script>
 
-<TextInput
-	label="Description"
-	bind:value
-	multiline={true}
-	hint="Add some notable details that could help visitors understand the importance of this tree."
-/>
+<TextInput label={locale.notesLabel()} bind:value multiline={true} hint={locale.notesHint()} />

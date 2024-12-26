@@ -1,5 +1,6 @@
 <script>
 	import { routes } from '$lib/routes';
+	import { locale } from '$lib/locale';
 	import TabRenderer from '$lib/components/TabRenderer.svelte';
 
 	export let tree;
@@ -8,22 +9,22 @@
 	const tabs = [
 		{
 			id: 'details',
-			title: 'Details',
+			title: locale.treeTabsDetails(),
 			url: routes.treeDetails(tree)
 		},
 		{
 			id: 'map',
-			title: 'Map',
+			title: locale.treeTabsMap(),
 			url: routes.treeMap(tree)
 		},
 		{
 			id: 'comments',
-			title: 'Comments',
+			title: locale.treeTabsComments(),
 			url: routes.treeComments(tree)
 		},
 		{
 			id: 'history',
-			title: 'History',
+			title: locale.treeTabsChanges(),
 			url: routes.treeHistory(tree)
 		}
 	];

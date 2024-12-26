@@ -3,6 +3,7 @@
 	import { toast } from '@zerodevx/svelte-toast';
 	import { apiClient } from '$lib/api';
 	import { routes } from '$lib/routes';
+	import { locale } from '$lib/locale';
 
 	import AuthWrapper from '$lib/components/auth/AuthWrapper.svelte';
 	import Button from '$lib/components/forms/Button.svelte';
@@ -84,14 +85,14 @@
 </script>
 
 <svelte:head>
-	<title>Add tree</title>
+	<title>{locale.addTitle()}</title>
 </svelte:head>
 
-<Header title="Add Tree" />
+<Header title={locale.addTitle()} />
 
 <div class="form">
 	<AuthWrapper>
-		<LocationInput bind:value={location} label="Confirm location" />
+		<LocationInput bind:value={location} label={locale.addConfirmLocation()} />
 		<SpeciesInput bind:value={species} />
 		<HeightInput bind:value={height} />
 		<CanopyInput bind:value={diameter} />
@@ -101,8 +102,8 @@
 		<NotesInput bind:value={notes} />
 
 		<div class="buttons">
-			<Button type="submit" label="Add tree" onClick={onSave} disabled={busy} />
-			<Button type="cancel" label="Cancel" onClick={onCancel} disabled={busy} />
+			<Button type="submit" label={locale.addConfirmButton()} onClick={onSave} disabled={busy} />
+			<Button type="cancel" label={locale.addCancelButton()} onClick={onCancel} disabled={busy} />
 		</div>
 	</AuthWrapper>
 </div>

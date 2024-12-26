@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { locale } from '$lib/locale';
 	import Header from '$lib/components/tree/Header.svelte';
 	import NewTreesListItem from '$lib/components/updates/NewTreesListItem.svelte';
 	import Tabs from '$lib/components/updates/Tabs.svelte';
@@ -8,10 +9,10 @@
 </script>
 
 <svelte:head>
-	<title>New Trees</title>
+	<title>{locale.updatesNewTitle()}</title>
 </svelte:head>
 
-<Header title="New Trees" />
+<Header title={locale.updatesNewTitle()} />
 <Tabs active="new" />
 
 <div class="trees padded">

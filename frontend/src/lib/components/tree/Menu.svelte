@@ -1,6 +1,7 @@
 <script>
 	import { menuState } from '$lib/stores/treeMenu';
 	import { routes } from '$lib/routes';
+	import { locale } from '$lib/locale';
 
 	export let id;
 
@@ -15,8 +16,8 @@
 	<div class="canvas" on:click={onCloseMenu}>
 		<div class="menu">
 			<ul>
-				<li><a href={routes.treeEdit(id)}>Edit this tree</a></li>
-				<li><a href={routes.treeUploadPhotos(id)}>Upload photos</a></li>
+				<li><a href={routes.treeEdit(id)}>{locale.contextEditTree()}</a></li>
+				<li><a href={routes.treeUploadPhotos(id)}>{locale.contextUploadPhotos()}</a></li>
 			</ul>
 		</div>
 	</div>

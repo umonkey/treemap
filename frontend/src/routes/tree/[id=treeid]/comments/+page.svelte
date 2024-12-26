@@ -4,6 +4,7 @@
 	import { routes } from '$lib/routes';
 	import { toast } from '@zerodevx/svelte-toast';
 	import { formatSpecies } from '$lib/utils/trees';
+	import { locale } from '$lib/locale';
 
 	import Header from '$lib/components/tree/Header.svelte';
 	import Tabs from '$lib/components/tree/Tabs.svelte';
@@ -50,7 +51,7 @@
 			<Comment {comment} />
 		{/each}
 	{:else}
-		<p>No comments for this tree yet.</p>
+		<p>{locale.noComments()}</p>
 	{/if}
 
 	<CommentForm {onSubmit} />
