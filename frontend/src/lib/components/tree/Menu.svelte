@@ -48,6 +48,7 @@
 			list-style-type: none;
 			margin: 0;
 			padding: var(--gap) 0;
+			white-space: nowrap;
 		}
 
 		li {
