@@ -462,7 +462,7 @@ class RussianLocale extends EnglishLocale {
 	}
 
 	public treeTabsComments(): string {
-		return 'Чат';
+		return 'Комменты';
 	}
 
 	public treeTabsChanges(): string {
