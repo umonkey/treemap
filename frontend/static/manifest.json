@@ -6,17 +6,27 @@
 			"src": "/favicon-192x192.png",
 			"sizes": "192x192",
 			"type": "image/png",
-			"purpose": "maskable"
+			"purpose": "any"
 		},
 		{
 			"src": "/favicon-512x512.png",
 			"sizes": "512x512",
 			"type": "image/png",
-			"purpose": "maskable"
+			"purpose": "any"
+		}
+	],
+	"screenshots": [
+		{
+			"src": "/screenshot-mobile.png",
+			"form_mactor": "narrow",
+			"type": "image/png",
+			"sizes": "375x717",
+			"label": "Search results on map"
 		}
 	],
 	"theme_color": "#14191f",
 	"background_color": "#14191f",
 	"display": "standalone",
-	"orientation": "portrait"
+	"orientation": "portrait",
+	"start_url": "/"
 }
