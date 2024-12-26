@@ -478,7 +478,7 @@ class RussianLocale extends EnglishLocale {
 	}
 
 	public propTrunk(): string {
-		return 'Обхват ствола';
+		return 'Обхват';
 	}
 
 	public propState(): string {

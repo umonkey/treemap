@@ -49,6 +49,9 @@
 	dt {
 		flex-shrink: 1;
 		flex-grow: 0;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	dd {
