@@ -1,8 +1,9 @@
 <script lang="ts">
 	import MapIcon from '$lib/icons/MapIcon.svelte';
 	import MapLocationPicker from '$lib/components/forms/MapLocationPicker.svelte';
+	import { locale } from '$lib/locale';
 
-	let { value = $bindable([]), hint = undefined, label = 'Location' } = $props();
+	let { value = $bindable([]), hint = undefined, label = locale.locationLabel() } = $props();
 
 	let showMap = $state(false);
 

@@ -39,6 +39,10 @@ class EnglishLocale {
 		return 'Add a tree';
 	}
 
+	public sideAbout(): stirng {
+		return 'About this app';
+	}
+
 	public searchPrompt(): string {
 		return 'Search trees...';
 	}
@@ -109,6 +113,10 @@ class EnglishLocale {
 
 	public addConfirmLocation(): string {
 		return 'Confirm location';
+	}
+
+	public editTitle(): string {
+		return 'Edit Tree';
 	}
 
 	public speciesLabel(): string {
@@ -262,6 +270,18 @@ class EnglishLocale {
 	public contextUploadPhotos(): string {
 		return 'Upload photos';
 	}
+
+	public locationLabel(): string {
+		return 'Location';
+	}
+
+	public editSave(): string {
+		return 'Save changes';
+	}
+
+	public editCancel(): string {
+		return 'Cancel';
+	}
 }
 
 class RussianLocale extends EnglishLocale {
@@ -299,6 +319,10 @@ class RussianLocale extends EnglishLocale {
 
 	public sideAdd(): stirng {
 		return 'Добавить дерево';
+	}
+
+	public sideAbout(): stirng {
+		return 'Об этом приложении';
 	}
 
 	public searchPrompt(): string {
@@ -523,6 +547,22 @@ class RussianLocale extends EnglishLocale {
 
 	public contextUploadPhotos(): string {
 		return 'Добавить фотографии';
+	}
+
+	public editTitle(): string {
+		return 'Редактор дерева';
+	}
+
+	public locationLabel(): string {
+		return 'Координаты';
+	}
+
+	public editSave(): string {
+		return 'Сохранить изменения';
+	}
+
+	public editCancel(): string {
+		return 'Отмена';
 	}
 }
 

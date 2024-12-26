@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { routes } from '$lib/routes';
 	import { toast } from '@zerodevx/svelte-toast';
+	import { locale } from '$lib/locale';
 
 	import AuthWrapper from '$lib/components/auth/AuthWrapper.svelte';
 	import Button from '$lib/components/forms/Button.svelte';
@@ -74,10 +75,10 @@
 </script>
 
 <svelte:head>
-	<title>Edit tree</title>
+	<title>{locale.editTitle()}</title>
 </svelte:head>
 
-<Header title="Edit tree" />
+<Header title={locale.editTitle()} />
 
 <div class="form">
 	<AuthWrapper>
@@ -91,8 +92,8 @@
 		<NotesInput bind:value={notes} />
 
 		<div class="buttons">
-			<Button type="submit" label="Save changes" onClick={onSave} />
-			<Button type="cancel" label="Cancel" onClick={onCancel} />
+			<Button type="submit" label={locale.editSave()} onClick={onSave} />
+			<Button type="cancel" label={locale.editCancel()} onClick={onCancel} />
 		</div>
 	</AuthWrapper>
 </div>
