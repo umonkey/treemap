@@ -7,6 +7,7 @@
 	import { addResizeObserver } from '$lib/map/resizeObserver';
 	import { Markers } from '$lib/map/markers';
 	import { onMount } from 'svelte';
+	import { baseLayer } from '$lib/stores/mapLayerStore';
 
 	const {
 		center,
@@ -64,7 +65,7 @@
 	});
 </script>
 
-<div id="map" class={className}></div>
+<div id="map" class={className} class:dark={$baseLayer === 'OSM Dark'}></div>
 
 {#if crosshair}
 	<img src="/icons/crosshair.svg" class="crosshair" alt="" />
@@ -117,6 +118,10 @@
 	@media (prefers-color-scheme: dark) {
 		:global {
 			.cluster-count {
+				color: #000;
+			}
+
+			#map.dark .cluster-count {
 				color: #fff;
 			}
 		}
