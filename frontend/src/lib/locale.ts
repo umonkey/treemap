@@ -282,6 +282,14 @@ class EnglishLocale {
 	public editCancel(): string {
 		return 'Cancel';
 	}
+
+	public mapTitle(): string {
+		return 'Map';
+	}
+
+	public mapTitleQuery(query: string): string {
+		return `Map: ${query}`;
+	}
 }
 
 class RussianLocale extends EnglishLocale {
@@ -563,6 +571,14 @@ class RussianLocale extends EnglishLocale {
 
 	public editCancel(): string {
 		return 'Отмена';
+	}
+
+	public mapTitle(): string {
+		return 'Карта';
+	}
+
+	public mapTitleQuery(query: string): string {
+		return `Карта: ${query}`;
 	}
 }
 

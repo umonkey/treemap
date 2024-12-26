@@ -4,13 +4,14 @@
 	import MapPreview from '$lib/components/map/MapPreview.svelte';
 	import { mapState, mapCenter, mapZoom } from '$lib/stores/map';
 	import type { ITree } from '$lib/types';
+	import { locale } from '$lib/locale';
 
 	const { data } = $props();
 	const searchQuery = data.searchQuery;
 
 	let selectedTree: ITree | undefined = $state();
 
-	const title = searchQuery ? `Map: ${searchQuery}` : 'Map';
+	const title = searchQuery ? locale.mapTitleQuery(searchQuery) : locale.mapTitle();
 
 	const onChange = (tree: ITree) => {
 		selectedTree = tree;
@@ -29,7 +30,7 @@
 </script>
 
 <svelte:head>
-	<title>Tree Map</title>
+	<title>{locale.mapTitle()}</title>
 </svelte:head>
 
 <Header {title} />
