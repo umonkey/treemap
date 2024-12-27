@@ -15,6 +15,9 @@ import GreenIcon from '$lib/map/icons/dot-green.svg';
 import RedIcon from '$lib/map/icons/dot-red.svg';
 import YellorIcon from '$lib/map/icons/dot-yellow.svg';
 
+// Only start clustering when showing this number of trees.
+const MIN_CLUSTER_SIZE = 200;
+
 type MarkerMap = {
 	[key: string]: Marker;
 };
@@ -197,7 +200,7 @@ export class Markers {
 	 * on the map zoom level.
 	 */
 	private getItemsToShow(trees: ITree[]) {
-		if (this.map.getZoom() < 18) {
+		if (this.map.getZoom() < 18 && trees.length >= MIN_CLUSTER_SIZE) {
 			return this.getClusterGroupsToShow(trees);
 		} else {
 			return this.getMarkersToShow(trees);
