@@ -40,9 +40,25 @@ const CLUSTER_GRID = {
 	18: 0.0001220703125
 };
 
+const CLUSTER_RADIUS = {
+	6: 32000,
+	7: 16000,
+	8: 8000,
+	9: 4000,
+	10: 2000,
+	11: 1000,
+	12: 500,
+	13: 250,
+	14: 125,
+	15: 62.5,
+	16: 31.25,
+	17: 15.625
+};
+
 type ClusterGroup = {
 	lat: number;
 	lon: number;
+	radius: number;
 	count: number;
 
 	// Additional props for panning.
@@ -213,8 +229,6 @@ export class Markers {
 	private getClusterGroupsToShow(trees: ITree[]) {
 		const res = [];
 
-		const r = this.getClusterGroupRadius();
-
 		for (const group of this.splitBuckets(trees)) {
 			const onClick = () => {
 				this.map.fitBounds([
@@ -223,11 +237,11 @@ export class Markers {
 				]);
 			};
 
-			const circle = L.circleMarker([group.lat, group.lon], {
+			const circle = L.circle([group.lat, group.lon], {
 				color: '#080',
 				fillColor: '#080',
 				fillOpacity: 0.5,
-				radius: r
+				radius: group.radius
 			}).on('click', onClick);
 
 			const label = L.divIcon({
@@ -254,6 +268,7 @@ export class Markers {
 		const divider = CLUSTER_GRID[this.map.getZoom()];
 
 		const buckets = {};
+		const radius = CLUSTER_RADIUS[this.map.getZoom()] ?? 100;
 
 		for (const tree of trees) {
 			const y = Math.round(tree.lat / divider) * divider;
@@ -265,6 +280,7 @@ export class Markers {
 				lat: y,
 				lon: x,
 				count: 0,
+				radius,
 
 				n: y + divider / 2,
 				e: x + divider / 2,

@@ -102,7 +102,7 @@
 			background-color: transparent;
 			border: none;
 			box-shadow: none;
-			font-size: 20px;
+			font-size: 14px;
 			line-height: 40px;
 			text-align: center;
 			padding: 0;
