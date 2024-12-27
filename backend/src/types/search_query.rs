@@ -13,6 +13,8 @@ pub struct SearchQuery {
     pub nometrics: bool,
     pub nocirc: bool,
     pub noimages: bool,
+    pub hasaddr: bool,
+    pub noaddr: bool,
     pub hasimages: bool,
     pub sick: bool,
     pub dead: bool,
@@ -39,6 +41,8 @@ impl SearchQuery {
         let mut stomp = false;
         let mut gone = false;
         let mut unknown = false;
+        let mut hasaddr = false;
+        let mut noaddr = false;
         let mut all = false;
 
         for word in query.to_lowercase().split_whitespace() {
@@ -66,6 +70,10 @@ impl SearchQuery {
                 unknown = true;
             } else if word.contains("incomplete") {
                 incomplete = true;
+            } else if word == "has:addr" {
+                hasaddr = true;
+            } else if word == "no:addr" {
+                noaddr = true;
             } else if word.contains("all") {
                 all = true;
             } else {
@@ -87,6 +95,8 @@ impl SearchQuery {
             stomp,
             gone,
             unknown,
+            hasaddr,
+            noaddr,
             all,
         }
     }
@@ -113,6 +123,14 @@ impl SearchQuery {
         }
 
         if self.nocirc && tree.circumference.is_some() {
+            return false;
+        }
+
+        if self.hasaddr && tree.address.is_none() {
+            return false;
+        }
+
+        if self.noaddr && tree.address.is_some() {
             return false;
         }
 
@@ -581,6 +599,52 @@ mod tests {
             query.r#match(&TreeRecord {
                 species: "Thuja plicata".to_string(),
                 circumference: Some(2.0),
+                ..default_tree()
+            })
+        );
+    }
+
+    #[test]
+    fn test_hasaddr() {
+        let query = SearchQuery::from_string("has:addr");
+
+        assert_eq!(
+            true,
+            query.r#match(&TreeRecord {
+                species: "Thuja plicata".to_string(),
+                address: Some("test".to_string()),
+                ..default_tree()
+            })
+        );
+
+        assert_eq!(
+            false,
+            query.r#match(&TreeRecord {
+                species: "Thuja plicata".to_string(),
+                address: None,
+                ..default_tree()
+            })
+        );
+    }
+
+    #[test]
+    fn test_noaddr() {
+        let query = SearchQuery::from_string("no:addr");
+
+        assert_eq!(
+            false,
+            query.r#match(&TreeRecord {
+                species: "Thuja plicata".to_string(),
+                address: Some("test".to_string()),
+                ..default_tree()
+            })
+        );
+
+        assert_eq!(
+            true,
+            query.r#match(&TreeRecord {
+                species: "Thuja plicata".to_string(),
+                address: None,
                 ..default_tree()
             })
         );
