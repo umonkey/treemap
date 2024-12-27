@@ -14,7 +14,7 @@
 	<h1>
 		<strong>{title}</strong>
 		{#if address}
-			&middot; <a href={routes.searchQuery(address)}>{address}</a>{/if}
+			&middot; <a href={routes.searchAddress(address)}>{address}</a>{/if}
 	</h1>
 	<button class="edit" onclick={onMenu}>
 		<DotsIcon />

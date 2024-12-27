@@ -4,7 +4,6 @@
 	import Header from '$lib/components/tree/Header.svelte';
 
 	const { data } = $props();
-	console.debug('DATA:', data);
 </script>
 
 <svelte:head>
@@ -18,7 +17,7 @@
 
 	<ul>
 		{#each data.stats as { address, count }}
-			<li><a href={routes.searchQuery(address)}>{address}</a> ({count})</li>
+			<li><a href={routes.searchAddress(address)}>{address}</a> ({count})</li>
 		{/each}
 	</ul>
 </div>

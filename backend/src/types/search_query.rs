@@ -1,12 +1,12 @@
-/**
- * This structure represents a search query.
- *
- * We parse it to extract the words to search for, and flags to disable certain
- * search features.
- */
-use crate::types::TreeRecord;
+//! This structure represents a search query.
+//!
+//! We parse it to extract the words to search for, and flags to disable certain
+//! search features.
 
-#[derive(Debug)]
+use crate::types::TreeRecord;
+use crate::utils::split_words;
+
+#[derive(Debug, Default)]
 pub struct SearchQuery {
     pub words: Vec<String>,
     pub incomplete: bool,
@@ -24,81 +24,57 @@ pub struct SearchQuery {
     pub gone: bool,
     pub unknown: bool,
     pub all: bool,
+    pub address: Option<String>,
+    pub species: Option<String>,
 }
 
 impl SearchQuery {
     pub fn from_string(query: &str) -> SearchQuery {
-        let mut words = Vec::new();
-        let mut nometrics = false;
-        let mut nocirc = false;
-        let mut noimages = false;
-        let mut hasimages = false;
-        let mut sick = false;
-        let mut dead = false;
-        let mut deformed = false;
-        let mut healthy = false;
-        let mut incomplete = false;
-        let mut stomp = false;
-        let mut gone = false;
-        let mut unknown = false;
-        let mut hasaddr = false;
-        let mut noaddr = false;
-        let mut all = false;
+        let mut res = SearchQuery {
+            ..Default::default()
+        };
 
-        for word in query.to_lowercase().split_whitespace() {
+        for word in split_words(query.to_lowercase().as_str()) {
             if word.contains("nometric") {
-                nometrics = true;
+                res.nometrics = true;
             } else if word.contains("nocirc") {
-                nocirc = true;
+                res.nocirc = true;
             } else if word.contains("noimage") || word.contains("nophoto") {
-                noimages = true;
+                res.noimages = true;
             } else if word.contains("hasimage") || word.contains("hasphoto") {
-                hasimages = true;
+                res.hasimages = true;
             } else if word.contains("healthy") {
-                healthy = true;
+                res.healthy = true;
             } else if word.contains("deformed") {
-                deformed = true;
+                res.deformed = true;
             } else if word.contains("sick") {
-                sick = true;
+                res.sick = true;
             } else if word.contains("dead") {
-                dead = true;
+                res.dead = true;
             } else if word.contains("stomp") {
-                stomp = true;
+                res.stomp = true;
             } else if word.contains("gone") {
-                gone = true;
+                res.gone = true;
             } else if word.contains("state:unknown") {
-                unknown = true;
+                res.unknown = true;
             } else if word.contains("incomplete") {
-                incomplete = true;
+                res.incomplete = true;
             } else if word == "has:addr" {
-                hasaddr = true;
+                res.hasaddr = true;
             } else if word == "no:addr" {
-                noaddr = true;
+                res.noaddr = true;
             } else if word.contains("all") {
-                all = true;
+                res.all = true;
+            } else if let Some(value) = word.strip_prefix("addr:") {
+                res.address = Some(value.to_string());
+            } else if let Some(value) = word.strip_prefix("species:") {
+                res.species = Some(value.to_string());
             } else {
-                words.push(word.to_string().to_lowercase());
+                res.words.push(word.to_string().to_lowercase());
             }
         }
 
-        SearchQuery {
-            words,
-            nometrics,
-            nocirc,
-            noimages,
-            hasimages,
-            sick,
-            dead,
-            deformed,
-            healthy,
-            incomplete,
-            stomp,
-            gone,
-            unknown,
-            hasaddr,
-            noaddr,
-            all,
-        }
+        res
     }
 
     pub fn r#match(&self, tree: &TreeRecord) -> bool {
@@ -132,6 +108,24 @@ impl SearchQuery {
 
         if self.noaddr && tree.address.is_some() {
             return false;
+        }
+
+        if self.address.is_some() {
+            if tree.address.is_none() {
+                return false;
+            }
+
+            if tree.address.as_ref().unwrap().to_lowercase()
+                != self.address.as_ref().unwrap().to_lowercase()
+            {
+                return false;
+            }
+        }
+
+        if let Some(value) = &self.species {
+            if !tree.species.to_lowercase().contains(value) {
+                return false;
+            }
         }
 
         if !self.all {
@@ -645,6 +639,63 @@ mod tests {
             query.r#match(&TreeRecord {
                 species: "Thuja plicata".to_string(),
                 address: None,
+                ..default_tree()
+            })
+        );
+    }
+
+    #[test]
+    fn test_address() {
+        let query = SearchQuery::from_string("addr:\"Some Street\"");
+
+        assert_eq!(Some("some street"), query.address.as_deref());
+
+        assert_eq!(
+            true,
+            query.r#match(&TreeRecord {
+                species: "Thuja plicata".to_string(),
+                address: Some("Some Street".to_string()),
+                ..default_tree()
+            })
+        );
+
+        assert_eq!(
+            false,
+            query.r#match(&TreeRecord {
+                species: "Thuja plicata".to_string(),
+                address: Some("other street".to_string()),
+                ..default_tree()
+            })
+        );
+
+        assert_eq!(
+            false,
+            query.r#match(&TreeRecord {
+                species: "Thuja plicata".to_string(),
+                address: None,
+                ..default_tree()
+            })
+        );
+    }
+
+    #[test]
+    fn test_species() {
+        let query = SearchQuery::from_string("species:\"Thuja plicata\"");
+
+        assert_eq!(Some("thuja plicata"), query.species.as_deref());
+
+        assert_eq!(
+            true,
+            query.r#match(&TreeRecord {
+                species: "Thuja plicata".to_string(),
+                ..default_tree()
+            })
+        );
+
+        assert_eq!(
+            false,
+            query.r#match(&TreeRecord {
+                species: "Thuja orientalis".to_string(),
                 ..default_tree()
             })
         );

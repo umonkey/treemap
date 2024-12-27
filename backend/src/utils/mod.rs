@@ -1,9 +1,11 @@
 mod dates;
 mod env;
 mod id;
-pub use self::dates::*;
-pub use self::env::*;
-pub use self::id::*;
+mod strings;
+pub use dates::*;
+pub use env::*;
+pub use id::*;
+pub use strings::*;
 
 pub fn fix_circumference(value: Option<f64>) -> Option<f64> {
     let mut value: f64 = match value {

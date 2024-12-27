@@ -14,7 +14,7 @@
 			<div class="title">
 				<a href={routes.treeDetails(tree.id)}>{formatSpecies(tree.species)}</a>
 				{#if tree.address}
-					&middot; <a href={routes.searchQuery(tree.address)}>{tree.address}</a>{/if}
+					&middot; <a href={routes.searchAddress(tree.address)}>{tree.address}</a>{/if}
 			</div>
 			<button class="close" on:click={onClose}><CloseIcon /></button>
 		</div>

@@ -6,6 +6,8 @@ export const routes = {
 	newTrees: () => '/updates/new',
 	search: '/search',
 	searchQuery: (query: string) => `/map?q=${query}`,
+	searchSpecies: (query: string) => `/map?q=species:"${query}"`,
+	searchAddress: (query: string) => `/map?q=addr:"${query}"`,
 	stats: () => '/stats',
 	statsSpecies: () => '/stats/species',
 	statsHeight: () => '/stats/height',

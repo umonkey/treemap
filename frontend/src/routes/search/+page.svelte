@@ -37,11 +37,11 @@
 				деревья, или <a href={routes.searchQuery('stomp')}>пни</a>
 			</li>
 			<li>
-				<a href={routes.searchQuery('quercus')}>Дубы</a> или
-				<a href={routes.searchQuery('acer')}>клёны</a>
+				<a href={routes.searchSpecies('quercus')}>Дубы</a> или
+				<a href={routes.searchSpecies('acer')}>клёны</a>
 				или
-				<a href={routes.searchQuery('fraxinus')}>ясени</a>
-				или <a href={routes.searchQuery('ulmus')}>вязы</a>
+				<a href={routes.searchSpecies('fraxinus')}>ясени</a>
+				или <a href={routes.searchSpecies('ulmus')}>вязы</a>
 			</li>
 			<li>
 				<a href={routes.searchQuery('unknown hasimage')}>Неопознанные деревья</a> с фотографиями
@@ -64,11 +64,11 @@
 				trees, or <a href={routes.searchQuery('stomp')}>stomps</a>
 			</li>
 			<li>
-				<a href={routes.searchQuery('quercus')}>Oaks</a> or
-				<a href={routes.searchQuery('acer')}>maples</a>
+				<a href={routes.searchSpecies('quercus')}>Oaks</a> or
+				<a href={routes.searchSpecies('acer')}>maples</a>
 				or
-				<a href={routes.searchQuery('fraxinus')}>ashes</a>
-				or <a href={routes.searchQuery('ulmus')}>elms</a>
+				<a href={routes.searchSpecies('fraxinus')}>ashes</a>
+				or <a href={routes.searchSpecies('ulmus')}>elms</a>
 			</li>
 			<li>With <a href={routes.searchQuery('unknown hasimage')}>unknown species</a> and photos</li>
 			<li>

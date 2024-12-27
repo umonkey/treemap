@@ -17,7 +17,7 @@
 
 	<ul>
 		{#each data.stats as { species, count }}
-			<li><a href={routes.searchQuery(species)}>{species}</a> ({count})</li>
+			<li><a href={routes.searchSpecies(species)}>{species}</a> ({count})</li>
 		{/each}
 	</ul>
 </div>
