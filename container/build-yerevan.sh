@@ -46,6 +46,7 @@ docker run --rm \
     -v $PWD/.cache/npm:/root/.npm \
     -w /app \
     -e VITE_API_ROOT="$API_ROOT" \
+    -e VITE_SENTRY_AUTH_TOKEN="$SENTRY_AUTH_TOKEN" \
     --network=host \
     --ulimit nofile=5000:5000 \
     node:20-alpine3.18 \
