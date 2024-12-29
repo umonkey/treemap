@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
+	import { soundBus } from '$lib/buses/soundBus';
 
 	const { question, onCorrect, onWrong } = $props();
-
-	let soundCorrect, soundWrong;
 
 	// Which answer is selected (not yet submitted).
 	let selected = $state('');
@@ -18,10 +17,10 @@
 	const onConfirm = () => {
 		if (question.correct.includes(selected)) {
 			state = 'correct';
-			soundCorrect.play();
+			soundBus.emit('correct');
 		} else {
 			state = 'wrong';
-			soundWrong.play();
+			soundBus.emit('wrong');
 		}
 	};
 
@@ -73,16 +72,6 @@
 			<button type="button" class="button" onclick={onContinue}>{locale.learnContinue()}</button>
 		</div>
 	{/if}
-
-	<audio bind:this={soundCorrect}>
-		<source src="/sounds/correct.aac" type="audio/aac" />
-		<source src="/sounds/correct.oga" type="audio/ogg" />
-	</audio>
-
-	<audio bind:this={soundWrong}>
-		<source src="/sounds/wrong.aac" type="audio/aac" />
-		<source src="/sounds/wrong.oga" type="audio/ogg" />
-	</audio>
 </div>
 
 <style>

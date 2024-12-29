@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
+	import { onMount } from 'svelte';
+	import { soundBus } from '$lib/buses/soundBus';
 
 	const { correct, total } = $props();
 
@@ -20,6 +22,10 @@
 
 		return locale.learnBad();
 	};
+
+	onMount(() => {
+		soundBus.emit('finished');
+	});
 
 	const onReload = () => {
 		window.location.reload();

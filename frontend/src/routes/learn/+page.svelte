@@ -3,31 +3,23 @@
 	import Header from '$lib/components/tree/Header.svelte';
 	import Question from '$lib/components/learn/Question.svelte';
 	import Results from '$lib/components/learn/Results.svelte';
+	import SoundPlayer from '$lib/components/learn/SoundPlayer.svelte';
+
 	import { locale } from '$lib/locale';
 
 	const { data } = $props();
 	const { questions } = data;
 
-	let soundFinished;
-
 	let idx = $state(0);
 	let correct = $state(0);
 
-	const onNext = () => {
-		idx++;
-
-		if (idx === questions.length) {
-			soundFinished.play();
-		}
-	};
-
 	const onCorrect = () => {
 		correct++;
-		onNext();
+		idx++;
 	};
 
 	const onWrong = () => {
-		onNext();
+		idx++;
 	};
 </script>
 
@@ -47,10 +39,7 @@
 	{/if}
 </div>
 
-<audio bind:this={soundFinished}>
-	<source src="/sounds/finished.aac" type="audio/aac" />
-	<source src="/sounds/finished.oga" type="audio/ogg" />
-</audio>
+<SoundPlayer />
 
 <style>
 	.padded {
