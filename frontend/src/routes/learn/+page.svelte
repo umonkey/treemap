@@ -8,16 +8,26 @@
 	const { data } = $props();
 	const { questions } = data;
 
+	let soundFinished;
+
 	let idx = $state(0);
 	let correct = $state(0);
 
+	const onNext = () => {
+		idx++;
+
+		if (idx === questions.length) {
+			soundFinished.play();
+		}
+	};
+
 	const onCorrect = () => {
 		correct++;
-		idx++;
+		onNext();
 	};
 
 	const onWrong = () => {
-		idx++;
+		onNext();
 	};
 </script>
 
@@ -36,6 +46,11 @@
 		<Question question={questions[idx]} {onCorrect} {onWrong} />
 	{/if}
 </div>
+
+<audio bind:this={soundFinished}>
+	<source src="/sounds/finished.aac" type="audio/aac" />
+	<source src="/sounds/finished.oga" type="audio/ogg" />
+</audio>
 
 <style>
 	.padded {
