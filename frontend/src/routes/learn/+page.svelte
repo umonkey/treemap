@@ -1,5 +1,7 @@
 <script lang="ts">
 	import ProgressBar from '$lib/components/learn/ProgressBar.svelte';
+	import Header from '$lib/components/tree/Header.svelte';
+	import { locale } from '$lib/locale';
 
 	const { data } = $props();
 	const { questions } = data;
@@ -28,6 +30,12 @@
 		console.debug(`[learn] idx=${idx}, selected=${selected}, state=${state}`);
 	};
 </script>
+
+<svelte:head>
+	<title>{locale.learnTitle()}</title>
+</svelte:head>
+
+<Header title={locale.learnTitle()} />
 
 <div class="question padded">
 	<ProgressBar total={questions.length} complete={idx} />

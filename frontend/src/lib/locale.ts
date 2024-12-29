@@ -286,6 +286,10 @@ class EnglishLocale {
 	public mapTitleQuery(query: string): string {
 		return `Map: ${query}`;
 	}
+
+	public learnTitle(): string {
+		return 'Training';
+	}
 }
 
 class RussianLocale extends EnglishLocale {
@@ -575,6 +579,10 @@ class RussianLocale extends EnglishLocale {
 
 	public mapTitleQuery(query: string): string {
 		return `Карта: ${query}`;
+	}
+
+	public learnTitle(): string {
+		return 'Тренировка';
 	}
 }
 
