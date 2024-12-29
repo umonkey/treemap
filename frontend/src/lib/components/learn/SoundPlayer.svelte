@@ -2,7 +2,9 @@
 	import { soundBus } from '$lib/buses/soundBus';
 	import { onMount } from 'svelte';
 
-	let soundCorrect, soundWrong, soundFinished;
+	let soundCorrect = $state(null);
+	let soundWrong = $state(null);
+	let soundFinished = $state(null);
 
 	onMount(() => {
 		soundBus.on('correct', () => {
