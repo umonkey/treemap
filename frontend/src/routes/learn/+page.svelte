@@ -6,10 +6,9 @@
 	import SoundPlayer from '$lib/components/learn/SoundPlayer.svelte';
 
 	import { locale } from '$lib/locale';
+	import { getRandomQuestions } from '$lib/learn/questions';
 
-	const { data } = $props();
-	const { questions } = data;
-
+	let questions = $state(getRandomQuestions());
 	let idx = $state(0);
 	let correct = $state(0);
 
@@ -20,6 +19,12 @@
 
 	const onWrong = () => {
 		idx++;
+	};
+
+	const onRetry = () => {
+		idx = 0;
+		correct = 0;
+		questions = getRandomQuestions();
 	};
 </script>
 
@@ -33,7 +38,7 @@
 	<ProgressBar total={questions.length} complete={idx} />
 
 	{#if idx === questions.length}
-		<Results {correct} total={questions.length} />
+		<Results {correct} total={questions.length} {onRetry} />
 	{:else}
 		<Question question={questions[idx]} {onCorrect} {onWrong} />
 	{/if}

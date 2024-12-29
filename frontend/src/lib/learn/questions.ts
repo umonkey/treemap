@@ -1,3 +1,5 @@
+import { shuffle } from '$lib/utils/arrays';
+
 export interface IQuestion {
 	question: string;
 	image: string;
@@ -421,3 +423,14 @@ export const QUESTIONS: IQuestion[] = [
 		correct: ['абрикос']
 	}
 ];
+
+export const getRandomQuestions = (): IQuestion[] => {
+	return shuffle(QUESTIONS)
+		.map((question: IQuestion) => {
+			return {
+				...question,
+				options: shuffle(question.options)
+			};
+		})
+		.slice(0, 10);
+};

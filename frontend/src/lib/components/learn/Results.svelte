@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 	import { soundBus } from '$lib/buses/soundBus';
 
-	const { correct, total } = $props();
+	const { correct, total, onRetry } = $props();
 
 	const title = (): string => {
 		const rate = correct / total;
@@ -26,12 +26,8 @@
 	onMount(() => {
 		soundBus.emit('finished');
 	});
-
-	const onReload = () => {
-		window.location.reload();
-	};
 </script>
 
 <h1>{title()}</h1>
 <p>{locale.learnScore(correct, total)}</p>
-<button type="button" class="button" onclick={onReload}>{locale.learnRetry()}</button>
+<button type="button" class="button" onclick={onRetry}>{locale.learnRetry()}</button>
