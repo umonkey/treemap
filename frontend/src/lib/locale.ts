@@ -290,6 +290,10 @@ class EnglishLocale {
 	public learnTitle(): string {
 		return 'Training';
 	}
+
+	public sideLearn(): string {
+		return 'Training';
+	}
 }
 
 class RussianLocale extends EnglishLocale {
@@ -582,6 +586,10 @@ class RussianLocale extends EnglishLocale {
 	}
 
 	public learnTitle(): string {
+		return 'Тренировка';
+	}
+
+	public sideLearn(): string {
 		return 'Тренировка';
 	}
 }

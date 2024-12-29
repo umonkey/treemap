@@ -4,6 +4,7 @@ export const routes = {
 	file: (id: string) => `https://yerevan.treemaps.app/v1/files/${id}.jpg`,
 	home: () => '/',
 	newTrees: () => '/updates/new',
+	learn: () => '/learn',
 	search: '/search',
 	searchQuery: (query: string) => `/map?q=${query}`,
 	searchSpecies: (query: string) => `/map?q=species:"${query}"`,
