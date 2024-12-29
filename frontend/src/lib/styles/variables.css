@@ -10,6 +10,8 @@
 	--tab-hover-color: #f1f3f5;
 	--text-color-inactive: #42576c;
 	--text-color: #0b0f14;
+	--color-progress-bg: #36464f;
+	--color-progress-fg: #95d237;
 
 	/* Z-indexes */
 	--z-map: 2;
