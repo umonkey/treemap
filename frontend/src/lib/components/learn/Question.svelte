@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { locale } from '$lib/locale';
+
 	const { question, onCorrect, onWrong } = $props();
 
 	// Which answer is selected (not yet submitted).
@@ -47,22 +49,24 @@
 
 	{#if state === 'guessing'}
 		<div class="actions">
-			<button class="button" type="button" disabled={!selected} onclick={onConfirm}>Confirm</button>
+			<button class="button" type="button" disabled={!selected} onclick={onConfirm}
+				>{locale.learnConfirm()}</button
+			>
 		</div>
 	{:else if state === 'correct'}
 		<div class="result correct">
 			<div class="message">
-				<p><strong>Correct!</strong></p>
+				<p><strong>{locale.learnCorrect()}</strong></p>
 			</div>
-			<button type="button" class="button" onclick={onContinue}>Continue</button>
+			<button type="button" class="button" onclick={onContinue}>{locale.learnContinue()}</button>
 		</div>
 	{:else}
 		<div class="result wrong">
 			<div class="message">
-				<p><strong>Wrong!</strong></p>
-				<p>Correct answer: {question.correct[0]}</p>
+				<p><strong>{locale.learnWrong()}</strong></p>
+				<p>{locale.learnCorrectAnswer(question.correct[0])}</p>
 			</div>
-			<button type="button" class="button" onclick={onContinue}>Continue</button>
+			<button type="button" class="button" onclick={onContinue}>{locale.learnContinue()}</button>
 		</div>
 	{/if}
 </div>
@@ -101,6 +105,12 @@
 	}
 
 	.result {
+		background-color: var(--form-background);
+		width: 100%;
+		padding: calc(var(--gap) * 2);
+		box-sizing: border-box;
+		z-index: var(--z-learn-result);
+
 		.message {
 			margin: var(--gap) 0;
 		}
@@ -108,26 +118,50 @@
 
 	.result.correct {
 		.message {
-			color: #080;
-			border-left: solid 8px #080;
-			padding-left: var(--gap);
+			color: var(--color-learn-correct-bg);
 
 			p {
 				margin: 0;
 				line-height: 1.5;
 			}
 		}
+
+		button {
+			background-color: var(--color-learn-correct-bg);
+			border-color: var(--color-learn-correct-bg);
+			color: var(--color-learn-correct-fg);
+		}
 	}
 
 	.result.wrong {
 		.message {
-			color: #800;
-			border-left: solid 8px #800;
-			padding-left: var(--gap);
+			color: var(--color-learn-wrong-bg);
 
 			p {
 				margin: 0;
 				line-height: 1.5;
+			}
+		}
+
+		button {
+			background-color: var(--color-learn-wrong-bg);
+			border-color: var(--color-learn-wrong-bg);
+			color: var(--color-learn-wrong-fg);
+		}
+	}
+
+	@media (max-width: 480px) {
+		.result {
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			border-top-left-radius: 8px;
+			border-top-right-radius: 8px;
+			font-size: 20px;
+
+			button {
+				width: 100%;
+				font-size: 18px;
 			}
 		}
 	}

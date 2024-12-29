@@ -294,6 +294,54 @@ class EnglishLocale {
 	public sideLearn(): string {
 		return 'Training';
 	}
+
+	public learnDone(): string {
+		return 'Done!';
+	}
+
+	public learnScore(correct: number, total: number): string {
+		return `Your score is: ${correct} of ${total}`;
+	}
+
+	public learnRetry(): string {
+		return 'Try again';
+	}
+
+	public learnPerfect(): string {
+		return 'Perfect!';
+	}
+
+	public learnGreat(): string {
+		return 'Great!';
+	}
+
+	public learnGood(): string {
+		return 'Needs more work';
+	}
+
+	public learnBad(): string {
+		return 'Needs a lot more work!';
+	}
+
+	public learnCorrect(): string {
+		return 'Correct!';
+	}
+
+	public learnConfirm(): string {
+		return 'Confirm';
+	}
+
+	public learnWrong(): string {
+		return 'Wrong!';
+	}
+
+	public learnCorrectAnswer(value: string): string {
+		return `Correct answer: ${value}`;
+	}
+
+	public learnContinue(): string {
+		return 'Continue';
+	}
 }
 
 class RussianLocale extends EnglishLocale {
@@ -591,6 +639,50 @@ class RussianLocale extends EnglishLocale {
 
 	public sideLearn(): string {
 		return 'Тренировка';
+	}
+
+	public learnScore(correct: number, total: number): string {
+		return `Твой результат: ${correct} из ${total}`;
+	}
+
+	public learnRetry(): string {
+		return 'Попробовать ещё раз';
+	}
+
+	public learnPerfect(): string {
+		return 'Идеально!';
+	}
+
+	public learnGreat(): string {
+		return 'Отлично!';
+	}
+
+	public learnGood(): string {
+		return 'Неплохо';
+	}
+
+	public learnBad(): string {
+		return 'Нужно больше тренировок';
+	}
+
+	public learnCorrect(): string {
+		return 'Верно!';
+	}
+
+	public learnConfirm(): string {
+		return 'Проверить';
+	}
+
+	public learnWrong(): string {
+		return 'Ошибка!';
+	}
+
+	public learnCorrectAnswer(value: string): string {
+		return `Правильный ответ: ${value}`;
+	}
+
+	public learnContinue(): string {
+		return 'Продолжить';
 	}
 }
 

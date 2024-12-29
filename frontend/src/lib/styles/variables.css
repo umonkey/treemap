@@ -12,6 +12,10 @@
 	--text-color: #0b0f14;
 	--color-progress-bg: #36464f;
 	--color-progress-fg: #95d237;
+	--color-learn-wrong-bg: #ef5554;
+	--color-learn-wrong-fg: #000;
+	--color-learn-correct-bg: #92d333;
+	--color-learn-correct-fg: #000;
 
 	/* Z-indexes */
 	--z-map: 2;
@@ -20,6 +24,7 @@
 	--z-map-preview: 8;
 	--z-add-button: 10;
 	--z-mobile-sidebar: 11;
+	--z-learn-result: 11;
 }
 
 @media (prefers-color-scheme: dark) {
