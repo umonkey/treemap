@@ -2,6 +2,7 @@
 	import { locale } from '$lib/locale';
 	import { onMount } from 'svelte';
 	import { soundBus } from '$lib/buses/soundBus';
+	import { apiClient } from '$lib/api';
 
 	const { correct, total, onRetry } = $props();
 
@@ -25,6 +26,10 @@
 
 	onMount(() => {
 		soundBus.emit('finished');
+
+		const rate = correct / total;
+
+		apiClient.addTraining(rate);
 	});
 </script>
 

@@ -1,4 +1,5 @@
 mod add_comment_handler;
+mod add_training_handler;
 mod add_trees_handler;
 mod get_file_status_handler;
 mod get_me_handler;
@@ -31,6 +32,7 @@ mod update_tree_addresses_handler;
 mod update_tree_handler;
 mod upload_local_files;
 pub use add_comment_handler::*;
+pub use add_training_handler::*;
 pub use add_trees_handler::*;
 pub use get_file_status_handler::*;
 pub use get_me_handler::*;

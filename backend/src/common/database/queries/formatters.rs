@@ -1,4 +1,4 @@
-use crate::common::database::types::Attributes;
+use crate::types::Attributes;
 use rusqlite::types::Value;
 use std::collections::HashMap;
 

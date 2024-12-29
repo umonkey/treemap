@@ -111,6 +111,18 @@ export class ApiClient {
 		});
 	}
 
+	public async addTraining(result: number): Promise<void> {
+		return await this.request('POST', 'v1/training', {
+			body: JSON.stringify({
+				result
+			}),
+			headers: {
+				'Content-Type': 'application/json',
+				...this.getAuthHeaders()
+			}
+		});
+	}
+
 	public async loginWithGoogle(token: string): Promise<Response<ILoginResponse>> {
 		console.debug('[api] Logging in with Google');
 

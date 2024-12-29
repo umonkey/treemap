@@ -1,8 +1,7 @@
 use super::formatters::*;
+use crate::types::Attributes;
 use rusqlite::types::Value;
 use std::collections::HashMap;
-
-pub type Attributes = HashMap<String, Value>;
 
 #[derive(Debug, Default)]
 pub struct SelectQuery {
