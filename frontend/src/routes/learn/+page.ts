@@ -8,8 +8,8 @@ export const load: Load = (): Promise<{
 }> => {
 	const questions = shuffle(QUESTIONS).map((question: IQuestion) => {
 		return {
+			...question,
 			options: shuffle(question.options),
-			...question
 		};
 	});
 
