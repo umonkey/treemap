@@ -27,10 +27,6 @@ class EnglishLocale {
 		return 'Data reports';
 	}
 
-	public sideReports(): stirng {
-		return 'Data reports';
-	}
-
 	public sideProfile(): stirng {
 		return 'Profile';
 	}
