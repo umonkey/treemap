@@ -1,5 +1,6 @@
 mod add_comment_request;
 mod add_file_request;
+mod add_training_request;
 mod add_tree_request;
 mod added_trees_request;
 mod get_trees_request;
@@ -10,6 +11,7 @@ mod move_tree_request;
 mod update_tree_request;
 pub use add_comment_request::*;
 pub use add_file_request::*;
+pub use add_training_request::*;
 pub use add_tree_request::*;
 pub use added_trees_request::*;
 pub use get_trees_request::*;

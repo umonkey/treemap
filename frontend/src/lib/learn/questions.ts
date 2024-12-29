@@ -1,3 +1,5 @@
+import { shuffle } from '$lib/utils/arrays';
+
 export interface IQuestion {
 	question: string;
 	image: string;
@@ -15,8 +17,18 @@ export const QUESTIONS: IQuestion[] = [
 	{
 		question: 'Какое дерево на картинке?',
 		image: '/learn/maple-leaves-v2.jpg',
-		options: ['клён', 'каштан', 'платан', 'берёза', 'дуб'],
-		correct: ['клён']
+		options: [
+			'клён полевой',
+			'малина',
+			'каштан',
+			'платан',
+			'берёза',
+			'дуб',
+			'каштан',
+			'тополь белый',
+			'пихта'
+		],
+		correct: ['клён полевой']
 	},
 	{
 		question: 'Какое дерево на картинке?',
@@ -261,7 +273,7 @@ export const QUESTIONS: IQuestion[] = [
 	{
 		question: 'Какое дерево на картинке?',
 		image: '/learn/robinia-seeds-v2.jpg',
-		options: ['ясень', 'гледичия', 'альбиция', 'липа', 'орех', 'робиния', 'акация белая'],
+		options: ['ясень', 'гледичия', 'альбиция', 'липа', 'орех', 'робиния', 'акация белая', 'фасоль'],
 		correct: ['робиния', 'акация белая']
 	},
 	{
@@ -327,19 +339,19 @@ export const QUESTIONS: IQuestion[] = [
 	{
 		question: 'Какое дерево на картинке?',
 		image: '/learn/cercis-leaves-v1.jpg',
-		options: ['багряник', 'фасоль', 'липа', 'роза', 'орех'],
+		options: ['багряник', 'фасоль', 'липа', 'роза', 'орех', 'кувшинка'],
 		correct: ['багряник']
 	},
 	{
 		question: 'Какое дерево на картинке?',
 		image: '/learn/cercis-leaves-v2.jpg',
-		options: ['багряник', 'фасоль', 'липа', 'роза', 'орех'],
+		options: ['багряник', 'фасоль', 'липа', 'роза', 'орех', 'кувшинка'],
 		correct: ['багряник']
 	},
 	{
 		question: 'Какое дерево на картинке?',
 		image: '/learn/cercis-leaves-v3.jpg',
-		options: ['багряник', 'фасоль', 'липа', 'роза', 'орех'],
+		options: ['багряник', 'фасоль', 'липа', 'роза', 'орех', 'абрикос', 'виноград'],
 		correct: ['багряник']
 	},
 	{
@@ -421,3 +433,14 @@ export const QUESTIONS: IQuestion[] = [
 		correct: ['абрикос']
 	}
 ];
+
+export const getRandomQuestions = (): IQuestion[] => {
+	return shuffle(QUESTIONS)
+		.map((question: IQuestion) => {
+			return {
+				...question,
+				options: shuffle(question.options)
+			};
+		})
+		.slice(0, 10);
+};

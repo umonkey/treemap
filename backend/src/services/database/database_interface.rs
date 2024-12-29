@@ -1,5 +1,4 @@
 use crate::common::database::queries::*;
-use crate::common::database::types::Attributes;
 use crate::types::*;
 use async_trait::async_trait;
 

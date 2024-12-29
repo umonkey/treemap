@@ -139,3 +139,13 @@ CREATE TABLE IF NOT EXISTS likes (
     PRIMARY KEY(`tree_id`, `user_id`)
 );
 CREATE INDEX IF NOT EXISTS likes_state ON likes (state);
+
+CREATE TABLE IF NOT EXISTS training (
+    `id` INT NOT NULL,
+    `user_id` INT NOT NULL,
+    `added_at` INT NOT NULL,
+    `result` REAL NOT NULL,
+    PRIMARY KEY(`id`)
+);
+CREATE INDEX IF NOT EXISTS IDX_training_user_id ON training (user_id);
+CREATE INDEX IF NOT EXISTS IDX_training_added_at ON training (added_at);

@@ -3,31 +3,28 @@
 	import Header from '$lib/components/tree/Header.svelte';
 	import Question from '$lib/components/learn/Question.svelte';
 	import Results from '$lib/components/learn/Results.svelte';
+	import SoundPlayer from '$lib/components/learn/SoundPlayer.svelte';
+
 	import { locale } from '$lib/locale';
+	import { getRandomQuestions } from '$lib/learn/questions';
 
-	const { data } = $props();
-	const { questions } = data;
-
-	let soundFinished;
-
+	let questions = $state(getRandomQuestions());
 	let idx = $state(0);
 	let correct = $state(0);
 
-	const onNext = () => {
-		idx++;
-
-		if (idx === questions.length) {
-			soundFinished.play();
-		}
-	};
-
 	const onCorrect = () => {
 		correct++;
-		onNext();
+		idx++;
 	};
 
 	const onWrong = () => {
-		onNext();
+		idx++;
+	};
+
+	const onRetry = () => {
+		idx = 0;
+		correct = 0;
+		questions = getRandomQuestions();
 	};
 </script>
 
@@ -41,16 +38,13 @@
 	<ProgressBar total={questions.length} complete={idx} />
 
 	{#if idx === questions.length}
-		<Results {correct} total={questions.length} />
+		<Results {correct} total={questions.length} {onRetry} />
 	{:else}
 		<Question question={questions[idx]} {onCorrect} {onWrong} />
 	{/if}
 </div>
 
-<audio bind:this={soundFinished}>
-	<source src="/sounds/finished.aac" type="audio/aac" />
-	<source src="/sounds/finished.oga" type="audio/ogg" />
-</audio>
+<SoundPlayer />
 
 <style>
 	.padded {

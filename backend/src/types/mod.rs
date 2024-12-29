@@ -1,3 +1,4 @@
+mod attributes;
 mod bounds;
 mod database;
 mod errors;
@@ -7,7 +8,7 @@ mod requests;
 mod responses;
 mod search_query;
 mod token_claims;
-
+pub use self::attributes::*;
 pub use self::bounds::*;
 pub use self::database::*;
 pub use self::errors::*;
