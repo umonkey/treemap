@@ -10,6 +10,7 @@
 	import PlusIcon from '$lib/icons/PlusIcon.svelte';
 	import SearchIcon from '$lib/icons/SearchIcon.svelte';
 	import UserIcon from '$lib/icons/UserIcon.svelte';
+	import LearnIcon from '$lib/icons/LearnIcon.svelte';
 
 	const onClick = () => {
 		mobileSidebarStore.update(() => false);
@@ -60,6 +61,12 @@
 				<a href="/profile">
 					<span class="icon"><UserIcon /></span>
 					<span>{locale.sideProfile()}</span>
+				</a>
+			</li>
+			<li>
+				<a href={routes.learn()}>
+					<span class="icon"><LearnIcon /></span>
+					<span>{locale.sideLearn()}</span>
 				</a>
 			</li>
 			<li>
