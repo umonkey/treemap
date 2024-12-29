@@ -11,7 +11,7 @@ export default defineConfig({
 			sourceMapsUploadOptions: {
 				org: 'trees-of-yerevan',
 				project: 'treemap-v2',
-				authToken: process.env.VITE_SENTRY_AUTH_TOKEN,
+				authToken: process.env.VITE_SENTRY_AUTH_TOKEN
 			}
 		}),
 		sveltekit()
