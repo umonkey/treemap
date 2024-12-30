@@ -6,6 +6,7 @@
 	import LeftSideBar from '$lib/components/LeftSideBar.svelte';
 	import RightSideBar from '$lib/components/RightSideBar.svelte';
 	import MobileSidebar from '$lib/components/MobileSidebar.svelte';
+	import GoogleTracker from '$lib/components/GoogleTracker.svelte';
 
 	import '$lib/styles/variables.css';
 	import '$lib/styles/forms.css';
@@ -29,6 +30,7 @@
 
 <SvelteToast />
 <MobileSidebar />
+<GoogleTracker />
 
 <style>
 	:global {
