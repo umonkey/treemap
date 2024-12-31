@@ -4,7 +4,7 @@ class EnglishLocale {
 	}
 
 	public homeTitle(): string {
-		return 'Tee Map';
+		return 'Tree Map';
 	}
 
 	public sideHome(): string {
