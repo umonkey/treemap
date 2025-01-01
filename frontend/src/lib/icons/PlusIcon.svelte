@@ -1,10 +1,17 @@
 <svg
-	fill="currentColor"
 	width="100%"
 	height="100%"
+	data-slot="icon"
+	aria-hidden="true"
+	fill="none"
+	stroke-width="1.5"
+	stroke="currentColor"
+	viewBox="0 0 24 24"
 	xmlns="http://www.w3.org/2000/svg"
-	viewBox="0 0 512 512"
-	><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path
-		d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM232 344l0-64-64 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l64 0 0-64c0-13.3 10.7-24 24-24s24 10.7 24 24l0 64 64 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-64 0 0 64c0 13.3-10.7 24-24 24s-24-10.7-24-24z"
-	/></svg
 >
+	<path
+		d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+		stroke-linecap="round"
+		stroke-linejoin="round"
+	></path>
+</svg>
