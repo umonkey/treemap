@@ -37,6 +37,7 @@ pub struct AppState {
     pub suggest_species_handler: Arc<SuggestSpeciesHandler>,
     pub unlike_tree_handler: Arc<UnlikeTreeHandler>,
     pub update_tree_handler: Arc<UpdateTreeHandler>,
+    pub update_tree_thumbnail_handler: Arc<UpdateTreeThumbnailHandler>,
 }
 
 impl AppState {
@@ -73,6 +74,7 @@ impl AppState {
             suggest_species_handler: locator.get::<SuggestSpeciesHandler>()?,
             unlike_tree_handler: locator.get::<UnlikeTreeHandler>()?,
             update_tree_handler: locator.get::<UpdateTreeHandler>()?,
+            update_tree_thumbnail_handler: locator.get::<UpdateTreeThumbnailHandler>()?,
         })
     }
 

@@ -15,12 +15,10 @@ use async_sqlite::{JournalMode, Pool, PoolBuilder};
 use async_trait::async_trait;
 use log::{debug, error, info};
 use rusqlite::params_from_iter;
+use rusqlite::types::Value;
 use std::cmp::Ordering;
-use std::collections::HashMap;
 
 const SUGGEST_WINDOW: u64 = 3600 * 24; // 24 hours
-
-type Attributes = HashMap<String, rusqlite::types::Value>;
 
 pub struct SqliteDatabase {
     pub pool: Pool,
@@ -53,7 +51,7 @@ impl SqliteDatabase {
         {
             Ok(value) => value,
             Err(e) => {
-                error!("Error connecting to the database: {}", e);
+                error!("Error connecting to the database: {:?}", e);
                 return Err(Error::DatabaseConnect);
             }
         };
@@ -195,14 +193,14 @@ impl SqliteDatabase {
     }
 
     fn pack_record(row: &rusqlite::Row, fields: &Vec<&str>) -> rusqlite::Result<Attributes> {
-        let mut record: Attributes = HashMap::new();
+        let mut props = Vec::<(String, Value)>::new();
 
         for field in fields {
             let value = row.get(*field)?;
-            record.insert(field.to_string(), value);
+            props.push((field.to_string(), value));
         }
 
-        Ok(record)
+        Ok(Attributes::from(&props))
     }
 }
 
@@ -298,6 +296,27 @@ impl DatabaseInterface for SqliteDatabase {
 
                     Err(e) => {
                         error!("Error adding a record to the database: {}", e);
+                        return Err(e);
+                    }
+                };
+
+                Ok(())
+            })
+            .await?;
+
+        Ok(())
+    }
+
+    async fn update(&self, query: UpdateQuery) -> Result<()> {
+        self.pool
+            .conn(move |conn| {
+                let (sql, params) = query.build();
+
+                match conn.execute(sql.as_str(), params_from_iter(params)) {
+                    Ok(_) => (),
+
+                    Err(e) => {
+                        error!("Error updating database: {}", e);
                         return Err(e);
                     }
                 };

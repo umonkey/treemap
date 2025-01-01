@@ -17,7 +17,7 @@ impl SelectQuery {
         let (where_query, params) = format_where(&self.conditions);
 
         let query = format!(
-            "SELECT * FROM {}{}{}{}",
+            "SELECT * FROM `{}`{}{}{}",
             self.table_name,
             where_query,
             format_order(&self.order),
@@ -37,13 +37,13 @@ mod tests {
     fn test_select_where() -> Result<()> {
         let query = SelectQuery {
             table_name: "trees".to_string(),
-            conditions: Attributes::from([("id".to_string(), Value::from(1))]),
+            conditions: Attributes::from(&[("id".to_string(), Value::from(1))]),
             ..Default::default()
         };
 
         let (query, params) = query.build();
 
-        assert_eq!(query, "SELECT * FROM trees WHERE id = ?");
+        assert_eq!(query, "SELECT * FROM `trees` WHERE `id` = ?");
         assert_eq!(1, params.len());
         assert_eq!(Value::from(1), params[0]);
 
@@ -60,7 +60,7 @@ mod tests {
 
         let (query, params) = query.build();
 
-        assert_eq!(query, "SELECT * FROM trees ORDER BY id DESC");
+        assert_eq!(query, "SELECT * FROM `trees` ORDER BY `id` DESC");
         assert_eq!(0, params.len());
 
         Ok(())
@@ -76,7 +76,7 @@ mod tests {
 
         let (query, params) = query.build();
 
-        assert_eq!(query, "SELECT * FROM trees LIMIT 10");
+        assert_eq!(query, "SELECT * FROM `trees` LIMIT 10");
         assert_eq!(0, params.len());
 
         Ok(())
@@ -86,7 +86,7 @@ mod tests {
     fn test_select_where_order_limit() -> Result<()> {
         let query = SelectQuery {
             table_name: "trees".to_string(),
-            conditions: Attributes::from([("state".to_string(), Value::from("dead".to_string()))]),
+            conditions: Attributes::from(&[("state".to_string(), Value::from("dead".to_string()))]),
             order: HashMap::from([("added_at".to_string(), "DESC".to_string())]),
             limit: Some(10),
             ..Default::default()
@@ -96,7 +96,7 @@ mod tests {
 
         assert_eq!(
             query,
-            "SELECT * FROM trees WHERE state = ? ORDER BY added_at DESC LIMIT 10"
+            "SELECT * FROM `trees` WHERE `state` = ? ORDER BY `added_at` DESC LIMIT 10"
         );
         assert_eq!(1, params.len());
         assert_eq!(Value::from("dead".to_string()), params[0]);

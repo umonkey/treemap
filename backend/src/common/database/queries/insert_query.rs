@@ -13,7 +13,7 @@ impl InsertQuery {
         let mut placeholders = Vec::new();
         let mut params = Vec::new();
 
-        for (column, value) in &self.attributes {
+        for (column, value) in &self.attributes.props {
             columns.push(format!("`{}`", column).to_string());
             placeholders.push("?".to_string());
             params.push(value.clone());
@@ -39,7 +39,7 @@ mod tests {
     fn test_insert() -> Result<()> {
         let query = InsertQuery {
             table_name: "trees".to_string(),
-            attributes: Attributes::from([("id".to_string(), Value::from(1))]),
+            attributes: Attributes::from(&[("id".to_string(), Value::from(1))]),
         };
 
         let (query, params) = query.build();

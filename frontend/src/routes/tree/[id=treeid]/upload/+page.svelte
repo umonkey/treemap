@@ -5,8 +5,10 @@
 	import Header from '$lib/components/tree/Header.svelte';
 	import FilePicker from '$lib/components/forms/FilePicker.svelte';
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
+	import PhotoManager from '$lib/components/tree/PhotoManager.svelte';
 
 	const { data } = $props();
+	const tree = data.tree;
 	const treeId = data.id;
 
 	const onFileSelected = (selected: File[]) => {
@@ -66,6 +68,8 @@
 		</div>
 	{/if}
 </div>
+
+<PhotoManager {tree} />
 
 <style>
 	.form {

@@ -4,12 +4,12 @@ use async_trait::async_trait;
 
 #[async_trait]
 pub trait DatabaseInterface: Send + Sync {
-    #[allow(unused)]
     async fn get_record(&self, query: SelectQuery) -> Result<Option<Attributes>>;
     #[allow(unused)]
     async fn get_records(&self, query: SelectQuery) -> Result<Vec<Attributes>>;
     #[allow(unused)]
     async fn add_record(&self, query: InsertQuery) -> Result<()>;
+    async fn update(&self, query: UpdateQuery) -> Result<()>;
 
     async fn add_tree(&self, tree: &TreeRecord) -> Result<()>;
     async fn update_tree(&self, tree: &TreeRecord) -> Result<()>;
