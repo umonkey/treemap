@@ -40,9 +40,7 @@ pub struct AppState {
 }
 
 impl AppState {
-    pub async fn new() -> Result<Self> {
-        let locator = Locator::new();
-
+    pub async fn new(locator: Arc<Locator>) -> Result<Self> {
         Ok(Self {
             files: locator.get::<FileService>()?,
             tokens: locator.get::<TokenService>()?,

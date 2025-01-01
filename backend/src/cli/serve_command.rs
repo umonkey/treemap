@@ -1,21 +1,12 @@
+use crate::actions::*;
+use crate::services::*;
+use crate::utils::{get_payload_size, get_server_addr, get_server_port, get_workers};
 use actix_cors::Cors;
 use actix_files::Files;
 use actix_web::{middleware::DefaultHeaders, web::PayloadConfig, App, HttpServer};
 use log::{debug, info};
+use std::sync::Arc;
 use std::time::Duration;
-
-use crate::actions::*;
-use crate::services::AppState;
-use crate::types::Result;
-use crate::utils::{get_payload_size, get_server_addr, get_server_port, get_workers};
-
-async fn data_factory() -> Result<AppState> {
-    debug!("Initializing app state.");
-
-    let state = AppState::new().await?;
-
-    Ok(state)
-}
 
 pub async fn serve_command() {
     let workers = get_workers();
@@ -27,6 +18,8 @@ pub async fn serve_command() {
         workers, host_addr, host_port
     );
 
+    let locator = Arc::new(Locator::new());
+
     // Create the web server, passing it a closure that will initialize the shared
     // data for each new thread.  When all threads are busy, Actix will create
     // a new one, call this closure to set it up, and have a new worker thread
@@ -34,10 +27,15 @@ pub async fn serve_command() {
     HttpServer::new(move || {
         debug!("Initializing new thread.");
 
+        let l1 = locator.clone();
+
         App::new()
             .wrap(DefaultHeaders::new().add(("Cache-Control", "no-store")))
             .wrap(Cors::permissive())
-            .data_factory(data_factory)
+            .data_factory(move || {
+                let l2 = l1.clone();
+                async move { AppState::new(l2.clone()).await }
+            })
             .app_data(PayloadConfig::new(get_payload_size()))
             .service(add_comment_action)
             .service(add_file)
