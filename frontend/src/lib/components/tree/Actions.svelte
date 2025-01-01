@@ -5,6 +5,7 @@
 	import ChatIcon from '$lib/icons/ChatIcon.svelte';
 	import HeartIcon from '$lib/icons/HeartIcon.svelte';
 	import SaveIcon from '$lib/icons/SaveIcon.svelte';
+	import CameraIcon from '$lib/icons/CameraIcon.svelte';
 	import ShareButton from '$lib/components/tree/ShareButton.svelte';
 
 	const { tree } = $props();
@@ -15,6 +16,7 @@
 		<div><HeartIcon /></div>
 	{/if}
 	<div><a href={routes.treeComments(tree)}><ChatIcon /></a></div>
+	<div><a href={routes.treeUploadPhotos(tree)}><CameraIcon /></a></div>
 	<div><ShareButton /></div>
 	{#if FEATURES.bookmarks}
 		<div class="sep"></div>
