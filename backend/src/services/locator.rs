@@ -59,13 +59,20 @@ impl Locator {
     {
         let id = &TypeId::of::<Arc<T>>();
 
+        // First see if the service already exists.
         match self.map.lock() {
             Ok(hash) => {
                 if let Some(value) = hash.get(id) {
-                    if let Some(instance) = value.downcast_ref::<Arc<T>>() {
-                        debug!("Found instance in service locator: {:?}", id);
-                        return Ok(instance.clone());
-                    }
+                    return match value.downcast_ref::<Arc<T>>() {
+                        Some(instance) => {
+                            debug!("Found instance in service locator: {:?}", id);
+                            Ok(instance.clone())
+                        }
+                        None => {
+                            debug!("Error downcasting instance in service locator: {:?}", id);
+                            Err(Error::DependencyLoad)
+                        }
+                    };
                 }
             }
 
@@ -75,7 +82,7 @@ impl Locator {
             }
         }
 
-        let obj: T = <T as Locatable>::create(self)?;
+        let obj = T::create(self)?;
         let arc = Arc::new(obj);
 
         match self.map.lock() {
@@ -107,9 +114,30 @@ mod locator_tests {
 
     fn require_sync<T: Sync>(_t: &T) {}
 
+    struct TestService {}
+
+    impl Locatable for TestService {
+        fn create(_locator: &Locator) -> Result<Self> {
+            Ok(Self {})
+        }
+    }
+
+    fn setup() {
+        let _ = env_logger::try_init();
+    }
+
     #[test]
     fn test_create() {
         Locator::new();
+    }
+
+    #[test]
+    fn test_cached() {
+        setup();
+
+        let locator = Locator::new();
+        locator.get::<TestService>().unwrap();
+        locator.get::<TestService>().unwrap();
     }
 
     #[test]
