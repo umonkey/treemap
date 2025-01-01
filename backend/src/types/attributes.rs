@@ -95,8 +95,4 @@ impl Attributes {
             _ => Err(Error::DatabaseStructure),
         }
     }
-
-    fn type_name<T>(_: &T) -> &'static str {
-        std::any::type_name::<T>()
-    }
 }

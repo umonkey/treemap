@@ -7,6 +7,7 @@ use std::sync::Arc;
 pub struct UpdateTreeThumbnailHandler {
     trees: Arc<TreeRepository>,
     files: Arc<FileRepository>,
+    props: Arc<PropRepository>,
 }
 
 impl UpdateTreeThumbnailHandler {
@@ -15,6 +16,16 @@ impl UpdateTreeThumbnailHandler {
         let file = self.files.get(req.file_id).await?;
 
         self.trees.update_thumbnail(tree.id, file.small_id).await?;
+
+        self.props
+            .add(&PropRecord {
+                tree_id: tree.id,
+                added_by: req.user_id,
+                name: "thumbnail_id".to_string(),
+                value: file.small_id.to_string(),
+                ..Default::default()
+            })
+            .await?;
 
         info!(
             "Thumbnail for tree {} changed to {} by {}.",
@@ -29,6 +40,11 @@ impl Locatable for UpdateTreeThumbnailHandler {
     fn create(locator: &Locator) -> Result<Self> {
         let trees = locator.get::<TreeRepository>()?;
         let files = locator.get::<FileRepository>()?;
-        Ok(Self { trees, files })
+        let props = locator.get::<PropRepository>()?;
+        Ok(Self {
+            trees,
+            files,
+            props,
+        })
     }
 }
