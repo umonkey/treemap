@@ -65,7 +65,7 @@ impl Locator {
                 if let Some(value) = hash.get(id) {
                     return match value.downcast_ref::<Arc<T>>() {
                         Some(instance) => {
-                            debug!("Found instance in service locator: {:?}", id);
+                            debug!("Found existing instance in service locator: {:?}", id);
                             Ok(instance.clone())
                         }
                         None => {
@@ -82,14 +82,13 @@ impl Locator {
             }
         }
 
-        let obj = T::create(self)?;
-        let arc = Arc::new(obj);
+        let instance = Arc::new(T::create(self)?);
 
         match self.map.lock() {
             Ok(mut hash) => {
-                hash.insert(*id, arc.clone());
+                hash.insert(*id, Arc::new(instance.clone()));
                 debug!("Created new instance in service locator: {:?}", id);
-                Ok(arc)
+                Ok(instance)
             }
 
             Err(e) => {
