@@ -342,6 +342,10 @@ class EnglishLocale {
 	public learnContinue(): string {
 		return 'Continue';
 	}
+
+	public helpCircumference(): string {
+		return 'https://myga.am/app/measuring-circumference.html';
+	}
 }
 
 class RussianLocale extends EnglishLocale {
@@ -683,6 +687,10 @@ class RussianLocale extends EnglishLocale {
 
 	public learnContinue(): string {
 		return 'Продолжить';
+	}
+
+	public helpCircumference(): string {
+		return 'https://myga.am/ru/app/measuring-circumference.html';
 	}
 }
 
