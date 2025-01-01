@@ -13,12 +13,12 @@
 use crate::types::Error;
 use crate::types::Result;
 use log::{debug, error};
-use std::any::{Any, TypeId};
+use std::any::Any;
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 
 // A type alias to simplify typing.
-type ServiceMap = HashMap<TypeId, Arc<dyn Any + Sync + Send>>;
+type ServiceMap = HashMap<String, Arc<dyn Any + Sync + Send>>;
 
 pub struct Locator {
     map: Mutex<ServiceMap>,
@@ -57,19 +57,19 @@ impl Locator {
     where
         T: Locatable + 'static + Send + Sync,
     {
-        let id = &TypeId::of::<Arc<T>>();
+        let id = std::any::type_name::<T>().to_string();
 
         // First see if the service already exists.
         match self.map.lock() {
             Ok(hash) => {
-                if let Some(value) = hash.get(id) {
+                if let Some(value) = hash.get(&id) {
                     return match value.downcast_ref::<Arc<T>>() {
                         Some(instance) => {
-                            debug!("Found existing instance in service locator: {:?}", id);
+                            debug!("Found existing {} in the map.", id);
                             Ok(instance.clone())
                         }
                         None => {
-                            debug!("Error downcasting instance in service locator: {:?}", id);
+                            error!("Error downcasting {} from the map.", id);
                             Err(Error::DependencyLoad)
                         }
                     };
@@ -86,8 +86,8 @@ impl Locator {
 
         match self.map.lock() {
             Ok(mut hash) => {
-                hash.insert(*id, Arc::new(instance.clone()));
-                debug!("Created new instance in service locator: {:?}", id);
+                hash.insert(id.clone(), Arc::new(instance.clone()));
+                debug!("Created new instance of {}.", id);
                 Ok(instance)
             }
 
