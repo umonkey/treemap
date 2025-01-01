@@ -13,12 +13,12 @@
 use crate::types::Error;
 use crate::types::Result;
 use log::{debug, error};
-use std::any::{Any, TypeId};
+use std::any::Any;
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 
 // A type alias to simplify typing.
-type ServiceMap = HashMap<TypeId, Arc<dyn Any + Sync + Send>>;
+type ServiceMap = HashMap<String, Arc<dyn Any + Sync + Send>>;
 
 pub struct Locator {
     map: Mutex<ServiceMap>,
@@ -57,15 +57,22 @@ impl Locator {
     where
         T: Locatable + 'static + Send + Sync,
     {
-        let id = &TypeId::of::<Arc<T>>();
+        let id = std::any::type_name::<T>().to_string();
 
+        // First see if the service already exists.
         match self.map.lock() {
             Ok(hash) => {
-                if let Some(value) = hash.get(id) {
-                    if let Some(instance) = value.downcast_ref::<Arc<T>>() {
-                        debug!("Found instance in service locator: {:?}", id);
-                        return Ok(instance.clone());
-                    }
+                if let Some(value) = hash.get(&id) {
+                    return match value.downcast_ref::<Arc<T>>() {
+                        Some(instance) => {
+                            debug!("Found existing {} in the map.", id);
+                            Ok(instance.clone())
+                        }
+                        None => {
+                            error!("Error downcasting {} from the map.", id);
+                            Err(Error::DependencyLoad)
+                        }
+                    };
                 }
             }
 
@@ -75,14 +82,13 @@ impl Locator {
             }
         }
 
-        let obj: T = <T as Locatable>::create(self)?;
-        let arc = Arc::new(obj);
+        let instance = Arc::new(T::create(self)?);
 
         match self.map.lock() {
             Ok(mut hash) => {
-                hash.insert(*id, arc.clone());
-                debug!("Created new instance in service locator: {:?}", id);
-                Ok(arc)
+                hash.insert(id.clone(), Arc::new(instance.clone()));
+                debug!("Created new instance of {}.", id);
+                Ok(instance)
             }
 
             Err(e) => {
@@ -107,9 +113,30 @@ mod locator_tests {
 
     fn require_sync<T: Sync>(_t: &T) {}
 
+    struct TestService {}
+
+    impl Locatable for TestService {
+        fn create(_locator: &Locator) -> Result<Self> {
+            Ok(Self {})
+        }
+    }
+
+    fn setup() {
+        let _ = env_logger::try_init();
+    }
+
     #[test]
     fn test_create() {
         Locator::new();
+    }
+
+    #[test]
+    fn test_cached() {
+        setup();
+
+        let locator = Locator::new();
+        locator.get::<TestService>().unwrap();
+        locator.get::<TestService>().unwrap();
     }
 
     #[test]
