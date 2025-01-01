@@ -1,10 +1,22 @@
 <svg
-	xmlns="http://www.w3.org/2000/svg"
-	fill="currentColor"
+	data-slot="icon"
+	aria-hidden="true"
+	fill="none"
+	stroke-width="1.5"
+	stroke="currentColor"
+	viewBox="0 0 24 24"
 	width="100%"
 	height="100%"
-	viewBox="0 0 512 512"
-	><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path
-		d="M149.1 64.8L138.7 96 64 96C28.7 96 0 124.7 0 160L0 416c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-256c0-35.3-28.7-64-64-64l-74.7 0L362.9 64.8C356.4 45.2 338.1 32 317.4 32L194.6 32c-20.7 0-39 13.2-45.5 32.8zM256 192a96 96 0 1 1 0 192 96 96 0 1 1 0-192z"
-	/></svg
+	xmlns="http://www.w3.org/2000/svg"
 >
+	<path
+		d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z"
+		stroke-linecap="round"
+		stroke-linejoin="round"
+	></path>
+	<path
+		d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z"
+		stroke-linecap="round"
+		stroke-linejoin="round"
+	></path>
+</svg>
