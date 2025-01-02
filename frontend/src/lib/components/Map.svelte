@@ -5,10 +5,12 @@
 	import { addLayerSelection } from '$lib/map/baseLayerSelector';
 	import { addTreeButton } from '$lib/map/addTreeButton';
 	import { addResizeObserver } from '$lib/map/resizeObserver';
+	import { addMyLocation } from '$lib/map/myLocation';
 	import { Markers } from '$lib/map/markers';
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import { baseLayer } from '$lib/stores/mapLayerStore';
 	import { MAX_BOUNDS } from '$lib/constants';
+	import { locationBus } from '$lib/buses/locationBus';
 
 	const {
 		center,
@@ -36,6 +38,7 @@
 
 		addLayerSelection(map);
 		addResizeObserver(map);
+		addMyLocation(map);
 
 		if (canAdd) {
 			addTreeButton(map);
@@ -65,6 +68,14 @@
 				onMove(map.getCenter(), map.getZoom());
 			}
 		});
+
+		// Start tracking user's location.
+		locationBus.emit('start');
+	});
+
+	onDestroy(() => {
+		console.debug('[map] Destroying map.');
+		map.remove();
 	});
 </script>
 

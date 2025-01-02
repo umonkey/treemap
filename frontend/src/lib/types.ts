@@ -110,3 +110,9 @@ export interface IStreetStats {
 	address: string;
 	count: number;
 }
+
+export interface IMyPosition {
+	lat: number;
+	lng: number;
+	accuracy: number;
+}
