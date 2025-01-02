@@ -4,7 +4,7 @@ autofix:
 	npm run format
 
 build:
-	VITE_API_ROOT=$(API_ROOT) npm run build
+	VITE_API_ROOT=$(API_ROOT) VITE_ENVIRONMENT=production npm run build
 	cp build/index.html build/404.html
 
 clean:

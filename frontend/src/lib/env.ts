@@ -5,3 +5,4 @@ export const AUTH_CLIENT_ID =
 	'999312923392-6k26jala2pe5dk9u7o63o8nvts3a7f1f.apps.googleusercontent.com';
 
 export const GTM_ID = import.meta.env.VITE_GTM_ID ?? 'G-CEJ6L6RMWG';
+export const ENVIRONMENT = import.meta.env.VITE_ENVIRONMENT ?? 'development';
