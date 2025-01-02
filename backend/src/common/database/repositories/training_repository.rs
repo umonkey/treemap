@@ -14,7 +14,7 @@ impl TrainingRepository {
     pub async fn add(&self, record: &TrainingRecord) -> Result<()> {
         let query = InsertQuery {
             table_name: TABLE.to_string(),
-            attributes: Attributes::from([
+            attributes: Attributes::from(&[
                 ("id".to_string(), Value::from(record.id as i64)),
                 ("user_id".to_string(), Value::from(record.user_id as i64)),
                 ("added_at".to_string(), Value::from(record.added_at as i64)),

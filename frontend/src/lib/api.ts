@@ -192,6 +192,25 @@ export class ApiClient {
 		return await this.request('GET', `v1/trees/updated`);
 	}
 
+	public async changeTreeThumbnail(tree: string, file: string): Promise<Response<void>> {
+		return await this.request('PUT', `v1/trees/${tree}/thumbnail`, {
+			body: JSON.stringify({ file }),
+			headers: {
+				'Content-Type': 'application/json',
+				...this.getAuthHeaders()
+			}
+		});
+	}
+
+	public async deleteFile(id: string): Promise<Response<void>> {
+		return await this.request('DELETE', `v1/files/${id}`, {
+			headers: {
+				'Content-Type': 'application/json',
+				...this.getAuthHeaders()
+			}
+		});
+	}
+
 	/**
 	 * Send a raw request to the API.
 	 *

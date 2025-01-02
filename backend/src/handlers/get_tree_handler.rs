@@ -13,7 +13,13 @@ impl GetTreeHandler {
             None => return Err(Error::TreeNotFound),
         };
 
-        let files = self.db.find_files_by_tree(id).await?;
+        let files: Vec<FileRecord> = self
+            .db
+            .find_files_by_tree(id)
+            .await?
+            .into_iter()
+            .filter(|file| file.deleted_at.is_none())
+            .collect();
 
         let user_ids = self.collect_user_ids(&tree, &files).await?;
         let users = self.db.get_users(&user_ids).await?;

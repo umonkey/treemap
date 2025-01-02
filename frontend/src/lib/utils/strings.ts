@@ -1,3 +1,6 @@
+import { getUser } from '$lib/stores/userStore';
+import { get } from 'svelte/store';
+
 export const formatDate = (timestamp: number): string => {
 	const date = new Date(timestamp * 1000);
 
@@ -6,4 +9,19 @@ export const formatDate = (timestamp: number): string => {
 	const year = date.getFullYear();
 
 	return `${day}.${month}.${year}`;
+};
+
+export const fileAttribution = (file: ITreeFile): string => {
+	if (!file.added_at || !file.added_by) {
+		return '';
+	}
+
+	const user = get(getUser)(file.added_by);
+
+	if (user === undefined) {
+		return '';
+	}
+
+	const date = formatDate(file.added_at);
+	return `${date} by ${user.name}`;
 };

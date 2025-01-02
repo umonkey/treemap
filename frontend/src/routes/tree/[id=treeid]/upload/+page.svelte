@@ -2,11 +2,14 @@
 	import { fileStore, storedFiles, isUploading, uploadMessage } from '$lib/stores/fileStore';
 	import { startUpload } from '$lib/utils/fileUploader';
 
+	import AuthWrapper from '$lib/components/auth/AuthWrapper.svelte';
 	import Header from '$lib/components/tree/Header.svelte';
 	import FilePicker from '$lib/components/forms/FilePicker.svelte';
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
+	import PhotoManager from '$lib/components/tree/PhotoManager.svelte';
 
 	const { data } = $props();
+	const tree = data.tree;
 	const treeId = data.id;
 
 	const onFileSelected = (selected: File[]) => {
@@ -34,44 +37,46 @@
 
 <Header title="Upload photos" />
 
-<div class="form">
-	<p>Here you can upload multiple photos of this tree.</p>
+<div class="padded">
+	<AuthWrapper>
+		<div class="form">
+			<p>Here you can upload multiple photos of this tree.</p>
 
-	{#if $uploadMessage}
-		<p>{$uploadMessage}</p>
-	{/if}
+			{#if $uploadMessage}
+				<p>{$uploadMessage}</p>
+			{/if}
 
-	<div class="buttons">
-		<FilePicker {onFileSelected} disabled={$isUploading} />
-		<button
-			disabled={!($storedFiles.length > 0 && !$isUploading)}
-			class="button"
-			type="button"
-			onclick={() => startUpload(treeId)}>Upload</button
-		>
-	</div>
+			<div class="buttons">
+				<FilePicker {onFileSelected} disabled={$isUploading} />
+				<button
+					disabled={!($storedFiles.length > 0 && !$isUploading)}
+					class="button"
+					type="button"
+					onclick={() => startUpload(treeId)}>Upload</button
+				>
+			</div>
 
-	{#if $storedFiles.length > 0}
-		<h2>Selected photos:</h2>
+			{#if $storedFiles.length > 0}
+				<h2>Selected photos:</h2>
 
-		<div class="grid">
-			{#each $storedFiles as file, idx}
-				<div class="preview">
-					<img src={URL.createObjectURL(file)} alt="preview" />
-					<button class="close" onclick={() => removeFile(idx)}>
-						<CloseIcon width={24} height={24} />
-					</button>
+				<div class="grid">
+					{#each $storedFiles as file, idx}
+						<div class="preview">
+							<img src={URL.createObjectURL(file)} alt="preview" />
+							<button class="close" onclick={() => removeFile(idx)}>
+								<CloseIcon width={24} height={24} />
+							</button>
+						</div>
+					{/each}
 				</div>
-			{/each}
+			{/if}
 		</div>
-	{/if}
+
+		<PhotoManager {tree} />
+	</AuthWrapper>
 </div>
 
 <style>
-	.form {
-		padding: 0 var(--gap) var(--gap);
-	}
-
 	.grid {
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);

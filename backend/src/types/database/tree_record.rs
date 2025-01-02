@@ -1,6 +1,6 @@
-/**
- * This is how a single tree is stored in the database.
- */
+//! This is how a single tree is stored in the database.
+
+use crate::types::{Attributes, Result};
 use serde::Serialize;
 
 #[derive(Clone, Debug, Default, Serialize)]
@@ -42,6 +42,27 @@ impl TreeRecord {
             thumbnail_id: row.get(13)?,
             year: row.get(14)?,
             address: row.get(15)?,
+        })
+    }
+
+    pub fn from_attributes(attributes: &Attributes) -> Result<Self> {
+        Ok(Self {
+            id: attributes.require_u64("id")?,
+            osm_id: attributes.get_u64("osm_id")?,
+            lat: attributes.require_f64("lat")?,
+            lon: attributes.require_f64("lon")?,
+            species: attributes.require_string("species")?,
+            notes: attributes.get_string("notes")?,
+            height: attributes.get_f64("height")?,
+            circumference: attributes.get_f64("circumference")?,
+            diameter: attributes.get_f64("diameter")?,
+            state: attributes.require_string("state")?,
+            added_at: attributes.require_u64("added_at")?,
+            updated_at: attributes.require_u64("updated_at")?,
+            added_by: attributes.require_u64("added_by")?,
+            thumbnail_id: attributes.get_u64("thumbnail_id")?,
+            year: attributes.get_i64("year")?,
+            address: attributes.get_string("address")?,
         })
     }
 }

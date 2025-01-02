@@ -41,6 +41,7 @@ pub async fn serve_command() {
             .service(add_file)
             .service(add_training_action)
             .service(add_trees_action)
+            .service(delete_file_action)
             .service(get_new_comments_action)
             .service(get_tree_comments_action)
             .service(get_file_jpg)
@@ -68,6 +69,7 @@ pub async fn serve_command() {
             .service(search_species_action)
             .service(suggest_species_action)
             .service(update_tree_action)
+            .service(update_tree_thumbnail_action)
             .service(get_user_action)
             .service(
                 Files::new("/", "./static")

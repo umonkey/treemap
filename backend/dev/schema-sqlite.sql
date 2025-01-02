@@ -54,6 +54,8 @@ CREATE TABLE IF NOT EXISTS files (
     `tree_id` INT NOT NULL,
     `added_at` INT NOT NULL,
     `added_by` INT NOT NULL,
+    `deleted_at` INT NULL,
+    `deleted_by` INT NULL,
     `small_id` INT NOT NULL,
     `large_id` INT NOT NULL,
     PRIMARY KEY(`id`)

@@ -11,6 +11,7 @@ pub struct AppState {
     pub add_comment_handler: Arc<AddCommentHandler>,
     pub add_training_handler: Arc<AddTrainingHandler>,
     pub add_trees_handler: Arc<AddTreesHandler>,
+    pub delete_file_handler: Arc<DeleteFileHandler>,
     pub get_file_status_handler: Arc<GetFileStatusHandler>,
     pub get_me_handler: Arc<GetMeHandler>,
     pub get_new_comments_handler: Arc<GetNewCommentsHandler>,
@@ -37,6 +38,7 @@ pub struct AppState {
     pub suggest_species_handler: Arc<SuggestSpeciesHandler>,
     pub unlike_tree_handler: Arc<UnlikeTreeHandler>,
     pub update_tree_handler: Arc<UpdateTreeHandler>,
+    pub update_tree_thumbnail_handler: Arc<UpdateTreeThumbnailHandler>,
 }
 
 impl AppState {
@@ -47,6 +49,7 @@ impl AppState {
             add_comment_handler: locator.get::<AddCommentHandler>()?,
             add_training_handler: locator.get::<AddTrainingHandler>()?,
             add_trees_handler: locator.get::<AddTreesHandler>()?,
+            delete_file_handler: locator.get::<DeleteFileHandler>()?,
             get_file_status_handler: locator.get::<GetFileStatusHandler>()?,
             get_me_handler: locator.get::<GetMeHandler>()?,
             get_new_comments_handler: locator.get::<GetNewCommentsHandler>()?,
@@ -73,6 +76,7 @@ impl AppState {
             suggest_species_handler: locator.get::<SuggestSpeciesHandler>()?,
             unlike_tree_handler: locator.get::<UnlikeTreeHandler>()?,
             update_tree_handler: locator.get::<UpdateTreeHandler>()?,
+            update_tree_thumbnail_handler: locator.get::<UpdateTreeThumbnailHandler>()?,
         })
     }
 
