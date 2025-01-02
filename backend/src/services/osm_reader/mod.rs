@@ -138,20 +138,17 @@ impl OsmReaderService {
             lat: node.lat,
             lon: node.lon,
             species: node.get_species(),
-            notes: None,
             height: node.height,
             circumference: node.circumference,
             diameter: node.diameter_crown,
             state: DEFAULT_STATE.to_string(),
             added_at: now,
             updated_at: now,
-            added_by: 0,
-            thumbnail_id: None,
-            year: None,
-            address: None,
+            added_by: self.user_id,
+            ..Default::default()
         };
 
-        self.db.add_tree(&tree).await?;
+        self.trees.add(&tree).await?;
         self.schedule_address_update(tree.id).await?;
 
         info!("Tree {} added from OSM node {}.", tree.id, node.id);

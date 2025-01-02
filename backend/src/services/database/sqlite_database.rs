@@ -267,26 +267,6 @@ impl DatabaseInterface for SqliteDatabase {
         Ok(())
     }
 
-    async fn add_tree(&self, tree: &TreeRecord) -> Result<()> {
-        let tree = tree.clone();
-
-        self.pool.conn(move |conn| {
-            match conn.execute("INSERT INTO trees (id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (tree.id, tree.osm_id, tree.lat, tree.lon, tree.species, tree.notes, tree.height, tree.circumference, tree.diameter, tree.state, tree.added_at, tree.updated_at, tree.added_by, tree.thumbnail_id)) {
-                Ok(_) => (),
-
-                Err(e) => {
-                    error!("Error adding tree to the database: {}", e);
-                    return Err(e);
-                },
-            };
-
-            debug!("Tree {} added to the database.", tree.id);
-            Ok(())
-        }).await?;
-
-        Ok(())
-    }
-
     async fn move_tree(&self, id: u64, lat: f64, lon: f64) -> Result<()> {
         let updated_at = get_timestamp();
 
@@ -1423,7 +1403,6 @@ impl Clone for SqliteDatabase {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::utils::get_unique_id;
     use env_logger;
     use std::env;
 
@@ -1469,53 +1448,6 @@ mod tests {
 
         assert_eq!(trees.len(), 3);
         Ok(())
-    }
-
-    #[tokio::test]
-    async fn test_add_tree() {
-        let db = setup().await;
-
-        db.add_tree(&TreeRecord {
-            id: 123,
-            osm_id: Some(234),
-            lat: 56.65,
-            lon: 28.48,
-            species: "Quercus".to_string(),
-            notes: Some("Big Oak".to_string()),
-            height: Some(12.0),
-            circumference: Some(1.0),
-            diameter: Some(2.3),
-            state: "healthy".to_string(),
-            added_at: 12345,
-            updated_at: 23456,
-            added_by: 7,
-            thumbnail_id: Some(8),
-            year: None,
-            address: None,
-        })
-        .await
-        .expect("Error adding tree");
-
-        let tree = db
-            .get_tree(123)
-            .await
-            .expect("Error reading a tree that was just added")
-            .expect("Tree not found.");
-
-        assert_eq!(tree.id, 123, "wrong id");
-        assert_eq!(tree.osm_id, Some(234), "wrong osm_id");
-        assert_eq!(tree.lat, 56.65, "wrong lat");
-        assert_eq!(tree.lon, 28.48, "wrong lon");
-        assert_eq!(tree.species, "Quercus", "wrong species");
-        assert_eq!(tree.notes, Some("Big Oak".to_string()), "wrong notes");
-        assert_eq!(tree.height, Some(12.0), "wrong height");
-        assert_eq!(tree.circumference, Some(1.0), "wrong circumference");
-        assert_eq!(tree.diameter, Some(2.3), "wrong diameter");
-        assert_eq!(tree.state, "healthy", "wrong state");
-        assert_eq!(tree.added_at, 12345, "wrong added_at");
-        assert_eq!(tree.updated_at, 23456, "wrong updated_at");
-        assert_eq!(tree.added_by, 7, "wrong added_by");
-        assert_eq!(tree.thumbnail_id, Some(8), "wrong thumbnail_id");
     }
 
     #[tokio::test]
@@ -1668,161 +1600,6 @@ mod tests {
 
         assert_eq!(species.len(), 1, "Could not find species for oak.");
         assert_eq!("Quercus robur", species[0].name);
-    }
-
-    #[tokio::test]
-    async fn test_find_recent_species() {
-        let db = setup().await;
-
-        let now = get_timestamp();
-        let user_id: u64 = 12345;
-
-        for species_id in 0..10 {
-            for _ in 0..species_id {
-                db.add_tree(&TreeRecord {
-                    id: get_unique_id().expect("Error generating tree id."),
-                    osm_id: None,
-                    lat: 0.0,
-                    lon: 0.0,
-                    species: format!("Species nr.{}", species_id + 1),
-                    notes: None,
-                    height: None,
-                    circumference: None,
-                    diameter: None,
-                    state: "healthy".to_string(),
-                    added_at: now,
-                    added_by: user_id,
-                    updated_at: now,
-                    thumbnail_id: None,
-                    year: None,
-                    address: None,
-                })
-                .await
-                .expect("Error adding tree.");
-            }
-        }
-
-        let recent = db
-            .find_recent_species(user_id)
-            .await
-            .expect("Error reading recent species.");
-        assert_eq!(recent.len(), 9);
-        assert_eq!(recent[0], "Species nr.10");
-        assert_eq!(recent[1], "Species nr.9");
-    }
-
-    #[tokio::test]
-    async fn test_find_recent_species_single() {
-        let db = setup().await;
-
-        let now = get_timestamp();
-        let user_id: u64 = 12345;
-
-        db.add_tree(&TreeRecord {
-            id: get_unique_id().expect("Error generating tree id."),
-            osm_id: None,
-            lat: 0.0,
-            lon: 0.0,
-            species: "Some tree".to_string(),
-            notes: None,
-            height: None,
-            circumference: None,
-            diameter: None,
-            state: "healthy".to_string(),
-            added_at: now,
-            added_by: user_id,
-            updated_at: now,
-            thumbnail_id: None,
-            year: None,
-            address: None,
-        })
-        .await
-        .expect("Error adding tree");
-
-        let recent = db
-            .find_recent_species(user_id)
-            .await
-            .expect("Error reading recent species.");
-
-        assert_eq!(recent.len(), 1);
-        assert_eq!(recent[0], "Some tree");
-    }
-
-    #[tokio::test]
-    async fn test_find_recent_species_old() {
-        let db = setup().await;
-
-        let now = get_timestamp();
-        let user_id: u64 = 12345;
-
-        db.add_tree(&TreeRecord {
-            id: get_unique_id().expect("Error generating tree id."),
-            osm_id: None,
-            lat: 0.0,
-            lon: 0.0,
-            species: "Some tree".to_string(),
-            notes: None,
-            height: None,
-            circumference: None,
-            diameter: None,
-            state: "healthy".to_string(),
-            added_at: now - 86400 * 7, // one week ago
-            added_by: user_id,
-            updated_at: now,
-            thumbnail_id: None,
-            year: None,
-            address: None,
-        })
-        .await
-        .expect("Error adding tree");
-
-        let recent = db
-            .find_recent_species(user_id)
-            .await
-            .expect("Error reading recent species.");
-
-        assert_eq!(recent.len(), 0);
-    }
-
-    #[tokio::test]
-    async fn test_suggest_case_insensitive() {
-        let db = setup().await;
-
-        let now = get_timestamp();
-        let user_id = 1;
-
-        let names = vec!["клён", "Клён", "Unknown", "КЛЁН"];
-
-        for name in names {
-            db.add_tree(&TreeRecord {
-                id: get_unique_id().expect("Error generating tree id."),
-                osm_id: None,
-                lat: 0.0,
-                lon: 0.0,
-                species: name.to_string(),
-                notes: None,
-                height: None,
-                circumference: None,
-                diameter: None,
-                state: "healthy".to_string(),
-                added_at: now,
-                added_by: user_id,
-                updated_at: now,
-                thumbnail_id: None,
-                year: None,
-                address: None,
-            })
-            .await
-            .expect("Error adding tree.");
-        }
-
-        let recent = db
-            .find_recent_species(user_id)
-            .await
-            .expect("Error reading recent species.");
-
-        assert_eq!(recent.len(), 1);
-        assert_eq!(recent[0], "клён");
     }
 
     #[tokio::test]

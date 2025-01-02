@@ -31,6 +31,18 @@ impl TreeRepository {
         }
     }
 
+    pub async fn add(&self, tree: &TreeRecord) -> Result<()> {
+        self.db
+            .add_record(InsertQuery {
+                table_name: TABLE.to_string(),
+                attributes: tree.to_attributes(),
+            })
+            .await?;
+
+        self.log_changes(&TreeRecord::default(), tree, tree.added_by)
+            .await
+    }
+
     pub async fn update(&self, tree: &TreeRecord, user_id: u64) -> Result<()> {
         let old = self.get(tree.id).await?;
 

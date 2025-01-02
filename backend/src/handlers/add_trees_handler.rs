@@ -1,3 +1,4 @@
+use crate::common::database::repositories::*;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::{fix_circumference, get_timestamp, get_unique_id};
@@ -5,7 +6,7 @@ use log::{debug, info};
 use std::sync::Arc;
 
 pub struct AddTreesHandler {
-    db: Arc<dyn DatabaseInterface>,
+    trees: Arc<TreeRepository>,
     queue: Arc<QueueService>,
 }
 
@@ -18,7 +19,6 @@ impl AddTreesHandler {
         for point in req.points {
             let tree = TreeRecord {
                 id: get_unique_id()?,
-                osm_id: None,
                 lat: point.lat,
                 lon: point.lon,
                 species: req.species.clone(),
@@ -28,11 +28,12 @@ impl AddTreesHandler {
                 diameter: req.diameter,
                 state: req.state.to_string(),
                 added_at: now,
-                updated_at: now,
                 added_by: req.user_id,
+                updated_at: now,
                 thumbnail_id: None,
                 year: req.year,
                 address: req.address.clone(),
+                ..Default::default()
             };
 
             debug!(
@@ -40,7 +41,7 @@ impl AddTreesHandler {
                 tree.lat, tree.lon, tree.species
             );
 
-            self.db.add_tree(&tree).await?;
+            self.trees.add(&tree).await?;
             self.schedule_address_update(tree.id).await?;
 
             trees.push(tree);
@@ -61,8 +62,8 @@ impl AddTreesHandler {
 
 impl Locatable for AddTreesHandler {
     fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<PreferredDatabase>()?.driver();
+        let trees = locator.get::<TreeRepository>()?;
         let queue = locator.get::<QueueService>()?;
-        Ok(Self { db, queue })
+        Ok(Self { trees, queue })
     }
 }
