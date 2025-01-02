@@ -4,11 +4,14 @@
 	import type { ITree } from '$lib/types';
 	import { addLayerSelection } from '$lib/map/baseLayerSelector';
 	import { addTreeButton } from '$lib/map/addTreeButton';
+	import { addLocateMeButton } from '$lib/map/addLocateMeButton';
 	import { addResizeObserver } from '$lib/map/resizeObserver';
+	import { addLocateMeCircle } from '$lib/map/addLocateMeCircle';
 	import { Markers } from '$lib/map/markers';
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import { baseLayer } from '$lib/stores/mapLayerStore';
 	import { MAX_BOUNDS } from '$lib/constants';
+	import { locationBus } from '$lib/buses/locationBus';
 
 	const {
 		center,
@@ -36,6 +39,8 @@
 
 		addLayerSelection(map);
 		addResizeObserver(map);
+		addLocateMeCircle(map);
+		addLocateMeButton(map);
 
 		if (canAdd) {
 			addTreeButton(map);
@@ -65,6 +70,14 @@
 				onMove(map.getCenter(), map.getZoom());
 			}
 		});
+
+		// Start tracking user's location.
+		locationBus.emit('start');
+	});
+
+	onDestroy(() => {
+		console.debug('[map] Destroying map.');
+		map.remove();
 	});
 </script>
 
