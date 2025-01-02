@@ -12,7 +12,7 @@ pub trait DatabaseInterface: Send + Sync {
     async fn delete(&self, query: DeleteQuery) -> Result<()>;
 
     async fn add_tree(&self, tree: &TreeRecord) -> Result<()>;
-    async fn update_tree(&self, tree: &TreeRecord) -> Result<()>;
+    async fn update_tree(&self, tree: &TreeRecord, user_id: u64) -> Result<()>;
     async fn move_tree(&self, id: u64, lat: f64, lon: f64) -> Result<()>;
     async fn get_trees(&self, bounds: Bounds) -> Result<Vec<TreeRecord>>;
     async fn get_trees_by_ids(&self, ids: &[u64]) -> Result<Vec<TreeRecord>>;
@@ -31,7 +31,7 @@ pub trait DatabaseInterface: Send + Sync {
     ) -> Result<Vec<TreeRecord>>;
 
     // Record a new property value.  Returns the assigned prop id.
-    async fn add_tree_prop(&self, id: u64, name: &str, value: &str) -> Result<u64>;
+    async fn add_tree_prop(&self, id: u64, name: &str, value: &str, user_id: u64) -> Result<u64>;
     async fn update_tree_thumbnail(&self, tree_id: u64, file_id: u64) -> Result<()>;
 
     async fn find_user_by_email(&self, email: &str) -> Result<Option<UserRecord>>;

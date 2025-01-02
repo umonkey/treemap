@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS trees_props (
     `id` INT NOT NULL,
     `tree_id` INT NOT NULL,
     `added_at` INT NOT NULL,
+    `added_by` INT NOT NULL,
     `name` TEXT NOT NULL,
     `value` TEXT NOT NULL,
     PRIMARY KEY(`id`)

@@ -41,7 +41,12 @@ impl ResizeImageHandler {
                     .await?;
 
                 self.db
-                    .add_tree_prop(file.tree_id, "thumbnail_id", small_id.to_string().as_str())
+                    .add_tree_prop(
+                        file.tree_id,
+                        "thumbnail_id",
+                        small_id.to_string().as_str(),
+                        file.added_by,
+                    )
                     .await?;
 
                 info!("Resized images for file {}, tree {}", file_id, file.tree_id);

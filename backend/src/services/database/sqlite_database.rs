@@ -101,11 +101,17 @@ impl SqliteDatabase {
         }
     }
 
-    async fn log_tree_changes(&self, old: &TreeRecord, new: &TreeRecord) -> Result<()> {
+    async fn log_tree_changes(
+        &self,
+        old: &TreeRecord,
+        new: &TreeRecord,
+        user_id: u64,
+    ) -> Result<()> {
         debug!("Logging changes for tree {}.", new.id);
 
         if old.species != new.species {
-            self.add_tree_prop(new.id, "species", &new.species).await?;
+            self.add_tree_prop(new.id, "species", &new.species, user_id)
+                .await?;
         }
 
         if old.osm_id != new.osm_id {
@@ -114,21 +120,23 @@ impl SqliteDatabase {
                 None => "".to_string(),
             };
 
-            self.add_tree_prop(new.id, "osm_id", &value).await?;
+            self.add_tree_prop(new.id, "osm_id", &value, user_id)
+                .await?;
         }
 
         if old.lat != new.lat {
-            self.add_tree_prop(new.id, "lat", &new.lat.to_string())
+            self.add_tree_prop(new.id, "lat", &new.lat.to_string(), user_id)
                 .await?;
         }
 
         if old.lon != new.lon {
-            self.add_tree_prop(new.id, "lon", &new.lon.to_string())
+            self.add_tree_prop(new.id, "lon", &new.lon.to_string(), user_id)
                 .await?;
         }
 
         if old.species != new.species {
-            self.add_tree_prop(new.id, "species", &new.species).await?;
+            self.add_tree_prop(new.id, "species", &new.species, user_id)
+                .await?;
         }
 
         if old.notes != new.notes {
@@ -137,7 +145,7 @@ impl SqliteDatabase {
                 None => "".to_string(),
             };
 
-            self.add_tree_prop(new.id, "notes", &value).await?;
+            self.add_tree_prop(new.id, "notes", &value, user_id).await?;
         }
 
         if old.height != new.height {
@@ -146,7 +154,8 @@ impl SqliteDatabase {
                 None => "".to_string(),
             };
 
-            self.add_tree_prop(new.id, "height", &value).await?;
+            self.add_tree_prop(new.id, "height", &value, user_id)
+                .await?;
         }
 
         if old.circumference != new.circumference {
@@ -155,7 +164,8 @@ impl SqliteDatabase {
                 None => "".to_string(),
             };
 
-            self.add_tree_prop(new.id, "circumference", &value).await?;
+            self.add_tree_prop(new.id, "circumference", &value, user_id)
+                .await?;
         }
 
         if old.diameter != new.diameter {
@@ -164,11 +174,13 @@ impl SqliteDatabase {
                 None => "".to_string(),
             };
 
-            self.add_tree_prop(new.id, "diameter", &value).await?;
+            self.add_tree_prop(new.id, "diameter", &value, user_id)
+                .await?;
         }
 
         if old.state != new.state {
-            self.add_tree_prop(new.id, "state", &new.state).await?;
+            self.add_tree_prop(new.id, "state", &new.state, user_id)
+                .await?;
         }
 
         if old.thumbnail_id != new.thumbnail_id {
@@ -177,7 +189,8 @@ impl SqliteDatabase {
                 None => "".to_string(),
             };
 
-            self.add_tree_prop(new.id, "thumbnail_id", &value).await?;
+            self.add_tree_prop(new.id, "thumbnail_id", &value, user_id)
+                .await?;
         }
 
         Ok(())
@@ -369,7 +382,7 @@ impl DatabaseInterface for SqliteDatabase {
         Ok(())
     }
 
-    async fn update_tree(&self, tree: &TreeRecord) -> Result<()> {
+    async fn update_tree(&self, tree: &TreeRecord, user_id: u64) -> Result<()> {
         let tree = tree.clone();
 
         let old = match self.get_tree(tree.id).await? {
@@ -397,7 +410,7 @@ impl DatabaseInterface for SqliteDatabase {
             Ok(())
         }).await?;
 
-        self.log_tree_changes(&old, &new).await?;
+        self.log_tree_changes(&old, &new, user_id).await?;
 
         Ok(())
     }
@@ -700,14 +713,20 @@ impl DatabaseInterface for SqliteDatabase {
      *
      * Returns new property id.
      */
-    async fn add_tree_prop(&self, tree_id: u64, name: &str, value: &str) -> Result<u64> {
+    async fn add_tree_prop(
+        &self,
+        tree_id: u64,
+        name: &str,
+        value: &str,
+        user_id: u64,
+    ) -> Result<u64> {
         let id = get_unique_id()?;
         let added_at = crate::utils::get_timestamp();
         let name = name.to_string();
         let value = value.to_string();
 
         self.pool.conn(move |conn| {
-            match conn.execute("INSERT INTO trees_props (id, tree_id, added_at, name, value) VALUES (?, ?, ?, ?, ?)", (id, tree_id, added_at, name, value)) {
+            match conn.execute("INSERT INTO trees_props (id, tree_id, added_at, added_by, name, value) VALUES (?, ?, ?, ?, ?, ?)", (id, tree_id, added_at, user_id, name, value)) {
                 Ok(_) => debug!("Property {} added to tree {}.", id, tree_id),
 
                 Err(e) => {

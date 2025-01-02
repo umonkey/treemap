@@ -60,7 +60,7 @@ impl UpdateTreeHandler {
 
         info!("Updating tree: {:?}", new);
 
-        self.db.update_tree(&new).await?;
+        self.db.update_tree(&new, req.user_id).await?;
 
         if new.address.is_none() {
             self.schedule_address_update(new.id).await?;

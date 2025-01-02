@@ -16,7 +16,7 @@
 
 use crate::services::*;
 use crate::types::*;
-use crate::utils::{get_timestamp, get_unique_id};
+use crate::utils::{get_bot_user_id, get_timestamp, get_unique_id};
 use log::{error, info};
 use std::sync::Arc;
 
@@ -26,6 +26,7 @@ pub struct OsmReaderService {
     db: Arc<dyn DatabaseInterface>,
     overpass_client: Arc<OverpassClient>,
     queue: Arc<QueueService>,
+    user_id: u64,
 }
 
 impl OsmReaderService {
@@ -112,10 +113,13 @@ impl OsmReaderService {
         };
 
         self.db
-            .update_tree(&TreeRecord {
-                osm_id: Some(node.id),
-                ..closest.clone()
-            })
+            .update_tree(
+                &TreeRecord {
+                    osm_id: Some(node.id),
+                    ..closest.clone()
+                },
+                self.user_id,
+            )
             .await?;
 
         info!("Tree {} linked to OSM node {}.", closest.id, node.id);
@@ -178,11 +182,13 @@ impl Locatable for OsmReaderService {
         let db = locator.get::<PreferredDatabase>()?.driver();
         let overpass_client = locator.get::<OverpassClient>()?;
         let queue = locator.get::<QueueService>()?;
+        let user_id = get_bot_user_id();
 
         Ok(Self {
             db,
             overpass_client,
             queue,
+            user_id,
         })
     }
 }

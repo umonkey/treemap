@@ -1,11 +1,13 @@
 use crate::services::*;
 use crate::types::*;
+use crate::utils::*;
 use log::info;
 use std::sync::Arc;
 
 pub struct UpdateTreeAddressHandler {
     db: Arc<dyn DatabaseInterface>,
     nominatim: Arc<NominatimService>,
+    user_id: u64,
 }
 
 impl UpdateTreeAddressHandler {
@@ -15,10 +17,13 @@ impl UpdateTreeAddressHandler {
                 info!("Updating tree {} address to: {}", tree_id, address);
 
                 self.db
-                    .update_tree(&TreeRecord {
-                        address: Some(address),
-                        ..tree.clone()
-                    })
+                    .update_tree(
+                        &TreeRecord {
+                            address: Some(address),
+                            ..tree.clone()
+                        },
+                        self.user_id,
+                    )
                     .await?;
             };
         }
@@ -31,6 +36,11 @@ impl Locatable for UpdateTreeAddressHandler {
     fn create(locator: &Locator) -> Result<Self> {
         let db = locator.get::<PreferredDatabase>()?.driver();
         let nominatim = locator.get::<NominatimService>()?;
-        Ok(Self { db, nominatim })
+        let user_id = get_bot_user_id();
+        Ok(Self {
+            db,
+            nominatim,
+            user_id,
+        })
     }
 }
