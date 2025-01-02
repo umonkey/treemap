@@ -48,7 +48,12 @@ impl TreeRepository {
         self.log_changes(&old, tree, user_id).await
     }
 
-    pub async fn update_thumbnail(&self, tree_id: u64, thumbnail_id: u64) -> Result<()> {
+    pub async fn update_thumbnail(
+        &self,
+        tree_id: u64,
+        thumbnail_id: u64,
+        user_id: u64,
+    ) -> Result<()> {
         let query = UpdateQuery {
             table_name: TABLE.to_string(),
             conditions: Attributes::from(&[("id".to_string(), Value::from(tree_id as i64))]),
@@ -61,7 +66,10 @@ impl TreeRepository {
         self.db.update(query).await.map_err(|e| {
             error!("Error updating a tree: {}", e);
             e
-        })
+        })?;
+
+        self.add_tree_prop(tree_id, "thumbnail_id", &thumbnail_id.to_string(), user_id)
+            .await
     }
 
     async fn log_changes(&self, old: &TreeRecord, new: &TreeRecord, user_id: u64) -> Result<()> {

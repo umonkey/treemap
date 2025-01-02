@@ -10,7 +10,7 @@
 use crate::common::database::queries::*;
 use crate::services::*;
 use crate::types::*;
-use crate::utils::{get_sqlite_path, get_timestamp, get_unique_id};
+use crate::utils::{get_sqlite_path, get_timestamp};
 use async_sqlite::{JournalMode, Pool, PoolBuilder};
 use async_trait::async_trait;
 use log::{debug, error, info};
@@ -580,39 +580,6 @@ impl DatabaseInterface for SqliteDatabase {
         Ok(tree)
     }
 
-    /**
-     * Record a change in tree properties.
-     *
-     * Returns new property id.
-     */
-    async fn add_tree_prop(
-        &self,
-        tree_id: u64,
-        name: &str,
-        value: &str,
-        user_id: u64,
-    ) -> Result<u64> {
-        let id = get_unique_id()?;
-        let added_at = crate::utils::get_timestamp();
-        let name = name.to_string();
-        let value = value.to_string();
-
-        self.pool.conn(move |conn| {
-            match conn.execute("INSERT INTO trees_props (id, tree_id, added_at, added_by, name, value) VALUES (?, ?, ?, ?, ?, ?)", (id, tree_id, added_at, user_id, name, value)) {
-                Ok(_) => debug!("Property {} added to tree {}.", id, tree_id),
-
-                Err(e) => {
-                    error!("Error adding property to tree: {}", e);
-                    return Err(e);
-                }
-            }
-
-            Ok(conn.last_insert_rowid())
-        }).await?;
-
-        Ok(id)
-    }
-
     async fn find_user_by_email(&self, email: &str) -> Result<Option<UserRecord>> {
         let email = email.to_string();
 
@@ -911,29 +878,6 @@ impl DatabaseInterface for SqliteDatabase {
                 };
 
                 debug!("File {} updated.", id);
-                Ok(())
-            })
-            .await?;
-
-        Ok(())
-    }
-
-    async fn update_tree_thumbnail(&self, tree_id: u64, file_id: u64) -> Result<()> {
-        self.pool
-            .conn(move |conn| {
-                match conn.execute(
-                    "UPDATE trees SET thumbnail_id = ? WHERE id = ?",
-                    (file_id, tree_id),
-                ) {
-                    Ok(_) => (),
-
-                    Err(e) => {
-                        error!("Error updating a tree thumbnail: {}", e);
-                        return Err(e);
-                    }
-                };
-
-                debug!("Thumbnail for tree {} updated.", tree_id);
                 Ok(())
             })
             .await?;
@@ -1479,6 +1423,7 @@ impl Clone for SqliteDatabase {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::utils::get_unique_id;
     use env_logger;
     use std::env;
 

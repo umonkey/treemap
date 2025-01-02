@@ -29,10 +29,6 @@ pub trait DatabaseInterface: Send + Sync {
         distance: f64,
     ) -> Result<Vec<TreeRecord>>;
 
-    // Record a new property value.  Returns the assigned prop id.
-    async fn add_tree_prop(&self, id: u64, name: &str, value: &str, user_id: u64) -> Result<u64>;
-    async fn update_tree_thumbnail(&self, tree_id: u64, file_id: u64) -> Result<()>;
-
     async fn find_user_by_email(&self, email: &str) -> Result<Option<UserRecord>>;
     async fn add_user(&self, user: &UserRecord) -> Result<()>;
     async fn get_user(&self, id: u64) -> Result<Option<UserRecord>>;

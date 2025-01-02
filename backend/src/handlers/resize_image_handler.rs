@@ -1,3 +1,4 @@
+use crate::common::database::repositories::*;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::get_unique_id;
@@ -9,6 +10,7 @@ const LARGE_SIZE: u32 = 2000;
 
 pub struct ResizeImageHandler {
     db: Arc<dyn DatabaseInterface>,
+    trees: Arc<TreeRepository>,
     storage: Arc<dyn FileStorageInterface>,
     thumbnailer: Arc<ThumbnailerService>,
 }
@@ -36,17 +38,9 @@ impl ResizeImageHandler {
                 };
 
                 self.db.update_file(&updated).await?;
-                self.db
-                    .update_tree_thumbnail(file.tree_id, small_id)
-                    .await?;
 
-                self.db
-                    .add_tree_prop(
-                        file.tree_id,
-                        "thumbnail_id",
-                        small_id.to_string().as_str(),
-                        file.added_by,
-                    )
+                self.trees
+                    .update_thumbnail(file.tree_id, small_id, file.added_by)
                     .await?;
 
                 info!("Resized images for file {}, tree {}", file_id, file.tree_id);
@@ -84,11 +78,13 @@ impl ResizeImageHandler {
 impl Locatable for ResizeImageHandler {
     fn create(locator: &Locator) -> Result<Self> {
         let db = locator.get::<PreferredDatabase>()?.driver();
+        let trees = locator.get::<TreeRepository>()?;
         let thumbnailer = locator.get::<ThumbnailerService>()?;
         let storage = locator.get::<FileStorageSelector>()?.driver();
 
         Ok(Self {
             db,
+            trees,
             thumbnailer,
             storage,
         })
