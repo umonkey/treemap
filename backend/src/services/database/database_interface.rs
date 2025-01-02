@@ -9,6 +9,7 @@ pub trait DatabaseInterface: Send + Sync {
     async fn get_records(&self, query: SelectQuery) -> Result<Vec<Attributes>>;
     async fn add_record(&self, query: InsertQuery) -> Result<()>;
     async fn update(&self, query: UpdateQuery) -> Result<()>;
+    async fn delete(&self, query: DeleteQuery) -> Result<()>;
 
     async fn add_tree(&self, tree: &TreeRecord) -> Result<()>;
     async fn update_tree(&self, tree: &TreeRecord) -> Result<()>;

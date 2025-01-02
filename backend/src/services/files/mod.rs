@@ -27,8 +27,7 @@ impl FileService {
             tree_id: req.tree_id,
             added_at: get_timestamp(),
             added_by: req.user_id,
-            small_id: 0,
-            large_id: 0,
+            ..Default::default()
         };
 
         self.db.add_file(&file_record).await?;

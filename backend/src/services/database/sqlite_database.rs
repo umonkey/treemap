@@ -328,6 +328,27 @@ impl DatabaseInterface for SqliteDatabase {
         Ok(())
     }
 
+    async fn delete(&self, query: DeleteQuery) -> Result<()> {
+        self.pool
+            .conn(move |conn| {
+                let (sql, params) = query.build();
+
+                match conn.execute(sql.as_str(), params_from_iter(params)) {
+                    Ok(_) => (),
+
+                    Err(e) => {
+                        error!("Error deleting record: {}", e);
+                        return Err(e);
+                    }
+                };
+
+                Ok(())
+            })
+            .await?;
+
+        Ok(())
+    }
+
     async fn add_tree(&self, tree: &TreeRecord) -> Result<()> {
         let tree = tree.clone();
 
@@ -916,7 +937,7 @@ impl DatabaseInterface for SqliteDatabase {
 
     async fn get_file(&self, id: u64) -> Result<Option<FileRecord>> {
         let file = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, tree_id, added_at, added_by, small_id, large_id FROM files WHERE id = ?") {
+            let mut stmt = match conn.prepare("SELECT id, tree_id, added_at, added_by, deleted_at, deleted_by, small_id, large_id FROM files WHERE id = ?") {
                 Ok(value) => value,
 
                 Err(e) => {
@@ -933,8 +954,10 @@ impl DatabaseInterface for SqliteDatabase {
                     tree_id: row.get(1)?,
                     added_at: row.get(2)?,
                     added_by: row.get(3)?,
-                    small_id: row.get(4)?,
-                    large_id: row.get(5)?,
+                    deleted_at: row.get(4)?,
+                    deleted_by: row.get(5)?,
+                    small_id: row.get(6)?,
+                    large_id: row.get(7)?,
                 }));
             }
 
@@ -946,7 +969,7 @@ impl DatabaseInterface for SqliteDatabase {
 
     async fn find_files_by_tree(&self, tree_id: u64) -> Result<Vec<FileRecord>> {
         let files = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, tree_id, added_at, added_by, small_id, large_id FROM files WHERE tree_id = ? AND small_id <> 0 AND large_id <> 0 ORDER BY id DESC") {
+            let mut stmt = match conn.prepare("SELECT id, tree_id, added_at, added_by, deleted_at, deleted_by, small_id, large_id FROM files WHERE tree_id = ? AND small_id <> 0 AND large_id <> 0 ORDER BY id DESC") {
                 Ok(value) => value,
 
                 Err(e) => {
@@ -964,8 +987,10 @@ impl DatabaseInterface for SqliteDatabase {
                     tree_id: row.get(1)?,
                     added_at: row.get(2)?,
                     added_by: row.get(3)?,
-                    small_id: row.get(4)?,
-                    large_id: row.get(5)?,
+                    deleted_at: row.get(4)?,
+                    deleted_by: row.get(5)?,
+                    small_id: row.get(6)?,
+                    large_id: row.get(7)?,
                 });
             }
 
@@ -1738,22 +1763,19 @@ mod tests {
 
         db.add_file(&FileRecord {
             id: 1,
-            added_at: 0,
-            added_by: 0,
             tree_id: 2,
             small_id: 3,
-            large_id: 0,
+            ..Default::default()
         })
         .await
         .expect("Error adding file.");
 
         db.add_file(&FileRecord {
             id: 2,
-            added_at: 0,
-            added_by: 0,
             tree_id: 2,
             small_id: 3,
             large_id: 5,
+            ..Default::default()
         })
         .await
         .expect("Error adding file.");

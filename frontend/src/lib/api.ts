@@ -202,6 +202,15 @@ export class ApiClient {
 		});
 	}
 
+	public async deleteFile(id: string): Promise<Response<void>> {
+		return await this.request('DELETE', `v1/files/${id}`, {
+			headers: {
+				'Content-Type': 'application/json',
+				...this.getAuthHeaders()
+			}
+		});
+	}
+
 	/**
 	 * Send a raw request to the API.
 	 *

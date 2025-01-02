@@ -20,8 +20,14 @@
 		}
 	};
 
-	const handleDelete = (id: string) => {
-		console.debug(`Deleting file ${id}.`);
+	const handleDelete = async (id: string) => {
+		const res = await apiClient.deleteFile(id);
+
+		if (res.status >= 200 && res.status < 300) {
+			toast.push('File deleted.');
+		} else {
+			toast.push('Error deleting file.');
+		}
 	};
 </script>
 
