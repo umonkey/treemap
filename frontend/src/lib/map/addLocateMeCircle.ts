@@ -5,7 +5,7 @@
 import L from 'leaflet';
 import { locationStore } from '$lib/stores/locationStore';
 
-export const addMyLocation = (map: L.Map) => {
+export const addLocateMeCircle = (map: L.Map) => {
 	console.debug('[map] Adding my location display.');
 
 	let circle = null;

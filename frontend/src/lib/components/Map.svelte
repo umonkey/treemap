@@ -6,7 +6,7 @@
 	import { addTreeButton } from '$lib/map/addTreeButton';
 	import { addLocateMeButton } from '$lib/map/addLocateMeButton';
 	import { addResizeObserver } from '$lib/map/resizeObserver';
-	import { addMyLocation } from '$lib/map/myLocation';
+	import { addLocateMeCircle } from '$lib/map/addLocateMeCircle';
 	import { Markers } from '$lib/map/markers';
 	import { onMount, onDestroy } from 'svelte';
 	import { baseLayer } from '$lib/stores/mapLayerStore';
@@ -39,7 +39,7 @@
 
 		addLayerSelection(map);
 		addResizeObserver(map);
-		addMyLocation(map);
+		addLocateMeCircle(map);
 		addLocateMeButton(map);
 
 		if (canAdd) {
