@@ -1,6 +1,7 @@
 //! This is how a single tree is stored in the database.
 
 use crate::types::{Attributes, Result};
+use rusqlite::types::Value;
 use serde::Serialize;
 
 #[derive(Clone, Debug, Default, Serialize)]
@@ -64,5 +65,41 @@ impl TreeRecord {
             year: attributes.get_i64("year")?,
             address: attributes.get_string("address")?,
         })
+    }
+
+    pub fn to_attributes(&self) -> Attributes {
+        Attributes::from(&[
+            ("id".to_string(), Value::from(self.id as i64)),
+            (
+                "osm_id".to_string(),
+                match self.osm_id {
+                    Some(value) => Value::from(value as i64),
+                    None => Value::Null,
+                },
+            ),
+            ("lat".to_string(), Value::from(self.lat)),
+            ("lon".to_string(), Value::from(self.lon)),
+            ("species".to_string(), Value::from(self.species.clone())),
+            ("notes".to_string(), Value::from(self.notes.clone())),
+            ("height".to_string(), Value::from(self.height)),
+            ("circumference".to_string(), Value::from(self.circumference)),
+            ("diameter".to_string(), Value::from(self.diameter)),
+            ("state".to_string(), Value::from(self.state.clone())),
+            ("added_at".to_string(), Value::from(self.added_at as i64)),
+            (
+                "updated_at".to_string(),
+                Value::from(self.updated_at as i64),
+            ),
+            ("added_by".to_string(), Value::from(self.added_by as i64)),
+            (
+                "thumbnail_id".to_string(),
+                match self.thumbnail_id {
+                    Some(value) => Value::from(value as i64),
+                    None => Value::Null,
+                },
+            ),
+            ("year".to_string(), Value::from(self.year)),
+            ("address".to_string(), Value::from(self.address.clone())),
+        ])
     }
 }

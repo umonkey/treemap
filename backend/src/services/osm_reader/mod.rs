@@ -14,6 +14,7 @@
 //! 3. If not found, find a tree within 10 meters and link them.
 //! 4. If a local tree is found, update it.
 
+use crate::common::database::repositories::*;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::{get_bot_user_id, get_timestamp, get_unique_id};
@@ -24,6 +25,7 @@ const DEFAULT_STATE: &str = "healthy";
 
 pub struct OsmReaderService {
     db: Arc<dyn DatabaseInterface>,
+    trees: Arc<TreeRepository>,
     overpass_client: Arc<OverpassClient>,
     queue: Arc<QueueService>,
     user_id: u64,
@@ -112,8 +114,8 @@ impl OsmReaderService {
             None => return Ok(false),
         };
 
-        self.db
-            .update_tree(
+        self.trees
+            .update(
                 &TreeRecord {
                     osm_id: Some(node.id),
                     ..closest.clone()
@@ -180,12 +182,14 @@ impl OsmReaderService {
 impl Locatable for OsmReaderService {
     fn create(locator: &Locator) -> Result<Self> {
         let db = locator.get::<PreferredDatabase>()?.driver();
+        let trees = locator.get::<TreeRepository>()?;
         let overpass_client = locator.get::<OverpassClient>()?;
         let queue = locator.get::<QueueService>()?;
         let user_id = get_bot_user_id();
 
         Ok(Self {
             db,
+            trees,
             overpass_client,
             queue,
             user_id,

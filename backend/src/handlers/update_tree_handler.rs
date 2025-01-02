@@ -1,3 +1,4 @@
+use crate::common::database::repositories::*;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::{fix_circumference, get_timestamp};
@@ -6,6 +7,7 @@ use std::sync::Arc;
 
 pub struct UpdateTreeHandler {
     db: Arc<dyn DatabaseInterface>,
+    trees: Arc<TreeRepository>,
     queue: Arc<QueueService>,
 }
 
@@ -60,7 +62,7 @@ impl UpdateTreeHandler {
 
         info!("Updating tree: {:?}", new);
 
-        self.db.update_tree(&new, req.user_id).await?;
+        self.trees.update(&new, req.user_id).await?;
 
         if new.address.is_none() {
             self.schedule_address_update(new.id).await?;
@@ -82,7 +84,8 @@ impl UpdateTreeHandler {
 impl Locatable for UpdateTreeHandler {
     fn create(locator: &Locator) -> Result<Self> {
         let db = locator.get::<PreferredDatabase>()?.driver();
+        let trees = locator.get::<TreeRepository>()?;
         let queue = locator.get::<QueueService>()?;
-        Ok(Self { db, queue })
+        Ok(Self { db, trees, queue })
     }
 }

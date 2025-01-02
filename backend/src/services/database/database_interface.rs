@@ -12,7 +12,6 @@ pub trait DatabaseInterface: Send + Sync {
     async fn delete(&self, query: DeleteQuery) -> Result<()>;
 
     async fn add_tree(&self, tree: &TreeRecord) -> Result<()>;
-    async fn update_tree(&self, tree: &TreeRecord, user_id: u64) -> Result<()>;
     async fn move_tree(&self, id: u64, lat: f64, lon: f64) -> Result<()>;
     async fn get_trees(&self, bounds: Bounds) -> Result<Vec<TreeRecord>>;
     async fn get_trees_by_ids(&self, ids: &[u64]) -> Result<Vec<TreeRecord>>;
