@@ -21,9 +21,7 @@
 
 <div>
 	{#if isPWA}
-		<button {disabled} type="button" class="button" onclick={onClick}
-			>{locale.photoTake()}</button
-		>
+		<button {disabled} type="button" class="button" onclick={onClick}>{locale.photoTake()}</button>
 		<input
 			type="file"
 			accept="image/jpeg"

@@ -4,6 +4,7 @@
 	import { formatDate } from '$lib/utils/strings';
 	import { getUser } from '$lib/stores/userStore';
 	import { get } from 'svelte/store';
+	import ExpandIcon from '$lib/icons/ExpandIcon.svelte';
 
 	export let files: ITreeFile[] = [];
 
@@ -21,6 +22,11 @@
 		const date = formatDate(file.added_at);
 		return `${date} by ${user.name}`;
 	};
+
+	const onExpand = (file: ITreeFile) => {
+		const url = routes.file(file.id);
+		window.open(url, '_blank');
+	};
 </script>
 
 <div class="gallery">
@@ -32,6 +38,9 @@
 				{#if file.added_at}
 					<div class="date">{added_at(file)}</div>
 				{/if}
+				<button class="expand" onclick={() => onExpand(file)}>
+					<ExpandIcon />
+				</button>
 			</div>
 		{:else}
 			<div>
@@ -109,5 +118,18 @@
 			overflow: hidden;
 			text-overflow: ellipsis;
 		}
+	}
+
+	.expand {
+		width: 30px;
+		height: 30px;
+		border: none;
+		padding: 0;
+		position: absolute;
+		bottom: var(--gap);
+		right: var(--gap);
+		cursor: pointer;
+		background-color: var(--form-background);
+		color: var(--text-color);
 	}
 </style>
