@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { fileStore, storedFiles, isUploading, uploadMessage } from '$lib/stores/fileStore';
 	import { startUpload } from '$lib/utils/fileUploader';
+	import { locale } from '$lib/locale';
 
 	import AuthWrapper from '$lib/components/auth/AuthWrapper.svelte';
 	import Header from '$lib/components/tree/Header.svelte';
@@ -32,15 +33,15 @@
 </script>
 
 <svelte:head>
-	<title>Upload tree photos</title>
+	<title>{locale.photoTitle()}</title>
 </svelte:head>
 
-<Header title="Upload photos" />
+<Header title={locale.photoTitle()} />
 
 <div class="padded">
 	<AuthWrapper>
 		<div class="form">
-			<p>Here you can upload multiple photos of this tree.</p>
+			<p>{locale.photoIntro()}</p>
 
 			{#if $uploadMessage}
 				<p>{$uploadMessage}</p>
@@ -52,7 +53,7 @@
 					disabled={!($storedFiles.length > 0 && !$isUploading)}
 					class="button"
 					type="button"
-					onclick={() => startUpload(treeId)}>Upload</button
+					onclick={() => startUpload(treeId)}>{locale.photoUpload()}</button
 				>
 			</div>
 

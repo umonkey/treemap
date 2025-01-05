@@ -346,6 +346,26 @@ class EnglishLocale {
 	public helpCircumference(): string {
 		return 'https://myga.am/app/measuring-circumference.html';
 	}
+
+	public photoTake(): string {
+		return 'Take a photo';
+	}
+
+	public photoUpload(): string {
+		return 'Upload files';
+	}
+
+	public photoSelect(): string {
+		return 'Select files';
+	}
+
+	public photoIntro(): string {
+		return 'Here you can upload multiple photos of this tree.';
+	}
+
+	public photoTitle(): string {
+		return 'Upload photos';
+	}
 }
 
 class RussianLocale extends EnglishLocale {
@@ -691,6 +711,26 @@ class RussianLocale extends EnglishLocale {
 
 	public helpCircumference(): string {
 		return 'https://myga.am/ru/app/measuring-circumference.html';
+	}
+
+	public photoTake(): string {
+		return 'Сделать фото';
+	}
+
+	public photoUpload(): string {
+		return 'Загрузить файлы';
+	}
+
+	public photoSelect(): string {
+		return 'Выбрать файлы';
+	}
+
+	public photoIntro(): string {
+		return 'Здесь можно загрузить фотографии дерева.';
+	}
+
+	public photoTitle(): string {
+		return 'Загрузка фотографий';
 	}
 }
 
