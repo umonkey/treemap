@@ -22,7 +22,7 @@
 <div>
 	{#if isPWA}
 		<button {disabled} type="button" class="button" onclick={onClick}
-			>{locale.photoTake()}photo</button
+			>{locale.photoTake()}</button
 		>
 		<input
 			type="file"
