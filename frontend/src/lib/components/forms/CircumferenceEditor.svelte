@@ -8,7 +8,7 @@
 
 	const { tree, onClose } = $props();
 
-	let value = $state<number>((tree.circumference ?? 0) * 100);
+	let value = $state<number>(Math.round((tree.circumference ?? 0) * 100));
 
 	const onSave = async () => {
 		const meters = value / 100;
@@ -18,11 +18,11 @@
 			addTrees([
 				{
 					...tree,
-					circumference: value / 100
+					circumference: meters
 				}
 			]);
 
-			toast.push('Trunk circumference updated.');
+			toast.push(locale.measureTrunkUpdated());
 
 			onClose();
 		} else {

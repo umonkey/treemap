@@ -21,7 +21,7 @@
 				}
 			]);
 
-			toast.push('Height updated.');
+			toast.push(locale.measureHeightUpdated());
 
 			onClose();
 		} else {

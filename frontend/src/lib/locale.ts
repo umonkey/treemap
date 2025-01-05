@@ -379,16 +379,32 @@ class EnglishLocale {
 		return 'Enter tree height in meters:';
 	}
 
+	public measureHeightUpdated(): string {
+		return 'Height updated.';
+	}
+
 	public measureCanopy(): string {
 		return 'Enter canopy diameter in meters:';
+	}
+
+	public measureCanopyUpdated(): string {
+		return 'Canopy diameter updated.';
 	}
 
 	public measureTrunk(): string {
 		return 'Enter trunk circumference in centimeters:';
 	}
 
+	public measureTrunkUpdated(): string {
+		return 'Trunk circumference updated.';
+	}
+
 	public measureState(): string {
 		return 'Select tree state:';
+	}
+
+	public measureStateUpdated(): string {
+		return 'Tree state updated.';
 	}
 
 	public meters(value: string): string {
@@ -777,16 +793,32 @@ class RussianLocale extends EnglishLocale {
 		return 'Введите высоту дерева в метрах:';
 	}
 
+	public measureHeightUpdated(): string {
+		return 'Высота обновлена.';
+	}
+
 	public measureCanopy(): string {
 		return 'Введите диаметр кроны в метрах:';
+	}
+
+	public measureCanopyUpdated(): string {
+		return 'Диаметр кроны обновлён.';
 	}
 
 	public measureTrunk(): string {
 		return 'Введите обхват ствола в сантиметрах:';
 	}
 
+	public measureTrunkUpdated(): string {
+		return 'Обхват ствола обновлён.';
+	}
+
 	public measureState(): string {
 		return 'Укажите состояние дерева:';
+	}
+
+	public measureStateUpdated(): string {
+		return 'Состояние дерева обновлено.';
 	}
 
 	public meters(value: string): string {

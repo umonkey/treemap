@@ -21,7 +21,7 @@
 				}
 			]);
 
-			toast.push('Tree state updated.');
+			toast.push(locale.measureStateUpdated());
 
 			onClose();
 		} else {

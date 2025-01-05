@@ -21,7 +21,7 @@
 				}
 			]);
 
-			toast.push('Canopy diameter updated.');
+			toast.push(locale.measureCanopyUpdated());
 
 			onClose();
 		} else {
