@@ -65,12 +65,12 @@
 			margin: 0;
 			line-height: 38px;
 		}
-	}
 
-	:global(svg) {
-		width: 30px;
-		height: 30px;
-		display: block;
+		:global(svg) {
+			width: 30px;
+			height: 30px;
+			display: block;
+		}
 	}
 
 	a.icon {

@@ -37,6 +37,12 @@
 			height: 20px;
 			color: var(--icon-color-secondary);
 			text-align: center;
+
+			a {
+				display: block;
+				width: 100%;
+				height: 100%;
+			}
 		}
 
 		.sep {

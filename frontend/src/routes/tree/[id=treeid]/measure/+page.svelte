@@ -42,7 +42,7 @@
 
 <Header title={locale.measureTitle()} />
 
-<div class="padded">
+<div class="padded measure">
 	<AuthWrapper>
 		{#if tab === 'height'}
 			<HeightEditor {tree} {onClose} />
@@ -96,6 +96,8 @@
 			display: flex;
 			flex-direction: row;
 			gap: var(--gap);
+			color: var(--text-color);
+			align-items: center;
 		}
 
 		.label {
@@ -103,15 +105,10 @@
 			flex-shrink: 0;
 		}
 
-		:global(svg) {
-			width: 30px;
-			height: 30px;
-			display: block;
-			color: var(--text-color-inactive);
-		}
-
 		a {
 			color: inherit;
+			display: block;
+			line-height: 0;
 		}
 
 		button {
@@ -120,6 +117,13 @@
 			cursor: pointer;
 			padding: 0;
 			margin: 0;
+			color: inherit;
+			display: block;
+		}
+
+		:global(svg) {
+			width: 30px;
+			height: 30px;
 		}
 	}
 </style>
