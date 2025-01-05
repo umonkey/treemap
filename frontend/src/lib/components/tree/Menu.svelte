@@ -2,6 +2,8 @@
 	import { menuState } from '$lib/stores/treeMenu';
 	import { routes } from '$lib/routes';
 	import { locale } from '$lib/locale';
+	import EditIcon from '$lib/icons/EditIcon.svelte';
+	import CameraIcon from '$lib/icons/CameraIcon.svelte';
 
 	export let id;
 
@@ -16,8 +18,10 @@
 	<div class="canvas" on:click={onCloseMenu}>
 		<div class="menu">
 			<ul>
-				<li><a href={routes.treeEdit(id)}>{locale.contextEditTree()}</a></li>
-				<li><a href={routes.treeUploadPhotos(id)}>{locale.contextUploadPhotos()}</a></li>
+				<li><EditIcon /> <a href={routes.treeEdit(id)}>{locale.contextEditTree()}</a></li>
+				<li>
+					<CameraIcon /> <a href={routes.treeUploadPhotos(id)}>{locale.contextUploadPhotos()}</a>
+				</li>
 			</ul>
 		</div>
 	</div>
@@ -53,13 +57,20 @@
 
 		li {
 			margin: 0;
-			padding: 0;
+			padding: 10px 20px;
+			display: flex;
+			flex-direction: row;
+			gap: var(--gap);
 		}
 
 		a {
 			display: block;
 			line-height: 20px;
-			padding: 10px 20px;
+		}
+
+		:global(svg) {
+			width: 20px;
+			height: 20px;
 		}
 	}
 </style>
