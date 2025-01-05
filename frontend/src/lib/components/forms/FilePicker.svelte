@@ -20,9 +20,9 @@
 <div>
 	<button {disabled} type="button" class="button" onclick={onClick}>Add photos</button>
 	{#if isPWA}
-		<input type="file" accept="image/jpeg" bind:this={input} onchange={onChange} multiple />
-	{:else}
 		<input type="file" accept="image/jpeg" bind:this={input} onchange={onChange} capture="environment" />
+	{:else}
+		<input type="file" accept="image/jpeg" bind:this={input} onchange={onChange} multiple />
 	{/if}
 </div>
 
