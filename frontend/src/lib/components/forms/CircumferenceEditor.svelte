@@ -31,7 +31,7 @@
 	};
 </script>
 
-<div class="form">
+<form class="form" onsubmit={onSave}>
 	<label for="control">{locale.measureTrunk()}</label>
 	<div class="row">
 		<!-- svelte-ignore a11y_autofocus -->
@@ -44,7 +44,7 @@
 		<Button label={locale.editSave()} type="submit" onClick={onSave} />
 		<Button label={locale.editCancel()} type="cancel" onClick={onClose} />
 	</div>
-</div>
+</form>
 
 <style>
 	.form {

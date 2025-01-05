@@ -30,11 +30,11 @@
 	};
 </script>
 
-<div class="form">
+<form class="form" onsubmit={onSave}>
 	<label for="control">{locale.measureCanopy()}</label>
 	<div class="row">
 		<!-- svelte-ignore a11y_autofocus -->
-		<input id="control" type="number" bind:value autofocus />
+		<input id="control" type="number" step="0.1" bind:value autofocus />
 		<a class="icon" href="https://myga.am/app/measuring-canopy.html" target="_blank"><HelpIcon /></a
 		>
 	</div>
@@ -42,7 +42,7 @@
 		<Button label={locale.editSave()} type="submit" onClick={onSave} />
 		<Button label={locale.editCancel()} type="cancel" onClick={onClose} />
 	</div>
-</div>
+</form>
 
 <style>
 	.form {

@@ -24,7 +24,7 @@ button:disabled {
 	flex-direction: row;
 }
 
-div.form {
+.form {
 	label {
 		display: block;
 		margin-top: calc(2 * var(--gap));
