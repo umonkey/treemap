@@ -9,7 +9,7 @@
 	const { data } = $props();
 	const searchQuery = data.searchQuery;
 
-	let selectedTree: ITree | undefined = $state();
+	let selectedTree = $state<ITree | undefined>(undefined);
 
 	const title = searchQuery ? locale.mapTitleQuery(searchQuery) : locale.mapTitle();
 
