@@ -267,6 +267,10 @@ class EnglishLocale {
 		return 'Upload photos';
 	}
 
+	public contextMeasure(): string {
+		return 'Measures';
+	}
+
 	public locationLabel(): string {
 		return 'Location';
 	}
@@ -365,6 +369,34 @@ class EnglishLocale {
 
 	public photoTitle(): string {
 		return 'Upload photos';
+	}
+
+	public measureTitle(): string {
+		return 'Measure tree';
+	}
+
+	public measureHeight(): string {
+		return 'Enter tree height in meters:';
+	}
+
+	public measureCanopy(): string {
+		return 'Enter canopy diameter in meters:';
+	}
+
+	public measureTrunk(): string {
+		return 'Enter trunk circumference in centimeters:';
+	}
+
+	public measureState(): string {
+		return 'Select tree state:';
+	}
+
+	public meters(value: string): string {
+		return `${value} m`;
+	}
+
+	public meters(value: string): string {
+		return `${value} cm`;
 	}
 }
 
@@ -633,6 +665,10 @@ class RussianLocale extends EnglishLocale {
 		return 'Добавить фотографии';
 	}
 
+	public contextMeasure(): string {
+		return 'Замеры';
+	}
+
 	public editTitle(): string {
 		return 'Редактор дерева';
 	}
@@ -731,6 +767,34 @@ class RussianLocale extends EnglishLocale {
 
 	public photoTitle(): string {
 		return 'Загрузка фотографий';
+	}
+
+	public measureTitle(): string {
+		return 'Замер дерева';
+	}
+
+	public measureHeight(): string {
+		return 'Введите высоту дерева в метрах:';
+	}
+
+	public measureCanopy(): string {
+		return 'Введите диаметр кроны в метрах:';
+	}
+
+	public measureTrunk(): string {
+		return 'Введите обхват ствола в сантиметрах:';
+	}
+
+	public measureState(): string {
+		return 'Укажите состояние дерева:';
+	}
+
+	public meters(value: string): string {
+		return `${value} м`;
+	}
+
+	public centimeters(value: string): string {
+		return `${value} см`;
 	}
 }
 

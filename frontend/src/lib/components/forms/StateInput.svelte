@@ -2,12 +2,12 @@
 	import HelpButton from '$lib/components/forms/HelpButton.svelte';
 	import { locale } from '$lib/locale';
 
-	export let value = '';
+	let { value = $bindable(''), label = true } = $props();
 </script>
 
 <div class="input">
 	<label>
-		<span>{locale.stateLabel()}</span>
+		{#if label}<span>{locale.stateLabel()}</span>{/if}
 		<div class="group">
 			<select bind:value>
 				<option value="">{locale.stateUnknown()}</option>

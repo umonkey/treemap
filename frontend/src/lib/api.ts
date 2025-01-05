@@ -144,6 +144,46 @@ export class ApiClient {
 		});
 	}
 
+	public async updateTreeHeight(id: string, value: number): Promise<Response<ITree>> {
+		return await this.request('PUT', `v1/trees/${id}/height`, {
+			body: JSON.stringify({ value }),
+			headers: {
+				'Content-Type': 'application/json',
+				...this.getAuthHeaders()
+			}
+		});
+	}
+
+	public async updateTreeDiameter(id: string, value: number): Promise<Response<ITree>> {
+		return await this.request('PUT', `v1/trees/${id}/diameter`, {
+			body: JSON.stringify({ value }),
+			headers: {
+				'Content-Type': 'application/json',
+				...this.getAuthHeaders()
+			}
+		});
+	}
+
+	public async updateTreeCircumference(id: string, value: number): Promise<Response<ITree>> {
+		return await this.request('PUT', `v1/trees/${id}/circumference`, {
+			body: JSON.stringify({ value }),
+			headers: {
+				'Content-Type': 'application/json',
+				...this.getAuthHeaders()
+			}
+		});
+	}
+
+	public async updateTreeState(id: string, value: string | null): Promise<Response<ITree>> {
+		return await this.request('PUT', `v1/trees/${id}/state`, {
+			body: JSON.stringify({ value }),
+			headers: {
+				'Content-Type': 'application/json',
+				...this.getAuthHeaders()
+			}
+		});
+	}
+
 	public async addComment(id: string, message: string): Promise<Response<void>> {
 		const headers: HeadersInit = {
 			'Content-Type': 'application/json',

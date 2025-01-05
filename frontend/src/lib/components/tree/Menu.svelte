@@ -4,6 +4,7 @@
 	import { locale } from '$lib/locale';
 	import EditIcon from '$lib/icons/EditIcon.svelte';
 	import CameraIcon from '$lib/icons/CameraIcon.svelte';
+	import AdjustIcon from '$lib/icons/AdjustIcon.svelte';
 
 	export let id;
 
@@ -21,6 +22,9 @@
 				<li><EditIcon /> <a href={routes.treeEdit(id)}>{locale.contextEditTree()}</a></li>
 				<li>
 					<CameraIcon /> <a href={routes.treeUploadPhotos(id)}>{locale.contextUploadPhotos()}</a>
+				</li>
+				<li>
+					<AdjustIcon /> <a href={routes.treeMeasure(id)}>{locale.contextMeasure()}</a>
 				</li>
 			</ul>
 		</div>

@@ -1,12 +1,5 @@
 import type { ITree } from '$lib/types';
-
-export const formatState = (value: string | null): string => {
-	if (!value) {
-		return 'unknown state';
-	}
-
-	return value;
-};
+import { locale } from '$lib/locale';
 
 export const formatYear = (value: number | null): string => {
 	if (!value) {
@@ -73,7 +66,7 @@ export const formatMeters = (value: number | undefined | null): string => {
 		return '???';
 	}
 
-	return `${value.toFixed(1)} m`;
+	return locale.meters(value.toFixed(1));
 };
 
 export const formatCentimeters = (value: number | undefined | null): string => {
@@ -81,7 +74,7 @@ export const formatCentimeters = (value: number | undefined | null): string => {
 		return '???';
 	}
 
-	return `${Math.round(value * 100)} cm`;
+	return locale.centimeters(Math.round(value * 100));
 };
 
 export const formatSpecies = (value: string | null): string => {
@@ -90,4 +83,26 @@ export const formatSpecies = (value: string | null): string => {
 	}
 
 	return value;
+};
+
+export const formatState = (value: string | null): string => {
+	if (!value || value === 'Unknown') {
+		return 'Unknown species';
+	}
+
+	if (value === 'healthy') {
+		return locale.stateHealthy();
+	} else if (value === 'sick') {
+		return locale.stateSick();
+	} else if (value === 'dead') {
+		return locale.stateDead();
+	} else if (value === 'gone') {
+		return locale.stateGone();
+	} else if (value === 'stomp') {
+		return locale.stateStomp();
+	} else if (value === 'deformed') {
+		return locale.stateDeformed();
+	} else {
+		return locale.stateUnknown();
+	}
 };
