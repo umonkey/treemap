@@ -395,7 +395,7 @@ class EnglishLocale {
 		return `${value} m`;
 	}
 
-	public meters(value: string): string {
+	public centimeters(value: string): string {
 		return `${value} cm`;
 	}
 }
