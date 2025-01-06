@@ -22,7 +22,7 @@
 <div class="home">
 	<h1>{locale.appTitle()}</h1>
 	<p>
-		Welcome to the community-drive map of trees in Yerevan, Armenia. Here we collect information
+		Welcome to the community-driven map of trees in Yerevan, Armenia. Here we collect information
 		about trees to protect them. We have <strong>{totalCount} trees</strong> in our database. You
 		can read about this app
 		<a href="https://github.com/KanachYerevan/kb/wiki/Mobile-Application" target="_blank"
