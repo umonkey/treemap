@@ -8,7 +8,7 @@ The data can be used for various purposes, such as urban planning, environmental
 The application is heavily inspired by the [New York City Street Tree Map](https://tree-map.nycgovparks.org/) (870k trees), which is a great example of how tree mapping can be done, and [Treezilla](https://www.treezilla.org/) (1M trees), which is a similar project in the UK.
 There might be other similar projects, but none that you can run easily and use in your own city, as far as I know.
 
-[About](https://github.com/umonkey/treemap/wiki/Home) - [Screenshots](https://github.com/umonkey/treemap/wiki/Screenshots) - [API Documentation](https://github.com/umonkey/treemap/wiki/API) - [TODO](https://github.com/umonkey/treemap/issues) - [Demo](https://treemap.umonkey.net/)
+[About](https://github.com/umonkey/treemap/wiki/Home) - [Screenshots](https://github.com/umonkey/treemap/wiki/Screenshots) - [API Documentation](https://github.com/umonkey/treemap/wiki/API) - [TODO](https://github.com/umonkey/treemap/issues) - [Demo](https://yerevan.treemaps.app/)
 
 
 ## Current status
@@ -52,7 +52,6 @@ Please see the [installation instructions](https://github.com/umonkey/treemap/wi
 ## Demo
 
 There is a fully working public installation at [Yerevan Tree Map](https://yerevan.treemaps.app/).
-The demo is running on a tiny server.
 
 
 ## Motivation
