@@ -54,6 +54,17 @@ Please see the [installation instructions](https://github.com/umonkey/treemap/wi
 There is a fully working public installation at [Yerevan Tree Map](https://yerevan.treemaps.app/).
 
 
+## Help wanted
+
+If you are an UI/UX designer, we would love some feedback on how to improve the user experience.
+The focus should be on people doing the mapping work in the fields: adding new trees, measuring existing ones, and so on.
+
+If you are into machine learning and computer vision, we would love some help on automating the process of initial mapping.
+Manually adding trees is the most time consuming thing so far.
+We would like to use video records of streets from a car mounted camera, to automatically detect trees and add them to the OSM map.
+We have [a ticket](https://github.com/umonkey/treemap/issues/61) for this, please join.
+
+
 ## Motivation
 
 I love growing trees and [crowdmapping](https://en.wikipedia.org/wiki/Crowdmapping).
