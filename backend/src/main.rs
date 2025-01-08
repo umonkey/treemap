@@ -14,6 +14,7 @@ fn usage() {
     println!();
     println!("Commands:");
     println!("  osm-pull              -- get new trees from OpenStreetMap");
+    println!("  osm-push              -- send updates to OpenStreetMap");
     println!("  queue-consumer        -- run the queue consumer daemon");
     println!("  serve                 -- run the web server");
     println!("  update-tree-address N -- update street address for a single tree");
@@ -46,6 +47,10 @@ async fn main() -> std::io::Result<()> {
         }
         "osm-pull" => {
             osm_pull_command().await;
+            return Ok(());
+        }
+        "osm-push" => {
+            osm_push_command().await;
             return Ok(());
         }
         "update-tree-address" => {

@@ -14,6 +14,20 @@ pub struct TreeRepository {
 }
 
 impl TreeRepository {
+    pub async fn all(&self) -> Result<Vec<TreeRecord>> {
+        let query = SelectQuery {
+            table_name: TABLE.to_string(),
+            ..Default::default()
+        };
+
+        let records = self.db.get_records(query).await?;
+
+        Ok(records
+            .iter()
+            .map(|props| TreeRecord::from_attributes(props).unwrap())
+            .collect())
+    }
+
     pub async fn get(&self, id: u64) -> Result<TreeRecord> {
         let query = SelectQuery {
             table_name: TABLE.to_string(),
@@ -99,6 +113,21 @@ impl TreeRepository {
 
         self.add_tree_prop(tree_id, "thumbnail_id", &thumbnail_id.to_string(), user_id)
             .await
+    }
+
+    pub async fn update_osm_id(&self, tree_id: u64, osm_id: u64) -> Result<()> {
+        let query = UpdateQuery {
+            table_name: TABLE.to_string(),
+            conditions: Attributes::from(&[("id".to_string(), Value::from(tree_id as i64))]),
+            attributes: Attributes::from(&[("osm_id".to_string(), Value::from(osm_id as i64))]),
+        };
+
+        self.db.update(query).await.map_err(|e| {
+            error!("Error updating a tree: {}", e);
+            e
+        })?;
+
+        Ok(())
     }
 
     async fn log_changes(&self, old: &TreeRecord, new: &TreeRecord, user_id: u64) -> Result<()> {

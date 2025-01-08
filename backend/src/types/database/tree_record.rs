@@ -102,4 +102,8 @@ impl TreeRecord {
             ("address".to_string(), Value::from(self.address.clone())),
         ])
     }
+
+    pub fn is_existing(&self) -> bool {
+        self.state != "gone" && self.state != "stomp"
+    }
 }

@@ -1,6 +1,7 @@
 /*.log
 /*.profraw
 /.env
+/.envrc
 /database.*
 /target
 /var
