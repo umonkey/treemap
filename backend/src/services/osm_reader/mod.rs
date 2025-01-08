@@ -29,6 +29,7 @@ pub struct OsmReaderService {
     overpass_client: Arc<OverpassClient>,
     queue: Arc<QueueService>,
     user_id: u64,
+    osm_trees: Arc<OsmTreeRepository>,
 }
 
 impl OsmReaderService {
@@ -51,21 +52,17 @@ impl OsmReaderService {
         let mut updated: u64 = 0;
 
         for node in doc.iter() {
-            match self.db.get_osm_tree(node.id).await? {
-                Some(prev) => {
-                    if prev != *node {
-                        self.db.add_osm_tree(node).await?;
-                        info!("OSM node {} updated in the database.", node.id);
-                        updated += 1;
-                    }
+            if let Some(old) = self.osm_trees.get(node.id).await? {
+                if old != *node {
+                    self.osm_trees.update(node).await?;
+                    info!("OSM node {} updated in the database.", node.id);
+                    updated += 1;
                 }
-
-                None => {
-                    self.db.add_osm_tree(node).await?;
-                    info!("OSM node {} added to the database.", node.id);
-                    added += 1;
-                }
-            };
+            } else {
+                self.osm_trees.add(node).await?;
+                info!("OSM node {} added to the database.", node.id);
+                added += 1;
+            }
         }
 
         info!(
@@ -85,7 +82,7 @@ impl OsmReaderService {
         let mut added: u64 = 0;
         let mut updated: u64 = 0;
 
-        for node in self.db.find_osm_trees().await? {
+        for node in self.osm_trees.all().await? {
             if self.tree_exists(&node).await? {
                 continue;
             }
@@ -105,7 +102,7 @@ impl OsmReaderService {
     }
 
     async fn tree_exists(&self, node: &OsmTreeRecord) -> Result<bool> {
-        Ok(self.db.get_tree_by_osm_id(node.id).await?.is_some())
+        Ok(self.trees.get_by_osm_id(node.id).await?.is_some())
     }
 
     async fn tree_updated(&self, node: &OsmTreeRecord) -> Result<bool> {
@@ -178,18 +175,13 @@ impl OsmReaderService {
 
 impl Locatable for OsmReaderService {
     fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<PreferredDatabase>()?.driver();
-        let trees = locator.get::<TreeRepository>()?;
-        let overpass_client = locator.get::<OverpassClient>()?;
-        let queue = locator.get::<QueueService>()?;
-        let user_id = get_bot_user_id();
-
         Ok(Self {
-            db,
-            trees,
-            overpass_client,
-            queue,
-            user_id,
+            db: locator.get::<PreferredDatabase>()?.driver(),
+            trees: locator.get::<TreeRepository>()?,
+            overpass_client: locator.get::<OverpassClient>()?,
+            queue: locator.get::<QueueService>()?,
+            user_id: get_bot_user_id(),
+            osm_trees: locator.get::<OsmTreeRepository>()?,
         })
     }
 }

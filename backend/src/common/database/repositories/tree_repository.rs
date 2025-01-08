@@ -31,6 +31,23 @@ impl TreeRepository {
         }
     }
 
+    pub async fn get_by_osm_id(&self, id: u64) -> Result<Option<TreeRecord>> {
+        let query = SelectQuery {
+            table_name: TABLE.to_string(),
+            conditions: Attributes::from(&[("osm_id".to_string(), Value::from(id as i64))]),
+            ..Default::default()
+        };
+
+        match self.db.get_record(query).await {
+            Ok(Some(props)) => Ok(Some(TreeRecord::from_attributes(&props)?)),
+            Ok(None) => Ok(None),
+            Err(err) => {
+                error!("Error reading a tree: {}", err);
+                Err(err)
+            }
+        }
+    }
+
     pub async fn add(&self, tree: &TreeRecord) -> Result<()> {
         self.db
             .add_record(InsertQuery {

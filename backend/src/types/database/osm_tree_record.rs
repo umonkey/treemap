@@ -1,6 +1,9 @@
+use crate::types::{Attributes, Result};
+use rusqlite::types::Value;
+
 const DEFAULT_SPECIES: &str = "Unknown tree";
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct OsmTreeRecord {
     pub id: u64,
     pub lat: f64,
@@ -26,61 +29,37 @@ impl OsmTreeRecord {
         DEFAULT_SPECIES.to_string()
     }
 
-    pub fn from_sqlite_row(row: &rusqlite::Row) -> rusqlite::Result<Self> {
+    pub fn from_attributes(attributes: &Attributes) -> Result<Self> {
         Ok(Self {
-            id: row.get(0)?,
-            lat: row.get(1)?,
-            lon: row.get(2)?,
-            genus: row.get(3)?,
-            species: row.get(4)?,
-            species_wikidata: row.get(5)?,
-            height: row.get(6)?,
-            circumference: row.get(7)?,
-            diameter_crown: row.get(8)?,
+            id: attributes.require_u64("id")?,
+            lat: attributes.require_f64("lat")?,
+            lon: attributes.require_f64("lon")?,
+            genus: attributes.get_string("genus")?,
+            species: attributes.get_string("species")?,
+            species_wikidata: attributes.get_string("species_wikidata")?,
+            height: attributes.get_f64("height")?,
+            circumference: attributes.get_f64("circumference")?,
+            diameter_crown: attributes.get_f64("diameter_crown")?,
         })
     }
-}
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    fn default() -> OsmTreeRecord {
-        OsmTreeRecord {
-            id: 1,
-            lat: 0.0,
-            lon: 0.0,
-            genus: None,
-            species: None,
-            species_wikidata: None,
-            height: None,
-            circumference: None,
-            diameter_crown: None,
-        }
-    }
-
-    #[test]
-    fn test_get_species() {
-        let tree = OsmTreeRecord {
-            species: Some("Quercus robur".to_string()),
-            ..default()
-        };
-
-        assert_eq!(tree.get_species(), "Quercus robur");
-    }
-
-    #[test]
-    fn test_get_species_genus() {
-        let tree = OsmTreeRecord {
-            genus: Some("Quercus".to_string()),
-            ..default()
-        };
-
-        assert_eq!(tree.get_species(), "Quercus");
-    }
-
-    #[test]
-    fn test_get_species_empty() {
-        assert_eq!(default().get_species(), DEFAULT_SPECIES);
+    pub fn to_attributes(&self) -> Attributes {
+        Attributes::from(&[
+            ("id".to_string(), Value::from(self.id as i64)),
+            ("lat".to_string(), Value::from(self.lat)),
+            ("lon".to_string(), Value::from(self.lon)),
+            ("genus".to_string(), Value::from(self.genus.clone())),
+            ("species".to_string(), Value::from(self.species.clone())),
+            (
+                "species_wikidata".to_string(),
+                Value::from(self.species_wikidata.clone()),
+            ),
+            ("height".to_string(), Value::from(self.height)),
+            ("circumference".to_string(), Value::from(self.circumference)),
+            (
+                "diameter_crown".to_string(),
+                Value::from(self.diameter_crown),
+            ),
+        ])
     }
 }

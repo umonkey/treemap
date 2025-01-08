@@ -17,7 +17,6 @@ pub trait DatabaseInterface: Send + Sync {
     async fn get_new_trees(&self, count: u64, skip: u64) -> Result<Vec<TreeRecord>>;
     async fn get_updated_trees(&self, count: u64, skip: u64) -> Result<Vec<TreeRecord>>;
     async fn get_tree(&self, id: u64) -> Result<Option<TreeRecord>>;
-    async fn get_tree_by_osm_id(&self, osm_id: u64) -> Result<Option<TreeRecord>>;
     async fn get_last_tree_by_user(&self, user_id: u64) -> Result<Option<TreeRecord>>;
     async fn count_trees(&self) -> Result<u64>;
 
@@ -48,10 +47,6 @@ pub trait DatabaseInterface: Send + Sync {
     async fn find_recent_comments(&self, count: u64) -> Result<Vec<CommentRecord>>;
 
     async fn find_species(&self, query: &str) -> Result<Vec<SpeciesRecord>>;
-
-    async fn get_osm_tree(&self, id: u64) -> Result<Option<OsmTreeRecord>>;
-    async fn add_osm_tree(&self, tree: &OsmTreeRecord) -> Result<()>;
-    async fn find_osm_trees(&self) -> Result<Vec<OsmTreeRecord>>;
 
     async fn find_recent_species(&self, user_id: u64) -> Result<Vec<String>>;
     async fn find_trees_with_no_address(&self) -> Result<Vec<TreeRecord>>;

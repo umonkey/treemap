@@ -326,39 +326,6 @@ impl DatabaseInterface for SqliteDatabase {
     }
 
     /**
-     * Read information on a single tree.
-     */
-    async fn get_tree_by_osm_id(&self, osm_id: u64) -> Result<Option<TreeRecord>> {
-        let tree = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id, year, address FROM trees WHERE osm_id = ? LIMIT 1") {
-                Ok(value) => value,
-
-                Err(e) => {
-                    error!("Error preparing SQL statement: {}", e);
-                    return Err(e);
-                },
-            };
-
-            let mut rows = match stmt.query([osm_id]) {
-                Ok(value) => value,
-
-                Err(e) => {
-                    error!("Error executing SQL statement: {}", e);
-                    return Err(e);
-                },
-            };
-
-            if let Some(row) = rows.next()? {
-                return Ok(Some(TreeRecord::from_sqlite_row(row)?));
-            }
-
-            Ok(None)
-        }).await?;
-
-        Ok(tree)
-    }
-
-    /**
      * Read all trees from the database.
      *
      * https://docs.rs/rusqlite/0.30.0/rusqlite/index.html
@@ -982,98 +949,6 @@ impl DatabaseInterface for SqliteDatabase {
         }).await?;
 
         Ok(species)
-    }
-
-    async fn get_osm_tree(&self, id: u64) -> Result<Option<OsmTreeRecord>> {
-        let tree = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, lat, lon, genus, species, species_wikidata, height, circumference, diameter_crown FROM osm_trees WHERE id = ? LIMIT 1") {
-                Ok(value) => value,
-
-                Err(e) => {
-                    error!("Error preparing SQL statement: {}", e);
-                    return Err(e);
-                },
-            };
-
-            let mut rows = match stmt.query([id]) {
-                Ok(value) => value,
-
-                Err(e) => {
-                    error!("Error executing SQL statement: {}", e);
-                    return Err(e);
-                },
-            };
-
-            if let Some(row) = rows.next()? {
-                return Ok(Some(OsmTreeRecord::from_sqlite_row(row)?));
-            }
-
-            Ok(None)
-        }).await?;
-
-        Ok(tree)
-    }
-
-    async fn add_osm_tree(&self, tree: &OsmTreeRecord) -> Result<()> {
-        let tmp = tree.clone();
-
-        self.pool.conn(move |conn| {
-            match conn.execute("DELETE FROM osm_trees WHERE id = ?", [tmp.id]) {
-                Ok(_) => (),
-
-                Err(e) => {
-                    error!("Error deleting existing tree: {}", e);
-                    return Err(e);
-                },
-            };
-
-            match conn.execute("INSERT INTO osm_trees (id, lat, lon, genus, species, species_wikidata, height, circumference, diameter_crown) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (tmp.id, tmp.lat, tmp.lon, tmp.genus, tmp.species, tmp.species_wikidata, tmp.height, tmp.circumference, tmp.diameter_crown)) {
-                Ok(_) => (),
-
-                Err(e) => {
-                    error!("Error adding comment to the database: {}", e);
-                    return Err(e);
-                },
-            };
-
-            debug!("OSM Tree {} added to the database.", tmp.id);
-
-            Ok(())
-        }).await?;
-
-        Ok(())
-    }
-
-    async fn find_osm_trees(&self) -> Result<Vec<OsmTreeRecord>> {
-        let trees = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, lat, lon, genus, species, species_wikidata, height, circumference, diameter_crown FROM osm_trees") {
-                Ok(value) => value,
-
-                Err(e) => {
-                    error!("Error preparing SQL statement: {}", e);
-                    return Err(e);
-                },
-            };
-
-            let mut rows = match stmt.query([]) {
-                Ok(value) => value,
-
-                Err(e) => {
-                    error!("Error executing SQL statement: {}", e);
-                    return Err(e);
-                },
-            };
-
-            let mut trees: Vec<OsmTreeRecord> = Vec::new();
-
-            while let Some(row) = rows.next()? {
-                trees.push(OsmTreeRecord::from_sqlite_row(row)?);
-            }
-
-            Ok(trees)
-        }).await?;
-
-        Ok(trees)
     }
 
     /**
