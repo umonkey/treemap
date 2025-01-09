@@ -1,6 +1,7 @@
 use crate::services::*;
 use crate::types::*;
 use crate::utils::*;
+use crate::utils::{get_app_name, get_app_version};
 use log::{error, info};
 use reqwest::Client;
 use serde_json::Value;
@@ -13,9 +14,19 @@ pub struct OsmClient {
 impl OsmClient {
     pub async fn create_changeset(&self) -> Result<u64> {
         let url = "https://api.openstreetmap.org/api/0.6/changeset/create";
-        let body = r#"<osm><changeset></changeset></osm>"#;
+        let mut body: String = "<osm><changeset>".to_string();
+        body.push_str(
+            format!(
+                r#"<tag k="created_by" v="{}/{}""#,
+                get_app_name(),
+                get_app_version()
+            )
+            .as_str(),
+        );
+        body.push_str(r#"<tag k="host" v="https://yerevan.treemaps.app/"/>"#);
+        body.push_str("</changeset></osm>");
 
-        let res = self.put(url, body).await?;
+        let res = self.put(url, body.as_str()).await?;
 
         match res.parse::<u64>() {
             Ok(id) => {

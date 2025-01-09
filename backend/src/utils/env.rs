@@ -163,3 +163,11 @@ pub fn get_osm_redirect_uri() -> Result<String> {
 pub fn get_osm_token() -> Result<String> {
     env::var("OSM_TOKEN").map_err(|_| Error::EnvNotSet)
 }
+
+pub fn get_app_name() -> String {
+    env!("CARGO_PKG_NAME").to_string()
+}
+
+pub fn get_app_version() -> String {
+    env!("CARGO_PKG_VERSION").to_string()
+}
