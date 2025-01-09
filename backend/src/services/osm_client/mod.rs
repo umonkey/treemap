@@ -24,6 +24,8 @@ impl OsmClient {
             .as_str(),
         );
         body.push_str(r#"<tag k="host" v="https://yerevan.treemaps.app/"/>"#);
+        body.push_str("<tag k=\"bot\" v=\"yes\" />");
+        body.push_str("<tag k=\"source\" v=\"survey\" />");
         body.push_str("</changeset></osm>");
 
         let res = self.put(url, body.as_str()).await?;
