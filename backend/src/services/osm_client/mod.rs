@@ -2,7 +2,7 @@ use crate::services::*;
 use crate::types::*;
 use crate::utils::*;
 use crate::utils::{get_app_name, get_app_version};
-use log::{error, info};
+use log::{debug, error, info};
 use reqwest::Client;
 use serde_json::Value;
 use xml::escape::escape_str_attribute;
@@ -15,17 +15,14 @@ impl OsmClient {
     pub async fn create_changeset(&self) -> Result<u64> {
         let url = "https://api.openstreetmap.org/api/0.6/changeset/create";
         let mut body: String = "<osm><changeset>".to_string();
-        body.push_str(
-            format!(
-                r#"<tag k="created_by" v="{}/{}""#,
-                get_app_name(),
-                get_app_version()
-            )
-            .as_str(),
-        );
-        body.push_str(r#"<tag k="host" v="https://yerevan.treemaps.app/"/>"#);
-        body.push_str("<tag k=\"bot\" v=\"yes\" />");
-        body.push_str("<tag k=\"source\" v=\"survey\" />");
+
+        body.push_str(&osm_tag(
+            "created_by",
+            &format!("{}/{}", get_app_name(), get_app_version()),
+        ));
+        body.push_str(&osm_tag("host", "https://yerevan.treemaps.app/"));
+        body.push_str(&osm_tag("bot", "yes"));
+        body.push_str(&osm_tag("source", "survey"));
         body.push_str("</changeset></osm>");
 
         let res = self.put(url, body.as_str()).await?;
@@ -133,6 +130,8 @@ impl OsmClient {
 
     async fn put(&self, url: &str, body: &str) -> Result<String> {
         let token = get_osm_token()?;
+
+        debug!("OSM PUT: {}; body: {}", url, body);
 
         let response = match self
             .client

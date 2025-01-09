@@ -1,3 +1,5 @@
+use xml::escape::escape_str_attribute;
+
 pub fn split_words(text: &str) -> Vec<String> {
     let mut res = Vec::new();
     let mut word = String::new();
@@ -25,6 +27,14 @@ pub fn split_words(text: &str) -> Vec<String> {
     }
 
     res
+}
+
+pub fn osm_tag(key: &str, value: &str) -> String {
+    format!(
+        r#"<tag k="{}" v="{}" />"#,
+        escape_str_attribute(key),
+        escape_str_attribute(value)
+    )
 }
 
 #[cfg(test)]
