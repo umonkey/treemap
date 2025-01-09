@@ -1,6 +1,7 @@
 use crate::common::database::repositories::*;
 use crate::services::*;
 use crate::types::*;
+use log::info;
 use std::sync::Arc;
 
 const MAX_CHANGES: usize = 100;
@@ -18,12 +19,19 @@ impl OsmPushHandler {
     }
 
     pub async fn push_new_trees(&self) -> Result<()> {
+        let trees = self.get_new_trees().await?;
+
+        if trees.is_empty() {
+            info!("No new trees to push to OSM.");
+            return Ok(());
+        }
+
         let changeset = self
             .osm
             .create_changeset("Adding new trees found during surveys.")
             .await?;
 
-        for tree in self.get_new_trees().await? {
+        for tree in trees {
             let osm_id = self.osm.create_tree(changeset, &tree).await?;
 
             self.trees.update_osm_id(tree.id, osm_id).await?;
