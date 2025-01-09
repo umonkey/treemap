@@ -1,0 +1,5 @@
+#!/bin/sh
+set -e
+cd /app
+bin/treemap osm-pull
+bin/treemap osm-push
