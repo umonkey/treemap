@@ -225,6 +225,10 @@ impl OsmClient {
             }
         }
 
+        // https://wiki.openstreetmap.org/wiki/Key:image
+        let url = format!("https://yerevan.treemaps.app/tree/{}", tree.id);
+        xml.push_str(&format!("<tag k=\"image\" v=\"{}\" />", url));
+
         xml.push_str("</node>");
         Ok(xml)
     }
