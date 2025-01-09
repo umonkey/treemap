@@ -17,7 +17,11 @@ impl UpdateTreeThumbnailHandler {
             .await?
             .ok_or(Error::TreeNotFound)?;
 
-        let file = self.files.get(req.file_id).await?;
+        let file = self
+            .files
+            .get(req.file_id)
+            .await?
+            .ok_or(Error::FileNotFound)?;
 
         self.trees
             .update_thumbnail(tree.id, file.small_id, req.user_id)

@@ -9,8 +9,8 @@ const SMALL_SIZE: u32 = 1000;
 const LARGE_SIZE: u32 = 2000;
 
 pub struct ResizeImageHandler {
-    db: Arc<dyn DatabaseInterface>,
     trees: Arc<TreeRepository>,
+    files: Arc<FileRepository>,
     storage: Arc<dyn FileStorageInterface>,
     thumbnailer: Arc<ThumbnailerService>,
 }
@@ -19,7 +19,7 @@ impl ResizeImageHandler {
     pub async fn handle(&self, file_id: u64) -> Result<()> {
         debug!("Going to resize images for file {}.", file_id);
 
-        match self.db.get_file(file_id).await {
+        match self.files.get(file_id).await {
             Ok(Some(file)) => {
                 let body = self.storage.read_file(file.id).await?;
 
@@ -37,7 +37,7 @@ impl ResizeImageHandler {
                     ..file
                 };
 
-                self.db.update_file(&updated).await?;
+                self.files.update(&updated).await?;
 
                 self.trees
                     .update_thumbnail(file.tree_id, small_id, file.added_by)
@@ -77,16 +77,11 @@ impl ResizeImageHandler {
 
 impl Locatable for ResizeImageHandler {
     fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<PreferredDatabase>()?.driver();
-        let trees = locator.get::<TreeRepository>()?;
-        let thumbnailer = locator.get::<ThumbnailerService>()?;
-        let storage = locator.get::<FileStorageSelector>()?.driver();
-
         Ok(Self {
-            db,
-            trees,
-            thumbnailer,
-            storage,
+            trees: locator.get::<TreeRepository>()?,
+            files: locator.get::<FileRepository>()?,
+            thumbnailer: locator.get::<ThumbnailerService>()?,
+            storage: locator.get::<FileStorageSelector>()?.driver(),
         })
     }
 }

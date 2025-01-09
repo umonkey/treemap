@@ -506,69 +506,6 @@ impl DatabaseInterface for SqliteDatabase {
         Ok(())
     }
 
-    async fn add_file(&self, file: &FileRecord) -> Result<()> {
-        let id = file.id;
-        let added_at = file.added_at;
-        let added_by = file.added_by;
-        let tree_id = file.tree_id;
-        let small_id = file.small_id;
-        let large_id = file.large_id;
-
-        self.pool
-            .conn(move |conn| {
-                match conn.execute(
-                    "INSERT INTO files (id, tree_id, added_at, added_by, small_id, large_id) VALUES (?, ?, ?, ?, ?, ?)",
-                    (id, tree_id, added_at, added_by, small_id, large_id),
-                ) {
-                    Ok(_) => (),
-
-                    Err(e) => {
-                        error!("Error adding file to the database: {}", e);
-                        return Err(e);
-                    },
-                }
-
-                Ok(())
-            })
-            .await?;
-
-        debug!("File {} added to the database.", id);
-
-        Ok(())
-    }
-
-    async fn get_file(&self, id: u64) -> Result<Option<FileRecord>> {
-        let file = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, tree_id, added_at, added_by, deleted_at, deleted_by, small_id, large_id FROM files WHERE id = ?") {
-                Ok(value) => value,
-
-                Err(e) => {
-                    error!("Error preparing SQL statement: {}", e);
-                    return Err(e);
-                },
-            };
-
-            let mut rows = stmt.query([id])?;
-
-            if let Some(row) = rows.next()? {
-                return Ok(Some(FileRecord {
-                    id: row.get(0)?,
-                    tree_id: row.get(1)?,
-                    added_at: row.get(2)?,
-                    added_by: row.get(3)?,
-                    deleted_at: row.get(4)?,
-                    deleted_by: row.get(5)?,
-                    small_id: row.get(6)?,
-                    large_id: row.get(7)?,
-                }));
-            }
-
-            Ok(None)
-        }).await?;
-
-        Ok(file)
-    }
-
     async fn find_files_by_tree(&self, tree_id: u64) -> Result<Vec<FileRecord>> {
         let files = self.pool.conn(move |conn| {
             let mut stmt = match conn.prepare("SELECT id, tree_id, added_at, added_by, deleted_at, deleted_by, small_id, large_id FROM files WHERE tree_id = ? AND small_id <> 0 AND large_id <> 0 ORDER BY id DESC") {
@@ -600,33 +537,6 @@ impl DatabaseInterface for SqliteDatabase {
         }).await?;
 
         Ok(files)
-    }
-
-    async fn update_file(&self, file: &FileRecord) -> Result<()> {
-        let id = file.id;
-        let small_id = file.small_id;
-        let large_id = file.large_id;
-
-        self.pool
-            .conn(move |conn| {
-                match conn.execute(
-                    "UPDATE files SET small_id = ?, large_id = ? WHERE id = ?",
-                    (small_id, large_id, id),
-                ) {
-                    Ok(_) => (),
-
-                    Err(e) => {
-                        error!("Error updating a file in the database: {}", e);
-                        return Err(e);
-                    }
-                };
-
-                debug!("File {} updated.", id);
-                Ok(())
-            })
-            .await?;
-
-        Ok(())
     }
 
     async fn add_comment(&self, comment: &CommentRecord) -> Result<()> {
@@ -1046,37 +956,6 @@ mod tests {
             .await
             .expect("Error picking message.");
         assert!(pick.is_none());
-    }
-
-    #[tokio::test]
-    async fn test_pending_files_ignored() {
-        let db = setup().await;
-
-        db.add_file(&FileRecord {
-            id: 1,
-            tree_id: 2,
-            small_id: 3,
-            ..Default::default()
-        })
-        .await
-        .expect("Error adding file.");
-
-        db.add_file(&FileRecord {
-            id: 2,
-            tree_id: 2,
-            small_id: 3,
-            large_id: 5,
-            ..Default::default()
-        })
-        .await
-        .expect("Error adding file.");
-
-        let files = db
-            .find_files_by_tree(2)
-            .await
-            .expect("Error finding files.");
-        assert_eq!(files.len(), 1);
-        assert_eq!(files[0].id, 2);
     }
 
     #[tokio::test]

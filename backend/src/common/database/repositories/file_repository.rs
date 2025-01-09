@@ -11,14 +11,22 @@ pub struct FileRepository {
 }
 
 impl FileRepository {
-    pub async fn get(&self, id: u64) -> Result<FileRecord> {
+    pub async fn get(&self, id: u64) -> Result<Option<FileRecord>> {
         let query = SelectQuery::new(TABLE).with_condition("id", Value::from(id as i64));
 
         match self.db.get_record(query).await {
-            Ok(Some(props)) => FileRecord::from_attributes(&props),
-            Ok(None) => Err(Error::FileNotFound),
+            Ok(Some(props)) => Ok(Some(FileRecord::from_attributes(&props)?)),
+            Ok(None) => Ok(None),
             Err(err) => Err(err),
         }
+    }
+
+    pub async fn add(&self, file: &FileRecord) -> Result<()> {
+        let query = InsertQuery::new(TABLE).with_values(file.to_attributes());
+
+        self.db.add_record(query).await?;
+
+        Ok(())
     }
 
     pub async fn update(&self, file: &FileRecord) -> Result<()> {

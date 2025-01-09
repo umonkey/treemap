@@ -19,10 +19,7 @@ pub trait DatabaseInterface: Send + Sync {
     async fn get_user(&self, id: u64) -> Result<Option<UserRecord>>;
     async fn get_users(&self, ids: &[u64]) -> Result<Vec<UserRecord>>;
 
-    async fn add_file(&self, file: &FileRecord) -> Result<()>;
     async fn find_files_by_tree(&self, tree_id: u64) -> Result<Vec<FileRecord>>;
-    async fn get_file(&self, id: u64) -> Result<Option<FileRecord>>;
-    async fn update_file(&self, file: &FileRecord) -> Result<()>;
 
     async fn add_queue_message(&self, msg: &QueueMessage) -> Result<()>;
     async fn pick_queue_message(&self) -> Result<Option<QueueMessage>>;

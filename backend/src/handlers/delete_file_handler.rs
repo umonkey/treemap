@@ -11,7 +11,11 @@ pub struct DeleteFileHandler {
 
 impl DeleteFileHandler {
     pub async fn handle(&self, req: DeleteFileRequest) -> Result<()> {
-        let file = self.files.get(req.file_id).await?;
+        let file = self
+            .files
+            .get(req.file_id)
+            .await?
+            .ok_or(Error::FileNotFound)?;
 
         if file.deleted_at.is_some() {
             return Err(Error::FileNotFound);

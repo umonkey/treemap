@@ -1,6 +1,7 @@
 //! This is how a single file is stored in the database.
 
 use crate::types::*;
+use rusqlite::types::Value;
 use serde::Serialize;
 
 #[derive(Clone, Debug, Default, Serialize)]
@@ -27,5 +28,30 @@ impl FileRecord {
             small_id: attributes.require_u64("small_id")?,
             large_id: attributes.require_u64("large_id")?,
         })
+    }
+
+    pub fn to_attributes(&self) -> Attributes {
+        Attributes::from(&[
+            ("id".to_string(), Value::from(self.id as i64)),
+            ("tree_id".to_string(), Value::from(self.tree_id as i64)),
+            ("added_at".to_string(), Value::from(self.added_at as i64)),
+            ("added_by".to_string(), Value::from(self.added_by as i64)),
+            (
+                "deleted_at".to_string(),
+                match self.deleted_at {
+                    Some(value) => Value::from(value as i64),
+                    None => Value::Null,
+                },
+            ),
+            (
+                "deleted_by".to_string(),
+                match self.deleted_by {
+                    Some(value) => Value::from(value as i64),
+                    None => Value::Null,
+                },
+            ),
+            ("small_id".to_string(), Value::from(self.small_id as i64)),
+            ("large_id".to_string(), Value::from(self.large_id as i64)),
+        ])
     }
 }
