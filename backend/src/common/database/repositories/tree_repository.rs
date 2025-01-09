@@ -4,7 +4,6 @@ use crate::services::*;
 use crate::types::*;
 use log::error;
 use rusqlite::types::Value;
-use std::collections::HashMap;
 use std::sync::Arc;
 
 const TABLE: &str = "trees";
@@ -16,20 +15,12 @@ pub struct TreeRepository {
 
 impl TreeRepository {
     pub async fn all(&self) -> Result<Vec<TreeRecord>> {
-        self.query_multiple(SelectQuery {
-            table_name: TABLE.to_string(),
-            ..Default::default()
-        })
-        .await
+        self.query_multiple(SelectQuery::new(TABLE)).await
     }
 
     pub async fn get(&self, id: u64) -> Result<Option<TreeRecord>> {
-        self.query_single(SelectQuery {
-            table_name: TABLE.to_string(),
-            conditions: Attributes::from(&[("id".to_string(), Value::from(id as i64))]),
-            ..Default::default()
-        })
-        .await
+        let query = SelectQuery::new(TABLE).with_condition("id", Value::from(id as i64));
+        self.query_single(query).await
     }
 
     pub async fn get_multiple(&self, ids: &[u64]) -> Result<Vec<TreeRecord>> {
@@ -45,23 +36,18 @@ impl TreeRepository {
     }
 
     pub async fn get_last_by_user(&self, user_id: u64) -> Result<Option<TreeRecord>> {
-        self.query_single(SelectQuery {
-            table_name: TABLE.to_string(),
-            conditions: Attributes::from(&[("added_by".to_string(), Value::from(user_id as i64))]),
-            order: HashMap::from([("created_at".to_string(), "DESC".to_string())]),
-            limit: Some(1),
-            ..Default::default()
-        })
-        .await
+        let query = SelectQuery::new(TABLE)
+            .with_condition("added_by", Value::from(user_id as i64))
+            .with_order_desc("created_at")
+            .with_limit(1);
+
+        self.query_single(query).await
     }
 
     pub async fn get_by_osm_id(&self, id: u64) -> Result<Option<TreeRecord>> {
-        self.query_single(SelectQuery {
-            table_name: TABLE.to_string(),
-            conditions: Attributes::from(&[("osm_id".to_string(), Value::from(id as i64))]),
-            ..Default::default()
-        })
-        .await
+        let query = SelectQuery::new(TABLE).with_condition("osm_id", Value::from(id as i64));
+
+        self.query_single(query).await
     }
 
     // FIXME: use a proper query
@@ -82,25 +68,21 @@ impl TreeRepository {
     }
 
     pub async fn get_recently_created(&self, count: u64, skip: u64) -> Result<Vec<TreeRecord>> {
-        self.query_multiple(SelectQuery {
-            table_name: TABLE.to_string(),
-            order: HashMap::from([("created_at".to_string(), "DESC".to_string())]),
-            limit: Some(count as i64),
-            offset: Some(skip as i64),
-            ..Default::default()
-        })
-        .await
+        let query = SelectQuery::new(TABLE)
+            .with_order_desc("created_at")
+            .with_limit(count)
+            .with_offset(skip);
+
+        self.query_multiple(query).await
     }
 
     pub async fn get_recently_updated(&self, count: u64, skip: u64) -> Result<Vec<TreeRecord>> {
-        self.query_multiple(SelectQuery {
-            table_name: TABLE.to_string(),
-            order: HashMap::from([("updated_at".to_string(), "DESC".to_string())]),
-            limit: Some(count as i64),
-            offset: Some(skip as i64),
-            ..Default::default()
-        })
-        .await
+        let query = SelectQuery::new(TABLE)
+            .with_order_desc("updated_at")
+            .with_limit(count)
+            .with_offset(skip);
+
+        self.query_multiple(query).await
     }
 
     pub async fn get_close(&self, lat: f64, lon: f64, distance: f64) -> Result<Vec<TreeRecord>> {
@@ -117,43 +99,35 @@ impl TreeRepository {
     }
 
     pub async fn get_with_no_address(&self) -> Result<Vec<TreeRecord>> {
-        self.query_multiple(SelectQuery {
-            table_name: TABLE.to_string(),
-            order: HashMap::from([("updated_at".to_string(), "DESC".to_string())]),
-            conditions: Attributes::from(&[("address".to_string(), Value::Null)]),
-            ..Default::default()
-        })
-        .await
+        let query = SelectQuery::new(TABLE)
+            .with_condition("address", Value::Null)
+            .with_order_desc("updated_at");
+
+        self.query_multiple(query).await
     }
 
     pub async fn get_top_height(&self, count: u64) -> Result<Vec<TreeRecord>> {
-        self.query_multiple(SelectQuery {
-            table_name: TABLE.to_string(),
-            order: HashMap::from([("height".to_string(), "DESC".to_string())]),
-            limit: Some(count as i64),
-            ..Default::default()
-        })
-        .await
+        let query = SelectQuery::new(TABLE)
+            .with_order_desc("height")
+            .with_limit(count);
+
+        self.query_multiple(query).await
     }
 
     pub async fn get_top_circumference(&self, count: u64) -> Result<Vec<TreeRecord>> {
-        self.query_multiple(SelectQuery {
-            table_name: TABLE.to_string(),
-            order: HashMap::from([("circumference".to_string(), "DESC".to_string())]),
-            limit: Some(count as i64),
-            ..Default::default()
-        })
-        .await
+        let query = SelectQuery::new(TABLE)
+            .with_order_desc("circumference")
+            .with_limit(count);
+
+        self.query_multiple(query).await
     }
 
     pub async fn get_top_diameter(&self, count: u64) -> Result<Vec<TreeRecord>> {
-        self.query_multiple(SelectQuery {
-            table_name: TABLE.to_string(),
-            order: HashMap::from([("diameter".to_string(), "DESC".to_string())]),
-            limit: Some(count as i64),
-            ..Default::default()
-        })
-        .await
+        let query = SelectQuery::new(TABLE)
+            .with_order_desc("diameter")
+            .with_limit(count);
+
+        self.query_multiple(query).await
     }
 
     pub async fn add(&self, tree: &TreeRecord) -> Result<()> {

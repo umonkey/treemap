@@ -131,11 +131,7 @@ impl Locatable for SqliteDatabase {
 #[async_trait]
 impl DatabaseInterface for SqliteDatabase {
     async fn get_record(&self, query: SelectQuery) -> Result<Option<Attributes>> {
-        let query = SelectQuery {
-            limit: Some(1),
-            offset: None,
-            ..query
-        };
+        let query = query.with_limit(1);
 
         let record = self
             .pool

@@ -12,11 +12,7 @@ pub struct FileRepository {
 
 impl FileRepository {
     pub async fn get(&self, id: u64) -> Result<FileRecord> {
-        let query = SelectQuery {
-            table_name: TABLE.to_string(),
-            conditions: Attributes::from(&[("id".to_string(), Value::from(id as i64))]),
-            ..Default::default()
-        };
+        let query = SelectQuery::new(TABLE).with_condition("id", Value::from(id as i64));
 
         match self.db.get_record(query).await {
             Ok(Some(props)) => FileRecord::from_attributes(&props),

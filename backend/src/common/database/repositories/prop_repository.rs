@@ -14,11 +14,7 @@ pub struct PropRepository {
 impl PropRepository {
     #[allow(unused)]
     pub async fn get(&self, id: u64) -> Result<PropRecord> {
-        let query = SelectQuery {
-            table_name: TABLE.to_string(),
-            conditions: Attributes::from(&[("id".to_string(), Value::from(id as i64))]),
-            ..Default::default()
-        };
+        let query = SelectQuery::new(TABLE).with_condition("id", Value::from(id as i64));
 
         match self.db.get_record(query).await {
             Ok(Some(props)) => PropRecord::from_attributes(&props),

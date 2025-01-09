@@ -9,6 +9,10 @@ pub struct Attributes {
 }
 
 impl Attributes {
+    pub fn insert(&mut self, key: &str, value: Value) {
+        self.props.insert(key.to_string(), value);
+    }
+
     pub fn from(props: &[(String, Value)]) -> Self {
         Self {
             props: HashMap::from_iter(props.iter().cloned()),

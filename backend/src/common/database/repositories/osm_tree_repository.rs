@@ -13,11 +13,7 @@ pub struct OsmTreeRepository {
 
 impl OsmTreeRepository {
     pub async fn get(&self, id: u64) -> Result<Option<OsmTreeRecord>> {
-        let query = SelectQuery {
-            table_name: TABLE.to_string(),
-            conditions: Attributes::from(&[("id".to_string(), Value::from(id as i64))]),
-            ..Default::default()
-        };
+        let query = SelectQuery::new(TABLE).with_condition("id", Value::from(id as i64));
 
         match self.db.get_record(query).await {
             Ok(Some(props)) => Ok(Some(OsmTreeRecord::from_attributes(&props)?)),
@@ -56,10 +52,7 @@ impl OsmTreeRepository {
     }
 
     pub async fn all(&self) -> Result<Vec<OsmTreeRecord>> {
-        let query = SelectQuery {
-            table_name: TABLE.to_string(),
-            ..Default::default()
-        };
+        let query = SelectQuery::new(TABLE);
 
         let records = self.db.get_records(query).await?;
 
