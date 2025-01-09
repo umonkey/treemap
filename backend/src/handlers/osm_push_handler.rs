@@ -1,10 +1,14 @@
 use crate::common::database::repositories::*;
 use crate::services::*;
 use crate::types::*;
+use crate::utils::get_timestamp;
 use log::info;
 use std::sync::Arc;
 
 const MAX_CHANGES: usize = 100;
+
+// Don't push trees younget than 10 minutes, let users finish their surveys.
+const MIN_AGE: u64 = 600;
 
 pub struct OsmPushHandler {
     osm: Arc<OsmClient>,
@@ -70,14 +74,21 @@ impl OsmPushHandler {
 
     async fn get_new_trees(&self) -> Result<Vec<TreeRecord>> {
         let mut res = Vec::new();
+        let max_ts = get_timestamp() - MIN_AGE;
 
         for tree in self.trees.all().await? {
-            if self.shall_add(&tree) {
-                res.push(tree);
+            if !self.shall_add(&tree) {
+                continue;
+            }
 
-                if res.len() == MAX_CHANGES {
-                    break;
-                }
+            if tree.added_at > max_ts {
+                continue;
+            }
+
+            res.push(tree);
+
+            if res.len() == MAX_CHANGES {
+                break;
             }
         }
 
