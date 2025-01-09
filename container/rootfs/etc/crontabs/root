@@ -1,2 +1,2 @@
 # Run OSM updates every hour.
-0 * * * * cd /app; bin/treemap osm-pull
+0 * * * * cd /app; bin/treemap osm-pull && bin/treemap osm-push
