@@ -12,18 +12,17 @@ pub struct OsmClient {
 }
 
 impl OsmClient {
-    pub async fn create_changeset(&self) -> Result<u64> {
-        let url = "https://api.openstreetmap.org/api/0.6/changeset/create";
-        let mut body: String = "<osm><changeset>".to_string();
+    pub async fn create_changeset(&self, comment: &str) -> Result<u64> {
+        let changeset = OsmChangeset {
+            created_by: format!("{}/{}", get_app_name(), get_app_version()),
+            host: "https://yerevan.treemaps.app/".to_string(),
+            bot: true,
+            source: "survey".to_string(),
+            comment: comment.to_string(),
+        };
 
-        body.push_str(&osm_tag(
-            "created_by",
-            &format!("{}/{}", get_app_name(), get_app_version()),
-        ));
-        body.push_str(&osm_tag("host", "https://yerevan.treemaps.app/"));
-        body.push_str(&osm_tag("bot", "yes"));
-        body.push_str(&osm_tag("source", "survey"));
-        body.push_str("</changeset></osm>");
+        let url = "https://api.openstreetmap.org/api/0.6/changeset/create";
+        let body: String = format!("<osm>{}</osm>", changeset);
 
         let res = self.put(url, body.as_str()).await?;
 

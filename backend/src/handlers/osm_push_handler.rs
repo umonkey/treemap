@@ -18,7 +18,10 @@ impl OsmPushHandler {
     }
 
     pub async fn push_new_trees(&self) -> Result<()> {
-        let changeset = self.osm.create_changeset().await?;
+        let changeset = self
+            .osm
+            .create_changeset("Adding new trees found during surveys.")
+            .await?;
 
         for tree in self.get_new_trees().await? {
             let osm_id = self.osm.create_tree(changeset, &tree).await?;
