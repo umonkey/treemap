@@ -1,4 +1,5 @@
 use crate::types::{Attributes, Result};
+use log::debug;
 use rusqlite::types::Value;
 
 const DEFAULT_SPECIES: &str = "Unknown tree";
@@ -61,5 +62,73 @@ impl OsmTreeRecord {
                 Value::from(self.diameter_crown),
             ),
         ])
+    }
+
+    pub fn from_overpass(node: &serde_json::Value) -> Option<Self> {
+        let id = node["id"].as_u64()?;
+        let lat = node["lat"].as_f64()?;
+        let lon = node["lon"].as_f64()?;
+        let tags = node["tags"].as_object()?;
+
+        if !tags.contains_key("natural") || tags["natural"] != "tree" {
+            debug!("Node is not a tree: {:?}", id);
+            return None;
+        }
+
+        Some(Self {
+            id,
+            lat,
+            lon,
+            genus: Self::get_string(tags, "genus"),
+            species: Self::get_string(tags, "species"),
+            species_wikidata: Self::get_string(tags, "species:wikidata"),
+            height: Self::get_size(tags, "height", id),
+            circumference: Self::get_size(tags, "circumference", id),
+            diameter_crown: Self::get_size(tags, "diameter_crown", id),
+        })
+    }
+
+    fn get_size(
+        tags: &serde_json::Map<String, serde_json::Value>,
+        key: &str,
+        node_id: u64,
+    ) -> Option<f64> {
+        let value = match tags.get(key) {
+            Some(value) => value,
+            None => return None,
+        };
+
+        let value = match value.as_str() {
+            Some(value) => value,
+            None => return None,
+        };
+
+        if let Ok(value) = value.parse::<f64>() {
+            return Some(value);
+        }
+
+        if let Some(value) = value.strip_suffix('m') {
+            if let Ok(value) = value.parse::<f64>() {
+                return Some(value);
+            }
+        }
+
+        debug!("Could not parse {} for node {}: {:?}", key, node_id, value);
+
+        None
+    }
+
+    fn get_string(tags: &serde_json::Map<String, serde_json::Value>, key: &str) -> Option<String> {
+        let value = match tags.get(key) {
+            Some(value) => value,
+            None => return None,
+        };
+
+        let value = match value.as_str() {
+            Some(value) => value,
+            None => return None,
+        };
+
+        Some(value.to_string())
     }
 }

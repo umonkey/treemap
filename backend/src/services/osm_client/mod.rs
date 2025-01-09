@@ -209,19 +209,19 @@ impl OsmClient {
 
         if let Some(value) = tree.height {
             if value > 0.0 {
-                xml.push_str(&format!("<tag k=\"height\" v=\"{}m\" />", value));
+                xml.push_str(&format!("<tag k=\"height\" v=\"{}\" />", value));
             }
         }
 
         if let Some(value) = tree.circumference {
             if value > 0.0 {
-                xml.push_str(&format!("<tag k=\"circumference\" v=\"{}m\" />", value));
+                xml.push_str(&format!("<tag k=\"circumference\" v=\"{}\" />", value));
             }
         }
 
         if let Some(value) = tree.diameter {
             if value > 0.0 {
-                xml.push_str(&format!("<tag k=\"diameter_crown\" v=\"{}m\" />", value));
+                xml.push_str(&format!("<tag k=\"diameter_crown\" v=\"{}\" />", value));
             }
         }
 

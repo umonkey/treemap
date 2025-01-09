@@ -1,6 +1,3 @@
-mod node_parser;
-
-use self::node_parser::NodeParser;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::{get_overpass_endpoint, get_overpass_query};
@@ -41,7 +38,7 @@ impl OverpassClient {
         let mut trees: Vec<OsmTreeRecord> = Vec::new();
 
         for element in elements {
-            match NodeParser::parse(element) {
+            match OsmTreeRecord::from_overpass(element) {
                 Some(tree) => trees.push(tree),
                 None => {
                     error!("Error parsing OSM node: {:?}", element);
