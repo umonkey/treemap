@@ -145,11 +145,9 @@ impl TreeRepository {
             Error::TreeNotFound
         })?;
 
-        let query = UpdateQuery {
-            table_name: TABLE.to_string(),
-            conditions: Attributes::from(&[("id".to_string(), Value::from(tree.id as i64))]),
-            attributes: tree.to_attributes(),
-        };
+        let query = UpdateQuery::new(TABLE)
+            .with_condition("id", Value::from(tree.id as i64))
+            .with_values(tree.to_attributes());
 
         self.db.update(query).await.map_err(|e| {
             error!("Error updating a tree: {}", e);
@@ -165,14 +163,9 @@ impl TreeRepository {
         thumbnail_id: u64,
         user_id: u64,
     ) -> Result<()> {
-        let query = UpdateQuery {
-            table_name: TABLE.to_string(),
-            conditions: Attributes::from(&[("id".to_string(), Value::from(tree_id as i64))]),
-            attributes: Attributes::from(&[(
-                "thumbnail_id".to_string(),
-                Value::from(thumbnail_id as i64),
-            )]),
-        };
+        let query = UpdateQuery::new(TABLE)
+            .with_condition("id", Value::from(tree_id as i64))
+            .with_value("thumbnail_id", Value::from(thumbnail_id as i64));
 
         self.db.update(query).await.map_err(|e| {
             error!("Error updating a tree: {}", e);
@@ -184,11 +177,9 @@ impl TreeRepository {
     }
 
     pub async fn update_osm_id(&self, tree_id: u64, osm_id: u64) -> Result<()> {
-        let query = UpdateQuery {
-            table_name: TABLE.to_string(),
-            conditions: Attributes::from(&[("id".to_string(), Value::from(tree_id as i64))]),
-            attributes: Attributes::from(&[("osm_id".to_string(), Value::from(osm_id as i64))]),
-        };
+        let query = UpdateQuery::new(TABLE)
+            .with_condition("id", Value::from(tree_id as i64))
+            .with_value("osm_id", Value::from(osm_id as i64));
 
         self.db.update(query).await.map_err(|e| {
             error!("Error updating a tree: {}", e);

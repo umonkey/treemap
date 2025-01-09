@@ -34,11 +34,9 @@ impl OsmTreeRepository {
     }
 
     pub async fn update(&self, tree: &OsmTreeRecord) -> Result<()> {
-        let query = UpdateQuery {
-            table_name: TABLE.to_string(),
-            conditions: Attributes::from(&[("id".to_string(), Value::from(tree.id as i64))]),
-            attributes: tree.to_attributes(),
-        };
+        let query = UpdateQuery::new(TABLE)
+            .with_condition("id", Value::from(tree.id as i64))
+            .with_values(tree.to_attributes());
 
         self.db.update(query).await.map_err(|e| {
             error!("Error updating an OSM tree: {}", e);
