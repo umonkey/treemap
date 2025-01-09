@@ -6,7 +6,6 @@ use log::info;
 use std::sync::Arc;
 
 pub struct UpdateTreeHandler {
-    db: Arc<dyn DatabaseInterface>,
     trees: Arc<TreeRepository>,
     queue: Arc<QueueService>,
 }
@@ -15,7 +14,7 @@ impl UpdateTreeHandler {
     pub async fn handle(&self, req: UpdateTreeRequest) -> Result<TreeRecord> {
         let now = get_timestamp();
 
-        let old = match self.db.get_tree(req.id).await? {
+        let old = match self.trees.get(req.id).await? {
             Some(tree) => tree,
             None => return Err(Error::TreeNotFound),
         };
@@ -83,9 +82,9 @@ impl UpdateTreeHandler {
 
 impl Locatable for UpdateTreeHandler {
     fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<PreferredDatabase>()?.driver();
-        let trees = locator.get::<TreeRepository>()?;
-        let queue = locator.get::<QueueService>()?;
-        Ok(Self { db, trees, queue })
+        Ok(Self {
+            trees: locator.get::<TreeRepository>()?,
+            queue: locator.get::<QueueService>()?,
+        })
     }
 }

@@ -1,9 +1,11 @@
+use crate::common::database::repositories::*;
 use crate::services::*;
 use crate::types::*;
 use std::sync::Arc;
 
 pub struct GetNewCommentsHandler {
     db: Arc<dyn DatabaseInterface>,
+    trees: Arc<TreeRepository>,
 }
 
 impl GetNewCommentsHandler {
@@ -14,7 +16,7 @@ impl GetNewCommentsHandler {
         let users = self.db.get_users(&user_ids).await?;
 
         let tree_ids: Vec<u64> = comments.iter().map(|r| r.tree_id).collect();
-        let trees = self.db.get_trees_by_ids(&tree_ids).await?;
+        let trees = self.trees.get_multiple(&tree_ids).await?;
 
         Ok(CommentList::from_records(&comments, &users, &trees))
     }
@@ -22,7 +24,9 @@ impl GetNewCommentsHandler {
 
 impl Locatable for GetNewCommentsHandler {
     fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<PreferredDatabase>()?.driver();
-        Ok(Self { db })
+        Ok(Self {
+            db: locator.get::<PreferredDatabase>()?.driver(),
+            trees: locator.get::<TreeRepository>()?,
+        })
     }
 }

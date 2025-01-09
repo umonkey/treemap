@@ -13,7 +13,7 @@ pub struct UpdateTreeAddressHandler {
 
 impl UpdateTreeAddressHandler {
     pub async fn handle(&self, tree_id: u64) -> Result<()> {
-        if let Ok(tree) = self.trees.get(tree_id).await {
+        if let Ok(Some(tree)) = self.trees.get(tree_id).await {
             if let Ok(Some(address)) = self.nominatim.get_street_address(tree.lat, tree.lon).await {
                 info!("Updating tree {} address to: {}", tree_id, address);
 

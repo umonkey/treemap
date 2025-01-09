@@ -1,14 +1,15 @@
+use crate::common::database::repositories::*;
 use crate::services::*;
 use crate::types::*;
 use std::sync::Arc;
 
 pub struct GetTreeDefaultsHandler {
-    db: Arc<dyn DatabaseInterface>,
+    trees: Arc<TreeRepository>,
 }
 
 impl GetTreeDefaultsHandler {
     pub async fn handle(&self, user_id: u64) -> Result<NewTreeDefaultsResponse> {
-        match self.db.get_last_tree_by_user(user_id).await? {
+        match self.trees.get_last_by_user(user_id).await? {
             Some(tree) => Ok(NewTreeDefaultsResponse::from_tree(&tree)),
 
             None => Ok(NewTreeDefaultsResponse {
@@ -25,7 +26,8 @@ impl GetTreeDefaultsHandler {
 
 impl Locatable for GetTreeDefaultsHandler {
     fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<PreferredDatabase>()?.driver();
-        Ok(Self { db })
+        Ok(Self {
+            trees: locator.get::<TreeRepository>()?,
+        })
     }
 }

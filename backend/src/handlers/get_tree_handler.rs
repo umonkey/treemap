@@ -1,14 +1,16 @@
+use crate::common::database::repositories::*;
 use crate::services::*;
 use crate::types::*;
 use std::sync::Arc;
 
 pub struct GetTreeHandler {
     db: Arc<dyn DatabaseInterface>,
+    trees: Arc<TreeRepository>,
 }
 
 impl GetTreeHandler {
     pub async fn handle(&self, id: u64) -> Result<SingleTreeResponse> {
-        let tree = match self.db.get_tree(id).await? {
+        let tree = match self.trees.get(id).await? {
             Some(value) => value,
             None => return Err(Error::TreeNotFound),
         };
@@ -42,7 +44,9 @@ impl GetTreeHandler {
 
 impl Locatable for GetTreeHandler {
     fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<PreferredDatabase>()?.driver();
-        Ok(Self { db })
+        Ok(Self {
+            db: locator.get::<PreferredDatabase>()?.driver(),
+            trees: locator.get::<TreeRepository>()?,
+        })
     }
 }

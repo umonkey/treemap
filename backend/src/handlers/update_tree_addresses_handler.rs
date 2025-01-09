@@ -6,7 +6,6 @@ use log::{info, warn};
 use std::sync::Arc;
 
 pub struct UpdateTreeAddressesHandler {
-    db: Arc<dyn DatabaseInterface>,
     trees: Arc<TreeRepository>,
     nominatim: Arc<NominatimService>,
     user_id: u64,
@@ -14,7 +13,7 @@ pub struct UpdateTreeAddressesHandler {
 
 impl UpdateTreeAddressesHandler {
     pub async fn handle(&self) -> Result<()> {
-        let trees = self.db.find_trees_with_no_address().await?;
+        let trees = self.trees.get_with_no_address().await?;
 
         for tree in trees {
             self.update_tree_address(&tree).await?;
@@ -65,15 +64,10 @@ impl UpdateTreeAddressesHandler {
 
 impl Locatable for UpdateTreeAddressesHandler {
     fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<PreferredDatabase>()?.driver();
-        let trees = locator.get::<TreeRepository>()?;
-        let nominatim = locator.get::<NominatimService>()?;
-        let user_id = get_bot_user_id();
         Ok(Self {
-            db,
-            trees,
-            nominatim,
-            user_id,
+            trees: locator.get::<TreeRepository>()?,
+            nominatim: locator.get::<NominatimService>()?,
+            user_id: get_bot_user_id(),
         })
     }
 }

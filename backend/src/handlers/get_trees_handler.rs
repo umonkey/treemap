@@ -1,15 +1,16 @@
+use crate::common::database::repositories::*;
 use crate::services::*;
 use crate::types::*;
 use std::sync::Arc;
 
 pub struct GetTreesHandler {
-    db: Arc<dyn DatabaseInterface>,
     loader: Arc<TreeListLoader>,
+    trees: Arc<TreeRepository>,
 }
 
 impl GetTreesHandler {
     pub async fn handle(&self, request: &GetTreesRequest) -> Result<TreeList> {
-        let mut trees = self.db.get_trees(request.bounds()).await?;
+        let mut trees = self.trees.get_by_bounds(request.bounds()).await?;
 
         if let Some(search) = &request.search {
             let query = SearchQuery::from_string(search);
@@ -22,8 +23,9 @@ impl GetTreesHandler {
 
 impl Locatable for GetTreesHandler {
     fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<PreferredDatabase>()?.driver();
-        let loader = locator.get::<TreeListLoader>()?;
-        Ok(Self { db, loader })
+        Ok(Self {
+            loader: locator.get::<TreeListLoader>()?,
+            trees: locator.get::<TreeRepository>()?,
+        })
     }
 }

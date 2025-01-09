@@ -24,7 +24,6 @@ use std::sync::Arc;
 const DEFAULT_STATE: &str = "healthy";
 
 pub struct OsmReaderService {
-    db: Arc<dyn DatabaseInterface>,
     trees: Arc<TreeRepository>,
     overpass_client: Arc<OverpassClient>,
     queue: Arc<QueueService>,
@@ -154,7 +153,7 @@ impl OsmReaderService {
     }
 
     async fn find_closest_available_tree(&self, lat: f64, lon: f64) -> Result<Option<TreeRecord>> {
-        for tree in self.db.find_closest_trees(lat, lon, 5.0).await? {
+        for tree in self.trees.get_close(lat, lon, 5.0).await? {
             if tree.state != "gone" && tree.osm_id.is_none() {
                 return Ok(Some(tree));
             }
@@ -176,7 +175,6 @@ impl OsmReaderService {
 impl Locatable for OsmReaderService {
     fn create(locator: &Locator) -> Result<Self> {
         Ok(Self {
-            db: locator.get::<PreferredDatabase>()?.driver(),
             trees: locator.get::<TreeRepository>()?,
             overpass_client: locator.get::<OverpassClient>()?,
             queue: locator.get::<QueueService>()?,

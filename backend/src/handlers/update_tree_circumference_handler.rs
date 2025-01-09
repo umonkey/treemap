@@ -17,7 +17,7 @@ impl UpdateTreeCircumferenceHandler {
         value: f64,
         user_id: u64,
     ) -> Result<SingleTreeResponse> {
-        let tree = self.trees.get(tree_id).await?;
+        let tree = self.trees.get(tree_id).await?.ok_or(Error::TreeNotFound)?;
 
         self.trees
             .update(

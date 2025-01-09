@@ -4,6 +4,7 @@ use crate::services::*;
 use crate::types::*;
 use log::error;
 use rusqlite::types::Value;
+use std::collections::HashMap;
 use std::sync::Arc;
 
 const TABLE: &str = "trees";
@@ -15,51 +16,144 @@ pub struct TreeRepository {
 
 impl TreeRepository {
     pub async fn all(&self) -> Result<Vec<TreeRecord>> {
-        let query = SelectQuery {
+        self.query_multiple(SelectQuery {
             table_name: TABLE.to_string(),
             ..Default::default()
-        };
-
-        let records = self.db.get_records(query).await?;
-
-        Ok(records
-            .iter()
-            .map(|props| TreeRecord::from_attributes(props).unwrap())
-            .collect())
+        })
+        .await
     }
 
-    pub async fn get(&self, id: u64) -> Result<TreeRecord> {
-        let query = SelectQuery {
+    pub async fn get(&self, id: u64) -> Result<Option<TreeRecord>> {
+        self.query_single(SelectQuery {
             table_name: TABLE.to_string(),
             conditions: Attributes::from(&[("id".to_string(), Value::from(id as i64))]),
             ..Default::default()
-        };
+        })
+        .await
+    }
 
-        match self.db.get_record(query).await {
-            Ok(Some(props)) => TreeRecord::from_attributes(&props),
-            Ok(None) => Err(Error::TreeNotFound),
-            Err(err) => {
-                error!("Error reading a tree: {}", err);
-                Err(err)
+    pub async fn get_multiple(&self, ids: &[u64]) -> Result<Vec<TreeRecord>> {
+        let mut trees: Vec<TreeRecord> = Vec::new();
+
+        for id in ids {
+            if let Some(tree) = self.get(*id).await? {
+                trees.push(tree);
             }
         }
+
+        Ok(trees)
+    }
+
+    pub async fn get_last_by_user(&self, user_id: u64) -> Result<Option<TreeRecord>> {
+        self.query_single(SelectQuery {
+            table_name: TABLE.to_string(),
+            conditions: Attributes::from(&[("added_by".to_string(), Value::from(user_id as i64))]),
+            order: HashMap::from([("created_at".to_string(), "DESC".to_string())]),
+            limit: Some(1),
+            ..Default::default()
+        })
+        .await
     }
 
     pub async fn get_by_osm_id(&self, id: u64) -> Result<Option<TreeRecord>> {
-        let query = SelectQuery {
+        self.query_single(SelectQuery {
             table_name: TABLE.to_string(),
             conditions: Attributes::from(&[("osm_id".to_string(), Value::from(id as i64))]),
             ..Default::default()
+        })
+        .await
+    }
+
+    // FIXME: use a proper query
+    pub async fn get_by_bounds(&self, bounds: Bounds) -> Result<Vec<TreeRecord>> {
+        let trees = self
+            .all()
+            .await?
+            .into_iter()
+            .filter(|tree| {
+                tree.lat <= bounds.n
+                    && tree.lat >= bounds.s
+                    && tree.lon <= bounds.e
+                    && tree.lon >= bounds.w
+            })
+            .collect();
+
+        Ok(trees)
+    }
+
+    pub async fn get_recently_created(&self, count: u64, skip: u64) -> Result<Vec<TreeRecord>> {
+        self.query_multiple(SelectQuery {
+            table_name: TABLE.to_string(),
+            order: HashMap::from([("created_at".to_string(), "DESC".to_string())]),
+            limit: Some(count as i64),
+            offset: Some(skip as i64),
+            ..Default::default()
+        })
+        .await
+    }
+
+    pub async fn get_recently_updated(&self, count: u64, skip: u64) -> Result<Vec<TreeRecord>> {
+        self.query_multiple(SelectQuery {
+            table_name: TABLE.to_string(),
+            order: HashMap::from([("updated_at".to_string(), "DESC".to_string())]),
+            limit: Some(count as i64),
+            offset: Some(skip as i64),
+            ..Default::default()
+        })
+        .await
+    }
+
+    pub async fn get_close(&self, lat: f64, lon: f64, distance: f64) -> Result<Vec<TreeRecord>> {
+        let delta = distance / 111_111.0; // meters per degree
+
+        let bounds = Bounds {
+            n: lat + delta,
+            s: lat - delta,
+            e: lon + delta,
+            w: lon - delta,
         };
 
-        match self.db.get_record(query).await {
-            Ok(Some(props)) => Ok(Some(TreeRecord::from_attributes(&props)?)),
-            Ok(None) => Ok(None),
-            Err(err) => {
-                error!("Error reading a tree: {}", err);
-                Err(err)
-            }
-        }
+        self.get_by_bounds(bounds).await
+    }
+
+    pub async fn get_with_no_address(&self) -> Result<Vec<TreeRecord>> {
+        self.query_multiple(SelectQuery {
+            table_name: TABLE.to_string(),
+            order: HashMap::from([("updated_at".to_string(), "DESC".to_string())]),
+            conditions: Attributes::from(&[("address".to_string(), Value::Null)]),
+            ..Default::default()
+        })
+        .await
+    }
+
+    pub async fn get_top_height(&self, count: u64) -> Result<Vec<TreeRecord>> {
+        self.query_multiple(SelectQuery {
+            table_name: TABLE.to_string(),
+            order: HashMap::from([("height".to_string(), "DESC".to_string())]),
+            limit: Some(count as i64),
+            ..Default::default()
+        })
+        .await
+    }
+
+    pub async fn get_top_circumference(&self, count: u64) -> Result<Vec<TreeRecord>> {
+        self.query_multiple(SelectQuery {
+            table_name: TABLE.to_string(),
+            order: HashMap::from([("circumference".to_string(), "DESC".to_string())]),
+            limit: Some(count as i64),
+            ..Default::default()
+        })
+        .await
+    }
+
+    pub async fn get_top_diameter(&self, count: u64) -> Result<Vec<TreeRecord>> {
+        self.query_multiple(SelectQuery {
+            table_name: TABLE.to_string(),
+            order: HashMap::from([("diameter".to_string(), "DESC".to_string())]),
+            limit: Some(count as i64),
+            ..Default::default()
+        })
+        .await
     }
 
     pub async fn add(&self, tree: &TreeRecord) -> Result<()> {
@@ -75,7 +169,10 @@ impl TreeRepository {
     }
 
     pub async fn update(&self, tree: &TreeRecord, user_id: u64) -> Result<()> {
-        let old = self.get(tree.id).await?;
+        let old = self.get(tree.id).await?.ok_or_else(|| {
+            error!("Error updating a tree: tree not found");
+            Error::TreeNotFound
+        })?;
 
         let query = UpdateQuery {
             table_name: TABLE.to_string(),
@@ -128,6 +225,26 @@ impl TreeRepository {
         })?;
 
         Ok(())
+    }
+
+    async fn query_single(&self, query: SelectQuery) -> Result<Option<TreeRecord>> {
+        match self.db.get_record(query).await {
+            Ok(Some(props)) => Ok(Some(TreeRecord::from_attributes(&props)?)),
+            Ok(None) => Ok(None),
+            Err(err) => {
+                error!("Error reading a tree: {}", err);
+                Err(err)
+            }
+        }
+    }
+
+    async fn query_multiple(&self, query: SelectQuery) -> Result<Vec<TreeRecord>> {
+        let records = self.db.get_records(query).await?;
+
+        Ok(records
+            .iter()
+            .map(|props| TreeRecord::from_attributes(props).unwrap())
+            .collect())
     }
 
     async fn log_changes(&self, old: &TreeRecord, new: &TreeRecord, user_id: u64) -> Result<()> {

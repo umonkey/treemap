@@ -11,7 +11,12 @@ pub struct UpdateTreeThumbnailHandler {
 
 impl UpdateTreeThumbnailHandler {
     pub async fn handle(&self, req: UpdateTreeThumbnailRequest) -> Result<()> {
-        let tree = self.trees.get(req.tree_id).await?;
+        let tree = self
+            .trees
+            .get(req.tree_id)
+            .await?
+            .ok_or(Error::TreeNotFound)?;
+
         let file = self.files.get(req.file_id).await?;
 
         self.trees

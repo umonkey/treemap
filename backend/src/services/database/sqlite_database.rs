@@ -293,154 +293,6 @@ impl DatabaseInterface for SqliteDatabase {
     }
 
     /**
-     * Read information on a single tree.
-     */
-    async fn get_tree(&self, id: u64) -> Result<Option<TreeRecord>> {
-        let tree = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id, year, address FROM trees WHERE id = ? LIMIT 1") {
-                Ok(value) => value,
-
-                Err(e) => {
-                    error!("Error preparing SQL statement: {}", e);
-                    return Err(e);
-                },
-            };
-
-            let mut rows = match stmt.query([id]) {
-                Ok(value) => value,
-
-                Err(e) => {
-                    error!("Error executing SQL statement: {}", e);
-                    return Err(e);
-                },
-            };
-
-            if let Some(row) = rows.next()? {
-                return Ok(Some(TreeRecord::from_sqlite_row(row)?));
-            }
-
-            Ok(None)
-        }).await?;
-
-        Ok(tree)
-    }
-
-    /**
-     * Read all trees from the database.
-     *
-     * https://docs.rs/rusqlite/0.30.0/rusqlite/index.html
-     */
-    async fn get_trees(&self, bounds: Bounds) -> Result<Vec<TreeRecord>> {
-        let trees = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id, year, address FROM trees WHERE lat <= ? AND lat >= ? AND lon <= ? AND lon >= ?") {
-                Ok(value) => value,
-
-                Err(e) => {
-                    error!("Error preparing SQL statement: {}", e);
-                    return Err(e);
-                },
-            };
-
-            let mut rows = match stmt.query([bounds.n, bounds.s, bounds.e, bounds.w]) {
-                Ok(value) => value,
-
-                Err(e) => {
-                    error!("Error executing SQL statement: {}", e);
-                    return Err(e);
-                },
-            };
-
-            let mut trees: Vec<TreeRecord> = Vec::new();
-
-            while let Some(row) = rows.next()? {
-                trees.push(TreeRecord::from_sqlite_row(row)?);
-            }
-
-            Ok(trees)
-        }).await?;
-
-        Ok(trees)
-    }
-
-    async fn get_trees_by_ids(&self, ids: &[u64]) -> Result<Vec<TreeRecord>> {
-        let mut trees: Vec<TreeRecord> = Vec::new();
-
-        for id in ids {
-            let tree = self.get_tree(*id).await?;
-
-            if let Some(tree) = tree {
-                trees.push(tree);
-            }
-        }
-
-        Ok(trees)
-    }
-
-    async fn get_new_trees(&self, count: u64, skip: u64) -> Result<Vec<TreeRecord>> {
-        let trees = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id, year, address FROM trees ORDER BY added_at DESC LIMIT ?, ?") {
-                Ok(value) => value,
-
-                Err(e) => {
-                    error!("Error preparing SQL statement: {}", e);
-                    return Err(e);
-                },
-            };
-
-            let mut rows = match stmt.query([skip, count]) {
-                Ok(value) => value,
-
-                Err(e) => {
-                    error!("Error executing SQL statement: {}", e);
-                    return Err(e);
-                },
-            };
-
-            let mut trees: Vec<TreeRecord> = Vec::new();
-
-            while let Some(row) = rows.next()? {
-                trees.push(TreeRecord::from_sqlite_row(row)?);
-            }
-
-            Ok(trees)
-        }).await?;
-
-        Ok(trees)
-    }
-
-    async fn get_updated_trees(&self, count: u64, skip: u64) -> Result<Vec<TreeRecord>> {
-        let trees = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id, year, address FROM trees WHERE added_at <> updated_at ORDER BY updated_at DESC LIMIT ?, ?") {
-                Ok(value) => value,
-
-                Err(e) => {
-                    error!("Error preparing SQL statement: {}", e);
-                    return Err(e);
-                },
-            };
-
-            let mut rows = match stmt.query([skip, count]) {
-                Ok(value) => value,
-
-                Err(e) => {
-                    error!("Error executing SQL statement: {}", e);
-                    return Err(e);
-                },
-            };
-
-            let mut trees: Vec<TreeRecord> = Vec::new();
-
-            while let Some(row) = rows.next()? {
-                trees.push(TreeRecord::from_sqlite_row(row)?);
-            }
-
-            Ok(trees)
-        }).await?;
-
-        Ok(trees)
-    }
-
-    /**
      * Count all trees that still exist.
      */
     async fn count_trees(&self) -> Result<u64> {
@@ -474,57 +326,6 @@ impl DatabaseInterface for SqliteDatabase {
             .await?;
 
         Ok(count)
-    }
-
-    /**
-     * Find the closest tree to the given coordinates.
-     */
-    async fn find_closest_trees(
-        &self,
-        lat: f64,
-        lon: f64,
-        distance: f64,
-    ) -> Result<Vec<TreeRecord>> {
-        let delta = distance / 111_111.0; // meters per degree
-
-        let bounds = Bounds {
-            n: lat + delta,
-            s: lat - delta,
-            e: lon + delta,
-            w: lon - delta,
-        };
-
-        self.get_trees(bounds).await
-    }
-
-    async fn get_last_tree_by_user(&self, user_id: u64) -> Result<Option<TreeRecord>> {
-        let tree = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id, year, address FROM trees WHERE added_by = ? ORDER BY id DESC") {
-                Ok(value) => value,
-
-                Err(e) => {
-                    error!("Error preparing SQL statement: {}", e);
-                    return Err(e);
-                },
-            };
-
-            let mut rows = match stmt.query([user_id]) {
-                Ok(value) => value,
-
-                Err(e) => {
-                    error!("Error executing SQL statement: {}", e);
-                    return Err(e);
-                },
-            };
-
-            if let Some(row) = rows.next()? {
-                return Ok(Some(TreeRecord::from_sqlite_row(row)?));
-            }
-
-            Ok(None)
-        }).await?;
-
-        Ok(tree)
     }
 
     async fn find_user_by_email(&self, email: &str) -> Result<Option<UserRecord>> {
@@ -1038,38 +839,6 @@ impl DatabaseInterface for SqliteDatabase {
         Ok(())
     }
 
-    async fn find_trees_with_no_address(&self) -> Result<Vec<TreeRecord>> {
-        let trees = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id, year, address FROM trees WHERE address IS NULL ORDER BY added_at DESC") {
-                Ok(value) => value,
-
-                Err(e) => {
-                    error!("Error preparing SQL statement: {}", e);
-                    return Err(e);
-                },
-            };
-
-            let mut rows = match stmt.query([]) {
-                Ok(value) => value,
-
-                Err(e) => {
-                    error!("Error executing SQL statement: {}", e);
-                    return Err(e);
-                },
-            };
-
-            let mut trees: Vec<TreeRecord> = Vec::new();
-
-            while let Some(row) = rows.next()? {
-                trees.push(TreeRecord::from_sqlite_row(row)?);
-            }
-
-            Ok(trees)
-        }).await?;
-
-        Ok(trees)
-    }
-
     async fn get_species_stats(&self) -> Result<Vec<(String, u64)>> {
         let res = self.pool.conn(move |conn| {
             let mut stmt = match conn.prepare("SELECT species, COUNT(1) AS cnt FROM trees WHERE state <> 'gone' GROUP BY species ORDER BY cnt DESC, LOWER(species)") {
@@ -1124,13 +893,18 @@ impl DatabaseInterface for SqliteDatabase {
                 },
             };
 
-            let mut res = Vec::new();
+            let mut records = Vec::new();
 
             while let Some(row) = rows.next()? {
-                res.push(TreeRecord::from_sqlite_row(row)?);
+                let fields = row.as_ref().column_names();
+                let rec = Self::pack_record(row, &fields)?;
+
+                if let Ok(packed) = TreeRecord::from_attributes(&rec) {
+                    records.push(packed);
+                }
             }
 
-            Ok(res)
+            Ok(records)
         }).await?;
 
         Ok(res)
@@ -1169,102 +943,6 @@ impl DatabaseInterface for SqliteDatabase {
 
         Ok(res)
     }
-
-    async fn get_top_height(&self, count: u64) -> Result<Vec<TreeRecord>> {
-        let trees = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id, year, address FROM trees WHERE state <> 'gone' AND height IS NOT NULL ORDER BY height DESC LIMIT ?") {
-                Ok(value) => value,
-
-                Err(e) => {
-                    error!("Error preparing SQL statement: {}", e);
-                    return Err(e);
-                },
-            };
-
-            let mut rows = match stmt.query([count]) {
-                Ok(value) => value,
-
-                Err(e) => {
-                    error!("Error executing SQL statement: {}", e);
-                    return Err(e);
-                },
-            };
-
-            let mut trees: Vec<TreeRecord> = Vec::new();
-
-            while let Some(row) = rows.next()? {
-                trees.push(TreeRecord::from_sqlite_row(row)?);
-            }
-
-            Ok(trees)
-        }).await?;
-
-        Ok(trees)
-    }
-
-    async fn get_top_diameter(&self, count: u64) -> Result<Vec<TreeRecord>> {
-        let trees = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id, year, address FROM trees WHERE state <> 'gone' AND diameter IS NOT NULL ORDER BY diameter DESC LIMIT ?") {
-                Ok(value) => value,
-
-                Err(e) => {
-                    error!("Error preparing SQL statement: {}", e);
-                    return Err(e);
-                },
-            };
-
-            let mut rows = match stmt.query([count]) {
-                Ok(value) => value,
-
-                Err(e) => {
-                    error!("Error executing SQL statement: {}", e);
-                    return Err(e);
-                },
-            };
-
-            let mut trees: Vec<TreeRecord> = Vec::new();
-
-            while let Some(row) = rows.next()? {
-                trees.push(TreeRecord::from_sqlite_row(row)?);
-            }
-
-            Ok(trees)
-        }).await?;
-
-        Ok(trees)
-    }
-
-    async fn get_top_circumference(&self, count: u64) -> Result<Vec<TreeRecord>> {
-        let trees = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id, year, address FROM trees WHERE state <> 'gone' AND circumference IS NOT NULL ORDER BY circumference DESC LIMIT ?") {
-                Ok(value) => value,
-
-                Err(e) => {
-                    error!("Error preparing SQL statement: {}", e);
-                    return Err(e);
-                },
-            };
-
-            let mut rows = match stmt.query([count]) {
-                Ok(value) => value,
-
-                Err(e) => {
-                    error!("Error executing SQL statement: {}", e);
-                    return Err(e);
-                },
-            };
-
-            let mut trees: Vec<TreeRecord> = Vec::new();
-
-            while let Some(row) = rows.next()? {
-                trees.push(TreeRecord::from_sqlite_row(row)?);
-            }
-
-            Ok(trees)
-        }).await?;
-
-        Ok(trees)
-    }
 }
 
 impl Clone for SqliteDatabase {
@@ -1297,32 +975,6 @@ mod tests {
             .expect("Error installing fixtures.");
 
         db
-    }
-
-    #[tokio::test]
-    async fn test_get_trees() -> Result<()> {
-        let db = setup().await;
-        db.execute(include_str!("./fixtures/trees.sql").to_string())
-            .await
-            .unwrap();
-
-        let bounds = Bounds {
-            n: 90.0,
-            e: 180.0,
-            s: -90.0,
-            w: -180.0,
-        };
-
-        let trees = match db.get_trees(bounds).await {
-            Ok(value) => value,
-
-            Err(e) => {
-                panic!("Error reading trees from the database: {}", e);
-            }
-        };
-
-        assert_eq!(trees.len(), 3);
-        Ok(())
     }
 
     #[tokio::test]
