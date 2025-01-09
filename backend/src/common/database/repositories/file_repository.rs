@@ -48,10 +48,7 @@ impl FileRepository {
 
     #[allow(unused)]
     pub async fn delete(&self, file: &FileRecord) -> Result<()> {
-        let query = DeleteQuery {
-            table_name: TABLE.to_string(),
-            conditions: Attributes::from(&[("id".to_string(), Value::from(file.id as i64))]),
-        };
+        let query = DeleteQuery::new(TABLE).with_condition("id", Value::from(file.id as i64));
 
         self.db.delete(query).await
     }

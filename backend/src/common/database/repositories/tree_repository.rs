@@ -131,12 +131,9 @@ impl TreeRepository {
     }
 
     pub async fn add(&self, tree: &TreeRecord) -> Result<()> {
-        self.db
-            .add_record(InsertQuery {
-                table_name: TABLE.to_string(),
-                attributes: tree.to_attributes(),
-            })
-            .await?;
+        let query = InsertQuery::new(TABLE).with_values(tree.to_attributes());
+
+        self.db.add_record(query).await?;
 
         self.log_changes(&TreeRecord::default(), tree, tree.added_by)
             .await

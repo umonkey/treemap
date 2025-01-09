@@ -4,11 +4,23 @@ use rusqlite::types::Value;
 
 #[derive(Debug, Default)]
 pub struct DeleteQuery {
-    pub table_name: String,
-    pub conditions: Attributes,
+    table_name: String,
+    conditions: Attributes,
 }
 
 impl DeleteQuery {
+    pub fn new(table_name: &str) -> Self {
+        DeleteQuery {
+            table_name: table_name.to_string(),
+            ..Default::default()
+        }
+    }
+
+    pub fn with_condition(mut self, column: &str, value: Value) -> Self {
+        self.conditions.insert(column, value);
+        self
+    }
+
     pub fn build(&self) -> (String, Vec<Value>) {
         let (where_query, params) = format_where(&self.conditions);
 
@@ -25,11 +37,7 @@ mod tests {
 
     #[test]
     fn test_delete() -> Result<()> {
-        let query = DeleteQuery {
-            table_name: "trees".to_string(),
-            conditions: Attributes::from(&[("id".to_string(), Value::from(1))]),
-            ..Default::default()
-        };
+        let query = DeleteQuery::new("trees").with_condition("id", Value::from(1));
 
         let (query, params) = query.build();
 

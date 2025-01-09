@@ -30,10 +30,7 @@ impl PropRepository {
             ..prop.clone()
         };
 
-        let query = InsertQuery {
-            table_name: TABLE.to_string(),
-            attributes: prop.to_attributes(),
-        };
+        let query = InsertQuery::new(TABLE).with_values(prop.to_attributes());
 
         match self.db.add_record(query).await {
             Ok(_) => Ok(()),

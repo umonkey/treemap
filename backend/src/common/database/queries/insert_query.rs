@@ -3,11 +3,28 @@ use rusqlite::types::Value;
 
 #[derive(Debug, Default)]
 pub struct InsertQuery {
-    pub table_name: String,
-    pub attributes: Attributes,
+    table_name: String,
+    attributes: Attributes,
 }
 
 impl InsertQuery {
+    pub fn new(table_name: &str) -> Self {
+        InsertQuery {
+            table_name: table_name.to_string(),
+            ..Default::default()
+        }
+    }
+
+    pub fn with_value(mut self, column: &str, value: Value) -> Self {
+        self.attributes.insert(column, value);
+        self
+    }
+
+    pub fn with_values(mut self, values: Attributes) -> Self {
+        self.attributes = values;
+        self
+    }
+
     pub fn build(&self) -> (String, Vec<Value>) {
         let mut columns = Vec::new();
         let mut placeholders = Vec::new();
@@ -37,10 +54,7 @@ mod tests {
 
     #[test]
     fn test_insert() -> Result<()> {
-        let query = InsertQuery {
-            table_name: "trees".to_string(),
-            attributes: Attributes::from(&[("id".to_string(), Value::from(1))]),
-        };
+        let query = InsertQuery::new("trees").with_value("id", Value::from(1));
 
         let (query, params) = query.build();
 

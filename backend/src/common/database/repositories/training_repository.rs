@@ -12,15 +12,11 @@ pub struct TrainingRepository {
 
 impl TrainingRepository {
     pub async fn add(&self, record: &TrainingRecord) -> Result<()> {
-        let query = InsertQuery {
-            table_name: TABLE.to_string(),
-            attributes: Attributes::from(&[
-                ("id".to_string(), Value::from(record.id as i64)),
-                ("user_id".to_string(), Value::from(record.user_id as i64)),
-                ("added_at".to_string(), Value::from(record.added_at as i64)),
-                ("result".to_string(), Value::from(record.result)),
-            ]),
-        };
+        let query = InsertQuery::new(TABLE)
+            .with_value("id", Value::from(record.id as i64))
+            .with_value("user_id", Value::from(record.user_id as i64))
+            .with_value("added_at", Value::from(record.added_at as i64))
+            .with_value("result", Value::from(record.result));
 
         self.db.add_record(query).await
     }
