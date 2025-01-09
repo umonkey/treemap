@@ -54,10 +54,6 @@ impl OsmPushHandler {
             return false;
         }
 
-        if tree.species.to_lowercase().contains("unknown") {
-            return false;
-        }
-
         true
     }
 

@@ -193,10 +193,19 @@ impl OsmClient {
         );
         xml.push_str("<tag k=\"natural\" v=\"tree\" />");
 
-        xml.push_str(&format!(
-            "<tag k=\"species\" v=\"{}\" />",
-            escape_str_attribute(tree.species.as_str())
-        ));
+        if let Some(value) = tree.get_genus() {
+            xml.push_str(&format!(
+                "<tag k=\"genus\" v=\"{}\" />",
+                escape_str_attribute(value.as_str())
+            ));
+        }
+
+        if let Some(value) = tree.get_full_species() {
+            xml.push_str(&format!(
+                "<tag k=\"species\" v=\"{}\" />",
+                escape_str_attribute(value.as_str())
+            ));
+        }
 
         if let Some(value) = tree.height {
             if value > 0.0 {

@@ -106,4 +106,33 @@ impl TreeRecord {
     pub fn is_existing(&self) -> bool {
         self.state != "gone" && self.state != "stomp"
     }
+
+    pub fn get_genus(&self) -> Option<String> {
+        if self.species.is_empty() {
+            return None;
+        }
+
+        if self.species.to_lowercase().contains("unknown") {
+            return None;
+        }
+
+        let parts = self.species.split_whitespace().collect::<Vec<_>>();
+        Some(parts[0].to_string())
+    }
+
+    pub fn get_full_species(&self) -> Option<String> {
+        if self.species.is_empty() {
+            return None;
+        }
+
+        if self.species.to_lowercase().contains("unknown") {
+            return None;
+        }
+
+        if !self.species.contains(" ") {
+            return None;
+        }
+
+        Some(self.species.clone())
+    }
 }
