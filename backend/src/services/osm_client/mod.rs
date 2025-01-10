@@ -70,6 +70,21 @@ impl OsmClient {
         }
     }
 
+    pub async fn update_tree(&self, changeset_id: u64, element: &OsmElement) -> Result<()> {
+        let url = format!("https://api.openstreetmap.org/api/0.6/node/{}", element.id);
+
+        let xml = format!(
+            "<osm>{}</osm>",
+            self.format_node_update(changeset_id, element)?
+        );
+
+        self.put(&url, &xml).await?;
+
+        info!("OSM node {} updated.", element.id);
+
+        Ok(())
+    }
+
     pub async fn get_token(&self, code: &str) -> Result<String> {
         let json = self
             .request_json(&format!(
@@ -127,6 +142,68 @@ impl OsmClient {
         Ok(res)
     }
 
+    pub async fn get_node(&self, id: u64) -> Result<Option<OsmElement>> {
+        let url = format!("https://api.openstreetmap.org/api/0.6/node/{}.json", id);
+
+        let response = match self.client.get(url.to_string()).send().await {
+            Ok(response) => response,
+
+            Err(e) => {
+                error!("Error querying OSM API: {}; URL: {}", e, url);
+                return Err(Error::OsmExchange);
+            }
+        };
+
+        if response.status() == 410 {
+            debug!("OSM node {} is gone.", id);
+            return Ok(None);
+        }
+
+        if response.status() == 404 {
+            debug!("OSM node {} not found.", id);
+            return Ok(None);
+        }
+
+        if response.status() != 200 {
+            error!(
+                "OSM API GET failed with status: {}; URL: {}",
+                response.status(),
+                url
+            );
+            return Err(Error::OsmExchange);
+        }
+
+        let json: Value = match response.json().await {
+            Ok(json) => json,
+
+            Err(e) => {
+                error!("Error parsing OSM API response JSON: {:?}", e);
+                return Err(Error::OsmExchange);
+            }
+        };
+
+        let raw_elements = match json["elements"].as_array() {
+            Some(elements) => elements,
+
+            None => {
+                error!("OSM response does not contain elements array.");
+                return Err(Error::OsmExchange);
+            }
+        };
+
+        for raw_element in raw_elements {
+            match serde_json::from_value::<OsmElement>(raw_element.clone()) {
+                Ok(element) => return Ok(Some(element)),
+
+                Err(e) => {
+                    error!("Error parsing OSM element: {:?}", e);
+                }
+            };
+        }
+
+        Ok(None)
+    }
+
     async fn put(&self, url: &str, body: &str) -> Result<String> {
         let token = get_osm_token()?;
 
@@ -149,7 +226,12 @@ impl OsmClient {
         };
 
         if response.status() != 200 {
-            error!("Overpass query failed with status: {}", response.status());
+            error!(
+                "OSM API PUT failed with status: {}; URL: {}; body: {}",
+                response.status(),
+                url,
+                body
+            );
             return Err(Error::OsmExchange);
         }
 
@@ -170,7 +252,11 @@ impl OsmClient {
         };
 
         if response.status() != 200 {
-            error!("Overpass query failed with status: {}", response.status());
+            error!(
+                "OSM API GET failed with status: {}; URL: {}",
+                response.status(),
+                url
+            );
             return Err(Error::OsmExchange);
         }
 
@@ -178,7 +264,7 @@ impl OsmClient {
             Ok(json) => json,
 
             Err(e) => {
-                error!("Error parsing Overpass response JSON: {:?}", e);
+                error!("Error parsing OSM API response JSON: {:?}", e);
                 return Err(Error::OsmExchange);
             }
         };
@@ -228,6 +314,20 @@ impl OsmClient {
         // https://wiki.openstreetmap.org/wiki/Key:image
         let url = format!("https://yerevan.treemaps.app/tree/{}", tree.id);
         xml.push_str(&format!("<tag k=\"image\" v=\"{}\" />", url));
+
+        xml.push_str("</node>");
+        Ok(xml)
+    }
+
+    fn format_node_update(&self, changeset_id: u64, element: &OsmElement) -> Result<String> {
+        let mut xml = format!(
+            "<node changeset=\"{}\" id=\"{}\" version=\"{}\" lat=\"{}\" lon=\"{}\">",
+            changeset_id, element.id, element.version, element.lat, element.lon
+        );
+
+        for (k, v) in &element.tags {
+            xml.push_str(osm_tag(k, v).as_str());
+        }
 
         xml.push_str("</node>");
         Ok(xml)

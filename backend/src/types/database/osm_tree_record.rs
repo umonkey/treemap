@@ -1,4 +1,4 @@
-use crate::types::{Attributes, Result};
+use crate::types::*;
 use log::debug;
 use rusqlite::types::Value;
 
@@ -122,6 +122,18 @@ impl OsmTreeRecord {
         None
     }
 
+    fn parse_size(value: Option<String>) -> Option<f64> {
+        if let Some(value) = value {
+            if let Some(value) = value.strip_suffix('m') {
+                if let Ok(value) = value.parse::<f64>() {
+                    return Some(value);
+                }
+            }
+        }
+
+        None
+    }
+
     fn get_string(tags: &serde_json::Map<String, serde_json::Value>, key: &str) -> Option<String> {
         let value = match tags.get(key) {
             Some(value) => value,
@@ -134,5 +146,44 @@ impl OsmTreeRecord {
         };
 
         Some(value.to_string())
+    }
+}
+
+impl From<&TreeRecord> for OsmTreeRecord {
+    fn from(tree: &TreeRecord) -> Self {
+        let species = match tree.species.to_lowercase().contains("unknown") {
+            true => None,
+            false => Some(tree.species.clone()),
+        };
+
+        Self {
+            id: tree.osm_id.unwrap_or(0),
+            lat: tree.lat,
+            lon: tree.lon,
+            genus: None,
+            species,
+            species_wikidata: None,
+            height: tree.height,
+            circumference: tree.circumference,
+            diameter_crown: tree.diameter,
+            image: None,
+        }
+    }
+}
+
+impl From<&OsmElement> for OsmTreeRecord {
+    fn from(em: &OsmElement) -> Self {
+        Self {
+            id: em.id,
+            lat: em.lat,
+            lon: em.lon,
+            genus: em.tags.get("genus").cloned(),
+            species: em.tags.get("species").cloned(),
+            species_wikidata: None,
+            height: Self::parse_size(em.tags.get("height").cloned()),
+            circumference: Self::parse_size(em.tags.get("circumference").cloned()),
+            diameter_crown: Self::parse_size(em.tags.get("diameter_crown").cloned()),
+            image: em.tags.get("image").cloned(),
+        }
     }
 }
