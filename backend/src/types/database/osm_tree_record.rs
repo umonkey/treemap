@@ -15,6 +15,7 @@ pub struct OsmTreeRecord {
     pub height: Option<f64>,
     pub circumference: Option<f64>,
     pub diameter_crown: Option<f64>,
+    pub image: Option<String>,
 }
 
 impl OsmTreeRecord {
@@ -41,6 +42,7 @@ impl OsmTreeRecord {
             height: attributes.get_f64("height")?,
             circumference: attributes.get_f64("circumference")?,
             diameter_crown: attributes.get_f64("diameter_crown")?,
+            image: attributes.get_string("image")?,
         })
     }
 
@@ -61,6 +63,7 @@ impl OsmTreeRecord {
                 "diameter_crown".to_string(),
                 Value::from(self.diameter_crown),
             ),
+            ("image".to_string(), Value::from(self.image.clone())),
         ])
     }
 
@@ -85,6 +88,7 @@ impl OsmTreeRecord {
             height: Self::get_size(tags, "height", id),
             circumference: Self::get_size(tags, "circumference", id),
             diameter_crown: Self::get_size(tags, "diameter_crown", id),
+            image: Self::get_string(tags, "image"),
         })
     }
 
