@@ -1,8 +1,7 @@
 use serde::Deserialize;
 use std::collections::HashMap;
 
-#[derive(Debug, Deserialize)]
-#[allow(unused)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct OsmElement {
     pub r#type: String,
     pub id: u64,

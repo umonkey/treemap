@@ -6,15 +6,15 @@
 use crate::common::database::repositories::*;
 use crate::services::*;
 use crate::types::*;
+use crate::utils::get_osm_changeset_size;
 use log::{debug, info, warn};
 use std::sync::Arc;
-
-const MAX_CHANGES: usize = 100;
 
 pub struct OsmPushChangesHandler {
     osm: Arc<OsmClient>,
     osm_trees: Arc<OsmTreeRepository>,
     trees: Arc<TreeRepository>,
+    changeset_size: u64,
 }
 
 impl OsmPushChangesHandler {
@@ -32,7 +32,10 @@ impl OsmPushChangesHandler {
         }
 
         let total = trees.len();
-        let trees = trees.into_iter().take(MAX_CHANGES).collect::<Vec<_>>();
+        let trees = trees
+            .into_iter()
+            .take(self.changeset_size as usize)
+            .collect::<Vec<_>>();
 
         debug!(
             "Have {} node updates for OSM, sending {}.",
@@ -40,10 +43,12 @@ impl OsmPushChangesHandler {
             trees.len()
         );
 
+        /*
         let changeset = self
             .osm
             .create_changeset("Updating tree attributes.")
             .await?;
+        */
 
         for tree in trees {
             let node = match self.osm.get_node(tree.osm_id.unwrap()).await? {
@@ -58,16 +63,21 @@ impl OsmPushChangesHandler {
                 }
             };
 
-            let node_with_changes = self.merge_changes(node, &tree);
+            let node_with_changes = self.merge_changes(node.clone(), &tree);
+            debug!("CURRENT: {:?}", node);
+            debug!("UPDATED: {:?}", node_with_changes);
+            break;
 
+            /*
             self.osm.update_tree(changeset, &node_with_changes).await?;
 
             // Update our existing record to avoid duplicate updates.
             let osm_record: OsmTreeRecord = (&tree).into();
             self.osm_trees.update(&osm_record).await?;
+            */
         }
 
-        self.osm.close_changeset(changeset).await?;
+        // self.osm.close_changeset(changeset).await?;
 
         Ok(())
     }
@@ -81,6 +91,7 @@ impl OsmPushChangesHandler {
             }
 
             res.push(tree);
+            break;
         }
 
         Ok(res)
@@ -207,6 +218,7 @@ impl Locatable for OsmPushChangesHandler {
             osm: locator.get::<OsmClient>()?,
             osm_trees: locator.get::<OsmTreeRepository>()?,
             trees: locator.get::<TreeRepository>()?,
+            changeset_size: get_osm_changeset_size(),
         })
     }
 }
