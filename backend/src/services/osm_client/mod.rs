@@ -18,7 +18,7 @@ impl OsmClient {
             host: "https://yerevan.treemaps.app/".to_string(),
             bot: true,
             source: "survey".to_string(),
-            comment: comment.to_string(),
+            comment: self.format_changeset_comment(comment),
         };
 
         let url = "https://api.openstreetmap.org/api/0.6/changeset/create";
@@ -331,6 +331,20 @@ impl OsmClient {
 
         xml.push_str("</node>");
         Ok(xml)
+    }
+
+    fn format_changeset_comment(&self, comment: &str) -> String {
+        let mut comment = comment.to_string();
+
+        if let Ok(hashtag) = get_osm_hashtag() {
+            comment.push_str(&format!("\n\n #{}", hashtag));
+        }
+
+        if let Ok(activity) = get_osm_activity() {
+            comment.push_str(&format!("\n\n{}", activity));
+        }
+
+        comment
     }
 }
 
