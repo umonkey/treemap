@@ -173,6 +173,14 @@ pub fn get_osm_activity() -> Result<String> {
     env::var("OSM_ACTIVITY").map_err(|_| Error::EnvNotSet)
 }
 
+pub fn get_dry_run() -> Result<bool> {
+    if let Ok(value) = env::var("DRY") {
+        return Ok(value == "yes");
+    }
+
+    Ok(false)
+}
+
 pub fn get_app_name() -> String {
     env!("CARGO_PKG_NAME").to_string()
 }

@@ -1,4 +1,5 @@
 use crate::types::*;
+use crate::utils::*;
 use log::debug;
 use rusqlite::types::Value;
 
@@ -34,8 +35,8 @@ impl OsmTreeRecord {
     pub fn from_attributes(attributes: &Attributes) -> Result<Self> {
         Ok(Self {
             id: attributes.require_u64("id")?,
-            lat: attributes.require_f64("lat")?,
-            lon: attributes.require_f64("lon")?,
+            lat: osm_round_coord(attributes.require_f64("lat")?),
+            lon: osm_round_coord(attributes.require_f64("lon")?),
             genus: attributes.get_string("genus")?,
             species: attributes.get_string("species")?,
             species_wikidata: attributes.get_string("species_wikidata")?,
@@ -151,17 +152,12 @@ impl OsmTreeRecord {
 
 impl From<&TreeRecord> for OsmTreeRecord {
     fn from(tree: &TreeRecord) -> Self {
-        let species = match tree.species.to_lowercase().contains("unknown") {
-            true => None,
-            false => Some(tree.species.clone()),
-        };
-
         Self {
             id: tree.osm_id.unwrap_or(0),
-            lat: tree.lat,
-            lon: tree.lon,
-            genus: None,
-            species,
+            lat: osm_round_coord(tree.lat),
+            lon: osm_round_coord(tree.lon),
+            genus: get_osm_genus(&tree.species),
+            species: get_osm_species(&tree.species),
             species_wikidata: None,
             height: tree.height,
             circumference: tree.circumference,

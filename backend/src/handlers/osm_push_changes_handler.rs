@@ -2,11 +2,19 @@
 //!
 //! When we know that a tree exists in OSM, we have the osm_id,
 //! and we can see that the tree has been updated, we push them.
+//!
+//! The algorithm is the following.
+//!
+//! (1) Get all trees from the database which have an osm_id.
+//! (2) Convert them to OsmTreeRecord.
+//! (3) See if there is a corresponding record in table osm_trees.
+//! (4) See if that differs from the current tree.
+//! (5) If it does, push the changes to OSM.
 
 use crate::common::database::repositories::*;
 use crate::services::*;
 use crate::types::*;
-use crate::utils::get_osm_changeset_size;
+use crate::utils::*;
 use log::{debug, info, warn};
 use std::sync::Arc;
 
@@ -15,6 +23,7 @@ pub struct OsmPushChangesHandler {
     osm_trees: Arc<OsmTreeRepository>,
     trees: Arc<TreeRepository>,
     changeset_size: u64,
+    dry_run: bool,
 }
 
 impl OsmPushChangesHandler {
@@ -43,74 +52,72 @@ impl OsmPushChangesHandler {
             trees.len()
         );
 
-        /*
-        let changeset = self
-            .osm
-            .create_changeset("Updating tree attributes.")
-            .await?;
-        */
+        let changeset = self.get_changeset_id().await?;
 
         for tree in trees {
-            let node = match self.osm.get_node(tree.osm_id.unwrap()).await? {
+            let node = match self.osm.get_node(tree.id).await? {
                 Some(value) => value,
 
                 None => {
-                    warn!(
-                        "OSM node {} not found, skipping update.",
-                        tree.osm_id.unwrap()
-                    );
+                    warn!("OSM node {} not found, skipping update.", tree.id);
                     continue;
                 }
             };
 
             let node_with_changes = self.merge_changes(node.clone(), &tree);
-            debug!("CURRENT: {:?}", node);
-            debug!("UPDATED: {:?}", node_with_changes);
-            break;
 
-            /*
-            self.osm.update_tree(changeset, &node_with_changes).await?;
+            if !self.dry_run {
+                // Send updates to OSM.
+                self.osm.update_tree(changeset, &node_with_changes).await?;
 
-            // Update our existing record to avoid duplicate updates.
-            let osm_record: OsmTreeRecord = (&tree).into();
-            self.osm_trees.update(&osm_record).await?;
-            */
+                // Update our existing record to avoid duplicate updates.
+                self.osm_trees.update(&tree).await?;
+            } else {
+                debug!("Source node: {:?}", node);
+                debug!("Updated node: {:?}", node_with_changes);
+            }
         }
 
-        // self.osm.close_changeset(changeset).await?;
+        if !self.dry_run {
+            self.osm.close_changeset(changeset).await?;
+        }
 
         Ok(())
     }
 
-    async fn get_changed_trees(&self) -> Result<Vec<TreeRecord>> {
+    async fn get_changeset_id(&self) -> Result<u64> {
+        if self.dry_run {
+            return Ok(0);
+        }
+
+        self.osm.create_changeset("Updating tree attributes.").await
+    }
+
+    async fn get_changed_trees(&self) -> Result<Vec<OsmTreeRecord>> {
         let mut res = Vec::new();
 
         for tree in self.trees.all().await? {
-            if !self.shall_add(&tree).await? {
-                continue;
-            }
+            if tree.osm_id.is_some() {
+                let tree: OsmTreeRecord = (&tree).into();
 
-            res.push(tree);
-            break;
+                if self.has_changes(&tree).await? {
+                    res.push(tree);
+                }
+            }
         }
 
         Ok(res)
     }
 
-    async fn shall_add(&self, tree: &TreeRecord) -> Result<bool> {
-        let osm_id = match tree.osm_id {
-            Some(value) => value,
-            None => return Ok(false),
-        };
+    async fn has_changes(&self, new: &OsmTreeRecord) -> Result<bool> {
+        let osm_id = new.id;
 
         let old = match self.osm_trees.get(osm_id).await? {
             Some(value) => value,
             None => return Ok(false),
         };
 
-        let new: OsmTreeRecord = tree.into();
-
-        if self.ll_diff(old.lat, new.lat) {
+        if old.lat != new.lat {
             debug!(
                 "OSM node {} changed: lat: {} -> {}",
                 osm_id, old.lat, new.lat
@@ -118,7 +125,7 @@ impl OsmPushChangesHandler {
             return Ok(true);
         }
 
-        if self.ll_diff(old.lon, new.lon) {
+        if old.lon != new.lon {
             debug!(
                 "OSM node {} changed: lon: {} -> {}",
                 osm_id, old.lon, new.lon
@@ -161,13 +168,7 @@ impl OsmPushChangesHandler {
         Ok(false)
     }
 
-    // Tell if a coordinate difference is more than 1 cm.
-    // @docs https://support.garmin.com/en-US/?faq=hRMBoCTy5a7HqVkxukhHd8
-    fn ll_diff(&self, a: f64, b: f64) -> bool {
-        (a - b).abs() > 0.0000001
-    }
-
-    fn merge_changes(&self, node: OsmElement, tree: &TreeRecord) -> OsmElement {
+    fn merge_changes(&self, node: OsmElement, tree: &OsmTreeRecord) -> OsmElement {
         let mut node = node;
 
         node.lat = tree.lat;
@@ -175,12 +176,12 @@ impl OsmPushChangesHandler {
 
         node.tags.insert("natural".to_string(), "tree".to_string());
 
-        if let Some(value) = tree.get_genus() {
-            node.tags.insert("genus".to_string(), value);
+        if let Some(value) = &tree.genus {
+            node.tags.insert("genus".to_string(), value.to_string());
         }
 
-        if let Some(value) = tree.get_full_species() {
-            node.tags.insert("species".to_string(), value);
+        if let Some(value) = &tree.species {
+            node.tags.insert("species".to_string(), value.to_string());
         }
 
         if let Some(value) = tree.height {
@@ -196,16 +197,15 @@ impl OsmPushChangesHandler {
             }
         }
 
-        if let Some(value) = tree.diameter {
+        if let Some(value) = tree.diameter_crown {
             if value > 0.0 {
                 node.tags
                     .insert("diameter_crown".to_string(), value.to_string());
             }
         }
 
-        if tree.thumbnail_id.is_some() {
-            let page = format!("https://yerevan.treemaps.app/tree/{}", tree.id);
-            node.tags.insert("image".to_string(), page.to_string());
+        if let Some(value) = &tree.image {
+            node.tags.insert("image".to_string(), value.to_string());
         }
 
         node
@@ -219,6 +219,7 @@ impl Locatable for OsmPushChangesHandler {
             osm_trees: locator.get::<OsmTreeRepository>()?,
             trees: locator.get::<TreeRepository>()?,
             changeset_size: get_osm_changeset_size(),
+            dry_run: get_dry_run()?,
         })
     }
 }
