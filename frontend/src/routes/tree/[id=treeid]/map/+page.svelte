@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { formatSpecies } from '$lib/utils/trees';
 	import type { ITree } from '$lib/types';
+	import { mapZoom } from '$lib/stores/map';
 
 	import Header from '$lib/components/tree/Header.svelte';
 	import Tabs from '$lib/components/tree/Tabs.svelte';
@@ -36,7 +37,7 @@
 	<Map
 		center={[tree.lat, tree.lon]}
 		marker={[tree.lat, tree.lon]}
-		zoom={18}
+		zoom={$mapZoom}
 		className="treeTab"
 		canAdd={true}
 		onChange={onPreview}
