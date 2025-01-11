@@ -81,7 +81,12 @@
 	});
 </script>
 
-<div id="map" class={className} class:dark={$baseLayer === 'OSM Dark'}></div>
+<div
+	id="map"
+	class={className}
+	class:dark={$baseLayer === 'OSM Dark'}
+	class:light={$baseLayer !== 'OSM Dark'}
+></div>
 
 {#if crosshair}
 	<img src="/icons/crosshair.svg" class="crosshair" alt="" />
@@ -94,10 +99,12 @@
 		z-index: 1;
 	}
 
-	@media (prefers-color-scheme: dark) {
-		#map {
-			background-color: #000;
-		}
+	#map.light {
+		background-color: #f9f6ef;
+	}
+
+	#map.dark {
+		background-color: #080808;
 	}
 
 	.crosshair {
