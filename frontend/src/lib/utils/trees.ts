@@ -13,19 +13,19 @@ export const shortDetails = (tree: ITree): string => {
 	const parts = [];
 
 	if (tree.height) {
-		parts.push(`H=${tree.height.toFixed(1)}m`);
+		parts.push(`H=${formatMeters(tree.height)}`);
 	} else {
 		parts.push('H=?');
 	}
 
 	if (tree.diameter) {
-		parts.push(`D=${tree.diameter.toFixed(1)}m`);
+		parts.push(`D=${formatMeters(tree.diameter)}`);
 	} else {
 		parts.push('D=?');
 	}
 
 	if (tree.circumference) {
-		parts.push(`C=${(tree.circumference * 100).toFixed(1)}cm`);
+		parts.push(`C=${formatCentimeters(tree.circumference)}`);
 	} else {
 		parts.push('C=?');
 	}
@@ -66,7 +66,13 @@ export const formatMeters = (value: number | undefined | null): string => {
 		return '???';
 	}
 
-	return locale.meters(value.toFixed(1));
+	let v = value.toFixed(1);
+
+	if (v.endsWith('.0')) {
+		v = v.slice(0, -2);
+	}
+
+	return locale.meters(v);
 };
 
 export const formatCentimeters = (value: number | undefined | null): string => {
