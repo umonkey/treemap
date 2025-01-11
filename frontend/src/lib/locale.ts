@@ -39,6 +39,10 @@ class EnglishLocale {
 		return 'About this app';
 	}
 
+	public searchTitle(): string {
+		return 'Search';
+	}
+
 	public searchPrompt(): string {
 		return 'Search trees...';
 	}
@@ -455,6 +459,10 @@ class RussianLocale extends EnglishLocale {
 
 	public sideAbout(): stirng {
 		return 'Об этом приложении';
+	}
+
+	public searchTitle(): string {
+		return 'Поиск';
 	}
 
 	public searchPrompt(): string {

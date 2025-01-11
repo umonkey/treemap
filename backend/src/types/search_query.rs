@@ -15,6 +15,8 @@ pub struct SearchQuery {
     pub noimages: bool,
     pub hasaddr: bool,
     pub noaddr: bool,
+    pub noheight: bool,
+    pub nodiameter: bool,
     pub hasimages: bool,
     pub sick: bool,
     pub dead: bool,
@@ -37,8 +39,10 @@ impl SearchQuery {
         for word in split_words(query.to_lowercase().as_str()) {
             if word.contains("nometric") {
                 res.nometrics = true;
-            } else if word.contains("nocirc") {
+            } else if word.contains("no:circumference") {
                 res.nocirc = true;
+            } else if word.contains("no:diameter") {
+                res.nodiameter = true;
             } else if word.contains("noimage") || word.contains("nophoto") {
                 res.noimages = true;
             } else if word.contains("hasimage") || word.contains("hasphoto") {
@@ -63,6 +67,8 @@ impl SearchQuery {
                 res.hasaddr = true;
             } else if word == "no:addr" {
                 res.noaddr = true;
+            } else if word == "no:height" {
+                res.noheight = true;
             } else if word.contains("all") {
                 res.all = true;
             } else if let Some(value) = word.strip_prefix("addr:") {
@@ -98,7 +104,15 @@ impl SearchQuery {
             return false;
         }
 
-        if self.nocirc && tree.circumference.is_some() {
+        if self.nocirc && tree.circumference.unwrap_or(0.0) > 0.0 {
+            return false;
+        }
+
+        if self.nodiameter && tree.diameter.unwrap_or(0.0) > 0.0 {
+            return false;
+        }
+
+        if self.noheight && tree.height.unwrap_or(0.0) > 0.0 {
             return false;
         }
 
@@ -577,7 +591,7 @@ mod tests {
 
     #[test]
     fn test_nocirc() {
-        let query = SearchQuery::from_string("nocirc");
+        let query = SearchQuery::from_string("no:circumference");
 
         assert_eq!(
             true,

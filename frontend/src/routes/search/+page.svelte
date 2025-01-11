@@ -15,7 +15,11 @@
 	};
 </script>
 
-<Header title="Search" />
+<svelte:head>
+	<title>{locale.searchTitle()}</title>
+</svelte:head>
+
+<Header title={locale.searchTitle()} />
 
 <div class="search">
 	<SearchBar bind:value={query} {onSearch} />
@@ -50,7 +54,14 @@
 				<a href={routes.searchQuery('noimage')}>Без фотографий</a> или
 				<a href={routes.searchQuery('unknown')}>неопознанные</a>
 			</li>
-			<li>Деревья <a href={routes.searchQuery('incomplete')}>без некоторых параметров</a></li>
+			<li>
+				Без <a href={routes.searchQuery('no:height')}>высоты</a>,
+				<a href={routes.searchQuery('no:diameter')}>диаметра</a>,
+				<a href={routes.searchQuery('no:circumference')}>обхвата</a>
+			</li>
+			<li>
+				<a href={routes.searchQuery('incomplete')}>incomplete</a> — деревья без некоторых параметров
+			</li>
 		</ul>
 	{:else}
 		<p>Some interesting searches:</p>
@@ -75,7 +86,12 @@
 				With <a href={routes.searchQuery('noimage')}>no images</a> or
 				<a href={routes.searchQuery('unknown')}>no species</a>
 			</li>
-			<li><a href={routes.searchQuery('incomplete')}>Missing some data</a></li>
+			<li>
+				Without <a href={routes.searchQuery('no:height')}>height</a>,
+				<a href={routes.searchQuery('no:diameter')}>crown diameter</a>,
+				<a href={routes.searchQuery('no:circumference')}>trunk circumference</a>
+			</li>
+			<li><a href={routes.searchQuery('incomplete')}>Missing any data</a></li>
 		</ul>
 	{/if}
 </div>
