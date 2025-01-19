@@ -32,7 +32,7 @@
 	{:else}
 		<button {disabled} type="button" class="button" onclick={onClick}>{locale.photoSelect()}</button
 		>
-		<input type="file" accept="image/jpeg" bind:this={input} onchange={onChange} multiple />
+		<input type="file" accept="image/jpeg, text/plain" bind:this={input} onchange={onChange} multiple />
 	{/if}
 </div>
 
