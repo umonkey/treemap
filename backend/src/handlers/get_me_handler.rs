@@ -14,6 +14,10 @@ impl GetMeHandler {
         Ok(MeResponse {
             name: user.name,
             picture: user.picture,
+            trees_count: user.trees_count,
+            comments_count: user.comments_count,
+            updates_count: user.updates_count,
+            files_count: user.files_count,
         })
     }
 }

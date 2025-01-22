@@ -1,10 +1,17 @@
-<script>
+<script lang="ts">
 	import { isAuthenticated, authState } from '$lib/stores/auth';
 	import { locale } from '$lib/locale';
 	import SignIn from '$lib/components/auth/SignIn.svelte';
 	import SignOut from '$lib/components/auth/SignOut.svelte';
 	import Header from '$lib/components/tree/Header.svelte';
+
+	const { data } = $props();
+	const { profile } = data;
 </script>
+
+<svelte:head>
+	<title>Profile</title>
+</svelte:head>
 
 <Header title="Profile" />
 
@@ -16,7 +23,9 @@
 
 		<h1>{$authState?.name ?? 'Unknown user'}</h1>
 		<div class="stats">
-			{locale.profileTrees(75)}, {locale.profileUpdates(14)}, {locale.profilePhotos(295)}
+			{locale.profileTrees(profile.trees_count)}, {locale.profileUpdates(profile.updates_count)}, {locale.profilePhotos(
+				profile.files_count
+			)}.
 		</div>
 
 		<div class="actions">

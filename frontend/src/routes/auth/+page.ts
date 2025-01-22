@@ -13,7 +13,7 @@ export const load: Load = async ({
 	console.debug(`[auth] token=${token}`);
 	console.debug(`[auth] state=${state}`);
 
-	const res = await apiClient.getMe(token);
+	const res = await apiClient.verifyToken(token);
 
 	if (res.status !== 200) {
 		console.error('[auth] Error fetching user data');

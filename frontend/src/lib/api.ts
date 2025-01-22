@@ -71,7 +71,16 @@ export class ApiClient {
 		return await this.request('GET', 'v1/stats/streets');
 	}
 
-	public async getMe(token: string): Promise<Response<IMeResponse>> {
+	public async getMe(): Promise<Response<IMeResponse>> {
+		return await this.request('GET', 'v1/me', {
+			headers: {
+				'Content-Type': 'application/json',
+				...this.getAuthHeaders()
+			}
+		});
+	}
+
+	public async verifyToken(token: string): Promise<Response<IMeResponse>> {
 		return await this.request('GET', 'v1/me', {
 			headers: {
 				'Content-Type': 'application/json',

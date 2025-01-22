@@ -38,7 +38,7 @@ impl TreeRepository {
     pub async fn get_last_by_user(&self, user_id: u64) -> Result<Option<TreeRecord>> {
         let query = SelectQuery::new(TABLE)
             .with_condition("added_by", Value::from(user_id as i64))
-            .with_order_desc("created_at")
+            .with_order_desc("added_at")
             .with_limit(1);
 
         self.query_single(query).await
@@ -69,7 +69,7 @@ impl TreeRepository {
 
     pub async fn get_recently_created(&self, count: u64, skip: u64) -> Result<Vec<TreeRecord>> {
         let query = SelectQuery::new(TABLE)
-            .with_order_desc("created_at")
+            .with_order_desc("added_at")
             .with_limit(count)
             .with_offset(skip);
 
