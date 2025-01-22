@@ -7,6 +7,7 @@ use std::sync::Arc;
 
 pub struct UpdateTreeCircumferenceHandler {
     trees: Arc<TreeRepository>,
+    users: Arc<UserRepository>,
     getter: Arc<GetTreeHandler>,
 }
 
@@ -29,6 +30,8 @@ impl UpdateTreeCircumferenceHandler {
             )
             .await?;
 
+        self.users.increment_update_count(user_id).await?;
+
         info!(
             "Circumference for tree {} changed to {} by {}.",
             tree_id, value, user_id
@@ -40,8 +43,10 @@ impl UpdateTreeCircumferenceHandler {
 
 impl Locatable for UpdateTreeCircumferenceHandler {
     fn create(locator: &Locator) -> Result<Self> {
-        let trees = locator.get::<TreeRepository>()?;
-        let getter = locator.get::<GetTreeHandler>()?;
-        Ok(Self { trees, getter })
+        Ok(Self {
+            trees: locator.get::<TreeRepository>()?,
+            users: locator.get::<UserRepository>()?,
+            getter: locator.get::<GetTreeHandler>()?,
+        })
     }
 }

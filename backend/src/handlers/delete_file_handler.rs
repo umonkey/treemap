@@ -7,6 +7,7 @@ use std::sync::Arc;
 
 pub struct DeleteFileHandler {
     files: Arc<FileRepository>,
+    users: Arc<UserRepository>,
 }
 
 impl DeleteFileHandler {
@@ -29,6 +30,8 @@ impl DeleteFileHandler {
             })
             .await?;
 
+        self.users.increment_files_count(file.added_by, -1).await?;
+
         info!("File {} deleted by {}.", file.id, req.user_id);
 
         Ok(())
@@ -37,7 +40,9 @@ impl DeleteFileHandler {
 
 impl Locatable for DeleteFileHandler {
     fn create(locator: &Locator) -> Result<Self> {
-        let files = locator.get::<FileRepository>()?;
-        Ok(Self { files })
+        Ok(Self {
+            files: locator.get::<FileRepository>()?,
+            users: locator.get::<UserRepository>()?,
+        })
     }
 }

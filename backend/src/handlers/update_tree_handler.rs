@@ -7,6 +7,7 @@ use std::sync::Arc;
 
 pub struct UpdateTreeHandler {
     trees: Arc<TreeRepository>,
+    users: Arc<UserRepository>,
     queue: Arc<QueueService>,
 }
 
@@ -67,6 +68,8 @@ impl UpdateTreeHandler {
             self.schedule_address_update(new.id).await?;
         }
 
+        self.users.increment_update_count(req.user_id).await?;
+
         Ok(new)
     }
 
@@ -84,6 +87,7 @@ impl Locatable for UpdateTreeHandler {
     fn create(locator: &Locator) -> Result<Self> {
         Ok(Self {
             trees: locator.get::<TreeRepository>()?,
+            users: locator.get::<UserRepository>()?,
             queue: locator.get::<QueueService>()?,
         })
     }

@@ -9,14 +9,10 @@ pub trait DatabaseInterface: Send + Sync {
     async fn add_record(&self, query: InsertQuery) -> Result<()>;
     async fn update(&self, query: UpdateQuery) -> Result<()>;
     async fn delete(&self, query: DeleteQuery) -> Result<()>;
+    async fn increment(&self, query: IncrementQuery) -> Result<()>;
 
     async fn move_tree(&self, id: u64, lat: f64, lon: f64) -> Result<()>;
     async fn count_trees(&self) -> Result<u64>;
-
-    async fn find_user_by_email(&self, email: &str) -> Result<Option<UserRecord>>;
-    async fn add_user(&self, user: &UserRecord) -> Result<()>;
-    async fn get_user(&self, id: u64) -> Result<Option<UserRecord>>;
-    async fn get_users(&self, ids: &[u64]) -> Result<Vec<UserRecord>>;
 
     async fn find_files_by_tree(&self, tree_id: u64) -> Result<Vec<FileRecord>>;
 

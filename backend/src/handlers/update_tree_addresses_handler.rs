@@ -1,3 +1,7 @@
+//! Update addresses for all trees that don't have one.
+//!
+//! This is only executed using a dedicated CLI command.
+
 use crate::common::database::repositories::*;
 use crate::services::*;
 use crate::types::*;

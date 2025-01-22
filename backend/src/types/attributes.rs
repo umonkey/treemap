@@ -93,6 +93,13 @@ impl Attributes {
         }
     }
 
+    pub fn require_i64(&self, key: &str) -> Result<i64> {
+        match self.props.get(key) {
+            Some(Value::Integer(value)) => Ok(*value),
+            _ => Err(Error::DatabaseStructure),
+        }
+    }
+
     pub fn require_string(&self, key: &str) -> Result<String> {
         match self.props.get(key) {
             Some(Value::Text(value)) => Ok(value.to_string()),

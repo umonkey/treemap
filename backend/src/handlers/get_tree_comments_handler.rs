@@ -6,6 +6,7 @@ use std::sync::Arc;
 pub struct GetTreeCommentsHandler {
     db: Arc<dyn DatabaseInterface>,
     trees: Arc<TreeRepository>,
+    users: Arc<UserRepository>,
 }
 
 impl GetTreeCommentsHandler {
@@ -13,7 +14,7 @@ impl GetTreeCommentsHandler {
         let comments = self.db.find_comments_by_tree(tree_id).await?;
 
         let user_ids: Vec<u64> = comments.iter().map(|r| r.added_by).collect();
-        let users = self.db.get_users(&user_ids).await?;
+        let users = self.users.get_multiple(&user_ids).await?;
 
         let tree_ids: Vec<u64> = comments.iter().map(|r| r.tree_id).collect();
         let trees = self.trees.get_multiple(&tree_ids).await?;
@@ -27,6 +28,7 @@ impl Locatable for GetTreeCommentsHandler {
         Ok(Self {
             db: locator.get::<PreferredDatabase>()?.driver(),
             trees: locator.get::<TreeRepository>()?,
+            users: locator.get::<UserRepository>()?,
         })
     }
 }

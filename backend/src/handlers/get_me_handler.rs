@@ -1,17 +1,15 @@
+use crate::common::database::repositories::*;
 use crate::services::*;
 use crate::types::*;
 use std::sync::Arc;
 
 pub struct GetMeHandler {
-    db: Arc<dyn DatabaseInterface>,
+    users: Arc<UserRepository>,
 }
 
 impl GetMeHandler {
     pub async fn handle(&self, user_id: u64) -> Result<MeResponse> {
-        let user = match self.db.get_user(user_id).await? {
-            Some(u) => u,
-            None => return Err(Error::UserNotFound),
-        };
+        let user = self.users.get(user_id).await?.ok_or(Error::UserNotFound)?;
 
         Ok(MeResponse {
             name: user.name,
@@ -22,7 +20,8 @@ impl GetMeHandler {
 
 impl Locatable for GetMeHandler {
     fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<PreferredDatabase>()?.driver();
-        Ok(Self { db })
+        Ok(Self {
+            users: locator.get::<UserRepository>()?,
+        })
     }
 }

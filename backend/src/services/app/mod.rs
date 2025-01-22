@@ -1,3 +1,4 @@
+use crate::common::database::repositories::*;
 use crate::handlers::*;
 use crate::services::Locator;
 use crate::services::{FileService, TokenService};
@@ -7,6 +8,7 @@ use std::sync::Arc;
 
 pub struct AppState {
     files: Arc<FileService>,
+    users: Arc<UserRepository>,
     tokens: Arc<TokenService>,
     pub add_comment_handler: Arc<AddCommentHandler>,
     pub add_training_handler: Arc<AddTrainingHandler>,
@@ -50,6 +52,7 @@ impl AppState {
     pub async fn new(locator: Arc<Locator>) -> Result<Self> {
         Ok(Self {
             files: locator.get::<FileService>()?,
+            users: locator.get::<UserRepository>()?,
             tokens: locator.get::<TokenService>()?,
             add_comment_handler: locator.get::<AddCommentHandler>()?,
             add_training_handler: locator.get::<AddTrainingHandler>()?,
@@ -126,7 +129,9 @@ impl AppState {
     }
 
     pub async fn add_file(&self, req: AddFileRequest) -> Result<FileUploadResponse> {
+        let user_id = req.user_id;
         let file = self.files.add_file(req).await?;
+        self.users.increment_files_count(user_id, 1).await?;
         Ok(FileUploadResponse::from_file(&file))
     }
 }

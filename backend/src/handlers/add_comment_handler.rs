@@ -1,3 +1,4 @@
+use crate::common::database::repositories::*;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::{get_timestamp, get_unique_id};
@@ -6,6 +7,7 @@ use std::sync::Arc;
 
 pub struct AddCommentHandler {
     db: Arc<dyn DatabaseInterface>,
+    users: Arc<UserRepository>,
 }
 
 impl AddCommentHandler {
@@ -23,6 +25,8 @@ impl AddCommentHandler {
 
         self.db.add_comment(&comment).await?;
 
+        self.users.increment_comment_count(req.user_id).await?;
+
         info!("Comment {} added to tree {}", id, req.tree_id);
 
         Ok(())
@@ -31,7 +35,9 @@ impl AddCommentHandler {
 
 impl Locatable for AddCommentHandler {
     fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<PreferredDatabase>()?.driver();
-        Ok(Self { db })
+        Ok(Self {
+            db: locator.get::<PreferredDatabase>()?.driver(),
+            users: locator.get::<UserRepository>()?,
+        })
     }
 }

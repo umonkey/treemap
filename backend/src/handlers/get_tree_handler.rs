@@ -6,6 +6,7 @@ use std::sync::Arc;
 pub struct GetTreeHandler {
     db: Arc<dyn DatabaseInterface>,
     trees: Arc<TreeRepository>,
+    users: Arc<UserRepository>,
 }
 
 impl GetTreeHandler {
@@ -24,7 +25,7 @@ impl GetTreeHandler {
             .collect();
 
         let user_ids = self.collect_user_ids(&tree, &files).await?;
-        let users = self.db.get_users(&user_ids).await?;
+        let users = self.users.get_multiple(&user_ids).await?;
 
         Ok(SingleTreeResponse::from_tree(&tree, &files, &users))
     }
@@ -47,6 +48,7 @@ impl Locatable for GetTreeHandler {
         Ok(Self {
             db: locator.get::<PreferredDatabase>()?.driver(),
             trees: locator.get::<TreeRepository>()?,
+            users: locator.get::<UserRepository>()?,
         })
     }
 }

@@ -1,3 +1,4 @@
+use crate::common::database::repositories::*;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::{get_timestamp, get_unique_id};
@@ -17,8 +18,8 @@ pub struct GoogleIdToken {
 }
 
 pub struct LoginGoogleV2Handler {
-    db: Arc<dyn DatabaseInterface>,
     tokens: Arc<TokenService>,
+    users: Arc<UserRepository>,
 }
 
 impl LoginGoogleV2Handler {
@@ -82,7 +83,7 @@ impl LoginGoogleV2Handler {
     }
 
     async fn get_user(&self, userinfo: &GoogleUserinfoResponse) -> Result<UserRecord> {
-        if let Some(user) = self.db.find_user_by_email(&userinfo.email).await? {
+        if let Some(user) = self.users.get_by_email(&userinfo.email).await? {
             debug!("Found a user with email {}.", userinfo.email);
             return Ok(user);
         }
@@ -94,9 +95,10 @@ impl LoginGoogleV2Handler {
             email: userinfo.email.clone(),
             name: userinfo.name.clone(),
             picture: userinfo.picture.clone(),
+            ..Default::default()
         };
 
-        self.db.add_user(&user).await?;
+        self.users.add(&user).await?;
 
         info!(
             "Created a new user with email {} and id {}.",
@@ -109,8 +111,9 @@ impl LoginGoogleV2Handler {
 
 impl Locatable for LoginGoogleV2Handler {
     fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<PreferredDatabase>()?.driver();
-        let tokens = locator.get::<TokenService>()?;
-        Ok(Self { db, tokens })
+        Ok(Self {
+            users: locator.get::<UserRepository>()?,
+            tokens: locator.get::<TokenService>()?,
+        })
     }
 }

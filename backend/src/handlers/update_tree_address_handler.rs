@@ -1,3 +1,8 @@
+//! Update tree address using OSM's Nominatim service.
+//!
+//! This is executed after a tree is added or updated,
+//! and its address is not known, or the coordinates have changed.
+
 use crate::common::database::repositories::*;
 use crate::services::*;
 use crate::types::*;

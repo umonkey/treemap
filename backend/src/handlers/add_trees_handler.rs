@@ -7,6 +7,7 @@ use std::sync::Arc;
 
 pub struct AddTreesHandler {
     trees: Arc<TreeRepository>,
+    users: Arc<UserRepository>,
     queue: Arc<QueueService>,
 }
 
@@ -44,6 +45,8 @@ impl AddTreesHandler {
             self.trees.add(&tree).await?;
             self.schedule_address_update(tree.id).await?;
 
+            self.users.increment_tree_count(req.user_id).await?;
+
             trees.push(tree);
         }
 
@@ -62,8 +65,10 @@ impl AddTreesHandler {
 
 impl Locatable for AddTreesHandler {
     fn create(locator: &Locator) -> Result<Self> {
-        let trees = locator.get::<TreeRepository>()?;
-        let queue = locator.get::<QueueService>()?;
-        Ok(Self { trees, queue })
+        Ok(Self {
+            trees: locator.get::<TreeRepository>()?,
+            users: locator.get::<UserRepository>()?,
+            queue: locator.get::<QueueService>()?,
+        })
     }
 }

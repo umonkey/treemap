@@ -263,6 +263,27 @@ impl DatabaseInterface for SqliteDatabase {
         Ok(())
     }
 
+    async fn increment(&self, query: IncrementQuery) -> Result<()> {
+        self.pool
+            .conn(move |conn| {
+                let (sql, params) = query.build();
+
+                match conn.execute(sql.as_str(), params_from_iter(params)) {
+                    Ok(_) => (),
+
+                    Err(e) => {
+                        error!("Error incrementing a value: {}", e);
+                        return Err(e);
+                    }
+                };
+
+                Ok(())
+            })
+            .await?;
+
+        Ok(())
+    }
+
     async fn move_tree(&self, id: u64, lat: f64, lon: f64) -> Result<()> {
         let updated_at = get_timestamp();
 
@@ -322,97 +343,6 @@ impl DatabaseInterface for SqliteDatabase {
             .await?;
 
         Ok(count)
-    }
-
-    async fn find_user_by_email(&self, email: &str) -> Result<Option<UserRecord>> {
-        let email = email.to_string();
-
-        let user = self
-            .pool
-            .conn(move |conn| {
-                let mut stmt = match conn
-                    .prepare("SELECT id, email, name, picture FROM users WHERE email = ?")
-                {
-                    Ok(value) => value,
-
-                    Err(e) => {
-                        error!("Error preparing SQL statement: {}", e);
-                        return Err(e);
-                    }
-                };
-
-                let mut rows = stmt.query([email])?;
-
-                if let Some(row) = rows.next()? {
-                    return Ok(Some(UserRecord::from_sqlite_row(row)?));
-                }
-
-                Ok(None)
-            })
-            .await?;
-
-        Ok(user)
-    }
-
-    async fn add_user(&self, user: &UserRecord) -> Result<()> {
-        let id = user.id;
-        let email = user.email.clone();
-        let name = user.name.clone();
-        let picture = user.picture.clone();
-
-        self.pool
-            .conn(move |conn| {
-                conn.execute(
-                    "INSERT INTO users (id, email, name, picture) VALUES (?, ?, ?, ?)",
-                    (id, email, name, picture),
-                )?;
-                debug!("User {} added to the database.", id);
-                Ok(())
-            })
-            .await?;
-
-        Ok(())
-    }
-
-    async fn get_user(&self, id: u64) -> Result<Option<UserRecord>> {
-        let user = self
-            .pool
-            .conn(move |conn| {
-                let mut stmt =
-                    match conn.prepare("SELECT id, email, name, picture FROM users WHERE id = ?") {
-                        Ok(value) => value,
-
-                        Err(e) => {
-                            error!("Error preparing SQL statement: {}", e);
-                            return Err(e);
-                        }
-                    };
-
-                let mut rows = stmt.query([id])?;
-
-                if let Some(row) = rows.next()? {
-                    return Ok(Some(UserRecord::from_sqlite_row(row)?));
-                }
-
-                Ok(None)
-            })
-            .await?;
-
-        Ok(user)
-    }
-
-    async fn get_users(&self, ids: &[u64]) -> Result<Vec<UserRecord>> {
-        let mut users: Vec<UserRecord> = Vec::new();
-
-        for id in ids {
-            let user = self.get_user(*id).await?;
-
-            if let Some(user) = user {
-                users.push(user);
-            }
-        }
-
-        Ok(users)
     }
 
     async fn add_queue_message(&self, msg: &QueueMessage) -> Result<()> {
