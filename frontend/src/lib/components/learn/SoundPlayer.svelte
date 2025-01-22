@@ -8,15 +8,21 @@
 
 	onMount(() => {
 		soundBus.on('correct', () => {
-			soundCorrect.play();
+			if (soundCorrect) {
+				soundCorrect.play();
+			}
 		});
 
 		soundBus.on('wrong', () => {
-			soundWrong.play();
+			if (soundWrong) {
+				soundWrong.play();
+			}
 		});
 
 		soundBus.on('finished', () => {
-			soundFinished.play();
+			if (soundFinished) {
+				soundFinished.play();
+			}
 		});
 
 		console.debug('Sound player initialized.');
