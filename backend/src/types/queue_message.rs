@@ -1,6 +1,7 @@
-/**
- * This is how a single queue message is stored in the database.
- */
+//! This is how a single queue message is stored in the database.
+
+use crate::types::*;
+use rusqlite::types::Value;
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]
@@ -13,15 +14,26 @@ pub struct QueueMessage {
 }
 
 impl QueueMessage {
-    pub fn from_sqlite(
-        row: &async_sqlite::rusqlite::Row,
-    ) -> std::result::Result<Self, async_sqlite::rusqlite::Error> {
+    pub fn from_attributes(attributes: &Attributes) -> Result<Self> {
         Ok(Self {
-            id: row.get(0)?,
-            added_at: row.get(1)?,
-            available_at: row.get(2)?,
-            payload: row.get(3)?,
-            attempts: row.get(4)?,
+            id: attributes.require_u64("id")?,
+            added_at: attributes.require_u64("added_at")?,
+            available_at: attributes.require_u64("available_at")?,
+            payload: attributes.require_string("payload")?,
+            attempts: attributes.require_u64("attempts")?,
         })
+    }
+
+    pub fn to_attributes(&self) -> Attributes {
+        Attributes::from(&[
+            ("id".to_string(), Value::from(self.id as i64)),
+            ("added_at".to_string(), Value::from(self.added_at as i64)),
+            (
+                "available_at".to_string(),
+                Value::from(self.available_at as i64),
+            ),
+            ("payload".to_string(), Value::from(self.payload.clone())),
+            ("attempts".to_string(), Value::from(self.attempts as i64)),
+        ])
     }
 }

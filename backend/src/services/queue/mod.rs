@@ -4,6 +4,7 @@
 //! This class only adds, retrieves and removes text messages,
 //! parsing and processing happens outside.
 
+use crate::common::database::repositories::*;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::{get_timestamp, get_unique_id};
@@ -17,15 +18,11 @@ use std::sync::Arc;
 const DELAY: u64 = 60;
 
 pub struct QueueService {
-    db: Arc<dyn DatabaseInterface>,
+    messages: Arc<QueueMessageRepository>,
     delay: u64,
 }
 
 impl QueueService {
-    pub fn new(db: Arc<dyn DatabaseInterface>) -> Result<Self> {
-        Ok(Self { db, delay: DELAY })
-    }
-
     pub async fn push(&self, payload: &str) -> Result<QueueMessage> {
         let id = get_unique_id()?;
         let now = get_timestamp();
@@ -38,7 +35,7 @@ impl QueueService {
             attempts: 0,
         };
 
-        self.db.add_queue_message(&msg).await?;
+        self.messages.add(&msg).await?;
 
         debug!("Message {} added to queue, payload: {}", id, payload);
 
@@ -46,7 +43,7 @@ impl QueueService {
     }
 
     pub async fn pop(&self) -> Result<Option<QueueMessage>> {
-        let msg = self.db.pick_queue_message().await?;
+        let msg = self.messages.pick().await?;
 
         match msg {
             Some(msg) => {
@@ -63,15 +60,15 @@ impl QueueService {
     }
 
     pub async fn delete(&self, msg: &QueueMessage) -> Result<()> {
-        self.db.delete_queue_message(msg.id).await?;
+        self.messages.delete(msg).await?;
         debug!("Message {} deleted from queue.", msg.id);
         Ok(())
     }
 
     async fn delay_message(&self, msg: &QueueMessage) -> Result<()> {
         let now = get_timestamp();
-        self.db
-            .delay_queue_message(msg.id, now + self.delay * (msg.attempts + 1))
+        self.messages
+            .delay(msg, now + self.delay * (msg.attempts + 1))
             .await?;
         debug!("Message {} delayed for {} seconds.", msg.id, self.delay);
         Ok(())
@@ -80,8 +77,10 @@ impl QueueService {
 
 impl Locatable for QueueService {
     fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<PreferredDatabase>()?.driver();
-        Self::new(db)
+        Ok(Self {
+            messages: locator.get::<QueueMessageRepository>()?,
+            delay: DELAY,
+        })
     }
 }
 
