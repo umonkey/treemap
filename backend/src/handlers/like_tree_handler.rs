@@ -1,21 +1,32 @@
+use crate::common::database::repositories::*;
 use crate::services::*;
 use crate::types::*;
+use crate::utils::get_timestamp;
 use std::sync::Arc;
 
 pub struct LikeTreeHandler {
-    db: Arc<dyn DatabaseInterface>,
+    likes: Arc<LikeRepository>,
 }
 
 impl LikeTreeHandler {
     pub async fn handle(&self, tree_id: u64, user_id: u64) -> Result<()> {
-        self.db.like_tree(tree_id, user_id).await?;
+        self.likes
+            .add(&LikeRecord {
+                tree_id,
+                user_id,
+                state: true,
+                updated_at: get_timestamp(),
+            })
+            .await?;
+
         Ok(())
     }
 }
 
 impl Locatable for LikeTreeHandler {
     fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<PreferredDatabase>()?.driver();
-        Ok(Self { db })
+        Ok(Self {
+            likes: locator.get::<LikeRepository>()?,
+        })
     }
 }

@@ -221,6 +221,27 @@ impl DatabaseInterface for SqliteDatabase {
         Ok(())
     }
 
+    async fn replace(&self, query: ReplaceQuery) -> Result<()> {
+        self.pool
+            .conn(move |conn| {
+                let (sql, params) = query.build();
+
+                match conn.execute(sql.as_str(), params_from_iter(params)) {
+                    Ok(_) => (),
+
+                    Err(e) => {
+                        error!("Error replacing a record to the database: {}", e);
+                        return Err(e);
+                    }
+                };
+
+                Ok(())
+            })
+            .await?;
+
+        Ok(())
+    }
+
     async fn update(&self, query: UpdateQuery) -> Result<()> {
         self.pool
             .conn(move |conn| {
@@ -393,54 +414,6 @@ impl DatabaseInterface for SqliteDatabase {
         }).await?;
 
         Ok(items)
-    }
-
-    async fn like_tree(&self, tree_id: u64, user_id: u64) -> Result<()> {
-        let updated_at = crate::utils::get_timestamp();
-
-        self.pool
-            .conn(move |conn| {
-                match conn.execute(
-                    "REPLACE INTO likes (tree_id, user_id, state, updated_at) VALUES (?, ?, 1, ?)",
-                    (tree_id, user_id, updated_at),
-                ) {
-                    Ok(_) => debug!("Tree {} liked by user {}.", tree_id, user_id),
-
-                    Err(e) => {
-                        error!("Error liking a tree: {}", e);
-                        return Err(e);
-                    }
-                }
-
-                Ok(())
-            })
-            .await?;
-
-        Ok(())
-    }
-
-    async fn unlike_tree(&self, tree_id: u64, user_id: u64) -> Result<()> {
-        let updated_at = crate::utils::get_timestamp();
-
-        self.pool
-            .conn(move |conn| {
-                match conn.execute(
-                    "REPLACE INTO likes (tree_id, user_id, state, updated_at) VALUES (?, ?, 0, ?)",
-                    (tree_id, user_id, updated_at),
-                ) {
-                    Ok(_) => debug!("Tree {} liked by user {}.", tree_id, user_id),
-
-                    Err(e) => {
-                        error!("Error liking a tree: {}", e);
-                        return Err(e);
-                    }
-                }
-
-                Ok(())
-            })
-            .await?;
-
-        Ok(())
     }
 
     async fn get_species_stats(&self) -> Result<Vec<(String, u64)>> {

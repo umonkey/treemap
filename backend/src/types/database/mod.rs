@@ -1,5 +1,6 @@
 mod comment_record;
 mod file_record;
+mod like_record;
 mod osm_tree_record;
 mod prop_record;
 mod species_record;
@@ -14,3 +15,4 @@ pub use self::species_record::*;
 pub use self::training_record::*;
 pub use self::tree_record::*;
 pub use self::user_record::*;
+pub use like_record::*;
