@@ -4,7 +4,7 @@ use crate::types::*;
 use std::sync::Arc;
 
 pub struct GetTreeHandler {
-    db: Arc<dyn DatabaseInterface>,
+    files: Arc<FileRepository>,
     trees: Arc<TreeRepository>,
     users: Arc<UserRepository>,
 }
@@ -17,8 +17,8 @@ impl GetTreeHandler {
         };
 
         let files: Vec<FileRecord> = self
-            .db
-            .find_files_by_tree(id)
+            .files
+            .find_by_tree(id)
             .await?
             .into_iter()
             .filter(|file| file.deleted_at.is_none())
@@ -46,7 +46,7 @@ impl GetTreeHandler {
 impl Locatable for GetTreeHandler {
     fn create(locator: &Locator) -> Result<Self> {
         Ok(Self {
-            db: locator.get::<PreferredDatabase>()?.driver(),
+            files: locator.get::<FileRepository>()?,
             trees: locator.get::<TreeRepository>()?,
             users: locator.get::<UserRepository>()?,
         })

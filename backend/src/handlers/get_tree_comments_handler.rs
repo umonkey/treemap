@@ -4,14 +4,14 @@ use crate::types::*;
 use std::sync::Arc;
 
 pub struct GetTreeCommentsHandler {
-    db: Arc<dyn DatabaseInterface>,
+    comments: Arc<CommentRepository>,
     trees: Arc<TreeRepository>,
     users: Arc<UserRepository>,
 }
 
 impl GetTreeCommentsHandler {
     pub async fn handle(&self, tree_id: u64) -> Result<CommentList> {
-        let comments = self.db.find_comments_by_tree(tree_id).await?;
+        let comments = self.comments.find_by_tree(tree_id).await?;
 
         let user_ids: Vec<u64> = comments.iter().map(|r| r.added_by).collect();
         let users = self.users.get_multiple(&user_ids).await?;
@@ -26,7 +26,7 @@ impl GetTreeCommentsHandler {
 impl Locatable for GetTreeCommentsHandler {
     fn create(locator: &Locator) -> Result<Self> {
         Ok(Self {
-            db: locator.get::<PreferredDatabase>()?.driver(),
+            comments: locator.get::<CommentRepository>()?,
             trees: locator.get::<TreeRepository>()?,
             users: locator.get::<UserRepository>()?,
         })

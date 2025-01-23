@@ -14,16 +14,10 @@ pub trait DatabaseInterface: Send + Sync {
     async fn move_tree(&self, id: u64, lat: f64, lon: f64) -> Result<()>;
     async fn count_trees(&self) -> Result<u64>;
 
-    async fn find_files_by_tree(&self, tree_id: u64) -> Result<Vec<FileRecord>>;
-
     async fn add_queue_message(&self, msg: &QueueMessage) -> Result<()>;
     async fn pick_queue_message(&self) -> Result<Option<QueueMessage>>;
     async fn delay_queue_message(&self, id: u64, available_at: u64) -> Result<()>;
     async fn delete_queue_message(&self, id: u64) -> Result<()>;
-
-    async fn add_comment(&self, comment: &CommentRecord) -> Result<()>;
-    async fn find_comments_by_tree(&self, tree_id: u64) -> Result<Vec<CommentRecord>>;
-    async fn find_recent_comments(&self, count: u64) -> Result<Vec<CommentRecord>>;
 
     async fn find_species(&self, query: &str) -> Result<Vec<SpeciesRecord>>;
 

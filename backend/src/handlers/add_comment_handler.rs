@@ -6,7 +6,7 @@ use log::info;
 use std::sync::Arc;
 
 pub struct AddCommentHandler {
-    db: Arc<dyn DatabaseInterface>,
+    comments: Arc<CommentRepository>,
     users: Arc<UserRepository>,
 }
 
@@ -23,7 +23,7 @@ impl AddCommentHandler {
             message: req.message.to_string(),
         };
 
-        self.db.add_comment(&comment).await?;
+        self.comments.add(&comment).await?;
 
         self.users.increment_comment_count(req.user_id).await?;
 
@@ -36,7 +36,7 @@ impl AddCommentHandler {
 impl Locatable for AddCommentHandler {
     fn create(locator: &Locator) -> Result<Self> {
         Ok(Self {
-            db: locator.get::<PreferredDatabase>()?.driver(),
+            comments: locator.get::<CommentRepository>()?,
             users: locator.get::<UserRepository>()?,
         })
     }
