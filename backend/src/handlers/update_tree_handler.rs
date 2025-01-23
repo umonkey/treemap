@@ -23,9 +23,9 @@ impl UpdateTreeHandler {
         let new = TreeRecord {
             id: req.id,
             osm_id: old.osm_id,
-            lat: old.lat,
-            lon: old.lon,
             species: req.species.unwrap_or(old.species),
+            lat: req.lat.unwrap_or(old.lat),
+            lon: req.lon.unwrap_or(old.lon),
             notes: match req.notes {
                 Some(value) => Some(value),
                 None => old.notes,

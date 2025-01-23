@@ -58,6 +58,7 @@
 			.then((res) => {
 				if (res.status >= 200 && res.status < 400) {
 					goto(routes.treeDetails(treeId));
+					toast.push('Tree updated.');
 				} else {
 					console.error(`Error ${res.status} updating tree.`);
 					toast.push('Error updating tree.');

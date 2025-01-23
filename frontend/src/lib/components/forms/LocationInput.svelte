@@ -25,7 +25,7 @@
 		<span>{label}</span>
 
 		<div class="group">
-			<input type="text" value={formatLocation(value)} />
+			<input type="text" value={formatLocation(value)} readonly={true} />
 			<button type="button" onclick={toggleMap}><MapIcon /></button>
 		</div>
 
