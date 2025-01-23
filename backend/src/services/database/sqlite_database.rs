@@ -284,31 +284,6 @@ impl DatabaseInterface for SqliteDatabase {
         Ok(())
     }
 
-    async fn move_tree(&self, id: u64, lat: f64, lon: f64) -> Result<()> {
-        let updated_at = get_timestamp();
-
-        self.pool
-            .conn(move |conn| {
-                match conn.execute(
-                    "UPDATE trees set lat = ?, lon = ?, updated_at = ? WHERE id = ?",
-                    (lat, lon, updated_at, id),
-                ) {
-                    Ok(_) => (),
-
-                    Err(e) => {
-                        error!("Error updating a tree in the database: {}", e);
-                        return Err(e);
-                    }
-                };
-
-                debug!("Tree {} moved.", id);
-                Ok(())
-            })
-            .await?;
-
-        Ok(())
-    }
-
     /**
      * Count all trees that still exist.
      */

@@ -157,6 +157,28 @@ impl TreeRepository {
         self.log_changes(&old, tree, user_id).await
     }
 
+    pub async fn r#move(&self, tree: &TreeRecord, lat: f64, lon: f64, user_id: u64) -> Result<()> {
+        let old = tree.clone();
+
+        let query = UpdateQuery::new(TABLE)
+            .with_condition("id", Value::from(tree.id as i64))
+            .with_value("lat", Value::from(lat))
+            .with_value("lon", Value::from(lon));
+
+        self.db.update(query).await.map_err(|e| {
+            error!("Error updating a tree: {}", e);
+            e
+        })?;
+
+        let new = TreeRecord {
+            lat,
+            lon,
+            ..tree.clone()
+        };
+
+        self.log_changes(&old, &new, user_id).await
+    }
+
     pub async fn update_thumbnail(
         &self,
         tree_id: u64,

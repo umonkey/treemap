@@ -11,7 +11,6 @@ pub trait DatabaseInterface: Send + Sync {
     async fn delete(&self, query: DeleteQuery) -> Result<()>;
     async fn increment(&self, query: IncrementQuery) -> Result<()>;
 
-    async fn move_tree(&self, id: u64, lat: f64, lon: f64) -> Result<()>;
     async fn count_trees(&self) -> Result<u64>;
 
     async fn find_species(&self, query: &str) -> Result<Vec<SpeciesRecord>>;
