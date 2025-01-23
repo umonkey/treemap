@@ -18,6 +18,11 @@ impl TreeRepository {
         self.query_multiple(SelectQuery::new(TABLE)).await
     }
 
+    pub async fn count(&self) -> Result<u64> {
+        let query = CountQuery::new(TABLE);
+        self.db.count(query).await
+    }
+
     pub async fn get(&self, id: u64) -> Result<Option<TreeRecord>> {
         let query = SelectQuery::new(TABLE).with_condition("id", Value::from(id as i64));
         self.query_single(query).await

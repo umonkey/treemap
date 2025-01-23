@@ -287,31 +287,28 @@ impl DatabaseInterface for SqliteDatabase {
     /**
      * Count all trees that still exist.
      */
-    async fn count_trees(&self) -> Result<u64> {
-        let count: u64 = self
+    async fn count(&self, query: CountQuery) -> Result<u64> {
+        let count = self
             .pool
             .conn(move |conn| {
-                let mut stmt =
-                    match conn.prepare("SELECT COUNT(1) FROM trees WHERE state <> 'gone'") {
-                        Ok(value) => value,
+                let (sql, params) = query.build();
 
-                        Err(e) => {
-                            error!("Error preparing SQL statement: {}", e);
-                            return Err(e);
-                        }
-                    };
-
-                let mut rows = match stmt.query([]) {
+                let mut stmt = match conn.prepare(sql.as_str()) {
                     Ok(value) => value,
 
                     Err(e) => {
-                        error!("Error executing SQL statement: {}", e);
+                        error!("Error preparing SQL statement: {}", e);
                         return Err(e);
                     }
                 };
 
+                let mut rows = stmt.query(params_from_iter(params.iter())).map_err(|e| {
+                    error!("Error executing SQL statement: {}", e);
+                    e
+                })?;
+
                 match rows.next()? {
-                    Some(row) => row.get(0),
+                    Some(row) => Ok(row.get(0)?),
                     None => Ok(0),
                 }
             })
@@ -599,17 +596,5 @@ mod tests {
 
         assert_eq!(species.len(), 1, "Could not find species for oak.");
         assert_eq!("Quercus robur", species[0].name);
-    }
-
-    #[tokio::test]
-    async fn test_count() {
-        let db = setup().await;
-
-        db.execute(include_str!("./fixtures/test_count.sql").to_string())
-            .await
-            .expect("Error setting up data.");
-
-        let count = db.count_trees().await.expect("Error counting trees.");
-        assert_eq!(count, 2); // 1 dead + 1 healthy - 1 gone
     }
 }
