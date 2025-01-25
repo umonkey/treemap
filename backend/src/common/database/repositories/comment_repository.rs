@@ -34,10 +34,12 @@ impl CommentRepository {
     async fn query_multiple(&self, query: SelectQuery) -> Result<Vec<CommentRecord>> {
         let records = self.db.get_records(query).await?;
 
-        Ok(records
+        records
             .iter()
-            .map(|props| CommentRecord::from_attributes(props).unwrap())
-            .collect())
+            .map(|props| {
+                CommentRecord::from_attributes(props).map_err(|_| Error::DatabaseStructure)
+            })
+            .collect()
     }
 }
 

@@ -53,10 +53,10 @@ impl QueueMessageRepository {
     async fn query_multiple(&self, query: SelectQuery) -> Result<Vec<QueueMessage>> {
         let records = self.db.get_records(query).await?;
 
-        Ok(records
+        records
             .iter()
-            .map(|props| QueueMessage::from_attributes(props).unwrap())
-            .collect())
+            .map(|props| QueueMessage::from_attributes(props).map_err(|_| Error::DatabaseStructure))
+            .collect()
     }
 }
 

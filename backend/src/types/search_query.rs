@@ -124,14 +124,12 @@ impl SearchQuery {
             return false;
         }
 
-        if self.address.is_some() {
-            if tree.address.is_none() {
-                return false;
-            }
-
-            if tree.address.as_ref().unwrap().to_lowercase()
-                != self.address.as_ref().unwrap().to_lowercase()
-            {
+        if let Some(a1) = &self.address {
+            if let Some(a2) = &tree.address {
+                if a1.to_lowercase() != a2.to_lowercase() {
+                    return false;
+                }
+            } else {
                 return false;
             }
         }

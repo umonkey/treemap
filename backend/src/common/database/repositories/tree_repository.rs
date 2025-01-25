@@ -230,10 +230,10 @@ impl TreeRepository {
     async fn query_multiple(&self, query: SelectQuery) -> Result<Vec<TreeRecord>> {
         let records = self.db.get_records(query).await?;
 
-        Ok(records
+        records
             .iter()
-            .map(|props| TreeRecord::from_attributes(props).unwrap())
-            .collect())
+            .map(|props| TreeRecord::from_attributes(props).map_err(|_| Error::DatabaseStructure))
+            .collect()
     }
 
     async fn log_changes(&self, old: &TreeRecord, new: &TreeRecord, user_id: u64) -> Result<()> {

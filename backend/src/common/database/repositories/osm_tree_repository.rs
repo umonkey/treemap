@@ -51,10 +51,12 @@ impl OsmTreeRepository {
 
         let records = self.db.get_records(query).await?;
 
-        Ok(records
+        records
             .iter()
-            .map(|props| OsmTreeRecord::from_attributes(props).unwrap())
-            .collect())
+            .map(|props| {
+                OsmTreeRecord::from_attributes(props).map_err(|_| Error::DatabaseStructure)
+            })
+            .collect()
     }
 }
 

@@ -108,10 +108,10 @@ impl UserRepository {
     async fn query_multiple(&self, query: SelectQuery) -> Result<Vec<UserRecord>> {
         let records = self.db.get_records(query).await?;
 
-        Ok(records
+        records
             .iter()
-            .map(|props| UserRecord::from_attributes(props).unwrap())
-            .collect())
+            .map(|props| UserRecord::from_attributes(props).map_err(|_| Error::DatabaseStructure))
+            .collect()
     }
 }
 

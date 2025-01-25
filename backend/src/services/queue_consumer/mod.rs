@@ -29,13 +29,8 @@ impl QueueConsumer {
             match msg {
                 Ok(Some(msg)) => {
                     match self.process_message(msg.payload.as_str()).await {
-                        Ok(_) => {
-                            self.queue.delete(&msg).await.unwrap();
-                        }
-
-                        Err(e) => {
-                            error!("Error while processing message: {:?}", e);
-                        }
+                        Ok(_) => self.delete_message(&msg).await,
+                        Err(e) => error!("Error while processing message: {:?}", e),
                     };
                 }
 
@@ -47,6 +42,12 @@ impl QueueConsumer {
                     error!("Error while processing queue message: {:?}", e);
                 }
             }
+        }
+    }
+
+    async fn delete_message(&self, msg: &QueueMessage) {
+        if let Err(e) = self.queue.delete(msg).await {
+            error!("Error deleting message from queue: {}", e);
         }
     }
 

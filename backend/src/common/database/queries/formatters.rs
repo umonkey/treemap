@@ -34,12 +34,12 @@ pub fn format_order(order: &HashMap<String, String>) -> String {
 }
 
 pub fn format_limit(limit: &Option<i64>, offset: &Option<i64>) -> String {
-    if limit.is_some() && offset.is_some() {
-        return format!(" LIMIT {} OFFSET {}", limit.unwrap(), offset.unwrap());
-    }
+    if let Some(limit) = limit {
+        if let Some(offset) = offset {
+            return format!(" LIMIT {} OFFSET {}", limit, offset);
+        }
 
-    if limit.is_some() && offset.is_none() {
-        return format!(" LIMIT {}", limit.unwrap());
+        return format!(" LIMIT {}", limit);
     }
 
     "".to_string()
