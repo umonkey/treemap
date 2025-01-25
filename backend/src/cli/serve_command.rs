@@ -27,14 +27,14 @@ pub async fn serve_command() {
     HttpServer::new(move || {
         debug!("Initializing new thread.");
 
-        let l1 = locator.clone();
+        let locator = locator.clone();
 
         App::new()
             .wrap(DefaultHeaders::new().add(("Cache-Control", "no-store")))
             .wrap(Cors::permissive())
             .data_factory(move || {
-                let l2 = l1.clone();
-                async move { AppState::new(l2.clone()).await }
+                let locator = locator.clone();
+                async move { AppState::new(locator).await }
             })
             .app_data(PayloadConfig::new(get_payload_size()))
             .service(add_comment_action)
