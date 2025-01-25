@@ -5,6 +5,7 @@
 	import { locale } from '$lib/locale';
 
 	import Header from '$lib/components/tree/Header.svelte';
+	import AppInstallButton from '$lib/components/AppInstallButton.svelte';
 
 	const { data } = $props();
 	const { totalCount } = data;
@@ -54,6 +55,8 @@
 			or <a href={routes.searchQuery('noimage')}>missing photos</a> and help us out!
 		</p>
 	{/if}
+
+	<AppInstallButton />
 </div>
 
 <style>

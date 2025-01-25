@@ -6,11 +6,7 @@
 	"launch_handler": {
 		"client_mode": "focus-existing"
 	},
-	"categories": [
-		"education",
-		"environment",
-		"maps"
-	],
+	"categories": ["education", "environment", "maps"],
 	"icons": [
 		{
 			"src": "/favicon-192x192.png",
@@ -39,5 +35,5 @@
 	"display": "standalone",
 	"orientation": "portrait",
 	"start_url": "/",
-	"lang": "en",
+	"lang": "en"
 }
