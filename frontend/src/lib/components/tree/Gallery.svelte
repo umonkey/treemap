@@ -1,12 +1,17 @@
 <script lang="ts">
-	import { routes } from '$lib/routes';
 	import type { ITreeFile } from '$lib/types';
 	import { formatDate } from '$lib/utils/strings';
-	import { getUser } from '$lib/stores/userStore';
 	import { get } from 'svelte/store';
+	import { getUser } from '$lib/stores/userStore';
+	import { longtap } from '$lib/utils/longtap';
+	import { menuState } from '$lib/stores/treeMenu';
+	import { onMount } from 'svelte';
+	import { routes } from '$lib/routes';
+
 	import ExpandIcon from '$lib/icons/ExpandIcon.svelte';
 
 	export let files: ITreeFile[] = [];
+	let ref: HTMLDivElement;
 
 	const added_at = (file: ITreeFile) => {
 		if (!file.added_at || !file.added_by) {
@@ -27,9 +32,12 @@
 		const url = routes.file(file.id);
 		window.open(url, '_blank');
 	};
+
+	// Show context menu on image long tap
+	onMount(() => longtap(ref, () => menuState.update(() => true), 500));
 </script>
 
-<div class="gallery">
+<div class="gallery" bind:this={ref}>
 	<div class="slides">
 		{#each files as file, idx}
 			<div>
