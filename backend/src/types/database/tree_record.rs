@@ -22,6 +22,7 @@ pub struct TreeRecord {
     pub thumbnail_id: Option<u64>,
     pub year: Option<i64>,
     pub address: Option<String>,
+    pub like_count: i64,
 }
 
 impl TreeRecord {
@@ -43,6 +44,7 @@ impl TreeRecord {
             thumbnail_id: attributes.get_u64("thumbnail_id")?,
             year: attributes.get_i64("year")?,
             address: attributes.get_string("address")?,
+            like_count: attributes.get_i64("like_count")?.unwrap_or(0),
         })
     }
 
@@ -79,6 +81,7 @@ impl TreeRecord {
             ),
             ("year".to_string(), Value::from(self.year)),
             ("address".to_string(), Value::from(self.address.clone())),
+            ("like_count".to_string(), Value::from(self.like_count)),
         ])
     }
 

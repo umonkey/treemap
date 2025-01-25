@@ -80,6 +80,15 @@ export class ApiClient {
 		});
 	}
 
+	public async getMeLikes(): Promise<Response<IMeResponse>> {
+		return await this.request('GET', 'v1/me/likes', {
+			headers: {
+				'Content-Type': 'application/json',
+				...this.getAuthHeaders()
+			}
+		});
+	}
+
 	public async verifyToken(token: string): Promise<Response<IMeResponse>> {
 		return await this.request('GET', 'v1/me', {
 			headers: {
@@ -253,6 +262,24 @@ export class ApiClient {
 
 	public async deleteFile(id: string): Promise<Response<void>> {
 		return await this.request('DELETE', `v1/files/${id}`, {
+			headers: {
+				'Content-Type': 'application/json',
+				...this.getAuthHeaders()
+			}
+		});
+	}
+
+	public async likeTree(id: string): Promise<void> {
+		return await this.request('POST', `v1/trees/${id}/likes`, {
+			headers: {
+				'Content-Type': 'application/json',
+				...this.getAuthHeaders()
+			}
+		});
+	}
+
+	public async unlikeTree(id: string): Promise<void> {
+		return await this.request('DELETE', `v1/trees/${id}/likes`, {
 			headers: {
 				'Content-Type': 'application/json',
 				...this.getAuthHeaders()

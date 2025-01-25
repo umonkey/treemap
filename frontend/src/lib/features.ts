@@ -1,4 +1,4 @@
 export const FEATURES = {
-	likes: false,
+	likes: true,
 	bookmarks: false
 };

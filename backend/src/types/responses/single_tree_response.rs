@@ -18,6 +18,7 @@ pub struct SingleTreeResponse {
     pub added_by: String,
     pub address: Option<String>,
     pub thumbnail_id: Option<String>,
+    pub like_count: i64,
     pub files: Vec<PublicFileInfo>,
     pub users: Vec<UserResponse>,
 }
@@ -48,6 +49,7 @@ impl SingleTreeResponse {
             added_by: tree.added_by.to_string(),
             address: tree.address.clone(),
             thumbnail_id,
+            like_count: tree.like_count,
             files: files.iter().map(PublicFileInfo::from_file).collect(),
             users,
         }

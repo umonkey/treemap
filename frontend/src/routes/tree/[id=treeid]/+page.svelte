@@ -24,7 +24,7 @@
 <Title title={formatSpecies(tree.species)} address={tree.address} />
 <Tabs tree={tree.id} active="details" />
 <Gallery files={tree.files} />
-<Actions tree={tree.id} />
+<Actions {tree} />
 <Properties {tree} />
 <Links {tree} />
 <Description text={tree.notes} />

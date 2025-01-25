@@ -216,6 +216,24 @@ impl TreeRepository {
         Ok(())
     }
 
+    pub async fn increment_likes(&self, tree_id: u64, value: i64) -> Result<()> {
+        self.increment(tree_id, "like_count", value).await
+    }
+
+    async fn increment(&self, tree_id: u64, key: &str, value: i64) -> Result<()> {
+        let query = IncrementQuery::new(TABLE)
+            .with_condition("id", Value::from(tree_id as i64))
+            .with_key(key)
+            .with_value(value);
+
+        self.db.increment(query).await.map_err(|e| {
+            error!("Error incrementing {} for tree {}: {}", key, tree_id, e);
+            e
+        })?;
+
+        Ok(())
+    }
+
     async fn query_single(&self, query: SelectQuery) -> Result<Option<TreeRecord>> {
         match self.db.get_record(query).await {
             Ok(Some(props)) => Ok(Some(TreeRecord::from_attributes(&props)?)),

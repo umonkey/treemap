@@ -116,3 +116,8 @@ export interface IMyPosition {
 	lng: number;
 	accuracy: number;
 }
+
+export interface ILike {
+	tree_id: string;
+	user_id: string;
+}

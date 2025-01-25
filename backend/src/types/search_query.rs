@@ -251,6 +251,7 @@ mod tests {
             thumbnail_id: None,
             year: None,
             address: None,
+            ..Default::default()
         }
     }
 

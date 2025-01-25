@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS trees (
     `thumbnail_id` INT NULL,
     `year` INT NULL,
     `address` TEXT NULL,
+    `like_count` INT NOT NULL DEFAULT '0',
     PRIMARY KEY(`id`)
 );
 

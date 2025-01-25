@@ -58,6 +58,7 @@ impl UpdateTreeHandler {
                 Some(value) => Some(value),
                 None => old.address,
             },
+            ..old
         };
 
         info!("Updating tree: {:?}", new);
