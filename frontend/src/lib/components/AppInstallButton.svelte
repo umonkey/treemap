@@ -16,6 +16,6 @@
 	});
 </script>
 
-{#if $isInstallable || true}
+{#if $isInstallable}
 	<button class="button" onclick={onClick}>Install application</button>
 {/if}
