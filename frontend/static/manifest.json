@@ -1,6 +1,16 @@
 {
 	"name": "Yerevan Tree Map",
 	"short_name": "TreeMap",
+	"description": "Yerevan Tree Map is a web application that allows users to search for trees in Yerevan, Armenia. The app provides information about the trees, such as their species, age, and location.",
+	"id": "app.treemaps.yerevan",
+	"launch_handler": {
+		"client_mode": "focus-existing"
+	},
+	"categories": [
+		"education",
+		"environment",
+		"maps"
+	],
 	"icons": [
 		{
 			"src": "/favicon-192x192.png",
@@ -28,5 +38,6 @@
 	"background_color": "#14191f",
 	"display": "standalone",
 	"orientation": "portrait",
-	"start_url": "/"
+	"start_url": "/",
+	"lang": "en",
 }
