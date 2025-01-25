@@ -23,11 +23,39 @@
 	],
 	"screenshots": [
 		{
-			"src": "/screenshot-mobile.png",
+			"src": "/screenshot-phone-map.png",
 			"form_mactor": "narrow",
 			"type": "image/png",
-			"sizes": "375x717",
+			"sizes": "375x667",
 			"label": "Search results on map"
+		},
+		{
+			"src": "/screenshot-phone-home.png",
+			"form_mactor": "narrow",
+			"type": "image/png",
+			"sizes": "375x667",
+			"label": "Home screen"
+		},
+		{
+			"src": "/screenshot-phone-sidebar.png",
+			"form_mactor": "narrow",
+			"type": "image/png",
+			"sizes": "375x667",
+			"label": "Side menu"
+		},
+		{
+			"src": "/screenshot-phone-tree.png",
+			"form_mactor": "narrow",
+			"type": "image/png",
+			"sizes": "375x667",
+			"label": "Tree details screen"
+		},
+		{
+			"src": "/screenshot-phone-edit.png",
+			"form_mactor": "narrow",
+			"type": "image/png",
+			"sizes": "375x667",
+			"label": "Tree edit screen"
 		}
 	],
 	"theme_color": "#14191f",
