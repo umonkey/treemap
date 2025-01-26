@@ -1,6 +1,7 @@
 use crate::common::database::queries::*;
 use crate::services::*;
 use crate::types::*;
+use crate::utils::unique_ids;
 use log::error;
 use rusqlite::types::Value;
 use std::sync::Arc;
@@ -30,8 +31,8 @@ impl UserRepository {
     pub async fn get_multiple(&self, ids: &[u64]) -> Result<Vec<UserRecord>> {
         let mut users: Vec<UserRecord> = Vec::new();
 
-        for id in ids {
-            if let Some(user) = self.get(*id).await? {
+        for id in unique_ids(ids) {
+            if let Some(user) = self.get(id).await? {
                 users.push(user);
             }
         }

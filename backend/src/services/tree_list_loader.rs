@@ -1,7 +1,7 @@
 use crate::common::database::repositories::*;
 use crate::services::*;
 use crate::types::*;
-use std::collections::HashSet;
+use crate::utils::unique_ids;
 use std::sync::Arc;
 
 pub struct TreeListLoader {
@@ -17,9 +17,8 @@ impl TreeListLoader {
     }
 
     async fn load_users(&self, user_ids: &[u64]) -> Result<Vec<UserRecord>> {
-        let user_ids = HashSet::<u64>::from_iter(user_ids.iter().copied());
-        let user_ids: Vec<u64> = user_ids.into_iter().collect();
-        let users = self.users.get_multiple(&user_ids).await?;
+        let ids = unique_ids(user_ids);
+        let users = self.users.get_multiple(&ids).await?;
         Ok(users)
     }
 }
