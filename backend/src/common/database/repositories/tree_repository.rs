@@ -2,6 +2,7 @@ use crate::common::database::queries::*;
 use crate::common::database::repositories::*;
 use crate::services::*;
 use crate::types::*;
+use crate::utils::get_timestamp;
 use log::error;
 use rusqlite::types::Value;
 use std::sync::Arc;
@@ -152,7 +153,8 @@ impl TreeRepository {
 
         let query = UpdateQuery::new(TABLE)
             .with_condition("id", Value::from(tree.id as i64))
-            .with_values(tree.to_attributes());
+            .with_values(tree.to_attributes())
+            .with_value("updated_at", Value::from(get_timestamp() as i64));
 
         self.db.update(query).await.map_err(|e| {
             error!("Error updating a tree: {}", e);
@@ -167,6 +169,7 @@ impl TreeRepository {
 
         let query = UpdateQuery::new(TABLE)
             .with_condition("id", Value::from(tree.id as i64))
+            .with_value("updated_at", Value::from(get_timestamp() as i64))
             .with_value("lat", Value::from(lat))
             .with_value("lon", Value::from(lon));
 
@@ -192,6 +195,7 @@ impl TreeRepository {
     ) -> Result<()> {
         let query = UpdateQuery::new(TABLE)
             .with_condition("id", Value::from(tree_id as i64))
+            .with_value("updated_at", Value::from(get_timestamp() as i64))
             .with_value("thumbnail_id", Value::from(thumbnail_id as i64));
 
         self.db.update(query).await.map_err(|e| {
