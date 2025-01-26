@@ -86,10 +86,6 @@ pub fn get_osm_token() -> Result<String> {
     env::var("OSM_TOKEN").map_err(|_| Error::EnvNotSet)
 }
 
-pub fn get_osm_hashtag() -> Result<String> {
-    env::var("OSM_HASHTAG").map_err(|_| Error::EnvNotSet)
-}
-
 pub fn get_dry_run() -> Result<bool> {
     if let Ok(value) = env::var("DRY") {
         return Ok(value == "yes");

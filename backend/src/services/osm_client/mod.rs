@@ -10,6 +10,7 @@ use xml::escape::escape_str_attribute;
 pub struct OsmClient {
     client: Client,
     osm_activity: Option<String>,
+    osm_hashtag: Option<String>,
 }
 
 impl OsmClient {
@@ -337,7 +338,7 @@ impl OsmClient {
     fn format_changeset_comment(&self, comment: &str) -> String {
         let mut comment = comment.to_string();
 
-        if let Ok(hashtag) = get_osm_hashtag() {
+        if let Some(hashtag) = &self.osm_hashtag {
             comment.push_str(&format!("\n\n #{}", hashtag));
         }
 
@@ -356,6 +357,7 @@ impl Locatable for OsmClient {
         Ok(Self {
             client: reqwest::Client::new(),
             osm_activity: config.osm_activity.clone(),
+            osm_hashtag: config.osm_hashtag.clone(),
         })
     }
 }
