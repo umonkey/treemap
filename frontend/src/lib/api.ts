@@ -80,15 +80,6 @@ export class ApiClient {
 		});
 	}
 
-	public async validateToken(token: string): Promise<Response<IMeResponse>> {
-		return await this.request('GET', 'v1/me', {
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${token}`
-			}
-		});
-	}
-
 	public async getMeLikes(): Promise<Response<IMeResponse>> {
 		return await this.request('GET', 'v1/me/likes', {
 			headers: {

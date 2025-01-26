@@ -36,7 +36,7 @@ export const validateStoredToken = async () => {
 
 	console.debug('[auth] Validating stored auth token...', auth.token);
 
-	const res = await apiClient.validateToken(auth.token);
+	const res = await apiClient.verifyToken(auth.token);
 
 	if (res.status === 401) {
 		console.info('[auth] Token expired.');
