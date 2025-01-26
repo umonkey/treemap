@@ -9,6 +9,7 @@ use xml::escape::escape_str_attribute;
 
 pub struct OsmClient {
     client: Client,
+    osm_activity: Option<String>,
 }
 
 impl OsmClient {
@@ -340,7 +341,7 @@ impl OsmClient {
             comment.push_str(&format!("\n\n #{}", hashtag));
         }
 
-        if let Ok(activity) = get_osm_activity() {
+        if let Some(activity) = &self.osm_activity {
             comment.push_str(&format!("\n\n{}", activity));
         }
 
@@ -349,9 +350,12 @@ impl OsmClient {
 }
 
 impl Locatable for OsmClient {
-    fn create(_locator: &Locator) -> Result<Self> {
+    fn create(locator: &Locator) -> Result<Self> {
+        let config = locator.get::<ConfigService>()?;
+
         Ok(Self {
             client: reqwest::Client::new(),
+            osm_activity: config.osm_activity.clone(),
         })
     }
 }
