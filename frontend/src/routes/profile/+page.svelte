@@ -1,12 +1,32 @@
 <script lang="ts">
-	import { isAuthenticated, authStore } from '$lib/stores/authStore';
-	import { locale } from '$lib/locale';
+	import Header from '$lib/components/tree/Header.svelte';
 	import SignIn from '$lib/components/auth/SignIn.svelte';
 	import SignOut from '$lib/components/auth/SignOut.svelte';
-	import Header from '$lib/components/tree/Header.svelte';
+	import type { IMeResponse } from '$lib/types';
+	import { apiClient } from '$lib/api';
+	import { authStore } from '$lib/stores/authStore';
+	import { locale } from '$lib/locale';
+	import { onMount } from 'svelte';
 
-	const { data } = $props();
-	const { profile } = data;
+	let me = $state<IMeResponse | undefined>(undefined);
+	let loading = $state<boolean>(true);
+
+	onMount(async () => {
+		try {
+			const res = await apiClient.getMe();
+
+			if (res.status === 401) {
+				authStore.set(undefined);
+				loading = false;
+			} else if (res.status === 200) {
+				me = res.data;
+			} else {
+				console.error('Error reading user data:', res);
+			}
+		} finally {
+			loading = false;
+		}
+	});
 </script>
 
 <svelte:head>
@@ -15,16 +35,18 @@
 
 <Header title="Profile" />
 
-{#if $isAuthenticated}
+{#if loading}
+	<!-- loading --->
+{:else if me}
 	<img class="header" src="/header.jpg" alt="header background" />
 
 	<div class="container signedIn">
-		<img class="userpic" src={$authStore?.picture} alt="userpic" />
+		<img class="userpic" src={me.picture} alt="userpic" />
 
-		<h1>{$authStore?.name ?? 'Unknown user'}</h1>
+		<h1>{me.name}</h1>
 		<div class="stats">
-			{locale.profileTrees(profile.trees_count)}, {locale.profileUpdates(profile.updates_count)}, {locale.profilePhotos(
-				profile.files_count
+			{locale.profileTrees(me.trees_count)}, {locale.profileUpdates(me.updates_count)}, {locale.profilePhotos(
+				me.files_count
 			)}.
 		</div>
 
