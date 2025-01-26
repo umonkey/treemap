@@ -1,2 +1,4 @@
 bot_user_id = 0
 web_workers = 10
+osm_hashtag = "YerevanTreeMap"
+osm_activity = "https://wiki.openstreetmap.org/wiki/Organised_Editing/Activities/Yerevan_Tree_Map"
