@@ -70,10 +70,6 @@ pub fn get_overpass_query() -> String {
     }
 }
 
-pub fn get_osm_client_id() -> Result<String> {
-    env::var("OSM_CLIENT_ID").map_err(|_| Error::EnvNotSet)
-}
-
 pub fn get_osm_client_secret() -> Result<String> {
     env::var("OSM_CLIENT_SECRET").map_err(|_| Error::EnvNotSet)
 }

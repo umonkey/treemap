@@ -26,6 +26,7 @@ pub struct ConfigService {
     pub osm_changeset_size: u64,
     pub osm_activity: Option<String>,
     pub osm_hashtag: Option<String>,
+    pub osm_client_id: Option<String>,
 }
 
 impl ConfigService {

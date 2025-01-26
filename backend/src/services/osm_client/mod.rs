@@ -11,6 +11,7 @@ pub struct OsmClient {
     client: Client,
     osm_activity: Option<String>,
     osm_hashtag: Option<String>,
+    osm_client_id: Option<String>,
 }
 
 impl OsmClient {
@@ -88,11 +89,16 @@ impl OsmClient {
     }
 
     pub async fn get_token(&self, code: &str) -> Result<String> {
+        let client_id = self.osm_client_id.as_ref().ok_or_else(|| {
+            error!("OSM client_id is not set.");
+            Error::OsmExchange
+        })?;
+
         let json = self
             .request_json(&format!(
                 "https://api.openstreetmap.org/oauth/token?grant_type=authorization_code&code={}&client_id={}&client_secret={}&redirect_uri={}",
                 code,
-                get_osm_client_id()?,
+                client_id,
                 get_osm_client_secret()?,
                 get_osm_redirect_uri()?
             ))
@@ -358,6 +364,7 @@ impl Locatable for OsmClient {
             client: reqwest::Client::new(),
             osm_activity: config.osm_activity.clone(),
             osm_hashtag: config.osm_hashtag.clone(),
+            osm_client_id: config.osm_client_id.clone(),
         })
     }
 }
