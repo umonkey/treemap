@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { formatSpecies } from '$lib/utils/trees';
 	import type { ITree } from '$lib/types';
-	import { mapZoom } from '$lib/stores/map';
+	import { mapZoom } from '$lib/stores/mapStore';
 
 	import Header from '$lib/components/tree/Header.svelte';
 	import Tabs from '$lib/components/tree/Tabs.svelte';

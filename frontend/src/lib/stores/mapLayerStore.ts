@@ -21,5 +21,5 @@ mapLayerStore.subscribe((value: IMapLayers) => {
 	ls.write('mapLayerStore', value);
 });
 
-export const baseLayer = derived(mapLayerStore, ($mapState) => $mapState?.base);
-export const droneLayer = derived(mapLayerStore, ($mapState) => $mapState?.drone);
+export const baseLayer = derived(mapLayerStore, ($mapStore) => $mapStore?.base);
+export const droneLayer = derived(mapLayerStore, ($mapStore) => $mapStore?.drone);

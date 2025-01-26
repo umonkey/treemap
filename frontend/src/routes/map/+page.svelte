@@ -2,7 +2,7 @@
 	import Header from '$lib/components/tree/Header.svelte';
 	import Map from '$lib/components/Map.svelte';
 	import MapPreview from '$lib/components/map/MapPreview.svelte';
-	import { mapState, mapCenter, mapZoom } from '$lib/stores/map';
+	import { mapStore, mapCenter, mapZoom } from '$lib/stores/mapStore';
 	import type { ITree } from '$lib/types';
 	import { locale } from '$lib/locale';
 
@@ -22,7 +22,7 @@
 	};
 
 	const onMove = (center: number[], zoom: number) => {
-		mapState.set({
+		mapStore.set({
 			center,
 			zoom
 		});
