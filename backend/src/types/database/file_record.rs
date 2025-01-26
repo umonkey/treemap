@@ -53,6 +53,10 @@ impl FileRecord {
         false
     }
 
+    pub fn is_visible(&self) -> bool {
+        !self.is_deleted() && self.small_id > 0 && self.large_id > 0
+    }
+
     fn oi64(value: &Option<u64>) -> Value {
         match value {
             Some(value) => Value::from(*value as i64),

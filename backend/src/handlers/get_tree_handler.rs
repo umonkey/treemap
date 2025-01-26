@@ -38,10 +38,7 @@ impl GetTreeHandler {
 
     async fn find_files(&self, tree_id: u64) -> Result<Vec<FileRecord>> {
         let files = self.files.find_by_tree(tree_id).await?;
-        Ok(files
-            .into_iter()
-            .filter(|file| !file.is_deleted())
-            .collect())
+        Ok(files.into_iter().filter(|file| file.is_visible()).collect())
     }
 }
 
