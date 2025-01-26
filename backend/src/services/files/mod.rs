@@ -114,6 +114,7 @@ mod tests {
             user_id: 1,
             tree_id: 2,
             file: body,
+            ..Default::default()
         };
 
         let file = service

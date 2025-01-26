@@ -85,8 +85,6 @@ impl FileStorageInterface for S3FileStorage {
     }
 
     async fn write_file(&self, id: u64, bytes: &[u8]) -> Result<()> {
-        debug!("Writing file {} to S3.", id);
-
         let body = ByteStream::from(bytes.to_vec());
 
         let res = self
@@ -105,7 +103,7 @@ impl FileStorageInterface for S3FileStorage {
             return Err(Error::FileUpload);
         }
 
-        info!("File {} written.", id);
+        info!("File {} written to S3, length={}", id, bytes.len());
 
         Ok(())
     }

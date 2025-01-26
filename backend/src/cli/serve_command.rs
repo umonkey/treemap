@@ -38,7 +38,7 @@ pub async fn serve_command() {
             })
             .app_data(PayloadConfig::new(get_payload_size()))
             .service(add_comment_action)
-            .service(add_file)
+            .service(add_file_action)
             .service(add_training_action)
             .service(add_trees_action)
             .service(delete_file_action)

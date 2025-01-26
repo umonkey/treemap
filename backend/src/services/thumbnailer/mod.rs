@@ -8,48 +8,14 @@ use std::panic;
 pub struct ThumbnailerService;
 
 impl ThumbnailerService {
-    pub fn new() -> Self {
-        Self
-    }
-
-    pub fn resize(&self, data: &Vec<u8>, size: u32) -> Result<Vec<u8>> {
+    pub fn resize(&self, data: &[u8], size: u32) -> Result<Vec<u8>> {
         debug!("Reading an image to resize it to {} px.", size);
 
-        debug!("Creating a reader.");
-        let reader = Reader::new(Cursor::new(data));
-
-        debug!("Guessing image format.");
-        let format = match reader.with_guessed_format() {
-            Ok(value) => value,
-            Err(e) => {
-                error!("Error guessing image format: {:?}", e);
-                return Err(Error::BadImage);
-            }
-        };
-
-        debug!("Decoding image.");
-
-        let v1 = match panic::catch_unwind(|| format.decode()) {
-            Ok(value) => value,
-
-            Err(e) => {
-                error!("Panic during decoding an image: {:?}.", e);
-                return Err(Error::BadImage);
-            }
-        };
-
-        let img = match v1 {
-            Ok(value) => value,
-            Err(e) => {
-                error!("Error decoding image: {:?}", e);
-                return Err(Error::BadImage);
-            }
-        };
-
-        debug!("Image read, size is {}x{}", img.width(), img.height());
+        let img = self.decode(data)?;
 
         if img.width() <= size && img.height() <= size {
-            return Ok(data.clone());
+            debug!("Image too small, no need to downsize.");
+            return Ok(data.to_vec());
         }
 
         let rotated = self.autorotate(&img, data)?;
@@ -68,6 +34,47 @@ impl ThumbnailerService {
         debug!("Resize successful.");
 
         Ok(buf)
+    }
+
+    pub fn validate(&self, data: &[u8]) -> Result<()> {
+        self.decode(data)?;
+        Ok(())
+    }
+
+    pub fn decode(&self, data: &[u8]) -> Result<DynamicImage> {
+        debug!("Decoding image of {} bytes.", data.len());
+
+        let reader = Reader::new(Cursor::new(data));
+
+        let format = match reader.with_guessed_format() {
+            Ok(value) => value,
+            Err(e) => {
+                error!("Error guessing image format: {:?}", e);
+                return Err(Error::BadImage);
+            }
+        };
+
+        let v1 = match panic::catch_unwind(|| format.decode()) {
+            Ok(value) => value,
+
+            Err(e) => {
+                error!("Panic during decoding an image: {:?}.", e);
+                return Err(Error::BadImage);
+            }
+        };
+
+        let img = match v1 {
+            Ok(value) => value,
+
+            Err(e) => {
+                error!("Error decoding image: {:?}", e);
+                return Err(Error::BadImage);
+            }
+        };
+
+        debug!("Image decoded, size is {}x{}", img.width(), img.height());
+
+        Ok(img)
     }
 
     fn autorotate(&self, img: &DynamicImage, raw_image: &[u8]) -> Result<DynamicImage> {
@@ -118,7 +125,7 @@ impl ThumbnailerService {
 
 impl Locatable for ThumbnailerService {
     fn create(_locator: &Locator) -> Result<Self> {
-        Ok(Self::new())
+        Ok(Self {})
     }
 }
 
@@ -134,7 +141,7 @@ mod tests {
             debug!("env_logger already initialized.");
         };
 
-        ThumbnailerService::new()
+        ThumbnailerService {}
     }
 
     fn read_image(bytes: Vec<u8>) -> DynamicImage {

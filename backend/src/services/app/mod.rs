@@ -1,4 +1,3 @@
-use crate::common::database::repositories::*;
 use crate::handlers::*;
 use crate::services::Locator;
 use crate::services::{FileService, TokenService};
@@ -8,9 +7,9 @@ use std::sync::Arc;
 
 pub struct AppState {
     files: Arc<FileService>,
-    users: Arc<UserRepository>,
     tokens: Arc<TokenService>,
     pub add_comment_handler: Arc<AddCommentHandler>,
+    pub add_file_handler: Arc<AddFileHandler>,
     pub add_training_handler: Arc<AddTrainingHandler>,
     pub add_trees_handler: Arc<AddTreesHandler>,
     pub delete_file_handler: Arc<DeleteFileHandler>,
@@ -53,9 +52,9 @@ impl AppState {
     pub async fn new(locator: Arc<Locator>) -> Result<Self> {
         Ok(Self {
             files: locator.get::<FileService>()?,
-            users: locator.get::<UserRepository>()?,
             tokens: locator.get::<TokenService>()?,
             add_comment_handler: locator.get::<AddCommentHandler>()?,
+            add_file_handler: locator.get::<AddFileHandler>()?,
             add_training_handler: locator.get::<AddTrainingHandler>()?,
             add_trees_handler: locator.get::<AddTreesHandler>()?,
             delete_file_handler: locator.get::<DeleteFileHandler>()?,
@@ -128,12 +127,5 @@ impl AppState {
 
     pub async fn get_file(&self, id: u64) -> Result<Vec<u8>> {
         self.files.get_file(id).await
-    }
-
-    pub async fn add_file(&self, req: AddFileRequest) -> Result<FileUploadResponse> {
-        let user_id = req.user_id;
-        let file = self.files.add_file(req).await?;
-        self.users.increment_files_count(user_id, 1).await?;
-        Ok(FileUploadResponse::from_file(&file))
     }
 }

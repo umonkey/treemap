@@ -1,5 +1,5 @@
 mod add_comment_action;
-mod add_file;
+mod add_file_action;
 mod add_training_action;
 mod add_trees_action;
 mod default_action;
@@ -39,7 +39,7 @@ mod update_tree_height_action;
 mod update_tree_state_action;
 mod update_tree_thumbnail_action;
 pub use add_comment_action::*;
-pub use add_file::*;
+pub use add_file_action::*;
 pub use add_training_action::*;
 pub use add_trees_action::*;
 pub use default_action::*;

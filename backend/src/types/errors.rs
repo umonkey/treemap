@@ -12,9 +12,10 @@ pub enum Error {
     BadAuthorizationHeader,
     BadCallback,
     BadImage,
+    #[allow(unused)]
+    BadRequest,
     DatabaseConnect,
     DatabaseQuery,
-    #[allow(unused)]
     DatabaseStructure,
     DependencyLoad,
     EnvNotSet,
@@ -26,8 +27,10 @@ pub enum Error {
     MissingAuthorizationHeader,
     OsmExchange,
     Queue,
+    RemoteAddrNotSet,
     TreeNotFound,
     UniqueId,
+    UserAgentNotSet,
     UserNotFound,
 }
 
@@ -49,6 +52,7 @@ impl Error {
             Error::BadImage => {
                 r#"{"error":{"code":"BadImage","description":"Bad image file, cannot work with it."}}"#
             }
+            Error::BadRequest => r#"{"error":{"code":"BadRequest","description":"Bad request."}}"#,
             Error::DatabaseConnect => {
                 r#"{"error":{"code":"DatabaseConnect","description":"Error connecting to the database."}}"#
             }
@@ -88,11 +92,17 @@ impl Error {
             Error::Queue => {
                 r#"{"error":{"code":"Queue","description":"Error processing queue request."}}"#
             }
+            Error::RemoteAddrNotSet => {
+                r#"{"error":{"code":"RemoteAddrNotSet","description":"Remote address not set."}}"#
+            }
             Error::TreeNotFound => {
                 r#"{"error":{"code":"TreeNotFound","description":"The specified tree does not exist in the database."}}"#
             }
             Error::UniqueId => {
                 r#"{"error":{"code":"UniqueId","description":"Could not generate a unique id to assign to an object."}}"#
+            }
+            Error::UserAgentNotSet => {
+                r#"{"error":{"code":"UserAgentNotSet","description":"User agent not set."}}"#
             }
             Error::UserNotFound => {
                 r#"{"error":{"code":"UserNotFound","description":"User record not found, or deleted."}}"#
@@ -127,6 +137,7 @@ impl ResponseError for Error {
             Error::BadAuthorizationHeader => StatusCode::BAD_REQUEST,
             Error::BadCallback => StatusCode::BAD_REQUEST,
             Error::BadImage => StatusCode::BAD_REQUEST,
+            Error::BadRequest => StatusCode::BAD_REQUEST,
             Error::DatabaseConnect => StatusCode::INTERNAL_SERVER_ERROR,
             Error::DatabaseQuery => StatusCode::INTERNAL_SERVER_ERROR,
             Error::DatabaseStructure => StatusCode::INTERNAL_SERVER_ERROR,
@@ -140,8 +151,10 @@ impl ResponseError for Error {
             Error::MissingAuthorizationHeader => StatusCode::UNAUTHORIZED,
             Error::OsmExchange => StatusCode::INTERNAL_SERVER_ERROR,
             Error::Queue => StatusCode::INTERNAL_SERVER_ERROR,
+            Error::RemoteAddrNotSet => StatusCode::INTERNAL_SERVER_ERROR,
             Error::TreeNotFound => StatusCode::NOT_FOUND,
             Error::UniqueId => StatusCode::INTERNAL_SERVER_ERROR,
+            Error::UserAgentNotSet => StatusCode::UNAUTHORIZED,
             Error::UserNotFound => StatusCode::UNAUTHORIZED,
         }
     }
@@ -155,6 +168,7 @@ impl fmt::Display for Error {
             Error::BadAuthorizationHeader => write!(f, "BadAuthorizationHeader"),
             Error::BadCallback => write!(f, "BadCallback"),
             Error::BadImage => write!(f, "BadImage"),
+            Error::BadRequest => write!(f, "BadRequest"),
             Error::DatabaseConnect => write!(f, "DatabaseConnect"),
             Error::DatabaseQuery => write!(f, "DatabaseQuery"),
             Error::DatabaseStructure => write!(f, "DatabaseStructure"),
@@ -168,8 +182,10 @@ impl fmt::Display for Error {
             Error::MissingAuthorizationHeader => write!(f, "MissingAuthorizationHeader"),
             Error::OsmExchange => write!(f, "OsmExchange"),
             Error::Queue => write!(f, "Queue"),
+            Error::RemoteAddrNotSet => write!(f, "RemoteAddrNotSet"),
             Error::TreeNotFound => write!(f, "TreeNotFound"),
             Error::UniqueId => write!(f, "UniqueId"),
+            Error::UserAgentNotSet => write!(f, "UserAgentNotSet"),
             Error::UserNotFound => write!(f, "UserNotFound"),
         }
     }
