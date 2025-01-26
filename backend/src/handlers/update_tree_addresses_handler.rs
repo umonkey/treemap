@@ -5,14 +5,13 @@
 use crate::common::database::repositories::*;
 use crate::services::*;
 use crate::types::*;
-use crate::utils::*;
 use log::{info, warn};
 use std::sync::Arc;
 
 pub struct UpdateTreeAddressesHandler {
+    config: Arc<ConfigService>,
     trees: Arc<TreeRepository>,
     nominatim: Arc<NominatimService>,
-    user_id: u64,
 }
 
 impl UpdateTreeAddressesHandler {
@@ -58,7 +57,7 @@ impl UpdateTreeAddressesHandler {
                     address: Some(address),
                     ..tree.clone()
                 },
-                self.user_id,
+                self.config.bot_user_id,
             )
             .await?;
 
@@ -69,9 +68,9 @@ impl UpdateTreeAddressesHandler {
 impl Locatable for UpdateTreeAddressesHandler {
     fn create(locator: &Locator) -> Result<Self> {
         Ok(Self {
+            config: locator.get::<ConfigService>()?,
             trees: locator.get::<TreeRepository>()?,
             nominatim: locator.get::<NominatimService>()?,
-            user_id: get_bot_user_id(),
         })
     }
 }

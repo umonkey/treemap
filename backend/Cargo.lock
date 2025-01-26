@@ -3777,6 +3777,7 @@ dependencies = [
  "serde_json",
  "snowflaker",
  "tokio",
+ "toml",
  "url",
  "xml",
 ]

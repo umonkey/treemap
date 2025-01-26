@@ -17,7 +17,7 @@
 use crate::common::database::repositories::*;
 use crate::services::*;
 use crate::types::*;
-use crate::utils::{get_bot_user_id, get_timestamp, get_unique_id};
+use crate::utils::{get_timestamp, get_unique_id};
 use log::{error, info};
 use std::sync::Arc;
 
@@ -27,8 +27,8 @@ pub struct OsmReaderService {
     trees: Arc<TreeRepository>,
     overpass_client: Arc<OverpassClient>,
     queue: Arc<QueueService>,
-    user_id: u64,
     osm_trees: Arc<OsmTreeRepository>,
+    config: Arc<ConfigService>,
 }
 
 impl OsmReaderService {
@@ -116,7 +116,7 @@ impl OsmReaderService {
                     osm_id: Some(node.id),
                     ..closest.clone()
                 },
-                self.user_id,
+                self.config.bot_user_id,
             )
             .await?;
 
@@ -140,7 +140,7 @@ impl OsmReaderService {
             state: DEFAULT_STATE.to_string(),
             added_at: now,
             updated_at: now,
-            added_by: self.user_id,
+            added_by: self.config.bot_user_id,
             ..Default::default()
         };
 
@@ -176,9 +176,9 @@ impl Locatable for OsmReaderService {
     fn create(locator: &Locator) -> Result<Self> {
         Ok(Self {
             trees: locator.get::<TreeRepository>()?,
+            config: locator.get::<ConfigService>()?,
             overpass_client: locator.get::<OverpassClient>()?,
             queue: locator.get::<QueueService>()?,
-            user_id: get_bot_user_id(),
             osm_trees: locator.get::<OsmTreeRepository>()?,
         })
     }
