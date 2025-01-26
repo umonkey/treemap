@@ -1,6 +1,8 @@
 <script>
 	import '@fontsource-variable/inter';
 	import { SvelteToast } from '@zerodevx/svelte-toast';
+	import { validateStoredToken } from '$lib/utils/auth';
+	import { onMount } from 'svelte';
 
 	import MobileNav from '$lib/components/MobileNav.svelte';
 	import LeftSideBar from '$lib/components/LeftSideBar.svelte';
@@ -13,6 +15,10 @@
 	import '$lib/styles/forms.css';
 
 	let { children } = $props();
+
+	onMount(() => {
+		validateStoredToken();
+	});
 </script>
 
 <div class="layout">
