@@ -7,6 +7,7 @@ const CONFIG_FILE: &str = "config.toml";
 
 const DEFAULT_WEB_WORKERS: usize = 1;
 const DEFAULT_WEB_ADDR: &str = "0.0.0.0";
+const DEFAULT_WEB_PORT: u16 = 8000;
 
 #[derive(Default, Deserialize)]
 pub struct ConfigService {
@@ -15,6 +16,8 @@ pub struct ConfigService {
     pub web_workers: usize,
     #[serde(default = "default_web_addr")]
     pub web_addr: String,
+    #[serde(default = "default_web_port")]
+    pub web_port: u16,
 }
 
 impl ConfigService {
@@ -45,4 +48,8 @@ fn default_web_workers() -> usize {
 
 fn default_web_addr() -> String {
     DEFAULT_WEB_ADDR.to_string()
+}
+
+fn default_web_port() -> u16 {
+    DEFAULT_WEB_PORT
 }

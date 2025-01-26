@@ -1,6 +1,6 @@
 use crate::actions::*;
 use crate::services::*;
-use crate::utils::{get_payload_size, get_server_port};
+use crate::utils::get_payload_size;
 use actix_cors::Cors;
 use actix_files::Files;
 use actix_web::{middleware::DefaultHeaders, web::PayloadConfig, App, HttpServer};
@@ -18,7 +18,7 @@ pub async fn serve_command() {
 
     let workers = config.web_workers;
     let host_addr = config.web_addr.clone();
-    let host_port = get_server_port();
+    let host_port = config.web_port;
 
     info!(
         "Running {} worker(s) at {}:{}.",
