@@ -8,6 +8,7 @@ const CONFIG_FILE: &str = "config.toml";
 const DEFAULT_WEB_WORKERS: usize = 1;
 const DEFAULT_WEB_ADDR: &str = "0.0.0.0";
 const DEFAULT_WEB_PORT: u16 = 8000;
+const DEFAULT_MAX_UPLOAD_SIZE: usize = 50_485_760;
 
 #[derive(Default, Deserialize)]
 pub struct ConfigService {
@@ -18,6 +19,8 @@ pub struct ConfigService {
     pub web_addr: String,
     #[serde(default = "default_web_port")]
     pub web_port: u16,
+    #[serde(default = "default_max_upload_size")]
+    pub max_upload_size: usize,
 }
 
 impl ConfigService {
@@ -52,4 +55,8 @@ fn default_web_addr() -> String {
 
 fn default_web_port() -> u16 {
     DEFAULT_WEB_PORT
+}
+
+fn default_max_upload_size() -> usize {
+    DEFAULT_MAX_UPLOAD_SIZE
 }

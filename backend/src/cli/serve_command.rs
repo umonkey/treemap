@@ -1,6 +1,5 @@
 use crate::actions::*;
 use crate::services::*;
-use crate::utils::get_payload_size;
 use actix_cors::Cors;
 use actix_files::Files;
 use actix_web::{middleware::DefaultHeaders, web::PayloadConfig, App, HttpServer};
@@ -19,6 +18,7 @@ pub async fn serve_command() {
     let workers = config.web_workers;
     let host_addr = config.web_addr.clone();
     let host_port = config.web_port;
+    let payload_size = config.max_upload_size;
 
     info!(
         "Running {} worker(s) at {}:{}.",
@@ -41,7 +41,7 @@ pub async fn serve_command() {
                 let locator = locator.clone();
                 async move { AppState::new(locator).await }
             })
-            .app_data(PayloadConfig::new(get_payload_size()))
+            .app_data(PayloadConfig::new(payload_size))
             .service(add_comment_action)
             .service(add_file_action)
             .service(add_training_action)
