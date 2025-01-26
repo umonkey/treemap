@@ -9,11 +9,9 @@ const OSM_CHANGESET_SIZE: &str = "OSM_CHANGESET_SIZE";
 const OVERPASS_ENDPOINT: &str = "TREEMAP_OVERPASS_ENDPOINT";
 const OVERPASS_QUERY: &str = "TREEMAP_OVERPASS_QUERY";
 const PAYLOAD_SIZE: &str = "PAYLOAD_SIZE";
-const SERVER_ADDR: &str = "TREEMAP_ADDR";
 const SERVER_PORT: &str = "TREEMAP_PORT";
 const SQLITE_PATH: &str = "TREEMAP_SQLITE_PATH";
 
-const DEFAULT_ADDR: &str = "0.0.0.0";
 const DEFAULT_FILE_FOLDER: &str = "var/files";
 const DEFAULT_JWT_SECRET: &str = "secret";
 const DEFAULT_OVERPASS_ENDPONT: &str = "https://overpass-api.de/api/interpreter";
@@ -29,20 +27,6 @@ pub fn get_sqlite_path() -> Result<String> {
         Err(_) => {
             error!("Environment variable {} not set, cannot connect to the database. Read more at <https://github.com/umonkey/treemap/wiki/Configuration#sqlite_path>", SQLITE_PATH);
             Err(Error::EnvNotSet)
-        }
-    }
-}
-
-pub fn get_server_addr() -> String {
-    match env::var(SERVER_ADDR) {
-        Ok(v) => v,
-
-        Err(_) => {
-            warn!(
-                "Environment variable {} not set, using default: {}.",
-                SERVER_ADDR, DEFAULT_ADDR
-            );
-            DEFAULT_ADDR.to_string()
         }
     }
 }

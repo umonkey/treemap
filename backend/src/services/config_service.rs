@@ -6,12 +6,15 @@ use serde::Deserialize;
 const CONFIG_FILE: &str = "config.toml";
 
 const DEFAULT_WEB_WORKERS: usize = 1;
+const DEFAULT_WEB_ADDR: &str = "0.0.0.0";
 
 #[derive(Default, Deserialize)]
 pub struct ConfigService {
     pub bot_user_id: u64,
     #[serde(default = "default_web_workers")]
     pub web_workers: usize,
+    #[serde(default = "default_web_addr")]
+    pub web_addr: String,
 }
 
 impl ConfigService {
@@ -38,4 +41,8 @@ impl Locatable for ConfigService {
 
 fn default_web_workers() -> usize {
     DEFAULT_WEB_WORKERS
+}
+
+fn default_web_addr() -> String {
+    DEFAULT_WEB_ADDR.to_string()
 }
