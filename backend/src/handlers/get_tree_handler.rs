@@ -16,13 +16,7 @@ impl GetTreeHandler {
             None => return Err(Error::TreeNotFound),
         };
 
-        let files: Vec<FileRecord> = self
-            .files
-            .find_by_tree(id)
-            .await?
-            .into_iter()
-            .filter(|file| file.deleted_at.is_none())
-            .collect();
+        let files = self.find_files(id).await?;
 
         let user_ids = self.collect_user_ids(&tree, &files).await?;
         let users = self.users.get_multiple(&user_ids).await?;
@@ -40,6 +34,14 @@ impl GetTreeHandler {
         }
 
         Ok(user_ids)
+    }
+
+    async fn find_files(&self, tree_id: u64) -> Result<Vec<FileRecord>> {
+        let files = self.files.find_by_tree(tree_id).await?;
+        Ok(files
+            .into_iter()
+            .filter(|file| !file.is_deleted())
+            .collect())
     }
 }
 

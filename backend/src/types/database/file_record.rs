@@ -36,22 +36,27 @@ impl FileRecord {
             ("tree_id".to_string(), Value::from(self.tree_id as i64)),
             ("added_at".to_string(), Value::from(self.added_at as i64)),
             ("added_by".to_string(), Value::from(self.added_by as i64)),
-            (
-                "deleted_at".to_string(),
-                match self.deleted_at {
-                    Some(value) => Value::from(value as i64),
-                    None => Value::Null,
-                },
-            ),
-            (
-                "deleted_by".to_string(),
-                match self.deleted_by {
-                    Some(value) => Value::from(value as i64),
-                    None => Value::Null,
-                },
-            ),
+            ("deleted_at".to_string(), Self::oi64(&self.deleted_at)),
+            ("deleted_by".to_string(), Self::oi64(&self.deleted_by)),
             ("small_id".to_string(), Value::from(self.small_id as i64)),
             ("large_id".to_string(), Value::from(self.large_id as i64)),
         ])
+    }
+
+    pub fn is_deleted(&self) -> bool {
+        if let Some(value) = self.deleted_at {
+            if value > 0 {
+                return true;
+            }
+        }
+
+        false
+    }
+
+    fn oi64(value: &Option<u64>) -> Value {
+        match value {
+            Some(value) => Value::from(*value as i64),
+            _ => Value::Null,
+        }
     }
 }

@@ -72,13 +72,7 @@ impl TreeRecord {
                 Value::from(self.updated_at as i64),
             ),
             ("added_by".to_string(), Value::from(self.added_by as i64)),
-            (
-                "thumbnail_id".to_string(),
-                match self.thumbnail_id {
-                    Some(value) => Value::from(value as i64),
-                    None => Value::Null,
-                },
-            ),
+            ("thumbnail_id".to_string(), Self::oi64(&self.thumbnail_id)),
             ("year".to_string(), Value::from(self.year)),
             ("address".to_string(), Value::from(self.address.clone())),
             ("like_count".to_string(), Value::from(self.like_count)),
@@ -116,5 +110,12 @@ impl TreeRecord {
         }
 
         Some(self.species.clone())
+    }
+
+    fn oi64(value: &Option<u64>) -> Value {
+        match value {
+            Some(value) => Value::from(*value as i64),
+            _ => Value::Null,
+        }
     }
 }
