@@ -1,1 +1,2 @@
-bot_user_id: 0
+bot_user_id = 0
+web_workers = 10

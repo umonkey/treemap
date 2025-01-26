@@ -12,7 +12,6 @@ const PAYLOAD_SIZE: &str = "PAYLOAD_SIZE";
 const SERVER_ADDR: &str = "TREEMAP_ADDR";
 const SERVER_PORT: &str = "TREEMAP_PORT";
 const SQLITE_PATH: &str = "TREEMAP_SQLITE_PATH";
-const WORKERS: &str = "TREEMAP_WORKERS";
 
 const DEFAULT_ADDR: &str = "0.0.0.0";
 const DEFAULT_FILE_FOLDER: &str = "var/files";
@@ -22,7 +21,6 @@ const DEFAULT_OVERPASS_QUERY: &str =
     "[out:json];node[natural=tree](40.052848, 44.294472, 40.300476, 44.807396);out;";
 const DEFAULT_PAYLOAD_SIZE: usize = 50_485_760;
 const DEFAULT_PORT: u16 = 8000;
-const DEFAULT_WORKERS: usize = 1;
 
 pub fn get_sqlite_path() -> Result<String> {
     match env::var(SQLITE_PATH) {
@@ -31,19 +29,6 @@ pub fn get_sqlite_path() -> Result<String> {
         Err(_) => {
             error!("Environment variable {} not set, cannot connect to the database. Read more at <https://github.com/umonkey/treemap/wiki/Configuration#sqlite_path>", SQLITE_PATH);
             Err(Error::EnvNotSet)
-        }
-    }
-}
-
-pub fn get_workers() -> usize {
-    match env::var(WORKERS) {
-        Ok(v) => v.parse::<usize>().unwrap_or(DEFAULT_WORKERS),
-        Err(_) => {
-            warn!(
-                "Environment variable {} not set, using default {}.",
-                WORKERS, DEFAULT_WORKERS
-            );
-            DEFAULT_WORKERS
         }
     }
 }
