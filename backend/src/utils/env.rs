@@ -5,7 +5,6 @@ use crate::types::{Error, Result};
 
 const FILE_FOLDER: &str = "FILE_FOLDER";
 const JWT_SECRET: &str = "JWT_SECRET";
-const OSM_CHANGESET_SIZE: &str = "OSM_CHANGESET_SIZE";
 const OVERPASS_ENDPOINT: &str = "TREEMAP_OVERPASS_ENDPOINT";
 const OVERPASS_QUERY: &str = "TREEMAP_OVERPASS_QUERY";
 const SQLITE_PATH: &str = "TREEMAP_SQLITE_PATH";
@@ -105,19 +104,6 @@ pub fn get_dry_run() -> Result<bool> {
 
 pub fn get_app_name() -> String {
     env!("CARGO_PKG_NAME").to_string()
-}
-
-pub fn get_osm_changeset_size() -> u64 {
-    match env::var(OSM_CHANGESET_SIZE) {
-        Ok(v) => v.parse::<u64>().unwrap_or(1),
-        Err(_) => {
-            warn!(
-                "Environment variable {} not set, using default {}.",
-                OSM_CHANGESET_SIZE, 1
-            );
-            1
-        }
-    }
 }
 
 pub fn get_app_version() -> String {
