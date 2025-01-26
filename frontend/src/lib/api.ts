@@ -9,7 +9,7 @@ import type {
 	ITree,
 	ITreeUpdatePayload
 } from '$lib/types';
-import { isAuthenticated, authState } from '$lib/stores/auth';
+import { isAuthenticated, authStore } from '$lib/stores/authStore';
 import { addUsers } from '$lib/stores/userStore';
 import { get } from 'svelte/store';
 import { API_ROOT } from '$lib/env';
@@ -324,7 +324,7 @@ export class ApiClient {
 
 	private getAuthHeaders(): HeadersInit {
 		if (get(isAuthenticated)) {
-			const token = get(authState)?.token;
+			const token = get(authStore)?.token;
 
 			if (token) {
 				return {

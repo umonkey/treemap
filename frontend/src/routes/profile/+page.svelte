@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { isAuthenticated, authState } from '$lib/stores/auth';
+	import { isAuthenticated, authStore } from '$lib/stores/authStore';
 	import { locale } from '$lib/locale';
 	import SignIn from '$lib/components/auth/SignIn.svelte';
 	import SignOut from '$lib/components/auth/SignOut.svelte';
@@ -19,9 +19,9 @@
 	<img class="header" src="/header.jpg" alt="header background" />
 
 	<div class="container signedIn">
-		<img class="userpic" src={$authState?.picture} alt="userpic" />
+		<img class="userpic" src={$authStore?.picture} alt="userpic" />
 
-		<h1>{$authState?.name ?? 'Unknown user'}</h1>
+		<h1>{$authStore?.name ?? 'Unknown user'}</h1>
 		<div class="stats">
 			{locale.profileTrees(profile.trees_count)}, {locale.profileUpdates(profile.updates_count)}, {locale.profilePhotos(
 				profile.files_count

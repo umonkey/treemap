@@ -1,9 +1,9 @@
 <script>
-	import { authState } from '$lib/stores/auth';
+	import { authStore } from '$lib/stores/authStore';
 	import { locale } from '$lib/locale';
 
 	const onClick = () => {
-		authState.set(undefined);
+		authStore.set(undefined);
 	};
 </script>
 

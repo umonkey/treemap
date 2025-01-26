@@ -1,5 +1,5 @@
 <script>
-	import { isAuthenticated } from '$lib/stores/auth';
+	import { isAuthenticated } from '$lib/stores/authStore';
 	import { locale } from '$lib/locale';
 
 	import SignIn from '$lib/components/auth/SignIn.svelte';

@@ -4,7 +4,7 @@
 	import MapIcon from '$lib/icons/MapIcon.svelte';
 	import SearchIcon from '$lib/icons/SearchIcon.svelte';
 	import UserIcon from '$lib/icons/UserIcon.svelte';
-	import { isAuthenticated, authState } from '$lib/stores/auth';
+	import { isAuthenticated, authStore } from '$lib/stores/authStore';
 	import { routes } from '$lib/routes';
 </script>
 
@@ -15,8 +15,8 @@
 	<a href={routes.newTrees()}><div><BellIcon /></div></a>
 	<a href="/profile"
 		><div>
-			{#if $isAuthenticated && $authState?.picture}
-				<img src={$authState.picture} alt="userpic" />
+			{#if $isAuthenticated && $authStore?.picture}
+				<img src={$authStore.picture} alt="userpic" />
 			{:else}
 				<UserIcon />
 			{/if}

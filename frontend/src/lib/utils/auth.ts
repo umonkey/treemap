@@ -1,5 +1,5 @@
 import { apiClient } from '$lib/api';
-import { authState } from '$lib/stores/auth';
+import { authStore } from '$lib/stores/authStore';
 import { get } from 'svelte/store';
 import { toast } from '@zerodevx/svelte-toast';
 
@@ -13,7 +13,7 @@ export const googleCallbackHandler = async (user: LoginData) => {
 	const res = await apiClient.loginWithGoogle(token);
 
 	if (res.status === 200) {
-		authState.set(res.data);
+		authStore.set(res.data);
 		console.info(`Logged in as ${res.data.name}`);
 	} else {
 		toast.push(`Error ${res.status} getting an authentication token.`);
@@ -21,7 +21,7 @@ export const googleCallbackHandler = async (user: LoginData) => {
 };
 
 export const validateStoredToken = async () => {
-	const auth = get(authState);
+	const auth = get(authStore);
 
 	if (auth === undefined) {
 		console.debug('[auth] Not authenticated.');
@@ -30,7 +30,7 @@ export const validateStoredToken = async () => {
 
 	if (auth.token === undefined) {
 		console.debug('[auth] No auth token stored.');
-		authState.update(() => undefined);
+		authStore.update(() => undefined);
 		return;
 	}
 
@@ -40,7 +40,7 @@ export const validateStoredToken = async () => {
 
 	if (res.status === 401) {
 		console.info('[auth] Token expired.');
-		authState.update(() => undefined);
+		authStore.update(() => undefined);
 		return;
 	}
 

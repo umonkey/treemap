@@ -1,5 +1,5 @@
 import { apiClient } from '$lib/api';
-import { authState } from '$lib/stores/auth';
+import { authStore } from '$lib/stores/authStore';
 import { error } from '@sveltejs/kit';
 
 export const load: Load = async ({
@@ -22,7 +22,7 @@ export const load: Load = async ({
 
 	console.info(`[auth] Logged in as ${res.data.name}`);
 
-	authState.set({
+	authStore.set({
 		token,
 		name: res.data.name,
 		picture: res.data.picture
