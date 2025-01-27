@@ -132,46 +132,18 @@ impl Locatable for SqliteDatabase {
 impl DatabaseInterface for SqliteDatabase {
     async fn get_record(&self, query: SelectQuery) -> Result<Option<Attributes>> {
         let query = query.with_limit(1);
-
-        let record = self
-            .pool
-            .conn(move |conn| {
-                let (sql, params) = query.build();
-
-                let mut stmt = match conn.prepare(sql.as_str()) {
-                    Ok(value) => value,
-
-                    Err(e) => {
-                        error!("Error preparing SQL statement: {}", e);
-                        return Err(e);
-                    }
-                };
-
-                let mut rows = stmt.query(params_from_iter(params.iter())).map_err(|e| {
-                    error!("Error executing SQL statement: {}", e);
-                    e
-                })?;
-
-                if let Some(row) = rows.next()? {
-                    let fields = row.as_ref().column_names();
-                    let rec = Self::pack_record(row, &fields)?;
-                    Ok(Some(rec))
-                } else {
-                    Ok(None)
-                }
-            })
-            .await?;
-
-        Ok(record)
+        let records = self.get_records(query).await?;
+        Ok(records.first().cloned())
     }
 
-    async fn get_records(&self, query: SelectQuery) -> Result<Vec<Attributes>> {
+    async fn sql(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>> {
+        let query = query.to_string();
+        let params = params.to_vec();
+
         let record = self
             .pool
             .conn(move |conn| {
-                let (sql, params) = query.build();
-
-                let mut stmt = match conn.prepare(sql.as_str()) {
+                let mut stmt = match conn.prepare(query.as_str()) {
                     Ok(value) => value,
 
                     Err(e) => {
@@ -198,6 +170,11 @@ impl DatabaseInterface for SqliteDatabase {
             .await?;
 
         Ok(record)
+    }
+
+    async fn get_records(&self, query: SelectQuery) -> Result<Vec<Attributes>> {
+        let (sql, params) = query.build();
+        self.sql(sql.as_str(), params.as_slice()).await
     }
 
     async fn add_record(&self, query: InsertQuery) -> Result<()> {

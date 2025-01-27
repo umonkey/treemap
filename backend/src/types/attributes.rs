@@ -3,7 +3,7 @@ use log::debug;
 use rusqlite::types::Value;
 use std::collections::HashMap;
 
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct Attributes {
     pub props: HashMap<String, Value>,
 }

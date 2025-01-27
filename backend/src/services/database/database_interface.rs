@@ -1,6 +1,7 @@
 use crate::common::database::queries::*;
 use crate::types::*;
 use async_trait::async_trait;
+use rusqlite::types::Value;
 
 #[async_trait]
 pub trait DatabaseInterface: Send + Sync {
@@ -12,6 +13,7 @@ pub trait DatabaseInterface: Send + Sync {
     async fn delete(&self, query: DeleteQuery) -> Result<()>;
     async fn increment(&self, query: IncrementQuery) -> Result<()>;
     async fn count(&self, query: CountQuery) -> Result<u64>;
+    async fn sql(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>>;
 
     async fn find_species(&self, query: &str) -> Result<Vec<SpeciesRecord>>;
 

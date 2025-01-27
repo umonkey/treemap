@@ -57,6 +57,7 @@ pub async fn serve_command() {
             .service(get_top_diameter_action)
             .service(get_top_height_action)
             .service(get_top_streets_action)
+            .service(get_top_users_action)
             .service(get_tree_defaults_action)
             .service(get_tree_stats_action)
             .service(get_tree_action)
