@@ -29,7 +29,8 @@ export const addLocateMeButton = (map: Map) => {
 		}
 	});
 
-	L.Control.LocateMeButton = L.Control.extend({
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	(L.Control as any).LocateMeButton = L.Control.extend({
 		options: {
 			position: 'topleft'
 		},
@@ -65,7 +66,8 @@ export const addLocateMeButton = (map: Map) => {
 		}
 	});
 
-	const control = new L.Control.LocateMeButton();
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const control = new (L.Control as any).LocateMeButton();
 	const button = control.addTo(map);
 
 	console.debug('[map] LocateMe button added.', button);

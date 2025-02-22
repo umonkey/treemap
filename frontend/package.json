@@ -9,7 +9,8 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"format": "prettier --write .",
-		"lint": "eslint . --report-unused-disable-directives --max-warnings 0 --color && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json && prettier --check .",
+		"format-check": "prettier --check .",
+		"lint": "eslint . --report-unused-disable-directives --max-warnings 0 --color",
 		"test:unit": "vitest",
 		"test": "npm run test:unit -- --run"
 	},

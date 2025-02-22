@@ -4,7 +4,8 @@ import { Map } from 'leaflet';
 import { routes } from '$lib/routes';
 
 export const addTreeButton = (map: Map) => {
-	L.Control.TreeButton = L.Control.extend({
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	(L.Control as any).TreeButton = L.Control.extend({
 		options: {
 			position: 'topleft'
 		},
@@ -34,6 +35,7 @@ export const addTreeButton = (map: Map) => {
 		}
 	});
 
-	const control = new L.Control.TreeButton();
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const control = new (L.Control as any).TreeButton();
 	control.addTo(map);
 };

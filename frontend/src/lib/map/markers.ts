@@ -91,7 +91,7 @@ export class Markers {
 
 	public changeHandler: onChangeFn | null = null;
 
-	private oldClusterGroups = [];
+	private oldClusterGroups: L.Layer[] = [];
 
 	constructor(map: Map, searchQuery: string | undefined) {
 		this.map = map;

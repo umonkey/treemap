@@ -45,7 +45,7 @@ export const addLayerSelection = (map: L.Map) => {
 		maxNativeZoom: 21,
 		minZoom: 15,
 		tms: true,
-		opaque: 0.9
+		opacity: 0.9
 	});
 
 	const baseMaps = {
