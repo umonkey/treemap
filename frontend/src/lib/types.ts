@@ -59,6 +59,7 @@ export interface ITreeUpdatePayload {
 	circumference?: number|null;
 	diameter?: number|null;
 	state?: string|null;
+	year?: number|null;
 }
 
 export interface IMeResponse {
