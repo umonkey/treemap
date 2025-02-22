@@ -12,7 +12,7 @@ export const load: Load = async (): Promise<{
 	const res = await apiClient.getNewTrees();
 
 	if (res.status !== 200) {
-		error('Failed to load new trees');
+		error(res.status);
 	}
 
 	addTrees(res.data.trees);

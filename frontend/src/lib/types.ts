@@ -29,6 +29,9 @@ export interface ITree {
 	added_by: string;
 	year?: number | null;
 	files: ITreeFile[];
+}
+
+export interface ISingleTree extends ITree {
 	users: IUser[];
 }
 
@@ -47,20 +50,24 @@ export interface ILoginResponse {
 }
 
 export interface ITreeUpdatePayload {
-	lat?: number;
-	lon?: number;
-	address?: string;
-	species?: string;
-	notes?: string;
-	height?: number;
-	circumference?: number;
-	diameter?: number;
-	state?: string;
+	lat?: number|null;
+	lon?: number|null;
+	address?: string|null;
+	species?: string|null;
+	notes?: string|null;
+	height?: number|null;
+	circumference?: number|null;
+	diameter?: number|null;
+	state?: string|null;
 }
 
 export interface IMeResponse {
 	name: string;
 	picture: string;
+	trees_count: number;
+	comments_count: number;
+	updates_count: number;
+	files_count: number;
 }
 
 export interface ISpecies {
@@ -70,6 +77,7 @@ export interface ISpecies {
 
 export interface IComment {
 	id: string;
+	tree_id: number;
 	added_at: number;
 	added_by: string;
 	message: string;
@@ -78,6 +86,7 @@ export interface IComment {
 export interface ICommentList {
 	comments: IComment[];
 	users: IUser[];
+	trees: ITree[];
 }
 
 export interface ILatLon {
@@ -120,4 +129,19 @@ export interface IMyPosition {
 export interface ILike {
 	tree_id: string;
 	user_id: string;
+}
+
+export interface ITreeDefaults {
+	species: string|null;
+	notes: string|null;
+	height: number|null;
+	circumference: number|null;
+	diameter: number|null;
+	state: string|null;
+}
+
+export interface ILikeList {
+	likes: ILike[];
+	users: IUser[];
+	trees: ITree[];
 }

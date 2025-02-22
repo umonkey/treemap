@@ -10,7 +10,7 @@ const uploadSingleFile = async (file: File, tree: string) => {
 export const startUpload = async (tree: string) => {
 	const count = get(fileStore).files.length;
 	const files = get(fileStore).files;
-	const retry = [];
+	const retry: File[] = [];
 
 	const totalSize = files.length;
 	let uploadedSize = 0;

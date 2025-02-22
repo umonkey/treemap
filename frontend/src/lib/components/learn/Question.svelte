@@ -8,7 +8,7 @@
 	let selected = $state('');
 
 	// Values: guessing, correct, wrong.
-	let state = $state('guessing');
+	let currentState = $state('guessing');
 
 	const onSelect = (value: string) => {
 		selected = value;
@@ -16,23 +16,23 @@
 
 	const onConfirm = () => {
 		if (question.correct.includes(selected)) {
-			state = 'correct';
+			currentState = 'correct';
 			soundBus.emit('correct');
 		} else {
-			state = 'wrong';
+			currentState = 'wrong';
 			soundBus.emit('wrong');
 		}
 	};
 
 	// Go to the next question.
 	const onContinue = () => {
-		if (state === 'correct') {
+		if (currentState === 'correct') {
 			onCorrect();
 		} else {
 			onWrong();
 		}
 
-		state = 'guessing';
+		currentState = 'guessing';
 		selected = '';
 	};
 </script>
@@ -50,13 +50,13 @@
 		{/each}
 	</div>
 
-	{#if state === 'guessing'}
+	{#if currentState === 'guessing'}
 		<div class="actions">
 			<button class="button" type="button" disabled={!selected} onclick={onConfirm}
 				>{locale.learnConfirm()}</button
 			>
 		</div>
-	{:else if state === 'correct'}
+	{:else if currentState === 'correct'}
 		<div class="result correct">
 			<div class="message">
 				<p><strong>{locale.learnCorrect()}</strong></p>

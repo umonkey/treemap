@@ -2,7 +2,10 @@
 	import HelpButton from '$lib/components/forms/HelpButton.svelte';
 	import { locale } from '$lib/locale';
 
-	let { value = $bindable(''), label = true } = $props();
+	let { value = $bindable(''), label = true }: {
+		value: string|null;
+		label: boolean;
+	} = $props();
 </script>
 
 <div class="input">

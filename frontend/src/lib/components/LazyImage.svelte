@@ -1,7 +1,7 @@
 <script lang="ts">
 	const { src, alt, fallback } = $props();
 
-	let img;
+	let img: HTMLImageElement;
 
 	const handleError = () => {
 		console.debug(`Error loading image ${src}, falling back to ${fallback}`);

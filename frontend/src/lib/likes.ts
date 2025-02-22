@@ -1,6 +1,7 @@
 import { apiClient } from '$lib/api';
 import { likeStore, haveOwnLikes } from '$lib/stores/likeStore';
 import { get } from 'svelte/store';
+import type { ILike } from '$lib/types';
 
 export const preloadMeLikes = async () => {
 	if (get(haveOwnLikes)) {
@@ -12,7 +13,7 @@ export const preloadMeLikes = async () => {
 	const res = await apiClient.getMeLikes();
 
 	if (res.status === 200) {
-		likeStore.update(() => res.data.likes.map((x) => x.tree_id));
+		likeStore.update(() => res.data.likes.map((x: ILike) => x.tree_id));
 	}
 };
 
@@ -20,8 +21,8 @@ export const like = async (tree: string) => {
 	const res = await apiClient.likeTree(tree);
 
 	if (res.status < 400) {
-		likeStore.update((likes) => {
-			const updated = likes ? [...likes].filter((t) => t !== tree) : [];
+		likeStore.update((likes: string[] | undefined) => {
+			const updated = likes ? [...(likes ?? [])].filter((t) => t !== tree) : [];
 			updated.push(tree);
 			return updated;
 		});
@@ -34,8 +35,8 @@ export const unlike = async (tree: string) => {
 	const res = await apiClient.unlikeTree(tree);
 
 	if (res.status < 400) {
-		likeStore.update((likes) => {
-			const updated = [...likes].filter((t) => t !== tree);
+		likeStore.update((likes: string[] | undefined) => {
+			const updated = [...(likes ?? [])].filter((t) => t !== tree);
 			return updated;
 		});
 

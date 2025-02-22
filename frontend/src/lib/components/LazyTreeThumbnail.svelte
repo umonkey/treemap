@@ -7,7 +7,7 @@
 	const src = tree.thumbnail_id ? routes.file(tree.thumbnail_id) : fallback;
 	const alt = tree.species;
 
-	let img;
+	let img: HTMLImageElement;
 
 	const handleError = () => {
 		if (img.src !== fallback) {

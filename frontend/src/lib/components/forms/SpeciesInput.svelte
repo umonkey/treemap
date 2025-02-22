@@ -12,7 +12,7 @@
 	let { value = $bindable() } = $props();
 
 	let options: ISpecies[] = $state([]);
-	let showOptions = $state(false);
+	let showOptions = $state<boolean>(false);
 
 	const handleInput = (event: Event) => {
 		const target = event.target as HTMLInputElement;
@@ -49,7 +49,7 @@
 			onfocusout={handleFocusOut}
 		/>
 
-		{#if showOptions > 0}
+		{#if showOptions}
 			<ul class="options">
 				{#each options as option}
 					<!-- svelte-ignore a11y_click_events_have_key_events -->

@@ -8,7 +8,7 @@ type UserMap = {
 export const userStore = writable<UserMap>({});
 
 export const getUser = derived(userStore, ($userStore) => {
-	return (id) => $userStore[id] ?? undefined;
+	return (id: string) => $userStore[id] ?? undefined;
 });
 
 export const addUsers = (users: IUser[]) => {

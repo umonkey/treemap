@@ -12,7 +12,7 @@ export const load: Load = async (): Promise<{
 	const res = await apiClient.getSpeciesMismatch();
 
 	if (res.status !== 200) {
-		error('Failed to load report');
+		error(res.status);
 	}
 
 	addTrees(res.data.trees);

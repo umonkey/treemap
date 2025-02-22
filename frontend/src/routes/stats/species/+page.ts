@@ -1,5 +1,7 @@
+import type { ISpeciesStats } from '$lib/types';
 import type { Load } from '@sveltejs/kit';
 import { apiClient } from '$lib/api';
+import { error } from '@sveltejs/kit';
 
 export const load: Load = async (): Promise<{
 	stats: ISpeciesStats[];
@@ -7,7 +9,7 @@ export const load: Load = async (): Promise<{
 	const res = await apiClient.getSpeciesStats();
 
 	if (res.status !== 200) {
-		error(404);
+		error(res.status);
 	}
 
 	return {

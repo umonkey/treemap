@@ -25,7 +25,7 @@ export const addLocateMeButton = (map: Map) => {
 		const element = document.getElementsByClassName('leaflet-locate-me-container')[0] ?? undefined;
 
 		if (element) {
-			element.style.display = visibility;
+			(element as HTMLElement).style.display = visibility;
 		}
 	});
 

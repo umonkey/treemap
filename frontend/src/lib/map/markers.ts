@@ -22,7 +22,9 @@ type MarkerMap = {
 	[key: string]: Marker;
 };
 
-const CLUSTER_GRID = {
+const CLUSTER_GRID: {
+	[key: number]: number;
+} = {
 	1: 26.214,
 	2: 13.107,
 	3: 6.5535,
@@ -43,7 +45,9 @@ const CLUSTER_GRID = {
 	18: 0.0001220703125
 };
 
-const CLUSTER_RADIUS = {
+const CLUSTER_RADIUS: {
+	[key: number]: number;
+} = {
 	6: 32000,
 	7: 16000,
 	8: 8000,
@@ -270,7 +274,10 @@ export class Markers {
 	private splitBuckets(trees: ITree[]): ClusterGroup[] {
 		const divider = CLUSTER_GRID[this.map.getZoom()];
 
-		const buckets = {};
+		const buckets: {
+			[key: string]: ClusterGroup;
+		} = {};
+
 		const radius = CLUSTER_RADIUS[this.map.getZoom()] ?? 100;
 
 		for (const tree of trees) {

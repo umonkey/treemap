@@ -20,7 +20,7 @@
 		});
 
 		const url = `https://accounts.google.com/o/oauth2/auth?${qs.toString()}`;
-		window.location = url;
+		window.location.assign(url);
 	};
 </script>
 

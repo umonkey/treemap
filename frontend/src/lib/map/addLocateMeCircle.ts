@@ -8,8 +8,8 @@ import { locationStore } from '$lib/stores/locationStore';
 export const addLocateMeCircle = (map: L.Map) => {
 	console.debug('[map] Adding my location display.');
 
-	let circle = null;
-	let dot = null;
+	let circle: L.Layer|null = null;
+	let dot: L.Layer|null = null;
 
 	const unsubscribe = locationStore.subscribe((pos) => {
 		console.debug('[map] My location changed:', pos);
@@ -42,7 +42,7 @@ export const addLocateMeCircle = (map: L.Map) => {
 			fillColor: '#2A93EE',
 			fillOpacity: 1,
 			opacity: 1,
-			radis: 9
+			radius: 9
 		}).addTo(map);
 	});
 

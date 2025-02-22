@@ -18,7 +18,7 @@
 	onMount(() => {
 		locationBus.on('start', () => {
 			if (!('geolocation' in navigator)) {
-				console.warning('[GEO] Geolocation is not available, not tracking.');
+				console.warn('[GEO] Geolocation is not available, not tracking.');
 				return;
 			}
 
