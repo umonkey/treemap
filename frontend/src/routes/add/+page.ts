@@ -7,7 +7,7 @@ const coord = (value: string | null, defaultValue: number): number => {
 	}
 
 	return parseFloat(value);
-}
+};
 
 export const load: Load = ({
 	url

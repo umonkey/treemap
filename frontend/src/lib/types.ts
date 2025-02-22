@@ -27,7 +27,7 @@ export interface ITree {
 	added_at: number;
 	updated_at: number;
 	added_by: string;
-	year?: number | null;
+	year: number | null;
 	files: ITreeFile[];
 }
 
@@ -50,16 +50,16 @@ export interface ILoginResponse {
 }
 
 export interface ITreeUpdatePayload {
-	lat?: number|null;
-	lon?: number|null;
-	address?: string|null;
-	species?: string|null;
-	notes?: string|null;
-	height?: number|null;
-	circumference?: number|null;
-	diameter?: number|null;
-	state?: string|null;
-	year?: number|null;
+	lat?: number | null;
+	lon?: number | null;
+	address?: string | null;
+	species?: string | null;
+	notes?: string | null;
+	height?: number | null;
+	circumference?: number | null;
+	diameter?: number | null;
+	state?: string | null;
+	year?: number | null;
 }
 
 export interface IMeResponse {
@@ -103,7 +103,7 @@ export interface IAddTreesRequest {
 	circumference: number | null;
 	diameter: number | null;
 	year: number | null;
-	state: string;
+	state: string | null;
 }
 
 export interface ITreeList {
@@ -133,12 +133,12 @@ export interface ILike {
 }
 
 export interface ITreeDefaults {
-	species: string|null;
-	notes: string|null;
-	height: number|null;
-	circumference: number|null;
-	diameter: number|null;
-	state: string|null;
+	species: string | null;
+	notes: string | null;
+	height: number | null;
+	circumference: number | null;
+	diameter: number | null;
+	state: string | null;
 }
 
 export interface ILikeList {

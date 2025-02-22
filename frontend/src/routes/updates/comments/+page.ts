@@ -18,6 +18,6 @@ export const load: Load = async (): Promise<{
 	addTrees(res.data.trees);
 
 	return {
-		comments: res.data.comments,
+		comments: res.data.comments
 	};
 };

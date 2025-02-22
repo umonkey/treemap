@@ -2,17 +2,29 @@
 	import HelpButton from '$lib/components/forms/HelpButton.svelte';
 	import { locale } from '$lib/locale';
 
-	let { value = $bindable(''), label = true }: {
-		value: string|null;
-		label: boolean;
+	const {
+		value,
+		label = true,
+		onChange
+	}: {
+		value: string | null;
+		label?: boolean;
+		onChange: (value: string | null) => void;
 	} = $props();
+
+	const handleChange = (e: Event) => {
+		if (e.target) {
+			const select = e.target as HTMLSelectElement;
+			onChange(select.value ?? null);
+		}
+	};
 </script>
 
 <div class="input">
 	<label>
 		{#if label}<span>{locale.stateLabel()}</span>{/if}
 		<div class="group">
-			<select bind:value>
+			<select {value} onchange={handleChange}>
 				<option value="">{locale.stateUnknown()}</option>
 				<option value="healthy">{locale.stateHealthy()}</option>
 				<option value="sick">{locale.stateSick()}</option>

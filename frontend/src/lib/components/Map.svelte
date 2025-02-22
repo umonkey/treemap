@@ -37,7 +37,7 @@
 		const c2 = L.latLng(MAX_BOUNDS[1][0], MAX_BOUNDS[1][1]);
 
 		map = L.map('map', {
-			maxBounds: L.latLngBounds(c1, c2),
+			maxBounds: L.latLngBounds(c1, c2)
 		}).setView(center, zoom);
 
 		addLayerSelection(map);

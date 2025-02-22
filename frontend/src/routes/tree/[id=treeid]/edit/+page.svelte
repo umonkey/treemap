@@ -20,40 +20,27 @@
 	const { data } = $props();
 	const treeId = data.id;
 
-	let species = $state(data.tree.species ?? '');
-	let height = $state(data.tree.height?.toString() ?? '0');
-	let diameter = $state(data.tree.diameter?.toString() ?? '0');
-	let circumference = $state(data.tree.circumference?.toString() ?? '0');
-	let treeState = $state(data.tree.state ?? '');
+	let species = $state<string | null>(data.tree.species);
+	let height = $state<number | null>(data.tree.height);
+	let diameter = $state<number | null>(data.tree.diameter);
+	let circumference = $state<number | null>(data.tree.circumference);
+	let treeState = $state<string | null>(data.tree.state);
 	let notes = $state(data.tree.notes ?? '');
 	let location = $state([data.tree.lat, data.tree.lon]);
-	let year = $state(data.tree.year ?? '');
-
-	const numeric = (value: string): number | null => {
-		if (value === '') {
-			return null;
-		}
-
-		if (value === '0') {
-			return null;
-		}
-
-		const num = parseFloat(value);
-		return isNaN(num) ? null : num;
-	};
+	let year = $state<number | null>(data.tree.year);
 
 	const onSave = () => {
 		apiClient
 			.updateTree(treeId, {
 				species,
-				height: numeric(height),
-				diameter: numeric(diameter),
-				circumference: numeric(circumference),
+				height,
+				diameter,
+				circumference,
 				state: treeState,
 				notes,
 				lat: location[0],
 				lon: location[1],
-				year: numeric(year)
+				year
 			})
 			.then((res) => {
 				if (res.status >= 200 && res.status < 400) {
@@ -84,11 +71,14 @@
 <div class="form">
 	<AuthWrapper>
 		<SpeciesInput bind:value={species} />
-		<HeightInput bind:value={height} />
-		<CanopyInput bind:value={diameter} />
-		<CircumferenceInput bind:value={circumference} />
-		<StateInput bind:value={treeState} />
-		<YearInput bind:value={year} />
+		<HeightInput value={height} onChange={(value: number | null) => (height = value)} />
+		<CanopyInput value={diameter} onChange={(value: number | null) => (diameter = value)} />
+		<CircumferenceInput
+			value={circumference}
+			onChange={(value: number) => (circumference = value)}
+		/>
+		<StateInput value={treeState} onChange={(value: string | null) => (treeState = value)} />
+		<YearInput value={year} onChange={(value: number | null) => (year = value)} />
 		<LocationInput bind:value={location} />
 		<NotesInput bind:value={notes} />
 

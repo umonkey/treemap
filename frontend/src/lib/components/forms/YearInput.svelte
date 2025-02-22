@@ -1,13 +1,19 @@
-<script>
-	import TextInput from '$lib/components/forms/TextInput.svelte';
+<script lang="ts">
+	import NumberInput from '$lib/components/forms/NumberInput.svelte';
 	import { locale } from '$lib/locale';
 
-	let { value = $bindable('') } = $props();
+	const {
+		value,
+		onChange
+	}: {
+		value: number | null;
+		onChange: (value: number) => void;
+	} = $props();
 </script>
 
-<TextInput
+<NumberInput
 	label={locale.yearLabel()}
-	bind:value
-	type="number"
+	{value}
+	{onChange}
 	help="https://github.com/KanachYerevan/kb/wiki/Year-Planted"
 />

@@ -9,13 +9,15 @@ const getPlugins = () => {
 	const plugins = [];
 
 	if (process.env.VITE_SENTRY_AUTH_TOKEN) {
-		plugins.push(sentrySvelteKit({
-			sourceMapsUploadOptions: {
-				org: 'trees-of-yerevan',
-				project: 'treemap-v2',
-				authToken: process.env.VITE_SENTRY_AUTH_TOKEN
-			}
-		}));
+		plugins.push(
+			sentrySvelteKit({
+				sourceMapsUploadOptions: {
+					org: 'trees-of-yerevan',
+					project: 'treemap-v2',
+					authToken: process.env.VITE_SENTRY_AUTH_TOKEN
+				}
+			})
+		);
 	}
 
 	plugins.push(sveltekit());

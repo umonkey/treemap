@@ -1,7 +1,7 @@
 <script lang="ts">
 	import HelpButton from '$lib/components/forms/HelpButton.svelte';
 
-	export let value: string|number = '';
+	export let value: string | number = '';
 	export let placeholder = '';
 	export let label = '';
 	export let type = 'text';

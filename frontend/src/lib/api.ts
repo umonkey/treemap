@@ -13,7 +13,7 @@ import type {
 	ITree,
 	ITreeDefaults,
 	ITreeList,
-	ITreeUpdatePayload,
+	ITreeUpdatePayload
 } from '$lib/types';
 import { isAuthenticated, authStore } from '$lib/stores/authStore';
 import { addUsers } from '$lib/stores/userStore';
