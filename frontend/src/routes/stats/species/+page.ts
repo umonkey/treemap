@@ -6,13 +6,15 @@ import { error } from '@sveltejs/kit';
 export const load: Load = async (): Promise<{
 	stats: ISpeciesStats[];
 }> => {
-	const res = await apiClient.getSpeciesStats();
+	const { status, data } = await apiClient.getSpeciesStats();
 
-	if (res.status !== 200) {
-		error(res.status);
+	console.debug('RES', status, data);
+
+	if (status === 200 && data) {
+		return {
+			stats: data
+		};
 	}
 
-	return {
-		stats: res.data
-	};
+	error(400);
 };

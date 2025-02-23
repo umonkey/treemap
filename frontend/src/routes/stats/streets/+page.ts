@@ -6,13 +6,13 @@ import { error } from '@sveltejs/kit';
 export const load: Load = async (): Promise<{
 	stats: IStreetStats[];
 }> => {
-	const res = await apiClient.getTopStreets();
+	const { status, data } = await apiClient.getTopStreets();
 
-	if (res.status !== 200) {
-		error(404);
+	if (status === 200 && data) {
+		return {
+			stats: data
+		};
 	}
 
-	return {
-		stats: res.data
-	};
+	error(404);
 };

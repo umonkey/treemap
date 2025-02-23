@@ -50,7 +50,7 @@
 				year
 			})
 			.then((res) => {
-				if (res.status >= 200 && res.status < 400) {
+				if (res.data) {
 					goto(routes.treeDetails(res.data.trees[0].id));
 				} else {
 					console.error(`Error ${res.status} adding tree.`);

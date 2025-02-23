@@ -11,15 +11,15 @@ export const load: Load = async (): Promise<{
 }> => {
 	const res = await apiClient.getTopHeight();
 
-	if (res.status !== 200) {
-		error(res.status);
+	if (res.status === 200 && res.data) {
+		addTrees(res.data.trees);
+		addUsers(res.data.users);
+
+		return {
+			trees: res.data.trees,
+			users: res.data.users
+		};
 	}
 
-	addTrees(res.data.trees);
-	addUsers(res.data.users);
-
-	return {
-		trees: res.data.trees,
-		users: res.data.users
-	};
+	error(res.status);
 };

@@ -8,16 +8,16 @@ import type { IComment } from '$lib/types';
 export const load: Load = async (): Promise<{
 	comments: IComment[];
 }> => {
-	const res = await apiClient.getRecentComments();
+	const { status, data } = await apiClient.getRecentComments();
 
-	if (res.status !== 200) {
-		error(res.status);
+	if (status === 200 && data) {
+		addUsers(data.users);
+		addTrees(data.trees);
+
+		return {
+			comments: data.comments
+		};
 	}
 
-	addUsers(res.data.users);
-	addTrees(res.data.trees);
-
-	return {
-		comments: res.data.comments
-	};
+	error(status);
 };

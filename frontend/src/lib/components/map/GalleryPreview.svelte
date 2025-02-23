@@ -7,11 +7,7 @@
 
 <div class="gallery">
 	{#await apiClient.getTree(tree.id) then res}
-		{#if res.status != 200}
-			Failed to load photos.
-		{:else if res.data.files.length == 0}
-			No images for this tree.
-		{:else}
+		{#if res.status === 200 && res.data && res.data.files.length > 0}
 			<div class="images">
 				{#each res.data.files as file}
 					<div>
@@ -21,6 +17,10 @@
 					</div>
 				{/each}
 			</div>
+		{:else if res.status === 200 && res.data && res.data.files.length === 0}
+			No images for this tree.
+		{:else}
+			Failed to load photos.
 		{/if}
 	{/await}
 </div>

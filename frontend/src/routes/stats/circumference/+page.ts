@@ -11,7 +11,7 @@ export const load: Load = async (): Promise<{
 }> => {
 	const res = await apiClient.getTopCircumference();
 
-	if (res.status !== 200) {
+	if (res.status !== 200 || !res.data) {
 		error(res.status);
 	}
 

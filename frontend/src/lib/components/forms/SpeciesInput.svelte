@@ -18,7 +18,7 @@
 		const target = event.target as HTMLInputElement;
 
 		apiClient.searchSpecies(target.value).then((res) => {
-			if (res.status === 200) {
+			if (res.status === 200 && res.data) {
 				options = res.data;
 				showOptions = options.length > 0;
 			}

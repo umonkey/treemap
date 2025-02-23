@@ -10,10 +10,11 @@ export const preloadMeLikes = async () => {
 	}
 
 	console.debug('[likes] Preloading own likes.');
-	const res = await apiClient.getMeLikes();
 
-	if (res.status === 200) {
-		likeStore.update(() => res.data.likes.map((x: ILike) => x.tree_id));
+	const { status, data } = await apiClient.getMeLikes();
+
+	if (status === 200 && data) {
+		likeStore.update(() => data.likes.map((x: ILike) => x.tree_id));
 	}
 };
 

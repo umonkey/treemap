@@ -497,6 +497,40 @@ impl DatabaseInterface for SqliteDatabase {
 
         Ok(res)
     }
+
+    async fn get_state_stats(&self) -> Result<Vec<(String, u64)>> {
+        let res = self.pool.conn(move |conn| {
+            let mut stmt = match conn.prepare("SELECT state, COUNT(1) AS cnt FROM trees WHERE state IS NOT NULL GROUP BY state ORDER BY cnt DESC") {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error preparing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut rows = match stmt.query([]) {
+                Ok(value) => value,
+
+                Err(e) => {
+                    error!("Error executing SQL statement: {}", e);
+                    return Err(e);
+                },
+            };
+
+            let mut res = Vec::new();
+
+            while let Some(row) = rows.next()? {
+                let state: String = row.get(0)?;
+                let count: u64 = row.get(1)?;
+                res.push((state, count));
+            }
+
+            Ok(res)
+        }).await?;
+
+        Ok(res)
+    }
 }
 
 impl Clone for SqliteDatabase {

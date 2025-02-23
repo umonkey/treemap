@@ -12,7 +12,7 @@ export const googleCallbackHandler = async (user: LoginData) => {
 
 	const res = await apiClient.loginWithGoogle(token);
 
-	if (res.status === 200) {
+	if (res.status === 200 && res.data) {
 		authStore.set(res.data);
 		console.info(`Logged in as ${res.data.name}`);
 	} else {

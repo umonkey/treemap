@@ -1,6 +1,7 @@
 import type {
 	IAddTreesRequest,
 	ICommentList,
+	IError,
 	ILikeList,
 	ILoginResponse,
 	IMarkers,
@@ -8,6 +9,7 @@ import type {
 	ISingleTree,
 	ISpecies,
 	ISpeciesStats,
+	IStateStats,
 	IStats,
 	IStreetStats,
 	ITree,
@@ -20,9 +22,10 @@ import { addUsers } from '$lib/stores/userStore';
 import { get } from 'svelte/store';
 import { API_ROOT } from '$lib/env';
 
-interface Response<T> {
+export interface Response<T> {
 	status: number;
-	data: T;
+	data?: T;
+	error?: IError;
 }
 
 export class ApiClient {
@@ -37,7 +40,7 @@ export class ApiClient {
 		console.debug(`[api] Getting tree ${id}`);
 		const res = await this.request<ISingleTree>('GET', `v1/trees/${id}`);
 
-		if (res.status === 200) {
+		if (res.status === 200 && res.data) {
 			addUsers(res.data.users);
 		}
 
@@ -75,6 +78,10 @@ export class ApiClient {
 
 	public async getTopStreets(): Promise<Response<IStreetStats[]>> {
 		return await this.request('GET', 'v1/stats/streets');
+	}
+
+	public async getStateStats(): Promise<Response<IStateStats[]>> {
+		return await this.request('GET', 'v1/stats/state');
 	}
 
 	public async getMe(): Promise<Response<IMeResponse>> {
@@ -311,11 +318,27 @@ export class ApiClient {
 		});
 
 		const response = await fetch(request);
-		const data = response.status == 202 ? undefined : await response.json();
+
+		if (response.status === 202) {
+			return {
+				status: 202,
+				data: undefined,
+				error: undefined
+			};
+		}
+
+		if (response.status >= 400) {
+			return {
+				status: response.status,
+				data: await response.json(),
+				error: undefined
+			};
+		}
 
 		return {
 			status: response.status,
-			data
+			data: await response.json(),
+			error: undefined
 		};
 	}
 

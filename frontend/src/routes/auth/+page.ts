@@ -26,20 +26,18 @@ export const load: Load = async ({
 
 	const res = await apiClient.verifyToken(token);
 
-	if (res.status !== 200) {
-		console.error('[auth] Error fetching user data');
-		error(401);
+	if (res.status === 200 && res.data) {
+		authStore.set({
+			token,
+			name: res.data.name,
+			picture: res.data.picture
+		});
+
+		return {
+			redirect: state
+		};
 	}
 
-	console.info(`[auth] Logged in as ${res.data.name}`);
-
-	authStore.set({
-		token,
-		name: res.data.name,
-		picture: res.data.picture
-	});
-
-	return {
-		redirect: state
-	};
+	console.error('[auth] Error fetching user data');
+	error(401);
 };

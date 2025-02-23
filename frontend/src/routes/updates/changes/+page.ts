@@ -9,17 +9,17 @@ export const load: Load = async (): Promise<{
 	trees: ITree[];
 	users: IUser[];
 }> => {
-	const res = await apiClient.getUpdatedTrees();
+	const { status, data } = await apiClient.getUpdatedTrees();
 
-	if (res.status !== 200) {
-		error(res.status);
+	if (status === 200 && data) {
+		addTrees(data.trees);
+		addUsers(data.users);
+
+		return {
+			trees: data.trees,
+			users: data.users
+		};
 	}
 
-	addTrees(res.data.trees);
-	addUsers(res.data.users);
-
-	return {
-		trees: res.data.trees,
-		users: res.data.users
-	};
+	error(status);
 };

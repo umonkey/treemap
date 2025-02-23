@@ -5,27 +5,26 @@ import { apiClient } from '$lib/api';
 import { addUsers } from '$lib/stores/userStore';
 
 const loadTree = async (id: string): Promise<ITree> => {
-	const res = await apiClient.getTree(id);
+	const { status, data } = await apiClient.getTree(id);
 
-	if (res.status !== 200) {
-		error(404);
+	if (status === 200 && data) {
+		addUsers(data.users);
+		return data;
 	}
 
-	addUsers(res.data.users);
-
-	return res.data;
+	error(status);
 };
 
 const loadComments = async (id: string): Promise<IComment[]> => {
-	const res = await apiClient.getTreeComments(id);
+	const { status, data } = await apiClient.getTreeComments(id);
 
-	if (res.status !== 200) {
-		error(404);
+	if (status === 200 && data) {
+		addUsers(data.users);
+
+		return data.comments;
 	}
 
-	addUsers(res.data.users);
-
-	return res.data.comments;
+	error(status);
 };
 
 export const load: Load = async ({

@@ -121,6 +121,11 @@ export interface IStreetStats {
 	count: number;
 }
 
+export interface IStateStats {
+	state: string;
+	count: number;
+}
+
 export interface IMyPosition {
 	lat: number;
 	lng: number;
@@ -145,4 +150,11 @@ export interface ILikeList {
 	likes: ILike[];
 	users: IUser[];
 	trees: ITree[];
+}
+
+export interface IError {
+	error: {
+		code: string;
+		description: string;
+	};
 }

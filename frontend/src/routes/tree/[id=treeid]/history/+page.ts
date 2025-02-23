@@ -17,16 +17,14 @@ export const load: Load = async ({ params }): Promise<Response> => {
 		});
 	}
 
-	const res = await apiClient.getTree(treeId);
+	const { status, data } = await apiClient.getTree(treeId);
 
-	if (res.status !== 200) {
-		error(404, {
-			message: 'Error fetching tree.'
-		});
+	if (status === 200 && data) {
+		return {
+			id: treeId,
+			tree: data
+		};
 	}
 
-	return {
-		id: treeId,
-		tree: res.data
-	};
+	error(status);
 };
