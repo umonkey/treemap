@@ -10,25 +10,44 @@ describe('formatDate', () => {
 
 describe('fileAttribution', () => {
 	it('should return an empty string on no data', () => {
-		expect(fileAttribution({} as any)).toBe('');
+		expect(
+			fileAttribution({
+				id: '1',
+				small_id: '2',
+				large_id: '3'
+			})
+		).toBe('');
 	});
 
 	it('should return an empty string on no user', () => {
-		expect(fileAttribution({
-			added_by: 12345,
-		} as any)).toBe('');
+		expect(
+			fileAttribution({
+				id: '1',
+				small_id: '2',
+				large_id: '3',
+				added_at: 0,
+				added_by: '12345'
+			})
+		).toBe('');
 	});
 
 	it('should return the correct attribution', () => {
-		addUsers([{
-			id: 12345,
-			name: 'Alice',
-			picture: 'none.jpg',
-		}]);
+		addUsers([
+			{
+				id: '12345',
+				name: 'Alice',
+				picture: 'none.jpg'
+			}
+		]);
 
-		expect(fileAttribution({
-			added_at: 1740304662,
-			added_by: 12345,
-		})).toBe('23.02.2025 by Alice');
+		expect(
+			fileAttribution({
+				id: '1',
+				small_id: '2',
+				large_id: '3',
+				added_at: 1740304662,
+				added_by: '12345'
+			})
+		).toBe('23.02.2025 by Alice');
 	});
 });

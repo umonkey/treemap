@@ -29,6 +29,13 @@ export default defineConfig({
 	plugins: getPlugins(),
 
 	test: {
+		environment: 'jsdom',
 		include: ['src/**/*.{test,spec}.{js,ts}']
-	}
+	},
+
+	resolve: process.env.VITEST
+		? {
+				conditions: ['browser']
+			}
+		: undefined
 });
