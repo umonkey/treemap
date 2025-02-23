@@ -1,12 +1,18 @@
 import type {
 	IAddTreesRequest,
 	ICommentList,
+	ILikeList,
 	ILoginResponse,
-	IMeResponse,
 	IMarkers,
+	IMeResponse,
+	ISingleTree,
 	ISpecies,
+	ISpeciesStats,
 	IStats,
+	IStreetStats,
 	ITree,
+	ITreeDefaults,
+	ITreeList,
 	ITreeUpdatePayload
 } from '$lib/types';
 import { isAuthenticated, authStore } from '$lib/stores/authStore';
@@ -27,9 +33,9 @@ export class ApiClient {
 		console.debug(`[api] Root: ${this.root}`);
 	}
 
-	public async getTree(id: string): Promise<Response<ITree>> {
+	public async getTree(id: string): Promise<Response<ISingleTree>> {
 		console.debug(`[api] Getting tree ${id}`);
-		const res = await this.request('GET', `v1/trees/${id}`);
+		const res = await this.request<ISingleTree>('GET', `v1/trees/${id}`);
 
 		if (res.status === 200) {
 			addUsers(res.data.users);
@@ -40,7 +46,7 @@ export class ApiClient {
 
 	public async getTreeDefaults(): Promise<Response<ITreeDefaults>> {
 		console.debug(`[api] Getting tree defaults`);
-		return await this.request('GET', 'v1/trees/defaults');
+		return await this.request<ITreeDefaults>('GET', 'v1/trees/defaults');
 	}
 
 	public async getStats(): Promise<Response<IStats>> {
@@ -51,19 +57,19 @@ export class ApiClient {
 		return await this.request('GET', 'v1/stats/species');
 	}
 
-	public async getSpeciesMismatch(): Promise<Response<IMarkers>> {
+	public async getSpeciesMismatch(): Promise<Response<ITreeList>> {
 		return await this.request('GET', 'v1/stats/species/mismatch');
 	}
 
-	public async getTopHeight(): Promise<Response<IMarkers>> {
+	public async getTopHeight(): Promise<Response<ITreeList>> {
 		return await this.request('GET', 'v1/stats/height');
 	}
 
-	public async getTopDiameter(): Promise<Response<IMarkers>> {
+	public async getTopDiameter(): Promise<Response<ITreeList>> {
 		return await this.request('GET', 'v1/stats/diameter');
 	}
 
-	public async getTopCircumference(): Promise<Response<IMarkers>> {
+	public async getTopCircumference(): Promise<Response<ITreeList>> {
 		return await this.request('GET', 'v1/stats/circumference');
 	}
 
@@ -80,7 +86,7 @@ export class ApiClient {
 		});
 	}
 
-	public async getMeLikes(): Promise<Response<IMeResponse>> {
+	public async getMeLikes(): Promise<Response<ILikeList>> {
 		return await this.request('GET', 'v1/me/likes', {
 			headers: {
 				'Content-Type': 'application/json',
@@ -119,7 +125,7 @@ export class ApiClient {
 		return await this.request('GET', 'v1/trees?' + params.toString());
 	}
 
-	public async addTree(props: IAddTreesRequest): Promise<Response<ITree>> {
+	public async addTree(props: IAddTreesRequest): Promise<Response<ITreeList>> {
 		return await this.request('POST', 'v1/trees', {
 			body: JSON.stringify(props),
 			headers: {
@@ -129,7 +135,7 @@ export class ApiClient {
 		});
 	}
 
-	public async addTraining(result: number): Promise<void> {
+	public async addTraining(result: number): Promise<Response<void>> {
 		return await this.request('POST', 'v1/training', {
 			body: JSON.stringify({
 				result
@@ -229,7 +235,7 @@ export class ApiClient {
 		});
 	}
 
-	public async searchSpecies(query: string): Promise<Response<ISpecies>> {
+	public async searchSpecies(query: string): Promise<Response<ISpecies[]>> {
 		const params = new URLSearchParams({ query });
 		return await this.request('GET', `v1/species/search?${params}`);
 	}
@@ -269,7 +275,7 @@ export class ApiClient {
 		});
 	}
 
-	public async likeTree(id: string): Promise<void> {
+	public async likeTree(id: string): Promise<Response<void>> {
 		return await this.request('POST', `v1/trees/${id}/likes`, {
 			headers: {
 				'Content-Type': 'application/json',
@@ -278,7 +284,7 @@ export class ApiClient {
 		});
 	}
 
-	public async unlikeTree(id: string): Promise<void> {
+	public async unlikeTree(id: string): Promise<Response<void>> {
 		return await this.request('DELETE', `v1/trees/${id}/likes`, {
 			headers: {
 				'Content-Type': 'application/json',

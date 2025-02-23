@@ -65,7 +65,7 @@
 						<div class="preview">
 							<img src={URL.createObjectURL(file)} alt="preview" />
 							<button class="close" onclick={() => removeFile(idx)}>
-								<CloseIcon width={24} height={24} />
+								<CloseIcon width="24px" height="24px" />
 							</button>
 						</div>
 					{/each}

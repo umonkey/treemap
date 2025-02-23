@@ -1,5 +1,5 @@
 import { writable, derived } from 'svelte/store';
-import type { IMyLocation } from '$lib/types';
+import type { IMyPosition } from '$lib/types';
 
-export const locationStore = writable<IMyLocation | null>(null);
+export const locationStore = writable<IMyPosition | null>(null);
 export const currentLocation = derived(locationStore, ($location) => $location);

@@ -23,6 +23,8 @@ install:
 
 lint:
 	npm run lint
+	npm run check
+	npm run format-check
 
 preview:
 	npm run preview

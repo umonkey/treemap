@@ -1,14 +1,12 @@
 import type { Load } from '@sveltejs/kit';
 import { error } from '@sveltejs/kit';
 import { apiClient } from '$lib/api';
-import type { ITree } from '$lib/types';
 import { addTrees } from '$lib/stores/treeStore';
 
 export const load: Load = async ({
 	params
 }): Promise<{
-	id: string;
-	tree: ITree;
+	treeId: string;
 }> => {
 	const treeId = params.id;
 

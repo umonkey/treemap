@@ -1,5 +1,7 @@
 import type { Load } from '@sveltejs/kit';
 import { apiClient } from '$lib/api';
+import type { IStreetStats } from '$lib/types';
+import { error } from '@sveltejs/kit';
 
 export const load: Load = async (): Promise<{
 	stats: IStreetStats[];

@@ -6,7 +6,7 @@ export const formatYear = (value: number | null): string => {
 		return 'no data';
 	}
 
-	return value;
+	return value.toString();
 };
 
 export const shortDetails = (tree: ITree): string => {
@@ -80,7 +80,7 @@ export const formatCentimeters = (value: number | undefined | null): string => {
 		return '???';
 	}
 
-	return locale.centimeters(Math.round(value * 100));
+	return locale.centimeters(Math.round(value * 100).toString());
 };
 
 export const formatSpecies = (value: string | null): string => {

@@ -8,7 +8,7 @@ type TreeMap = {
 export const treeStore = writable<TreeMap>({});
 
 export const getTree = derived(treeStore, ($treeStore) => {
-	return (id) => $treeStore[id] ?? undefined;
+	return (id: string) => $treeStore[id] ?? undefined;
 });
 
 export const addTrees = (trees: ITree[]) => {

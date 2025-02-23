@@ -33,8 +33,13 @@ export const load: Load = async ({
 }): Promise<{
 	id: string;
 	tree: ITree;
+	comments: IComment[];
 }> => {
 	const treeId = params.id;
+
+	if (!treeId) {
+		error(400);
+	}
 
 	return {
 		id: treeId,

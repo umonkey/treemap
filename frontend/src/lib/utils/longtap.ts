@@ -1,5 +1,5 @@
 const unselect = () => {
-	document.getSelection().empty();
+	document.getSelection()?.empty();
 };
 
 export const longtap = (el: HTMLElement, callback: () => void, time: number = 500): void => {
@@ -8,7 +8,7 @@ export const longtap = (el: HTMLElement, callback: () => void, time: number = 50
 	el.addEventListener(
 		'touchstart',
 		() => {
-			timer = setTimeout(() => {
+			timer = window.setTimeout(() => {
 				timer = null;
 				unselect();
 				callback();
@@ -18,7 +18,9 @@ export const longtap = (el: HTMLElement, callback: () => void, time: number = 50
 	);
 
 	el.addEventListener('touchend', () => {
-		clearTimeout(timer);
-		timer = null;
+		if (timer) {
+			window.clearTimeout(timer);
+			timer = null;
+		}
 	});
 };

@@ -23,7 +23,7 @@
 
 	onMount(preloadMeLikes);
 
-	const onLike = async (e) => {
+	const onLike = async (e: Event) => {
 		e.preventDefault();
 
 		if (!isTreeLiked) {

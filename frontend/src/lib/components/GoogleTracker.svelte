@@ -5,8 +5,9 @@
 	onMount(async () => {
 		window.dataLayer = window.dataLayer || [];
 
-		function gtag() {
-			window.dataLayer.push(arguments);
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		function gtag(...args: any[]) {
+			window.dataLayer.push(args);
 		}
 
 		gtag('js', new Date());

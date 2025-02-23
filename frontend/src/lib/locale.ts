@@ -15,27 +15,27 @@ class EnglishLocale {
 		return 'Search';
 	}
 
-	public sideExplore(): stirng {
+	public sideExplore(): string {
 		return 'Explore Map';
 	}
 
-	public sideUpdates(): stirng {
+	public sideUpdates(): string {
 		return 'Recent updates';
 	}
 
-	public sideReports(): stirng {
+	public sideReports(): string {
 		return 'Data reports';
 	}
 
-	public sideProfile(): stirng {
+	public sideProfile(): string {
 		return 'Profile';
 	}
 
-	public sideAdd(): stirng {
+	public sideAdd(): string {
 		return 'Add a tree';
 	}
 
-	public sideAbout(): stirng {
+	public sideAbout(): string {
 		return 'About this app';
 	}
 
@@ -437,27 +437,27 @@ class RussianLocale extends EnglishLocale {
 		return 'Поиск';
 	}
 
-	public sideExplore(): stirng {
+	public sideExplore(): string {
 		return 'Карта';
 	}
 
-	public sideUpdates(): stirng {
+	public sideUpdates(): string {
 		return 'Обновления';
 	}
 
-	public sideReports(): stirng {
+	public sideReports(): string {
 		return 'Анализ данных';
 	}
 
-	public sideProfile(): stirng {
+	public sideProfile(): string {
 		return 'Профиль';
 	}
 
-	public sideAdd(): stirng {
+	public sideAdd(): string {
 		return 'Добавить дерево';
 	}
 
-	public sideAbout(): stirng {
+	public sideAbout(): string {
 		return 'Об этом приложении';
 	}
 

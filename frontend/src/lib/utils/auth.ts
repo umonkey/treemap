@@ -4,7 +4,7 @@ import { get } from 'svelte/store';
 import { toast } from '@zerodevx/svelte-toast';
 
 type LoginData = {
-	credentials: string;
+	credential: string;
 };
 
 export const googleCallbackHandler = async (user: LoginData) => {

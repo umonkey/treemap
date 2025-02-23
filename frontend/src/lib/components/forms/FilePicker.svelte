@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
 
-	let input;
+	let input: HTMLInputElement;
 
 	export let disabled = false;
 	export let onFileSelected: (files: File[]) => void;
@@ -10,9 +10,11 @@
 		input.click();
 	};
 
-	const onChange = (event) => {
-		if (event.target.files.length > 0) {
-			onFileSelected(event.target.files);
+	const onChange = (event: Event) => {
+		const files = (event.target as HTMLInputElement).files;
+
+		if (files && files.length > 0) {
+			onFileSelected(Array.from(files));
 		}
 	};
 

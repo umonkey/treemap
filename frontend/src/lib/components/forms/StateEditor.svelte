@@ -33,7 +33,7 @@
 <div class="form">
 	<label for="control">{locale.measureState()}</label>
 	<div class="row">
-		<StateInput bind:value label={false} />
+		<StateInput {value} label={false} onChange={(v: string | null) => (value = v)} />
 	</div>
 	<div class="actions">
 		<Button label={locale.editSave()} type="submit" onClick={onSave} />

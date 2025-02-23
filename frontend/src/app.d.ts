@@ -11,6 +11,8 @@ declare global {
 
 	interface Window {
 		onSignIn: (googleUser: { credentials: string }) => void;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		dataLayer: any[];
 	}
 }
 

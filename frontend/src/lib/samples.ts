@@ -12,6 +12,7 @@ export const Tree: ITree = {
 	circumference: 0.89,
 	diameter: 4.0,
 	state: 'sick',
+	year: 1980,
 	added_at: 1720282295,
 	updated_at: 1720282741,
 	added_by: '134022734140280832',

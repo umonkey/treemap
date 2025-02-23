@@ -1,26 +1,20 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
-	import TextInput from '$lib/components/forms/TextInput.svelte';
+	import NumberInput from '$lib/components/forms/NumberInput.svelte';
 
-	// This is the input value in meters.
 	let {
-		value = $bindable(0)
+		value,
+		onChange
 	}: {
-		value: number;
+		value: number | null;
+		onChange: (value: number) => void;
 	} = $props();
-
-	// This is the editable value in centimeters.
-	let centimeters = $state(value * 100);
-
-	$effect(() => {
-		value = centimeters / 100;
-	});
 </script>
 
-<TextInput
+<NumberInput
 	label={locale.circumferenceLabel()}
-	bind:value={centimeters}
-	type="number"
+	value={value ? value * 100 : null}
+	onChange={(value: number) => onChange(value / 100)}
 	hint={locale.circumferenceHint()}
 	help={locale.helpCircumference()}
 />

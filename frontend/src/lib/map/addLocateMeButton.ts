@@ -25,11 +25,12 @@ export const addLocateMeButton = (map: Map) => {
 		const element = document.getElementsByClassName('leaflet-locate-me-container')[0] ?? undefined;
 
 		if (element) {
-			element.style.display = visibility;
+			(element as HTMLElement).style.display = visibility;
 		}
 	});
 
-	L.Control.LocateMeButton = L.Control.extend({
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	(L.Control as any).LocateMeButton = L.Control.extend({
 		options: {
 			position: 'topleft'
 		},
@@ -65,7 +66,8 @@ export const addLocateMeButton = (map: Map) => {
 		}
 	});
 
-	const control = new L.Control.LocateMeButton();
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const control = new (L.Control as any).LocateMeButton();
 	const button = control.addTo(map);
 
 	console.debug('[map] LocateMe button added.', button);

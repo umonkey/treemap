@@ -22,26 +22,13 @@
 	let busy = $state(false);
 
 	let species = $state('');
-	let height = $state('');
-	let diameter = $state('');
-	let circumference = $state('');
-	let treeState = $state('');
+	let height = $state<number | null>(null);
+	let diameter = $state<number | null>(null);
+	let circumference = $state<number | null>(null);
+	let treeState = $state<string | null>(null);
 	let notes = $state('');
 	let location = $state([data.lat, data.lng]);
-	let year = $state('');
-
-	const numeric = (value: string): number | null => {
-		if (value === '') {
-			return null;
-		}
-
-		if (value === '0') {
-			return null;
-		}
-
-		const num = parseFloat(value);
-		return isNaN(num) ? null : num;
-	};
+	let year = $state<number | null>(null);
 
 	const onSave = () => {
 		busy = true;
@@ -55,12 +42,12 @@
 					}
 				],
 				species,
-				height: numeric(height),
-				diameter: numeric(diameter),
-				circumference: numeric(circumference),
+				height,
+				diameter,
+				circumference,
 				state: treeState,
 				notes,
-				year: numeric(year)
+				year
 			})
 			.then((res) => {
 				if (res.status >= 200 && res.status < 400) {
@@ -94,11 +81,14 @@
 	<AuthWrapper>
 		<LocationInput bind:value={location} label={locale.addConfirmLocation()} />
 		<SpeciesInput bind:value={species} />
-		<HeightInput bind:value={height} />
-		<CanopyInput bind:value={diameter} />
-		<CircumferenceInput bind:value={circumference} />
-		<StateInput bind:value={treeState} />
-		<YearInput bind:value={year} />
+		<HeightInput value={height} onChange={(value: number | null) => (height = value)} />
+		<CanopyInput value={diameter} onChange={(value: number | null) => (diameter = value)} />
+		<CircumferenceInput
+			value={circumference}
+			onChange={(value: number) => (circumference = value)}
+		/>
+		<StateInput value={treeState} onChange={(value: string | null) => (treeState = value)} />
+		<YearInput value={year} onChange={(value: number) => (year = value)} />
 		<NotesInput bind:value={notes} />
 
 		<div class="buttons">

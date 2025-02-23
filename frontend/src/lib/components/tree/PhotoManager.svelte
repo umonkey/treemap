@@ -1,15 +1,15 @@
 <script lang="ts">
 	import { apiClient } from '$lib/api';
 	import { routes } from '$lib/routes';
-	import { fileAttribution } from '$lib/utils/strings.ts';
+	import { fileAttribution } from '$lib/utils/strings';
 	import { toast } from '@zerodevx/svelte-toast';
-	import type { IFile } from '$lib/types';
+	import type { ITreeFile } from '$lib/types';
 
 	const { tree } = $props();
 
 	let thumbnail_id = $state(tree.thumbnail_id);
 
-	const handleMakeThumbnail = async (file: IFile) => {
+	const handleMakeThumbnail = async (file: ITreeFile) => {
 		const res = await apiClient.changeTreeThumbnail(tree.id, file.id);
 
 		if (res.status >= 200 && res.status < 300) {
