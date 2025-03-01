@@ -1,9 +1,13 @@
 <script lang="ts">
 	import Header from '$lib/components/tree/Header.svelte';
 	import NewTreesListItem from '$lib/components/updates/NewTreesListItem.svelte';
+	import { loadTreesByDiameter } from '$lib/hooks';
 
-	const { data } = $props();
-	const { trees } = data;
+	const { loading, error, data, reload } = loadTreesByDiameter();
+
+	$effect(() => {
+		reload();
+	});
 
 	const format = (value: number | null): string => {
 		if (!value) {
@@ -21,9 +25,15 @@
 <Header title="Widest trees" />
 
 <div class="trees padded">
-	{#each trees as tree}
-		<NewTreesListItem {tree} extra={format(tree.diameter)} />
-	{/each}
+	{#if $loading}
+		<p>Loading...</p>
+	{:else if $error}
+		<p>{$error.description}</p>
+	{:else}
+		{#each $data as tree}
+			<NewTreesListItem {tree} extra={format(tree.diameter)} />
+		{/each}
+	{/if}
 </div>
 
 <style>

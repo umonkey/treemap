@@ -1,18 +1,13 @@
 <script lang="ts">
 	import { routes } from '$lib/routes';
-
+	import { loadStreetStats } from '$lib/hooks';
 	import Header from '$lib/components/tree/Header.svelte';
 
-	const { data } = $props();
-	let sorted = $state(data.stats);
+	const { loading, error, data, reload, reorder } = loadStreetStats();
 
-	const sortByName = () => {
-		sorted = data.stats.sort((a, b) => a.address.localeCompare(b.address));
-	};
-
-	const sortByCount = () => {
-		sorted = data.stats.sort((a, b) => b.count - a.count);
-	};
+	$effect(() => {
+		reload();
+	});
 </script>
 
 <svelte:head>
@@ -24,22 +19,28 @@
 <div class="padded">
 	<h1>Trees by address</h1>
 
-	<table>
-		<thead>
-			<tr>
-				<th class="l" onclick={sortByName}>Address</th>
-				<th class="r" onclick={sortByCount}>Count</th>
-			</tr>
-		</thead>
-		<tbody>
-			{#each sorted as { address, count }}
+	{#if $loading}
+		<p>Loading...</p>
+	{:else if $error}
+		<p>{$error.description}</p>
+	{:else}
+		<table>
+			<thead>
 				<tr>
-					<td class="l"><a href={routes.searchAddress(address)}>{address}</a></td>
-					<td class="r">{count}</td>
+					<th class="l" onclick={() => reorder('address')}>Address</th>
+					<th class="r" onclick={() => reorder('count')}>Count</th>
 				</tr>
-			{/each}
-		</tbody>
-	</table>
+			</thead>
+			<tbody>
+				{#each $data as { address, count }}
+					<tr>
+						<td class="l"><a href={routes.searchAddress(address)}>{address}</a></td>
+						<td class="r">{count}</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	{/if}
 </div>
 
 <style>

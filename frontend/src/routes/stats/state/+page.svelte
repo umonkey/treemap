@@ -1,9 +1,12 @@
 <script lang="ts">
 	import Header from '$lib/components/tree/Header.svelte';
 	import { routes } from '$lib/routes';
+	import { loadStateStats } from '$lib/hooks';
 
-	const { data } = $props();
-	const { stats, error } = data;
+	const { loading, error, data, reload } = loadStateStats();
+	$effect(() => {
+		reload();
+	});
 </script>
 
 <svelte:head>
@@ -12,12 +15,14 @@
 
 <Header title="Trees by state" />
 
-{#if error}
-	<p>{error}</p>
-{:else}
-	<div class="padded">
-		<h1>Trees by state</h1>
+<div class="padded">
+	<h1>Trees by state</h1>
 
+	{#if $loading}
+		<p>Loading...</p>
+	{:else if $error}
+		<p>{$error.description}</p>
+	{:else}
 		<table>
 			<thead>
 				<tr>
@@ -26,7 +31,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each stats as { state, count }}
+				{#each $data as { state, count }}
 					<tr>
 						{#if state}
 							<td class="l"
@@ -40,8 +45,8 @@
 				{/each}
 			</tbody>
 		</table>
-	</div>
-{/if}
+	{/if}
+</div>
 
 <style>
 	table {

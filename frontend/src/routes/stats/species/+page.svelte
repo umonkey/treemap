@@ -1,18 +1,13 @@
 <script lang="ts">
 	import { routes } from '$lib/routes';
-
+	import { loadSpeciesStats } from '$lib/hooks';
 	import Header from '$lib/components/tree/Header.svelte';
 
-	const { data } = $props();
-	let sorted = $state(data.stats);
+	const { loading, error, data, reload, reorder } = loadSpeciesStats();
 
-	const sortByName = () => {
-		sorted = data.stats.sort((a, b) => a.species.localeCompare(b.species));
-	};
-
-	const sortByCount = () => {
-		sorted = data.stats.sort((a, b) => b.count - a.count);
-	};
+	$effect(() => {
+		reload();
+	});
 </script>
 
 <svelte:head>
@@ -24,22 +19,28 @@
 <div class="padded">
 	<h1>Trees by species</h1>
 
-	<table>
-		<thead>
-			<tr>
-				<th class="l" onclick={sortByName}>Species</th>
-				<th class="r" onclick={sortByCount}>Count</th>
-			</tr>
-		</thead>
-		<tbody>
-			{#each sorted as { species, count }}
+	{#if $loading}
+		<p>Loading...</p>
+	{:else if $error}
+		<p>Error: {$error.description}</p>
+	{:else}
+		<table>
+			<thead>
 				<tr>
-					<td class="l"><a href={routes.searchSpecies(species)}>{species}</a></td>
-					<td class="r">{count}</td>
+					<th class="l" onclick={() => reorder('name')}>Species</th>
+					<th class="r" onclick={() => reorder('count')}>Count</th>
 				</tr>
-			{/each}
-		</tbody>
-	</table>
+			</thead>
+			<tbody>
+				{#each $data as { species, count }}
+					<tr>
+						<td class="l"><a href={routes.searchSpecies(species)}>{species}</a></td>
+						<td class="r">{count}</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	{/if}
 </div>
 
 <style>
