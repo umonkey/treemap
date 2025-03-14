@@ -1,50 +1,50 @@
 class EnglishLocale {
 	public appTitle(): string {
-		return 'Trees of Yerevan';
+		return "Trees of Yerevan";
 	}
 
 	public homeTitle(): string {
-		return 'Tree Map';
+		return "Tree Map";
 	}
 
 	public sideHome(): string {
-		return 'Home';
+		return "Home";
 	}
 
 	public sideSearch(): string {
-		return 'Search';
+		return "Search";
 	}
 
 	public sideExplore(): string {
-		return 'Explore Map';
+		return "Explore Map";
 	}
 
 	public sideUpdates(): string {
-		return 'Recent updates';
+		return "Recent updates";
 	}
 
 	public sideReports(): string {
-		return 'Data reports';
+		return "Data reports";
 	}
 
 	public sideProfile(): string {
-		return 'Profile';
+		return "Profile";
 	}
 
 	public sideAdd(): string {
-		return 'Add a tree';
+		return "Add a tree";
 	}
 
 	public sideAbout(): string {
-		return 'About this app';
+		return "About this app";
 	}
 
 	public searchTitle(): string {
-		return 'Search';
+		return "Search";
 	}
 
 	public searchPrompt(): string {
-		return 'Search trees...';
+		return "Search trees...";
 	}
 
 	public searchLink(query: string): string {
@@ -52,27 +52,27 @@ class EnglishLocale {
 	}
 
 	public updatesNewTitle(): string {
-		return 'New Trees';
+		return "New Trees";
 	}
 
 	public updatesAdded(): string {
-		return 'Added';
+		return "Added";
 	}
 
 	public updatesChanged(): string {
-		return 'Edited';
+		return "Edited";
 	}
 
 	public updatesComments(): string {
-		return 'Comments';
+		return "Comments";
 	}
 
 	public addressUnknown(): string {
-		return 'Unknown address';
+		return "Unknown address";
 	}
 
 	public userUnknown(): string {
-		return 'Unknown user';
+		return "Unknown user";
 	}
 
 	public profileTrees(count: number): string {
@@ -88,107 +88,107 @@ class EnglishLocale {
 	}
 
 	public signOut(): string {
-		return 'Sign out';
+		return "Sign out";
 	}
 
 	public signInWithGoogle(): string {
-		return 'Sign In with Google';
+		return "Sign In with Google";
 	}
 
 	public profileSignInPrompt(): string {
-		return 'You need to sign in to access your profile.';
+		return "You need to sign in to access your profile.";
 	}
 
 	public addTitle(): string {
-		return 'Add Tree';
+		return "Add Tree";
 	}
 
 	public addConfirmButton(): string {
-		return 'Add tree';
+		return "Add tree";
 	}
 
 	public addCancelButton(): string {
-		return 'Cancel';
+		return "Cancel";
 	}
 
 	public addConfirmLocation(): string {
-		return 'Confirm location';
+		return "Confirm location";
 	}
 
 	public editTitle(): string {
-		return 'Edit Tree';
+		return "Edit Tree";
 	}
 
 	public speciesLabel(): string {
-		return 'Species';
+		return "Species";
 	}
 
 	public speciesPrompt(): string {
-		return 'Type a latin or local name';
+		return "Type a latin or local name";
 	}
 
 	public speciesHint(): string {
-		return 'Enter the latin genus of the tree.';
+		return "Enter the latin genus of the tree.";
 	}
 
 	public heightLabel(): string {
-		return 'Height, m';
+		return "Height, m";
 	}
 
 	public canopyLabel(): string {
-		return 'Canopy diameter, m';
+		return "Canopy diameter, m";
 	}
 
 	public circumferenceLabel(): string {
-		return 'Trunk circumference, cm';
+		return "Trunk circumference, cm";
 	}
 
 	public circumferenceHint(): string {
-		return 'Measure at chest level, aka 120 cm from the ground.';
+		return "Measure at chest level, aka 120 cm from the ground.";
 	}
 
 	public stateLabel(): string {
-		return 'State';
+		return "State";
 	}
 
 	public stateUnknown(): string {
-		return '(unknown)';
+		return "(unknown)";
 	}
 
 	public stateHealthy(): string {
-		return 'healthy';
+		return "healthy";
 	}
 
 	public stateSick(): string {
-		return 'sick';
+		return "sick";
 	}
 
 	public stateDeformed(): string {
-		return 'deformed';
+		return "deformed";
 	}
 
 	public stateDead(): string {
-		return 'dead';
+		return "dead";
 	}
 
 	public stateGone(): string {
-		return 'gone';
+		return "gone";
 	}
 
 	public stateStomp(): string {
-		return 'stomp';
+		return "stomp";
 	}
 
 	public yearLabel(): string {
-		return 'Year planted';
+		return "Year planted";
 	}
 
 	public notesLabel(): string {
-		return 'Description';
+		return "Description";
 	}
 
 	public notesHint(): string {
-		return 'Add some notable details that could help visitors understand the importance of this tree.';
+		return "Add some notable details that could help visitors understand the importance of this tree.";
 	}
 
 	public detailsTitle(name: string): string {
@@ -196,99 +196,99 @@ class EnglishLocale {
 	}
 
 	public treeShortTitle(): string {
-		return 'Tree';
+		return "Tree";
 	}
 
 	public treeTabsDetails(): string {
-		return 'Details';
+		return "Details";
 	}
 
 	public treeTabsMap(): string {
-		return 'Map';
+		return "Map";
 	}
 
 	public treeTabsComments(): string {
-		return 'Comments';
+		return "Comments";
 	}
 
 	public treeTabsChanges(): string {
-		return 'History';
+		return "History";
 	}
 
 	public propHeight(): string {
-		return 'Height';
+		return "Height";
 	}
 
 	public propCanopy(): string {
-		return 'Canopy';
+		return "Canopy";
 	}
 
 	public propTrunk(): string {
-		return 'Trunk';
+		return "Trunk";
 	}
 
 	public propState(): string {
-		return 'State';
+		return "State";
 	}
 
 	public propYear(): string {
-		return 'Year';
+		return "Year";
 	}
 
 	public noDescription(): string {
-		return 'There is no description for this tree. You can leave a comment to let us know about something interesting.';
+		return "There is no description for this tree. You can leave a comment to let us know about something interesting.";
 	}
 
 	public noComments(): string {
-		return 'No comments for this tree yet.';
+		return "No comments for this tree yet.";
 	}
 
 	public commentPrompt(): string {
-		return 'Would you like to leave a comment?';
+		return "Would you like to leave a comment?";
 	}
 
 	public commentLabel(): string {
-		return 'Comment';
+		return "Comment";
 	}
 
 	public commentSignIn(): string {
-		return 'You need to be authenticated to add comments.';
+		return "You need to be authenticated to add comments.";
 	}
 
 	public commentSubmit(): string {
-		return 'Submit comment';
+		return "Submit comment";
 	}
 
 	public commentHint(): string {
-		return 'Some hints or suggested edits.';
+		return "Some hints or suggested edits.";
 	}
 
 	public contextEditTree(): string {
-		return 'Edit this tree';
+		return "Edit this tree";
 	}
 
 	public contextUploadPhotos(): string {
-		return 'Upload photos';
+		return "Upload photos";
 	}
 
 	public contextMeasure(): string {
-		return 'Measures';
+		return "Measures";
 	}
 
 	public locationLabel(): string {
-		return 'Location';
+		return "Location";
 	}
 
 	public editSave(): string {
-		return 'Save changes';
+		return "Save changes";
 	}
 
 	public editCancel(): string {
-		return 'Cancel';
+		return "Cancel";
 	}
 
 	public mapTitle(): string {
-		return 'Map';
+		return "Map";
 	}
 
 	public mapTitleQuery(query: string): string {
@@ -296,15 +296,15 @@ class EnglishLocale {
 	}
 
 	public learnTitle(): string {
-		return 'Training';
+		return "Training";
 	}
 
 	public sideLearn(): string {
-		return 'Training';
+		return "Training";
 	}
 
 	public learnDone(): string {
-		return 'Done!';
+		return "Done!";
 	}
 
 	public learnScore(correct: number, total: number): string {
@@ -312,35 +312,35 @@ class EnglishLocale {
 	}
 
 	public learnRetry(): string {
-		return 'Try again';
+		return "Try again";
 	}
 
 	public learnPerfect(): string {
-		return 'Perfect!';
+		return "Perfect!";
 	}
 
 	public learnGreat(): string {
-		return 'Great!';
+		return "Great!";
 	}
 
 	public learnGood(): string {
-		return 'Needs more work';
+		return "Needs more work";
 	}
 
 	public learnBad(): string {
-		return 'Needs a lot more work!';
+		return "Needs a lot more work!";
 	}
 
 	public learnCorrect(): string {
-		return 'Correct!';
+		return "Correct!";
 	}
 
 	public learnConfirm(): string {
-		return 'Confirm';
+		return "Confirm";
 	}
 
 	public learnWrong(): string {
-		return 'Wrong!';
+		return "Wrong!";
 	}
 
 	public learnCorrectAnswer(value: string): string {
@@ -348,67 +348,67 @@ class EnglishLocale {
 	}
 
 	public learnContinue(): string {
-		return 'Continue';
+		return "Continue";
 	}
 
 	public helpCircumference(): string {
-		return 'https://myga.am/app/measuring-circumference.html';
+		return "https://myga.am/app/measuring-circumference.html";
 	}
 
 	public photoTake(): string {
-		return 'Take a photo';
+		return "Take a photo";
 	}
 
 	public photoUpload(): string {
-		return 'Upload files';
+		return "Upload files";
 	}
 
 	public photoSelect(): string {
-		return 'Select files';
+		return "Select files";
 	}
 
 	public photoIntro(): string {
-		return 'Here you can upload multiple photos of this tree.';
+		return "Here you can upload multiple photos of this tree.";
 	}
 
 	public photoTitle(): string {
-		return 'Upload photos';
+		return "Upload photos";
 	}
 
 	public measureTitle(): string {
-		return 'Measure tree';
+		return "Measure tree";
 	}
 
 	public measureHeight(): string {
-		return 'Enter tree height in meters:';
+		return "Enter tree height in meters:";
 	}
 
 	public measureHeightUpdated(): string {
-		return 'Height updated.';
+		return "Height updated.";
 	}
 
 	public measureCanopy(): string {
-		return 'Enter canopy diameter in meters:';
+		return "Enter canopy diameter in meters:";
 	}
 
 	public measureCanopyUpdated(): string {
-		return 'Canopy diameter updated.';
+		return "Canopy diameter updated.";
 	}
 
 	public measureTrunk(): string {
-		return 'Enter trunk circumference in centimeters:';
+		return "Enter trunk circumference in centimeters:";
 	}
 
 	public measureTrunkUpdated(): string {
-		return 'Trunk circumference updated.';
+		return "Trunk circumference updated.";
 	}
 
 	public measureState(): string {
-		return 'Select tree state:';
+		return "Select tree state:";
 	}
 
 	public measureStateUpdated(): string {
-		return 'Tree state updated.';
+		return "Tree state updated.";
 	}
 
 	public meters(value: string): string {
@@ -422,51 +422,51 @@ class EnglishLocale {
 
 class RussianLocale extends EnglishLocale {
 	public appTitle(): string {
-		return 'Деревья Еревана';
+		return "Деревья Еревана";
 	}
 
 	public homeTitle(): string {
-		return 'Карта деревьев';
+		return "Карта деревьев";
 	}
 
 	public sideHome(): string {
-		return 'Главная';
+		return "Главная";
 	}
 
 	public sideSearch(): string {
-		return 'Поиск';
+		return "Поиск";
 	}
 
 	public sideExplore(): string {
-		return 'Карта';
+		return "Карта";
 	}
 
 	public sideUpdates(): string {
-		return 'Обновления';
+		return "Обновления";
 	}
 
 	public sideReports(): string {
-		return 'Анализ данных';
+		return "Анализ данных";
 	}
 
 	public sideProfile(): string {
-		return 'Профиль';
+		return "Профиль";
 	}
 
 	public sideAdd(): string {
-		return 'Добавить дерево';
+		return "Добавить дерево";
 	}
 
 	public sideAbout(): string {
-		return 'Об этом приложении';
+		return "Об этом приложении";
 	}
 
 	public searchTitle(): string {
-		return 'Поиск';
+		return "Поиск";
 	}
 
 	public searchPrompt(): string {
-		return 'Искать деревья...';
+		return "Искать деревья...";
 	}
 
 	public searchLink(query: string): string {
@@ -474,27 +474,27 @@ class RussianLocale extends EnglishLocale {
 	}
 
 	public updatesNewTitle(): string {
-		return 'Новые деревья';
+		return "Новые деревья";
 	}
 
 	public updatesAdded(): string {
-		return 'Новые';
+		return "Новые";
 	}
 
 	public updatesChanged(): string {
-		return 'Изменённые';
+		return "Изменённые";
 	}
 
 	public updatesComments(): string {
-		return 'Комментарии';
+		return "Комментарии";
 	}
 
 	public addressUnknown(): string {
-		return 'Адрес не указан';
+		return "Адрес не указан";
 	}
 
 	public userUnknown(): string {
-		return 'Пользователь неизвестен';
+		return "Пользователь неизвестен";
 	}
 
 	public profileTrees(count: number): string {
@@ -510,103 +510,103 @@ class RussianLocale extends EnglishLocale {
 	}
 
 	public signOut(): string {
-		return 'Выйти';
+		return "Выйти";
 	}
 
 	public signInWithGoogle(): string {
-		return 'Войти через Google';
+		return "Войти через Google";
 	}
 
 	public profileSignInPrompt(): string {
-		return 'Вам нужно залогиниться, чтобы увидеть свой профиль.';
+		return "Вам нужно залогиниться, чтобы увидеть свой профиль.";
 	}
 
 	public addTitle(): string {
-		return 'Добавить дерево';
+		return "Добавить дерево";
 	}
 
 	public addConfirmButton(): string {
-		return 'Добавить дерево';
+		return "Добавить дерево";
 	}
 
 	public addCancelButton(): string {
-		return 'Отмена';
+		return "Отмена";
 	}
 
 	public addConfirmLocation(): string {
-		return 'Подтвердите координаты';
+		return "Подтвердите координаты";
 	}
 
 	public speciesLabel(): string {
-		return 'Название вида';
+		return "Название вида";
 	}
 
 	public speciesPrompt(): string {
-		return 'Введите латинское или местное название';
+		return "Введите латинское или местное название";
 	}
 
 	public speciesHint(): string {
-		return 'Укажите латинское название вида или рода дерева.';
+		return "Укажите латинское название вида или рода дерева.";
 	}
 
 	public heightLabel(): string {
-		return 'Высота, м';
+		return "Высота, м";
 	}
 
 	public canopyLabel(): string {
-		return 'Диаметр кроны, м';
+		return "Диаметр кроны, м";
 	}
 
 	public circumferenceLabel(): string {
-		return 'Обхват ствола, см';
+		return "Обхват ствола, см";
 	}
 
 	public circumferenceHint(): string {
-		return 'Измеряют на высоте 120-130 см от земли.';
+		return "Измеряют на высоте 120-130 см от земли.";
 	}
 
 	public stateLabel(): string {
-		return 'Состояние';
+		return "Состояние";
 	}
 
 	public stateUnknown(): string {
-		return '(неизвестно)';
+		return "(неизвестно)";
 	}
 
 	public stateHealthy(): string {
-		return 'здорово';
+		return "здорово";
 	}
 
 	public stateSick(): string {
-		return 'больное';
+		return "больное";
 	}
 
 	public stateDeformed(): string {
-		return 'деформировано';
+		return "деформировано";
 	}
 
 	public stateDead(): string {
-		return 'мертво';
+		return "мертво";
 	}
 
 	public stateGone(): string {
-		return 'удалено';
+		return "удалено";
 	}
 
 	public stateStomp(): string {
-		return 'пень';
+		return "пень";
 	}
 
 	public yearLabel(): string {
-		return 'Год посадки';
+		return "Год посадки";
 	}
 
 	public notesLabel(): string {
-		return 'Заметки';
+		return "Заметки";
 	}
 
 	public notesHint(): string {
-		return 'Добавьте важные детали об этом дереве, которые помогут людям понять его важность.';
+		return "Добавьте важные детали об этом дереве, которые помогут людям понять его важность.";
 	}
 
 	public detailsTitle(name: string): string {
@@ -614,103 +614,103 @@ class RussianLocale extends EnglishLocale {
 	}
 
 	public treeShortTitle(): string {
-		return 'Дерево';
+		return "Дерево";
 	}
 
 	public treeTabsDetails(): string {
-		return 'Общее';
+		return "Общее";
 	}
 
 	public treeTabsMap(): string {
-		return 'Карта';
+		return "Карта";
 	}
 
 	public treeTabsComments(): string {
-		return 'Комменты';
+		return "Комменты";
 	}
 
 	public treeTabsChanges(): string {
-		return 'Правки';
+		return "Правки";
 	}
 
 	public propHeight(): string {
-		return 'Высота';
+		return "Высота";
 	}
 
 	public propCanopy(): string {
-		return 'Крона';
+		return "Крона";
 	}
 
 	public propTrunk(): string {
-		return 'Обхват';
+		return "Обхват";
 	}
 
 	public propState(): string {
-		return 'Состояние';
+		return "Состояние";
 	}
 
 	public propYear(): string {
-		return 'Год';
+		return "Год";
 	}
 
 	public noDescription(): string {
-		return 'Нет описания этого дерева. Вы можете оставить комментарий чтобы рассказать о каких-то интересных особенностях.';
+		return "Нет описания этого дерева. Вы можете оставить комментарий чтобы рассказать о каких-то интересных особенностях.";
 	}
 
 	public noComments(): string {
-		return 'Нет комментариев для этого дерева.';
+		return "Нет комментариев для этого дерева.";
 	}
 
 	public commentPrompt(): string {
-		return 'Желаете оставить комментарий?';
+		return "Желаете оставить комментарий?";
 	}
 
 	public commentLabel(): string {
-		return 'Комментарий';
+		return "Комментарий";
 	}
 
 	public commentSignIn(): string {
-		return 'Нужно залогиниться, чтобы оставить комментарий.';
+		return "Нужно залогиниться, чтобы оставить комментарий.";
 	}
 
 	public commentSubmit(): string {
-		return 'Отправить комментарий';
+		return "Отправить комментарий";
 	}
 
 	public commentHint(): string {
-		return 'Оставьте подсказки или предложения по исправлению.';
+		return "Оставьте подсказки или предложения по исправлению.";
 	}
 
 	public contextEditTree(): string {
-		return 'Внести правки';
+		return "Внести правки";
 	}
 
 	public contextUploadPhotos(): string {
-		return 'Добавить фотографии';
+		return "Добавить фотографии";
 	}
 
 	public contextMeasure(): string {
-		return 'Замеры';
+		return "Замеры";
 	}
 
 	public editTitle(): string {
-		return 'Редактор дерева';
+		return "Редактор дерева";
 	}
 
 	public locationLabel(): string {
-		return 'Координаты';
+		return "Координаты";
 	}
 
 	public editSave(): string {
-		return 'Сохранить изменения';
+		return "Сохранить изменения";
 	}
 
 	public editCancel(): string {
-		return 'Отмена';
+		return "Отмена";
 	}
 
 	public mapTitle(): string {
-		return 'Карта';
+		return "Карта";
 	}
 
 	public mapTitleQuery(query: string): string {
@@ -718,11 +718,11 @@ class RussianLocale extends EnglishLocale {
 	}
 
 	public learnTitle(): string {
-		return 'Тренировка';
+		return "Тренировка";
 	}
 
 	public sideLearn(): string {
-		return 'Тренировка';
+		return "Тренировка";
 	}
 
 	public learnScore(correct: number, total: number): string {
@@ -730,35 +730,35 @@ class RussianLocale extends EnglishLocale {
 	}
 
 	public learnRetry(): string {
-		return 'Попробовать ещё раз';
+		return "Попробовать ещё раз";
 	}
 
 	public learnPerfect(): string {
-		return 'Идеально!';
+		return "Идеально!";
 	}
 
 	public learnGreat(): string {
-		return 'Отлично!';
+		return "Отлично!";
 	}
 
 	public learnGood(): string {
-		return 'Неплохо';
+		return "Неплохо";
 	}
 
 	public learnBad(): string {
-		return 'Нужно больше тренировок';
+		return "Нужно больше тренировок";
 	}
 
 	public learnCorrect(): string {
-		return 'Верно!';
+		return "Верно!";
 	}
 
 	public learnConfirm(): string {
-		return 'Проверить';
+		return "Проверить";
 	}
 
 	public learnWrong(): string {
-		return 'Ошибка!';
+		return "Ошибка!";
 	}
 
 	public learnCorrectAnswer(value: string): string {
@@ -766,67 +766,67 @@ class RussianLocale extends EnglishLocale {
 	}
 
 	public learnContinue(): string {
-		return 'Продолжить';
+		return "Продолжить";
 	}
 
 	public helpCircumference(): string {
-		return 'https://myga.am/ru/app/measuring-circumference.html';
+		return "https://myga.am/ru/app/measuring-circumference.html";
 	}
 
 	public photoTake(): string {
-		return 'Сделать фото';
+		return "Сделать фото";
 	}
 
 	public photoUpload(): string {
-		return 'Загрузить файлы';
+		return "Загрузить файлы";
 	}
 
 	public photoSelect(): string {
-		return 'Выбрать файлы';
+		return "Выбрать файлы";
 	}
 
 	public photoIntro(): string {
-		return 'Здесь можно загрузить фотографии дерева.';
+		return "Здесь можно загрузить фотографии дерева.";
 	}
 
 	public photoTitle(): string {
-		return 'Загрузка фотографий';
+		return "Загрузка фотографий";
 	}
 
 	public measureTitle(): string {
-		return 'Замер дерева';
+		return "Замер дерева";
 	}
 
 	public measureHeight(): string {
-		return 'Введите высоту дерева в метрах:';
+		return "Введите высоту дерева в метрах:";
 	}
 
 	public measureHeightUpdated(): string {
-		return 'Высота обновлена.';
+		return "Высота обновлена.";
 	}
 
 	public measureCanopy(): string {
-		return 'Введите диаметр кроны в метрах:';
+		return "Введите диаметр кроны в метрах:";
 	}
 
 	public measureCanopyUpdated(): string {
-		return 'Диаметр кроны обновлён.';
+		return "Диаметр кроны обновлён.";
 	}
 
 	public measureTrunk(): string {
-		return 'Введите обхват ствола в сантиметрах:';
+		return "Введите обхват ствола в сантиметрах:";
 	}
 
 	public measureTrunkUpdated(): string {
-		return 'Обхват ствола обновлён.';
+		return "Обхват ствола обновлён.";
 	}
 
 	public measureState(): string {
-		return 'Укажите состояние дерева:';
+		return "Укажите состояние дерева:";
 	}
 
 	public measureStateUpdated(): string {
-		return 'Состояние дерева обновлено.';
+		return "Состояние дерева обновлено.";
 	}
 
 	public meters(value: string): string {
@@ -839,9 +839,9 @@ class RussianLocale extends EnglishLocale {
 }
 
 const guessLocale = () => {
-	const lang = navigator.language || 'en-US';
+	const lang = navigator.language || "en-US";
 
-	if (lang === 'ru-RU') {
+	if (lang === "ru-RU") {
 		return new RussianLocale();
 	}
 

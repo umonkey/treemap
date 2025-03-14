@@ -1,17 +1,17 @@
 <script lang="ts">
-	import { routes } from '$lib/routes';
-	import { page } from '$app/stores';
-	import { rewriteHash } from '$lib/utils/rewrite';
-	import { locale } from '$lib/locale';
+import { page } from "$app/stores";
+import { locale } from "$lib/locale";
+import { routes } from "$lib/routes";
+import { rewriteHash } from "$lib/utils/rewrite";
 
-	import Header from '$lib/components/tree/Header.svelte';
-	import AppInstallButton from '$lib/components/AppInstallButton.svelte';
+import AppInstallButton from "$lib/components/AppInstallButton.svelte";
+import Header from "$lib/components/tree/Header.svelte";
 
-	const { data } = $props();
-	const { totalCount } = data;
+const { data } = $props();
+const { totalCount } = data;
 
-	// Redirect old urls from v1.
-	rewriteHash($page.url.hash);
+// Redirect old urls from v1.
+rewriteHash($page.url.hash);
 </script>
 
 <svelte:head>

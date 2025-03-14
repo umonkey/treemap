@@ -1,6 +1,6 @@
 <script>
-	import TextInput from '$lib/components/forms/TextInput.svelte';
-	export let value = '';
+import TextInput from "$lib/components/forms/TextInput.svelte";
+export const value = "";
 </script>
 
 <TextInput

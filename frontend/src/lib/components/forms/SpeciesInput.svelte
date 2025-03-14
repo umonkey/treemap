@@ -1,40 +1,40 @@
 <script lang="ts">
-	/**
-	 * This is a complex components that implements text input for
-	 * tree species, including autocomplete based on the API vocabulary,
-	 * and a history of recent inputs, also backed by the API.
-	 */
+/**
+ * This is a complex components that implements text input for
+ * tree species, including autocomplete based on the API vocabulary,
+ * and a history of recent inputs, also backed by the API.
+ */
 
-	import { apiClient } from '$lib/api';
-	import type { ISpecies } from '$lib/types';
-	import { locale } from '$lib/locale';
+import { apiClient } from "$lib/api";
+import { locale } from "$lib/locale";
+import type { ISpecies } from "$lib/types";
 
-	let { value = $bindable() } = $props();
+let { value = $bindable() } = $props();
 
-	let options: ISpecies[] = $state([]);
-	let showOptions = $state<boolean>(false);
+let options: ISpecies[] = $state([]);
+let showOptions = $state<boolean>(false);
 
-	const handleInput = (event: Event) => {
-		const target = event.target as HTMLInputElement;
+const handleInput = (event: Event) => {
+	const target = event.target as HTMLInputElement;
 
-		apiClient.searchSpecies(target.value).then((res) => {
-			if (res.status === 200 && res.data) {
-				options = res.data;
-				showOptions = options.length > 0;
-			}
-		});
-	};
+	apiClient.searchSpecies(target.value).then((res) => {
+		if (res.status === 200 && res.data) {
+			options = res.data;
+			showOptions = options.length > 0;
+		}
+	});
+};
 
-	const handleOptionClick = (selectedValue: string) => {
+const handleOptionClick = (selectedValue: string) => {
+	showOptions = false;
+	value = selectedValue;
+};
+
+const handleFocusOut = () => {
+	setTimeout(() => {
 		showOptions = false;
-		value = selectedValue;
-	};
-
-	const handleFocusOut = () => {
-		setTimeout(() => {
-			showOptions = false;
-		}, 200);
-	};
+	}, 200);
+};
 </script>
 
 <div class="input">

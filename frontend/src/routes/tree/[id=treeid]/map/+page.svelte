@@ -1,27 +1,27 @@
 <script lang="ts">
-	import { formatSpecies } from '$lib/utils/trees';
-	import type { ITree } from '$lib/types';
-	import { mapZoom } from '$lib/stores/mapStore';
+import { mapZoom } from "$lib/stores/mapStore";
+import type { ITree } from "$lib/types";
+import { formatSpecies } from "$lib/utils/trees";
 
-	import Header from '$lib/components/tree/Header.svelte';
-	import Tabs from '$lib/components/tree/Tabs.svelte';
-	import Title from '$lib/components/tree/Title.svelte';
-	import Map from '$lib/components/Map.svelte';
-	import MapPreview from '$lib/components/map/MapPreview.svelte';
-	import TreeMenu from '$lib/components/tree/Menu.svelte';
+import Map from "$lib/components/Map.svelte";
+import MapPreview from "$lib/components/map/MapPreview.svelte";
+import Header from "$lib/components/tree/Header.svelte";
+import TreeMenu from "$lib/components/tree/Menu.svelte";
+import Tabs from "$lib/components/tree/Tabs.svelte";
+import Title from "$lib/components/tree/Title.svelte";
 
-	const { data } = $props();
-	const tree = data.tree;
+const { data } = $props();
+const tree = data.tree;
 
-	let selectedTree = $state<ITree | null>(null);
+let selectedTree = $state<ITree | null>(null);
 
-	const onPreview = (tree: ITree) => {
-		selectedTree = tree;
-	};
+const onPreview = (tree: ITree) => {
+	selectedTree = tree;
+};
 
-	const onClosePreview = () => {
-		selectedTree = null;
-	};
+const onClosePreview = () => {
+	selectedTree = null;
+};
 </script>
 
 <svelte:head>

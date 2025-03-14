@@ -1,5 +1,5 @@
-import { writable, derived } from 'svelte/store';
-import type { IUser } from '$lib/types';
+import type { IUser } from "$lib/types";
+import { derived, writable } from "svelte/store";
 
 type UserMap = {
 	[key: string]: IUser;

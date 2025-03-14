@@ -1,13 +1,13 @@
-import type { Load } from '@sveltejs/kit';
+import type { Load } from "@sveltejs/kit";
 
 export const load: Load = ({
-	url
+	url,
 }): {
 	searchQuery: string | null;
 } => {
-	const searchQuery = url.searchParams.get('q');
+	const searchQuery = url.searchParams.get("q");
 
 	return {
-		searchQuery
+		searchQuery,
 	};
 };

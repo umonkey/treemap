@@ -1,32 +1,34 @@
 <script lang="ts">
-	import Header from '$lib/components/tree/Header.svelte';
-	import Map from '$lib/components/Map.svelte';
-	import MapPreview from '$lib/components/map/MapPreview.svelte';
-	import { mapStore, mapCenter, mapZoom } from '$lib/stores/mapStore';
-	import type { ITree } from '$lib/types';
-	import { locale } from '$lib/locale';
+import Map from "$lib/components/Map.svelte";
+import MapPreview from "$lib/components/map/MapPreview.svelte";
+import Header from "$lib/components/tree/Header.svelte";
+import { locale } from "$lib/locale";
+import { mapCenter, mapStore, mapZoom } from "$lib/stores/mapStore";
+import type { ITree } from "$lib/types";
 
-	const { data } = $props();
-	const searchQuery = data.searchQuery;
+const { data } = $props();
+const searchQuery = data.searchQuery;
 
-	let selectedTree = $state<ITree | undefined>(undefined);
+let selectedTree = $state<ITree | undefined>(undefined);
 
-	const title = searchQuery ? locale.mapTitleQuery(searchQuery) : locale.mapTitle();
+const title = searchQuery
+	? locale.mapTitleQuery(searchQuery)
+	: locale.mapTitle();
 
-	const onChange = (tree: ITree) => {
-		selectedTree = tree;
-	};
+const onChange = (tree: ITree) => {
+	selectedTree = tree;
+};
 
-	const onClosePreview = () => {
-		selectedTree = undefined;
-	};
+const onClosePreview = () => {
+	selectedTree = undefined;
+};
 
-	const onMove = (center: number[], zoom: number) => {
-		mapStore.set({
-			center,
-			zoom
-		});
-	};
+const onMove = (center: number[], zoom: number) => {
+	mapStore.set({
+		center,
+		zoom,
+	});
+};
 </script>
 
 <svelte:head>

@@ -1,13 +1,18 @@
 <script lang="ts">
-	export let active;
-	export let tabs;
+const {
+	active,
+	tabs,
+}: {
+	active: string;
+	tabs: { id: string; title: string; url: string }[];
+} = $props();
 
-	// In case tab id was not provided, default to the first tab.
-	const activeTab = active ?? tabs[0].id;
+// In case tab id was not provided, default to the first tab.
+const activeTab = active ?? tabs[0].id;
 
-	const cls = (tab: string) => {
-		return tab == activeTab;
-	};
+const cls = (tab: string) => {
+	return tab === activeTab;
+};
 </script>
 
 <nav class="tabs">

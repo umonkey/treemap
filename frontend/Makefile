@@ -1,7 +1,7 @@
 API_ROOT ?= http://127.0.0.1:8000/
 
 autofix:
-	npm run format
+	npm run autofix
 
 build:
 	VITE_API_ROOT=$(API_ROOT) VITE_ENVIRONMENT=production npm run build

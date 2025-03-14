@@ -1,34 +1,34 @@
 <script lang="ts">
-	import HelpIcon from '$lib/icons/HelpIcon.svelte';
-	import Button from '$lib/components/forms/Button.svelte';
-	import { apiClient } from '$lib/api';
-	import { toast } from '@zerodevx/svelte-toast';
-	import { addTrees } from '$lib/stores/treeStore';
-	import { locale } from '$lib/locale';
+import { apiClient } from "$lib/api";
+import Button from "$lib/components/forms/Button.svelte";
+import HelpIcon from "$lib/icons/HelpIcon.svelte";
+import { locale } from "$lib/locale";
+import { addTrees } from "$lib/stores/treeStore";
+import { toast } from "@zerodevx/svelte-toast";
 
-	const { tree, onClose } = $props();
+const { tree, onClose } = $props();
 
-	let value = $state<number>(Math.round((tree.circumference ?? 0) * 100));
+const value = $state<number>(Math.round((tree.circumference ?? 0) * 100));
 
-	const onSave = async () => {
-		const meters = value / 100;
-		const res = await apiClient.updateTreeCircumference(tree.id, meters);
+const onSave = async () => {
+	const meters = value / 100;
+	const res = await apiClient.updateTreeCircumference(tree.id, meters);
 
-		if (res.status >= 200 && res.status < 400) {
-			addTrees([
-				{
-					...tree,
-					circumference: meters
-				}
-			]);
+	if (res.status >= 200 && res.status < 400) {
+		addTrees([
+			{
+				...tree,
+				circumference: meters,
+			},
+		]);
 
-			toast.push(locale.measureTrunkUpdated());
+		toast.push(locale.measureTrunkUpdated());
 
-			onClose();
-		} else {
-			toast.push('Error saving changes.');
-		}
-	};
+		onClose();
+	} else {
+		toast.push("Error saving changes.");
+	}
+};
 </script>
 
 <form class="form" onsubmit={onSave}>

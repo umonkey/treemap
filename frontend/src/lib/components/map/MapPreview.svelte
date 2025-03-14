@@ -1,11 +1,17 @@
 <script lang="ts">
-	import CloseIcon from '$lib/icons/CloseIcon.svelte';
-	import GalleryPreview from '$lib/components/map/GalleryPreview.svelte';
-	import { routes } from '$lib/routes';
-	import { shortDetails, formatSpecies } from '$lib/utils/trees';
+import GalleryPreview from "$lib/components/map/GalleryPreview.svelte";
+import CloseIcon from "$lib/icons/CloseIcon.svelte";
+import { routes } from "$lib/routes";
+import type { ITree } from "$lib/types";
+import { formatSpecies, shortDetails } from "$lib/utils/trees";
 
-	export let tree;
-	export let onClose;
+const {
+	tree,
+	onClose,
+}: {
+	tree: ITree;
+	onClose: () => void;
+} = $props();
 </script>
 
 {#if tree}

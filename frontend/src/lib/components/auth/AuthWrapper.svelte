@@ -1,8 +1,8 @@
 <script>
-	import { isAuthenticated } from '$lib/stores/authStore';
-	import SignIn from '$lib/components/auth/SignIn.svelte';
+import SignIn from "$lib/components/auth/SignIn.svelte";
+import { isAuthenticated } from "$lib/stores/authStore";
 
-	let { children } = $props();
+const { children } = $props();
 </script>
 
 {#if $isAuthenticated}

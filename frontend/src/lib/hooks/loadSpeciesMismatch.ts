@@ -1,8 +1,8 @@
-import { apiClient } from '$lib/api';
-import type { IError, ITree } from '$lib/types';
-import { writable } from 'svelte/store';
-import { addUsers } from '$lib/stores/userStore';
-import { addTrees } from '$lib/stores/treeStore';
+import { apiClient } from "$lib/api";
+import { addTrees } from "$lib/stores/treeStore";
+import { addUsers } from "$lib/stores/userStore";
+import type { IError, ITree } from "$lib/types";
+import { writable } from "svelte/store";
 
 export const loadSpeciesMismatch = () => {
 	const loading = writable<boolean>(true);
@@ -13,7 +13,11 @@ export const loadSpeciesMismatch = () => {
 		try {
 			loading.set(true);
 
-			const { status, data: stats, error: err } = await apiClient.getSpeciesMismatch();
+			const {
+				status,
+				data: stats,
+				error: err,
+			} = await apiClient.getSpeciesMismatch();
 
 			if (status === 200 && stats) {
 				addTrees(stats.trees);

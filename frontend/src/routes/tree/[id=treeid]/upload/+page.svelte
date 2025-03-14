@@ -1,35 +1,40 @@
 <script lang="ts">
-	import { fileStore, storedFiles, isUploading, uploadMessage } from '$lib/stores/fileStore';
-	import { startUpload } from '$lib/utils/fileUploader';
-	import { locale } from '$lib/locale';
+import { locale } from "$lib/locale";
+import {
+	fileStore,
+	isUploading,
+	storedFiles,
+	uploadMessage,
+} from "$lib/stores/fileStore";
+import { startUpload } from "$lib/utils/fileUploader";
 
-	import AuthWrapper from '$lib/components/auth/AuthWrapper.svelte';
-	import Header from '$lib/components/tree/Header.svelte';
-	import FilePicker from '$lib/components/forms/FilePicker.svelte';
-	import CloseIcon from '$lib/icons/CloseIcon.svelte';
-	import PhotoManager from '$lib/components/tree/PhotoManager.svelte';
+import AuthWrapper from "$lib/components/auth/AuthWrapper.svelte";
+import FilePicker from "$lib/components/forms/FilePicker.svelte";
+import Header from "$lib/components/tree/Header.svelte";
+import PhotoManager from "$lib/components/tree/PhotoManager.svelte";
+import CloseIcon from "$lib/icons/CloseIcon.svelte";
 
-	const { data } = $props();
-	const tree = data.tree;
-	const treeId = data.id;
+const { data } = $props();
+const tree = data.tree;
+const treeId = data.id;
 
-	const onFileSelected = (selected: File[]) => {
-		fileStore.update((store) => {
-			store.files = [...store.files, ...selected];
-			return store;
-		});
-	};
+const onFileSelected = (selected: File[]) => {
+	fileStore.update((store) => {
+		store.files = [...store.files, ...selected];
+		return store;
+	});
+};
 
-	const removeFile = (index: number) => {
-		console.debug(`Removing file at index ${index}.`);
+const removeFile = (index: number) => {
+	console.debug(`Removing file at index ${index}.`);
 
-		fileStore.update((store) => {
-			const newFiles = [...store.files];
-			newFiles.splice(index, 1);
-			store.files = newFiles;
-			return store;
-		});
-	};
+	fileStore.update((store) => {
+		const newFiles = [...store.files];
+		newFiles.splice(index, 1);
+		store.files = newFiles;
+		return store;
+	});
+};
 </script>
 
 <svelte:head>

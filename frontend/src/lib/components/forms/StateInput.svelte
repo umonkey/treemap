@@ -1,23 +1,23 @@
 <script lang="ts">
-	import HelpButton from '$lib/components/forms/HelpButton.svelte';
-	import { locale } from '$lib/locale';
+import HelpButton from "$lib/components/forms/HelpButton.svelte";
+import { locale } from "$lib/locale";
 
-	const {
-		value,
-		label = true,
-		onChange
-	}: {
-		value: string | null;
-		label?: boolean;
-		onChange: (value: string | null) => void;
-	} = $props();
+const {
+	value,
+	label = true,
+	onChange,
+}: {
+	value: string | null;
+	label?: boolean;
+	onChange: (value: string | null) => void;
+} = $props();
 
-	const handleChange = (e: Event) => {
-		if (e.target) {
-			const select = e.target as HTMLSelectElement;
-			onChange(select.value ?? null);
-		}
-	};
+const handleChange = (e: Event) => {
+	if (e.target) {
+		const select = e.target as HTMLSelectElement;
+		onChange(select.value ?? null);
+	}
+};
 </script>
 
 <div class="input">

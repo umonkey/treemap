@@ -1,40 +1,40 @@
 <script lang="ts">
-	import { locale } from '$lib/locale';
-	import { soundBus } from '$lib/buses/soundBus';
+import { soundBus } from "$lib/buses/soundBus";
+import { locale } from "$lib/locale";
 
-	const { question, onCorrect, onWrong } = $props();
+const { question, onCorrect, onWrong } = $props();
 
-	// Which answer is selected (not yet submitted).
-	let selected = $state('');
+// Which answer is selected (not yet submitted).
+let selected = $state("");
 
-	// Values: guessing, correct, wrong.
-	let currentState = $state('guessing');
+// Values: guessing, correct, wrong.
+let currentState = $state("guessing");
 
-	const onSelect = (value: string) => {
-		selected = value;
-	};
+const onSelect = (value: string) => {
+	selected = value;
+};
 
-	const onConfirm = () => {
-		if (question.correct.includes(selected)) {
-			currentState = 'correct';
-			soundBus.emit('correct');
-		} else {
-			currentState = 'wrong';
-			soundBus.emit('wrong');
-		}
-	};
+const onConfirm = () => {
+	if (question.correct.includes(selected)) {
+		currentState = "correct";
+		soundBus.emit("correct");
+	} else {
+		currentState = "wrong";
+		soundBus.emit("wrong");
+	}
+};
 
-	// Go to the next question.
-	const onContinue = () => {
-		if (currentState === 'correct') {
-			onCorrect();
-		} else {
-			onWrong();
-		}
+// Go to the next question.
+const onContinue = () => {
+	if (currentState === "correct") {
+		onCorrect();
+	} else {
+		onWrong();
+	}
 
-		currentState = 'guessing';
-		selected = '';
-	};
+	currentState = "guessing";
+	selected = "";
+};
 </script>
 
 <div class="question">
