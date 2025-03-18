@@ -838,6 +838,428 @@ class RussianLocale extends EnglishLocale {
 	}
 }
 
+class ArmenianLocale {
+	public appTitle(): string {
+		return 'Երևանի ծառեր';
+	}
+
+	public homeTitle(): string {
+		return 'Ծառերի քարտեզ';
+	}
+
+	public sideHome(): string {
+		return 'Գլխավոր';
+	}
+
+	public sideSearch(): string {
+		return 'Որոնել';
+	}
+
+	public sideExplore(): string {
+		return 'Տեսնել քարտեզը';
+	}
+
+	public sideUpdates(): string {
+		return 'Վերջին թարմացումներ';
+	}
+
+	public sideReports(): string {
+		return 'Տվյալների զեկույցներ';
+	}
+
+	public sideProfile(): string {
+		return 'Պրոֆիլ';
+	}
+
+	public sideAdd(): string {
+		return 'Ավելացնել ծառ';
+	}
+
+	public sideAbout(): string {
+		return 'Այս ծրագրի մասին';
+	}
+
+	public searchTitle(): string {
+		return 'Որոնել';
+	}
+
+	public searchPrompt(): string {
+		return 'Գտնել ծառեր...';
+	}
+
+	public searchLink(query: string): string {
+		return `Որոնել քարտեզում "${query}"`;
+	}
+
+	public updatesNewTitle(): string {
+		return 'Նոր ծառեր';
+	}
+
+	public updatesAdded(): string {
+		return 'Ավելացված';
+	}
+
+	public updatesChanged(): string {
+		return 'Խմբագրված';
+	}
+
+	public updatesComments(): string {
+		return 'Մեկնաբանություններ';
+	}
+
+	public addressUnknown(): string {
+		return 'Անհայտ հասցե';
+	}
+
+	public userUnknown(): string {
+		return 'Անհայտ օգտատեր';
+	}
+
+	public profileTrees(count: number): string {
+		return `${count} ծառ`;
+	}
+
+	public profileUpdates(count: number): string {
+		return `${count} խմբագրում`;
+	}
+
+	public profilePhotos(count: number): string {
+		return `${count} լուսանկար`;
+	}
+
+	public signOut(): string {
+		return 'Ելք';
+	}
+
+	public signInWithGoogle(): string {
+		return 'Մուտք գործել Google-ով';
+	}
+
+	public profileSignInPrompt(): string {
+		return 'Դուք պետք է մուտք գործեք Ձեր պրոֆիլին հասնաելիություն ստանալու համար:';
+	}
+
+	public addTitle(): string {
+		return 'Ավելացնել ծառ';
+	}
+
+	public addConfirmButton(): string {
+		return 'Ավելացնել ծառ';
+	}
+
+	public addCancelButton(): string {
+		return 'Չեղարկել';
+	}
+
+	public addConfirmLocation(): string {
+		return 'Հաստատել տեղադրությունը';
+	}
+
+	public editTitle(): string {
+		return 'Խմբագրել ծառը';
+	}
+
+	public speciesLabel(): string {
+		return 'Տեսակ';
+	}
+
+	public speciesPrompt(): string {
+		return 'Մուտքագրեք լատիներեն կամ հայերեն անուն';
+	}
+
+	public speciesHint(): string {
+		return 'Մուտքագրեք ծառի լատիներեն սեռը:';
+	}
+
+	public heightLabel(): string {
+		return 'Բարձրություն, մ';
+	}
+
+	public canopyLabel(): string {
+		return 'Հովանի տրամագիծ, մ';
+	}
+
+	public circumferenceLabel(): string {
+		return 'Բնի շրջագիծ, սմ';
+	}
+
+	public circumferenceHint(): string {
+		return 'Չափել կրծքավանդակի մակարդակով, այսինքն՝ 120 սմ հողից:';
+	}
+
+	public stateLabel(): string {
+		return 'Վիճակը';
+	}
+
+	public stateUnknown(): string {
+		return '(անհայտ)';
+	}
+
+	public stateHealthy(): string {
+		return 'առողջ';
+	}
+
+	public stateSick(): string {
+		return 'հիվանդ';
+	}
+
+	public stateDeformed(): string {
+		return 'դեֆորմացված';
+	}
+
+	public stateDead(): string {
+		return 'չորացած';
+	}
+
+	public stateGone(): string {
+		return 'բացակայում է';
+	}
+
+	public stateStomp(): string {
+		return 'կոճղ';
+	}
+
+	public yearLabel(): string {
+		return 'Տնկման տարի';
+	}
+
+	public notesLabel(): string {
+		return 'Նկարագրություն';
+	}
+
+	public notesHint(): string {
+		return 'Ավելացրեք որոշ նշանակալի մանրամասներ, որոնք կարող են օգնել այցելուներին հասկանալ այս ծառի կարևորությունը:';
+	}
+
+	public detailsTitle(name: string): string {
+		return `${name} — Մանրամասներ`;
+	}
+
+	public treeShortTitle(): string {
+		return 'Ծառ';
+	}
+
+	public treeTabsDetails(): string {
+		return 'Մանրամասներ';
+	}
+
+	public treeTabsMap(): string {
+		return 'Քարտեզ';
+	}
+
+	public treeTabsComments(): string {
+		return 'Մեկնաբանություններ';
+	}
+
+	public treeTabsChanges(): string {
+		return 'Պատմություն';
+	}
+
+	public propHeight(): string {
+		return 'Բարձրություն';
+	}
+
+	public propCanopy(): string {
+		return 'Հովանի';
+	}
+
+	public propTrunk(): string {
+		return 'Բուն';
+	}
+
+	public propState(): string {
+		return 'Վիճակ';
+	}
+
+	public propYear(): string {
+		return 'Տարի';
+	}
+
+	public noDescription(): string {
+		return 'Այս ծառը նկարագրություն չունի: Դուք կարող եք մեկնաբանություն թողնել՝ հետաքրքիր տեղեկության մասին:';
+	}
+
+	public noComments(): string {
+		return 'Այս ծառի մասին դեռևս մեկնաբանություններ չկան:';
+	}
+
+	public commentPrompt(): string {
+		return 'Կցանկանայի՞ք մեկնաբանություն թողնել:';
+	}
+
+	public commentLabel(): string {
+		return 'Մեկնաբանություն';
+	}
+
+	public commentSignIn(): string {
+		return 'Մեկնաբանություններ ավելացնելու համար անհրաժեշտ է վավերացում:';
+	}
+
+	public commentSubmit(): string {
+		return 'Հաստատել մեկնաբանությունը';
+	}
+
+	public commentHint(): string {
+		return 'Որոշ խորհուրդներ կամ առաջարկվող խմբագրումներ:';
+	}
+
+	public contextEditTree(): string {
+		return 'Խմբագրել այս ծառը';
+	}
+
+	public contextUploadPhotos(): string {
+		return 'Վերբեռնել լուսանկարներ';
+	}
+
+	public contextMeasure(): string {
+		return 'Չափումներ';
+	}
+
+	public locationLabel(): string {
+		return 'Տեղադրություն';
+	}
+
+	public editSave(): string {
+		return 'Պահպանել փոփոխությունները';
+	}
+
+	public editCancel(): string {
+		return 'Չեղարկել';
+	}
+
+	public mapTitle(): string {
+		return 'Քարտեզ';
+	}
+
+	public mapTitleQuery(query: string): string {
+		return `Քարտեզ: ${query}`;
+	}
+
+	public learnTitle(): string {
+		return 'Ուսուցում';
+	}
+
+	public sideLearn(): string {
+		return 'Ուսուցում';
+	}
+
+	public learnDone(): string {
+		return 'Ավարտված է!';
+	}
+
+	public learnScore(correct: number, total: number): string {
+		return `Ձեր արդյունքը՝ ${correct}-ը ${total}-ից`;
+	}
+
+	public learnRetry(): string {
+		return 'Կրկին փորձել';
+	}
+
+	public learnPerfect(): string {
+		return 'Հիանալի!';
+	}
+
+	public learnGreat(): string {
+		return 'Հիանալի!';
+	}
+
+	public learnGood(): string {
+		return 'Պահանջվում է ավելի շատ աշխատանք';
+	}
+
+	public learnBad(): string {
+		return 'Պահանջվում է շատ ավելի աշխատանք!';
+	}
+
+	public learnCorrect(): string {
+		return 'Ճիշտ!';
+	}
+
+	public learnConfirm(): string {
+		return 'Հաստատել';
+	}
+
+	public learnWrong(): string {
+		return 'Սխալ!';
+	}
+
+	public learnCorrectAnswer(value: string): string {
+		return `Ճիշտ պատասխան՝ ${value}`;
+	}
+
+	public learnContinue(): string {
+		return 'Շարունակել';
+	}
+
+	public helpCircumference(): string {
+		return 'https://myga.am/app/measuring-circumference.html';
+	}
+
+	public photoTake(): string {
+		return 'Լուսանկարել';
+	}
+
+	public photoUpload(): string {
+		return 'Վերբեռնել ֆայլեր';
+	}
+
+	public photoSelect(): string {
+		return 'Ընտրել ֆայլեր';
+	}
+
+	public photoIntro(): string {
+		return 'Այստեղ Դուք կարող եք վերբեռնել այս ծառի բազմաթիվ լուսանկարներ:';
+	}
+
+	public photoTitle(): string {
+		return 'Վերբեռնել լուսանկարներ';
+	}
+
+	public measureTitle(): string {
+		return 'Չափել ծառը';
+	}
+
+	public measureHeight(): string {
+		return 'Մուտքագրեք ծառի բարձրությունը մետրերով:';
+	}
+
+	public measureHeightUpdated(): string {
+		return 'Բարձրությունը թարմացված է:';
+	}
+
+	public measureCanopy(): string {
+		return 'Մուտքագրեք հովանի տրամագիծը մետրերով:';
+	}
+
+	public measureCanopyUpdated(): string {
+		return 'Հովանի տրամագիծը թարմացված է:';
+	}
+
+	public measureTrunk(): string {
+		return 'Մուտքագրեք բնի շրջագիծը սանտիմետրերով:';
+	}
+
+	public measureTrunkUpdated(): string {
+		return 'Բնի շրջագիծը թարմացված է:';
+	}
+
+	public measureState(): string {
+		return 'Ընտրեք ծառի վիճակը:';
+	}
+
+	public measureStateUpdated(): string {
+		return 'Ծառի վիճակը թարմացված է:';
+	}
+
+	public meters(value: string): string {
+		return `${value} մ`;
+	}
+
+	public centimeters(value: string): string {
+		return `${value} սմ`;
+	}
+}
+
 const guessLocale = () => {
 	const lang = navigator.language || 'en-US';
 
@@ -845,429 +1267,11 @@ const guessLocale = () => {
 		return new RussianLocale();
 	}
 
+	if (lang === 'hy-AM') {
+		return new ArmenianLocale();
+	}
+
 	return new EnglishLocale();
 };
-
-class ArmenianLocale {
-    public appTitle(): string {
-        return 'Երևանի ծառեր';
-    }
-
-    public homeTitle(): string {
-        return 'Ծառերի քարտեզ';
-    }
-
-    public sideHome(): string {
-        return 'Գլխավոր';
-    }
-
-    public sideSearch(): string {
-        return 'Որոնել';
-    }
-
-    public sideExplore(): string {
-        return 'Տեսնել քարտեզը';
-    }
-
-    public sideUpdates(): string {
-        return 'Վերջին թարմացումներ';
-    }
-
-    public sideReports(): string {
-        return 'Տվյալների զեկույցներ';
-    }
-
-    public sideProfile(): string {
-        return 'Պրոֆիլ';
-    }
-
-    public sideAdd(): string {
-        return 'Ավելացնել ծառ';
-    }
-
-    public sideAbout(): string {
-        return 'Այս ծրագրի մասին';
-    }
-
-    public searchTitle(): string {
-        return 'Որոնել';
-    }
-
-    public searchPrompt(): string {
-        return 'Գտնել ծառեր...';
-    }
-
-    public searchLink(query: string): string {
-        return `Որոնել քարտեզում "${query}"`;
-    }
-
-    public updatesNewTitle(): string {
-        return 'Նոր ծառեր';
-    }
-
-    public updatesAdded(): string {
-        return 'Ավելացված';
-    }
-
-    public updatesChanged(): string {
-        return 'Խմբագրված';
-    }
-
-    public updatesComments(): string {
-        return 'Մեկնաբանություններ';
-    }
-
-    public addressUnknown(): string {
-        return 'Անհայտ հասցե';
-    }
-
-    public userUnknown(): string {
-        return 'Անհայտ օգտատեր';
-    }
-
-    public profileTrees(count: number): string {
-        return `${count} ծառ`;
-    }
-
-    public profileUpdates(count: number): string {
-        return `${count} խմբագրում`;
-    }
-
-    public profilePhotos(count: number): string {
-        return `${count} լուսանկար`;
-    }
-
-    public signOut(): string {
-        return 'Ելք';
-    }
-
-    public signInWithGoogle(): string {
-        return 'Մուտք գործել Google-ով';
-    }
-
-    public profileSignInPrompt(): string {
-        return 'Դուք պետք է մուտք գործեք Ձեր պրոֆիլին հասնաելիություն ստանալու համար:';
-    }
-
-    public addTitle(): string {
-        return 'Ավելացնել ծառ';
-    }
-
-    public addConfirmButton(): string {
-        return 'Ավելացնել ծառ';
-    }
-
-    public addCancelButton(): string {
-        return 'Չեղարկել';
-    }
-
-    public addConfirmLocation(): string {
-        return 'Հաստատել տեղադրությունը';
-    }
-
-    public editTitle(): string {
-        return 'Խմբագրել ծառը';
-    }
-
-    public speciesLabel(): string {
-        return 'Տեսակ';
-    }
-
-    public speciesPrompt(): string {
-        return 'Մուտքագրեք լատիներեն կամ հայերեն անուն';
-    }
-
-    public speciesHint(): string {
-        return 'Մուտքագրեք ծառի լատիներեն սեռը:';
-    }
-
-    public heightLabel(): string {
-        return 'Բարձրություն, մ';
-    }
-
-    public canopyLabel(): string {
-        return 'Հովանի տրամագիծ, մ';
-    }
-
-    public circumferenceLabel(): string {
-        return 'Բնի շրջագիծ, սմ';
-    }
-
-    public circumferenceHint(): string {
-        return 'Չափել կրծքավանդակի մակարդակով, այսինքն՝ 120 սմ հողից:';
-    }
-
-    public stateLabel(): string {
-        return 'Վիճակը';
-    }
-
-    public stateUnknown(): string {
-        return '(անհայտ)';
-    }
-
-    public stateHealthy(): string {
-        return 'առողջ';
-    }
-
-    public stateSick(): string {
-        return 'հիվանդ';
-    }
-
-    public stateDeformed(): string {
-        return 'դեֆորմացված';
-    }
-
-    public stateDead(): string {
-        return 'չորացած';
-    }
-
-    public stateGone(): string {
-        return 'բացակայում է';
-    }
-
-    public stateStomp(): string {
-        return 'կոճղ';
-    }
-
-    public yearLabel(): string {
-        return 'Տնկման տարի';
-    }
-
-    public notesLabel(): string {
-        return 'Նկարագրություն';
-    }
-
-    public notesHint(): string {
-        return 'Ավելացրեք որոշ նշանակալի մանրամասներ, որոնք կարող են օգնել այցելուներին հասկանալ այս ծառի կարևորությունը:';
-    }
-
-    public detailsTitle(name: string): string {
-        return `${name} — Մանրամասներ`;
-    }
-
-    public treeShortTitle(): string {
-        return 'Ծառ';
-    }
-
-    public treeTabsDetails(): string {
-        return 'Մանրամասներ';
-    }
-
-    public treeTabsMap(): string {
-        return 'Քարտեզ';
-    }
-
-    public treeTabsComments(): string {
-        return 'Մեկնաբանություններ';
-    }
-
-    public treeTabsChanges(): string {
-        return 'Պատմություն';
-    }
-
-    public propHeight(): string {
-        return 'Բարձրություն';
-    }
-
-    public propCanopy(): string {
-        return 'Հովանի';
-    }
-
-    public propTrunk(): string {
-        return 'Բուն';
-    }
-
-    public propState(): string {
-        return 'Վիճակ';
-    }
-
-    public propYear(): string {
-        return 'Տարի';
-    }
-
-    public noDescription(): string {
-        return 'Այս ծառը նկարագրություն չունի: Դուք կարող եք մեկնաբանություն թողնել՝ հետաքրքիր տեղեկության մասին:';
-    }
-
-    public noComments(): string {
-        return 'Այս ծառի մասին դեռևս մեկնաբանություններ չկան:';
-    }
-
-    public commentPrompt(): string {
-        return 'Կցանկանայի՞ք մեկնաբանություն թողնել:';
-    }
-
-    public commentLabel(): string {
-        return 'Մեկնաբանություն';
-    }
-
-    public commentSignIn(): string {
-        return 'Մեկնաբանություններ ավելացնելու համար անհրաժեշտ է վավերացում:';
-    }
-
-    public commentSubmit(): string {
-        return 'Հաստատել մեկնաբանությունը';
-    }
-
-    public commentHint(): string {
-        return 'Որոշ խորհուրդներ կամ առաջարկվող խմբագրումներ:';
-    }
-
-    public contextEditTree(): string {
-        return 'Խմբագրել այս ծառը';
-    }
-
-    public contextUploadPhotos(): string {
-        return 'Վերբեռնել լուսանկարներ';
-    }
-
-    public contextMeasure(): string {
-        return 'Չափումներ';
-    }
-
-    public locationLabel(): string {
-        return 'Տեղադրություն';
-    }
-
-    public editSave(): string {
-        return 'Պահպանել փոփոխությունները';
-    }
-
-    public editCancel(): string {
-        return 'Չեղարկել';
-    }
-
-    public mapTitle(): string {
-        return 'Քարտեզ';
-    }
-
-    public mapTitleQuery(query: string): string {
-        return `Քարտեզ: ${query}`;
-    }
-
-    public learnTitle(): string {
-        return 'Ուսուցում';
-    }
-
-    public sideLearn(): string {
-        return 'Ուսուցում';
-    }
-
-    public learnDone(): string {
-        return 'Ավարտված է!';
-    }
-
-    public learnScore(correct: number, total: number): string {
-        return `Ձեր արդյունքը՝ ${correct}-ը ${total}-ից`;
-    }
-
-    public learnRetry(): string {
-        return 'Կրկին փորձել';
-    }
-
-    public learnPerfect(): string {
-        return 'Հիանալի!';
-    }
-
-    public learnGreat(): string {
-        return 'Հիանալի!';
-    }
-
-    public learnGood(): string {
-        return 'Պահանջվում է ավելի շատ աշխատանք';
-    }
-
-    public learnBad(): string {
-        return 'Պահանջվում է շատ ավելի աշխատանք!';
-    }
-
-    public learnCorrect(): string {
-        return 'Ճիշտ!';
-    }
-
-    public learnConfirm(): string {
-        return 'Հաստատել';
-    }
-
-    public learnWrong(): string {
-        return 'Սխալ!';
-    }
-
-    public learnCorrectAnswer(value: string): string {
-        return `Ճիշտ պատասխան՝ ${value}`;
-    }
-
-    public learnContinue(): string {
-        return 'Շարունակել';
-    }
-
-    public helpCircumference(): string {
-        return 'https://myga.am/app/measuring-circumference.html';
-    }
-
-    public photoTake(): string {
-        return 'Լուսանկարել';
-    }
-
-    public photoUpload(): string {
-        return 'Վերբեռնել ֆայլեր';
-    }
-
-    public photoSelect(): string {
-        return 'Ընտրել ֆայլեր';
-    }
-
-    public photoIntro(): string {
-        return 'Այստեղ Դուք կարող եք վերբեռնել այս ծառի բազմաթիվ լուսանկարներ:';
-    }
-
-    public photoTitle(): string {
-        return 'Վերբեռնել լուսանկարներ';
-    }
-
-    public measureTitle(): string {
-        return 'Չափել ծառը';
-    }
-
-    public measureHeight(): string {
-        return 'Մուտքագրեք ծառի բարձրությունը մետրերով:';
-    }
-
-    public measureHeightUpdated(): string {
-        return 'Բարձրությունը թարմացված է:';
-    }
-
-    public measureCanopy(): string {
-        return 'Մուտքագրեք հովանի տրամագիծը մետրերով:';
-    }
-
-    public measureCanopyUpdated(): string {
-        return 'Հովանի տրամագիծը թարմացված է:';
-    }
-
-    public measureTrunk(): string {
-        return 'Մուտքագրեք բնի շրջագիծը սանտիմետրերով:';
-    }
-
-    public measureTrunkUpdated(): string {
-        return 'Բնի շրջագիծը թարմացված է:';
-    }
-
-    public measureState(): string {
-        return 'Ընտրեք ծառի վիճակը:';
-    }
-
-    public measureStateUpdated(): string {
-        return 'Ծառի վիճակը թարմացված է:';
-    }
-
-    public meters(value: string): string {
-        return `${value} մ`;
-    }
-
-    public centimeters(value: string): string {
-        return `${value} սմ`;
-    }
-}
 
 export const locale = guessLocale();
