@@ -1,8 +1,13 @@
+///! This endpoint receives requests to add one new tree.
+
 use actix_web::{post, web::Data, web::Json, HttpRequest};
 use serde::Deserialize;
-
 use crate::services::AppState;
 use crate::types::{AddTreeRequest, LatLon, Result, TreeList};
+
+fn default_state() -> String {
+    "unknown".to_string()
+}
 
 #[derive(Debug, Deserialize)]
 struct RequestPayload {
@@ -12,6 +17,7 @@ struct RequestPayload {
     pub height: Option<f64>,
     pub circumference: Option<f64>,
     pub diameter: Option<f64>,
+    #[serde(default = "default_state")]
     pub state: String,
     pub year: Option<i64>,
     pub address: Option<String>,
