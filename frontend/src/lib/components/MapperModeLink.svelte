@@ -2,11 +2,12 @@
 	import { locale } from '$lib/locale';
 	import { modeStore } from '$lib/stores/modeStore';
 	import { routes, goto } from '$lib/routes';
+	import { ModeEnum } from '$lib/enums';
 
 	const handleClick = (e: Event) => {
 		e.preventDefault();
 
-		modeStore.set('mapper');
+		modeStore.set(ModeEnum.Mapper);
 		console.log('[mode] Entered Mapper Mode');
 
 		goto(routes.map());

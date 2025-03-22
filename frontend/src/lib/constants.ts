@@ -1,7 +1,8 @@
 import type { IMeResponse, ITree } from '$lib/types';
+import { ModeEnum } from '$lib/enums';
 
 export const DEFAULT_MAP_CENTER = [40.181389, 44.514444];
-export const DEFAULT_MODE = 'explorer';
+export const DEFAULT_MODE = ModeEnum.Explorer;
 
 export const MAX_BOUNDS = [
 	[
