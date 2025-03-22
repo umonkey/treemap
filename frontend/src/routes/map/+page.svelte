@@ -5,6 +5,7 @@
 	import { mapStore, mapCenter, mapZoom } from '$lib/stores/mapStore';
 	import type { ITree } from '$lib/types';
 	import { locale } from '$lib/locale';
+	import { isMapperMode } from '$lib/stores/modeStore';
 
 	const { data } = $props();
 	const searchQuery = data.searchQuery;
@@ -36,7 +37,15 @@
 <Header {title} />
 
 <div class="mapContainer">
-	<Map center={$mapCenter} zoom={$mapZoom} {onChange} {onMove} {searchQuery} canAdd={true} />
+	<Map
+		center={$mapCenter}
+		zoom={$mapZoom}
+		{onChange}
+		{onMove}
+		{searchQuery}
+		crosshair={$isMapperMode}
+		canAdd={$isMapperMode}
+	/>
 	<MapPreview tree={selectedTree} onClose={onClosePreview} />
 </div>
 

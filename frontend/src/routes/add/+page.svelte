@@ -4,6 +4,7 @@
 	import { apiClient } from '$lib/api';
 	import { routes } from '$lib/routes';
 	import { locale } from '$lib/locale';
+	import { isMapperMode } from '$lib/stores/modeStore';
 
 	import AuthWrapper from '$lib/components/auth/AuthWrapper.svelte';
 	import Button from '$lib/components/forms/Button.svelte';
@@ -51,7 +52,11 @@
 			})
 			.then((res) => {
 				if (res.data) {
-					goto(routes.treeDetails(res.data.trees[0].id));
+					if ($isMapperMode) {
+						goto(routes.map());
+					} else {
+						goto(routes.treeDetails(res.data.trees[0].id));
+					}
 				} else {
 					console.error(`Error ${res.status} adding tree.`);
 					toast.push('Error adding tree.');
