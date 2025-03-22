@@ -1,9 +1,12 @@
+export { goto } from '$app/navigation';
+
 export const routes = {
 	changedTrees: () => '/updates/changes',
 	comments: () => '/updates/comments',
 	file: (id: string) => `https://yerevan.treemaps.app/v1/files/${id}.jpg`,
 	home: () => '/',
 	learn: () => '/learn',
+	map: () => '/map',
 	newTrees: () => '/updates/new',
 	search: '/search',
 	searchAddress: (query: string) => `/map?q=addr:"${query}"`,

@@ -3,6 +3,7 @@
 	import { page } from '$app/stores';
 	import { rewriteHash } from '$lib/utils/rewrite';
 	import { locale } from '$lib/locale';
+	import { ExplorerModeLink, MapperModeLink } from '$lib/components';
 
 	import Header from '$lib/components/tree/Header.svelte';
 	import AppInstallButton from '$lib/components/AppInstallButton.svelte';
@@ -57,10 +58,32 @@
 	{/if}
 
 	<AppInstallButton />
+
+	<h2>{locale.chooseFocus()}</h2>
+
+	<ul>
+		<li><MapperModeLink /></li>
+		<li><ExplorerModeLink /></li>
+	</ul>
 </div>
 
 <style>
 	.home {
 		padding: 0 var(--gap);
+	}
+
+	h2 {
+		margin-top: 40px;
+		font-weight: 400;
+		font-size: 20px;
+		opacity: 0.75;
+	}
+
+	ul {
+		line-height: 1.5em;
+
+		li {
+			margin: 5px 0;
+		}
 	}
 </style>
