@@ -418,6 +418,18 @@ class EnglishLocale {
 	public centimeters(value: string): string {
 		return `${value} cm`;
 	}
+
+	public chooseFocus(): string {
+		return 'Please choose your focus';
+	}
+
+	public enterMapperMode(): string {
+		return 'Enter Tree Mapper';
+	}
+
+	public enterExplorerMode(): string {
+		return 'Enter Tree Explorer';
+	}
 }
 
 class RussianLocale extends EnglishLocale {
@@ -836,9 +848,21 @@ class RussianLocale extends EnglishLocale {
 	public centimeters(value: string): string {
 		return `${value} см`;
 	}
+
+	public chooseFocus(): string {
+		return 'Выберите фокус';
+	}
+
+	public enterMapperMode(): string {
+		return 'Войти в режим маппера';
+	}
+
+	public enterExplorerMode(): string {
+		return 'Войти в режим исследователя';
+	}
 }
 
-class ArmenianLocale {
+class ArmenianLocale extends EnglishLocale {
 	public appTitle(): string {
 		return 'Երևանի ծառեր';
 	}

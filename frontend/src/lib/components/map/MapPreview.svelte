@@ -3,23 +3,43 @@
 	import GalleryPreview from '$lib/components/map/GalleryPreview.svelte';
 	import { routes } from '$lib/routes';
 	import { shortDetails, formatSpecies } from '$lib/utils/trees';
+	import { loadTree } from '$lib/hooks';
 
-	export let tree;
-	export let onClose;
+	const {
+		tree,
+		onClose
+	}: {
+		tree: string | null;
+		onClose: () => void;
+	} = $props();
+
+	const { loading, data, error, reload } = loadTree();
+
+	$effect(() => {
+		if (tree) {
+			(async () => await reload(tree))();
+		}
+	});
 </script>
 
 {#if tree}
 	<div class="preview">
-		<div class="header">
-			<div class="title">
-				<a href={routes.treeDetails(tree.id)}>{formatSpecies(tree.species)}</a>
-				{#if tree.address}
-					&middot; {tree.address}{/if}
+		{#if $error}
+			<p>{$error}</p>
+		{:else if $loading}
+			<!-- a spinner -->
+		{:else if $data}
+			<div class="header">
+				<div class="title">
+					<a href={routes.treeDetails($data.id)}>{formatSpecies($data.species)}</a>
+					{#if $data.address}
+						&middot; {$data.address}{/if}
+				</div>
+				<button class="close" onclick={onClose}><CloseIcon /></button>
 			</div>
-			<button class="close" on:click={onClose}><CloseIcon /></button>
-		</div>
-		<div class="props">{shortDetails(tree)}</div>
-		<GalleryPreview {tree} />
+			<div class="props">{shortDetails($data)}</div>
+			<GalleryPreview tree={$data} />
+		{/if}
 	</div>
 {/if}
 
@@ -30,6 +50,7 @@
 		z-index: var(--z-map-preview);
 
 		width: 100%;
+		min-height: 132px;
 		box-sizing: border-box;
 		background-color: var(--form-background);
 		border-top-left-radius: 8px;

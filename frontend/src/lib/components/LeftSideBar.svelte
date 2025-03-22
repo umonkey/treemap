@@ -27,7 +27,7 @@
 			</a>
 		</li>
 		<li>
-			<a href="/map">
+			<a href={routes.map()}>
 				<span class="icon"><MapIcon /></span>
 				<span>{locale.sideExplore()}</span>
 			</a>

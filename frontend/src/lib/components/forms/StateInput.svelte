@@ -7,15 +7,15 @@
 		label = true,
 		onChange
 	}: {
-		value: string | null;
+		value: string;
 		label?: boolean;
-		onChange: (value: string | null) => void;
+		onChange: (value: string) => void;
 	} = $props();
 
 	const handleChange = (e: Event) => {
 		if (e.target) {
 			const select = e.target as HTMLSelectElement;
-			onChange(select.value ?? null);
+			onChange(select.value ?? 'unknown');
 		}
 	};
 </script>
@@ -25,7 +25,7 @@
 		{#if label}<span>{locale.stateLabel()}</span>{/if}
 		<div class="group">
 			<select {value} onchange={handleChange}>
-				<option value="">{locale.stateUnknown()}</option>
+				<option value="unknown">{locale.stateUnknown()}</option>
 				<option value="healthy">{locale.stateHealthy()}</option>
 				<option value="sick">{locale.stateSick()}</option>
 				<option value="deformed">{locale.stateDeformed()}</option>

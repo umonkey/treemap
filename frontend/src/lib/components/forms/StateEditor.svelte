@@ -8,7 +8,7 @@
 
 	const { tree, onClose } = $props();
 
-	let value = $state<string | null>(tree.state);
+	let value = $state<string>(tree.state ?? 'unknown');
 
 	const onSave = async () => {
 		const res = await apiClient.updateTreeState(tree.id, value);
@@ -33,7 +33,7 @@
 <div class="form">
 	<label for="control">{locale.measureState()}</label>
 	<div class="row">
-		<StateInput {value} label={false} onChange={(v: string | null) => (value = v)} />
+		<StateInput {value} label={false} onChange={(v: string) => (value = v)} />
 	</div>
 	<div class="actions">
 		<Button label={locale.editSave()} type="submit" onClick={onSave} />

@@ -13,10 +13,10 @@
 	const { data } = $props();
 	const tree = data.tree;
 
-	let selectedTree = $state<ITree | null>(null);
+	let selectedTree = $state<string | null>(null);
 
 	const onPreview = (tree: ITree) => {
-		selectedTree = tree;
+		selectedTree = tree.id;
 	};
 
 	const onClosePreview = () => {
@@ -39,7 +39,7 @@
 		marker={[tree.lat, tree.lon]}
 		zoom={$mapZoom}
 		className="treeTab"
-		canAdd={true}
+		canAdd={false}
 		onChange={onPreview}
 	/>
 	<MapPreview tree={selectedTree} onClose={onClosePreview} />

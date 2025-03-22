@@ -24,7 +24,7 @@
 	let height = $state<number | null>(data.tree.height);
 	let diameter = $state<number | null>(data.tree.diameter);
 	let circumference = $state<number | null>(data.tree.circumference);
-	let treeState = $state<string | null>(data.tree.state);
+	let treeState = $state<string>(data.tree.state ?? 'unknown');
 	let notes = $state(data.tree.notes ?? '');
 	let location = $state([data.tree.lat, data.tree.lon]);
 	let year = $state<number | null>(data.tree.year);
@@ -77,7 +77,7 @@
 			value={circumference}
 			onChange={(value: number) => (circumference = value)}
 		/>
-		<StateInput value={treeState} onChange={(value: string | null) => (treeState = value)} />
+		<StateInput value={treeState} onChange={(value: string) => (treeState = value)} />
 		<YearInput value={year} onChange={(value: number | null) => (year = value)} />
 		<LocationInput bind:value={location} />
 		<NotesInput bind:value={notes} />

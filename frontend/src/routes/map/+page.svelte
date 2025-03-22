@@ -5,20 +5,24 @@
 	import { mapStore, mapCenter, mapZoom } from '$lib/stores/mapStore';
 	import type { ITree } from '$lib/types';
 	import { locale } from '$lib/locale';
+	import { isMapperMode } from '$lib/stores/modeStore';
+	import { routes, goto } from '$lib/routes';
 
 	const { data } = $props();
 	const searchQuery = data.searchQuery;
-
-	let selectedTree = $state<ITree | undefined>(undefined);
+	const selectedTree = $derived(data.preview);
 
 	const title = searchQuery ? locale.mapTitleQuery(searchQuery) : locale.mapTitle();
 
+	// This is called when a user clicks a tree on the map.
+	// We need to show a preview, for this we redirect to the page
+	// with the right arguments.
 	const onChange = (tree: ITree) => {
-		selectedTree = tree;
+		goto(routes.mapPreview(tree.id));
 	};
 
 	const onClosePreview = () => {
-		selectedTree = undefined;
+		goto(routes.map());
 	};
 
 	const onMove = (center: number[], zoom: number) => {
@@ -36,7 +40,15 @@
 <Header {title} />
 
 <div class="mapContainer">
-	<Map center={$mapCenter} zoom={$mapZoom} {onChange} {onMove} {searchQuery} canAdd={true} />
+	<Map
+		center={$mapCenter}
+		zoom={$mapZoom}
+		{onChange}
+		{onMove}
+		{searchQuery}
+		crosshair={$isMapperMode}
+		canAdd={$isMapperMode}
+	/>
 	<MapPreview tree={selectedTree} onClose={onClosePreview} />
 </div>
 

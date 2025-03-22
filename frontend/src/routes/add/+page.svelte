@@ -4,6 +4,7 @@
 	import { apiClient } from '$lib/api';
 	import { routes } from '$lib/routes';
 	import { locale } from '$lib/locale';
+	import { isMapperMode } from '$lib/stores/modeStore';
 
 	import AuthWrapper from '$lib/components/auth/AuthWrapper.svelte';
 	import Button from '$lib/components/forms/Button.svelte';
@@ -25,7 +26,7 @@
 	let height = $state<number | null>(null);
 	let diameter = $state<number | null>(null);
 	let circumference = $state<number | null>(null);
-	let treeState = $state<string | null>(null);
+	let treeState = $state<string>('unknown');
 	let notes = $state('');
 	let location = $state([data.lat, data.lng]);
 	let year = $state<number | null>(null);
@@ -51,7 +52,11 @@
 			})
 			.then((res) => {
 				if (res.data) {
-					goto(routes.treeDetails(res.data.trees[0].id));
+					if ($isMapperMode) {
+						goto(routes.map());
+					} else {
+						goto(routes.treeDetails(res.data.trees[0].id));
+					}
 				} else {
 					console.error(`Error ${res.status} adding tree.`);
 					toast.push('Error adding tree.');
@@ -87,7 +92,7 @@
 			value={circumference}
 			onChange={(value: number) => (circumference = value)}
 		/>
-		<StateInput value={treeState} onChange={(value: string | null) => (treeState = value)} />
+		<StateInput value={treeState} onChange={(value: string) => (treeState = value)} />
 		<YearInput value={year} onChange={(value: number) => (year = value)} />
 		<NotesInput bind:value={notes} />
 
