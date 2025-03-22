@@ -18,7 +18,11 @@
 				{/each}
 			</div>
 		{:else if res.status === 200 && res.data && res.data.files.length === 0}
-			No images for this tree.
+			<div class="images">
+				<a href={routes.treeDetails(tree.id)}>
+					<img src="/tree.jpg" alt="See how good is this tree." />
+				</a>
+			</div>
 		{:else}
 			Failed to load photos.
 		{/if}
