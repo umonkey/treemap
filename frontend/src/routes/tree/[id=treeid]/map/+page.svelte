@@ -13,10 +13,10 @@
 	const { data } = $props();
 	const tree = data.tree;
 
-	let selectedTree = $state<ITree | null>(null);
+	let selectedTree = $state<string | null>(null);
 
 	const onPreview = (tree: ITree) => {
-		selectedTree = tree;
+		selectedTree = tree.id;
 	};
 
 	const onClosePreview = () => {

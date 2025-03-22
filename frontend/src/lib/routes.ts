@@ -7,6 +7,7 @@ export const routes = {
 	home: () => '/',
 	learn: () => '/learn',
 	map: () => '/map',
+	mapPreview: (id: string) => `/map?preview=${id}`,
 	newTrees: () => '/updates/new',
 	search: '/search',
 	searchAddress: (query: string) => `/map?q=addr:"${query}"`,
