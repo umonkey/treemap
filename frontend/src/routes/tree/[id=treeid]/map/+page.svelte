@@ -39,7 +39,7 @@
 		marker={[tree.lat, tree.lon]}
 		zoom={$mapZoom}
 		className="treeTab"
-		canAdd={true}
+		canAdd={false}
 		onChange={onPreview}
 	/>
 	<MapPreview tree={selectedTree} onClose={onClosePreview} />
