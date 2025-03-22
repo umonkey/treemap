@@ -1,9 +1,9 @@
-///! This endpoint receives requests to add one new tree.
+//! This endpoint receives requests to add one new tree.
 
-use actix_web::{post, web::Data, web::Json, HttpRequest};
-use serde::Deserialize;
 use crate::services::AppState;
 use crate::types::{AddTreeRequest, LatLon, Result, TreeList};
+use actix_web::{post, web::Data, web::Json, HttpRequest};
+use serde::Deserialize;
 
 fn default_state() -> String {
     "unknown".to_string()
