@@ -5,7 +5,7 @@
 	import { locale } from '$lib/locale';
 	import { loadMe } from '$lib/hooks';
 
-	const { loading, error, data, reload } = loadMe();
+	const { loading, error, data, statusCode, reload } = loadMe();
 
 	$effect(() => {
 		reload();
@@ -20,6 +20,11 @@
 
 {#if $loading}
 	<!-- loading --->
+{:else if $statusCode === 401}
+	<div class="container signedOut">
+		<p>{locale.profileSignInPrompt()}</p>
+		<SignIn />
+	</div>
 {:else if $error}
 	<p>{$error.description}</p>
 {:else if $data}
@@ -38,11 +43,6 @@
 		<div class="actions">
 			<SignOut />
 		</div>
-	</div>
-{:else}
-	<div class="container signedOut">
-		<p>{locale.profileSignInPrompt()}</p>
-		<SignIn />
 	</div>
 {/if}
 

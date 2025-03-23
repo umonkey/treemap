@@ -12,12 +12,15 @@ export const loadMe = () => {
 	const loading = writable<boolean>(true);
 	const data = writable<IMeResponse | undefined>(undefined);
 	const error = writable<IError | undefined>(undefined);
+	const statusCode = writable<number | undefined>(undefined);
 
 	const reload = async () => {
 		try {
 			loading.set(true);
 
 			const { status, data: payload, error: err } = await apiClient.getMe();
+
+			statusCode.set(status);
 
 			if (status === 200 && payload) {
 				data.set(payload);
@@ -31,5 +34,5 @@ export const loadMe = () => {
 		}
 	};
 
-	return { loading, error, data, reload };
+	return { loading, error, data, statusCode, reload };
 };
