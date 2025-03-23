@@ -3,6 +3,7 @@ export { loadSpeciesMismatch } from './loadSpeciesMismatch';
 export { loadSpeciesStats } from './loadSpeciesStats';
 export { loadStateStats } from './loadStateStats';
 export { loadStreetStats } from './loadStreetStats';
+export { loadSuggestedSpecies } from './loadSuggestedSpecies';
 export { loadTree } from './loadTree';
 export { loadTreesByCircumference } from './loadTreesByCircumference';
 export { loadTreesByDiameter } from './loadTreesByDiameter';

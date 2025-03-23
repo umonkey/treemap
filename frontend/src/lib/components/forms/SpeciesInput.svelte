@@ -5,11 +5,14 @@
 	 * and a history of recent inputs, also backed by the API.
 	 */
 
+	import { onMount } from 'svelte';
 	import { apiClient } from '$lib/api';
 	import type { ISpecies } from '$lib/types';
 	import { locale } from '$lib/locale';
+	import { loadSuggestedSpecies } from '$lib/hooks';
 
 	let { value = $bindable() } = $props();
+	const { data: suggested, reload } = loadSuggestedSpecies();
 
 	let options: ISpecies[] = $state([]);
 	let showOptions = $state<boolean>(false);
@@ -30,11 +33,17 @@
 		value = selectedValue;
 	};
 
+	const handleSuggestionClick = (sug: string) => {
+		value = sug;
+	};
+
 	const handleFocusOut = () => {
 		setTimeout(() => {
 			showOptions = false;
 		}, 200);
 	};
+
+	onMount(() => reload());
 </script>
 
 <div class="input">
@@ -61,6 +70,16 @@
 			</ul>
 		{/if}
 	</label>
+
+	{#if $suggested}
+		<ul class="suggested">
+			{#each $suggested as option}
+				<!-- svelte-ignore a11y_click_events_have_key_events -->
+				<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+				<li onclick={() => handleSuggestionClick(option)}><u>{option}</u></li>
+			{/each}
+		</ul>
+	{/if}
 
 	<div class="hint">{locale.speciesHint()}</div>
 </div>
@@ -127,5 +146,29 @@
 
 	small {
 		opacity: 0.5;
+	}
+
+	ul.suggested {
+		padding: 0;
+		list-style-type: none;
+
+		li {
+			display: inline-block;
+			opacity: 0.5;
+			margin-right: 0.25em;
+
+			u {
+				cursor: pointer;
+				color: var(--link-color);
+			}
+
+			&:after {
+				content: ',';
+			}
+
+			&:last-child:after {
+				content: '';
+			}
+		}
 	}
 </style>

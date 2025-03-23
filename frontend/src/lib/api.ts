@@ -242,6 +242,15 @@ export class ApiClient {
 		return await this.request('GET', `v1/species/search?${params}`);
 	}
 
+	public async suggestSpecies(): Promise<IResponse<string[]>> {
+		return await this.request('GET', 'v1/species/suggest', {
+			headers: {
+				'Content-Type': 'application/json',
+				...this.getAuthHeaders()
+			}
+		});
+	}
+
 	public async getTreeComments(id: string): Promise<IResponse<ICommentList>> {
 		return await this.request('GET', `v1/trees/${id}/comments`);
 	}
