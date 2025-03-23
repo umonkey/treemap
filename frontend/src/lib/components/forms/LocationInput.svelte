@@ -8,7 +8,7 @@
 	let showMap = $state(false);
 
 	const formatLocation = (value: number[]): string => {
-		return `${value[0]}, ${value[1]}`;
+		return `${value[0].toFixed(7)}, ${value[1].toFixed(7)}`;
 	};
 
 	const toggleMap = () => {

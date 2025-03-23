@@ -3,6 +3,11 @@ import L from 'leaflet';
 import { Map } from 'leaflet';
 import { routes } from '$lib/routes';
 
+const round = (val: number): number => {
+	const mul = 10000000;
+	return Math.round(val * mul) / mul;
+};
+
 export const addTreeButton = (map: Map) => {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	(L.Control as any).TreeButton = L.Control.extend({
@@ -28,7 +33,7 @@ export const addTreeButton = (map: Map) => {
 			L.DomEvent.on(button, 'click', (e) => {
 				e.preventDefault();
 				const center = map.getCenter();
-				goto(routes.treeAdd(center.lat, center.lng));
+				goto(routes.treeAdd(round(center.lat), round(center.lng)));
 			});
 
 			return container;
