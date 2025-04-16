@@ -15,9 +15,23 @@ impl GetTreesHandler {
         if let Some(search) = &request.search {
             let query = SearchQuery::from_string(search);
             trees.retain(|t| query.r#match(t));
+        } else {
+            trees.retain(Self::is_visible);
         }
 
         self.loader.load(&trees).await
+    }
+
+    fn is_visible(tree: &TreeRecord) -> bool {
+        if tree.state == "gone" {
+            return false;
+        }
+
+        if tree.species.to_lowercase().contains("error") {
+            return false;
+        }
+
+        true
     }
 }
 
