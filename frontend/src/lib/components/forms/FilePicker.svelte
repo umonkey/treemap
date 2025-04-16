@@ -1,24 +1,24 @@
 <script lang="ts">
-	import { locale } from '$lib/locale';
+import { locale } from "$lib/locale";
 
-	let input: HTMLInputElement;
+let input: HTMLInputElement;
 
-	export let disabled = false;
-	export let onFileSelected: (files: File[]) => void;
+export const disabled = false;
+export let onFileSelected: (files: File[]) => void;
 
-	const onClick = () => {
-		input.click();
-	};
+const onClick = () => {
+	input.click();
+};
 
-	const onChange = (event: Event) => {
-		const files = (event.target as HTMLInputElement).files;
+const onChange = (event: Event) => {
+	const files = (event.target as HTMLInputElement).files;
 
-		if (files && files.length > 0) {
-			onFileSelected(Array.from(files));
-		}
-	};
+	if (files && files.length > 0) {
+		onFileSelected(Array.from(files));
+	}
+};
 
-	const isPWA = window.matchMedia('(display-mode: standalone)').matches;
+const isPWA = window.matchMedia("(display-mode: standalone)").matches;
 </script>
 
 <div>

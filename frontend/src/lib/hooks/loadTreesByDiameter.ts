@@ -2,11 +2,11 @@
  * Load trees ordered by crown diameter
  */
 
-import { apiClient } from '$lib/api';
-import type { IError, ITree } from '$lib/types';
-import { writable } from 'svelte/store';
-import { addUsers } from '$lib/stores/userStore';
-import { addTrees } from '$lib/stores/treeStore';
+import { apiClient } from "$lib/api";
+import { addTrees } from "$lib/stores/treeStore";
+import { addUsers } from "$lib/stores/userStore";
+import type { IError, ITree } from "$lib/types";
+import { writable } from "svelte/store";
 
 export const loadTreesByDiameter = () => {
 	const loading = writable<boolean>(true);
@@ -17,7 +17,11 @@ export const loadTreesByDiameter = () => {
 		try {
 			loading.set(true);
 
-			const { status, data: list, error: err } = await apiClient.getTopDiameter();
+			const {
+				status,
+				data: list,
+				error: err,
+			} = await apiClient.getTopDiameter();
 
 			if (status === 200 && list) {
 				addTrees(list.trees);

@@ -1,24 +1,24 @@
 <script lang="ts">
-	import { routes } from '$lib/routes';
+import { routes } from "$lib/routes";
 
-	const { tree } = $props();
+const { tree } = $props();
 
-	const fallback = '/tree.jpg';
-	const src = tree.thumbnail_id ? routes.file(tree.thumbnail_id) : fallback;
-	const alt = tree.species;
+const fallback = "/tree.jpg";
+const src = tree.thumbnail_id ? routes.file(tree.thumbnail_id) : fallback;
+const alt = tree.species;
 
-	let img: HTMLImageElement;
+let img: HTMLImageElement;
 
-	const handleError = () => {
-		if (img.src !== fallback) {
-			console.debug(`Error loading image ${src}, falling back to ${fallback}`);
-			img.src = fallback;
-		}
-	};
+const handleError = () => {
+	if (img.src !== fallback) {
+		console.debug(`Error loading image ${src}, falling back to ${fallback}`);
+		img.src = fallback;
+	}
+};
 
-	const handleLoad = () => {
-		img.style.opacity = '1';
-	};
+const handleLoad = () => {
+	img.style.opacity = "1";
+};
 </script>
 
 <img {src} {alt} loading="lazy" onerror={() => handleError()} onload={handleLoad} bind:this={img} />

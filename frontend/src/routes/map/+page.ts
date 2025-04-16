@@ -1,16 +1,16 @@
-import type { Load } from '@sveltejs/kit';
+import type { Load } from "@sveltejs/kit";
 
 export const load: Load = ({
-	url
+	url,
 }): {
 	searchQuery: string | null;
 	preview: string | null;
 } => {
-	const searchQuery = url.searchParams.get('q');
-	const preview = url.searchParams.get('preview');
+	const searchQuery = url.searchParams.get("q");
+	const preview = url.searchParams.get("preview");
 
 	return {
 		searchQuery,
-		preview
+		preview,
 	};
 };

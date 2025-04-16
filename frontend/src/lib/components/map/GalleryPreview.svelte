@@ -1,8 +1,8 @@
 <script>
-	import { routes } from '$lib/routes';
-	import { apiClient } from '$lib/api';
+import { apiClient } from "$lib/api";
+import { routes } from "$lib/routes";
 
-	const { tree } = $props();
+const { tree } = $props();
 </script>
 
 <div class="gallery">

@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { locale } from '$lib/locale';
-	import SearchIcon from '$lib/icons/SearchIcon.svelte';
+import SearchIcon from "$lib/icons/SearchIcon.svelte";
+import { locale } from "$lib/locale";
 
-	export let value = '';
-	export let onSearch = () => {};
+export const value = "";
+export const onSearch = () => {};
 
-	const handleKeyDown = (event: KeyboardEvent) => {
-		if (event.key === 'Enter') {
-			onSearch();
-		}
-	};
+const handleKeyDown = (event: KeyboardEvent) => {
+	if (event.key === "Enter") {
+		onSearch();
+	}
+};
 </script>
 
 <div class="search">

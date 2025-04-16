@@ -1,49 +1,49 @@
 <script lang="ts">
-	/**
-	 * This is a complex components that implements text input for
-	 * tree species, including autocomplete based on the API vocabulary,
-	 * and a history of recent inputs, also backed by the API.
-	 */
+/**
+ * This is a complex components that implements text input for
+ * tree species, including autocomplete based on the API vocabulary,
+ * and a history of recent inputs, also backed by the API.
+ */
 
-	import { onMount } from 'svelte';
-	import { apiClient } from '$lib/api';
-	import type { ISpecies } from '$lib/types';
-	import { locale } from '$lib/locale';
-	import { loadSuggestedSpecies } from '$lib/hooks';
+import { apiClient } from "$lib/api";
+import { loadSuggestedSpecies } from "$lib/hooks";
+import { locale } from "$lib/locale";
+import type { ISpecies } from "$lib/types";
+import { onMount } from "svelte";
 
-	let { value = $bindable() } = $props();
-	const { data: suggested, reload } = loadSuggestedSpecies();
+let { value = $bindable() } = $props();
+const { data: suggested, reload } = loadSuggestedSpecies();
 
-	let options: ISpecies[] = $state([]);
-	let showOptions = $state<boolean>(false);
+let options: ISpecies[] = $state([]);
+let showOptions = $state<boolean>(false);
 
-	const handleInput = (event: Event) => {
-		const target = event.target as HTMLInputElement;
+const handleInput = (event: Event) => {
+	const target = event.target as HTMLInputElement;
 
-		apiClient.searchSpecies(target.value).then((res) => {
-			if (res.status === 200 && res.data) {
-				options = res.data;
-				showOptions = options.length > 0;
-			}
-		});
-	};
+	apiClient.searchSpecies(target.value).then((res) => {
+		if (res.status === 200 && res.data) {
+			options = res.data;
+			showOptions = options.length > 0;
+		}
+	});
+};
 
-	const handleOptionClick = (selectedValue: string) => {
+const handleOptionClick = (selectedValue: string) => {
+	showOptions = false;
+	value = selectedValue;
+};
+
+const handleSuggestionClick = (sug: string) => {
+	value = sug;
+};
+
+const handleFocusOut = () => {
+	setTimeout(() => {
 		showOptions = false;
-		value = selectedValue;
-	};
+	}, 200);
+};
 
-	const handleSuggestionClick = (sug: string) => {
-		value = sug;
-	};
-
-	const handleFocusOut = () => {
-		setTimeout(() => {
-			showOptions = false;
-		}, 200);
-	};
-
-	onMount(() => reload());
+onMount(() => reload());
 </script>
 
 <div class="input">

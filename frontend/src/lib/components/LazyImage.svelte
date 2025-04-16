@@ -1,16 +1,16 @@
 <script lang="ts">
-	const { src, alt, fallback } = $props();
+const { src, alt, fallback } = $props();
 
-	let img: HTMLImageElement;
+let img: HTMLImageElement;
 
-	const handleError = () => {
-		console.debug(`Error loading image ${src}, falling back to ${fallback}`);
-		img.src = fallback;
-	};
+const handleError = () => {
+	console.debug(`Error loading image ${src}, falling back to ${fallback}`);
+	img.src = fallback;
+};
 
-	const handleLoad = () => {
-		img.style.opacity = '1';
-	};
+const handleLoad = () => {
+	img.style.opacity = "1";
+};
 </script>
 
 <img {src} {alt} loading="lazy" onerror={() => handleError()} onload={handleLoad} bind:this={img} />

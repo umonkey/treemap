@@ -1,13 +1,13 @@
 <script lang="ts">
-	import HelpButton from '$lib/components/forms/HelpButton.svelte';
+import HelpButton from "$lib/components/forms/HelpButton.svelte";
 
-	export let value: string | number = '';
-	export let placeholder = '';
-	export let label = '';
-	export let type = 'text';
-	export let multiline = false;
-	export let hint = '';
-	export let help: string | undefined = undefined;
+export const value: string | number = "";
+export const placeholder = "";
+export const label = "";
+export const type = "text";
+export const multiline = false;
+export const hint = "";
+export const help: string | undefined = undefined;
 </script>
 
 <div class="input">

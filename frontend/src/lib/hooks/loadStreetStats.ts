@@ -1,6 +1,6 @@
-import { apiClient } from '$lib/api';
-import type { IError, IStreetStats } from '$lib/types';
-import { writable } from 'svelte/store';
+import { apiClient } from "$lib/api";
+import type { IError, IStreetStats } from "$lib/types";
+import { writable } from "svelte/store";
 
 export const loadStreetStats = () => {
 	const loading = writable<boolean>(true);
@@ -11,7 +11,11 @@ export const loadStreetStats = () => {
 		try {
 			loading.set(true);
 
-			const { status, data: stats, error: err } = await apiClient.getTopStreets();
+			const {
+				status,
+				data: stats,
+				error: err,
+			} = await apiClient.getTopStreets();
 
 			if (status === 200 && stats) {
 				data.set(stats);
@@ -27,7 +31,7 @@ export const loadStreetStats = () => {
 
 	const reorder = (field: string): void => {
 		data.update((items) => {
-			if (field === 'address') {
+			if (field === "address") {
 				return items.sort((a, b) => a.address.localeCompare(b.address));
 			}
 

@@ -1,23 +1,27 @@
 <script lang="ts">
-	import MapIcon from '$lib/icons/MapIcon.svelte';
-	import MapLocationPicker from '$lib/components/forms/MapLocationPicker.svelte';
-	import { locale } from '$lib/locale';
+import MapLocationPicker from "$lib/components/forms/MapLocationPicker.svelte";
+import MapIcon from "$lib/icons/MapIcon.svelte";
+import { locale } from "$lib/locale";
 
-	let { value = $bindable([]), hint = undefined, label = locale.locationLabel() } = $props();
+let {
+	value = $bindable([]),
+	hint = undefined,
+	label = locale.locationLabel(),
+} = $props();
 
-	let showMap = $state(false);
+let showMap = $state(false);
 
-	const formatLocation = (value: number[]): string => {
-		return `${value[0].toFixed(7)}, ${value[1].toFixed(7)}`;
-	};
+const formatLocation = (value: number[]): string => {
+	return `${value[0].toFixed(7)}, ${value[1].toFixed(7)}`;
+};
 
-	const toggleMap = () => {
-		showMap = !showMap;
-	};
+const toggleMap = () => {
+	showMap = !showMap;
+};
 
-	const handleMove = (center: number[]) => {
-		value = center;
-	};
+const handleMove = (center: number[]) => {
+	value = center;
+};
 </script>
 
 <div class="input">

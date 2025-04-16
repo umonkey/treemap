@@ -1,5 +1,5 @@
 <script lang="ts">
-	const { width = '100%', height = '100%' } = $props();
+const { width = "100%", height = "100%" } = $props();
 </script>
 
 <svg

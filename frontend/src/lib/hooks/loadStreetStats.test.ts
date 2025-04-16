@@ -1,15 +1,15 @@
-import type { IResponse, IStreetStats } from '$lib/types';
-import { apiClient } from '$lib/api';
-import { describe, it, expect } from 'vitest';
-import { loadStreetStats } from './loadStreetStats';
-import { get } from 'svelte/store';
+import { apiClient } from "$lib/api";
+import type { IResponse, IStreetStats } from "$lib/types";
+import { get } from "svelte/store";
+import { describe, expect, it } from "vitest";
+import { loadStreetStats } from "./loadStreetStats";
 
-describe('hooks/loadStreetStats', async () => {
-	it('should load empty list', async () => {
+describe("hooks/loadStreetStats", async () => {
+	it("should load empty list", async () => {
 		apiClient.getTopStreets = async (): Promise<IResponse<IStreetStats[]>> => {
 			return {
 				status: 200,
-				data: []
+				data: [],
 			};
 		};
 
@@ -23,16 +23,16 @@ describe('hooks/loadStreetStats', async () => {
 		expect(get(data)).toEqual([]);
 	});
 
-	it('should load non-empty list', async () => {
+	it("should load non-empty list", async () => {
 		apiClient.getTopStreets = async (): Promise<IResponse<IStreetStats[]>> => {
 			return {
 				status: 200,
 				data: [
 					{
-						address: 'Tumanyan str.',
-						count: 10
-					}
-				]
+						address: "Tumanyan str.",
+						count: 10,
+					},
+				],
 			};
 		};
 
@@ -44,18 +44,18 @@ describe('hooks/loadStreetStats', async () => {
 		expect(get(loading)).toBe(false);
 		expect(get(error)).toBeUndefined();
 		expect(get(data).length).toEqual(1);
-		expect(get(data)[0].address).toEqual('Tumanyan str.');
+		expect(get(data)[0].address).toEqual("Tumanyan str.");
 	});
 
-	it('should return an error', async () => {
+	it("should return an error", async () => {
 		apiClient.getTopStreets = async (): Promise<IResponse<IStreetStats[]>> => {
 			return {
 				status: 500,
 				data: undefined,
 				error: {
-					code: 'SomethingWentWrong',
-					description: 'something went wrong'
-				}
+					code: "SomethingWentWrong",
+					description: "something went wrong",
+				},
 			};
 		};
 
@@ -66,6 +66,6 @@ describe('hooks/loadStreetStats', async () => {
 
 		expect(get(loading)).toBe(false);
 		expect(get(data)).toEqual([]);
-		expect(get(error)?.description).toEqual('something went wrong');
+		expect(get(error)?.description).toEqual("something went wrong");
 	});
 });

@@ -1,20 +1,23 @@
 <script lang="ts">
-	import { mobileSidebarStore, isSidebarVisible } from '$lib/stores/mobileSidebarStore';
-	import { routes } from '$lib/routes';
-	import { locale } from '$lib/locale';
+import { locale } from "$lib/locale";
+import { routes } from "$lib/routes";
+import {
+	isSidebarVisible,
+	mobileSidebarStore,
+} from "$lib/stores/mobileSidebarStore";
 
-	import ChartIcon from '$lib/icons/ChartIcon.svelte';
-	import BellIcon from '$lib/icons/BellIcon.svelte';
-	import HomeIcon from '$lib/icons/HomeIcon.svelte';
-	import MapIcon from '$lib/icons/MapIcon.svelte';
-	import PlusIcon from '$lib/icons/PlusIcon.svelte';
-	import SearchIcon from '$lib/icons/SearchIcon.svelte';
-	import UserIcon from '$lib/icons/UserIcon.svelte';
-	import LearnIcon from '$lib/icons/LearnIcon.svelte';
+import BellIcon from "$lib/icons/BellIcon.svelte";
+import ChartIcon from "$lib/icons/ChartIcon.svelte";
+import HomeIcon from "$lib/icons/HomeIcon.svelte";
+import LearnIcon from "$lib/icons/LearnIcon.svelte";
+import MapIcon from "$lib/icons/MapIcon.svelte";
+import PlusIcon from "$lib/icons/PlusIcon.svelte";
+import SearchIcon from "$lib/icons/SearchIcon.svelte";
+import UserIcon from "$lib/icons/UserIcon.svelte";
 
-	const onClick = () => {
-		mobileSidebarStore.update(() => false);
-	};
+const onClick = () => {
+	mobileSidebarStore.update(() => false);
+};
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->

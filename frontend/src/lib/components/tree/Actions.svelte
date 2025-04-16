@@ -1,37 +1,37 @@
 <script lang="ts">
-	import { routes } from '$lib/routes';
-	import { FEATURES } from '$lib/features';
-	import { onMount } from 'svelte';
-	import { preloadMeLikes, like, unlike } from '$lib/likes';
-	import { isLiked } from '$lib/stores/likeStore';
-	import type { ITree } from '$lib/types';
+import { FEATURES } from "$lib/features";
+import { like, preloadMeLikes, unlike } from "$lib/likes";
+import { routes } from "$lib/routes";
+import { isLiked } from "$lib/stores/likeStore";
+import type { ITree } from "$lib/types";
+import { onMount } from "svelte";
 
-	import ChatIcon from '$lib/icons/ChatIcon.svelte';
-	import HeartIcon from '$lib/icons/HeartIcon.svelte';
-	import HeartSolidIcon from '$lib/icons/HeartSolidIcon.svelte';
-	import SaveIcon from '$lib/icons/SaveIcon.svelte';
-	import CameraIcon from '$lib/icons/CameraIcon.svelte';
-	import ShareButton from '$lib/components/tree/ShareButton.svelte';
+import ShareButton from "$lib/components/tree/ShareButton.svelte";
+import CameraIcon from "$lib/icons/CameraIcon.svelte";
+import ChatIcon from "$lib/icons/ChatIcon.svelte";
+import HeartIcon from "$lib/icons/HeartIcon.svelte";
+import HeartSolidIcon from "$lib/icons/HeartSolidIcon.svelte";
+import SaveIcon from "$lib/icons/SaveIcon.svelte";
 
-	const {
-		tree
-	}: {
-		tree: ITree;
-	} = $props();
+const {
+	tree,
+}: {
+	tree: ITree;
+} = $props();
 
-	let isTreeLiked = $derived($isLiked(tree.id));
+const isTreeLiked = $derived($isLiked(tree.id));
 
-	onMount(preloadMeLikes);
+onMount(preloadMeLikes);
 
-	const onLike = async (e: Event) => {
-		e.preventDefault();
+const onLike = async (e: Event) => {
+	e.preventDefault();
 
-		if (!isTreeLiked) {
-			await like(tree.id);
-		} else {
-			await unlike(tree.id);
-		}
-	};
+	if (!isTreeLiked) {
+		await like(tree.id);
+	} else {
+		await unlike(tree.id);
+	}
+};
 </script>
 
 <div class="actions">

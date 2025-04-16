@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { routes } from '$lib/routes';
-	import { loadSpeciesStats } from '$lib/hooks';
-	import Header from '$lib/components/tree/Header.svelte';
+import Header from "$lib/components/tree/Header.svelte";
+import { loadSpeciesStats } from "$lib/hooks";
+import { routes } from "$lib/routes";
 
-	const { loading, error, data, reload, reorder } = loadSpeciesStats();
+const { loading, error, data, reload, reorder } = loadSpeciesStats();
 
-	$effect(() => {
-		reload();
-	});
+$effect(() => {
+	reload();
+});
 </script>
 
 <svelte:head>

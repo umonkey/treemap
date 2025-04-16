@@ -5,15 +5,15 @@
  * - Change marker size based on zoom level, https://gis.stackexchange.com/questions/216558/leaflet-resize-markers-in-layer-when-zoom-in
  */
 
-import L from 'leaflet';
-import type { ITree } from '$lib/types';
-import type { Map, Marker, LatLngBounds } from 'leaflet';
-import { apiClient } from '$lib/api';
+import { apiClient } from "$lib/api";
+import type { ITree } from "$lib/types";
+import L from "leaflet";
+import type { LatLngBounds, Map, Marker } from "leaflet";
 
-import BlackIcon from '$lib/map/icons/dot-black.svg';
-import GreenIcon from '$lib/map/icons/dot-green.svg';
-import RedIcon from '$lib/map/icons/dot-red.svg';
-import YellorIcon from '$lib/map/icons/dot-yellow.svg';
+import BlackIcon from "$lib/map/icons/dot-black.svg";
+import GreenIcon from "$lib/map/icons/dot-green.svg";
+import RedIcon from "$lib/map/icons/dot-red.svg";
+import YellorIcon from "$lib/map/icons/dot-yellow.svg";
 
 // Only start clustering when showing this number of trees.
 const MIN_CLUSTER_SIZE = 200;
@@ -42,7 +42,7 @@ const CLUSTER_GRID: {
 	15: 0.0016,
 	16: 0.0008,
 	17: 0.0004,
-	18: 0.0001220703125
+	18: 0.0001220703125,
 };
 
 const CLUSTER_RADIUS: {
@@ -59,7 +59,7 @@ const CLUSTER_RADIUS: {
 	14: 125,
 	15: 62.5,
 	16: 31.25,
-	17: 15.625
+	17: 15.625,
 };
 
 type ClusterGroup = {
@@ -100,28 +100,28 @@ export class Markers {
 		this.greenIcon = L.icon({
 			iconUrl: GreenIcon,
 			iconSize: [20, 20],
-			iconAnchor: [10, 10]
+			iconAnchor: [10, 10],
 		});
 
 		this.yellowIcon = L.icon({
 			iconUrl: YellorIcon,
 			iconSize: [20, 20],
-			iconAnchor: [10, 10]
+			iconAnchor: [10, 10],
 		});
 
 		this.redIcon = L.icon({
 			iconUrl: RedIcon,
 			iconSize: [20, 20],
-			iconAnchor: [10, 10]
+			iconAnchor: [10, 10],
 		});
 
 		this.blackIcon = L.icon({
 			iconUrl: BlackIcon,
 			iconSize: [20, 20],
-			iconAnchor: [10, 10]
+			iconAnchor: [10, 10],
 		});
 
-		map.on('moveend', () => this.onMoveEnd());
+		map.on("moveend", () => this.onMoveEnd());
 
 		this.onMoveEnd();
 	}
@@ -145,7 +145,7 @@ export class Markers {
 	 */
 	private reload() {
 		if (!this.bounds) {
-			console.debug('[map] Not reloading -- bounds not set.');
+			console.debug("[map] Not reloading -- bounds not set.");
 			return;
 		}
 
@@ -157,7 +157,9 @@ export class Markers {
 		apiClient.getMarkers(n, e, s, w, this.searchQuery).then((res) => {
 			if (res.status === 200 && res.data) {
 				const trees = res.data.trees;
-				console.debug(`[map] Received ${trees.length} trees, search=${this.searchQuery}.`);
+				console.debug(
+					`[map] Received ${trees.length} trees, search=${this.searchQuery}.`,
+				);
 				this.replaceMarkers(trees);
 			}
 		});
@@ -184,15 +186,19 @@ export class Markers {
 	}
 
 	private getTreeIcon(tree: ITree) {
-		if (tree.state === 'dead' || tree.state === 'gone' || tree.state === 'stomp') {
+		if (
+			tree.state === "dead" ||
+			tree.state === "gone" ||
+			tree.state === "stomp"
+		) {
 			return this.blackIcon;
 		}
 
-		if (tree.state === 'sick') {
+		if (tree.state === "sick") {
 			return this.redIcon;
 		}
 
-		if (tree.state === 'deformed') {
+		if (tree.state === "deformed") {
 			return this.yellowIcon;
 		}
 
@@ -216,10 +222,10 @@ export class Markers {
 
 		for (const tree of trees) {
 			const point = L.marker([tree.lat, tree.lon], {
-				icon: this.getTreeIcon(tree)
+				icon: this.getTreeIcon(tree),
 			});
 
-			point.on('click', () => {
+			point.on("click", () => {
 				this.map.panTo([tree.lat, tree.lon]);
 
 				if (this.changeHandler) {
@@ -240,26 +246,26 @@ export class Markers {
 			const onClick = () => {
 				this.map.fitBounds([
 					[group.s, group.w],
-					[group.n, group.e]
+					[group.n, group.e],
 				]);
 			};
 
 			const circle = L.circle([group.lat, group.lon], {
-				color: '#080',
-				fillColor: '#080',
+				color: "#080",
+				fillColor: "#080",
 				fillOpacity: 0.5,
-				radius: group.radius
-			}).on('click', onClick);
+				radius: group.radius,
+			}).on("click", onClick);
 
 			const label = L.divIcon({
 				html: group.count.toString(),
-				className: 'cluster-count',
-				iconSize: [40, 40]
+				className: "cluster-count",
+				iconSize: [40, 40],
 			});
 
 			const marker = L.marker([group.lat, group.lon], {
-				icon: label
-			}).on('click', onClick);
+				icon: label,
+			}).on("click", onClick);
 
 			res.push(circle);
 			res.push(marker);
@@ -295,7 +301,7 @@ export class Markers {
 				n: y + divider / 2,
 				e: x + divider / 2,
 				s: y - divider / 2,
-				w: x - divider / 2
+				w: x - divider / 2,
 			};
 
 			bucket.count++;

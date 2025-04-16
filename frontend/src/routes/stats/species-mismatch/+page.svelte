@@ -1,13 +1,13 @@
 <script lang="ts">
-	import Header from '$lib/components/tree/Header.svelte';
-	import NewTreesListItem from '$lib/components/updates/NewTreesListItem.svelte';
-	import { loadSpeciesMismatch } from '$lib/hooks';
+import Header from "$lib/components/tree/Header.svelte";
+import NewTreesListItem from "$lib/components/updates/NewTreesListItem.svelte";
+import { loadSpeciesMismatch } from "$lib/hooks";
 
-	const { loading, error, data, reload } = loadSpeciesMismatch();
+const { loading, error, data, reload } = loadSpeciesMismatch();
 
-	$effect(() => {
-		reload();
-	});
+$effect(() => {
+	reload();
+});
 </script>
 
 <svelte:head>

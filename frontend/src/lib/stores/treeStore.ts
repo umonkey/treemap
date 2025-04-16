@@ -1,5 +1,5 @@
-import { writable, derived } from 'svelte/store';
-import type { ITree } from '$lib/types';
+import type { ITree } from "$lib/types";
+import { derived, writable } from "svelte/store";
 
 type TreeMap = {
 	[key: string]: ITree;

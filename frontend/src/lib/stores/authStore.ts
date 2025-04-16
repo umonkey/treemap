@@ -1,10 +1,12 @@
-import { writable, derived } from 'svelte/store';
-import type { ILoginResponse } from '$lib/types';
-import { ls } from '$lib/utils/localStorage';
+import type { ILoginResponse } from "$lib/types";
+import { ls } from "$lib/utils/localStorage";
+import { derived, writable } from "svelte/store";
 
-const STORAGE_KEY = 'auth_state';
+const STORAGE_KEY = "auth_state";
 
-export const authStore = writable<ILoginResponse | undefined>(ls.read(STORAGE_KEY));
+export const authStore = writable<ILoginResponse | undefined>(
+	ls.read(STORAGE_KEY),
+);
 
 authStore.subscribe((value: ILoginResponse | undefined) => {
 	ls.write(STORAGE_KEY, value);
