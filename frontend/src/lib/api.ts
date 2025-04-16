@@ -43,7 +43,7 @@ export class ApiClient {
 	}
 
 	public async getTreeDefaults(): Promise<IResponse<ITreeDefaults>> {
-		console.debug(`[api] Getting tree defaults`);
+		console.debug('[api] Getting tree defaults');
 		return await this.request<ITreeDefaults>('GET', 'v1/trees/defaults');
 	}
 
@@ -124,7 +124,7 @@ export class ApiClient {
 			params.set('search', search);
 		}
 
-		return await this.request('GET', 'v1/trees?' + params.toString());
+		return await this.request('GET', `v1/trees?${params.toString()}`);
 	}
 
 	public async addTree(props: IAddTreesRequest): Promise<IResponse<ITreeList>> {
@@ -256,15 +256,15 @@ export class ApiClient {
 	}
 
 	public async getRecentComments(): Promise<IResponse<ICommentList>> {
-		return await this.request('GET', `v1/comments`);
+		return await this.request('GET', 'v1/comments');
 	}
 
 	public async getNewTrees(): Promise<IResponse<ITreeList>> {
-		return await this.request('GET', `v1/trees/new`);
+		return await this.request('GET', 'v1/trees/new');
 	}
 
 	public async getUpdatedTrees(): Promise<IResponse<ITreeList>> {
-		return await this.request('GET', `v1/trees/updated`);
+		return await this.request('GET', 'v1/trees/updated');
 	}
 
 	public async changeTreeThumbnail(tree: string, file: string): Promise<IResponse<void>> {

@@ -13,7 +13,9 @@ describe('NumberInput', async () => {
 
 		render(NumberInput, {
 			value,
-			onChange: (v: number) => (value = v)
+			onChange: (v: number) => {
+				value = v;
+			}
 		});
 
 		const input = screen.getByRole('spinbutton');
@@ -30,7 +32,9 @@ describe('NumberInput', async () => {
 
 		render(NumberInput, {
 			value,
-			onChange: (v: number) => (value = v)
+			onChange: (v: number) => {
+				value = v;
+			}
 		});
 
 		const input = screen.getByRole('spinbutton');

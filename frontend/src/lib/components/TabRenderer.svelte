@@ -6,7 +6,7 @@
 	const activeTab = active ?? tabs[0].id;
 
 	const cls = (tab: string) => {
-		return tab == activeTab;
+		return tab === activeTab;
 	};
 </script>
 

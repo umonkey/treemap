@@ -1,7 +1,7 @@
 import mitt from 'mitt';
 
 type LocationBusEvent = {
-	start: void;
+	start: undefined;
 };
 
 export const locationBus = mitt<LocationBusEvent>();

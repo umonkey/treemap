@@ -98,17 +98,27 @@ export const formatState = (value: string | null): string => {
 
 	if (value === 'healthy') {
 		return locale.stateHealthy();
-	} else if (value === 'sick') {
-		return locale.stateSick();
-	} else if (value === 'dead') {
-		return locale.stateDead();
-	} else if (value === 'gone') {
-		return locale.stateGone();
-	} else if (value === 'stomp') {
-		return locale.stateStomp();
-	} else if (value === 'deformed') {
-		return locale.stateDeformed();
-	} else {
-		return locale.stateUnknown();
 	}
+
+	if (value === 'sick') {
+		return locale.stateSick();
+	}
+
+	if (value === 'dead') {
+		return locale.stateDead();
+	}
+
+	if (value === 'gone') {
+		return locale.stateGone();
+	}
+
+	if (value === 'stomp') {
+		return locale.stateStomp();
+	}
+
+	if (value === 'deformed') {
+		return locale.stateDeformed();
+	}
+
+	return locale.stateUnknown();
 };

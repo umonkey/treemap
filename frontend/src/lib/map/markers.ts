@@ -155,7 +155,7 @@ export class Markers {
 		const w = this.bounds.getWest();
 
 		apiClient.getMarkers(n, e, s, w, this.searchQuery).then((res) => {
-			if (res.status == 200 && res.data) {
+			if (res.status === 200 && res.data) {
 				const trees = res.data.trees;
 				console.debug(`[map] Received ${trees.length} trees, search=${this.searchQuery}.`);
 				this.replaceMarkers(trees);
@@ -206,9 +206,9 @@ export class Markers {
 	private getItemsToShow(trees: ITree[]) {
 		if (this.map.getZoom() < 18 && trees.length >= MIN_CLUSTER_SIZE) {
 			return this.getClusterGroupsToShow(trees);
-		} else {
-			return this.getMarkersToShow(trees);
 		}
+
+		return this.getMarkersToShow(trees);
 	}
 
 	private getMarkersToShow(trees: ITree[]) {

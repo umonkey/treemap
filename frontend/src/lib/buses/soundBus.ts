@@ -1,9 +1,9 @@
 import mitt from 'mitt';
 
 type SoundBusEvent = {
-	correct: void;
-	wrong: void;
-	finished: void;
+	correct: undefined;
+	wrong: undefined;
+	finished: undefined;
 };
 
 export const soundBus = mitt<SoundBusEvent>();

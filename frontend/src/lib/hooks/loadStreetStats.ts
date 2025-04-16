@@ -29,9 +29,9 @@ export const loadStreetStats = () => {
 		data.update((items) => {
 			if (field === 'address') {
 				return items.sort((a, b) => a.address.localeCompare(b.address));
-			} else {
-				return items.sort((a, b) => b.count - a.count);
 			}
+
+			return items.sort((a, b) => b.count - a.count);
 		});
 	};
 

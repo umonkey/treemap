@@ -29,9 +29,9 @@ export const loadSpeciesStats = () => {
 		data.update((items) => {
 			if (field === 'count') {
 				return items.sort((a, b) => b.count - a.count);
-			} else {
-				return items.sort((a, b) => a.species.localeCompare(b.species));
 			}
+
+			return items.sort((a, b) => a.species.localeCompare(b.species));
 		});
 	};
 

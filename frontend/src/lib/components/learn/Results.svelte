@@ -9,7 +9,7 @@
 	const title = (): string => {
 		const rate = correct / total;
 
-		if (rate == 1.0) {
+		if (rate === 1.0) {
 			return locale.learnPerfect();
 		}
 
