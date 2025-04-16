@@ -53,7 +53,7 @@
 			.then((res) => {
 				if (res.data) {
 					if ($isMapperMode) {
-						goto(routes.map());
+						goto(routes.mapPreview(res.data.trees[0].id));
 					} else {
 						goto(routes.treeDetails(res.data.trees[0].id));
 					}
