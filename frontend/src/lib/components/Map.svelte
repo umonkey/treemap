@@ -27,10 +27,10 @@ const {
 	canAdd = false,
 } = $props();
 
-	let map: Map;
+let map: Map;
 
-	// biome-ignore lint/suspicious/noImplicitAnyLet: Leaflet :(
-	let L;
+// biome-ignore lint/suspicious/noImplicitAnyLet: Leaflet :(
+let L;
 
 onMount(async () => {
 	L = await import("leaflet");

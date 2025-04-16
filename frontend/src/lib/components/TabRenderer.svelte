@@ -1,15 +1,15 @@
 <script lang="ts">
-	const {
-		active,
-		tabs
-	}: {
-		active: string;
-		tabs: {
-			id: string;
-			title: string;
-			url: string;
-		}[];
-	} = $props();
+const {
+	active,
+	tabs,
+}: {
+	active: string;
+	tabs: {
+		id: string;
+		title: string;
+		url: string;
+	}[];
+} = $props();
 
 // In case tab id was not provided, default to the first tab.
 const activeTab = active ?? tabs[0].id;
