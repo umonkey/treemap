@@ -28,6 +28,8 @@
 	} = $props();
 
 	let map: Map;
+
+	// biome-ignore lint/suspicious/noImplicitAnyLet: Leaflet :(
 	let L;
 
 	onMount(async () => {

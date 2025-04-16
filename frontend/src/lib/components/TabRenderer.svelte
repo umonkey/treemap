@@ -1,6 +1,15 @@
 <script lang="ts">
-	export let active;
-	export let tabs;
+	const {
+		active,
+		tabs
+	}: {
+		active: string;
+		tabs: {
+			id: string;
+			title: string;
+			url: string;
+		}[];
+	} = $props();
 
 	// In case tab id was not provided, default to the first tab.
 	const activeTab = active ?? tabs[0].id;
