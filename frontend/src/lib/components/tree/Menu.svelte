@@ -1,16 +1,16 @@
 <script>
-	import { menuState } from '$lib/stores/treeMenu';
-	import { routes } from '$lib/routes';
-	import { locale } from '$lib/locale';
-	import EditIcon from '$lib/icons/EditIcon.svelte';
-	import CameraIcon from '$lib/icons/CameraIcon.svelte';
-	import AdjustIcon from '$lib/icons/AdjustIcon.svelte';
+import AdjustIcon from "$lib/icons/AdjustIcon.svelte";
+import CameraIcon from "$lib/icons/CameraIcon.svelte";
+import EditIcon from "$lib/icons/EditIcon.svelte";
+import { locale } from "$lib/locale";
+import { routes } from "$lib/routes";
+import { menuState } from "$lib/stores/treeMenu";
 
-	export let id;
+export let id;
 
-	const onCloseMenu = () => {
-		menuState.set(false);
-	};
+const onCloseMenu = () => {
+	menuState.set(false);
+};
 </script>
 
 {#if $menuState}

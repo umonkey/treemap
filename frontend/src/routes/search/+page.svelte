@@ -1,18 +1,18 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { routes } from '$lib/routes';
-	import { locale } from '$lib/locale';
+import { goto } from "$app/navigation";
+import { locale } from "$lib/locale";
+import { routes } from "$lib/routes";
 
-	import Header from '$lib/components/tree/Header.svelte';
-	import SearchBar from '$lib/components/SearchBar.svelte';
+import SearchBar from "$lib/components/SearchBar.svelte";
+import Header from "$lib/components/tree/Header.svelte";
 
-	let query = '';
+const query = "";
 
-	const onSearch = () => {
-		if (query) {
-			goto(routes.searchQuery(query));
-		}
-	};
+const onSearch = () => {
+	if (query) {
+		goto(routes.searchQuery(query));
+	}
+};
 </script>
 
 <svelte:head>

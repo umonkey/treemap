@@ -1,5 +1,5 @@
-import { goto } from '$app/navigation';
-import { routes } from '$lib/routes';
+import { goto } from "$app/navigation";
+import { routes } from "$lib/routes";
 
 export const rewriteHash = (hash: string | undefined) => {
 	if (!hash) {

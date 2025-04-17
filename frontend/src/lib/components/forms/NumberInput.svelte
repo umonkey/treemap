@@ -1,27 +1,27 @@
 <script lang="ts">
-	import HelpButton from '$lib/components/forms/HelpButton.svelte';
+import HelpButton from "$lib/components/forms/HelpButton.svelte";
 
-	const {
-		value,
-		placeholder = undefined,
-		label = undefined,
-		hint = undefined,
-		help = undefined,
-		onChange = () => {}
-	}: {
-		value: number | null;
-		placeholder?: string | undefined;
-		label?: string | undefined;
-		hint?: string | undefined;
-		help?: string | undefined;
-		onChange: (value: number) => void;
-	} = $props();
+const {
+	value,
+	placeholder = undefined,
+	label = undefined,
+	hint = undefined,
+	help = undefined,
+	onChange = () => {},
+}: {
+	value: number | null;
+	placeholder?: string | undefined;
+	label?: string | undefined;
+	hint?: string | undefined;
+	help?: string | undefined;
+	onChange: (value: number) => void;
+} = $props();
 
-	const handleChange = (e: Event) => {
-		if (e.target) {
-			onChange((e.target as HTMLInputElement).valueAsNumber);
-		}
-	};
+const handleChange = (e: Event) => {
+	if (e.target) {
+		onChange((e.target as HTMLInputElement).valueAsNumber);
+	}
+};
 </script>
 
 <div class="input">

@@ -1,89 +1,89 @@
 <script lang="ts">
-	import 'leaflet/dist/leaflet.css';
-	import type { Map } from 'leaflet';
-	import type { ITree } from '$lib/types';
-	import { addLayerSelection } from '$lib/map/baseLayerSelector';
-	import { addTreeButton } from '$lib/map/addTreeButton';
-	import { addLocateMeButton } from '$lib/map/addLocateMeButton';
-	import { addResizeObserver } from '$lib/map/resizeObserver';
-	import { addLocateMeCircle } from '$lib/map/addLocateMeCircle';
-	import { Markers } from '$lib/map/markers';
-	import { onMount, onDestroy } from 'svelte';
-	import { baseLayer } from '$lib/stores/mapLayerStore';
-	import { MAX_BOUNDS } from '$lib/constants';
-	import { locationBus } from '$lib/buses/locationBus';
+import "leaflet/dist/leaflet.css";
+import { locationBus } from "$lib/buses/locationBus";
+import { MAX_BOUNDS } from "$lib/constants";
+import { addLocateMeButton } from "$lib/map/addLocateMeButton";
+import { addLocateMeCircle } from "$lib/map/addLocateMeCircle";
+import { addTreeButton } from "$lib/map/addTreeButton";
+import { addLayerSelection } from "$lib/map/baseLayerSelector";
+import { Markers } from "$lib/map/markers";
+import { addResizeObserver } from "$lib/map/resizeObserver";
+import { baseLayer } from "$lib/stores/mapLayerStore";
+import type { ITree } from "$lib/types";
+import type { Map } from "leaflet";
+import { onDestroy, onMount } from "svelte";
 
-	const {
-		center,
-		onChange = (tree: ITree) => {
-			console.debug(`[map] Selected tree ${tree.id}`);
-		},
-		onMove = () => {},
-		className = 'default',
-		marker = undefined,
-		zoom = 15,
-		searchQuery = undefined,
-		crosshair = false,
-		canAdd = false
-	} = $props();
+const {
+	center,
+	onChange = (tree: ITree) => {
+		console.debug(`[map] Selected tree ${tree.id}`);
+	},
+	onMove = () => {},
+	className = "default",
+	marker = undefined,
+	zoom = 15,
+	searchQuery = undefined,
+	crosshair = false,
+	canAdd = false,
+} = $props();
 
-	let map: Map;
+let map: Map;
 
-	// biome-ignore lint/suspicious/noImplicitAnyLet: Leaflet :(
-	let L;
+// biome-ignore lint/suspicious/noImplicitAnyLet: Leaflet :(
+let L;
 
-	onMount(async () => {
-		L = await import('leaflet');
+onMount(async () => {
+	L = await import("leaflet");
 
-		const c1 = L.latLng(MAX_BOUNDS[0][0], MAX_BOUNDS[0][1]);
-		const c2 = L.latLng(MAX_BOUNDS[1][0], MAX_BOUNDS[1][1]);
+	const c1 = L.latLng(MAX_BOUNDS[0][0], MAX_BOUNDS[0][1]);
+	const c2 = L.latLng(MAX_BOUNDS[1][0], MAX_BOUNDS[1][1]);
 
-		map = L.map('map', {
-			maxBounds: L.latLngBounds(c1, c2)
-		}).setView(center, zoom);
+	map = L.map("map", {
+		maxBounds: L.latLngBounds(c1, c2),
+	}).setView(center, zoom);
 
-		addLayerSelection(map);
-		addResizeObserver(map);
-		addLocateMeCircle(map);
-		addLocateMeButton(map);
+	addLayerSelection(map);
+	addResizeObserver(map);
+	addLocateMeCircle(map);
+	addLocateMeButton(map);
 
-		if (canAdd) {
-			addTreeButton(map);
-		}
+	if (canAdd) {
+		addTreeButton(map);
+	}
 
-		map.attributionControl.setPrefix('');
+	map.attributionControl.setPrefix("");
 
-		// Highlight the current tree.
-		if (marker) {
-			L.marker(marker, {
-				icon: L.icon({
-					iconUrl: '/icons/marker-icon-2x.png',
-					iconSize: [25, 41],
-					iconAnchor: [12, 41]
-				})
-			}).addTo(map);
-		}
+	// Highlight the current tree.
+	if (marker) {
+		L.marker(marker, {
+			icon: L.icon({
+				iconUrl: "/icons/marker-icon-2x.png",
+				iconSize: [25, 41],
+				iconAnchor: [12, 41],
+			}),
+		}).addTo(map);
+	}
 
-		const markers = new Markers(map, searchQuery);
+	const markers = new Markers(map, searchQuery);
 
-		markers.onChange((tree: ITree) => {
-			onChange(tree);
-		});
-
-		map.on('moveend', () => {
-			if (onMove) {
-				onMove(map.getCenter(), map.getZoom());
-			}
-		});
-
-		// Start tracking user's location.
-		locationBus.emit('start');
+	markers.onChange((tree: ITree) => {
+		onChange(tree);
 	});
 
-	onDestroy(() => {
-		console.debug('[map] Destroying map.');
-		map.remove();
+	map.on("moveend", () => {
+		if (onMove) {
+			onMove(map.getCenter(), map.getZoom());
+		}
 	});
+
+	// Start tracking user's location.
+	locationBus.emit("start");
+});
+
+onDestroy(() => {
+	console.debug("[map] Destroying map.");
+	map.remove();
+});
 </script>
 
 <div

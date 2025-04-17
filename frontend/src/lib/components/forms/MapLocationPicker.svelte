@@ -1,12 +1,12 @@
 <script lang="ts">
-	import Map from '$lib/components/Map.svelte';
-	import { LatLng } from 'leaflet';
+import Map from "$lib/components/Map.svelte";
+import type { LatLng } from "leaflet";
 
-	const { center, onMove } = $props();
+const { center, onMove } = $props();
 
-	const handleMove = (center: LatLng) => {
-		onMove([center.lat, center.lng]);
-	};
+const handleMove = (center: LatLng) => {
+	onMove([center.lat, center.lng]);
+};
 </script>
 
 <div class="mapContainer">

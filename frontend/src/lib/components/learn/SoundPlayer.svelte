@@ -1,32 +1,32 @@
 <script lang="ts">
-	import { soundBus } from '$lib/buses/soundBus';
-	import { onMount } from 'svelte';
+import { soundBus } from "$lib/buses/soundBus";
+import { onMount } from "svelte";
 
-	let soundCorrect = $state<HTMLAudioElement | null>(null);
-	let soundWrong = $state<HTMLAudioElement | null>(null);
-	let soundFinished = $state<HTMLAudioElement | null>(null);
+const soundCorrect = $state<HTMLAudioElement | null>(null);
+const soundWrong = $state<HTMLAudioElement | null>(null);
+const soundFinished = $state<HTMLAudioElement | null>(null);
 
-	onMount(() => {
-		soundBus.on('correct', () => {
-			if (soundCorrect) {
-				soundCorrect.play();
-			}
-		});
-
-		soundBus.on('wrong', () => {
-			if (soundWrong) {
-				soundWrong.play();
-			}
-		});
-
-		soundBus.on('finished', () => {
-			if (soundFinished) {
-				soundFinished.play();
-			}
-		});
-
-		console.debug('Sound player initialized.');
+onMount(() => {
+	soundBus.on("correct", () => {
+		if (soundCorrect) {
+			soundCorrect.play();
+		}
 	});
+
+	soundBus.on("wrong", () => {
+		if (soundWrong) {
+			soundWrong.play();
+		}
+	});
+
+	soundBus.on("finished", () => {
+		if (soundFinished) {
+			soundFinished.play();
+		}
+	});
+
+	console.debug("Sound player initialized.");
+});
 </script>
 
 <audio bind:this={soundCorrect} preload="auto">

@@ -1,39 +1,39 @@
 <script lang="ts">
-	import { locale } from '$lib/locale';
-	import { formatMeters, formatCentimeters, formatState } from '$lib/utils/trees';
-	import { treeStore, getTree } from '$lib/stores/treeStore';
-	import type { ITree } from '$lib/types';
+import { locale } from "$lib/locale";
+import { getTree, treeStore } from "$lib/stores/treeStore";
+import type { ITree } from "$lib/types";
+import { formatCentimeters, formatMeters, formatState } from "$lib/utils/trees";
 
-	import AuthWrapper from '$lib/components/auth/AuthWrapper.svelte';
-	import HeightEditor from '$lib/components/forms/HeightEditor.svelte';
-	import CanopyEditor from '$lib/components/forms/CanopyEditor.svelte';
-	import StateEditor from '$lib/components/forms/StateEditor.svelte';
-	import CircumferenceEditor from '$lib/components/forms/CircumferenceEditor.svelte';
-	import HeightIcon from '$lib/icons/HeightIcon.svelte';
-	import DiameterIcon from '$lib/icons/DiameterIcon.svelte';
-	import CircumferenceIcon from '$lib/icons/CircumferenceIcon.svelte';
-	import StateIcon from '$lib/icons/StateIcon.svelte';
-	import HelpIcon from '$lib/icons/HelpIcon.svelte';
-	import EditIcon from '$lib/icons/EditIcon.svelte';
-	import Header from '$lib/components/tree/Header.svelte';
+import AuthWrapper from "$lib/components/auth/AuthWrapper.svelte";
+import CanopyEditor from "$lib/components/forms/CanopyEditor.svelte";
+import CircumferenceEditor from "$lib/components/forms/CircumferenceEditor.svelte";
+import HeightEditor from "$lib/components/forms/HeightEditor.svelte";
+import StateEditor from "$lib/components/forms/StateEditor.svelte";
+import Header from "$lib/components/tree/Header.svelte";
+import CircumferenceIcon from "$lib/icons/CircumferenceIcon.svelte";
+import DiameterIcon from "$lib/icons/DiameterIcon.svelte";
+import EditIcon from "$lib/icons/EditIcon.svelte";
+import HeightIcon from "$lib/icons/HeightIcon.svelte";
+import HelpIcon from "$lib/icons/HelpIcon.svelte";
+import StateIcon from "$lib/icons/StateIcon.svelte";
 
-	const { data } = $props();
-	let tree = $state<ITree>($getTree(data.treeId));
+const { data } = $props();
+let tree = $state<ITree>($getTree(data.treeId));
 
-	let tab = $state<string | null>(null);
+let tab = $state<string | null>(null);
 
-	const onClose = () => {
-		tab = null;
-	};
+const onClose = () => {
+	tab = null;
+};
 
-	// WTF is this needed? Why doesn't it work if we just reference the store directly?
-	treeStore.subscribe((trees) => {
-		tree = trees[data.treeId];
-	});
+// WTF is this needed? Why doesn't it work if we just reference the store directly?
+treeStore.subscribe((trees) => {
+	tree = trees[data.treeId];
+});
 
-	const setTab = (value: string) => {
-		tab = value;
-	};
+const setTab = (value: string) => {
+	tab = value;
+};
 </script>
 
 <svelte:head>

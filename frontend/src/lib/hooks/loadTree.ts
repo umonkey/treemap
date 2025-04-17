@@ -10,9 +10,9 @@
 // $effect(() => reload(id));
 // ```
 
-import type { IError, ISingleTree } from '$lib/types';
-import { apiClient } from '$lib/api';
-import { writable } from 'svelte/store';
+import { apiClient } from "$lib/api";
+import type { IError, ISingleTree } from "$lib/types";
+import { writable } from "svelte/store";
 
 export const loadTree = () => {
 	const loading = writable<boolean>(true);

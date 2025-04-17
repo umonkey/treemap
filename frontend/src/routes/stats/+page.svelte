@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { routes } from '$lib/routes';
+import { routes } from "$lib/routes";
 
-	import Header from '$lib/components/tree/Header.svelte';
+import Header from "$lib/components/tree/Header.svelte";
 </script>
 
 <svelte:head>

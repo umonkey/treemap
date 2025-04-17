@@ -1,13 +1,13 @@
 <script lang="ts">
-	import HelpIcon from '$lib/icons/HelpIcon.svelte';
+import HelpIcon from "$lib/icons/HelpIcon.svelte";
 
-	export const { help } = $props();
+export const { help } = $props();
 
-	const handleHelp = () => {
-		if (help) {
-			window.open(help, '_blank');
-		}
-	};
+const handleHelp = () => {
+	if (help) {
+		window.open(help, "_blank");
+	}
+};
 </script>
 
 {#if help}

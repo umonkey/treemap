@@ -1,25 +1,25 @@
 <script lang="ts">
-	import CloseIcon from '$lib/icons/CloseIcon.svelte';
-	import GalleryPreview from '$lib/components/map/GalleryPreview.svelte';
-	import { routes } from '$lib/routes';
-	import { shortDetails, formatSpecies } from '$lib/utils/trees';
-	import { loadTree } from '$lib/hooks';
+import GalleryPreview from "$lib/components/map/GalleryPreview.svelte";
+import { loadTree } from "$lib/hooks";
+import CloseIcon from "$lib/icons/CloseIcon.svelte";
+import { routes } from "$lib/routes";
+import { formatSpecies, shortDetails } from "$lib/utils/trees";
 
-	const {
-		tree,
-		onClose
-	}: {
-		tree: string | null;
-		onClose: () => void;
-	} = $props();
+const {
+	tree,
+	onClose,
+}: {
+	tree: string | null;
+	onClose: () => void;
+} = $props();
 
-	const { loading, data, error, reload } = loadTree();
+const { loading, data, error, reload } = loadTree();
 
-	$effect(() => {
-		if (tree) {
-			(async () => await reload(tree))();
-		}
-	});
+$effect(() => {
+	if (tree) {
+		(async () => await reload(tree))();
+	}
+});
 </script>
 
 {#if tree}

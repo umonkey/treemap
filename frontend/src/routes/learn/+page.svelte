@@ -1,31 +1,31 @@
 <script lang="ts">
-	import ProgressBar from '$lib/components/learn/ProgressBar.svelte';
-	import Header from '$lib/components/tree/Header.svelte';
-	import Question from '$lib/components/learn/Question.svelte';
-	import Results from '$lib/components/learn/Results.svelte';
-	import SoundPlayer from '$lib/components/learn/SoundPlayer.svelte';
+import ProgressBar from "$lib/components/learn/ProgressBar.svelte";
+import Question from "$lib/components/learn/Question.svelte";
+import Results from "$lib/components/learn/Results.svelte";
+import SoundPlayer from "$lib/components/learn/SoundPlayer.svelte";
+import Header from "$lib/components/tree/Header.svelte";
 
-	import { locale } from '$lib/locale';
-	import { getRandomQuestions } from '$lib/learn/questions';
+import { getRandomQuestions } from "$lib/learn/questions";
+import { locale } from "$lib/locale";
 
-	let questions = $state(getRandomQuestions());
-	let idx = $state(0);
-	let correct = $state(0);
+let questions = $state(getRandomQuestions());
+let idx = $state(0);
+let correct = $state(0);
 
-	const onCorrect = () => {
-		correct++;
-		idx++;
-	};
+const onCorrect = () => {
+	correct++;
+	idx++;
+};
 
-	const onWrong = () => {
-		idx++;
-	};
+const onWrong = () => {
+	idx++;
+};
 
-	const onRetry = () => {
-		idx = 0;
-		correct = 0;
-		questions = getRandomQuestions();
-	};
+const onRetry = () => {
+	idx = 0;
+	correct = 0;
+	questions = getRandomQuestions();
+};
 </script>
 
 <svelte:head>

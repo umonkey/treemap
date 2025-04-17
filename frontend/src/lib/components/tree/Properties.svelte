@@ -1,8 +1,8 @@
 <script>
-	import { formatMeters, formatCentimeters, formatYear } from '$lib/utils/trees';
-	import { locale } from '$lib/locale';
+import { locale } from "$lib/locale";
+import { formatCentimeters, formatMeters, formatYear } from "$lib/utils/trees";
 
-	const { tree } = $props();
+const { tree } = $props();
 </script>
 
 <div class="properties">

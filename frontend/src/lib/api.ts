@@ -1,3 +1,6 @@
+import { API_ROOT } from "$lib/env";
+import { authStore, isAuthenticated } from "$lib/stores/authStore";
+import { addUsers } from "$lib/stores/userStore";
 import type {
 	IAddTreesRequest,
 	ICommentList,
@@ -16,12 +19,9 @@ import type {
 	ITree,
 	ITreeDefaults,
 	ITreeList,
-	ITreeUpdatePayload
-} from '$lib/types';
-import { isAuthenticated, authStore } from '$lib/stores/authStore';
-import { addUsers } from '$lib/stores/userStore';
-import { get } from 'svelte/store';
-import { API_ROOT } from '$lib/env';
+	ITreeUpdatePayload,
+} from "$lib/types";
+import { get } from "svelte/store";
 
 export class ApiClient {
 	private root: string;
@@ -33,7 +33,7 @@ export class ApiClient {
 
 	public async getTree(id: string): Promise<IResponse<ISingleTree>> {
 		console.debug(`[api] Getting tree ${id}`);
-		const res = await this.request<ISingleTree>('GET', `v1/trees/${id}`);
+		const res = await this.request<ISingleTree>("GET", `v1/trees/${id}`);
 
 		if (res.status === 200 && res.data) {
 			addUsers(res.data.users);
@@ -43,66 +43,66 @@ export class ApiClient {
 	}
 
 	public async getTreeDefaults(): Promise<IResponse<ITreeDefaults>> {
-		console.debug('[api] Getting tree defaults');
-		return await this.request<ITreeDefaults>('GET', 'v1/trees/defaults');
+		console.debug("[api] Getting tree defaults");
+		return await this.request<ITreeDefaults>("GET", "v1/trees/defaults");
 	}
 
 	public async getStats(): Promise<IResponse<IStats>> {
-		return await this.request('GET', 'v1/trees/stats');
+		return await this.request("GET", "v1/trees/stats");
 	}
 
 	public async getSpeciesStats(): Promise<IResponse<ISpeciesStats[]>> {
-		return await this.request('GET', 'v1/stats/species');
+		return await this.request("GET", "v1/stats/species");
 	}
 
 	public async getSpeciesMismatch(): Promise<IResponse<ITreeList>> {
-		return await this.request('GET', 'v1/stats/species/mismatch');
+		return await this.request("GET", "v1/stats/species/mismatch");
 	}
 
 	public async getTopHeight(): Promise<IResponse<ITreeList>> {
-		return await this.request('GET', 'v1/stats/height');
+		return await this.request("GET", "v1/stats/height");
 	}
 
 	public async getTopDiameter(): Promise<IResponse<ITreeList>> {
-		return await this.request('GET', 'v1/stats/diameter');
+		return await this.request("GET", "v1/stats/diameter");
 	}
 
 	public async getTopCircumference(): Promise<IResponse<ITreeList>> {
-		return await this.request('GET', 'v1/stats/circumference');
+		return await this.request("GET", "v1/stats/circumference");
 	}
 
 	public async getTopStreets(): Promise<IResponse<IStreetStats[]>> {
-		return await this.request('GET', 'v1/stats/streets');
+		return await this.request("GET", "v1/stats/streets");
 	}
 
 	public async getStateStats(): Promise<IResponse<IStateStats[]>> {
-		return await this.request('GET', 'v1/stats/state');
+		return await this.request("GET", "v1/stats/state");
 	}
 
 	public async getMe(): Promise<IResponse<IMeResponse>> {
-		return await this.request('GET', 'v1/me', {
+		return await this.request("GET", "v1/me", {
 			headers: {
-				'Content-Type': 'application/json',
-				...this.getAuthHeaders()
-			}
+				"Content-Type": "application/json",
+				...this.getAuthHeaders(),
+			},
 		});
 	}
 
 	public async getMeLikes(): Promise<IResponse<ILikeList>> {
-		return await this.request('GET', 'v1/me/likes', {
+		return await this.request("GET", "v1/me/likes", {
 			headers: {
-				'Content-Type': 'application/json',
-				...this.getAuthHeaders()
-			}
+				"Content-Type": "application/json",
+				...this.getAuthHeaders(),
+			},
 		});
 	}
 
 	public async verifyToken(token: string): Promise<IResponse<IMeResponse>> {
-		return await this.request('GET', 'v1/me', {
+		return await this.request("GET", "v1/me", {
 			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${token}`
-			}
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${token}`,
+			},
 		});
 	}
 
@@ -111,196 +111,219 @@ export class ApiClient {
 		e: number,
 		s: number,
 		w: number,
-		search?: string | undefined
+		search?: string | undefined,
 	): Promise<IResponse<IMarkers>> {
 		const params = new URLSearchParams({
 			n: n.toString(),
 			e: e.toString(),
 			s: s.toString(),
-			w: w.toString()
+			w: w.toString(),
 		});
 
 		if (search) {
-			params.set('search', search);
+			params.set("search", search);
 		}
 
-		return await this.request('GET', `v1/trees?${params.toString()}`);
+		return await this.request("GET", `v1/trees?${params.toString()}`);
 	}
 
 	public async addTree(props: IAddTreesRequest): Promise<IResponse<ITreeList>> {
-		return await this.request('POST', 'v1/trees', {
+		return await this.request("POST", "v1/trees", {
 			body: JSON.stringify(props),
 			headers: {
-				'Content-Type': 'application/json',
-				...this.getAuthHeaders()
-			}
+				"Content-Type": "application/json",
+				...this.getAuthHeaders(),
+			},
 		});
 	}
 
 	public async addTraining(result: number): Promise<IResponse<void>> {
-		return await this.request('POST', 'v1/training', {
+		return await this.request("POST", "v1/training", {
 			body: JSON.stringify({
-				result
+				result,
 			}),
 			headers: {
-				'Content-Type': 'application/json',
-				...this.getAuthHeaders()
-			}
+				"Content-Type": "application/json",
+				...this.getAuthHeaders(),
+			},
 		});
 	}
 
-	public async loginWithGoogle(token: string): Promise<IResponse<ILoginResponse>> {
-		console.debug('[api] Logging in with Google');
+	public async loginWithGoogle(
+		token: string,
+	): Promise<IResponse<ILoginResponse>> {
+		console.debug("[api] Logging in with Google");
 
-		return await this.request('POST', 'v2/login/google', {
+		return await this.request("POST", "v2/login/google", {
 			body: JSON.stringify({ token }),
 			headers: {
-				'Content-Type': 'application/json'
-			}
+				"Content-Type": "application/json",
+			},
 		});
 	}
 
-	public async updateTree(id: string, props: ITreeUpdatePayload): Promise<IResponse<ITree>> {
-		return await this.request('PUT', `v1/trees/${id}`, {
+	public async updateTree(
+		id: string,
+		props: ITreeUpdatePayload,
+	): Promise<IResponse<ITree>> {
+		return await this.request("PUT", `v1/trees/${id}`, {
 			body: JSON.stringify(props),
 			headers: {
-				'Content-Type': 'application/json',
-				...this.getAuthHeaders()
-			}
+				"Content-Type": "application/json",
+				...this.getAuthHeaders(),
+			},
 		});
 	}
 
-	public async updateTreeHeight(id: string, value: number): Promise<IResponse<ITree>> {
-		return await this.request('PUT', `v1/trees/${id}/height`, {
+	public async updateTreeHeight(
+		id: string,
+		value: number,
+	): Promise<IResponse<ITree>> {
+		return await this.request("PUT", `v1/trees/${id}/height`, {
 			body: JSON.stringify({ value }),
 			headers: {
-				'Content-Type': 'application/json',
-				...this.getAuthHeaders()
-			}
+				"Content-Type": "application/json",
+				...this.getAuthHeaders(),
+			},
 		});
 	}
 
-	public async updateTreeDiameter(id: string, value: number): Promise<IResponse<ITree>> {
-		return await this.request('PUT', `v1/trees/${id}/diameter`, {
+	public async updateTreeDiameter(
+		id: string,
+		value: number,
+	): Promise<IResponse<ITree>> {
+		return await this.request("PUT", `v1/trees/${id}/diameter`, {
 			body: JSON.stringify({ value }),
 			headers: {
-				'Content-Type': 'application/json',
-				...this.getAuthHeaders()
-			}
+				"Content-Type": "application/json",
+				...this.getAuthHeaders(),
+			},
 		});
 	}
 
-	public async updateTreeCircumference(id: string, value: number): Promise<IResponse<ITree>> {
-		return await this.request('PUT', `v1/trees/${id}/circumference`, {
+	public async updateTreeCircumference(
+		id: string,
+		value: number,
+	): Promise<IResponse<ITree>> {
+		return await this.request("PUT", `v1/trees/${id}/circumference`, {
 			body: JSON.stringify({ value }),
 			headers: {
-				'Content-Type': 'application/json',
-				...this.getAuthHeaders()
-			}
+				"Content-Type": "application/json",
+				...this.getAuthHeaders(),
+			},
 		});
 	}
 
-	public async updateTreeState(id: string, value: string | null): Promise<IResponse<ITree>> {
-		return await this.request('PUT', `v1/trees/${id}/state`, {
+	public async updateTreeState(
+		id: string,
+		value: string | null,
+	): Promise<IResponse<ITree>> {
+		return await this.request("PUT", `v1/trees/${id}/state`, {
 			body: JSON.stringify({ value }),
 			headers: {
-				'Content-Type': 'application/json',
-				...this.getAuthHeaders()
-			}
+				"Content-Type": "application/json",
+				...this.getAuthHeaders(),
+			},
 		});
 	}
 
-	public async addComment(id: string, message: string): Promise<IResponse<void>> {
+	public async addComment(
+		id: string,
+		message: string,
+	): Promise<IResponse<void>> {
 		const headers: HeadersInit = {
-			'Content-Type': 'application/json',
-			...this.getAuthHeaders()
+			"Content-Type": "application/json",
+			...this.getAuthHeaders(),
 		};
 
-		return await this.request('POST', `v1/trees/${id}/comments`, {
+		return await this.request("POST", `v1/trees/${id}/comments`, {
 			body: JSON.stringify({ message }),
-			headers
+			headers,
 		});
 	}
 
 	public async uploadFile(tree: string, file: File): Promise<IResponse<void>> {
 		const headers: HeadersInit = {
-			'Content-Type': 'application/json',
-			...this.getAuthHeaders()
+			"Content-Type": "application/json",
+			...this.getAuthHeaders(),
 		};
 
 		const buffer = await file.arrayBuffer();
 		const body = new Blob([buffer], { type: file.type });
 
-		return await this.request('POST', `v1/trees/${tree}/files`, {
+		return await this.request("POST", `v1/trees/${tree}/files`, {
 			body,
-			headers
+			headers,
 		});
 	}
 
 	public async searchSpecies(query: string): Promise<IResponse<ISpecies[]>> {
 		const params = new URLSearchParams({ query });
-		return await this.request('GET', `v1/species/search?${params}`);
+		return await this.request("GET", `v1/species/search?${params}`);
 	}
 
 	public async suggestSpecies(): Promise<IResponse<string[]>> {
-		return await this.request('GET', 'v1/species/suggest', {
+		return await this.request("GET", "v1/species/suggest", {
 			headers: {
-				'Content-Type': 'application/json',
-				...this.getAuthHeaders()
-			}
+				"Content-Type": "application/json",
+				...this.getAuthHeaders(),
+			},
 		});
 	}
 
 	public async getTreeComments(id: string): Promise<IResponse<ICommentList>> {
-		return await this.request('GET', `v1/trees/${id}/comments`);
+		return await this.request("GET", `v1/trees/${id}/comments`);
 	}
 
 	public async getRecentComments(): Promise<IResponse<ICommentList>> {
-		return await this.request('GET', 'v1/comments');
+		return await this.request("GET", "v1/comments");
 	}
 
 	public async getNewTrees(): Promise<IResponse<ITreeList>> {
-		return await this.request('GET', 'v1/trees/new');
+		return await this.request("GET", "v1/trees/new");
 	}
 
 	public async getUpdatedTrees(): Promise<IResponse<ITreeList>> {
-		return await this.request('GET', 'v1/trees/updated');
+		return await this.request("GET", "v1/trees/updated");
 	}
 
-	public async changeTreeThumbnail(tree: string, file: string): Promise<IResponse<void>> {
-		return await this.request('PUT', `v1/trees/${tree}/thumbnail`, {
+	public async changeTreeThumbnail(
+		tree: string,
+		file: string,
+	): Promise<IResponse<void>> {
+		return await this.request("PUT", `v1/trees/${tree}/thumbnail`, {
 			body: JSON.stringify({ file }),
 			headers: {
-				'Content-Type': 'application/json',
-				...this.getAuthHeaders()
-			}
+				"Content-Type": "application/json",
+				...this.getAuthHeaders(),
+			},
 		});
 	}
 
 	public async deleteFile(id: string): Promise<IResponse<void>> {
-		return await this.request('DELETE', `v1/files/${id}`, {
+		return await this.request("DELETE", `v1/files/${id}`, {
 			headers: {
-				'Content-Type': 'application/json',
-				...this.getAuthHeaders()
-			}
+				"Content-Type": "application/json",
+				...this.getAuthHeaders(),
+			},
 		});
 	}
 
 	public async likeTree(id: string): Promise<IResponse<void>> {
-		return await this.request('POST', `v1/trees/${id}/likes`, {
+		return await this.request("POST", `v1/trees/${id}/likes`, {
 			headers: {
-				'Content-Type': 'application/json',
-				...this.getAuthHeaders()
-			}
+				"Content-Type": "application/json",
+				...this.getAuthHeaders(),
+			},
 		});
 	}
 
 	public async unlikeTree(id: string): Promise<IResponse<void>> {
-		return await this.request('DELETE', `v1/trees/${id}/likes`, {
+		return await this.request("DELETE", `v1/trees/${id}/likes`, {
 			headers: {
-				'Content-Type': 'application/json',
-				...this.getAuthHeaders()
-			}
+				"Content-Type": "application/json",
+				...this.getAuthHeaders(),
+			},
 		});
 	}
 
@@ -312,14 +335,14 @@ export class ApiClient {
 	private async request<T>(
 		method: string,
 		path: string,
-		options?: RequestInit
+		options?: RequestInit,
 	): Promise<IResponse<T>> {
 		console.debug(`[api] Requesting ${method} ${this.root}${path}`);
 
 		try {
 			const request = new Request(this.root + path, {
 				method,
-				...options
+				...options,
 			});
 
 			const response = await fetch(request);
@@ -328,7 +351,7 @@ export class ApiClient {
 				return {
 					status: 202,
 					data: undefined,
-					error: undefined
+					error: undefined,
 				};
 			}
 
@@ -338,14 +361,14 @@ export class ApiClient {
 				return {
 					status: response.status,
 					data: undefined,
-					error: err.error
+					error: err.error,
 				};
 			}
 
 			return {
 				status: response.status,
 				data: await response.json(),
-				error: undefined
+				error: undefined,
 			};
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -354,9 +377,9 @@ export class ApiClient {
 				status: 500,
 				data: undefined,
 				error: {
-					code: 'network_error',
-					description: (e as unknown as Error).message
-				}
+					code: "network_error",
+					description: (e as unknown as Error).message,
+				},
 			};
 		}
 	}
@@ -367,7 +390,7 @@ export class ApiClient {
 
 			if (token) {
 				return {
-					Authorization: `Bearer ${token}`
+					Authorization: `Bearer ${token}`,
 				};
 			}
 		}

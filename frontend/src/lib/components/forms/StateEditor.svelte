@@ -1,33 +1,33 @@
 <script lang="ts">
-	import Button from '$lib/components/forms/Button.svelte';
-	import { apiClient } from '$lib/api';
-	import { toast } from '@zerodevx/svelte-toast';
-	import { addTrees } from '$lib/stores/treeStore';
-	import { locale } from '$lib/locale';
-	import StateInput from '$lib/components/forms/StateInput.svelte';
+import { apiClient } from "$lib/api";
+import Button from "$lib/components/forms/Button.svelte";
+import StateInput from "$lib/components/forms/StateInput.svelte";
+import { locale } from "$lib/locale";
+import { addTrees } from "$lib/stores/treeStore";
+import { toast } from "@zerodevx/svelte-toast";
 
-	const { tree, onClose } = $props();
+const { tree, onClose } = $props();
 
-	let value = $state<string>(tree.state ?? 'unknown');
+const value = $state<string>(tree.state ?? "unknown");
 
-	const onSave = async () => {
-		const res = await apiClient.updateTreeState(tree.id, value);
+const onSave = async () => {
+	const res = await apiClient.updateTreeState(tree.id, value);
 
-		if (res.status >= 200 && res.status < 400) {
-			addTrees([
-				{
-					...tree,
-					state: value
-				}
-			]);
+	if (res.status >= 200 && res.status < 400) {
+		addTrees([
+			{
+				...tree,
+				state: value,
+			},
+		]);
 
-			toast.push(locale.measureStateUpdated());
+		toast.push(locale.measureStateUpdated());
 
-			onClose();
-		} else {
-			toast.push('Error saving changes.');
-		}
-	};
+		onClose();
+	} else {
+		toast.push("Error saving changes.");
+	}
+};
 </script>
 
 <div class="form">

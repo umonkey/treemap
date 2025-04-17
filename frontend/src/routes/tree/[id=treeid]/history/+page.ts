@@ -1,7 +1,7 @@
-import type { ITree } from '$lib/types';
-import type { Load } from '@sveltejs/kit';
-import { apiClient } from '$lib/api';
-import { error } from '@sveltejs/kit';
+import { apiClient } from "$lib/api";
+import type { ITree } from "$lib/types";
+import type { Load } from "@sveltejs/kit";
+import { error } from "@sveltejs/kit";
 
 type Response = {
 	id: string;
@@ -13,7 +13,7 @@ export const load: Load = async ({ params }): Promise<Response> => {
 
 	if (!treeId) {
 		error(400, {
-			message: 'Tree id not specified.'
+			message: "Tree id not specified.",
 		});
 	}
 
@@ -22,7 +22,7 @@ export const load: Load = async ({ params }): Promise<Response> => {
 	if (status === 200 && data) {
 		return {
 			id: treeId,
-			tree: data
+			tree: data,
 		};
 	}
 

@@ -1,6 +1,6 @@
-import { get } from 'svelte/store';
-import { fileStore } from '$lib/stores/fileStore';
-import { apiClient } from '$lib/api';
+import { apiClient } from "$lib/api";
+import { fileStore } from "$lib/stores/fileStore";
+import { get } from "svelte/store";
 
 const uploadSingleFile = async (file: File, tree: string) => {
 	await apiClient.uploadFile(tree, file);
@@ -46,7 +46,7 @@ export const startUpload = async (tree: string) => {
 			}
 		}
 	} finally {
-		console.debug('[upload] Finished.');
+		console.debug("[upload] Finished.");
 
 		fileStore.update((store) => {
 			store.files = retry;
@@ -57,7 +57,7 @@ export const startUpload = async (tree: string) => {
 
 	fileStore.update((store) => {
 		store.message =
-			'Finished uploading all photos. They will show up on the tree page shortly. You can upload more files if needed.';
+			"Finished uploading all photos. They will show up on the tree page shortly. You can upload more files if needed.";
 		return store;
 	});
 };

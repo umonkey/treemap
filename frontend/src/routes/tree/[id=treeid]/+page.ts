@@ -1,10 +1,10 @@
-import type { Load } from '@sveltejs/kit';
-import type { ITree } from '$lib/types';
-import { error } from '@sveltejs/kit';
-import { apiClient } from '$lib/api';
+import { apiClient } from "$lib/api";
+import type { ITree } from "$lib/types";
+import type { Load } from "@sveltejs/kit";
+import { error } from "@sveltejs/kit";
 
 export const load: Load = async ({
-	params
+	params,
 }): Promise<{
 	id: string;
 	tree: ITree;
@@ -20,7 +20,7 @@ export const load: Load = async ({
 	if (status === 200 && data) {
 		return {
 			id: treeId,
-			tree: data
+			tree: data,
 		};
 	}
 

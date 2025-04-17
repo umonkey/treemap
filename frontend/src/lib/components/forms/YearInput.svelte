@@ -1,14 +1,14 @@
 <script lang="ts">
-	import NumberInput from '$lib/components/forms/NumberInput.svelte';
-	import { locale } from '$lib/locale';
+import NumberInput from "$lib/components/forms/NumberInput.svelte";
+import { locale } from "$lib/locale";
 
-	const {
-		value,
-		onChange
-	}: {
-		value: number | null;
-		onChange: (value: number) => void;
-	} = $props();
+const {
+	value,
+	onChange,
+}: {
+	value: number | null;
+	onChange: (value: number) => void;
+} = $props();
 </script>
 
 <NumberInput

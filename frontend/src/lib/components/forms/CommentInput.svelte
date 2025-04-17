@@ -1,7 +1,7 @@
 <script>
-	import { locale } from '$lib/locale';
-	import TextInput from '$lib/components/forms/TextInput.svelte';
-	export let value = '';
+import TextInput from "$lib/components/forms/TextInput.svelte";
+import { locale } from "$lib/locale";
+export const value = "";
 </script>
 
 <TextInput label={locale.commentLabel()} bind:value multiline={true} hint={locale.commentHint()} />

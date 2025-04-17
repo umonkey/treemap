@@ -1,24 +1,24 @@
 <script lang="ts">
-	import { mobileSidebarStore } from '$lib/stores/mobileSidebarStore';
+import { mobileSidebarStore } from "$lib/stores/mobileSidebarStore";
 
-	import BackIcon from '$lib/icons/BackIcon.svelte';
-	import BarsIcon from '$lib/icons/BarsIcon.svelte';
+import BackIcon from "$lib/icons/BackIcon.svelte";
+import BarsIcon from "$lib/icons/BarsIcon.svelte";
 
-	const {
-		title,
-		back = true
-	}: {
-		title: string;
-		back?: boolean;
-	} = $props();
+const {
+	title,
+	back = true,
+}: {
+	title: string;
+	back?: boolean;
+} = $props();
 
-	const onBack = () => {
-		history.back();
-	};
+const onBack = () => {
+	history.back();
+};
 
-	const onBars = () => {
-		mobileSidebarStore.update((state) => !state);
-	};
+const onBars = () => {
+	mobileSidebarStore.update((state) => !state);
+};
 </script>
 
 <div class="header">

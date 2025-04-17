@@ -1,33 +1,33 @@
 <script lang="ts">
-	import HelpIcon from '$lib/icons/HelpIcon.svelte';
-	import Button from '$lib/components/forms/Button.svelte';
-	import { apiClient } from '$lib/api';
-	import { toast } from '@zerodevx/svelte-toast';
-	import { addTrees } from '$lib/stores/treeStore';
-	import { locale } from '$lib/locale';
+import { apiClient } from "$lib/api";
+import Button from "$lib/components/forms/Button.svelte";
+import HelpIcon from "$lib/icons/HelpIcon.svelte";
+import { locale } from "$lib/locale";
+import { addTrees } from "$lib/stores/treeStore";
+import { toast } from "@zerodevx/svelte-toast";
 
-	const { tree, onClose } = $props();
+const { tree, onClose } = $props();
 
-	let value = $state<number>(tree.diameter ?? 0);
+const value = $state<number>(tree.diameter ?? 0);
 
-	const onSave = async () => {
-		const res = await apiClient.updateTreeDiameter(tree.id, value);
+const onSave = async () => {
+	const res = await apiClient.updateTreeDiameter(tree.id, value);
 
-		if (res.status >= 200 && res.status < 400) {
-			addTrees([
-				{
-					...tree,
-					diameter: value
-				}
-			]);
+	if (res.status >= 200 && res.status < 400) {
+		addTrees([
+			{
+				...tree,
+				diameter: value,
+			},
+		]);
 
-			toast.push(locale.measureCanopyUpdated());
+		toast.push(locale.measureCanopyUpdated());
 
-			onClose();
-		} else {
-			toast.push('Error saving changes.');
-		}
-	};
+		onClose();
+	} else {
+		toast.push("Error saving changes.");
+	}
+};
 </script>
 
 <form class="form" onsubmit={onSave}>

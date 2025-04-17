@@ -1,24 +1,24 @@
 <script>
-	import '@fontsource-variable/inter';
-	import { SvelteToast } from '@zerodevx/svelte-toast';
-	import { validateStoredToken } from '$lib/utils/auth';
-	import { onMount } from 'svelte';
+import "@fontsource-variable/inter";
+import { validateStoredToken } from "$lib/utils/auth";
+import { SvelteToast } from "@zerodevx/svelte-toast";
+import { onMount } from "svelte";
 
-	import MobileNav from '$lib/components/MobileNav.svelte';
-	import LeftSideBar from '$lib/components/LeftSideBar.svelte';
-	import RightSideBar from '$lib/components/RightSideBar.svelte';
-	import MobileSidebar from '$lib/components/MobileSidebar.svelte';
-	import GoogleTracker from '$lib/components/GoogleTracker.svelte';
-	import LocationTracker from '$lib/components/map/LocationTracker.svelte';
+import GoogleTracker from "$lib/components/GoogleTracker.svelte";
+import LeftSideBar from "$lib/components/LeftSideBar.svelte";
+import MobileNav from "$lib/components/MobileNav.svelte";
+import MobileSidebar from "$lib/components/MobileSidebar.svelte";
+import RightSideBar from "$lib/components/RightSideBar.svelte";
+import LocationTracker from "$lib/components/map/LocationTracker.svelte";
 
-	import '$lib/styles/variables.css';
-	import '$lib/styles/forms.css';
+import "$lib/styles/variables.css";
+import "$lib/styles/forms.css";
 
-	let { children } = $props();
+const { children } = $props();
 
-	onMount(() => {
-		validateStoredToken();
-	});
+onMount(() => {
+	validateStoredToken();
+});
 </script>
 
 <div class="layout">

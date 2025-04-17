@@ -1,34 +1,34 @@
 <script lang="ts">
-	import { apiClient } from '$lib/api';
-	import { routes } from '$lib/routes';
-	import { fileAttribution } from '$lib/utils/strings';
-	import { toast } from '@zerodevx/svelte-toast';
-	import type { ITreeFile } from '$lib/types';
+import { apiClient } from "$lib/api";
+import { routes } from "$lib/routes";
+import type { ITreeFile } from "$lib/types";
+import { fileAttribution } from "$lib/utils/strings";
+import { toast } from "@zerodevx/svelte-toast";
 
-	const { tree } = $props();
+const { tree } = $props();
 
-	let thumbnail_id = $state(tree.thumbnail_id);
+let thumbnail_id = $state(tree.thumbnail_id);
 
-	const handleMakeThumbnail = async (file: ITreeFile) => {
-		const res = await apiClient.changeTreeThumbnail(tree.id, file.id);
+const handleMakeThumbnail = async (file: ITreeFile) => {
+	const res = await apiClient.changeTreeThumbnail(tree.id, file.id);
 
-		if (res.status >= 200 && res.status < 300) {
-			thumbnail_id = file.small_id;
-			toast.push('Thumbnail changed.');
-		} else {
-			toast.push('Error changing thumbnail.');
-		}
-	};
+	if (res.status >= 200 && res.status < 300) {
+		thumbnail_id = file.small_id;
+		toast.push("Thumbnail changed.");
+	} else {
+		toast.push("Error changing thumbnail.");
+	}
+};
 
-	const handleDelete = async (id: string) => {
-		const res = await apiClient.deleteFile(id);
+const handleDelete = async (id: string) => {
+	const res = await apiClient.deleteFile(id);
 
-		if (res.status >= 200 && res.status < 300) {
-			toast.push('File deleted.');
-		} else {
-			toast.push('Error deleting file.');
-		}
-	};
+	if (res.status >= 200 && res.status < 300) {
+		toast.push("File deleted.");
+	} else {
+		toast.push("Error deleting file.");
+	}
+};
 </script>
 
 {#if tree.files.length > 0}
