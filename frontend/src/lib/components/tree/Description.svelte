@@ -1,6 +1,9 @@
 <script lang="ts">
-import { locale } from "$lib/locale";
-const { text } = $props();
+	import { locale } from '$lib/locale';
+
+	const { text } = $props<{
+		text: string | null;
+	}>();
 </script>
 
 <div class="description">

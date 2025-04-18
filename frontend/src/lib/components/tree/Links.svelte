@@ -1,8 +1,12 @@
-<script>
-import { formatLinks } from "$lib/utils/trees";
+<script lang="ts">
+	import { formatLinks } from '$lib/utils/trees';
+	import type { ITree } from '$lib/types';
 
-const { tree } = $props();
-const links = formatLinks(tree);
+	const { tree } = $props<{
+		tree: ITree;
+	}>();
+
+	const links = formatLinks(tree);
 </script>
 
 {#if links.length > 0}

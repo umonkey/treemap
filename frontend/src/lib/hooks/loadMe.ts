@@ -4,9 +4,9 @@
  * TODO: add a store to cache calls.
  */
 
-import { apiClient } from "$lib/api";
-import type { IError, IMeResponse } from "$lib/types";
-import { writable } from "svelte/store";
+import { apiClient } from '$lib/api';
+import type { IError, IMeResponse } from '$lib/types';
+import { writable } from 'svelte/store';
 
 export const loadMe = () => {
 	const loading = writable<boolean>(true);

@@ -1,9 +1,9 @@
-import { locale } from "$lib/locale";
-import type { ITree } from "$lib/types";
+import { locale } from '$lib/locale';
+import type { ITree } from '$lib/types';
 
 export const formatYear = (value: number | null): string => {
 	if (!value) {
-		return "no data";
+		return 'no data';
 	}
 
 	return value.toString();
@@ -15,29 +15,29 @@ export const shortDetails = (tree: ITree): string => {
 	if (tree.height) {
 		parts.push(`H=${formatMeters(tree.height)}`);
 	} else {
-		parts.push("H=?");
+		parts.push('H=?');
 	}
 
 	if (tree.diameter) {
 		parts.push(`D=${formatMeters(tree.diameter)}`);
 	} else {
-		parts.push("D=?");
+		parts.push('D=?');
 	}
 
 	if (tree.circumference) {
 		parts.push(`C=${formatCentimeters(tree.circumference)}`);
 	} else {
-		parts.push("C=?");
+		parts.push('C=?');
 	}
 
-	parts.push("·");
+	parts.push('·');
 	parts.push(formatState(tree.state));
 
-	return parts.join(" ");
+	return parts.join(' ');
 };
 
 export const formatLinks = (
-	tree: ITree,
+	tree: ITree
 ): {
 	text: string;
 	url: string;
@@ -46,15 +46,15 @@ export const formatLinks = (
 
 	if (tree.species) {
 		parts.push({
-			text: "Wikipedia",
-			url: `https://en.wikipedia.org/wiki/${tree.species}`,
+			text: 'Wikipedia',
+			url: `https://en.wikipedia.org/wiki/${tree.species}`
 		});
 	}
 
 	if (tree.osm_id) {
 		parts.push({
-			text: "OSM",
-			url: `https://www.openstreetmap.org/node/${tree.osm_id}`,
+			text: 'OSM',
+			url: `https://www.openstreetmap.org/node/${tree.osm_id}`
 		});
 	}
 
@@ -63,12 +63,12 @@ export const formatLinks = (
 
 export const formatMeters = (value: number | undefined | null): string => {
 	if (!value) {
-		return "???";
+		return '???';
 	}
 
 	let v = value.toFixed(1);
 
-	if (v.endsWith(".0")) {
+	if (v.endsWith('.0')) {
 		v = v.slice(0, -2);
 	}
 
@@ -77,46 +77,46 @@ export const formatMeters = (value: number | undefined | null): string => {
 
 export const formatCentimeters = (value: number | undefined | null): string => {
 	if (!value) {
-		return "???";
+		return '???';
 	}
 
 	return locale.centimeters(Math.round(value * 100).toString());
 };
 
 export const formatSpecies = (value: string | null): string => {
-	if (!value || value === "Unknown") {
-		return "Unknown species";
+	if (!value || value === 'Unknown') {
+		return 'Unknown species';
 	}
 
 	return value;
 };
 
 export const formatState = (value: string | null): string => {
-	if (!value || value === "Unknown") {
-		return "Unknown species";
+	if (!value || value === 'Unknown') {
+		return 'Unknown species';
 	}
 
-	if (value === "healthy") {
+	if (value === 'healthy') {
 		return locale.stateHealthy();
 	}
 
-	if (value === "sick") {
+	if (value === 'sick') {
 		return locale.stateSick();
 	}
 
-	if (value === "dead") {
+	if (value === 'dead') {
 		return locale.stateDead();
 	}
 
-	if (value === "gone") {
+	if (value === 'gone') {
 		return locale.stateGone();
 	}
 
-	if (value === "stomp") {
+	if (value === 'stomp') {
 		return locale.stateStomp();
 	}
 
-	if (value === "deformed") {
+	if (value === 'deformed') {
 		return locale.stateDeformed();
 	}
 

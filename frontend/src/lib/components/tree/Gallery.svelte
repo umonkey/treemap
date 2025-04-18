@@ -1,40 +1,42 @@
 <script lang="ts">
-import { routes } from "$lib/routes";
-import { menuState } from "$lib/stores/treeMenu";
-import { getUser } from "$lib/stores/userStore";
-import type { ITreeFile } from "$lib/types";
-import { longtap } from "$lib/utils/longtap";
-import { formatDate } from "$lib/utils/strings";
-import { onMount } from "svelte";
-import { get } from "svelte/store";
+	import type { ITreeFile } from '$lib/types';
+	import { ExpandIcon } from '$lib/icons';
+	import { formatDate } from '$lib/utils/strings';
+	import { get } from 'svelte/store';
+	import { getUser } from '$lib/stores/userStore';
+	import { longtap } from '$lib/utils/longtap';
+	import { menuState } from '$lib/stores/treeMenu';
+	import { onMount } from 'svelte';
+	import { routes } from '$lib/routes';
 
-import ExpandIcon from "$lib/icons/ExpandIcon.svelte";
+	const { files = [] } = $props<{
+		files: ITreeFile[];
+	}>();
 
-export const files: ITreeFile[] = [];
-let ref: HTMLDivElement;
+	let ref: HTMLDivElement;
 
-const added_at = (file: ITreeFile) => {
-	if (!file.added_at || !file.added_by) {
-		return "";
-	}
+	const added_at = (file: ITreeFile) => {
+		if (!file.added_at || !file.added_by) {
+			return '';
+		}
 
-	const user = get(getUser)(file.added_by);
+		const user = get(getUser)(file.added_by);
 
-	if (user === undefined) {
-		return "";
-	}
+		if (user === undefined) {
+			return '';
+		}
 
-	const date = formatDate(file.added_at);
-	return `${date} by ${user.name}`;
-};
+		const date = formatDate(file.added_at);
+		return `${date} by ${user.name}`;
+	};
 
-const onExpand = (file: ITreeFile) => {
-	const url = routes.file(file.id);
-	window.open(url, "_blank");
-};
+	const onExpand = (file: ITreeFile) => {
+		const url = routes.file(file.id);
+		window.open(url, '_blank');
+	};
 
-// Show context menu on image long tap
-onMount(() => longtap(ref, () => menuState.update(() => true), 500));
+	// Show context menu on image long tap
+	onMount(() => longtap(ref, () => menuState.update(() => true), 500));
 </script>
 
 <div class="gallery" bind:this={ref}>

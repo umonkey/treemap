@@ -1,11 +1,11 @@
-<script>
-import TreeListPreview from "$lib/components/TreeListPreview.svelte";
-import Comment from "$lib/components/tree/Comment.svelte";
-import Header from "$lib/components/tree/Header.svelte";
-import Tabs from "$lib/components/updates/Tabs.svelte";
+<script lang="ts">
+	import TreeListPreview from '$lib/components/TreeListPreview.svelte';
+	import Comment from '$lib/components/tree/Comment.svelte';
+	import Tabs from '$lib/components/updates/Tabs.svelte';
+	import { Header } from '$lib/ui';
 
-const { data } = $props();
-const { comments } = data;
+	const { data } = $props();
+	const { comments } = data;
 </script>
 
 <Header title="Recent Comments" />

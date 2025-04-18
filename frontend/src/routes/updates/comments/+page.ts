@@ -1,9 +1,9 @@
-import { apiClient } from "$lib/api";
-import { addTrees } from "$lib/stores/treeStore";
-import { addUsers } from "$lib/stores/userStore";
-import type { IComment } from "$lib/types";
-import type { Load } from "@sveltejs/kit";
-import { error } from "@sveltejs/kit";
+import { apiClient } from '$lib/api';
+import { addTrees } from '$lib/stores/treeStore';
+import { addUsers } from '$lib/stores/userStore';
+import type { IComment } from '$lib/types';
+import type { Load } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 
 export const load: Load = async (): Promise<{
 	comments: IComment[];
@@ -15,7 +15,7 @@ export const load: Load = async (): Promise<{
 		addTrees(data.trees);
 
 		return {
-			comments: data.comments,
+			comments: data.comments
 		};
 	}
 

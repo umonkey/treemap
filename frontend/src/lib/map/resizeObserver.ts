@@ -1,4 +1,4 @@
-import type { Map } from "leaflet";
+import type { Map } from 'leaflet';
 
 export const addResizeObserver = (map: Map) => {
 	const resizeObserver = new ResizeObserver(() => {
@@ -11,8 +11,8 @@ export const addResizeObserver = (map: Map) => {
 
 	resizeObserver.observe(map.getContainer());
 
-	map.on("unload", () => {
-		console.debug("[map] Disconnecting resize observer.");
+	map.on('unload', () => {
+		console.debug('[map] Disconnecting resize observer.');
 		resizeObserver.disconnect();
 	});
 };

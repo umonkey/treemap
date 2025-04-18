@@ -1,10 +1,10 @@
-import { apiClient } from "$lib/api";
-import { addTrees } from "$lib/stores/treeStore";
-import type { Load } from "@sveltejs/kit";
-import { error } from "@sveltejs/kit";
+import { apiClient } from '$lib/api';
+import { addTrees } from '$lib/stores/treeStore';
+import type { Load } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 
 export const load: Load = async ({
-	params,
+	params
 }): Promise<{
 	treeId: string;
 }> => {
@@ -20,7 +20,7 @@ export const load: Load = async ({
 		addTrees([data]);
 
 		return {
-			treeId,
+			treeId
 		};
 	}
 

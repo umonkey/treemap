@@ -1,16 +1,16 @@
-import { apiClient } from "$lib/api";
-import { DEFAULT_ME } from "$lib/constants";
-import type { IMeResponse, IResponse } from "$lib/types";
-import { get } from "svelte/store";
-import { describe, expect, it } from "vitest";
-import { loadMe } from "./loadMe";
+import { apiClient } from '$lib/api';
+import { DEFAULT_ME } from '$lib/constants';
+import type { IMeResponse, IResponse } from '$lib/types';
+import { get } from 'svelte/store';
+import { describe, expect, it } from 'vitest';
+import { loadMe } from './loadMe';
 
-describe("hooks/loadMe", async () => {
-	it("should load a profile", async () => {
+describe('hooks/loadMe', async () => {
+	it('should load a profile', async () => {
 		apiClient.getMe = async (): Promise<IResponse<IMeResponse>> => {
 			return {
 				status: 200,
-				data: DEFAULT_ME,
+				data: DEFAULT_ME
 			};
 		};
 
@@ -24,15 +24,15 @@ describe("hooks/loadMe", async () => {
 		expect(get(data)?.name).toEqual(DEFAULT_ME.name);
 	});
 
-	it("should return an error", async () => {
+	it('should return an error', async () => {
 		apiClient.getMe = async (): Promise<IResponse<IMeResponse>> => {
 			return {
 				status: 500,
 				data: undefined,
 				error: {
-					code: "SomethingWentWrong",
-					description: "something went wrong",
-				},
+					code: 'SomethingWentWrong',
+					description: 'something went wrong'
+				}
 			};
 		};
 
@@ -43,6 +43,6 @@ describe("hooks/loadMe", async () => {
 
 		expect(get(loading)).toBe(false);
 		expect(get(data)).toBeUndefined();
-		expect(get(error)?.description).toEqual("something went wrong");
+		expect(get(error)?.description).toEqual('something went wrong');
 	});
 });

@@ -1,15 +1,15 @@
 <script lang="ts">
-import SignIn from "$lib/components/auth/SignIn.svelte";
-import SignOut from "$lib/components/auth/SignOut.svelte";
-import Header from "$lib/components/tree/Header.svelte";
-import { loadMe } from "$lib/hooks";
-import { locale } from "$lib/locale";
+	import SignIn from '$lib/components/auth/SignIn.svelte';
+	import SignOut from '$lib/components/auth/SignOut.svelte';
+	import { Header } from '$lib/ui';
+	import { loadMe } from '$lib/hooks';
+	import { locale } from '$lib/locale';
 
-const { loading, error, data, statusCode, reload } = loadMe();
+	const { loading, error, data, statusCode, reload } = loadMe();
 
-$effect(() => {
-	reload();
-});
+	$effect(() => {
+		reload();
+	});
 </script>
 
 <svelte:head>

@@ -1,18 +1,18 @@
 <script lang="ts">
-import { page } from "$app/stores";
-import { ExplorerModeLink, MapperModeLink } from "$lib/components";
-import { locale } from "$lib/locale";
-import { routes } from "$lib/routes";
-import { rewriteHash } from "$lib/utils/rewrite";
+	import { page } from '$app/stores';
+	import { ExplorerModeLink, MapperModeLink } from '$lib/components';
+	import { locale } from '$lib/locale';
+	import { routes } from '$lib/routes';
+	import { rewriteHash } from '$lib/utils/rewrite';
 
-import AppInstallButton from "$lib/components/AppInstallButton.svelte";
-import Header from "$lib/components/tree/Header.svelte";
+	import AppInstallButton from '$lib/components/AppInstallButton.svelte';
+	import { Header } from '$lib/ui';
 
-const { data } = $props();
-const { totalCount } = data;
+	const { data } = $props();
+	const { totalCount } = data;
 
-// Redirect old urls from v1.
-rewriteHash($page.url.hash);
+	// Redirect old urls from v1.
+	rewriteHash($page.url.hash);
 </script>
 
 <svelte:head>

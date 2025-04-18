@@ -1,11 +1,7 @@
-<script>
-import BellIcon from "$lib/icons/BellIcon.svelte";
-import HomeIcon from "$lib/icons/HomeIcon.svelte";
-import MapIcon from "$lib/icons/MapIcon.svelte";
-import SearchIcon from "$lib/icons/SearchIcon.svelte";
-import UserIcon from "$lib/icons/UserIcon.svelte";
-import { routes } from "$lib/routes";
-import { authStore, isAuthenticated } from "$lib/stores/authStore";
+<script lang="ts">
+	import { BellIcon, HomeIcon, MapIcon, SearchIcon, UserIcon } from '$lib/icons';
+	import { routes } from '$lib/routes';
+	import { authStore, isAuthenticated } from '$lib/stores/authStore';
 </script>
 
 <nav class="mobile">

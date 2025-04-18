@@ -1,6 +1,8 @@
-<script>
-export const width = "100%";
-export const height = "100%";
+<script lang="ts">
+	const { width = '100%', height = '100%' } = $props<{
+		width: string;
+		height: string;
+	}>();
 </script>
 
 <svg

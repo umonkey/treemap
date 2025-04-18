@@ -1,5 +1,5 @@
-<script>
-import { page } from "$app/stores";
+<script lang="ts">
+	import { page } from '$app/stores';
 </script>
 
 <div class="container">

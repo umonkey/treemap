@@ -1,26 +1,37 @@
 <script lang="ts">
-import SearchIcon from "$lib/icons/SearchIcon.svelte";
-import { locale } from "$lib/locale";
+	import { SearchIcon } from '$lib/icons';
+	import { locale } from '$lib/locale';
 
-export const value = "";
-export const onSearch = () => {};
+	const { value, onInput, onSearch } = $props<{
+		value: string;
+		onInput: (query: string) => void;
+		onSearch: (query: string) => void;
+	}>();
 
-const handleKeyDown = (event: KeyboardEvent) => {
-	if (event.key === "Enter") {
-		onSearch();
-	}
-};
+	const handleInput = (event: Event) => {
+		const input = event.target as HTMLInputElement;
+		const newValue = input.value;
+		onInput(newValue);
+	};
+
+	const handleKeyDown = (event: KeyboardEvent) => {
+		if (event.key === 'Enter') {
+			onSearch(value);
+		}
+	};
 </script>
 
 <div class="search">
 	<div class="icon"><SearchIcon width="20px" height="20px" /></div>
-	<!-- svelte-ignore a11y-autofocus -->
+	<!-- svelte-ignore a11y_autofocus -->
 	<input
 		type="search"
+		data-testid="search-input"
 		placeholder={locale.searchPrompt()}
 		autofocus
-		bind:value
-		on:keydown={handleKeyDown}
+		value
+		oninput={handleInput}
+		onkeydown={handleKeyDown}
 	/>
 </div>
 

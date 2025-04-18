@@ -2,11 +2,11 @@
  * Load trees ordered by height
  */
 
-import { apiClient } from "$lib/api";
-import { addTrees } from "$lib/stores/treeStore";
-import { addUsers } from "$lib/stores/userStore";
-import type { IError, ITree } from "$lib/types";
-import { writable } from "svelte/store";
+import { apiClient } from '$lib/api';
+import { addTrees } from '$lib/stores/treeStore';
+import { addUsers } from '$lib/stores/userStore';
+import type { IError, ITree } from '$lib/types';
+import { writable } from 'svelte/store';
 
 export const loadTreesByHeight = () => {
 	const loading = writable<boolean>(true);

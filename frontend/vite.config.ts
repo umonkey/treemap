@@ -1,9 +1,9 @@
-import { sentrySvelteKit } from "@sentry/sveltekit";
+import { sentrySvelteKit } from '@sentry/sveltekit';
 /// <reference types="vitest" />
 /// <reference types="vite/client" />
 
-import { sveltekit } from "@sveltejs/kit/vite";
-import { defineConfig } from "vitest/config";
+import { sveltekit } from '@sveltejs/kit/vite';
+import { defineConfig } from 'vitest/config';
 
 const getPlugins = () => {
 	const plugins = [];
@@ -12,11 +12,11 @@ const getPlugins = () => {
 		plugins.push(
 			sentrySvelteKit({
 				sourceMapsUploadOptions: {
-					org: "trees-of-yerevan",
-					project: "treemap-v2",
-					authToken: process.env.VITE_SENTRY_AUTH_TOKEN,
-				},
-			}),
+					org: 'trees-of-yerevan',
+					project: 'treemap-v2',
+					authToken: process.env.VITE_SENTRY_AUTH_TOKEN
+				}
+			})
 		);
 	}
 
@@ -29,14 +29,14 @@ export default defineConfig({
 	plugins: getPlugins(),
 
 	test: {
-		environment: "jsdom",
-		include: ["src/**/*.{test,spec}.{js,ts}"],
-		setupFiles: ["./vitest.setup.ts"],
+		environment: 'jsdom',
+		include: ['src/**/*.{test,spec}.{js,ts}'],
+		setupFiles: ['./vitest.setup.ts']
 	},
 
 	resolve: process.env.VITEST
 		? {
-				conditions: ["browser"],
+				conditions: ['browser']
 			}
-		: undefined,
+		: undefined
 });

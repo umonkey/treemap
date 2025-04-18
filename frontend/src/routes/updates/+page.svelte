@@ -1,7 +1,7 @@
-<script>
-import AuthWrapper from "$lib/components/auth/AuthWrapper.svelte";
-import Header from "$lib/components/tree/Header.svelte";
-import Tabs from "$lib/components/updates/Tabs.svelte";
+<script lang="ts">
+	import AuthWrapper from '$lib/components/auth/AuthWrapper.svelte';
+	import Tabs from '$lib/components/updates/Tabs.svelte';
+	import { Header } from '$lib/ui';
 </script>
 
 <Header title="Updates" />

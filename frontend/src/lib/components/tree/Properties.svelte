@@ -1,8 +1,11 @@
-<script>
-import { locale } from "$lib/locale";
-import { formatCentimeters, formatMeters, formatYear } from "$lib/utils/trees";
+<script lang="ts">
+	import { locale } from '$lib/locale';
+	import { formatCentimeters, formatMeters, formatYear } from '$lib/utils/trees';
+	import type { ITree } from '$lib/types';
 
-const { tree } = $props();
+	const { tree } = $props<{
+		tree: ITree;
+	}>();
 </script>
 
 <div class="properties">

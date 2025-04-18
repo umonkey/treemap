@@ -1,37 +1,30 @@
 <script lang="ts">
-import { FEATURES } from "$lib/features";
-import { like, preloadMeLikes, unlike } from "$lib/likes";
-import { routes } from "$lib/routes";
-import { isLiked } from "$lib/stores/likeStore";
-import type { ITree } from "$lib/types";
-import { onMount } from "svelte";
+	import { FEATURES } from '$lib/features';
+	import { like, preloadMeLikes, unlike } from '$lib/likes';
+	import { routes } from '$lib/routes';
+	import { isLiked } from '$lib/stores/likeStore';
+	import type { ITree } from '$lib/types';
+	import { onMount } from 'svelte';
+	import ShareButton from '$lib/components/tree/ShareButton.svelte';
+	import { CameraIcon, ChatIcon, HeartIcon, HeartSolidIcon, SaveIcon } from '$lib/icons';
 
-import ShareButton from "$lib/components/tree/ShareButton.svelte";
-import CameraIcon from "$lib/icons/CameraIcon.svelte";
-import ChatIcon from "$lib/icons/ChatIcon.svelte";
-import HeartIcon from "$lib/icons/HeartIcon.svelte";
-import HeartSolidIcon from "$lib/icons/HeartSolidIcon.svelte";
-import SaveIcon from "$lib/icons/SaveIcon.svelte";
+	const { tree } = $props<{
+		tree: ITree;
+	}>();
 
-const {
-	tree,
-}: {
-	tree: ITree;
-} = $props();
+	const isTreeLiked = $derived($isLiked(tree.id));
 
-const isTreeLiked = $derived($isLiked(tree.id));
+	onMount(preloadMeLikes);
 
-onMount(preloadMeLikes);
+	const onLike = async (e: Event) => {
+		e.preventDefault();
 
-const onLike = async (e: Event) => {
-	e.preventDefault();
-
-	if (!isTreeLiked) {
-		await like(tree.id);
-	} else {
-		await unlike(tree.id);
-	}
-};
+		if (!isTreeLiked) {
+			await like(tree.id);
+		} else {
+			await unlike(tree.id);
+		}
+	};
 </script>
 
 <div class="actions">

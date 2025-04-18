@@ -1,12 +1,15 @@
 <script lang="ts">
-const { total, complete } = $props();
+	const { total, complete } = $props<{
+		total: number;
+		complete: number;
+	}>();
 
-console.debug(`[progress] total=${total}, complete=${complete}`);
+	console.debug(`[progress] total=${total}, complete=${complete}`);
 
-const width = () => {
-	const val = Math.round((complete / total) * 100);
-	return `${val}%`;
-};
+	const width = () => {
+		const val = Math.round((complete / total) * 100);
+		return `${val}%`;
+	};
 </script>
 
 <div class="progress">

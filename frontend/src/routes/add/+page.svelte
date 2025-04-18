@@ -1,79 +1,32 @@
 <script lang="ts">
-import { goto } from "$app/navigation";
-import { apiClient } from "$lib/api";
-import { locale } from "$lib/locale";
-import { routes } from "$lib/routes";
-import { isMapperMode } from "$lib/stores/modeStore";
-import { toast } from "@zerodevx/svelte-toast";
+	import { goto } from '$app/navigation';
+	import { locale } from '$lib/locale';
+	import { routes } from '$lib/routes';
+	import { isMapperMode } from '$lib/stores/modeStore';
+	import { AddTreeForm } from '$lib/forms';
+	import type { ITree } from '$lib/types';
 
-import AuthWrapper from "$lib/components/auth/AuthWrapper.svelte";
-import Button from "$lib/components/forms/Button.svelte";
-import CanopyInput from "$lib/components/forms/CanopyInput.svelte";
-import CircumferenceInput from "$lib/components/forms/CircumferenceInput.svelte";
-import HeightInput from "$lib/components/forms/HeightInput.svelte";
-import LocationInput from "$lib/components/forms/LocationInput.svelte";
-import NotesInput from "$lib/components/forms/NotesInput.svelte";
-import SpeciesInput from "$lib/components/forms/SpeciesInput.svelte";
-import StateInput from "$lib/components/forms/StateInput.svelte";
-import YearInput from "$lib/components/forms/YearInput.svelte";
-import Header from "$lib/components/tree/Header.svelte";
+	import AuthWrapper from '$lib/components/auth/AuthWrapper.svelte';
+	import { Header } from '$lib/ui';
 
-const { data } = $props();
+	const { data } = $props<{
+		data: {
+			lat: number;
+			lng: number;
+		};
+	}>();
 
-let busy = $state(false);
+	const handleAdded = (tree: ITree) => {
+		if ($isMapperMode) {
+			goto(routes.mapPreview(tree.id));
+		} else {
+			goto(routes.treeDetails(tree.id));
+		}
+	};
 
-let species = $state("");
-let height = $state<number | null>(null);
-let diameter = $state<number | null>(null);
-let circumference = $state<number | null>(null);
-let treeState = $state<string>("unknown");
-let notes = $state("");
-let location = $state([data.lat, data.lng]);
-let year = $state<number | null>(null);
-
-const onSave = () => {
-	busy = true;
-
-	apiClient
-		.addTree({
-			points: [
-				{
-					lat: location[0],
-					lon: location[1],
-				},
-			],
-			species,
-			height,
-			diameter,
-			circumference,
-			state: treeState,
-			notes,
-			year,
-		})
-		.then((res) => {
-			if (res.data) {
-				if ($isMapperMode) {
-					goto(routes.mapPreview(res.data.trees[0].id));
-				} else {
-					goto(routes.treeDetails(res.data.trees[0].id));
-				}
-			} else {
-				console.error(`Error ${res.status} adding tree.`);
-				toast.push("Error adding tree.");
-			}
-		})
-		.catch((e) => {
-			console.error(`Error adding tree: ${e}.`);
-			toast.push("Error adding tree.");
-		})
-		.finally(() => {
-			busy = false;
-		});
-};
-
-const onCancel = () => {
-	history.back();
-};
+	const handleCancel = () => {
+		history.back();
+	};
 </script>
 
 <svelte:head>
@@ -84,22 +37,7 @@ const onCancel = () => {
 
 <div class="form">
 	<AuthWrapper>
-		<LocationInput bind:value={location} label={locale.addConfirmLocation()} />
-		<SpeciesInput bind:value={species} />
-		<HeightInput value={height} onChange={(value: number | null) => (height = value)} />
-		<CanopyInput value={diameter} onChange={(value: number | null) => (diameter = value)} />
-		<CircumferenceInput
-			value={circumference}
-			onChange={(value: number) => (circumference = value)}
-		/>
-		<StateInput value={treeState} onChange={(value: string) => (treeState = value)} />
-		<YearInput value={year} onChange={(value: number) => (year = value)} />
-		<NotesInput bind:value={notes} />
-
-		<div class="buttons">
-			<Button type="submit" label={locale.addConfirmButton()} onClick={onSave} disabled={busy} />
-			<Button type="cancel" label={locale.addCancelButton()} onClick={onCancel} disabled={busy} />
-		</div>
+		<AddTreeForm lat={data.lat} lng={data.lng} onAdded={handleAdded} onCancel={handleCancel} />
 	</AuthWrapper>
 </div>
 

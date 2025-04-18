@@ -1,13 +1,16 @@
 <script lang="ts">
-import { routes } from "$lib/routes";
-import { getTree } from "$lib/stores/treeStore";
-import { formatSpecies } from "$lib/utils/trees";
-import { get } from "svelte/store";
+	import { routes } from '$lib/routes';
+	import { getTree } from '$lib/stores/treeStore';
+	import { formatSpecies } from '$lib/utils/trees';
+	import { get } from 'svelte/store';
 
-import LazyTreeThumbnail from "$lib/components/LazyTreeThumbnail.svelte";
+	import LazyTreeThumbnail from '$lib/components/LazyTreeThumbnail.svelte';
 
-const { id } = $props();
-const tree = get(getTree)(id);
+	const { id } = $props<{
+		id: string;
+	}>();
+
+	const tree = get(getTree)(id);
 </script>
 
 <div class="tree">

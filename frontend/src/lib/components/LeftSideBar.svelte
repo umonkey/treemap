@@ -1,15 +1,15 @@
 <script lang="ts">
-import { locale } from "$lib/locale";
-import { routes } from "$lib/routes";
-
-import BellIcon from "$lib/icons/BellIcon.svelte";
-import ChartIcon from "$lib/icons/ChartIcon.svelte";
-import HomeIcon from "$lib/icons/HomeIcon.svelte";
-import LearnIcon from "$lib/icons/LearnIcon.svelte";
-import MapIcon from "$lib/icons/MapIcon.svelte";
-import PlusIcon from "$lib/icons/PlusIcon.svelte";
-import SearchIcon from "$lib/icons/SearchIcon.svelte";
-import UserIcon from "$lib/icons/UserIcon.svelte";
+	import { locale } from '$lib/locale';
+	import { routes } from '$lib/routes';
+	import {
+		BellIcon,
+		ChartIcon,
+		HomeIcon,
+		LearnIcon,
+		MapIcon,
+		SearchIcon,
+		UserIcon
+	} from '$lib/icons';
 </script>
 
 <aside class="left">
@@ -56,12 +56,6 @@ import UserIcon from "$lib/icons/UserIcon.svelte";
 				<span>{locale.sideLearn()}</span>
 			</a>
 		</li>
-		<li>
-			<a href="/add">
-				<span class="icon"><PlusIcon /></span>
-				<span>{locale.sideAdd()}</span>
-			</a>
-		</li>
 	</ul>
 </aside>
 
@@ -79,28 +73,28 @@ import UserIcon from "$lib/icons/UserIcon.svelte";
 		font-size: 18px;
 
 		color: var(--text-color);
-	}
 
-	ul {
-		list-style-type: none;
-	}
+		ul {
+			list-style-type: none;
+		}
 
-	a {
-		display: flex;
-		flex-direction: row;
-		gap: var(--gap);
-		line-height: 24px;
-		color: inherit;
-		text-decoration: none;
-		padding: 10px 0;
-		margin-bottom: 10px;
-	}
+		a {
+			display: flex;
+			flex-direction: row;
+			gap: var(--gap);
+			line-height: 24px;
+			color: inherit;
+			text-decoration: none;
+			padding: 10px 0;
+			margin-bottom: 10px;
+		}
 
-	.icon {
-		flex-basis: 30px;
-		flex-shrink: 0;
-		flex-grow: 0;
-		height: 24px;
+		.icon {
+			flex-basis: 30px;
+			flex-shrink: 0;
+			flex-grow: 0;
+			height: 24px;
+		}
 	}
 
 	@media (max-width: 480px) {

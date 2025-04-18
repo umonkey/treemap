@@ -1,4 +1,4 @@
 export enum ModeEnum {
-	Mapper = "mapper",
-	Explorer = "explorer",
+	Mapper = 'mapper',
+	Explorer = 'explorer'
 }

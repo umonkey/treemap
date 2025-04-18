@@ -1,17 +1,20 @@
 <script lang="ts">
-import { locale } from "$lib/locale";
-import { routes } from "$lib/routes";
-import { getUser } from "$lib/stores/userStore";
-import { formatDate } from "$lib/utils/strings";
-import { formatSpecies } from "$lib/utils/trees";
-import { get } from "svelte/store";
+	import { locale } from '$lib/locale';
+	import { routes } from '$lib/routes';
+	import { getUser } from '$lib/stores/userStore';
+	import { formatDate } from '$lib/utils/strings';
+	import { formatSpecies } from '$lib/utils/trees';
+	import { get } from 'svelte/store';
+	import type { ITree } from '$lib/types';
+	import LazyTreeThumbnail from '$lib/components/LazyTreeThumbnail.svelte';
 
-import LazyTreeThumbnail from "$lib/components/LazyTreeThumbnail.svelte";
+	const { tree, extra = undefined } = $props<{
+		tree: ITree;
+		extra?: string | undefined;
+	}>();
 
-const { tree, extra = undefined } = $props();
-
-const user = get(getUser)(tree.added_by);
-const date = formatDate(tree.added_at);
+	const user = get(getUser)(tree.added_by);
+	const date = formatDate(tree.added_at);
 </script>
 
 <div class="tree">

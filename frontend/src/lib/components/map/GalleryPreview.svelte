@@ -1,8 +1,11 @@
-<script>
-import { apiClient } from "$lib/api";
-import { routes } from "$lib/routes";
+<script lang="ts">
+	import { apiClient } from '$lib/api';
+	import { routes } from '$lib/routes';
+	import type { ITree } from '$lib/types';
 
-const { tree } = $props();
+	const { tree } = $props<{
+		tree: ITree;
+	}>();
 </script>
 
 <div class="gallery">

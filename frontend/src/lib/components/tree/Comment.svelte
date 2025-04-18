@@ -1,13 +1,13 @@
 <script lang="ts">
-import { getUser } from "$lib/stores/userStore";
-import type { IComment } from "$lib/types";
-import { formatDate } from "$lib/utils/strings";
-import { get } from "svelte/store";
+	import { getUser } from '$lib/stores/userStore';
+	import type { IComment } from '$lib/types';
+	import { formatDate } from '$lib/utils/strings';
+	import { get } from 'svelte/store';
 
-export let comment: IComment;
+	export let comment: IComment;
 
-const user = get(getUser)(comment.added_by);
-const date = formatDate(comment.added_at);
+	const user = get(getUser)(comment.added_by);
+	const date = formatDate(comment.added_at);
 </script>
 
 <div class="comment">

@@ -1,13 +1,13 @@
-<script>
-import { formatSpecies } from "$lib/utils/trees";
+<script lang="ts">
+	import { formatSpecies } from '$lib/utils/trees';
 
-import Header from "$lib/components/tree/Header.svelte";
-import TreeMenu from "$lib/components/tree/Menu.svelte";
-import Tabs from "$lib/components/tree/Tabs.svelte";
-import Title from "$lib/components/tree/Title.svelte";
+	import TreeMenu from '$lib/components/tree/Menu.svelte';
+	import Tabs from '$lib/components/tree/Tabs.svelte';
+	import Title from '$lib/components/tree/Title.svelte';
+	import { Header } from '$lib/ui';
 
-const { data } = $props();
-const tree = data.tree;
+	const { data } = $props();
+	const tree = data.tree;
 </script>
 
 <svelte:head>

@@ -1,21 +1,21 @@
 <script lang="ts">
-import Header from "$lib/components/tree/Header.svelte";
-import NewTreesListItem from "$lib/components/updates/NewTreesListItem.svelte";
-import { loadTreesByCircumference } from "$lib/hooks";
+	import NewTreesListItem from '$lib/components/updates/NewTreesListItem.svelte';
+	import { loadTreesByCircumference } from '$lib/hooks';
+	import { Header } from '$lib/ui';
 
-const { loading, error, data, reload } = loadTreesByCircumference();
+	const { loading, error, data, reload } = loadTreesByCircumference();
 
-$effect(() => {
-	reload();
-});
+	$effect(() => {
+		reload();
+	});
 
-const format = (value: number | null): string => {
-	if (!value) {
-		return "no data";
-	}
+	const format = (value: number | null): string => {
+		if (!value) {
+			return 'no data';
+		}
 
-	return `${(value * 100).toFixed(0)} cm`;
-};
+		return `${(value * 100).toFixed(0)} cm`;
+	};
 </script>
 
 <svelte:head>

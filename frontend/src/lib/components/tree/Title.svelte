@@ -1,13 +1,16 @@
-<script>
-import DotsIcon from "$lib/icons/DotsIcon.svelte";
-import { routes } from "$lib/routes";
-import { menuState } from "$lib/stores/treeMenu";
+<script lang="ts">
+	import { DotsIcon } from '$lib/icons';
+	import { routes } from '$lib/routes';
+	import { menuState } from '$lib/stores/treeMenu';
 
-const { title, address = undefined } = $props();
+	const { title, address = undefined } = $props<{
+		title: string;
+		address?: string;
+	}>();
 
-const onMenu = () => {
-	menuState.update((value) => !value);
-};
+	const onMenu = () => {
+		menuState.update((value) => !value);
+	};
 </script>
 
 <div class="title">

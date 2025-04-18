@@ -1,10 +1,10 @@
 <script lang="ts">
-import Header from "$lib/components/tree/Header.svelte";
-import NewTreesListItem from "$lib/components/updates/NewTreesListItem.svelte";
-import Tabs from "$lib/components/updates/Tabs.svelte";
+	import NewTreesListItem from '$lib/components/updates/NewTreesListItem.svelte';
+	import Tabs from '$lib/components/updates/Tabs.svelte';
+	import { Header } from '$lib/ui';
 
-const { data } = $props();
-const { trees } = data;
+	const { data } = $props();
+	const { trees } = data;
 </script>
 
 <svelte:head>

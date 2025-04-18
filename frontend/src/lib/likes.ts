@@ -1,15 +1,15 @@
-import { apiClient } from "$lib/api";
-import { haveOwnLikes, likeStore } from "$lib/stores/likeStore";
-import type { ILike } from "$lib/types";
-import { get } from "svelte/store";
+import { apiClient } from '$lib/api';
+import { haveOwnLikes, likeStore } from '$lib/stores/likeStore';
+import type { ILike } from '$lib/types';
+import { get } from 'svelte/store';
 
 export const preloadMeLikes = async () => {
 	if (get(haveOwnLikes)) {
-		console.debug("[likes] Already have own likes.");
+		console.debug('[likes] Already have own likes.');
 		return;
 	}
 
-	console.debug("[likes] Preloading own likes.");
+	console.debug('[likes] Preloading own likes.');
 
 	const { status, data } = await apiClient.getMeLikes();
 

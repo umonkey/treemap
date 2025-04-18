@@ -1,5 +1,5 @@
-import { ls } from "$lib/utils/localStorage";
-import { derived, writable } from "svelte/store";
+import { ls } from '$lib/utils/localStorage';
+import { derived, writable } from 'svelte/store';
 
 interface IMapLayers {
 	base: string | undefined;
@@ -7,25 +7,19 @@ interface IMapLayers {
 }
 
 const getDefaultState = (): IMapLayers => {
-	const isDark =
-		window?.matchMedia("(prefers-color-scheme: dark)")?.matches ?? false;
+	const isDark = window?.matchMedia('(prefers-color-scheme: dark)')?.matches ?? false;
 
 	return {
-		base: isDark ? "OSM Dark" : "OSM Light",
-		drone: false,
+		base: isDark ? 'OSM Dark' : 'OSM Light',
+		drone: false
 	};
 };
 
-export const mapLayerStore = writable<IMapLayers>(
-	ls.read("mapLayerStore") ?? getDefaultState(),
-);
+export const mapLayerStore = writable<IMapLayers>(ls.read('mapLayerStore') ?? getDefaultState());
 
 mapLayerStore.subscribe((value: IMapLayers) => {
-	ls.write("mapLayerStore", value);
+	ls.write('mapLayerStore', value);
 });
 
 export const baseLayer = derived(mapLayerStore, ($mapStore) => $mapStore?.base);
-export const droneLayer = derived(
-	mapLayerStore,
-	($mapStore) => $mapStore?.drone,
-);
+export const droneLayer = derived(mapLayerStore, ($mapStore) => $mapStore?.drone);
