@@ -22,14 +22,14 @@ const { data } = $props();
 
 let busy = $state(false);
 
-const species = $state("");
-const height = $state<number | null>(null);
-const diameter = $state<number | null>(null);
-const circumference = $state<number | null>(null);
-const treeState = $state<string>("unknown");
-const notes = $state("");
-const location = $state([data.lat, data.lng]);
-const year = $state<number | null>(null);
+let species = $state("");
+let height = $state<number | null>(null);
+let diameter = $state<number | null>(null);
+let circumference = $state<number | null>(null);
+let treeState = $state<string>("unknown");
+let notes = $state("");
+let location = $state([data.lat, data.lng]);
+let year = $state<number | null>(null);
 
 const onSave = () => {
 	busy = true;

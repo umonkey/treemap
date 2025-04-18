@@ -32,6 +32,6 @@ serve:
 	VITE_API_ROOT=$(API_ROOT) npm run dev -- --host
 
 test:
-	npm run test:unit -- run
+	VITE_API_ROOT="https://api.treemaps.app/" npm run test:unit -- run
 
 .PHONY: build

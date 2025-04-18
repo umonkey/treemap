@@ -11,7 +11,14 @@ import { locale } from "$lib/locale";
 import type { ISpecies } from "$lib/types";
 import { onMount } from "svelte";
 
-let { value = $bindable() } = $props();
+const {
+	value,
+	onChange,
+}: {
+	value: string;
+	onChange: (value: string) => void;
+} = $props();
+
 const { data: suggested, reload } = loadSuggestedSpecies();
 
 let options: ISpecies[] = $state([]);
@@ -30,17 +37,24 @@ const handleInput = (event: Event) => {
 
 const handleOptionClick = (selectedValue: string) => {
 	showOptions = false;
-	value = selectedValue;
+	onChange(selectedValue);
 };
 
 const handleSuggestionClick = (sug: string) => {
-	value = sug;
+	onChange(sug);
 };
 
 const handleFocusOut = () => {
 	setTimeout(() => {
 		showOptions = false;
 	}, 200);
+};
+
+const handleChange = (e: Event) => {
+	if (e.target) {
+		const input = e.target as HTMLInputElement;
+		onChange(input.value ?? "");
+	}
 };
 
 onMount(() => reload());
@@ -52,14 +66,15 @@ onMount(() => reload());
 		<input
 			type="text"
 			autocomplete="off"
-			bind:value
+			{value}
 			placeholder={locale.speciesPrompt()}
 			oninput={handleInput}
 			onfocusout={handleFocusOut}
+			onchange={handleChange}
 		/>
 
 		{#if showOptions}
-			<ul class="options">
+			<ul class="options" aria-label="suggestions">
 				{#each options as option}
 					<!-- svelte-ignore a11y_click_events_have_key_events -->
 					<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
@@ -72,7 +87,7 @@ onMount(() => reload());
 	</label>
 
 	{#if $suggested}
-		<ul class="suggested">
+		<ul class="suggested" aria-label="history">
 			{#each $suggested as option}
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
