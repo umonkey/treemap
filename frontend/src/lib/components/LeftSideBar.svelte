@@ -1,15 +1,7 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
-	import {
-		BellIcon,
-		ChartIcon,
-		HomeIcon,
-		LearnIcon,
-		MapIcon,
-		SearchIcon,
-		UserIcon
-	} from '$lib/icons';
+	import { BellIcon, HomeIcon, LearnIcon, MapIcon, SearchIcon, UserIcon } from '$lib/icons';
 </script>
 
 <aside class="left">
@@ -36,12 +28,6 @@
 			<a href={routes.newTrees()}>
 				<span class="icon"><BellIcon /></span>
 				<span>{locale.sideUpdates()}</span>
-			</a>
-		</li>
-		<li>
-			<a href={routes.stats()}>
-				<span class="icon"><ChartIcon /></span>
-				<span>{locale.sideReports()}</span>
 			</a>
 		</li>
 		<li>

@@ -8,6 +8,7 @@
 	import AuthWrapper from '$lib/components/auth/AuthWrapper.svelte';
 	import {
 		Button,
+		Buttons,
 		CanopyInput,
 		CircumferenceInput,
 		Header,
@@ -113,10 +114,10 @@
 		<LocationInput value={location} onChange={handleLocationChange} />
 		<NotesInput value={notes} onChange={handleNotesChange} />
 
-		<div class="buttons">
+		<Buttons>
 			<Button type="submit" label={locale.editSave()} onClick={onSave} />
 			<Button type="cancel" label={locale.editCancel()} onClick={onCancel} />
-		</div>
+		</Buttons>
 	</AuthWrapper>
 </div>
 

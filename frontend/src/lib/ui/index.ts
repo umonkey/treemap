@@ -15,6 +15,7 @@ export { default as HeightInput } from './height-input/HeightInput.svelte';
 export { default as HelpButton } from './help-button/HelpButton.svelte';
 export { default as LocationInput } from './location-input/LocationInput.svelte';
 export { default as LocationPicker } from './location-picker/LocationPicker.svelte';
+export { default as ModeSwitcher } from './mode-switcher/ModeSwitcher.svelte';
 export { default as NotesInput } from './notes-input/NotesInput.svelte';
 export { default as NumberInput } from './number-input/NumberInput.svelte';
 export { default as SpeciesInput } from './species-input/SpeciesInput.svelte';

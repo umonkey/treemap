@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { ExplorerModeLink, MapperModeLink } from '$lib/components';
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
 	import { rewriteHash } from '$lib/utils/rewrite';
+	import { ModeSwitcher } from '$lib/ui';
 
 	import AppInstallButton from '$lib/components/AppInstallButton.svelte';
 	import { Header } from '$lib/ui';
@@ -59,31 +59,11 @@
 
 	<AppInstallButton />
 
-	<h2>{locale.chooseFocus()}</h2>
-
-	<ul>
-		<li><MapperModeLink /></li>
-		<li><ExplorerModeLink /></li>
-	</ul>
+	<ModeSwitcher />
 </div>
 
 <style>
 	.home {
 		padding: 0 var(--gap);
-	}
-
-	h2 {
-		margin-top: 40px;
-		font-weight: 400;
-		font-size: 20px;
-		opacity: 0.75;
-	}
-
-	ul {
-		line-height: 1.5em;
-
-		li {
-			margin: 5px 0;
-		}
 	}
 </style>

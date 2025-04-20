@@ -11,6 +11,7 @@
 
 	import {
 		Button,
+		Buttons,
 		CanopyInput,
 		CircumferenceInput,
 		HeightInput,
@@ -107,7 +108,11 @@
 	};
 </script>
 
-<LocationInput value={location} label={locale.addConfirmLocation()} onChange={handleLocationChange} />
+<LocationInput
+	value={location}
+	label={locale.addConfirmLocation()}
+	onChange={handleLocationChange}
+/>
 <SpeciesInput value={species} onChange={handleSpeciesChange} />
 <HeightInput value={height} onChange={(value: number | null) => (height = value)} />
 <CanopyInput value={diameter} onChange={(value: number | null) => (diameter = value)} />
@@ -116,7 +121,7 @@
 <YearInput value={year} onChange={handleYearChange} />
 <NotesInput value={notes} onChange={handleNotesChange} />
 
-<div class="buttons">
+<Buttons>
 	<Button type="submit" label={locale.addConfirmButton()} onClick={onSave} disabled={busy} />
 	<Button type="cancel" label={locale.addCancelButton()} onClick={onCancel} disabled={busy} />
-</div>
+</Buttons>
