@@ -14,6 +14,7 @@
 	import { loadTree } from '$lib/hooks';
 	import { routes } from '$lib/routes';
 	import LazyImage from '$lib/components/LazyImage.svelte';
+	import DefaultImage from '$lib/assets/tree.jpg';
 
 	const { tree } = $props<{
 		tree: ITree;
@@ -49,7 +50,7 @@
 						<LazyImage
 							src={routes.file(file.small_id)}
 							alt="See how good is this tree."
-							fallback="/tree.jpg"
+							fallback={DefaultImage}
 						/>
 					</a>
 				</div>
@@ -58,7 +59,7 @@
 			{#if $data.files.length === 0 && !$isMapperMode}
 				<div>
 					<a href={routes.treeDetails(tree.id)} title="No photos of this tree.">
-						<LazyImage src="/tree.jpg" alt="No photos for this tree." fallback="/tree.jpg" />
+						<LazyImage src={DefaultImage} alt="No photos for this tree." fallback={DefaultImage} />
 					</a>
 				</div>
 			{/if}

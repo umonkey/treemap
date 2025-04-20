@@ -8,6 +8,7 @@
 	import { menuState } from '$lib/stores/treeMenu';
 	import { onMount } from 'svelte';
 	import { routes } from '$lib/routes';
+	import FALLBACK from '$lib/assets/tree.jpg';
 
 	const { files = [] } = $props<{
 		files: ITreeFile[];
@@ -54,7 +55,7 @@
 			</div>
 		{:else}
 			<div>
-				<img src="/tree.jpg" alt="no photos of this tree" />
+				<img src={FALLBACK} alt="no photos of this tree" />
 			</div>
 		{/each}
 	</div>

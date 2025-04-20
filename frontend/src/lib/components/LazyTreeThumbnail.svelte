@@ -1,21 +1,21 @@
 <script lang="ts">
 	import { routes } from '$lib/routes';
 	import type { ITree } from '$lib/types';
+	import FALLBACK from '$lib/assets/tree.jpg';
 
 	const { tree } = $props<{
 		tree: ITree;
 	}>();
 
-	const fallback = '/tree.jpg';
-	const src = tree.thumbnail_id ? routes.file(tree.thumbnail_id) : fallback;
+	const src = tree.thumbnail_id ? routes.file(tree.thumbnail_id) : FALLBACK;
 	const alt = tree.species;
 
 	let img: HTMLImageElement;
 
 	const handleError = () => {
-		if (img.src !== fallback) {
-			console.debug(`Error loading image ${src}, falling back to ${fallback}`);
-			img.src = fallback;
+		if (img.src !== FALLBACK) {
+			console.debug(`Error loading image ${src}, falling back to ${FALLBACK}`);
+			img.src = FALLBACK;
 		}
 	};
 
