@@ -1,4 +1,10 @@
 <script lang="ts">
+	/**
+	 * This is part of the tree page, an additional header
+	 * with the tree title and the (...) button for additional
+	 * actions.
+	 **/
+
 	import { DotsIcon } from '$lib/icons';
 	import { routes } from '$lib/routes';
 	import { menuState } from '$lib/stores/treeMenu';
@@ -13,7 +19,7 @@
 	};
 </script>
 
-<div class="title">
+<div class="tree-title">
 	<h1>
 		<strong>{title}</strong>
 		{#if address}
@@ -25,7 +31,7 @@
 </div>
 
 <style>
-	.title {
+	.tree-title {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
@@ -34,6 +40,8 @@
 		gap: var(--gap);
 
 		h1 {
+			flex-grow: 1;
+
 			font-size: 1rem;
 			font-weight: 400;
 			line-height: 50px;
@@ -44,14 +52,19 @@
 			text-overflow: ellipsis;
 		}
 
-		.edit {
-			flex-basis: 25px;
+		button {
+			flex-basis: 50px;
 			flex-shrink: 0;
 			flex-grow: 0;
+
 			border: none;
 			background-color: transparent;
 			cursor: pointer;
 			color: var(--icon-color-secondary);
+
+			height: 50px;
+			width: 50px;
+			padding: 10px;
 		}
 	}
 </style>
