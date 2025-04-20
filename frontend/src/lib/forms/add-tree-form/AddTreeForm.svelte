@@ -101,9 +101,13 @@
 	const handleCircumferenceChange = (value: number | null) => {
 		circumference = value;
 	};
+
+	const handleLocationChange = (value: number[]) => {
+		location = value;
+	};
 </script>
 
-<LocationInput bind:value={location} label={locale.addConfirmLocation()} />
+<LocationInput value={location} label={locale.addConfirmLocation()} onChange={handleLocationChange} />
 <SpeciesInput value={species} onChange={handleSpeciesChange} />
 <HeightInput value={height} onChange={(value: number | null) => (height = value)} />
 <CanopyInput value={diameter} onChange={(value: number | null) => (diameter = value)} />

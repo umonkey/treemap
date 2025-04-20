@@ -3,9 +3,15 @@
 	import { MapIcon } from '$lib/icons';
 	import { locale } from '$lib/locale';
 
-	let { value = $bindable([]), hint = undefined, label = locale.locationLabel() } = $props();
+	const { value, hint, label, onChange } = $props<{
+		value: number[];
+		hint?: string;
+		label?: string;
+		onChange: (value: number[]) => void;
+	}>();
 
-	let showMap = $state(false);
+	let showMap = $state<boolean>(false);
+	let currentValue = $state<number[]>(value);
 
 	const formatLocation = (value: number[]): string => {
 		return `${value[0].toFixed(7)}, ${value[1].toFixed(7)}`;
@@ -15,17 +21,22 @@
 		showMap = !showMap;
 	};
 
+	const round = (value: number): number => {
+		return Math.round(value * 10000000) / 10000000;
+	};
+
 	const handleMove = (center: number[]) => {
-		value = center;
+		currentValue = center;
+		onChange([round(center[0]), round(center[1])]);
 	};
 </script>
 
 <div class="input">
 	<label>
-		<span>{label}</span>
+		<span>{label ?? locale.locationLabel()}</span>
 
 		<div class="group">
-			<input type="text" value={formatLocation(value)} readonly={true} />
+			<input type="text" value={formatLocation(currentValue)} readonly={true} />
 			<button type="button" onclick={toggleMap}><MapIcon /></button>
 		</div>
 
