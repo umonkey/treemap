@@ -8,10 +8,9 @@
 
 	import { CommentForm } from '$lib/ui';
 	import Comment from '$lib/components/tree/Comment.svelte';
-	import TreeMenu from '$lib/components/tree/Menu.svelte';
 	import Tabs from '$lib/components/tree/Tabs.svelte';
 	import Title from '$lib/components/tree/Title.svelte';
-	import { Header } from '$lib/ui';
+	import { Header, TreeContextMenu } from '$lib/ui';
 
 	const { data } = $props();
 	const tree = data.tree;
@@ -43,7 +42,7 @@
 <Header title="Tree" />
 <Title title={formatSpecies(tree.species)} address={tree.address} />
 <Tabs tree={tree.id} active="comments" />
-<TreeMenu id={tree.id} />
+<TreeContextMenu id={tree.id} />
 
 <div class="container">
 	{#if comments.length > 0}

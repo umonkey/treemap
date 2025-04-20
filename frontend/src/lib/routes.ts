@@ -24,6 +24,7 @@ export const routes = {
 	statsStreets: () => '/stats/streets',
 	treeAdd: (lat: number, lng: number) => `/add?lat=${lat}&lng=${lng}`,
 	treeComments: (id: string) => `/tree/${id}/comments`,
+	treeDelete: (id: string) => `/tree/${id}/delete`,
 	treeDetails: (id: string) => `/tree/${id}`,
 	treeEdit: (id: string) => `/tree/${id}/edit`,
 	treeHistory: (id: string) => `/tree/${id}/history`,

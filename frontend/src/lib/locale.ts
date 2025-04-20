@@ -67,6 +67,10 @@ class EnglishLocale {
 		return 'Comments';
 	}
 
+	public addressLabel(): string {
+		return 'Address';
+	}
+
 	public addressUnknown(): string {
 		return 'Unknown address';
 	}
@@ -275,6 +279,10 @@ class EnglishLocale {
 		return 'Measures';
 	}
 
+	public contextGone(): string {
+		return 'Tree is gone';
+	}
+
 	public locationLabel(): string {
 		return 'Location';
 	}
@@ -375,6 +383,22 @@ class EnglishLocale {
 		return 'Upload photos';
 	}
 
+	public deleteTreeTitle(): string {
+		return 'Delete tree';
+	}
+
+	public deleteConfirm(): string {
+		return 'Confirm removal';
+	}
+
+	public deleteHeader(): string {
+		return 'The tree is now gone, is this correct?';
+	}
+
+	public deleteUploadHint(): string {
+		return 'Please also upload a photo confirming that the tree is gone.';
+	}
+
 	public measureTitle(): string {
 		return 'Measure tree';
 	}
@@ -429,6 +453,10 @@ class EnglishLocale {
 
 	public enterExplorerMode(): string {
 		return 'Enter Tree Explorer';
+	}
+
+	public deleteNotification(): string {
+		return 'Tree deleted.';
 	}
 }
 
@@ -705,6 +733,10 @@ class RussianLocale extends EnglishLocale {
 		return 'Замеры';
 	}
 
+	public contextGone(): string {
+		return 'Дерево убрано';
+	}
+
 	public editTitle(): string {
 		return 'Редактор дерева';
 	}
@@ -859,6 +891,30 @@ class RussianLocale extends EnglishLocale {
 
 	public enterExplorerMode(): string {
 		return 'Войти в режим исследователя';
+	}
+
+	public deleteTreeTitle(): string {
+		return 'Удалить дерево';
+	}
+
+	public deleteHeader(): string {
+		return 'Это дерево было удалено, всё верно?';
+	}
+
+	public deleteConfirm(): string {
+		return 'Подтвердить удаление';
+	}
+
+	public deleteNotification(): string {
+		return 'Дерево удалено';
+	}
+
+	public addressLabel(): string {
+		return 'Адрес';
+	}
+
+	public deleteUploadHint(): string {
+		return 'Пожалуйста, также загрузите фото, подтверждающее, что дерево убрано.';
 	}
 }
 

@@ -6,11 +6,10 @@
 	import Description from '$lib/components/tree/Description.svelte';
 	import Gallery from '$lib/components/tree/Gallery.svelte';
 	import Links from '$lib/components/tree/Links.svelte';
-	import TreeMenu from '$lib/components/tree/Menu.svelte';
 	import Properties from '$lib/components/tree/Properties.svelte';
 	import Tabs from '$lib/components/tree/Tabs.svelte';
 	import Title from '$lib/components/tree/Title.svelte';
-	import { Header } from '$lib/ui';
+	import { Header, TreeContextMenu } from '$lib/ui';
 
 	const { data } = $props();
 	const tree = data.tree;
@@ -28,4 +27,4 @@
 <Properties {tree} />
 <Links {tree} />
 <Description text={tree.notes} />
-<TreeMenu id={tree.id} />
+<TreeContextMenu id={tree.id} />

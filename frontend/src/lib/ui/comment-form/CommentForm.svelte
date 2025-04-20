@@ -2,7 +2,7 @@
 	import { locale } from '$lib/locale';
 	import { isAuthenticated } from '$lib/stores/authStore';
 	import SignIn from '$lib/components/auth/SignIn.svelte';
-	import { Button, CommentInput } from '$lib/ui';
+	import { Button, Buttons, CommentInput } from '$lib/ui';
 
 	const { onSubmit } = $props<{
 		onSubmit: (message: string) => void;
@@ -20,9 +20,9 @@
 	<div class="form">
 		<CommentInput bind:value={message} />
 
-		<div class="buttons">
+		<Buttons>
 			<Button onClick={onButtonClicked} label={locale.commentSubmit()} disabled={!message} />
-		</div>
+		</Buttons>
 	</div>
 {:else}
 	<p>{locale.commentSignIn()}</p>

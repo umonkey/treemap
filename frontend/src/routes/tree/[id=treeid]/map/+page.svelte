@@ -5,10 +5,9 @@
 
 	import Map from '$lib/components/Map.svelte';
 	import MapPreview from '$lib/components/map/MapPreview.svelte';
-	import TreeMenu from '$lib/components/tree/Menu.svelte';
 	import Tabs from '$lib/components/tree/Tabs.svelte';
 	import Title from '$lib/components/tree/Title.svelte';
-	import { Header } from '$lib/ui';
+	import { Header, TreeContextMenu } from '$lib/ui';
 
 	const { data } = $props();
 	const tree = data.tree;
@@ -31,7 +30,7 @@
 <Header title="Tree" />
 <Title title={formatSpecies(tree.species)} address={tree.address} />
 <Tabs tree={tree.id} active="map" />
-<TreeMenu id={tree.id} />
+<TreeContextMenu id={tree.id} />
 
 <div class="mapContainer">
 	<Map

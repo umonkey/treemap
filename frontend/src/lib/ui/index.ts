@@ -1,5 +1,6 @@
 export { default as AddressInput } from './address-input/AddressInput.svelte';
 export { default as Button } from './button/Button.svelte';
+export { default as Buttons } from './buttons/Buttons.svelte';
 export { default as CanopyEditor } from './canopy-editor/CanopyEditor.svelte';
 export { default as CanopyInput } from './canopy-input/CanopyInput.svelte';
 export { default as CircumferenceEditor } from './circumference-editor/CircumferenceEditor.svelte';
@@ -20,4 +21,6 @@ export { default as SpeciesInput } from './species-input/SpeciesInput.svelte';
 export { default as StateEditor } from './state-editor/StateEditor.svelte';
 export { default as StateInput } from './state-input/StateInput.svelte';
 export { default as TextInput } from './text-input/TextInput.svelte';
+export { default as TreeContextMenu } from './tree-context-menu/TreeContextMenu.svelte';
+export { default as TreeSheet } from './tree-sheet/TreeSheet.svelte';
 export { default as YearInput } from './year-input/YearInput.svelte';
