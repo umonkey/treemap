@@ -24,6 +24,7 @@ export { default as SaveIcon } from './SaveIcon.svelte';
 export { default as SearchIcon } from './SearchIcon.svelte';
 export { default as SettingsIcon } from './SettingsIcon.svelte';
 export { default as ShareIcon } from './ShareIcon.svelte';
+export { default as SkullIcon } from './SkullIcon.svelte';
 export { default as StateIcon } from './StateIcon.svelte';
 export { default as TrashIcon } from './TrashIcon.svelte';
 export { default as TreeIcon } from './TreeIcon.svelte';

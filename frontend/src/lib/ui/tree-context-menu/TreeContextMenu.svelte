@@ -5,7 +5,7 @@
 	 * This component should be placed somewhere on the page, it will be centered
 	 * in the container, overlaying that container with a blurry background.
 	 */
-	import { AdjustIcon, CameraIcon, EditIcon, TrashIcon } from '$lib/icons';
+	import { AdjustIcon, CameraIcon, EditIcon, SkullIcon, TrashIcon } from '$lib/icons';
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
 	import { menuState } from '$lib/stores/treeMenu';
@@ -31,6 +31,9 @@
 				</li>
 				<li>
 					<AdjustIcon /> <a href={routes.treeMeasure(id)}>{locale.contextMeasure()}</a>
+				</li>
+				<li>
+					<SkullIcon /> <a href={routes.treeDead(id)}>{locale.contextDead()}</a>
 				</li>
 				<li>
 					<TrashIcon /> <a href={routes.treeDelete(id)}>{locale.contextGone()}</a>

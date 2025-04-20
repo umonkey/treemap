@@ -279,6 +279,10 @@ class EnglishLocale {
 		return 'Measures';
 	}
 
+	public contextDead(): string {
+		return 'Tree is dead';
+	}
+
 	public contextGone(): string {
 		return 'Tree is gone';
 	}
@@ -397,6 +401,26 @@ class EnglishLocale {
 
 	public deleteUploadHint(): string {
 		return 'Please also upload a photo confirming that the tree is gone.';
+	}
+
+	public deadTitle(): string {
+		return 'Dead tree';
+	}
+
+	public deadHeader(): string {
+		return 'The tree is completely dead, is this correct?';
+	}
+
+	public deadUploadHint(): string {
+		return 'Please also upload a photo confirming that the tree is now dead.';
+	}
+
+	public deadConfirm(): string {
+		return 'Confirm death';
+	}
+
+	public deadNotification(): string {
+		return 'Tree marked as dead.';
 	}
 
 	public measureTitle(): string {
@@ -733,6 +757,10 @@ class RussianLocale extends EnglishLocale {
 		return 'Замеры';
 	}
 
+	public contextDead(): string {
+		return 'Дерево засохло';
+	}
+
 	public contextGone(): string {
 		return 'Дерево убрано';
 	}
@@ -915,6 +943,22 @@ class RussianLocale extends EnglishLocale {
 
 	public deleteUploadHint(): string {
 		return 'Пожалуйста, также загрузите фото, подтверждающее, что дерево убрано.';
+	}
+
+	public deadTitle(): string {
+		return 'Мёртвое дерево';
+	}
+
+	public deadHeader(): string {
+		return 'Это дерево мёртвое, всё верно?';
+	}
+
+	public deadUploadHint(): string {
+		return 'Пожалуйста, также загрузите фото, подтверждающее, что дерево засохло.';
+	}
+
+	public deadConfirm(): string {
+		return 'Подтвердить';
 	}
 }
 
