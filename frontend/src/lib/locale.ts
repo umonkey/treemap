@@ -287,6 +287,10 @@ class EnglishLocale {
 		return 'Tree is gone';
 	}
 
+	public contextHeight(): string {
+		return 'Update height';
+	}
+
 	public locationLabel(): string {
 		return 'Location';
 	}
@@ -959,6 +963,10 @@ class RussianLocale extends EnglishLocale {
 
 	public deadConfirm(): string {
 		return 'Подтвердить';
+	}
+
+	public contextHeight(): string {
+		return 'Обновить высоту';
 	}
 }
 

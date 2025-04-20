@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { apiClient } from '$lib/api';
-	import { Button } from '$lib/ui';
+	import { Button, Buttons } from '$lib/ui';
 	import { HelpIcon } from '$lib/icons';
 	import { locale } from '$lib/locale';
 	import { addTrees } from '$lib/stores/treeStore';
@@ -42,10 +42,11 @@
 		<a class="icon" href="https://myga.am/app/measuring-height.html" target="_blank"><HelpIcon /></a
 		>
 	</div>
-	<div class="actions">
+
+	<Buttons>
 		<Button label={locale.editSave()} type="submit" onClick={onSave} />
 		<Button label={locale.editCancel()} type="cancel" onClick={onClose} />
-	</div>
+	</Buttons>
 </form>
 
 <style>
