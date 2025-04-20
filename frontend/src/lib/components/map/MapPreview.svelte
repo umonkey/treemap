@@ -1,5 +1,5 @@
 <script lang="ts">
-	import GalleryPreview from '$lib/components/map/GalleryPreview.svelte';
+	import { GalleryPreview } from '$lib/ui';
 	import { loadTree } from '$lib/hooks';
 	import { CloseIcon } from '$lib/icons';
 	import { routes } from '$lib/routes';

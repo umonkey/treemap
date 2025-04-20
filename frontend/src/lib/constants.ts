@@ -31,7 +31,8 @@ export const DEFAULT_TREE = {
 	updated_at: 0,
 	added_by: 'user1',
 	year: null,
-	files: []
+	files: [],
+	users: []
 } as ITree;
 
 export const DEFAULT_ME = {
