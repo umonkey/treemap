@@ -291,6 +291,10 @@ class EnglishLocale {
 		return 'Update height';
 	}
 
+	public contextDiameter(): string {
+		return 'Update crown';
+	}
+
 	public locationLabel(): string {
 		return 'Location';
 	}
@@ -967,6 +971,10 @@ class RussianLocale extends EnglishLocale {
 
 	public contextHeight(): string {
 		return 'Обновить высоту';
+	}
+
+	public contextDiameter(): string {
+		return 'Обновить крону';
 	}
 }
 

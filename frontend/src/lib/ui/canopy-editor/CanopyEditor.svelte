@@ -1,36 +1,20 @@
 <script lang="ts">
-	import { apiClient } from '$lib/api';
-	import { Button } from '$lib/ui';
+	import type { ITree } from '$lib/types';
+	import { Button, Buttons } from '$lib/ui';
 	import { HelpIcon } from '$lib/icons';
 	import { locale } from '$lib/locale';
-	import { addTrees } from '$lib/stores/treeStore';
-	import { toast } from '@zerodevx/svelte-toast';
-	import type { ITree } from '$lib/types';
+	import { updateCrownDiameter } from '$lib/actions';
 
-	const { tree, onClose } = $props<{
+	const { tree } = $props<{
 		tree: ITree;
-		onClose: () => void;
 	}>();
+
+	const { busy, handleConfirm, handleCancel } = updateCrownDiameter(tree.id);
 
 	let value = $state<number>(tree.diameter ?? 0);
 
 	const onSave = async () => {
-		const res = await apiClient.updateTreeDiameter(tree.id, value);
-
-		if (res.status >= 200 && res.status < 400) {
-			addTrees([
-				{
-					...tree,
-					diameter: value
-				}
-			]);
-
-			toast.push(locale.measureCanopyUpdated());
-
-			onClose();
-		} else {
-			toast.push('Error saving changes.');
-		}
+		handleConfirm(value);
 	};
 </script>
 
@@ -42,10 +26,10 @@
 		<a class="icon" href="https://myga.am/app/measuring-canopy.html" target="_blank"><HelpIcon /></a
 		>
 	</div>
-	<div class="actions">
-		<Button label={locale.editSave()} type="submit" onClick={onSave} />
-		<Button label={locale.editCancel()} type="cancel" onClick={onClose} />
-	</div>
+	<Buttons>
+		<Button label={locale.editSave()} type="submit" onClick={onSave} disabled={$busy} />
+		<Button label={locale.editCancel()} type="cancel" onClick={handleCancel} />
+	</Buttons>
 </form>
 
 <style>

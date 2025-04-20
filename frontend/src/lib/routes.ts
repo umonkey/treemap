@@ -27,6 +27,7 @@ export const routes = {
 	treeDead: (id: string) => `/tree/${id}/dead`,
 	treeDelete: (id: string) => `/tree/${id}/delete`,
 	treeDetails: (id: string) => `/tree/${id}`,
+	treeDiameter: (id: string) => `/tree/${id}/diameter`,
 	treeEdit: (id: string) => `/tree/${id}/edit`,
 	treeHeight: (id: string) => `/tree/${id}/height`,
 	treeHistory: (id: string) => `/tree/${id}/history`,

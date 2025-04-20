@@ -1,0 +1,78 @@
+import CrownDiameterForm from './CrownDiameterForm.svelte';
+import type { IResponse, ISingleTree, ITree } from '$lib/types';
+import userEvent from '@testing-library/user-event';
+import { DEFAULT_TREE } from '$lib/constants';
+import { afterEach, describe, expect, test, vi } from 'vitest';
+import { apiClient } from '$lib/api';
+import { cleanup, render, screen } from '@testing-library/svelte';
+import { goto } from '$app/navigation';
+import { authStore } from '$lib/stores/authStore';
+
+vi.mock('$app/navigation', async () => {
+	return {
+		goto: vi.fn()
+	};
+});
+
+const mockedGoto = vi.mocked(goto);
+
+describe('CrownDiameterForm', async () => {
+	afterEach(cleanup);
+
+	test('should save changes', async () => {
+		const user = userEvent.setup();
+
+		let saved: boolean = false;
+
+		apiClient.getTree = async (): Promise<IResponse<ISingleTree>> => {
+			console.debug('GET');
+
+			return {
+				status: 200,
+				data: {
+					...DEFAULT_TREE,
+					diameter: 2.34,
+					users: []
+				}
+			};
+		};
+
+		apiClient.updateTreeDiameter = async (id: string, value: number): Promise<IResponse<ITree>> => {
+			console.debug('PUT', id, value);
+
+			expect(id).toBe('tree1');
+			expect(value).toBe(1.23);
+
+			saved = true;
+
+			return {
+				status: 200,
+				data: DEFAULT_TREE
+			};
+		};
+
+		authStore.set({
+			token: 'secret',
+			name: 'John Doe',
+			picture: 'https://example.com/picture.jpg'
+		});
+
+		render(CrownDiameterForm, {
+			id: 'tree1'
+		});
+
+		const input = await screen.findByRole('spinbutton');
+		expect(input.value).toBe('2.34');
+		await user.clear(input);
+		await user.type(input, '1.23');
+
+		const confirm = await screen.findByRole('button', {
+			name: /save changes/i
+		});
+
+		await user.click(confirm);
+
+		expect(saved).toBe(true);
+		expect(mockedGoto).toHaveBeenCalledWith('/tree/tree1');
+	});
+});
