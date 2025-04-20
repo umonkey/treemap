@@ -8,7 +8,6 @@
 		HomeIcon,
 		LearnIcon,
 		MapIcon,
-		PlusIcon,
 		SearchIcon,
 		UserIcon
 	} from '$lib/icons';
@@ -68,12 +67,6 @@
 				<a href={routes.learn()}>
 					<span class="icon"><LearnIcon /></span>
 					<span>{locale.sideLearn()}</span>
-				</a>
-			</li>
-			<li>
-				<a href="/add">
-					<span class="icon"><PlusIcon /></span>
-					<span>{locale.sideAdd()}</span>
 				</a>
 			</li>
 		</ul>

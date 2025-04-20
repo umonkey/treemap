@@ -26,14 +26,6 @@
 			(async () => await reload(tree.id))();
 		}
 	});
-
-	const getDefaultLink = (id: string): string => {
-		if ($isMapperMode) {
-			return routes.treeUploadPhotos(id);
-		}
-
-		return routes.treeDetails(id);
-	};
 </script>
 
 <div class="gallery" class:loading={$loading} class:error={$error} class:mapper={$isMapperMode}>
@@ -54,7 +46,11 @@
 			{#each $data.files as file}
 				<div>
 					<a href={routes.treeDetails(tree.id)} aria-labelledby="thumbnail">
-						<LazyImage src={routes.file(file.small_id)} alt="See how good is this tree." fallback="/tree.jpg" />
+						<LazyImage
+							src={routes.file(file.small_id)}
+							alt="See how good is this tree."
+							fallback="/tree.jpg"
+						/>
 					</a>
 				</div>
 			{/each}
@@ -99,17 +95,6 @@
 
 			scroll-snap-align: start;
 			scroll-snap-stop: always;
-
-			img {
-				display: block;
-				width: 50px;
-				height: 50px;
-				object-position: center;
-				object-fit: cover;
-				overflow: hidden;
-				color: transparent; /* hide alt */
-				line-height: 0;
-			}
 
 			&.upload {
 				background-color: rgba(0, 0, 0, 0.25);
