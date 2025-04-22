@@ -6,6 +6,7 @@
 	import MAPPER from '$lib/assets/mapper-mode-500px.jpeg';
 	import EXPLORER from '$lib/assets/explorer-mode-500px.jpeg';
 	import REPORTS from '$lib/assets/reports-mode-500px.jpeg';
+	import LEARNING from '$lib/assets/learning-mode-500px.jpeg';
 
 	const handleExplorer = (e: Event) => {
 		e.preventDefault();
@@ -29,6 +30,10 @@
 		<a href={routes.stats()}>
 			<img src={REPORTS} alt="Reports Mode" />
 			<p>Researcher</p>
+		</a>
+		<a href={routes.learn()}>
+			<img src={LEARNING} alt="Learning Mode" />
+			<p>Beginner</p>
 		</a>
 	</div>
 </div>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
-	import { BellIcon, HomeIcon, LearnIcon, MapIcon, SearchIcon, UserIcon } from '$lib/icons';
+	import { BellIcon, HomeIcon, MapIcon, SearchIcon, UserIcon } from '$lib/icons';
 </script>
 
 <aside class="left">
@@ -34,12 +34,6 @@
 			<a href="/profile">
 				<span class="icon"><UserIcon /></span>
 				<span>{locale.sideProfile()}</span>
-			</a>
-		</li>
-		<li>
-			<a href={routes.learn()}>
-				<span class="icon"><LearnIcon /></span>
-				<span>{locale.sideLearn()}</span>
 			</a>
 		</li>
 	</ul>
