@@ -7,10 +7,8 @@
 		onChange: (value: string) => void;
 	}>();
 
-	const handleChange = (e: Event) => {
-		if (e.target) {
-			onChange((e.target as HTMLInputElement).value);
-		}
+	const handleChange = (value: string) => {
+		onChange(value);
 	};
 </script>
 
@@ -19,5 +17,5 @@
 	{value}
 	multiline={true}
 	hint={locale.commentHint()}
-	onchange={handleChange}
+	onChange={handleChange}
 />

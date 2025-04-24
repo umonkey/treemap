@@ -1,7 +1,8 @@
 use crate::types::*;
 use rusqlite::types::Value;
+use serde::Serialize;
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, Serialize)]
 pub struct PropRecord {
     pub id: u64,
     pub tree_id: u64,

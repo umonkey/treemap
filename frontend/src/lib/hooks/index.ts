@@ -5,6 +5,7 @@ export { loadStateStats } from './loadStateStats';
 export { loadStreetStats } from './loadStreetStats';
 export { loadSuggestedSpecies } from './loadSuggestedSpecies';
 export { loadTree } from './loadTree';
+export { loadTreeHistory } from './loadTreeHistory';
 export { loadTreesByCircumference } from './loadTreesByCircumference';
 export { loadTreesByDiameter } from './loadTreesByDiameter';
 export { loadTreesByHeight } from './loadTreesByHeight';

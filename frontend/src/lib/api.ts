@@ -3,6 +3,7 @@ import { authStore, isAuthenticated } from '$lib/stores/authStore';
 import { addUsers } from '$lib/stores/userStore';
 import type {
 	IAddTreesRequest,
+	IChangeList,
 	ICommentList,
 	ILikeList,
 	ILoginResponse,
@@ -253,6 +254,10 @@ export class ApiClient {
 
 	public async getTreeComments(id: string): Promise<IResponse<ICommentList>> {
 		return await this.request('GET', `v1/trees/${id}/comments`);
+	}
+
+	public async getTreeHistory(id: string): Promise<IResponse<IChangeList>> {
+		return await this.request('GET', `v1/trees/${id}/history`);
 	}
 
 	public async getRecentComments(): Promise<IResponse<ICommentList>> {

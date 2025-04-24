@@ -90,6 +90,20 @@ export interface ICommentList {
 	trees: ITree[];
 }
 
+export interface IChange {
+	id: string;
+	tree_id: string;
+	added_at: number;
+	name: string;
+	value: string;
+	added_by: string;
+}
+
+export interface IChangeList {
+	props: IChange[];
+	users: IUser[];
+}
+
 export interface ILatLon {
 	lat: number;
 	lon: number;
