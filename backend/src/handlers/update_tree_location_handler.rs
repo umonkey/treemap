@@ -1,4 +1,4 @@
-//! Update current height of a tree.
+//! Update current location of a tree.
 //! Note that this performs live database update.
 
 use crate::common::database::repositories::*;
@@ -8,30 +8,31 @@ use crate::types::*;
 use log::info;
 use std::sync::Arc;
 
-pub struct UpdateTreeHeightHandler {
+pub struct UpdateTreeLocationHandler {
     getter: Arc<GetTreeHandler>,
     props: Arc<PropRepository>,
     trees: Arc<TreeRepository>,
     users: Arc<UserRepository>,
 }
 
-impl UpdateTreeHeightHandler {
+impl UpdateTreeLocationHandler {
     pub async fn handle(
         &self,
         tree_id: u64,
-        value: f64,
+        lat: f64,
+        lon: f64,
         user_id: u64,
     ) -> Result<SingleTreeResponse> {
         // Make sure the tree exists.
         let tree = self.trees.get(tree_id).await?.ok_or(Error::TreeNotFound)?;
 
-        if tree.height == Some(value) {
+        if tree.lat == lat && tree.lon == lon {
             // If the height is the same, we still need to store the property update.
             self.props
                 .add(&PropRecord {
                     tree_id,
-                    name: "height".to_string(),
-                    value: value.to_string(),
+                    name: "location".to_string(),
+                    value: format!("{},{}", lat, lon).to_string(),
                     added_by: user_id,
                     ..Default::default()
                 })
@@ -39,27 +40,21 @@ impl UpdateTreeHeightHandler {
         }
 
         self.trees
-            .update(
-                &TreeRecord {
-                    height: Some(value),
-                    ..tree
-                },
-                user_id,
-            )
+            .update(&TreeRecord { lat, lon, ..tree }, user_id)
             .await?;
 
         self.users.increment_update_count(user_id).await?;
 
         info!(
-            "Height for tree {} changed to {} by {}.",
-            tree_id, value, user_id
+            "Location for tree {} changed to {},{} by {}.",
+            tree_id, lat, lon, user_id
         );
 
         self.getter.handle(tree_id).await
     }
 }
 
-impl Locatable for UpdateTreeHeightHandler {
+impl Locatable for UpdateTreeLocationHandler {
     fn create(locator: &Locator) -> Result<Self> {
         Ok(Self {
             props: locator.get::<PropRepository>()?,

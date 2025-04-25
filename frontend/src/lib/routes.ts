@@ -35,5 +35,6 @@ export const routes = {
 	treeHistory: (id: string) => `/tree/${id}/history`,
 	treeMap: (id: string) => `/tree/${id}/map`,
 	treeMeasure: (id: string) => `/tree/${id}/measure`,
+	treeMove: (id: string) => `/tree/${id}/move`,
 	treeUploadPhotos: (id: string) => `/tree/${id}/upload`
 };

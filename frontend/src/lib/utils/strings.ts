@@ -26,3 +26,8 @@ export const fileAttribution = (file: ITreeFile): string => {
 	const date = formatDate(file.added_at);
 	return `${date} by ${user.name}`;
 };
+
+// Round to 7 decimal places, which is 1 cm accuracy in Yerevan.
+export const roundCoord = (value: number): number => {
+	return Math.round(value * 10000000) / 10000000;
+};

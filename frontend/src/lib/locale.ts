@@ -287,6 +287,10 @@ class EnglishLocale {
 		return 'Tree is gone';
 	}
 
+	public contextMove(): string {
+		return 'Update location';
+	}
+
 	public contextHeight(): string {
 		return 'Update height';
 	}
@@ -445,6 +449,10 @@ class EnglishLocale {
 
 	public measureHeightUpdated(): string {
 		return 'Height updated.';
+	}
+
+	public measureLocationUpdated(): string {
+		return 'Location updated.';
 	}
 
 	public measureCanopy(): string {
@@ -999,6 +1007,14 @@ class RussianLocale extends EnglishLocale {
 
 	public measureCircumferenceUpdated(): string {
 		return 'Обхват ствола обновлён.';
+	}
+
+	public contextMove(): string {
+		return 'Уточнить координаты';
+	}
+
+	public measureLocationUpdated(): string {
+		return 'Координаты обновлены.';
 	}
 }
 

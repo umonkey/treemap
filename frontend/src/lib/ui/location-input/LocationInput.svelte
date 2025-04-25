@@ -3,14 +3,15 @@
 	import { MapIcon } from '$lib/icons';
 	import { locale } from '$lib/locale';
 
-	const { value, hint, label, onChange } = $props<{
+	const { value, hint, label, onChange, open } = $props<{
 		value: number[];
 		hint?: string;
 		label?: string;
 		onChange: (value: number[]) => void;
+		open?: boolean;
 	}>();
 
-	let showMap = $state<boolean>(false);
+	let showMap = $state<boolean>(!!open);
 	let currentValue = $state<number[]>(value);
 
 	const formatLocation = (value: number[]): string => {
@@ -41,7 +42,7 @@
 		</div>
 
 		{#if showMap}
-			<LocationPicker center={value} onMove={handleMove} />
+			<LocationPicker center={value} marker={value} onMove={handleMove} />
 		{/if}
 	</label>
 

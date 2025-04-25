@@ -37,10 +37,8 @@ pub async fn serve_command() {
                 async move { AppState::new(locator).await }
             })
             .app_data(PayloadConfig::new(get_payload_size()))
-
             // Prioritize because of collisions with wildcards later.
             .service(get_tree_stats_action)
-
             .service(add_comment_action)
             .service(add_file_action)
             .service(add_training_action)
@@ -81,6 +79,7 @@ pub async fn serve_command() {
             .service(update_tree_height_action)
             .service(update_tree_circumference_action)
             .service(update_tree_diameter_action)
+            .service(update_tree_location_action)
             .service(update_tree_state_action)
             .service(get_user_action)
             .service(

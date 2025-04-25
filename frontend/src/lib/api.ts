@@ -180,6 +180,16 @@ export class ApiClient {
 		});
 	}
 
+	public async updateTreeLocation(id: string, lat: number, lon: number): Promise<IResponse<ITree>> {
+		return await this.request('PUT', `v1/trees/${id}/location`, {
+			body: JSON.stringify({ lat, lon }),
+			headers: {
+				'Content-Type': 'application/json',
+				...this.getAuthHeaders()
+			}
+		});
+	}
+
 	public async updateTreeDiameter(id: string, value: number): Promise<IResponse<ITree>> {
 		return await this.request('PUT', `v1/trees/${id}/diameter`, {
 			body: JSON.stringify({ value }),

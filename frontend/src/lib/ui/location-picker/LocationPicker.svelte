@@ -2,8 +2,9 @@
 	import Map from '$lib/components/Map.svelte';
 	import type { LatLng } from 'leaflet';
 
-	const { center, onMove } = $props<{
+	const { center, marker, onMove } = $props<{
 		center: [number, number];
+		marker?: [number, number];
 		onMove: (center: [number, number]) => void;
 	}>();
 
@@ -13,7 +14,7 @@
 </script>
 
 <div class="mapContainer">
-	<Map {center} zoom={19} crosshair={true} onMove={handleMove} />
+	<Map {center} {marker} zoom={19} crosshair={true} onMove={handleMove} />
 </div>
 
 <style>

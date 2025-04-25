@@ -274,14 +274,14 @@ impl TreeRepository {
                 .await?;
         }
 
-        if old.lat != new.lat {
-            self.add_tree_prop(new.id, "lat", &new.lat.to_string(), user_id)
-                .await?;
-        }
-
-        if old.lon != new.lon {
-            self.add_tree_prop(new.id, "lon", &new.lon.to_string(), user_id)
-                .await?;
+        if old.lat != new.lat || old.lon != new.lon {
+            self.add_tree_prop(
+                new.id,
+                "location",
+                format!("{},{}", new.lat, new.lon).as_str(),
+                user_id,
+            )
+            .await?;
         }
 
         if old.species != new.species {

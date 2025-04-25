@@ -10,6 +10,7 @@
 		DiameterIcon,
 		EditIcon,
 		HeightIcon,
+		MapIcon,
 		SkullIcon,
 		TrashIcon
 	} from '$lib/icons';
@@ -33,6 +34,9 @@
 		<div class="menu">
 			<ul>
 				<li>
+					<MapIcon /> <a href={routes.treeMove(id)}>{locale.contextMove()}</a>
+				</li>
+				<li class="sep">
 					<HeightIcon /> <a href={routes.treeHeight(id)}>{locale.contextHeight()}</a>
 				</li>
 				<li>
@@ -42,13 +46,15 @@
 					<CircumferenceIcon />
 					<a href={routes.treeCircumference(id)}>{locale.contextCircumference()}</a>
 				</li>
-				<li>
+				<li class="sep">
 					<SkullIcon /> <a href={routes.treeDead(id)}>{locale.contextDead()}</a>
 				</li>
 				<li>
 					<TrashIcon /> <a href={routes.treeDelete(id)}>{locale.contextGone()}</a>
 				</li>
-				<li><EditIcon /> <a href={routes.treeEdit(id)}>{locale.contextEditTree()}</a></li>
+				<li class="sep">
+					<EditIcon /> <a href={routes.treeEdit(id)}>{locale.contextEditTree()}</a>
+				</li>
 			</ul>
 		</div>
 	</div>
@@ -98,6 +104,12 @@
 				width: 20px;
 				height: 20px;
 			}
+		}
+
+		li.sep {
+			margin-top: 5px;
+			padding-top: 10px;
+			border-top: solid 1px rgba(0, 0, 0, 0.2);
 		}
 	}
 </style>
