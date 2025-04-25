@@ -39,7 +39,10 @@ impl PropRepository {
     }
 
     pub async fn find_by_tree(&self, tree_id: u64) -> Result<Vec<PropRecord>> {
-        let query = SelectQuery::new(TABLE).with_condition("tree_id", Value::from(tree_id as i64));
+        let query = SelectQuery::new(TABLE)
+            .with_condition("tree_id", Value::from(tree_id as i64))
+            .with_order_desc("added_at");
+
         self.query_multiple(query).await
     }
 
