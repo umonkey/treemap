@@ -15,7 +15,7 @@
 	});
 
 	const handleClose = () => {
-		goto(routes.treeDetails(id));
+		goto(routes.treeHistory(id));
 	};
 </script>
 

@@ -23,7 +23,7 @@
 			busy = true;
 			await apiClient.updateTreeState(id, 'gone');
 			toast.push(locale.deleteNotification());
-			goto(routes.treeDetails(id));
+			goto(routes.treeHistory(id));
 		} catch (e) {
 			console.error(`Error deleting tree: ${e}`);
 			toast.push('Error deleting tree.');
