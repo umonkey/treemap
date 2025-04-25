@@ -2,17 +2,10 @@
 	import { locale } from '$lib/locale';
 	import { getTree, treeStore } from '$lib/stores/treeStore';
 	import type { ITree } from '$lib/types';
-	import { formatCentimeters, formatMeters, formatState } from '$lib/utils/trees';
+	import { formatCentimeters, formatState } from '$lib/utils/trees';
 	import AuthWrapper from '$lib/components/auth/AuthWrapper.svelte';
-	import { CanopyEditor, CircumferenceEditor, Header, HeightEditor, StateEditor } from '$lib/ui';
-	import {
-		CircumferenceIcon,
-		DiameterIcon,
-		EditIcon,
-		HeightIcon,
-		HelpIcon,
-		StateIcon
-	} from '$lib/icons';
+	import { CircumferenceEditor, Header, StateEditor } from '$lib/ui';
+	import { CircumferenceIcon, EditIcon, HelpIcon, StateIcon } from '$lib/icons';
 
 	const { data } = $props();
 	let tree = $state<ITree>($getTree(data.treeId));
@@ -41,28 +34,12 @@
 
 <div class="padded measure">
 	<AuthWrapper>
-		{#if tab === 'height'}
-			<HeightEditor {tree} {onClose} />
-		{:else if tab === 'canopy'}
-			<CanopyEditor {tree} {onClose} />
-		{:else if tab === 'circumference'}
+		{#if tab === 'circumference'}
 			<CircumferenceEditor {tree} {onClose} />
 		{:else if tab === 'state'}
 			<StateEditor {tree} {onClose} />
 		{:else}
 			<div class="form">
-				<div class="row">
-					<HeightIcon />
-					<span class="label">{locale.propHeight()}: {formatMeters(tree.height)}</span>
-					<button type="button" onclick={() => setTab('height')}><EditIcon /></button>
-					<a href="https://myga.am/app/measuring-height.html" target="_blank"><HelpIcon /></a>
-				</div>
-				<div class="row">
-					<DiameterIcon />
-					<span class="label">{locale.propCanopy()}: {formatMeters(tree.diameter)}</span>
-					<button type="button" onclick={() => setTab('canopy')}><EditIcon /></button>
-					<a href="https://myga.am/app/measuring-canopy.html" target="_blank"><HelpIcon /></a>
-				</div>
 				<div class="row">
 					<CircumferenceIcon />
 					<span class="label">{locale.propTrunk()}: {formatCentimeters(tree.circumference)}</span>

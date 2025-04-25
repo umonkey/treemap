@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
-	import { CrownDiameterForm } from '$lib/forms';
+	import { CrownForm } from '$lib/forms';
 	import { Header } from '$lib/ui';
 
 	const { data } = $props();
@@ -13,5 +13,5 @@
 <Header title={locale.measureTitle()} />
 
 <div class="padded measure">
-	<CrownDiameterForm id={data.id} />
+	<CrownForm id={data.id} />
 </div>

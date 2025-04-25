@@ -22,7 +22,7 @@ export const updateCrownDiameter = (id: string) => {
 	};
 
 	const handleCancel = () => {
-		goto(routes.treeDetails(id));
+		goto(routes.treeHistory(id));
 	};
 
 	return { busy, handleConfirm, handleCancel };

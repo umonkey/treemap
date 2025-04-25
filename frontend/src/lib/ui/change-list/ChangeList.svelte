@@ -3,6 +3,7 @@
 	import { formatDate } from '$lib/utils/strings';
 	import { get } from 'svelte/store';
 	import { getUser } from '$lib/stores/userStore';
+	import { locale } from '$lib/locale';
 
 	const { changes } = $props<{
 		changes: IChange[];
@@ -18,7 +19,7 @@
 			{/each}
 		</dl>
 	{:else}
-		<p>No changes found for this tree.</p>
+		<p>{locale.noChangeHistory()}</p>
 	{/if}
 </div>
 

@@ -268,7 +268,7 @@ class EnglishLocale {
 	}
 
 	public contextEditTree(): string {
-		return 'Edit this tree';
+		return 'Other changes';
 	}
 
 	public contextUploadPhotos(): string {
@@ -293,6 +293,10 @@ class EnglishLocale {
 
 	public contextDiameter(): string {
 		return 'Update crown';
+	}
+
+	public contextCircumference(): string {
+		return 'Update circumference';
 	}
 
 	public locationLabel(): string {
@@ -451,6 +455,10 @@ class EnglishLocale {
 		return 'Canopy diameter updated.';
 	}
 
+	public measureCircumferenceUpdated(): string {
+		return 'Trunk circumference updated.';
+	}
+
 	public measureTrunk(): string {
 		return 'Enter trunk circumference in centimeters:';
 	}
@@ -489,6 +497,10 @@ class EnglishLocale {
 
 	public deleteNotification(): string {
 		return 'Tree deleted.';
+	}
+
+	public noChangeHistory(): string {
+		return 'No changes found for this tree.';
 	}
 }
 
@@ -754,7 +766,7 @@ class RussianLocale extends EnglishLocale {
 	}
 
 	public contextEditTree(): string {
-		return 'Внести правки';
+		return 'Внести другие правки';
 	}
 
 	public contextUploadPhotos(): string {
@@ -975,6 +987,18 @@ class RussianLocale extends EnglishLocale {
 
 	public contextDiameter(): string {
 		return 'Обновить крону';
+	}
+
+	public contextCircumference(): string {
+		return 'Обновить обхват ствола';
+	}
+
+	public noChangeHistory(): string {
+		return 'Нет изменений для этого дерева.';
+	}
+
+	public measureCircumferenceUpdated(): string {
+		return 'Обхват ствола обновлён.';
 	}
 }
 

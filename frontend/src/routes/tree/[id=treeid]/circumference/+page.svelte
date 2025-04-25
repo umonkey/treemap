@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
-	import { HeightForm } from '$lib/forms';
+	import { CircumferenceForm } from '$lib/forms';
 	import { Header } from '$lib/ui';
 
 	const { data } = $props();
@@ -13,5 +13,5 @@
 <Header title={locale.measureTitle()} />
 
 <div class="padded measure">
-	<HeightForm id={data.id} />
+	<CircumferenceForm id={data.id} />
 </div>

@@ -6,6 +6,7 @@ use log::info;
 use std::sync::Arc;
 
 pub struct UpdateTreeStateHandler {
+    props: Arc<PropRepository>,
     trees: Arc<TreeRepository>,
     users: Arc<UserRepository>,
     getter: Arc<GetTreeHandler>,
@@ -18,7 +19,22 @@ impl UpdateTreeStateHandler {
         value: String,
         user_id: u64,
     ) -> Result<SingleTreeResponse> {
+        // Validate that tree exists.
         let tree = self.trees.get(tree_id).await?.ok_or(Error::TreeNotFound)?;
+
+        // The update method only logs changes, but for this explicit handler
+        // we need to save all data, even if no changes were made (confirm the value).
+        if tree.state == value {
+            self.props
+                .add(&PropRecord {
+                    tree_id,
+                    name: "state".to_string(),
+                    value: value.clone(),
+                    added_by: user_id,
+                    ..Default::default()
+                })
+                .await?;
+        }
 
         self.trees
             .update(
@@ -44,6 +60,7 @@ impl UpdateTreeStateHandler {
 impl Locatable for UpdateTreeStateHandler {
     fn create(locator: &Locator) -> Result<Self> {
         Ok(Self {
+            props: locator.get::<PropRepository>()?,
             trees: locator.get::<TreeRepository>()?,
             users: locator.get::<UserRepository>()?,
             getter: locator.get::<GetTreeHandler>()?,

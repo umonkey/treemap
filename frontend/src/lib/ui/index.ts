@@ -1,9 +1,9 @@
 export { default as AddressInput } from './address-input/AddressInput.svelte';
 export { default as Button } from './button/Button.svelte';
 export { default as Buttons } from './buttons/Buttons.svelte';
-export { default as CanopyEditor } from './canopy-editor/CanopyEditor.svelte';
 export { default as CanopyInput } from './canopy-input/CanopyInput.svelte';
 export { default as ChangeList } from './change-list/ChangeList.svelte';
+export { default as FilteredChangeList } from './filtered-change-list/FilteredChangeList.svelte';
 export { default as CircumferenceEditor } from './circumference-editor/CircumferenceEditor.svelte';
 export { default as CircumferenceInput } from './circumference-input/CircumferenceInput.svelte';
 export { default as CommentForm } from './comment-form/CommentForm.svelte';
@@ -11,7 +11,6 @@ export { default as CommentInput } from './comment-input/CommentInput.svelte';
 export { default as FilePicker } from './file-picker/FilePicker.svelte';
 export { default as GalleryPreview } from './gallery-preview/GalleryPreview.svelte';
 export { default as Header } from './header/Header.svelte';
-export { default as HeightEditor } from './height-editor/HeightEditor.svelte';
 export { default as HeightInput } from './height-input/HeightInput.svelte';
 export { default as HelpButton } from './help-button/HelpButton.svelte';
 export { default as LocationInput } from './location-input/LocationInput.svelte';

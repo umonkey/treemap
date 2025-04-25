@@ -32,10 +32,13 @@ impl PropRepository {
 
         let query = InsertQuery::new(TABLE).with_values(prop.to_attributes());
 
-        match self.db.add_record(query).await {
-            Ok(_) => Ok(()),
-            Err(err) => Err(err),
-        }
+        self.db.add_record(query).await.inspect_err(|e| {
+            log::error!("Error adding prop record: {:?}", e);
+        })?;
+
+        log::info!("Tree prop added: {:?}", prop);
+
+        Ok(())
     }
 
     pub async fn find_by_tree(&self, tree_id: u64) -> Result<Vec<PropRecord>> {

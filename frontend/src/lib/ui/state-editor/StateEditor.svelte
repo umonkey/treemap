@@ -1,46 +1,24 @@
 <script lang="ts">
-	import { apiClient } from '$lib/api';
-	import { Button, StateInput } from '$lib/ui';
-	import { locale } from '$lib/locale';
-	import { addTrees } from '$lib/stores/treeStore';
-	import { toast } from '@zerodevx/svelte-toast';
 	import type { ITree } from '$lib/types';
+	import { Button, StateInput } from '$lib/ui';
+	import { editor } from './hooks';
+	import { locale } from '$lib/locale';
 
-	const { tree, onClose } = $props<{
+	const { tree } = $props<{
 		tree: ITree;
-		onClose: () => void;
 	}>();
 
-	let value = $state<string>(tree.state ?? 'unknown');
-
-	const onSave = async () => {
-		const res = await apiClient.updateTreeState(tree.id, value);
-
-		if (res.status >= 200 && res.status < 400) {
-			addTrees([
-				{
-					...tree,
-					state: value
-				}
-			]);
-
-			toast.push(locale.measureStateUpdated());
-
-			onClose();
-		} else {
-			toast.push('Error saving changes.');
-		}
-	};
+	const { value, save, handleChange, close } = editor(tree);
 </script>
 
 <div class="form">
 	<label for="control">{locale.measureState()}</label>
 	<div class="row">
-		<StateInput {value} label={false} onChange={(v: string) => (value = v)} />
+		<StateInput {value} label={false} onChange={handleChange} />
 	</div>
 	<div class="actions">
-		<Button label={locale.editSave()} type="submit" onClick={onSave} />
-		<Button label={locale.editCancel()} type="cancel" onClick={onClose} />
+		<Button label={locale.editSave()} type="submit" onClick={save} />
+		<Button label={locale.editCancel()} type="cancel" onClick={close} />
 	</div>
 </div>
 

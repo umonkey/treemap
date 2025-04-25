@@ -1,40 +1,14 @@
 <script lang="ts">
 	import AuthWrapper from '$lib/components/auth/AuthWrapper.svelte';
-	import { Button, Buttons, TreeSheet } from '$lib/ui';
-	import { apiClient } from '$lib/api';
-	import { loadTree } from '$lib/hooks';
+	import { Button, Buttons, TreeSheet, FilteredChangeList } from '$lib/ui';
 	import { locale } from '$lib/locale';
-	import { routes, goto } from '$lib/routes';
-	import { toast } from '@zerodevx/svelte-toast';
+	import { stateUpdater } from '$lib/actions';
 
 	const { id } = $props<{
 		id: string;
 	}>();
 
-	const { loading, error, data, reload } = loadTree();
-	let busy = $state<boolean>(false);
-
-	$effect(() => {
-		(async () => await reload(id))();
-	});
-
-	const handleConfirm = async () => {
-		try {
-			busy = true;
-			await apiClient.updateTreeState(id, 'gone');
-			toast.push(locale.deleteNotification());
-			goto(routes.treeHistory(id));
-		} catch (e) {
-			console.error(`Error deleting tree: ${e}`);
-			toast.push('Error deleting tree.');
-		} finally {
-			busy = false;
-		}
-	};
-
-	const handleCancel = () => {
-		goto(routes.treeDetails(id));
-	};
+	const { loading, busy, error, history, tree, save, close } = stateUpdater(id, 'gone');
 </script>
 
 <AuthWrapper>
@@ -46,14 +20,16 @@
 		{:else}
 			<p>{locale.deleteHeader()}</p>
 
-			<TreeSheet tree={$data} />
+			<TreeSheet tree={$tree} />
 
 			<p>{locale.deleteUploadHint()}</p>
 
 			<Buttons>
-				<Button label={locale.deleteConfirm()} onClick={handleConfirm} disabled={busy} />
-				<Button type="cancel" label={locale.editCancel()} onClick={handleCancel} />
+				<Button label={locale.deleteConfirm()} onClick={save} disabled={$busy} />
+				<Button type="cancel" label={locale.editCancel()} onClick={close} />
 			</Buttons>
+
+			<FilteredChangeList changes={$history} name="state" />
 		{/if}
 	</div>
 </AuthWrapper>

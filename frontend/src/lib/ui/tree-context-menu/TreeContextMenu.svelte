@@ -6,8 +6,7 @@
 	 * in the container, overlaying that container with a blurry background.
 	 */
 	import {
-		AdjustIcon,
-		CameraIcon,
+		CircumferenceIcon,
 		DiameterIcon,
 		EditIcon,
 		HeightIcon,
@@ -33,13 +32,6 @@
 	<div class="canvas" onclick={onCloseMenu}>
 		<div class="menu">
 			<ul>
-				<li><EditIcon /> <a href={routes.treeEdit(id)}>{locale.contextEditTree()}</a></li>
-				<li>
-					<CameraIcon /> <a href={routes.treeUploadPhotos(id)}>{locale.contextUploadPhotos()}</a>
-				</li>
-				<li>
-					<AdjustIcon /> <a href={routes.treeMeasure(id)}>{locale.contextMeasure()}</a>
-				</li>
 				<li>
 					<HeightIcon /> <a href={routes.treeHeight(id)}>{locale.contextHeight()}</a>
 				</li>
@@ -47,11 +39,16 @@
 					<DiameterIcon /> <a href={routes.treeDiameter(id)}>{locale.contextDiameter()}</a>
 				</li>
 				<li>
+					<CircumferenceIcon />
+					<a href={routes.treeCircumference(id)}>{locale.contextCircumference()}</a>
+				</li>
+				<li>
 					<SkullIcon /> <a href={routes.treeDead(id)}>{locale.contextDead()}</a>
 				</li>
 				<li>
 					<TrashIcon /> <a href={routes.treeDelete(id)}>{locale.contextGone()}</a>
 				</li>
+				<li><EditIcon /> <a href={routes.treeEdit(id)}>{locale.contextEditTree()}</a></li>
 			</ul>
 		</div>
 	</div>

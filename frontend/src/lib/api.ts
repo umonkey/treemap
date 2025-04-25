@@ -22,6 +22,7 @@ import type {
 	ITreeList,
 	ITreeUpdatePayload
 } from '$lib/types';
+import { Response } from '$lib/types_response';
 import { get } from 'svelte/store';
 
 export class ApiClient {
@@ -29,11 +30,10 @@ export class ApiClient {
 
 	constructor() {
 		this.root = API_ROOT;
-		console.debug(`[api] Root: ${this.root}`);
+		// console.debug(`[api] Root: ${this.root}`);
 	}
 
 	public async getTree(id: string): Promise<IResponse<ISingleTree>> {
-		console.debug(`[api] Getting tree ${id}`);
 		const res = await this.request<ISingleTree>('GET', `v1/trees/${id}`);
 
 		if (res.status === 200 && res.data) {
@@ -44,7 +44,6 @@ export class ApiClient {
 	}
 
 	public async getTreeDefaults(): Promise<IResponse<ITreeDefaults>> {
-		console.debug('[api] Getting tree defaults');
 		return await this.request<ITreeDefaults>('GET', 'v1/trees/defaults');
 	}
 
@@ -380,5 +379,9 @@ export class ApiClient {
 		return {};
 	}
 }
+
+export const unwrap = <T>(res: IResponse<T>): Response<T> => {
+	return new Response<T>(res.status, res.data, res.error);
+};
 
 export const apiClient = new ApiClient();

@@ -1,3 +1,5 @@
+export type { IError, IResponse } from './types_response';
+
 export interface ITreeFile {
 	id: string;
 	small_id: string;
@@ -93,9 +95,9 @@ export interface ICommentList {
 export interface IChange {
 	id: string;
 	tree_id: string;
-	added_at: number;
 	name: string;
 	value: string;
+	added_at: number;
 	added_by: string;
 }
 
@@ -167,14 +169,6 @@ export interface ILikeList {
 }
 
 /**
- * This is the error objec that we pass around the application.
- */
-export interface IError {
-	code: string;
-	description: string;
-}
-
-/**
  * This is the raw error object that we receive from the API.
  */
 export interface IRawError {
@@ -182,10 +176,4 @@ export interface IRawError {
 		code: string;
 		description: string;
 	};
-}
-
-export interface IResponse<T> {
-	status: number;
-	data?: T;
-	error?: IError;
 }

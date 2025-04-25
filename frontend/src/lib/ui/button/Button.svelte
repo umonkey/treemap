@@ -7,7 +7,7 @@
 		disabled = false
 	} = $props<{
 		label: string;
-		type: 'submit' | 'button' | 'reset';
+		type: 'submit' | 'button' | 'reset' | 'cancel' | 'secondary' | 'tertiary';
 		onClick: () => void;
 		disabled?: boolean;
 		link?: string;
@@ -31,3 +31,12 @@
 {:else}
 	<button type="button" disabled={!!disabled} class={className} onclick={onClick}>{label}</button>
 {/if}
+
+<style>
+	a.tretiary {
+		border-color: rgba(16, 131, 254, 0.2);
+		background-color: transparent;
+		color: var(--form-border);
+		text-decoration: underline;
+	}
+</style>
