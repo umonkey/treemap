@@ -1,9 +1,7 @@
 <script lang="ts">
 	import type { IChange } from '$lib/types';
-	import { formatDate } from '$lib/utils/strings';
-	import { get } from 'svelte/store';
-	import { getUser } from '$lib/stores/userStore';
 	import { locale } from '$lib/locale';
+	import { format } from './hooks';
 
 	const { changes } = $props<{
 		changes: IChange[];
@@ -13,9 +11,9 @@
 <div class="change-list">
 	{#if changes.length > 0}
 		<dl>
-			{#each changes as change}
-				<dt>{formatDate(change.added_at)}, {get(getUser)(change.added_by).name}:</dt>
-				<dd>{change.name} → {change.value}</dd>
+			{#each format(changes) as rec}
+				<dt>{rec.header}</dt>
+				<dd>{rec.body}</dd>
 			{/each}
 		</dl>
 	{:else}
