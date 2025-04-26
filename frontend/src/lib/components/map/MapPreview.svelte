@@ -80,6 +80,9 @@
 		}
 	}
 
+	/**
+	 * This is for mobile phones.
+	 */
 	@media (max-width: 480px) {
 		.preview {
 			position: fixed;

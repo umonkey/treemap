@@ -37,7 +37,7 @@
 	{:else if $data}
 		<div class="images">
 			{#if $isMapperMode}
-				<div>
+				<div class="tile">
 					<a href={routes.treeUploadPhotos(tree.id)} class="upload" title="Upload a new image">
 						<UploadIcon />
 					</a>
@@ -45,7 +45,7 @@
 			{/if}
 
 			{#each $data.files as file}
-				<div>
+				<div class="tile">
 					<a href={routes.treeDetails(tree.id)} aria-labelledby="thumbnail">
 						<LazyImage
 							src={routes.file(file.small_id)}
@@ -57,7 +57,7 @@
 			{/each}
 
 			{#if $data.files.length === 0 && !$isMapperMode}
-				<div>
+				<div class="tile">
 					<a href={routes.treeDetails(tree.id)} title="No photos of this tree.">
 						<LazyImage src={DefaultImage} alt="No photos for this tree." fallback={DefaultImage} />
 					</a>
@@ -71,8 +71,8 @@
 
 <style>
 	.gallery {
-		height: 50px;
-		line-height: 50px;
+		height: 75px;
+		line-height: 75px;
 		margin-top: var(--gap);
 	}
 
@@ -81,25 +81,30 @@
 		flex-direction: row;
 		gap: var(--gap);
 
+		overflow-x: auto;
 		scroll-snap-type: x mandatory;
 		scrollbar-width: none;
 
-		& > div {
-			width: 50px;
-			height: 50px;
-		}
+		.tile {
+			width: 75px;
+			height: 75px;
 
-		a {
-			display: block;
-			color: inherit;
-			line-height: 0;
+			a {
+				display: block;
+				width: 75px;
+				height: 75px;
 
-			scroll-snap-align: start;
-			scroll-snap-stop: always;
+				color: inherit;
+				line-height: 0;
 
-			&.upload {
-				background-color: rgba(0, 0, 0, 0.25);
-				padding: 5px;
+				scroll-snap-align: start;
+				scroll-snap-stop: always;
+
+				&.upload {
+					background-color: rgba(0, 0, 0, 0.25);
+					padding: 5px;
+					box-sizing: border-box;
+				}
 			}
 		}
 	}
