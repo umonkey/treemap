@@ -39,6 +39,10 @@ class EnglishLocale {
 		return 'About this app';
 	}
 
+	public sideBugs(): string {
+		return 'Bugs';
+	}
+
 	public searchTitle(): string {
 		return 'Search';
 	}
@@ -550,7 +554,11 @@ class RussianLocale extends EnglishLocale {
 	}
 
 	public sideAbout(): string {
-		return 'Об этом приложении';
+		return 'О нас';
+	}
+
+	public sideBugs(): string {
+		return 'Баги';
 	}
 
 	public searchTitle(): string {

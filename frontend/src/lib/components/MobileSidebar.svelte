@@ -60,6 +60,8 @@
 			<a href="https://github.com/KanachYerevan/kb/wiki/Mobile-Application" target="_blank"
 				>{locale.sideAbout()}</a
 			>
+			&middot;
+			<a href="https://github.com/umonkey/treemap/issues" target="_blank">{locale.sideBugs()}</a>
 		</div>
 	</aside>
 </div>
@@ -140,10 +142,9 @@
 			&.links {
 				font-size: 14px;
 				padding: var(--gap) 0;
+				text-align: center;
 
 				a {
-					display: block;
-					text-align: center;
 					color: inherit;
 				}
 			}
