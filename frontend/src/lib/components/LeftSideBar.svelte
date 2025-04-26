@@ -2,6 +2,7 @@
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
 	import { BellIcon, HomeIcon, MapIcon, SearchIcon, UserIcon } from '$lib/icons';
+	import Logo from '$lib/assets/trees-of-yerevan.svelte';
 </script>
 
 <aside class="left">
@@ -37,6 +38,16 @@
 			</a>
 		</li>
 	</ul>
+
+	<div class="bottom">
+		<Logo />
+	</div>
+
+	<div class="bottom links">
+		<a href="https://github.com/KanachYerevan/kb/wiki/Mobile-Application" target="_blank"
+			>{locale.sideAbout()}</a
+		>
+	</div>
 </aside>
 
 <style>
@@ -44,6 +55,10 @@
 		flex-basis: 300px;
 		flex-shrink: 0;
 		flex-grow: 0;
+
+		display: flex;
+		flex-direction: column;
+		gap: calc(var(--gap) * 2);
 
 		padding: calc(2 * var(--gap));
 		box-sizing: border-box;
@@ -55,25 +70,45 @@
 		color: var(--text-color);
 
 		ul {
+			margin: 0;
+			padding: 0 var(--gap);
 			list-style-type: none;
+			flex-grow: 1;
+
+			a {
+				display: flex;
+				flex-direction: row;
+				gap: var(--gap);
+				line-height: 24px;
+				color: inherit;
+				text-decoration: none;
+				padding: 10px 0;
+				margin-bottom: 10px;
+			}
+
+			.icon {
+				flex-basis: 30px;
+				flex-shrink: 0;
+				flex-grow: 0;
+				height: 24px;
+			}
 		}
 
-		a {
-			display: flex;
-			flex-direction: row;
-			gap: var(--gap);
-			line-height: 24px;
-			color: inherit;
-			text-decoration: none;
-			padding: 10px 0;
-			margin-bottom: 10px;
-		}
-
-		.icon {
-			flex-basis: 30px;
-			flex-shrink: 0;
+		.bottom {
 			flex-grow: 0;
-			height: 24px;
+			flex-shrink: 0;
+			opacity: 0.5;
+		}
+
+		.links {
+			font-size: 14px;
+			text-decoration: underline;
+
+			a {
+				display: block;
+				color: inherit;
+				text-align: center;
+			}
 		}
 	}
 

@@ -3,6 +3,7 @@
 	import { routes } from '$lib/routes';
 	import { isSidebarVisible, mobileSidebarStore } from '$lib/stores/mobileSidebarStore';
 	import { BellIcon, HomeIcon, MapIcon, SearchIcon, UserIcon } from '$lib/icons';
+	import Logo from '$lib/assets/trees-of-yerevan.svelte';
 
 	const onClick = () => {
 		mobileSidebarStore.update(() => false);
@@ -50,7 +51,12 @@
 				</a>
 			</li>
 		</ul>
-		<div class="links">
+
+		<div class="bottom">
+			<Logo />
+		</div>
+
+		<div class="bottom links">
 			<a href="https://github.com/KanachYerevan/kb/wiki/Mobile-Application" target="_blank"
 				>{locale.sideAbout()}</a
 			>
@@ -82,6 +88,10 @@
 		height: 100%;
 		z-index: var(--z-mobile-sidebar);
 
+		display: flex;
+		flex-direction: column;
+		gap: var(--gap);
+
 		padding: calc(2 * var(--gap));
 		box-sizing: border-box;
 		border-right: 1px solid var(--sep-color);
@@ -91,39 +101,52 @@
 
 		background-color: var(--form-background);
 		color: var(--text-color);
-	}
 
-	.links {
-		font-size: 14px;
-		color: var(--link-color);
-		position: absolute;
-		bottom: 0;
-	}
+		ul {
+			list-style-type: none;
+			margin: 0;
+			padding: 0;
+			white-space: nowrap;
+			min-width: 200px;
 
-	ul {
-		list-style-type: none;
-		margin: 0;
-		padding: 0;
-		white-space: nowrap;
-		min-width: 200px;
-	}
+			flex-grow: 1;
+			flex-shrink: 0;
 
-	a {
-		display: flex;
-		flex-direction: row;
-		gap: var(--gap);
-		line-height: 24px;
-		color: inherit;
-		text-decoration: none;
-		padding: 10px 0;
-		margin-bottom: 10px;
-	}
+			a {
+				display: flex;
+				flex-direction: row;
+				gap: var(--gap);
+				line-height: 24px;
+				color: inherit;
+				text-decoration: none;
+				padding: 10px 0;
+				margin-bottom: 10px;
+			}
 
-	.icon {
-		flex-basis: 24px;
-		flex-shrink: 0;
-		flex-grow: 0;
-		height: 24px;
+			.icon {
+				flex-basis: 24px;
+				flex-shrink: 0;
+				flex-grow: 0;
+				height: 24px;
+			}
+		}
+
+		.bottom {
+			flex-grow: 0;
+			flex-shrink: 0;
+			opacity: 0.5;
+
+			&.links {
+				font-size: 14px;
+				padding: var(--gap) 0;
+
+				a {
+					display: block;
+					text-align: center;
+					color: inherit;
+				}
+			}
+		}
 	}
 
 	@media (min-width: 480px) {
