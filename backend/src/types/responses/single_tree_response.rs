@@ -22,6 +22,8 @@ pub struct SingleTreeResponse {
     pub like_count: i64,
     pub files: Vec<PublicFileInfo>,
     pub users: Vec<UserResponse>,
+    pub replaces: Option<String>,
+    pub replaced_by: Option<String>,
 }
 
 impl SingleTreeResponse {
@@ -52,8 +54,14 @@ impl SingleTreeResponse {
             thumbnail_id,
             year: tree.year,
             like_count: tree.like_count,
+            replaces: Self::itos(tree.replaces),
+            replaced_by: Self::itos(tree.replaced_by),
             files: files.iter().map(PublicFileInfo::from_file).collect(),
             users,
         }
+    }
+
+    fn itos(value: Option<u64>) -> Option<String> {
+        value.map(|v| v.to_string())
     }
 }

@@ -164,6 +164,24 @@ impl TreeRepository {
         self.log_changes(&old, tree, user_id).await
     }
 
+    pub async fn replace(&self, old_id: u64, new_id: u64, user_id: u64) -> Result<()> {
+        let query = UpdateQuery::new(TABLE)
+            .with_condition("id", Value::from(old_id as i64))
+            .with_value("state", Value::from("gone".to_string()))
+            .with_value("replaced_by", Value::from(new_id as i64));
+
+        self.db.update(query).await.map_err(|e| {
+            error!("Error updating a tree: {}", e);
+            e
+        })?;
+
+        self.add_tree_prop(old_id, "state", "gone", user_id).await?;
+        self.add_tree_prop(old_id, "replaced_by", &new_id.to_string(), user_id)
+            .await?;
+
+        Ok(())
+    }
+
     pub async fn r#move(&self, tree: &TreeRecord, lat: f64, lon: f64, user_id: u64) -> Result<()> {
         let old = tree.clone();
 
@@ -342,6 +360,17 @@ impl TreeRepository {
             self.add_tree_prop(new.id, "thumbnail_id", &value, user_id)
                 .await?;
         }
+
+        if old.replaces != new.replaces {
+            let value = match new.replaces {
+                Some(value) => value.to_string(),
+                None => "".to_string(),
+            };
+
+            self.add_tree_prop(new.id, "replaces", &value, user_id)
+                .await?;
+        }
+
         Ok(())
     }
 

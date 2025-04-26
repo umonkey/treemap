@@ -23,6 +23,8 @@ pub struct TreeListItem {
     pub year: Option<i64>,
     pub address: Option<String>,
     pub like_count: i64,
+    pub replaces: Option<String>,
+    pub replaced_by: Option<String>,
 }
 
 impl TreeListItem {
@@ -46,6 +48,8 @@ impl TreeListItem {
             year: tree.year,
             address: tree.address.clone(),
             like_count: tree.like_count,
+            replaces: tree.replaces.map(|value| value.to_string()),
+            replaced_by: tree.replaced_by.map(|value| value.to_string()),
         }
     }
 }

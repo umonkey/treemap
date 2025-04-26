@@ -20,6 +20,8 @@ CREATE TABLE IF NOT EXISTS trees (
     `year` INT NULL,
     `address` TEXT NULL,
     `like_count` INT NOT NULL DEFAULT '0',
+    `replaces` INT NULL,
+    `replaced_by` INT NULL,
     PRIMARY KEY(`id`)
 );
 

@@ -271,6 +271,10 @@ class EnglishLocale {
 		return 'Some hints or suggested edits.';
 	}
 
+	public contextReplace(): string {
+		return 'Replace tree';
+	}
+
 	public contextEditTree(): string {
 		return 'Other changes';
 	}
@@ -447,6 +451,10 @@ class EnglishLocale {
 		return 'Measure tree';
 	}
 
+	public replaceTitle(): string {
+		return 'Replace tree';
+	}
+
 	public measureHeight(): string {
 		return 'Enter tree height in meters:';
 	}
@@ -513,6 +521,14 @@ class EnglishLocale {
 
 	public noChangeHistory(): string {
 		return 'No changes found for this tree.';
+	}
+
+	public replaceHint(): string {
+		return 'You are about to replace a tree with a new one. The old tree will be marked as gone, the new one will be added at the exact location. The trees will be linekd to track planting history.';
+	}
+
+	public replaceSuccess(): string {
+		return 'The tree was replaced.';
 	}
 }
 
@@ -781,6 +797,10 @@ class RussianLocale extends EnglishLocale {
 		return 'Оставьте подсказки или предложения по исправлению.';
 	}
 
+	public contextReplace(): string {
+		return 'Заменить дерево';
+	}
+
 	public contextEditTree(): string {
 		return 'Внести другие правки';
 	}
@@ -905,6 +925,10 @@ class RussianLocale extends EnglishLocale {
 		return 'Замер дерева';
 	}
 
+	public replaceTitle(): string {
+		return 'Замена дерева';
+	}
+
 	public measureHeight(): string {
 		return 'Введите высоту дерева в метрах:';
 	}
@@ -1023,6 +1047,14 @@ class RussianLocale extends EnglishLocale {
 
 	public measureLocationUpdated(): string {
 		return 'Координаты обновлены.';
+	}
+
+	public replaceHint(): string {
+		return 'Вы собираетесь заменить дерево на новое. Старое дерево будет помечено как удалённое, новое будет добавлено в том же месте. Деревья будут связаны, чтобы отслеживать историю посадки.';
+	}
+
+	public replaceSuccess(): string {
+		return 'Дерево заменено.';
 	}
 }
 

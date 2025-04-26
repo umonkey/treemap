@@ -30,6 +30,8 @@ export interface ITree {
 	updated_at: number;
 	added_by: string;
 	year: number | null;
+	replaces: string | null;
+	replaced_by: string | null;
 	files: ITreeFile[];
 }
 
@@ -113,6 +115,16 @@ export interface ILatLon {
 
 export interface IAddTreesRequest {
 	points: ILatLon[];
+	species: string;
+	notes: string | null;
+	height: number | null;
+	circumference: number | null;
+	diameter: number | null;
+	year: number | null;
+	state: string | null;
+}
+
+export interface IReplaceTreeRequest {
 	species: string;
 	notes: string | null;
 	height: number | null;

@@ -10,6 +10,7 @@ import type {
 	IMarkers,
 	IMeResponse,
 	IRawError,
+	IReplaceTreeRequest,
 	IResponse,
 	ISingleTree,
 	ISpecies,
@@ -129,6 +130,16 @@ export class ApiClient {
 
 	public async addTree(props: IAddTreesRequest): Promise<IResponse<ITreeList>> {
 		return await this.request('POST', 'v1/trees', {
+			body: JSON.stringify(props),
+			headers: {
+				'Content-Type': 'application/json',
+				...this.getAuthHeaders()
+			}
+		});
+	}
+
+	public async replaceTree(id: string, props: IReplaceTreeRequest): Promise<IResponse<ITreeList>> {
+		return await this.request('PUT', `v1/trees/${id}/replace`, {
 			body: JSON.stringify(props),
 			headers: {
 				'Content-Type': 'application/json',

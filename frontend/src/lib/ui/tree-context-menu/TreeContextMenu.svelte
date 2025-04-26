@@ -12,7 +12,8 @@
 		HeightIcon,
 		MapIcon,
 		SkullIcon,
-		TrashIcon
+		TrashIcon,
+		TreeIcon
 	} from '$lib/icons';
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
@@ -54,6 +55,9 @@
 				</li>
 				<li class="sep">
 					<EditIcon /> <a href={routes.treeEdit(id)}>{locale.contextEditTree()}</a>
+				</li>
+				<li>
+					<TreeIcon /> <a href={routes.treeReplace(id)}>{locale.contextReplace()}</a>
 				</li>
 			</ul>
 		</div>

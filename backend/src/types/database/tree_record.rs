@@ -23,6 +23,12 @@ pub struct TreeRecord {
     pub year: Option<i64>,
     pub address: Option<String>,
     pub like_count: i64,
+
+    // The tree that was replaced by this one.
+    pub replaces: Option<u64>,
+
+    // The tree that succeeded this one.
+    pub replaced_by: Option<u64>,
 }
 
 impl TreeRecord {
@@ -45,6 +51,8 @@ impl TreeRecord {
             year: attributes.get_i64("year")?,
             address: attributes.get_string("address")?,
             like_count: attributes.get_i64("like_count")?.unwrap_or(0),
+            replaces: attributes.get_u64("replaces")?,
+            replaced_by: attributes.get_u64("replaced_by")?,
         })
     }
 
@@ -76,6 +84,20 @@ impl TreeRecord {
             ("year".to_string(), Value::from(self.year)),
             ("address".to_string(), Value::from(self.address.clone())),
             ("like_count".to_string(), Value::from(self.like_count)),
+            (
+                "replaces".to_string(),
+                match self.replaces {
+                    Some(value) => Value::from(value as i64),
+                    None => Value::Null,
+                },
+            ),
+            (
+                "replaced_by".to_string(),
+                match self.replaced_by {
+                    Some(value) => Value::from(value as i64),
+                    None => Value::Null,
+                },
+            ),
         ])
     }
 
