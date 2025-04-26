@@ -86,6 +86,7 @@
 		top: 0;
 		left: 0;
 		height: 100%;
+		width: 75vw;
 		z-index: var(--z-mobile-sidebar);
 
 		display: flex;
