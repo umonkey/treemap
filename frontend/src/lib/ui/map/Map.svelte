@@ -1,16 +1,16 @@
 <script lang="ts">
 	import 'leaflet/dist/leaflet.css';
-	import { locationBus } from '$lib/buses/locationBus';
-	import { MAX_BOUNDS } from '$lib/constants';
-	import { addLocateMeButton } from '$lib/map/addLocateMeButton';
-	import { addLocateMeCircle } from '$lib/map/addLocateMeCircle';
-	import { addTreeButton } from '$lib/map/addTreeButton';
-	import { addLayerSelection } from '$lib/map/baseLayerSelector';
-	import { Markers } from '$lib/map/markers';
-	import { addResizeObserver } from '$lib/map/resizeObserver';
-	import { baseLayer } from '$lib/stores/mapLayerStore';
 	import type { ITree } from '$lib/types';
 	import type { Map } from 'leaflet';
+	import { MAX_BOUNDS } from '$lib/constants';
+	import { Markers } from '$lib/map/markers';
+	import { addLayerSelection } from '$lib/map/baseLayerSelector';
+	import { addLocateMeButton } from '$lib/map/addLocateMeButton';
+	import { addLocateMeCircle } from '$lib/map/addLocateMeCircle';
+	import { addResizeObserver } from '$lib/map/resizeObserver';
+	import { addTreeButton } from '$lib/map/addTreeButton';
+	import { baseLayer } from '$lib/stores/mapLayerStore';
+	import { locationBus } from '$lib/buses/locationBus';
 	import { onDestroy, onMount } from 'svelte';
 
 	const {
@@ -18,7 +18,7 @@
 		onChange,
 		onMove,
 		className = 'default',
-		marker = undefined,
+		marker,
 		zoom = 15,
 		searchQuery = undefined,
 		crosshair = false,
@@ -34,6 +34,10 @@
 		crosshair?: boolean | undefined;
 		canAdd?: boolean | undefined;
 	}>();
+
+	$effect(() => {
+		console.debug(`[map] Map.svelte effect`, marker);
+	});
 
 	let map: Map;
 

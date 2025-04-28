@@ -4,6 +4,7 @@
 	import { isSidebarVisible, mobileSidebarStore } from '$lib/stores/mobileSidebarStore';
 	import { BellIcon, HomeIcon, MapIcon, SearchIcon, UserIcon } from '$lib/icons';
 	import Logo from '$lib/assets/trees-of-yerevan.svelte';
+	import { mapLastTree } from '$lib/stores/mapStore';
 
 	const onClick = () => {
 		mobileSidebarStore.update(() => false);
@@ -32,12 +33,21 @@
 					<span>{locale.sideSearch()}</span>
 				</a>
 			</li>
-			<li>
-				<a href="/map">
-					<span class="icon"><MapIcon /></span>
-					<span>{locale.sideExplore()}</span>
-				</a>
-			</li>
+			{#if $mapLastTree}
+				<li>
+					<a href={routes.mapPreview($mapLastTree)}>
+						<span class="icon"><MapIcon /></span>
+						<span>{locale.sideExplore()}</span>
+					</a>
+				</li>
+			{:else}
+				<li>
+					<a href={routes.map()}>
+						<span class="icon"><MapIcon /></span>
+						<span>{locale.sideExplore()}</span>
+					</a>
+				</li>
+			{/if}
 			<li>
 				<a href={routes.newTrees()}>
 					<span class="icon"><BellIcon /></span>

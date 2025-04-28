@@ -68,9 +68,9 @@ export const addLocateMeButton = (map: Map) => {
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const control = new (L.Control as any).LocateMeButton();
-	const button = control.addTo(map);
+	control.addTo(map);
 
-	console.debug('[map] LocateMe button added.', button);
+	console.debug('[map] LocateMe button added.');
 
 	map.on('unload', () => {
 		console.debug('[map] Removing the Locate Me button.');

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Map from '$lib/components/Map.svelte';
+	import { Map } from '$lib/ui';
 	import type { LatLng } from 'leaflet';
 
 	const { center, marker, onMove } = $props<{
