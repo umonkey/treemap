@@ -52,11 +52,10 @@
 
 	const updateMarker = (value: number[] | null) => {
 		if (!lldiff(value, lastMarkerPos)) {
-			console.debug('[Map.svelte] Marker position not changed.', value);
 			return;
 		}
 
-		console.debug(`[Map.svelte] Updating marker from ${lastMarkerPos} to ${value}`);
+		console.debug(`[Map.svelte] Updating marker to ${value}`);
 
 		const removeMarker = lastMarkerElement;
 
@@ -121,10 +120,7 @@
 		map.remove();
 	});
 
-	$effect(() => {
-		console.debug(`[Map.svelte] EFFECT; marker=${marker}`);
-		updateMarker(marker ?? null);
-	});
+	$effect(() => updateMarker(marker ?? null));
 </script>
 
 <div
