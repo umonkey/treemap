@@ -2,6 +2,7 @@
 	import 'leaflet/dist/leaflet.css';
 	import type { ITree } from '$lib/types';
 	import type { Map } from 'leaflet';
+	import L, { LatLng, LatLngBounds } from 'leaflet';
 	import { MAX_BOUNDS } from '$lib/constants';
 	import { Markers } from '$lib/map/markers';
 	import { addLayerSelection } from '$lib/map/baseLayerSelector';
@@ -12,6 +13,8 @@
 	import { baseLayer } from '$lib/stores/mapLayerStore';
 	import { locationBus } from '$lib/buses/locationBus';
 	import { onDestroy, onMount } from 'svelte';
+
+	console.debug('[Map.svelte] Loading map component.', new LatLng(0, 0));
 
 	const {
 		center,
@@ -35,23 +38,55 @@
 		canAdd?: boolean | undefined;
 	}>();
 
-	$effect(() => {
-		console.debug(`[map] Map.svelte effect`, marker);
-	});
-
 	let map: Map;
 
-	// biome-ignore lint/suspicious/noImplicitAnyLet: Leaflet :(
-	let L;
+	let lastMarkerPos = $state<number[] | null>(null);
+	let lastMarkerElement = $state(undefined);
+
+	const lldiff = (a: number[] | null, b: number[] | null): boolean => {
+		const _a = a ?? [0, 0];
+		const _b = b ?? [0, 0];
+
+		return _a[0] !== _b[0] || _a[1] !== _b[1];
+	};
+
+	const updateMarker = (value: number[] | null) => {
+		if (!lldiff(value, lastMarkerPos)) {
+			console.debug('[Map.svelte] Marker position not changed.', value);
+			return;
+		}
+
+		console.debug(`[Map.svelte] Updating marker from ${lastMarkerPos} to ${value}`);
+
+		const removeMarker = lastMarkerElement;
+
+		if (value) {
+			const ctl = L.marker(value, {
+				icon: L.icon({
+					iconUrl: '/icons/marker-icon-2x.png',
+					iconSize: [25, 41],
+					iconAnchor: [12, 41]
+				})
+			}).addTo(map);
+
+			lastMarkerPos = value;
+			lastMarkerElement = ctl;
+		} else {
+			lastMarkerPos = null;
+			lastMarkerElement = null;
+		}
+
+		if (removeMarker) {
+			map.removeLayer(removeMarker);
+		}
+	};
 
 	onMount(async () => {
-		L = await import('leaflet');
-
-		const c1 = L.latLng(MAX_BOUNDS[0][0], MAX_BOUNDS[0][1]);
-		const c2 = L.latLng(MAX_BOUNDS[1][0], MAX_BOUNDS[1][1]);
+		const c1 = new LatLng(MAX_BOUNDS[0][0], MAX_BOUNDS[0][1]);
+		const c2 = new LatLng(MAX_BOUNDS[1][0], MAX_BOUNDS[1][1]);
 
 		map = L.map('map', {
-			maxBounds: L.latLngBounds(c1, c2)
+			maxBounds: new LatLngBounds(c1, c2)
 		}).setView(center, zoom);
 
 		addLayerSelection(map);
@@ -64,17 +99,6 @@
 		}
 
 		map.attributionControl.setPrefix('');
-
-		// Highlight the current tree.
-		if (marker) {
-			L.marker(marker, {
-				icon: L.icon({
-					iconUrl: '/icons/marker-icon-2x.png',
-					iconSize: [25, 41],
-					iconAnchor: [12, 41]
-				})
-			}).addTo(map);
-		}
 
 		const markers = new Markers(map, searchQuery);
 
@@ -95,6 +119,11 @@
 	onDestroy(() => {
 		console.debug('[map] Destroying map.');
 		map.remove();
+	});
+
+	$effect(() => {
+		console.debug(`[Map.svelte] EFFECT; marker=${marker}`);
+		updateMarker(marker ?? null);
 	});
 </script>
 

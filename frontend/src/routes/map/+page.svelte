@@ -14,6 +14,10 @@
 
 	const { marker, reload } = mapState();
 
+	// Components cannot see store updates directly,
+	// so we need to use $derived to get the values.
+	const markerPosition = $derived($marker);
+
 	const title = searchQuery ? locale.mapTitleQuery(searchQuery) : locale.mapTitle();
 
 	// This is called when a user clicks a tree on the map.
@@ -55,7 +59,7 @@
 <div class="mapContainer">
 	<Map
 		center={$mapCenter}
-		marker={$marker}
+		marker={markerPosition}
 		zoom={$mapZoom}
 		{onChange}
 		{onMove}
