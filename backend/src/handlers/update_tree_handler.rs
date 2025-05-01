@@ -6,13 +6,14 @@ use log::info;
 use std::sync::Arc;
 
 pub struct UpdateTreeHandler {
+    files: Arc<FileRepository>,
     trees: Arc<TreeRepository>,
     users: Arc<UserRepository>,
     queue: Arc<QueueService>,
 }
 
 impl UpdateTreeHandler {
-    pub async fn handle(&self, req: UpdateTreeRequest) -> Result<TreeRecord> {
+    pub async fn handle(&self, req: UpdateTreeRequest) -> Result<SingleTreeResponse> {
         let now = get_timestamp();
 
         let old = match self.trees.get(req.id).await? {
@@ -71,7 +72,29 @@ impl UpdateTreeHandler {
 
         self.users.increment_update_count(req.user_id).await?;
 
-        Ok(new)
+        let files = self.find_files(new.id).await?;
+        let users = self.find_users(&new, &files).await?;
+
+        Ok(SingleTreeResponse::from_tree(&new, &files, &users))
+    }
+
+    async fn find_files(&self, tree_id: u64) -> Result<Vec<FileRecord>> {
+        let files = self.files.find_by_tree(tree_id).await?;
+        Ok(files.into_iter().filter(|file| file.is_visible()).collect())
+    }
+
+    async fn find_users(&self, tree: &TreeRecord, files: &[FileRecord]) -> Result<Vec<UserRecord>> {
+        let mut user_ids = Vec::new();
+
+        user_ids.push(tree.added_by);
+
+        for file in files {
+            user_ids.push(file.added_by);
+        }
+
+        let users = self.users.get_multiple(&user_ids).await?;
+
+        Ok(users)
     }
 
     async fn schedule_address_update(&self, tree_id: u64) -> Result<()> {
@@ -87,6 +110,7 @@ impl UpdateTreeHandler {
 impl Locatable for UpdateTreeHandler {
     fn create(locator: &Locator) -> Result<Self> {
         Ok(Self {
+            files: locator.get::<FileRepository>()?,
             trees: locator.get::<TreeRepository>()?,
             users: locator.get::<UserRepository>()?,
             queue: locator.get::<QueueService>()?,

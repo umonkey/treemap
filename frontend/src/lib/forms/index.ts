@@ -2,6 +2,7 @@ export { default as AddTreeForm } from './add-tree-form/AddTreeForm.svelte';
 export { default as CircumferenceForm } from './circumference-form/CircumferenceForm.svelte';
 export { default as CrownForm } from './crown-form/CrownForm.svelte';
 export { default as DeleteTreeForm } from './delete-tree-form/DeleteTreeForm.svelte';
+export { default as EditForm } from './edit-form/EditForm.svelte';
 export { default as HeightForm } from './height-form/HeightForm.svelte';
 export { default as MoveForm } from './move-form/MoveForm.svelte';
 export { default as ReplaceForm } from './replace-form/ReplaceForm.svelte';

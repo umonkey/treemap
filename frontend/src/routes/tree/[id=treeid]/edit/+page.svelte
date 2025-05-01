@@ -1,110 +1,10 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { apiClient } from '$lib/api';
+	import { EditForm } from '$lib/forms';
+	import { Header } from '$lib/ui';
 	import { locale } from '$lib/locale';
-	import { routes } from '$lib/routes';
-	import { toast } from '@zerodevx/svelte-toast';
-	import type { ILatLng } from '$lib/types';
-
 	import AuthWrapper from '$lib/components/auth/AuthWrapper.svelte';
-	import {
-		Button,
-		Buttons,
-		CanopyInput,
-		CircumferenceInput,
-		Header,
-		HeightInput,
-		LocationInput,
-		NotesInput,
-		StateInput,
-		YearInput,
-		SpeciesInput
-	} from '$lib/ui';
 
 	const { data } = $props();
-	const treeId = data.id;
-
-	let species = $state<string | null>(data.tree.species);
-	let height = $state<number | null>(data.tree.height);
-	let diameter = $state<number | null>(data.tree.diameter);
-	let circumference = $state<number | null>(data.tree.circumference);
-	let treeState = $state<string>(data.tree.state ?? 'unknown');
-	let notes = $state(data.tree.notes ?? '');
-	let location = $state<ILatLng>({ lat: data.tree.lat, lng: data.tree.lon });
-	let year = $state<number | null>(data.tree.year);
-
-	const onSave = () => {
-		apiClient
-			.updateTree(treeId, {
-				species,
-				height,
-				diameter,
-				circumference,
-				state: treeState,
-				notes,
-				lat: location.lat,
-				lon: location.lng,
-				year
-			})
-			.then((res) => {
-				if (res.status >= 200 && res.status < 400) {
-					location = { lat: res.data.lat, lng: res.data.lon };
-					toast.push('Tree updated.');
-					goto(routes.treeDetails(treeId));
-				} else {
-					console.error(`Error ${res.status} updating tree.`);
-					toast.push('Error updating tree.');
-				}
-			})
-			.catch((e) => {
-				console.error(`Error updating tree: ${e}.`);
-				toast.push('Error updating tree.');
-			});
-	};
-
-	const onCancel = () => {
-		history.back();
-	};
-
-	const handleSpeciesChange = (value: string) => {
-		species = value;
-	};
-
-	const handleHeightChange = (value: number | null) => {
-		height = value;
-	};
-
-	const handleCanopyChange = (value: number | null) => {
-		diameter = value;
-	};
-
-	const handleCircumferenceChange = (value: number | null) => {
-		circumference = value;
-	};
-
-	const handleStateChange = (value: string) => {
-		treeState = value;
-	};
-
-	const handleYearChange = (value: number | null) => {
-		year = value;
-	};
-
-	const handleNotesChange = (value: string) => {
-		notes = value;
-	};
-
-	const handleLocationChange = (value: ILatLng) => {
-		if (location.lat != value.lat || location.lng != value.lng) {
-			console.debug(`[edit page] Location updated to ${value.lat},${value.lng}`);
-			location = value;
-		}
-	};
-
-	const treeLocation = {
-		lat: data.tree.lat,
-		lng: data.tree.lon
-	};
 </script>
 
 <svelte:head>
@@ -113,26 +13,6 @@
 
 <Header title={locale.editTitle()} />
 
-<div class="form">
-	<AuthWrapper>
-		<SpeciesInput value={species} onChange={handleSpeciesChange} />
-		<HeightInput value={height} onChange={handleHeightChange} />
-		<CanopyInput value={diameter} onChange={handleCanopyChange} />
-		<CircumferenceInput value={circumference} onChange={handleCircumferenceChange} />
-		<StateInput value={treeState} onChange={handleStateChange} />
-		<YearInput value={year} onChange={handleYearChange} />
-		<LocationInput value={treeLocation} pin={treeLocation} onChange={handleLocationChange} />
-		<NotesInput value={notes} onChange={handleNotesChange} />
-
-		<Buttons>
-			<Button type="submit" label={locale.editSave()} onClick={onSave} />
-			<Button type="cancel" label={locale.editCancel()} onClick={onCancel} />
-		</Buttons>
-	</AuthWrapper>
-</div>
-
-<style>
-	.form {
-		padding: 0 var(--gap) var(--gap);
-	}
-</style>
+<AuthWrapper>
+	<EditForm id={data.id} />
+</AuthWrapper>
