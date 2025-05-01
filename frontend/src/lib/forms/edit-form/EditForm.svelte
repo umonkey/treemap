@@ -22,6 +22,7 @@
 		loading,
 		saving,
 		tree,
+		updated,
 		reload,
 		handleSpeciesChange,
 		handleHeightChange,
@@ -42,18 +43,18 @@
 	{#if $loading}
 		<!-- Loading... -->
 	{:else}
-		<SpeciesInput value={$tree.species} onChange={handleSpeciesChange} />
-		<HeightInput value={$tree.height} onChange={handleHeightChange} />
-		<CanopyInput value={$tree.diameter} onChange={handleDiameterChange} />
-		<CircumferenceInput value={$tree.circumference} onChange={handleCircumferenceChange} />
-		<StateInput value={$tree.state} onChange={handleStateChange} />
-		<YearInput value={$tree.year} onChange={handleYearChange} />
+		<SpeciesInput value={$updated.species} onChange={handleSpeciesChange} />
+		<HeightInput value={$updated.height} onChange={handleHeightChange} />
+		<CanopyInput value={$updated.diameter} onChange={handleDiameterChange} />
+		<CircumferenceInput value={$updated.circumference} onChange={handleCircumferenceChange} />
+		<StateInput value={$updated.state} onChange={handleStateChange} />
+		<YearInput value={$updated.year} onChange={handleYearChange} />
 		<LocationInput
 			value={{ lat: $tree.lat, lng: $tree.lon }}
 			pin={{ lat: $tree.lat, lng: $tree.lon }}
 			onChange={handleLocationChange}
 		/>
-		<NotesInput value={$tree.notes} onChange={handleNotesChange} />
+		<NotesInput value={$updated.notes} onChange={handleNotesChange} />
 
 		<Buttons>
 			<Button type="submit" label={locale.editSave()} onClick={handleConfirm} disabled={$saving} />
