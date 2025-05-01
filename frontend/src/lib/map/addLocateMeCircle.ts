@@ -12,8 +12,6 @@ export const addLocateMeCircle = (map: L.Map) => {
 	let dot: L.Layer | null = null;
 
 	const unsubscribe = locationStore.subscribe((pos) => {
-		console.debug('[map] My location changed:', pos);
-
 		if (circle) {
 			map.removeLayer(circle);
 			circle = null;
@@ -27,6 +25,8 @@ export const addLocateMeCircle = (map: L.Map) => {
 		if (pos === null) {
 			return;
 		}
+
+		console.debug(`[map] Location changed to ${pos.lat},${pos.lng}`);
 
 		circle = L.circle(pos, {
 			radius: pos.accuracy,
