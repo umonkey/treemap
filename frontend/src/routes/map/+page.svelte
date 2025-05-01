@@ -23,11 +23,6 @@
 		goto(routes.mapPreview(tree.id));
 	};
 
-	const onClosePreview = () => {
-		setLastTree(null);
-		goto(routes.map());
-	};
-
 	// The user moves/pans the map.  Save the new center and zoom.
 	const onMove = (center: number[], zoom: number) => {
 		mapStore.update((state) => ({
@@ -57,7 +52,7 @@
 		canAdd={$isMapperMode}
 	/>
 
-	<MapPreview id={data.preview} onClose={onClosePreview} />
+	<MapPreview id={data.preview} />
 </div>
 
 <style>

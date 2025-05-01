@@ -1,81 +1,31 @@
 <script lang="ts">
 	import 'leaflet/dist/leaflet.css';
-	import type { ITree } from '$lib/types';
-	import { Markers } from '$lib/map/markers';
-	import { addLayerSelection } from '$lib/map/baseLayerSelector';
-	import { addLocateMeButton } from '$lib/map/addLocateMeButton';
-	import { addLocateMeCircle } from '$lib/map/addLocateMeCircle';
-	import { addResizeObserver } from '$lib/map/resizeObserver';
-	import { addTreeButton } from '$lib/map/addTreeButton';
 	import { baseLayer } from '$lib/stores/mapLayerStore';
-	import { locationBus } from '$lib/buses/locationBus';
 	import { onDestroy, onMount } from 'svelte';
 	import { hook } from './hooks';
+	import CROSSHAIR from '$lib/assets/crosshair.svg';
 
 	const {
 		center,
-		onMove,
 		className = 'default',
 		marker,
-		zoom = 15,
 		searchQuery = undefined,
 		crosshair = false,
 		canAdd = false
 	} = $props<{
 		center: [number, number];
-		onMove: (center: [number, number], zoom: number) => void;
 		className: string;
 		marker?: [number, number];
-		zoom: number;
 		searchQuery?: string | undefined;
 		crosshair?: boolean | undefined;
 		canAdd?: boolean | undefined;
 	}>();
 
-	const { map, mount, destroy, update, handleMarkers } = hook('map');
+	const { handleCenter, handleMarkers, handleCanAdd } = hook('map', onMount, onDestroy);
 
-	onMount(async () => {
-		console.debug('[Map.svelte] MOUNT');
-
-		mount({ center, zoom });
-
-		addLayerSelection($map);
-		addResizeObserver($map);
-		addLocateMeCircle($map);
-		addLocateMeButton($map);
-
-		if (canAdd) {
-			addTreeButton($map);
-		}
-
-		$map.attributionControl.setPrefix('');
-
-		const markers = new Markers($map, searchQuery);
-
-		$map.on('moveend', () => {
-			if (onMove) {
-				const ll = $map.getCenter();
-				onMove([ll.lat, ll.lng], $map.getZoom());
-			}
-		});
-
-		// Start tracking user's location.
-		locationBus.emit('start');
-	});
-
-	onDestroy(destroy);
-
-	$effect(() =>
-		update({
-			center,
-			zoom,
-			marker
-		})
-	);
-
-	$effect(() => {
-		handleMarkers(marker);
-	});
+	$effect(() => handleCenter(center));
+	$effect(() => handleMarkers(marker));
+	$effect(() => handleCanAdd(canAdd));
 </script>
 
 <div
@@ -86,7 +36,7 @@
 ></div>
 
 {#if crosshair}
-	<img src="/icons/crosshair.svg" class="crosshair" alt="" />
+	<img src={CROSSHAIR} class="crosshair" alt="" />
 {/if}
 
 <style>

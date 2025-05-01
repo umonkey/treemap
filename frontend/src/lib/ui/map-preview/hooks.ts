@@ -1,6 +1,7 @@
 import { writable } from 'svelte/store';
 import type { ITree } from '$lib/types';
 import { apiClient } from '$lib/api';
+import { routes, goto } from '$lib/routes';
 
 export const hook = () => {
 	const visible = writable<boolean>(false);
@@ -8,15 +9,15 @@ export const hook = () => {
 	const error = writable<string | null>(null);
 
 	const handleClose = () => {
-		visible.set(false);
-		tree.set(null);
+		goto(routes.map());
 	};
 
 	const reload = (id: string | null) => {
 		console.debug(`[MapPreview] Selected tree: ${id}`);
 
 		if (id === null) {
-			handleClose();
+			visible.set(false);
+			tree.set(null);
 			return;
 		}
 

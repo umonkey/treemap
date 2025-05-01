@@ -14,7 +14,14 @@ import type { Map, Marker } from 'leaflet';
 import { MAX_BOUNDS } from '$lib/constants';
 import { get } from 'svelte/store';
 import { writable } from 'svelte/store';
-import { mapBus } from '$lib/buses';
+import { locationBus, mapBus } from '$lib/buses';
+import { addLayerSelection } from '$lib/map/baseLayerSelector';
+import { addLocateMeButton } from '$lib/map/addLocateMeButton';
+import { addLocateMeCircle } from '$lib/map/addLocateMeCircle';
+import { addResizeObserver } from '$lib/map/resizeObserver';
+import { addTreeButton } from '$lib/map/addTreeButton';
+import { Markers } from '$lib/map/markers';
+import { mapCenter, mapZoom, mapStore } from '$lib/stores/mapStore';
 
 const getMaxBounds = () => {
 	const c1 = L.latLng(MAX_BOUNDS[0][0], MAX_BOUNDS[0][1]);
@@ -29,30 +36,65 @@ const lldiff = (a: [number, number] | null, b: [number, number] | null): boolean
 	return _a[0] !== _b[0] || _a[1] !== _b[1];
 };
 
-export const hook = (element: string) => {
+export const hook = (element: string, mount, destroy) => {
 	const map = writable<Map | null>(null);
 	const lastMarkerPos = writable<[number, number] | null>(null);
 	const lastMarkerElement = writable<Marker | null>(null);
 
-	// Initialize the map component.
-	const mount = ({ center, zoom }: { center: [number, number]; zoom: number }) => {
+	// Initialize the map component on mount.
+	mount(() => {
+		console.debug('[map] Mounting the map component.');
+
+		const center = get(mapCenter);
+		const zoom = get(mapZoom);
+
 		const em = L.map(element, {
 			maxBounds: getMaxBounds()
-		}).setView(center, zoom);
+		}).setView([center[0], center[1]], zoom);
 
 		map.set(em);
+		em.attributionControl.setPrefix('');
+
+		addLayerSelection(em);
+		addResizeObserver(em);
+		addLocateMeCircle(em);
+		addLocateMeButton(em);
+
+		new Markers(em, null);
 
 		// Set up bus handlers.
 		mapBus.on('center', handleCenter);
-	};
 
-	// Destroy the map component.
-	const destroy = () => {
-		console.debug('[map] Destroying map');
+		// Start geo-location.
+		//
+		// Note that we don't stop it.  Once you open a map, we keep tracking your
+		// location in background, so when you jump between map and other pages,
+		// your location is still up to date.
+		locationBus.emit('start');
+
+		// Track and report map moves.
+		em.on('moveend', () => {
+			const c = em.getCenter();
+
+			console.debug(`[map] Reporting map move to ${c.lat},${c.lng}`);
+
+			mapBus.emit('onMoved', {
+				lat: c.lat,
+				lon: c.lng,
+				zoom: em.getZoom()
+			});
+
+			mapStore.update((state) => {
+				return { ...state, center: [em.getCenter().lat, em.getCenter().lng], zoom: em.getZoom() };
+			});
+		});
+	});
+
+	// Clean up on component removal.
+	destroy(() => {
+		console.debug('[map] Destroying the map component.');
 		get(map)?.remove();
-
-		// TODO: remove bus handlers.
-	};
+	});
 
 	// Update the component when parameters change.
 	const update = ({
@@ -105,6 +147,18 @@ export const hook = (element: string) => {
 	};
 
 	const handleCenter = (pos: [number, number]) => {
+		const center = get(map)?.getCenter();
+
+		if (!center) {
+			console.error('[map] Cannot center: map not initialized.');
+			return;
+		}
+
+		if (center.lat === pos[0] && center.lng === pos[1]) {
+			console.debug('[map] Cannot center: already there.');
+			return;
+		}
+
 		console.debug(`[map] Request to center: ${pos}`);
 		get(map)?.panTo(pos);
 	};
@@ -113,5 +167,15 @@ export const hook = (element: string) => {
 		console.debug(`[map] handleMarkers: ${marker}`);
 	};
 
-	return { map, mount, destroy, update, handleCenter, handleMarkers };
+	// Enable adding trees.
+	const handleCanAdd = (enabled: boolean) => {
+		const m = get(map);
+
+		if (enabled && m) {
+			console.debug('[map] Adding tree button');
+			addTreeButton(m);
+		}
+	};
+
+	return { map, destroy, update, handleCenter, handleMarkers, handleCanAdd };
 };

@@ -127,6 +127,7 @@ export class Markers {
 	}
 
 	private async onMoveEnd() {
+		console.debug('[map] Map moved, reloading markers.');
 		this.bounds = this.map.getBounds();
 		this.reload();
 	}
