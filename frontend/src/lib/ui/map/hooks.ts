@@ -89,7 +89,14 @@ export const hook = (element: string, mount: MountFn, destroy: DestroyFn) => {
 			});
 
 			mapStore.update((state) => {
-				return { ...state, center: [em.getCenter().lat, em.getCenter().lng], zoom: em.getZoom() };
+				return {
+					...state,
+					center: {
+						lat: c.lat,
+						lng: c.lng
+					},
+					zoom: em.getZoom()
+				};
 			});
 		});
 	});
