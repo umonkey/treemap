@@ -163,7 +163,7 @@ export const hooks = () => {
 	};
 
 	const handleCancel = () => {
-		goto(routes.treeDetails(get(tree).id));
+		goto(routes.map());
 	};
 
 	return {
