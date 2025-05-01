@@ -54,7 +54,7 @@ export const hook = (element: string, mount: MountFn, destroy: DestroyFn) => {
 
 		const em = L.map(element, {
 			maxBounds: getMaxBounds()
-		}).setView([center[0], center[1]], zoom);
+		}).setView([center.lat, center.lng], zoom);
 
 		map.set(em);
 		em.attributionControl.setPrefix('');
