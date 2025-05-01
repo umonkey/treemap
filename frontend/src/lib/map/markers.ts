@@ -213,6 +213,18 @@ export class Markers {
 
 			point.on('click', () => {
 				mapBus.emit('select', tree.id);
+
+				// Force map center change.
+				//
+				// This is also happening in select above, when the tree
+				// is changed, but in case you click a tree, then move the
+				// map, then click the same tree again, the id won't change
+				// and the component won't move the map as the center change
+				// effect didn't fire.  This is a double check.
+				//
+				// In the map component we make sure not to do any extra work
+				// if we're asked to center on the point where we are already.
+				mapBus.emit('center', [tree.lat, tree.lon]);
 			});
 
 			res.push(point);
