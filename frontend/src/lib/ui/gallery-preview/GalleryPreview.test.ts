@@ -64,7 +64,7 @@ describe('GalleryPreview', async () => {
 		};
 
 		render(GalleryPreview, {
-			id: tree.id,
+			id: tree.id
 		});
 
 		const link = await screen.findByTitle('Upload a new image');

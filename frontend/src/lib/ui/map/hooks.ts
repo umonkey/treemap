@@ -171,7 +171,7 @@ export const hook = (element: string, mount: MountFn, destroy: DestroyFn) => {
 			return;
 		}
 
-		console.debug(`[map] Request to center: ${pos}`);
+		console.debug(`[map] Request to center: ${pos.lat},${pos.lng}`);
 		get(map)?.panTo(pos);
 	};
 

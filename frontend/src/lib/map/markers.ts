@@ -8,6 +8,8 @@ import type { ITree } from '$lib/types';
 import L from 'leaflet';
 import type { LatLngBounds, Map, Marker } from 'leaflet';
 import { mapBus } from '$lib/buses';
+import { mapLastTree } from '$lib/stores/mapStore';
+import { get } from 'svelte/store';
 
 import BlackIcon from '$lib/map/icons/dot-black.svg';
 import GreenIcon from '$lib/map/icons/dot-green.svg';
@@ -241,10 +243,12 @@ export class Markers {
 				//
 				// In the map component we make sure not to do any extra work
 				// if we're asked to center on the point where we are already.
-				mapBus.emit('center', {
-					lat: tree.lat,
-					lng: tree.lon
-				});
+				if (tree.id === get(mapLastTree)) {
+					mapBus.emit('center', {
+						lat: tree.lat,
+						lng: tree.lon
+					});
+				}
 			});
 
 			res.push(point);

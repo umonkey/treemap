@@ -24,7 +24,12 @@
 	$effect(() => reload(id));
 </script>
 
-<div class="gallery" class:loading={$loading} class:error={$error !== ''} class:mapper={$isMapperMode}>
+<div
+	class="gallery"
+	class:loading={$loading}
+	class:error={$error !== ''}
+	class:mapper={$isMapperMode}
+>
 	{#if $error !== ''}
 		<p>{$error.description}</p>
 	{:else if $loading}
