@@ -1,20 +1,20 @@
 <script lang="ts">
-	import Map from '$lib/components/Map.svelte';
-	import type { LatLng } from 'leaflet';
+	import { Map } from '$lib/ui';
+	import type { ILatLng } from '$lib/types';
+	import { onMount, onDestroy } from 'svelte';
+	import { hooks } from './hooks';
 
-	const { center, marker, onMove } = $props<{
+	const { center, pin, onMove } = $props<{
 		center: [number, number];
-		marker?: [number, number];
-		onMove: (center: [number, number]) => void;
+		pin?: ILatLng;
+		onMove: (ll: ILatLng) => void;
 	}>();
 
-	const handleMove = (center: LatLng) => {
-		onMove([center.lat, center.lng]);
-	};
+	hooks(onMount, onDestroy, onMove);
 </script>
 
 <div class="mapContainer">
-	<Map {center} {marker} zoom={19} crosshair={true} onMove={handleMove} />
+	<Map {center} pins={pin ? [pin] : []} zoom={19} crosshair={true} />
 </div>
 
 <style>

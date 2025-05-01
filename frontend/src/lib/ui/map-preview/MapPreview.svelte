@@ -1,41 +1,31 @@
 <script lang="ts">
 	import { GalleryPreview } from '$lib/ui';
-	import { loadTree } from '$lib/hooks';
 	import { CloseIcon } from '$lib/icons';
 	import { routes } from '$lib/routes';
 	import { formatSpecies, shortDetails } from '$lib/utils/trees';
+	import { hook } from './hooks';
 
-	const { tree, onClose } = $props<{
-		tree: string | null;
-		onClose: () => void;
-	}>();
+	const { id } = $props<{ id: string }>();
+	const { visible, error, tree, handleClose, reload } = hook();
 
-	const { loading, data, error, reload } = loadTree();
-
-	$effect(() => {
-		if (tree) {
-			(async () => await reload(tree))();
-		}
-	});
+	$effect(() => reload(id));
 </script>
 
-{#if tree}
+{#if $visible}
 	<div class="preview">
 		{#if $error}
 			<p>{$error}</p>
-		{:else if $loading}
-			<!-- a spinner -->
-		{:else if $data}
+		{:else if $tree}
 			<div class="header">
 				<div class="title">
-					<a href={routes.treeDetails($data.id)}>{formatSpecies($data.species)}</a>
-					{#if $data.address}
-						&middot; {$data.address}{/if}
+					<a href={routes.treeDetails($tree.id)}>{formatSpecies($tree.species)}</a>
+					{#if $tree.address}
+						&middot; {$tree.address}{/if}
 				</div>
-				<button class="close" onclick={onClose}><CloseIcon /></button>
+				<button class="close" onclick={handleClose}><CloseIcon /></button>
 			</div>
-			<div class="props">{shortDetails($data)}</div>
-			<GalleryPreview tree={$data} />
+			<div class="props">{shortDetails($tree)}</div>
+			<GalleryPreview tree={$tree} />
 		{/if}
 	</div>
 {/if}

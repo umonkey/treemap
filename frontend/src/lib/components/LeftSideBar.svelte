@@ -2,6 +2,7 @@
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
 	import { BellIcon, HomeIcon, MapIcon, SearchIcon, UserIcon } from '$lib/icons';
+	import { mapLastTree } from '$lib/stores/mapStore';
 	import Logo from '$lib/assets/trees-of-yerevan.svelte';
 </script>
 
@@ -19,12 +20,21 @@
 				<span>{locale.sideSearch()}</span>
 			</a>
 		</li>
-		<li>
-			<a href={routes.map()}>
-				<span class="icon"><MapIcon /></span>
-				<span>{locale.sideExplore()}</span>
-			</a>
-		</li>
+		{#if $mapLastTree}
+			<li>
+				<a href={routes.mapPreview($mapLastTree)}>
+					<span class="icon"><MapIcon /></span>
+					<span>{locale.sideExplore()}</span>
+				</a>
+			</li>
+		{:else}
+			<li>
+				<a href={routes.map()}>
+					<span class="icon"><MapIcon /></span>
+					<span>{locale.sideExplore()}</span>
+				</a>
+			</li>
+		{/if}
 		<li>
 			<a href={routes.newTrees()}>
 				<span class="icon"><BellIcon /></span>

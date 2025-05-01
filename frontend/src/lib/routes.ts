@@ -8,7 +8,7 @@ export const routes = {
 	learn: () => '/learn',
 	map: () => '/map',
 	mapPreview: (id: string) => `/map?preview=${id}`,
-	modeMapper: () => '/mode/mapper/',
+	modeMapper: () => '/mode/mapper',
 	newTrees: () => '/updates/new',
 	search: '/search',
 	searchAddress: (query: string) => `/map?q=addr:"${query}"`,

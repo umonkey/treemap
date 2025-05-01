@@ -1,36 +1,17 @@
 <script lang="ts">
-	import Map from '$lib/components/Map.svelte';
-	import MapPreview from '$lib/components/map/MapPreview.svelte';
-	import { Header } from '$lib/ui';
+	import { Header, Map, MapPreview } from '$lib/ui';
 	import { locale } from '$lib/locale';
-	import { goto, routes } from '$lib/routes';
-	import { mapCenter, mapStore, mapZoom } from '$lib/stores/mapStore';
+	import { mapCenter, mapZoom } from '$lib/stores/mapStore';
 	import { isMapperMode } from '$lib/stores/modeStore';
-	import type { ITree } from '$lib/types';
+	import { hooks } from './hooks';
+	import { onMount, onDestroy } from 'svelte';
 
 	const { data } = $props();
-	const searchQuery = data.searchQuery;
-	const selectedTree = $derived(data.preview);
+	const { pins, handlePreviewChange } = hooks(onMount, onDestroy);
 
-	const title = searchQuery ? locale.mapTitleQuery(searchQuery) : locale.mapTitle();
+	const title = data.searchQuery ? locale.mapTitleQuery(data.searchQuery) : locale.mapTitle();
 
-	// This is called when a user clicks a tree on the map.
-	// We need to show a preview, for this we redirect to the page
-	// with the right arguments.
-	const onChange = (tree: ITree) => {
-		goto(routes.mapPreview(tree.id));
-	};
-
-	const onClosePreview = () => {
-		goto(routes.map());
-	};
-
-	const onMove = (center: number[], zoom: number) => {
-		mapStore.set({
-			center,
-			zoom
-		});
-	};
+	$effect(() => handlePreviewChange(data.preview));
 </script>
 
 <svelte:head>
@@ -42,14 +23,14 @@
 <div class="mapContainer">
 	<Map
 		center={$mapCenter}
+		pins={$pins}
 		zoom={$mapZoom}
-		{onChange}
-		{onMove}
-		{searchQuery}
+		searchQuery={data.searchQuery}
 		crosshair={$isMapperMode}
 		canAdd={$isMapperMode}
 	/>
-	<MapPreview tree={selectedTree} onClose={onClosePreview} />
+
+	<MapPreview id={data.preview} />
 </div>
 
 <style>

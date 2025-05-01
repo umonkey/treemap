@@ -2,20 +2,21 @@
 	import { LocationPicker } from '$lib/ui';
 	import { MapIcon } from '$lib/icons';
 	import { locale } from '$lib/locale';
+	import type { ILatLng } from '$lib/types';
 
 	const { value, hint, label, onChange, open } = $props<{
-		value: number[];
+		value: ILatLng;
 		hint?: string;
 		label?: string;
-		onChange: (value: number[]) => void;
+		onChange: (ll: ILatLng) => void;
 		open?: boolean;
 	}>();
 
 	let showMap = $state<boolean>(!!open);
-	let currentValue = $state<number[]>(value);
+	let currentValue = $state<ILatLng>(value);
 
-	const formatLocation = (value: number[]): string => {
-		return `${value[0].toFixed(7)}, ${value[1].toFixed(7)}`;
+	const formatLocation = (ll: ILatLng): string => {
+		return `${ll.lat.toFixed(7)}, ${ll.lng.toFixed(7)}`;
 	};
 
 	const toggleMap = () => {
@@ -26,10 +27,18 @@
 		return Math.round(value * 10000000) / 10000000;
 	};
 
-	const handleMove = (center: number[]) => {
-		currentValue = center;
-		onChange([round(center[0]), round(center[1])]);
+	const handleMove = (ll: ILatLng) => {
+		if (ll.lat != currentValue.lat || ll.lng != currentValue.lng) {
+			currentValue = ll;
+
+			onChange({
+				lat: round(ll.lat),
+				lng: round(ll.lng)
+			});
+		}
 	};
+
+	$effect(() => (currentValue = value));
 </script>
 
 <div class="input">
@@ -42,7 +51,7 @@
 		</div>
 
 		{#if showMap}
-			<LocationPicker center={value} marker={value} onMove={handleMove} />
+			<LocationPicker center={value} pin={value} onMove={handleMove} />
 		{/if}
 	</label>
 

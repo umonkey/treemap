@@ -1,14 +1,13 @@
-/**
- * Wrap the very low-level logic of Leaflet markers.
- *
- * TODO:
- * - Change marker size based on zoom level, https://gis.stackexchange.com/questions/216558/leaflet-resize-markers-in-layer-when-zoom-in
- */
+// Wrap the very low-level logic of Leaflet markers.
+//
+// TODO:
+// - Change marker size based on zoom level, https://gis.stackexchange.com/questions/216558/leaflet-resize-markers-in-layer-when-zoom-in
 
 import { apiClient } from '$lib/api';
 import type { ITree } from '$lib/types';
 import L from 'leaflet';
 import type { LatLngBounds, Map, Marker } from 'leaflet';
+import { mapBus } from '$lib/buses';
 
 import BlackIcon from '$lib/map/icons/dot-black.svg';
 import GreenIcon from '$lib/map/icons/dot-green.svg';
@@ -75,8 +74,6 @@ type ClusterGroup = {
 	w: number;
 };
 
-type onChangeFn = (tree: ITree) => void;
-
 export class Markers {
 	private map;
 
@@ -88,8 +85,6 @@ export class Markers {
 	private yellowIcon;
 	private redIcon;
 	private blackIcon;
-
-	public changeHandler: onChangeFn | null = null;
 
 	private oldClusterGroups: L.Layer[] = [];
 
@@ -131,11 +126,8 @@ export class Markers {
 		this.reload();
 	}
 
-	public onChange(handler: onChangeFn) {
-		this.changeHandler = handler;
-	}
-
 	private async onMoveEnd() {
+		console.debug('[map] Map moved, reloading markers.');
 		this.bounds = this.map.getBounds();
 		this.reload();
 	}
@@ -144,6 +136,8 @@ export class Markers {
 	 * Reload markers after a change in parameters.
 	 */
 	private reload() {
+		const query = this.searchQuery;
+
 		if (!this.bounds) {
 			console.debug('[map] Not reloading -- bounds not set.');
 			return;
@@ -154,10 +148,25 @@ export class Markers {
 		const s = this.bounds.getSouth();
 		const w = this.bounds.getWest();
 
-		apiClient.getMarkers(n, e, s, w, this.searchQuery).then((res) => {
+		apiClient.getMarkers(n, e, s, w, query).then((res) => {
+			// This is a hot fix for how the markers are added.
+			//
+			// We first initialize the map, and add the marker loader (this class),
+			// then the effect triggers which adds the search query.  This makes us send
+			// two simultaneous requests, which one comes first we don't know.
+			//
+			// The right solution would be to refactor the map hooks, to make sure we don't
+			// start loading markers before we know the right search query.
+			if (query !== this.searchQuery) {
+				console.debug(
+					`[map] Search query overruled; received=${query}, current=${this.searchQuery}.`
+				);
+				return;
+			}
+
 			if (res.status === 200 && res.data) {
 				const trees = res.data.trees;
-				console.debug(`[map] Received ${trees.length} trees, search=${this.searchQuery}.`);
+				console.debug(`[map] Received ${trees.length} trees, search=${query}.`);
 				this.replaceMarkers(trees);
 			}
 		});
@@ -220,11 +229,19 @@ export class Markers {
 			});
 
 			point.on('click', () => {
-				this.map.panTo([tree.lat, tree.lon]);
+				mapBus.emit('select', tree.id);
 
-				if (this.changeHandler) {
-					this.changeHandler(tree);
-				}
+				// Force map center change.
+				//
+				// This is also happening in select above, when the tree
+				// is changed, but in case you click a tree, then move the
+				// map, then click the same tree again, the id won't change
+				// and the component won't move the map as the center change
+				// effect didn't fire.  This is a double check.
+				//
+				// In the map component we make sure not to do any extra work
+				// if we're asked to center on the point where we are already.
+				mapBus.emit('center', [tree.lat, tree.lon]);
 			});
 
 			res.push(point);

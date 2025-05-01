@@ -1,8 +1,6 @@
 // Loads data required to move the tree, performs updates.
 
-import type { IChange, ITree } from '$lib/types';
-import { addTrees } from '$lib/stores/treeStore';
-import { addUsers } from '$lib/stores/userStore';
+import type { IChange, ITree, ILatLng } from '$lib/types';
 import { apiClient } from '$lib/api';
 import { get } from 'svelte/store';
 import { goto, routes } from '$lib/routes';
@@ -18,7 +16,8 @@ export const editor = (tree_id: string) => {
 	const saveError = writable<string | undefined>(undefined);
 	const tree = writable<ITree | undefined>(undefined);
 	const history = writable<IChange[]>([]);
-	const value = writable<number[]>([]);
+	const value = writable<ILatLng>({ lat: 0, lng: 0 });
+	const updated = writable<ILatLng>({ lat: 0, lng: 0 });
 
 	const reload = async (tree_id: string) => {
 		console.debug(`[location editor] Reloading tree ${tree_id}`);
@@ -29,8 +28,14 @@ export const editor = (tree_id: string) => {
 		const p1 = await apiClient.getTree(tree_id).then((res) => {
 			if (res.status >= 200 && res.status < 300 && res.data) {
 				tree.set(res.data);
-				value.set([roundCoord(res.data.lat), roundCoord(res.data.lon)]);
-				addUsers(res.data.users);
+
+				const ll = {
+					lat: roundCoord(res.data.lat),
+					lng: roundCoord(res.data.lon)
+				};
+
+				value.set(ll);
+				updated.set(ll);
 			} else if (res.error) {
 				loadError.set(res.error.description);
 			}
@@ -39,7 +44,6 @@ export const editor = (tree_id: string) => {
 		const p2 = await apiClient.getTreeHistory(tree_id).then((res) => {
 			if (res.status >= 200 && res.status < 300 && res.data) {
 				history.set(res.data.props);
-				addUsers(res.data.users);
 			} else if (res.error) {
 				loadError.set(res.error.description);
 			}
@@ -54,13 +58,14 @@ export const editor = (tree_id: string) => {
 		busy.set(true);
 		saveError.set(undefined);
 
+		const ll = get(updated);
+
 		await apiClient
-			.updateTreeLocation(tree_id, get(value)[0], get(value)[1])
+			.updateTreeLocation(tree_id, ll.lat, ll.lng)
 			.then((res) => {
 				if (res.status >= 200 && res.status < 300 && res.data) {
-					addTrees([res.data]);
 					toast.push(locale.measureLocationUpdated());
-					goto(routes.treeHistory(tree_id));
+					goto(routes.treeDetails(tree_id));
 				} else if (res.error) {
 					saveError.set(res.error.description);
 				}
@@ -74,8 +79,8 @@ export const editor = (tree_id: string) => {
 		goto(routes.treeHistory(tree_id));
 	};
 
-	const handleChange = (v: number[]) => {
-		value.set(v);
+	const handleChange = (v: ILatLng) => {
+		updated.set(v);
 	};
 
 	reload(tree_id);

@@ -1,9 +1,13 @@
-import AddTreeForm from './AddTreeForm.svelte';
-import type { IAddTreeRequest, ITree, ITreeList } from '$lib/types';
+// This must go first for the mocks to work.
+import { mockedGoto } from './mocks';
+
+import AddForm from './AddForm.svelte';
+import type { IAddTreesRequest, IResponse, ITreeList } from '$lib/types';
 import userEvent from '@testing-library/user-event';
 import { DEFAULT_TREE } from '$lib/constants';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { cleanup, render, screen } from '@testing-library/svelte';
+import { apiClient } from '$lib/api';
 
 beforeEach(() => {
 	const mockFetch = vi.fn();
@@ -38,7 +42,12 @@ beforeEach(() => {
 				status: 200,
 				json: async () =>
 					({
-						trees: [DEFAULT_TREE],
+						trees: [
+							{
+								...DEFAULT_TREE,
+								id: 'added1'
+							}
+						],
 						users: []
 					}) as ITreeList
 			};
@@ -56,20 +65,15 @@ afterEach(() => {
 	vi.unstubAllGlobals();
 });
 
-describe('AddTreeForm', async () => {
+describe('AddForm', async () => {
 	afterEach(cleanup);
 
 	test('handle cancel', async () => {
 		const user = userEvent.setup();
 
-		let clicked = false;
-
-		render(AddTreeForm, {
+		render(AddForm, {
 			lat: 1.0,
-			lng: 2.0,
-			onCancel: () => {
-				clicked = true;
-			}
+			lng: 2.0
 		});
 
 		const em = screen.getByRole('button', {
@@ -78,22 +82,31 @@ describe('AddTreeForm', async () => {
 
 		await user.click(em);
 
-		expect(clicked).toBe(true);
+		expect(mockedGoto).toHaveBeenCalledWith('/map');
 	});
 
 	// We allow adding trees with default values, all good.
 	test('handle default submit', async () => {
 		const user = userEvent.setup();
 
-		let submitted: ITree | null = null;
+		let request: IAddTreesRequest | null = null;
 
-		render(AddTreeForm, {
+		apiClient.addTree = async (req: IAddTreesRequest): Promise<IResponse<ITreeList>> => {
+			request = req;
+
+			return {
+				status: 200,
+				data: {
+					trees: [DEFAULT_TREE],
+					users: []
+				},
+				error: undefined
+			};
+		};
+
+		render(AddForm, {
 			lat: 1.0,
-			lng: 2.0,
-			onAdded: (tree: ITree) => {
-				submitted = tree;
-			},
-			onCancel: () => {}
+			lng: 2.0
 		});
 
 		const em = screen.getByRole('button', {
@@ -102,14 +115,17 @@ describe('AddTreeForm', async () => {
 
 		await user.click(em);
 
-		expect(submitted?.id).toBe('tree1');
+		expect(request?.points[0]).toStrictEqual({
+			lat: 1.0,
+			lon: 2.0
+		});
 	});
 
 	// We allow adding trees with default values, all good.
 	test('handle submit with input', async () => {
 		const user = userEvent.setup();
 
-		let request: IAddTreeRequest | null = null;
+		let request: IAddTreesRequest | null = null;
 
 		const inputNumber = async (name: RegExp, value: string) => {
 			const ctl = screen.getByRole('spinbutton', {
@@ -119,15 +135,28 @@ describe('AddTreeForm', async () => {
 			await user.type(ctl, value);
 		};
 
-		render(AddTreeForm, {
+		render(AddForm, {
 			lat: 1.0,
 			lng: 2.0,
 			onAdded: () => {},
 			onCancel: () => {},
-			onBeforeSubmit: (req: IAddTreeRequest) => {
+			onBeforeSubmit: (req: IAddTreesRequest) => {
 				request = req;
 			}
 		});
+
+		apiClient.addTree = async (req: IAddTreesRequest): Promise<IResponse<ITreeList>> => {
+			request = req;
+
+			return {
+				status: 200,
+				data: {
+					trees: [DEFAULT_TREE],
+					users: []
+				},
+				error: undefined
+			};
+		};
 
 		await inputNumber(/year/i, '1980');
 
@@ -137,6 +166,6 @@ describe('AddTreeForm', async () => {
 		await user.click(submit);
 
 		expect(request).not.toBeNull();
-		expect(request.year).toBe(1980);
+		expect(request?.year).toBe(1980);
 	});
 });

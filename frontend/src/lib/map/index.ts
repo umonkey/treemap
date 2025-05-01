@@ -1,0 +1,1 @@
+export { addPins } from './addPins';

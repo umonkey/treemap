@@ -13,11 +13,6 @@
 			url: routes.treeDetails(tree)
 		},
 		{
-			id: 'map',
-			title: locale.treeTabsMap(),
-			url: routes.treeMap(tree)
-		},
-		{
 			id: 'comments',
 			title: locale.treeTabsComments(),
 			url: routes.treeComments(tree)

@@ -2,6 +2,7 @@
 	import { locale } from '$lib/locale';
 	import { MoveForm } from '$lib/forms';
 	import { Header } from '$lib/ui';
+	import AuthWrapper from '$lib/components/auth/AuthWrapper.svelte';
 
 	const { data } = $props();
 </script>
@@ -13,5 +14,7 @@
 <Header title={locale.measureTitle()} />
 
 <div class="padded measure">
-	<MoveForm id={data.id} />
+	<AuthWrapper>
+		<MoveForm id={data.id} />
+	</AuthWrapper>
 </div>

@@ -1,6 +1,7 @@
 import { API_ROOT } from '$lib/env';
 import { authStore, isAuthenticated } from '$lib/stores/authStore';
 import { addUsers } from '$lib/stores/userStore';
+import { addTrees, getTree } from '$lib/stores/treeStore';
 import type {
 	IAddTreesRequest,
 	IChangeList,
@@ -34,10 +35,27 @@ export class ApiClient {
 		// console.debug(`[api] Root: ${this.root}`);
 	}
 
+	// Return a single tree.
 	public async getTree(id: string): Promise<IResponse<ISingleTree>> {
+		const cached = get(getTree)(id);
+
+		if (cached) {
+			console.debug(`[api] Tree ${id} found in cache.`);
+
+			return {
+				status: 200,
+				data: {
+					...cached,
+					users: []
+				},
+				error: undefined
+			};
+		}
+
 		const res = await this.request<ISingleTree>('GET', `v1/trees/${id}`);
 
 		if (res.status === 200 && res.data) {
+			addTrees([res.data]);
 			addUsers(res.data.users);
 		}
 
@@ -125,6 +143,8 @@ export class ApiClient {
 			params.set('search', search);
 		}
 
+		// Note that we don't automatically add trees to the cache here,
+		// as they don't have files or users.
 		return await this.request('GET', `v1/trees?${params.toString()}`);
 	}
 
@@ -172,63 +192,100 @@ export class ApiClient {
 	}
 
 	public async updateTree(id: string, props: ITreeUpdatePayload): Promise<IResponse<ITree>> {
-		return await this.request('PUT', `v1/trees/${id}`, {
+		const res = await this.request<ITree>('PUT', `v1/trees/${id}`, {
 			body: JSON.stringify(props),
 			headers: {
 				'Content-Type': 'application/json',
 				...this.getAuthHeaders()
 			}
 		});
+
+		if (res.status === 200 && res.data) {
+			console.debug(`[api] Tree ${id} updated in cache.`);
+			addTrees([res.data]);
+		}
+
+		return res;
 	}
 
 	public async updateTreeHeight(id: string, value: number): Promise<IResponse<ITree>> {
-		return await this.request('PUT', `v1/trees/${id}/height`, {
+		const res = await this.request<ITree>('PUT', `v1/trees/${id}/height`, {
 			body: JSON.stringify({ value }),
 			headers: {
 				'Content-Type': 'application/json',
 				...this.getAuthHeaders()
 			}
 		});
+
+		if (res.status === 200 && res.data) {
+			addTrees([res.data]);
+		}
+
+		return res;
 	}
 
 	public async updateTreeLocation(id: string, lat: number, lon: number): Promise<IResponse<ITree>> {
-		return await this.request('PUT', `v1/trees/${id}/location`, {
+		const res = await this.request<ITree>('PUT', `v1/trees/${id}/location`, {
 			body: JSON.stringify({ lat, lon }),
 			headers: {
 				'Content-Type': 'application/json',
 				...this.getAuthHeaders()
 			}
 		});
+
+		if (res.status === 200 && res.data) {
+			addTrees([res.data]);
+		}
+
+		return res;
 	}
 
 	public async updateTreeDiameter(id: string, value: number): Promise<IResponse<ITree>> {
-		return await this.request('PUT', `v1/trees/${id}/diameter`, {
+		const res = await this.request<ITree>('PUT', `v1/trees/${id}/diameter`, {
 			body: JSON.stringify({ value }),
 			headers: {
 				'Content-Type': 'application/json',
 				...this.getAuthHeaders()
 			}
 		});
+
+		if (res.status === 200 && res.data) {
+			addTrees([res.data]);
+		}
+
+		return res;
 	}
 
 	public async updateTreeCircumference(id: string, value: number): Promise<IResponse<ITree>> {
-		return await this.request('PUT', `v1/trees/${id}/circumference`, {
+		const res = await this.request<ITree>('PUT', `v1/trees/${id}/circumference`, {
 			body: JSON.stringify({ value }),
 			headers: {
 				'Content-Type': 'application/json',
 				...this.getAuthHeaders()
 			}
 		});
+
+		if (res.status === 200 && res.data) {
+			addTrees([res.data]);
+		}
+
+		return res;
 	}
 
 	public async updateTreeState(id: string, value: string | null): Promise<IResponse<ITree>> {
-		return await this.request('PUT', `v1/trees/${id}/state`, {
+		const res = await this.request<ITree>('PUT', `v1/trees/${id}/state`, {
 			body: JSON.stringify({ value }),
 			headers: {
 				'Content-Type': 'application/json',
 				...this.getAuthHeaders()
 			}
 		});
+
+		if (res.status === 200 && res.data) {
+			addTrees([res.data]);
+		}
+
+		return res;
 	}
 
 	public async addComment(id: string, message: string): Promise<IResponse<void>> {

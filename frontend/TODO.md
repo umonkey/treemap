@@ -24,3 +24,8 @@ Enhancements:
 - Translation.
 - Tree: manage photos.
 - Nav: cache userpics.
+
+Bugs:
+
+- Duplicate centering on map tree click.
+- Tree data not reloaded on repeated edit page access.
