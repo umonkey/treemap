@@ -1,5 +1,5 @@
-import AddTreeForm from './AddTreeForm.svelte';
-import type { IAddTreeRequest, ITree, ITreeList } from '$lib/types';
+import AddForm from './AddForm.svelte';
+import type { IAddTreesRequest, ITree, ITreeList } from '$lib/types';
 import userEvent from '@testing-library/user-event';
 import { DEFAULT_TREE } from '$lib/constants';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
@@ -56,7 +56,7 @@ afterEach(() => {
 	vi.unstubAllGlobals();
 });
 
-describe('AddTreeForm', async () => {
+describe('AddForm', async () => {
 	afterEach(cleanup);
 
 	test('handle cancel', async () => {
@@ -64,7 +64,7 @@ describe('AddTreeForm', async () => {
 
 		let clicked = false;
 
-		render(AddTreeForm, {
+		render(AddForm, {
 			lat: 1.0,
 			lng: 2.0,
 			onCancel: () => {
@@ -87,7 +87,7 @@ describe('AddTreeForm', async () => {
 
 		let submitted: ITree | null = null;
 
-		render(AddTreeForm, {
+		render(AddForm, {
 			lat: 1.0,
 			lng: 2.0,
 			onAdded: (tree: ITree) => {
@@ -109,7 +109,7 @@ describe('AddTreeForm', async () => {
 	test('handle submit with input', async () => {
 		const user = userEvent.setup();
 
-		let request: IAddTreeRequest | null = null;
+		let request: IAddTreesRequest | null = null;
 
 		const inputNumber = async (name: RegExp, value: string) => {
 			const ctl = screen.getByRole('spinbutton', {
@@ -119,12 +119,12 @@ describe('AddTreeForm', async () => {
 			await user.type(ctl, value);
 		};
 
-		render(AddTreeForm, {
+		render(AddForm, {
 			lat: 1.0,
 			lng: 2.0,
 			onAdded: () => {},
 			onCancel: () => {},
-			onBeforeSubmit: (req: IAddTreeRequest) => {
+			onBeforeSubmit: (req: IAddTreesRequest) => {
 				request = req;
 			}
 		});

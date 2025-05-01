@@ -1,13 +1,8 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { locale } from '$lib/locale';
-	import { routes } from '$lib/routes';
-	import { isMapperMode } from '$lib/stores/modeStore';
-	import { AddTreeForm } from '$lib/forms';
-	import type { ITree } from '$lib/types';
-
 	import AuthWrapper from '$lib/components/auth/AuthWrapper.svelte';
+	import { AddForm } from '$lib/forms';
 	import { Header } from '$lib/ui';
+	import { locale } from '$lib/locale';
 
 	const { data } = $props<{
 		data: {
@@ -15,18 +10,6 @@
 			lng: number;
 		};
 	}>();
-
-	const handleAdded = (tree: ITree) => {
-		if ($isMapperMode) {
-			goto(routes.mapPreview(tree.id));
-		} else {
-			goto(routes.treeDetails(tree.id));
-		}
-	};
-
-	const handleCancel = () => {
-		history.back();
-	};
 </script>
 
 <svelte:head>
@@ -37,7 +20,7 @@
 
 <div class="form">
 	<AuthWrapper>
-		<AddTreeForm lat={data.lat} lng={data.lng} onAdded={handleAdded} onCancel={handleCancel} />
+		<AddForm lat={data.lat} lng={data.lng} />
 	</AuthWrapper>
 </div>
 
