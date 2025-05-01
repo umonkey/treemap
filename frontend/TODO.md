@@ -24,3 +24,8 @@ Enhancements:
 - Translation.
 - Tree: manage photos.
 - Nav: cache userpics.
+
+Bugs:
+
+- On map page: click a tree (gets centered), move the map, click the same tree again.
+  Expected: centered again, actual: nothing happens.
