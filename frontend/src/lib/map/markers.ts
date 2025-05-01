@@ -241,7 +241,10 @@ export class Markers {
 				//
 				// In the map component we make sure not to do any extra work
 				// if we're asked to center on the point where we are already.
-				mapBus.emit('center', [tree.lat, tree.lon]);
+				mapBus.emit('center', {
+					lat: tree.lat,
+					lng: tree.lon
+				});
 			});
 
 			res.push(point);

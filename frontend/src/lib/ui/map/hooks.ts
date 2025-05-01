@@ -158,7 +158,7 @@ export const hook = (element: string, mount: MountFn, destroy: DestroyFn) => {
 		}
 	};
 
-	const handleCenter = (pos: [number, number]) => {
+	const handleCenter = (pos: ILatLng) => {
 		const center = get(map)?.getCenter();
 
 		if (!center) {
@@ -166,7 +166,7 @@ export const hook = (element: string, mount: MountFn, destroy: DestroyFn) => {
 			return;
 		}
 
-		if (center.lat === pos[0] && center.lng === pos[1]) {
+		if (center.lat === pos.lat && center.lng === pos.lng) {
 			console.debug('[map] Cannot center: already there.');
 			return;
 		}

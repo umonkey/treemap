@@ -5,7 +5,7 @@
 	import { hooks } from './hooks';
 
 	const { center, pin, onMove } = $props<{
-		center: [number, number];
+		center: ILatLng;
 		pin?: ILatLng;
 		onMove: (ll: ILatLng) => void;
 	}>();

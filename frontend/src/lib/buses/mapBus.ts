@@ -1,7 +1,8 @@
 import mitt from 'mitt';
+import type { ILatLng } from '$lib/types';
 
 type MapBusEvent = {
-	center: [number, number];
+	center: ILatLng;
 	select: string;
 	onMoved: {
 		lat: number;

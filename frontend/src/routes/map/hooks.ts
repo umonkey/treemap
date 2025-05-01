@@ -28,7 +28,10 @@ export const hooks = (mount: MountFn, destroy: DestroyFn) => {
 		const res = await apiClient.getTree(tree_id);
 
 		if (res.status === 200 && res.data) {
-			mapBus.emit('center', [res.data.lat, res.data.lon]);
+			mapBus.emit('center', {
+				lat: res.data.lat,
+				lng: res.data.lon
+			});
 
 			pins.set([
 				{
