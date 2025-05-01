@@ -5,9 +5,10 @@ import { writable } from 'svelte/store';
 import { mapBus } from '$lib/buses';
 import { routes, goto } from '$lib/routes';
 import { setLastTree } from '$lib/stores/mapStore';
+import type { ILatLng, MountFn, DestroyFn } from '$lib/types';
 
-export const hooks = (mount, destroy) => {
-	const marker = writable<number[] | undefined>(undefined);
+export const hooks = (mount: MountFn, destroy: DestroyFn) => {
+	const pins = writable<ILatLng[]>([]);
 
 	// This is called when the preview id changes in the URL.
 	// We need to let the preview control know about this,
@@ -20,7 +21,7 @@ export const hooks = (mount, destroy) => {
 
 		// No tree selected for preview.
 		if (tree_id === null) {
-			marker.set(undefined);
+			pins.set([]);
 			return;
 		}
 
@@ -28,6 +29,13 @@ export const hooks = (mount, destroy) => {
 
 		if (res.status === 200 && res.data) {
 			mapBus.emit('center', [res.data.lat, res.data.lon]);
+
+			pins.set([
+				{
+					lat: res.data.lat,
+					lng: res.data.lon
+				}
+			]);
 		}
 	};
 
@@ -42,5 +50,5 @@ export const hooks = (mount, destroy) => {
 	mount(() => mapBus.on('select', handleTreeClick));
 	destroy(() => mapBus.off('select', handleTreeClick));
 
-	return { marker, handlePreviewChange };
+	return { pins, handlePreviewChange };
 };

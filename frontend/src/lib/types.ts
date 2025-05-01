@@ -1,5 +1,13 @@
 export type { IError, IResponse } from './types_response';
 
+export interface ILatLng {
+	lat: number;
+	lng: number;
+}
+
+export type MountFn = (fn: () => void) => void;
+export type DestroyFn = (fn: () => void) => void;
+
 export interface ITreeFile {
 	id: string;
 	small_id: string;

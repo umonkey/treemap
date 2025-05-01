@@ -1,26 +1,15 @@
 <script lang="ts">
 	import { Header, Map, MapPreview } from '$lib/ui';
 	import { locale } from '$lib/locale';
-	import { mapCenter, mapStore, mapZoom } from '$lib/stores/mapStore';
+	import { mapCenter, mapZoom } from '$lib/stores/mapStore';
 	import { isMapperMode } from '$lib/stores/modeStore';
 	import { hooks } from './hooks';
 	import { onMount, onDestroy } from 'svelte';
 
 	const { data } = $props();
-	const searchQuery = data.searchQuery;
+	const { pins, handlePreviewChange } = hooks(onMount, onDestroy);
 
-	const { handlePreviewChange } = hooks(onMount, onDestroy);
-
-	const title = searchQuery ? locale.mapTitleQuery(searchQuery) : locale.mapTitle();
-
-	// The user moves/pans the map.  Save the new center and zoom.
-	const onMove = (center: number[], zoom: number) => {
-		mapStore.update((state) => ({
-			...state,
-			center,
-			zoom
-		}));
-	};
+	const title = data.searchQuery ? locale.mapTitleQuery(data.searchQuery) : locale.mapTitle();
 
 	$effect(() => handlePreviewChange(data.preview));
 </script>
@@ -34,9 +23,9 @@
 <div class="mapContainer">
 	<Map
 		center={$mapCenter}
+		pins={$pins}
 		zoom={$mapZoom}
-		{onMove}
-		{searchQuery}
+		searchQuery={data.searchQuery}
 		crosshair={$isMapperMode}
 		canAdd={$isMapperMode}
 	/>

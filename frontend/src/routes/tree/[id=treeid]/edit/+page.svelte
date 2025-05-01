@@ -4,6 +4,7 @@
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
 	import { toast } from '@zerodevx/svelte-toast';
+	import type { ILatLng } from '$lib/types';
 
 	import AuthWrapper from '$lib/components/auth/AuthWrapper.svelte';
 	import {
@@ -29,7 +30,7 @@
 	let circumference = $state<number | null>(data.tree.circumference);
 	let treeState = $state<string>(data.tree.state ?? 'unknown');
 	let notes = $state(data.tree.notes ?? '');
-	let location = $state([data.tree.lat, data.tree.lon]);
+	let location = $state<ILatLng>({ lat: data.tree.lat, lng: data.tree.lon });
 	let year = $state<number | null>(data.tree.year);
 
 	const onSave = () => {
@@ -41,14 +42,15 @@
 				circumference,
 				state: treeState,
 				notes,
-				lat: location[0],
-				lon: location[1],
+				lat: location.lat,
+				lon: location.lng,
 				year
 			})
 			.then((res) => {
 				if (res.status >= 200 && res.status < 400) {
-					goto(routes.treeDetails(treeId));
+					location = { lat: res.data.lat, lng: res.data.lon };
 					toast.push('Tree updated.');
+					goto(routes.treeDetails(treeId));
 				} else {
 					console.error(`Error ${res.status} updating tree.`);
 					toast.push('Error updating tree.');
@@ -92,8 +94,16 @@
 		notes = value;
 	};
 
-	const handleLocationChange = (value) => {
-		location = value;
+	const handleLocationChange = (value: ILatLng) => {
+		if (location.lat != value.lat || location.lng != value.lng) {
+			console.debug(`[edit page] Location updated to ${value.lat},${value.lng}`);
+			location = value;
+		}
+	};
+
+	const treeLocation = {
+		lat: data.tree.lat,
+		lng: data.tree.lon
 	};
 </script>
 
@@ -111,7 +121,7 @@
 		<CircumferenceInput value={circumference} onChange={handleCircumferenceChange} />
 		<StateInput value={treeState} onChange={handleStateChange} />
 		<YearInput value={year} onChange={handleYearChange} />
-		<LocationInput value={location} onChange={handleLocationChange} />
+		<LocationInput value={treeLocation} pin={treeLocation} onChange={handleLocationChange} />
 		<NotesInput value={notes} onChange={handleNotesChange} />
 
 		<Buttons>

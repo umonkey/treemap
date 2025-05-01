@@ -4,27 +4,28 @@
 	import { onDestroy, onMount } from 'svelte';
 	import { hook } from './hooks';
 	import CROSSHAIR from '$lib/assets/crosshair.svg';
+	import type { ILatLng } from '$lib/types';
 
 	const {
 		center,
 		className = 'default',
-		marker,
+		pins,
 		searchQuery = undefined,
 		crosshair = false,
 		canAdd = false
 	} = $props<{
 		center: [number, number];
 		className: string;
-		marker?: [number, number];
+		pins?: ILatLng[];
 		searchQuery?: string | undefined;
 		crosshair?: boolean | undefined;
 		canAdd?: boolean | undefined;
 	}>();
 
-	const { handleCenter, handleMarkers, handleCanAdd } = hook('map', onMount, onDestroy);
+	const { handleCenter, handlePinsChange, handleCanAdd } = hook('map', onMount, onDestroy);
 
 	$effect(() => handleCenter(center));
-	$effect(() => handleMarkers(marker));
+	$effect(() => handlePinsChange(pins));
 	$effect(() => handleCanAdd(canAdd));
 </script>
 
