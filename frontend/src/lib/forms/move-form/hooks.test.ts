@@ -26,12 +26,22 @@ describe('move-form/hooks', async () => {
 		const { loading, value, history, reload, save } = editor(tree_id);
 
 		expect(get(loading)).toBe(true);
-		expect(get(value)).toHaveLength(0);
+
+		expect(get(value)).toStrictEqual({
+			lat: 0,
+			lng: 0
+		});
+
 		expect(get(history)).toHaveLength(0);
 
 		await reload(tree_id);
 		expect(get(loading)).toBe(false);
-		expect(get(value)).toEqual([1.23, 2.34]);
+
+		expect(get(value)).toEqual({
+			lat: 1.23,
+			lng: 2.34
+		});
+
 		expect(get(history)).toHaveLength(1);
 
 		apiClient.updateTreeLocation = async (
@@ -54,6 +64,6 @@ describe('move-form/hooks', async () => {
 		await save();
 		expect(update_called).toBe(true);
 
-		expect(mockedGoto).toHaveBeenCalledWith('/tree/tree1/history');
+		expect(mockedGoto).toHaveBeenCalledWith('/tree/tree1');
 	});
 });
