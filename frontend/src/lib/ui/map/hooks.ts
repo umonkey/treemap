@@ -93,6 +93,7 @@ export const hook = (element: string, mount, destroy) => {
 	// Clean up on component removal.
 	destroy(() => {
 		console.debug('[map] Destroying the map component.');
+		mapBus.off('center', handleCenter);
 		get(map)?.remove();
 	});
 
