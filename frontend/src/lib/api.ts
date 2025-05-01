@@ -143,6 +143,8 @@ export class ApiClient {
 			params.set('search', search);
 		}
 
+		// Note that we don't automatically add trees to the cache here,
+		// as they don't have files or users.
 		return await this.request('GET', `v1/trees?${params.toString()}`);
 	}
 
