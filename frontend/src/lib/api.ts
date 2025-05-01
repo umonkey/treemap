@@ -36,10 +36,10 @@ export class ApiClient {
 	}
 
 	// Return a single tree.
-	public async getTree(id: string): Promise<IResponse<ISingleTree>> {
+	public async getTree(id: string, nocache?: boolean): Promise<IResponse<ISingleTree>> {
 		const cached = get(getTree)(id);
 
-		if (cached) {
+		if (cached && !nocache) {
 			console.debug(`[api] Tree ${id} found in cache.`);
 
 			return {
