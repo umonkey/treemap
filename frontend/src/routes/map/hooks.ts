@@ -2,14 +2,20 @@
 
 import { apiClient } from '$lib/api';
 import { writable } from 'svelte/store';
+import { mapBus } from '$lib/buses';
+import { routes, goto } from '$lib/routes';
 
-export const mapState = () => {
-	const center = writable<number[] | undefined>(undefined);
+export const hooks = (mount, destroy) => {
 	const marker = writable<number[] | undefined>(undefined);
 
-	const reload = async (tree_id: string | null) => {
+	// This is called when the preview id changes in the URL.
+	// We need to let the preview control know about this,
+	// and also move the map to the new center.
+	const handlePreviewChange = async (tree_id: string | null) => {
+		console.debug(`[map] Preview id updated to ${tree_id}.`);
+
+		// No tree selected for preview.
 		if (tree_id === null) {
-			center.set(undefined);
 			marker.set(undefined);
 			return;
 		}
@@ -17,13 +23,20 @@ export const mapState = () => {
 		const res = await apiClient.getTree(tree_id);
 
 		if (res.status === 200 && res.data) {
-			const ll = [res.data.lat, res.data.lon];
-			center.set(ll);
-			marker.set(ll);
-
-			console.debug(`[map] Center/Marker set to ${ll}`);
+			mapBus.emit('center', [res.data.lat, res.data.lon]);
 		}
 	};
 
-	return { center, marker, reload };
+	// A tree was selected on the map.
+	// This will update the page props, which will trigger handlePreviewChange,
+	// which will center the tree and update the marker.
+	const handleTreeClick = (id: string) => {
+		console.debug(`[map] Received click on tree ${id}, updating preview.`);
+		goto(routes.mapPreview(id));
+	};
+
+	mount(() => mapBus.on('select', handleTreeClick));
+	destroy(() => mapBus.off('select', handleTreeClick));
+
+	return { marker, handlePreviewChange };
 };

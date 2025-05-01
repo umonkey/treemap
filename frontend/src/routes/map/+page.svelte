@@ -1,22 +1,17 @@
 <script lang="ts">
-	import MapPreview from '$lib/components/map/MapPreview.svelte';
-	import { Header, Map } from '$lib/ui';
+	import { Header, Map, MapPreview } from '$lib/ui';
 	import { locale } from '$lib/locale';
 	import { goto, routes } from '$lib/routes';
 	import { mapCenter, mapStore, mapZoom, setLastTree } from '$lib/stores/mapStore';
 	import { isMapperMode } from '$lib/stores/modeStore';
 	import type { ITree } from '$lib/types';
-	import { mapState } from './hooks';
+	import { hooks } from './hooks';
+	import { onMount, onDestroy } from 'svelte';
 
 	const { data } = $props();
 	const searchQuery = data.searchQuery;
-	const selectedTree = $derived(data.preview);
 
-	const { marker, reload } = mapState();
-
-	// Components cannot see store updates directly,
-	// so we need to use $derived to get the values.
-	const markerPosition = $derived($marker);
+	const { handlePreviewChange } = hooks(onMount, onDestroy);
 
 	const title = searchQuery ? locale.mapTitleQuery(searchQuery) : locale.mapTitle();
 
@@ -42,12 +37,7 @@
 		}));
 	};
 
-	$effect(() => reload(data.preview));
-
-	$effect(() => {
-		const ll = $marker;
-		console.debug(`[map] map page marker=${ll}`);
-	});
+	$effect(() => handlePreviewChange(data.preview));
 </script>
 
 <svelte:head>
@@ -59,7 +49,6 @@
 <div class="mapContainer">
 	<Map
 		center={$mapCenter}
-		marker={markerPosition}
 		zoom={$mapZoom}
 		{onChange}
 		{onMove}
@@ -67,7 +56,8 @@
 		crosshair={$isMapperMode}
 		canAdd={$isMapperMode}
 	/>
-	<MapPreview tree={selectedTree} onClose={onClosePreview} />
+
+	<MapPreview id={data.preview} onClose={onClosePreview} />
 </div>
 
 <style>

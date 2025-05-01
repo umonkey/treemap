@@ -1,9 +1,6 @@
 <script lang="ts">
 	import 'leaflet/dist/leaflet.css';
 	import type { ITree } from '$lib/types';
-	import type { Map } from 'leaflet';
-	import L, { LatLng, LatLngBounds } from 'leaflet';
-	import { MAX_BOUNDS } from '$lib/constants';
 	import { Markers } from '$lib/map/markers';
 	import { addLayerSelection } from '$lib/map/baseLayerSelector';
 	import { addLocateMeButton } from '$lib/map/addLocateMeButton';
@@ -13,12 +10,10 @@
 	import { baseLayer } from '$lib/stores/mapLayerStore';
 	import { locationBus } from '$lib/buses/locationBus';
 	import { onDestroy, onMount } from 'svelte';
-
-	console.debug('[Map.svelte] Loading map component.', new LatLng(0, 0));
+	import { hook } from './hooks';
 
 	const {
 		center,
-		onChange,
 		onMove,
 		className = 'default',
 		marker,
@@ -28,86 +23,39 @@
 		canAdd = false
 	} = $props<{
 		center: [number, number];
-		onChange: (tree: ITree) => void;
 		onMove: (center: [number, number], zoom: number) => void;
 		className: string;
-		marker?: [number, number] | undefined;
+		marker?: [number, number];
 		zoom: number;
 		searchQuery?: string | undefined;
 		crosshair?: boolean | undefined;
 		canAdd?: boolean | undefined;
 	}>();
 
-	let map: Map;
-
-	let lastMarkerPos = $state<number[] | null>(null);
-	let lastMarkerElement = $state(undefined);
-
-	const lldiff = (a: number[] | null, b: number[] | null): boolean => {
-		const _a = a ?? [0, 0];
-		const _b = b ?? [0, 0];
-
-		return _a[0] !== _b[0] || _a[1] !== _b[1];
-	};
-
-	const updateMarker = (value: number[] | null) => {
-		if (!lldiff(value, lastMarkerPos)) {
-			return;
-		}
-
-		console.debug(`[Map.svelte] Updating marker to ${value}`);
-
-		const removeMarker = lastMarkerElement;
-
-		if (value) {
-			const ctl = L.marker(value, {
-				icon: L.icon({
-					iconUrl: '/icons/marker-icon-2x.png',
-					iconSize: [25, 41],
-					iconAnchor: [12, 41]
-				})
-			}).addTo(map);
-
-			lastMarkerPos = value;
-			lastMarkerElement = ctl;
-		} else {
-			lastMarkerPos = null;
-			lastMarkerElement = null;
-		}
-
-		if (removeMarker) {
-			map.removeLayer(removeMarker);
-		}
-	};
+	const { map, mount, destroy, update, handleMarkers } = hook('map');
 
 	onMount(async () => {
-		const c1 = new LatLng(MAX_BOUNDS[0][0], MAX_BOUNDS[0][1]);
-		const c2 = new LatLng(MAX_BOUNDS[1][0], MAX_BOUNDS[1][1]);
+		console.debug('[Map.svelte] MOUNT');
 
-		map = L.map('map', {
-			maxBounds: new LatLngBounds(c1, c2)
-		}).setView(center, zoom);
+		mount({ center, zoom });
 
-		addLayerSelection(map);
-		addResizeObserver(map);
-		addLocateMeCircle(map);
-		addLocateMeButton(map);
+		addLayerSelection($map);
+		addResizeObserver($map);
+		addLocateMeCircle($map);
+		addLocateMeButton($map);
 
 		if (canAdd) {
-			addTreeButton(map);
+			addTreeButton($map);
 		}
 
-		map.attributionControl.setPrefix('');
+		$map.attributionControl.setPrefix('');
 
-		const markers = new Markers(map, searchQuery);
+		const markers = new Markers($map, searchQuery);
 
-		markers.onChange((tree: ITree) => {
-			onChange(tree);
-		});
-
-		map.on('moveend', () => {
+		$map.on('moveend', () => {
 			if (onMove) {
-				onMove(map.getCenter(), map.getZoom());
+				const ll = $map.getCenter();
+				onMove([ll.lat, ll.lng], $map.getZoom());
 			}
 		});
 
@@ -115,12 +63,19 @@
 		locationBus.emit('start');
 	});
 
-	onDestroy(() => {
-		console.debug('[map] Destroying map.');
-		map.remove();
-	});
+	onDestroy(destroy);
 
-	$effect(() => updateMarker(marker ?? null));
+	$effect(() =>
+		update({
+			center,
+			zoom,
+			marker
+		})
+	);
+
+	$effect(() => {
+		handleMarkers(marker);
+	});
 </script>
 
 <div

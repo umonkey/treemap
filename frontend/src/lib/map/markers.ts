@@ -1,14 +1,13 @@
-/**
- * Wrap the very low-level logic of Leaflet markers.
- *
- * TODO:
- * - Change marker size based on zoom level, https://gis.stackexchange.com/questions/216558/leaflet-resize-markers-in-layer-when-zoom-in
- */
+// Wrap the very low-level logic of Leaflet markers.
+//
+// TODO:
+// - Change marker size based on zoom level, https://gis.stackexchange.com/questions/216558/leaflet-resize-markers-in-layer-when-zoom-in
 
 import { apiClient } from '$lib/api';
 import type { ITree } from '$lib/types';
 import L from 'leaflet';
 import type { LatLngBounds, Map, Marker } from 'leaflet';
+import { mapBus } from '$lib/buses';
 
 import BlackIcon from '$lib/map/icons/dot-black.svg';
 import GreenIcon from '$lib/map/icons/dot-green.svg';
@@ -75,8 +74,6 @@ type ClusterGroup = {
 	w: number;
 };
 
-type onChangeFn = (tree: ITree) => void;
-
 export class Markers {
 	private map;
 
@@ -88,8 +85,6 @@ export class Markers {
 	private yellowIcon;
 	private redIcon;
 	private blackIcon;
-
-	public changeHandler: onChangeFn | null = null;
 
 	private oldClusterGroups: L.Layer[] = [];
 
@@ -129,10 +124,6 @@ export class Markers {
 	public setSearchQuery(query: string | undefined) {
 		this.searchQuery = query;
 		this.reload();
-	}
-
-	public onChange(handler: onChangeFn) {
-		this.changeHandler = handler;
 	}
 
 	private async onMoveEnd() {
@@ -220,11 +211,7 @@ export class Markers {
 			});
 
 			point.on('click', () => {
-				this.map.panTo([tree.lat, tree.lon]);
-
-				if (this.changeHandler) {
-					this.changeHandler(tree);
-				}
+				mapBus.emit('select', tree.id);
 			});
 
 			res.push(point);
