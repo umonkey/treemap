@@ -143,9 +143,13 @@ export class ApiClient {
 			params.set('search', search);
 		}
 
-		// Note that we don't automatically add trees to the cache here,
-		// as they don't have files or users.
-		return await this.request('GET', `v1/trees?${params.toString()}`);
+		const res = await this.request<IMarkers>('GET', `v1/trees?${params.toString()}`);
+
+		if (res.status === 200 && res.data) {
+			addTrees(res.data.trees);
+		}
+
+		return res;
 	}
 
 	public async addTree(props: IAddTreesRequest): Promise<IResponse<ITreeList>> {

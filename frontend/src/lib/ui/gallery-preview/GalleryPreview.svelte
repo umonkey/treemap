@@ -8,45 +8,40 @@
 	// By default, trees returned in batches don't contain files, so we have to
 	// request tree details again.
 
-	import type { ITree } from '$lib/types';
 	import { UploadIcon } from '$lib/icons';
 	import { isMapperMode } from '$lib/stores/modeStore';
-	import { loadTree } from '$lib/hooks';
 	import { routes } from '$lib/routes';
 	import LazyImage from '$lib/components/LazyImage.svelte';
 	import DefaultImage from '$lib/assets/tree.jpg';
+	import { hooks } from './hooks';
 
-	const { tree } = $props<{
-		tree: ITree;
+	const { id } = $props<{
+		id: string;
 	}>();
 
-	const { loading, data, error, reload } = loadTree();
+	const { loading, error, tree, reload } = hooks();
 
-	$effect(() => {
-		if (tree) {
-			(async () => await reload(tree.id))();
-		}
-	});
+	$effect(() => reload(id));
 </script>
 
-<div class="gallery" class:loading={$loading} class:error={$error} class:mapper={$isMapperMode}>
-	{#if $error}
+<div class="gallery" class:loading={$loading} class:error={$error !== ''} class:mapper={$isMapperMode}>
+	{#if $error !== ''}
 		<p>{$error.description}</p>
 	{:else if $loading}
 		<!-- loading -->
-	{:else if $data}
+	{:else if $tree}
 		<div class="images">
 			{#if $isMapperMode}
 				<div class="tile">
-					<a href={routes.treeUploadPhotos(tree.id)} class="upload" title="Upload a new image">
+					<a href={routes.treeUploadPhotos($tree.id)} class="upload" title="Upload a new image">
 						<UploadIcon />
 					</a>
 				</div>
 			{/if}
 
-			{#each $data.files as file}
+			{#each $tree.files as file}
 				<div class="tile">
-					<a href={routes.treeDetails(tree.id)} aria-labelledby="thumbnail">
+					<a href={routes.treeDetails($tree.id)} aria-labelledby="thumbnail">
 						<LazyImage
 							src={routes.file(file.small_id)}
 							alt="See how good is this tree."
@@ -56,9 +51,9 @@
 				</div>
 			{/each}
 
-			{#if $data.files.length === 0 && !$isMapperMode}
+			{#if $tree.files.length === 0 && !$isMapperMode}
 				<div class="tile">
-					<a href={routes.treeDetails(tree.id)} title="No photos of this tree.">
+					<a href={routes.treeDetails($tree.id)} title="No photos of this tree.">
 						<LazyImage src={DefaultImage} alt="No photos for this tree." fallback={DefaultImage} />
 					</a>
 				</div>

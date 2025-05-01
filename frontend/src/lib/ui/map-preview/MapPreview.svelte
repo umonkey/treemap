@@ -25,7 +25,7 @@
 				<button class="close" onclick={handleClose}><CloseIcon /></button>
 			</div>
 			<div class="props">{shortDetails($tree)}</div>
-			<GalleryPreview tree={$tree} />
+			<GalleryPreview id={$tree.id} />
 		{/if}
 	</div>
 {/if}

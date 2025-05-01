@@ -47,14 +47,14 @@ describe('GalleryPreview', async () => {
 		};
 
 		render(GalleryPreview, {
-			tree
+			id: tree.id
 		});
 
 		const image = await screen.findByTitle('No photos of this tree.');
 		expect(image.getAttribute('href')).toBe('/tree/tree-with-no-images');
 	});
 
-	test('have an upload link in explorer mode', async () => {
+	test('have an upload link in mapper mode', async () => {
 		modeStore.set(ModeEnum.Mapper);
 
 		const tree = {
@@ -64,7 +64,7 @@ describe('GalleryPreview', async () => {
 		};
 
 		render(GalleryPreview, {
-			tree
+			id: tree.id,
 		});
 
 		const link = await screen.findByTitle('Upload a new image');
