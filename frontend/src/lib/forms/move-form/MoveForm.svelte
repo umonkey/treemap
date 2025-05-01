@@ -1,5 +1,4 @@
 <script lang="ts">
-	import AuthWrapper from '$lib/components/auth/AuthWrapper.svelte';
 	import { LocationInput, Button, Buttons, FilteredChangeList } from '$lib/ui';
 	import { locale } from '$lib/locale';
 	import { editor } from './hooks';
@@ -12,25 +11,23 @@
 		editor(id);
 </script>
 
-<AuthWrapper>
-	{#if $loading}
-		<!-- loading -->
-	{:else if $loadError}
-		<p>{$loadError}</p>
-	{:else}
-		<form class="form" onsubmit={save}>
-			<LocationInput value={$value} onChange={handleChange} open />
+{#if $loading}
+	<!-- loading -->
+{:else if $loadError}
+	<p>{$loadError}</p>
+{:else}
+	<form class="form" onsubmit={save}>
+		<LocationInput value={$value} onChange={handleChange} open />
 
-			<Buttons>
-				<Button label={locale.editSave()} type="submit" onClick={save} disabled={$busy} />
-				<Button label={locale.editCancel()} type="cancel" onClick={close} />
-			</Buttons>
-		</form>
+		<Buttons>
+			<Button label={locale.editSave()} type="submit" onClick={save} disabled={$busy} />
+			<Button label={locale.editCancel()} type="cancel" onClick={close} />
+		</Buttons>
+	</form>
 
-		{#if $saveError}
-			<p>{$saveError}</p>
-		{/if}
-
-		<FilteredChangeList changes={$history} name="location" />
+	{#if $saveError}
+		<p>{$saveError}</p>
 	{/if}
-</AuthWrapper>
+
+	<FilteredChangeList changes={$history} name="location" />
+{/if}

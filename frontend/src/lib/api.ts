@@ -40,7 +40,7 @@ export class ApiClient {
 		const cached = get(getTree)(id);
 
 		if (cached) {
-			console.debug(`[api] Tree ${id} found in cache.`, cached);
+			console.debug(`[api] Tree ${id} found in cache.`);
 
 			return {
 				status: 200,
@@ -201,7 +201,7 @@ export class ApiClient {
 		});
 
 		if (res.status === 200 && res.data) {
-			console.debug('[api] Tree cache updated with:', res.data);
+			console.debug(`[api] Tree ${id} updated in cache.`);
 			addTrees([res.data]);
 		}
 
