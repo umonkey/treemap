@@ -76,6 +76,20 @@ type ClusterGroup = {
 	w: number;
 };
 
+// Expand current map bounds by 100% in all directions, one extra screen.
+// This makes us load some extra markers, which makes panning more natural.
+const expand = (bounds: LatLngBounds) => {
+	const ns = bounds.getNorth() - bounds.getSouth();
+	const ew = bounds.getEast() - bounds.getWest();
+
+	return {
+		n: bounds.getNorth() + ns,
+		e: bounds.getEast() + ew,
+		s: bounds.getSouth() - ns,
+		w: bounds.getWest() - ew
+	};
+};
+
 export class Markers {
 	private map;
 
@@ -145,10 +159,7 @@ export class Markers {
 			return;
 		}
 
-		const n = this.bounds.getNorth();
-		const e = this.bounds.getEast();
-		const s = this.bounds.getSouth();
-		const w = this.bounds.getWest();
+		const { n, e, s, w } = expand(this.bounds);
 
 		apiClient.getMarkers(n, e, s, w, query).then((res) => {
 			// This is a hot fix for how the markers are added.
