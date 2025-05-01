@@ -3,10 +3,12 @@
 	import { CloseIcon } from '$lib/icons';
 	import { routes } from '$lib/routes';
 	import { formatSpecies, shortDetails } from '$lib/utils/trees';
-	import { onMount, onDestroy } from 'svelte';
 	import { hook } from './hooks';
 
-	const { visible, error, tree, handleClose } = hook(onMount, onDestroy);
+	const { id } = $props<{ id: string }>();
+	const { visible, error, tree, handleClose, reload } = hook();
+
+	$effect(() => reload(id));
 </script>
 
 {#if $visible}

@@ -1,9 +1,8 @@
 import { writable } from 'svelte/store';
 import type { ITree } from '$lib/types';
-import { mapBus } from '$lib/buses';
 import { apiClient } from '$lib/api';
 
-export const hook = (mount, destroy) => {
+export const hook = () => {
 	const visible = writable<boolean>(false);
 	const tree = writable<ITree | null>(null);
 	const error = writable<string | null>(null);
@@ -13,8 +12,13 @@ export const hook = (mount, destroy) => {
 		tree.set(null);
 	};
 
-	const handleSelect = (id: string) => {
+	const reload = (id: string | null) => {
 		console.debug(`[MapPreview] Selected tree: ${id}`);
+
+		if (id === null) {
+			handleClose();
+			return;
+		}
 
 		apiClient.getTree(id).then((res) => {
 			if (res.status === 200 && res.data) {
@@ -26,13 +30,5 @@ export const hook = (mount, destroy) => {
 		});
 	};
 
-	mount(() => {
-		mapBus.on('select', handleSelect);
-	});
-
-	destroy(() => {
-		mapBus.off('select', handleSelect);
-	});
-
-	return { visible, error, tree, handleClose };
+	return { visible, error, tree, reload, handleClose };
 };
