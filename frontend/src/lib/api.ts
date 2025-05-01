@@ -192,63 +192,99 @@ export class ApiClient {
 	}
 
 	public async updateTree(id: string, props: ITreeUpdatePayload): Promise<IResponse<ITree>> {
-		return await this.request('PUT', `v1/trees/${id}`, {
+		const res = await this.request<ITree>('PUT', `v1/trees/${id}`, {
 			body: JSON.stringify(props),
 			headers: {
 				'Content-Type': 'application/json',
 				...this.getAuthHeaders()
 			}
 		});
+
+		if (res.status === 200 && res.data) {
+			addTrees([res.data]);
+		}
+
+		return res;
 	}
 
 	public async updateTreeHeight(id: string, value: number): Promise<IResponse<ITree>> {
-		return await this.request('PUT', `v1/trees/${id}/height`, {
+		const res = await this.request<ITree>('PUT', `v1/trees/${id}/height`, {
 			body: JSON.stringify({ value }),
 			headers: {
 				'Content-Type': 'application/json',
 				...this.getAuthHeaders()
 			}
 		});
+
+		if (res.status === 200 && res.data) {
+			addTrees([res.data]);
+		}
+
+		return res;
 	}
 
 	public async updateTreeLocation(id: string, lat: number, lon: number): Promise<IResponse<ITree>> {
-		return await this.request('PUT', `v1/trees/${id}/location`, {
+		const res = await this.request<ITree>('PUT', `v1/trees/${id}/location`, {
 			body: JSON.stringify({ lat, lon }),
 			headers: {
 				'Content-Type': 'application/json',
 				...this.getAuthHeaders()
 			}
 		});
+
+		if (res.status === 200 && res.data) {
+			addTrees([res.data]);
+		}
+
+		return res;
 	}
 
 	public async updateTreeDiameter(id: string, value: number): Promise<IResponse<ITree>> {
-		return await this.request('PUT', `v1/trees/${id}/diameter`, {
+		const res = await this.request<ITree>('PUT', `v1/trees/${id}/diameter`, {
 			body: JSON.stringify({ value }),
 			headers: {
 				'Content-Type': 'application/json',
 				...this.getAuthHeaders()
 			}
 		});
+
+		if (res.status === 200 && res.data) {
+			addTrees([res.data]);
+		}
+
+		return res;
 	}
 
 	public async updateTreeCircumference(id: string, value: number): Promise<IResponse<ITree>> {
-		return await this.request('PUT', `v1/trees/${id}/circumference`, {
+		const res = await this.request<ITree>('PUT', `v1/trees/${id}/circumference`, {
 			body: JSON.stringify({ value }),
 			headers: {
 				'Content-Type': 'application/json',
 				...this.getAuthHeaders()
 			}
 		});
+
+		if (res.status === 200 && res.data) {
+			addTrees([res.data]);
+		}
+
+		return res;
 	}
 
 	public async updateTreeState(id: string, value: string | null): Promise<IResponse<ITree>> {
-		return await this.request('PUT', `v1/trees/${id}/state`, {
+		const res = await this.request<ITree>('PUT', `v1/trees/${id}/state`, {
 			body: JSON.stringify({ value }),
 			headers: {
 				'Content-Type': 'application/json',
 				...this.getAuthHeaders()
 			}
 		});
+
+		if (res.status === 200 && res.data) {
+			addTrees([res.data]);
+		}
+
+		return res;
 	}
 
 	public async addComment(id: string, message: string): Promise<IResponse<void>> {
