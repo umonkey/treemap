@@ -42,6 +42,7 @@ export const hook = (element: string, mount: MountFn, destroy: DestroyFn) => {
 	const map = writable<Map | null>(null);
 	const lastMarkerPos = writable<[number, number] | null>(null);
 	const lastMarkerElement = writable<Marker | null>(null);
+	const markers = writable<Markers | undefined>(undefined);
 	const { updatePins } = addPins();
 
 	// Initialize the map component on mount.
@@ -63,7 +64,7 @@ export const hook = (element: string, mount: MountFn, destroy: DestroyFn) => {
 		addLocateMeCircle(em);
 		addLocateMeButton(em);
 
-		new Markers(em, null);
+		markers.set(new Markers(em, undefined));
 
 		// Set up bus handlers.
 		mapBus.on('center', handleCenter);
@@ -186,5 +187,9 @@ export const hook = (element: string, mount: MountFn, destroy: DestroyFn) => {
 		}
 	};
 
-	return { map, destroy, update, handleCenter, handlePinsChange, handleCanAdd };
+	const handleSearch = (value: string | undefined) => {
+		get(markers)?.setSearchQuery(value);
+	};
+
+	return { map, destroy, update, handleCenter, handlePinsChange, handleSearch, handleCanAdd };
 };

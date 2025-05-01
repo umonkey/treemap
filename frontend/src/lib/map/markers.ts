@@ -136,6 +136,8 @@ export class Markers {
 	 * Reload markers after a change in parameters.
 	 */
 	private reload() {
+		const query = this.searchQuery;
+
 		if (!this.bounds) {
 			console.debug('[map] Not reloading -- bounds not set.');
 			return;
@@ -146,10 +148,25 @@ export class Markers {
 		const s = this.bounds.getSouth();
 		const w = this.bounds.getWest();
 
-		apiClient.getMarkers(n, e, s, w, this.searchQuery).then((res) => {
+		apiClient.getMarkers(n, e, s, w, query).then((res) => {
+			// This is a hot fix for how the markers are added.
+			//
+			// We first initialize the map, and add the marker loader (this class),
+			// then the effect triggers which adds the search query.  This makes us send
+			// two simultaneous requests, which one comes first we don't know.
+			//
+			// The right solution would be to refactor the map hooks, to make sure we don't
+			// start loading markers before we know the right search query.
+			if (query !== this.searchQuery) {
+				console.debug(
+					`[map] Search query overruled; received=${query}, current=${this.searchQuery}.`
+				);
+				return;
+			}
+
 			if (res.status === 200 && res.data) {
 				const trees = res.data.trees;
-				console.debug(`[map] Received ${trees.length} trees, search=${this.searchQuery}.`);
+				console.debug(`[map] Received ${trees.length} trees, search=${query}.`);
 				this.replaceMarkers(trees);
 			}
 		});

@@ -22,11 +22,16 @@
 		canAdd?: boolean | undefined;
 	}>();
 
-	const { handleCenter, handlePinsChange, handleCanAdd } = hook('map', onMount, onDestroy);
+	const { handleCenter, handlePinsChange, handleSearch, handleCanAdd } = hook(
+		'map',
+		onMount,
+		onDestroy
+	);
 
 	$effect(() => handleCenter(center));
 	$effect(() => handlePinsChange(pins));
 	$effect(() => handleCanAdd(canAdd));
+	$effect(() => handleSearch(searchQuery));
 </script>
 
 <div
