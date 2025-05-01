@@ -1,6 +1,7 @@
 import { API_ROOT } from '$lib/env';
 import { authStore, isAuthenticated } from '$lib/stores/authStore';
 import { addUsers } from '$lib/stores/userStore';
+import { getTree } from '$lib/stores/treeStore';
 import type {
 	IAddTreesRequest,
 	IChangeList,
@@ -34,7 +35,21 @@ export class ApiClient {
 		// console.debug(`[api] Root: ${this.root}`);
 	}
 
+	// Return a single tree.
 	public async getTree(id: string): Promise<IResponse<ISingleTree>> {
+		const cached = get(getTree)(id);
+
+		if (cached) {
+			return {
+				status: 200,
+				data: {
+					...cached,
+					users: []
+				},
+				error: undefined
+			};
+		}
+
 		const res = await this.request<ISingleTree>('GET', `v1/trees/${id}`);
 
 		if (res.status === 200 && res.data) {
