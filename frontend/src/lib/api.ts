@@ -1,7 +1,7 @@
 import { API_ROOT } from '$lib/env';
 import { authStore, isAuthenticated } from '$lib/stores/authStore';
 import { addUsers } from '$lib/stores/userStore';
-import { getTree } from '$lib/stores/treeStore';
+import { addTrees, getTree } from '$lib/stores/treeStore';
 import type {
 	IAddTreesRequest,
 	IChangeList,
@@ -40,6 +40,8 @@ export class ApiClient {
 		const cached = get(getTree)(id);
 
 		if (cached) {
+			console.debug(`[api] Tree ${id} found in cache.`);
+
 			return {
 				status: 200,
 				data: {
@@ -53,6 +55,7 @@ export class ApiClient {
 		const res = await this.request<ISingleTree>('GET', `v1/trees/${id}`);
 
 		if (res.status === 200 && res.data) {
+			addTrees([res.data]);
 			addUsers(res.data.users);
 		}
 
