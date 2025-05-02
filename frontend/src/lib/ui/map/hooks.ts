@@ -80,7 +80,7 @@ export const hook = (element: string, mount: MountFn, destroy: DestroyFn) => {
 		em.on('moveend', () => {
 			const c = em.getCenter();
 
-			console.debug(`[map] Reporting map move to ${c.lat},${c.lng}`);
+			console.debug(`[map] Reporting map move to ${c.lat},${c.lng} z=${em.getZoom()}`);
 
 			mapBus.emit('onMoved', {
 				lat: c.lat,

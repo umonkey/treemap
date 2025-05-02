@@ -21,6 +21,8 @@ import YellowIcon from '$lib/map/icons/dot-yellow.svg';
 // Only start clustering when showing this number of trees.
 const MIN_CLUSTER_SIZE = 200;
 
+const MAX_CLUSTER_ZOOM = 17;
+
 type MarkerMap = {
 	[key: string]: Marker;
 };
@@ -28,6 +30,7 @@ type MarkerMap = {
 const CLUSTER_GRID: {
 	[key: number]: number;
 } = {
+	0: 52.428,
 	1: 26.214,
 	2: 13.107,
 	3: 6.5535,
@@ -239,7 +242,7 @@ export class Markers {
 	private getItemsToShow(trees: ITree[]) {
 		const enabled = get(clusterStore);
 
-		if (enabled && this.map.getZoom() < 18 && trees.length >= MIN_CLUSTER_SIZE) {
+		if (enabled && this.map.getZoom() < MAX_CLUSTER_ZOOM && trees.length >= MIN_CLUSTER_SIZE) {
 			return this.getClusterGroupsToShow(trees);
 		}
 
@@ -324,7 +327,7 @@ export class Markers {
 	 * Split trees into 100 separate buckets (clustering).
 	 */
 	private splitBuckets(trees: ITree[]): ClusterGroup[] {
-		const divider = CLUSTER_GRID[this.map.getZoom()];
+		const divider = CLUSTER_GRID[this.map.getZoom() - 1];
 
 		const buckets: {
 			[key: string]: ClusterGroup;
