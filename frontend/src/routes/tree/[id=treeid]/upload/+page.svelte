@@ -4,7 +4,7 @@
 	import { startUpload } from '$lib/utils/fileUploader';
 	import AuthWrapper from '$lib/components/auth/AuthWrapper.svelte';
 	import { FilePicker, Header } from '$lib/ui';
-	import PhotoManager from '$lib/components/tree/PhotoManager.svelte';
+	import { UploadForm } from '$lib/forms';
 	import { CloseIcon } from '$lib/icons';
 
 	const { data } = $props();
@@ -71,7 +71,7 @@
 			{/if}
 		</div>
 
-		<PhotoManager {tree} />
+		<UploadForm id={tree.id} />
 	</AuthWrapper>
 </div>
 

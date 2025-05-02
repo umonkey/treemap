@@ -8,3 +8,4 @@ export { default as MoveForm } from './move-form/MoveForm.svelte';
 export { default as ReplaceForm } from './replace-form/ReplaceForm.svelte';
 export { default as SearchForm } from './search-form/SearchForm.svelte';
 export { default as TreeDeadForm } from './tree-dead-form/TreeDeadForm.svelte';
+export { default as UploadForm } from './upload-form/UploadForm.svelte';
