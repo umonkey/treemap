@@ -11,6 +11,7 @@ import { mapBus } from '$lib/buses';
 import { mapLastTree } from '$lib/stores/mapStore';
 import { get } from 'svelte/store';
 import { markerStore } from '$lib/stores/markerStore';
+import { clusterStore } from '$lib/stores/clusterStore';
 
 import BlackIcon from '$lib/map/icons/dot-black.svg';
 import GreenIcon from '$lib/map/icons/dot-green.svg';
@@ -236,7 +237,9 @@ export class Markers {
 	 * on the map zoom level.
 	 */
 	private getItemsToShow(trees: ITree[]) {
-		if (this.map.getZoom() < 18 && trees.length >= MIN_CLUSTER_SIZE) {
+		const enabled = get(clusterStore);
+
+		if (enabled && this.map.getZoom() < 18 && trees.length >= MIN_CLUSTER_SIZE) {
 			return this.getClusterGroupsToShow(trees);
 		}
 
