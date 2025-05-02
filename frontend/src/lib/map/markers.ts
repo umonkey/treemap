@@ -10,6 +10,7 @@ import type { LatLngBounds, Map, Marker } from 'leaflet';
 import { mapBus } from '$lib/buses';
 import { mapLastTree } from '$lib/stores/mapStore';
 import { get } from 'svelte/store';
+import { markerStore } from '$lib/stores/markerStore';
 
 import BlackIcon from '$lib/map/icons/dot-black.svg';
 import GreenIcon from '$lib/map/icons/dot-green.svg';
@@ -134,7 +135,11 @@ export class Markers {
 
 		map.on('moveend', () => this.onMoveEnd());
 
+		// Initiate the first load.
 		this.onMoveEnd();
+
+		// While we're loading new markers, show the ones from the previous time.
+		this.replaceMarkers(get(markerStore));
 	}
 
 	public setSearchQuery(query: string | undefined) {
@@ -180,6 +185,7 @@ export class Markers {
 			if (res.status === 200 && res.data) {
 				const trees = res.data.trees;
 				console.debug(`[map] Received ${trees.length} trees, search=${query}.`);
+				markerStore.set(trees);
 				this.replaceMarkers(trees);
 			}
 		});
