@@ -1,64 +1,48 @@
 <script lang="ts">
-	import type { ITreeFile } from '$lib/types';
+	import FALLBACK from '$lib/assets/tree.jpg';
 	import { ExpandIcon } from '$lib/icons';
-	import { formatDate } from '$lib/utils/strings';
-	import { get } from 'svelte/store';
-	import { getUser } from '$lib/stores/userStore';
+	import { hooks } from './hooks';
 	import { longtap } from '$lib/utils/longtap';
 	import { menuState } from '$lib/stores/treeMenu';
 	import { onMount } from 'svelte';
 	import { routes } from '$lib/routes';
-	import FALLBACK from '$lib/assets/tree.jpg';
 
-	const { files = [] } = $props<{
-		files: ITreeFile[];
-	}>();
+	const { id } = $props<{ id: string }>();
+	const { loading, error, files, reload, added_at, handleExpand } = hooks();
 
 	let ref: HTMLDivElement;
 
-	const added_at = (file: ITreeFile) => {
-		if (!file.added_at || !file.added_by) {
-			return '';
-		}
-
-		const user = get(getUser)(file.added_by);
-
-		if (user === undefined) {
-			return '';
-		}
-
-		const date = formatDate(file.added_at);
-		return `${date} by ${user.name}`;
-	};
-
-	const onExpand = (file: ITreeFile) => {
-		const url = routes.file(file.id);
-		window.open(url, '_blank');
-	};
-
 	// Show context menu on image long tap
 	onMount(() => longtap(ref, () => menuState.update(() => true), 500));
+
+	$effect(() => reload(id));
 </script>
 
 <div class="gallery" bind:this={ref}>
-	<div class="slides">
-		{#each files as file, idx}
-			<div>
-				<img src={routes.file(file.small_id)} alt="See how good is this tree." />
-				<div class="imgno">{idx + 1}/{files.length}</div>
-				{#if file.added_at}
-					<div class="date">{added_at(file)}</div>
-				{/if}
-				<button class="expand" onclick={() => onExpand(file)}>
-					<ExpandIcon />
-				</button>
-			</div>
-		{:else}
-			<div>
-				<img src={FALLBACK} alt="no photos of this tree" />
-			</div>
-		{/each}
-	</div>
+	{#if $loading}
+		<!-- Loading files -->
+	{:else if $error}
+		<p>{$error}</p>
+	{:else}
+		<div class="slides">
+			{#each $files as file, idx}
+				<div>
+					<img src={routes.file(file.small_id)} alt="See how good is this tree." />
+					<div class="imgno">{idx + 1}/{$files.length}</div>
+					{#if file.added_at}
+						<div class="date">{added_at(file)}</div>
+					{/if}
+					<button class="expand" onclick={() => handleExpand(file)}>
+						<ExpandIcon />
+					</button>
+				</div>
+			{:else}
+				<div>
+					<img src={FALLBACK} alt="no photos of this tree" />
+				</div>
+			{/each}
+		</div>
+	{/if}
 </div>
 
 <style>

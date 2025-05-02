@@ -21,6 +21,7 @@ import type {
 	IStreetStats,
 	ITree,
 	ITreeDefaults,
+	ITreeFile,
 	ITreeList,
 	ITreeUpdatePayload
 } from '$lib/types';
@@ -60,6 +61,24 @@ export class ApiClient {
 		}
 
 		return res;
+	}
+
+	public async getTreeFiles(id: string): Promise<IResponse<ITreeFile[]>> {
+		const res = await this.getTree(id, true);
+
+		if (res.status === 200 && res.data) {
+			return {
+				status: 200,
+				data: res.data.files ?? [],
+				error: undefined
+			};
+		}
+
+		return {
+			status: res.status,
+			data: undefined,
+			error: res.error
+		};
 	}
 
 	public async getTreeDefaults(): Promise<IResponse<ITreeDefaults>> {
