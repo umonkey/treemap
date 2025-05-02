@@ -143,8 +143,10 @@ export class Markers {
 	}
 
 	public setSearchQuery(query: string | undefined) {
-		this.searchQuery = query;
-		this.reload();
+		if ((this.searchQuery ?? null) !== (query ?? null)) {
+			this.searchQuery = query;
+			this.reload();
+		}
 	}
 
 	private async onMoveEnd() {
@@ -157,12 +159,14 @@ export class Markers {
 	 * Reload markers after a change in parameters.
 	 */
 	private reload() {
-		const query = this.searchQuery;
+		const query = this.searchQuery ?? null;
 
 		if (!this.bounds) {
 			console.debug('[map] Not reloading -- bounds not set.');
 			return;
 		}
+
+		console.debug(`[map] Reloading markers, search=${query}.`);
 
 		const { n, e, s, w } = expand(this.bounds);
 
@@ -175,10 +179,10 @@ export class Markers {
 			//
 			// The right solution would be to refactor the map hooks, to make sure we don't
 			// start loading markers before we know the right search query.
-			if (query !== this.searchQuery) {
-				console.debug(
-					`[map] Search query overruled; received=${query}, current=${this.searchQuery}.`
-				);
+			const current = this.searchQuery ?? null;
+
+			if (query !== current) {
+				console.debug(`[map] Search query overruled; received=${query}, current=${current}.`);
 				return;
 			}
 

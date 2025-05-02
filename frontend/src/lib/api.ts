@@ -149,7 +149,7 @@ export class ApiClient {
 		e: number,
 		s: number,
 		w: number,
-		search?: string | undefined
+		search?: string | null
 	): Promise<IResponse<IMarkers>> {
 		const params = new URLSearchParams({
 			n: n.toString(),
