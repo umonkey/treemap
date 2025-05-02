@@ -280,20 +280,24 @@ export class Markers {
 
 	private getClusterGroupsToShow(trees: ITree[]) {
 		const res = [];
+		const groups = this.splitBuckets(trees);
 
-		for (const group of this.splitBuckets(trees)) {
+		const maxValue = Math.max(...groups.map((g) => g.count));
+		console.debug(`[map] Clustering trees, max group size=${maxValue}.`);
+
+		for (const group of groups) {
+			const opacity = (group.count / maxValue) * 0.5 + 0.3;
+
+			const bounds = L.latLngBounds(L.latLng(group.n, group.w), L.latLng(group.s, group.e));
+
 			const onClick = () => {
-				this.map.fitBounds([
-					[group.s, group.w],
-					[group.n, group.e]
-				]);
+				this.map.fitBounds(bounds);
 			};
 
-			const circle = L.circle([group.lat, group.lon], {
+			const r = L.rectangle(bounds, {
 				color: '#080',
-				fillColor: '#080',
-				fillOpacity: 0.5,
-				radius: group.radius
+				stroke: false,
+				fillOpacity: opacity
 			}).on('click', onClick);
 
 			const label = L.divIcon({
@@ -306,7 +310,7 @@ export class Markers {
 				icon: label
 			}).on('click', onClick);
 
-			res.push(circle);
+			res.push(r);
 			res.push(marker);
 		}
 
