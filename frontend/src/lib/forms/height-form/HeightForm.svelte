@@ -19,7 +19,7 @@
 		<p>{$loadError}</p>
 	{:else}
 		<form class="form" onsubmit={save}>
-			<HeightInput value={$value} onChange={handleChange} />
+			<HeightInput value={$value} autofocus onChange={handleChange} />
 
 			<Buttons>
 				<Button label={locale.editSave()} type="submit" onClick={save} disabled={$busy} />

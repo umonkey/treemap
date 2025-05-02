@@ -19,7 +19,7 @@
 		<p>{$loadError}</p>
 	{:else}
 		<form class="form" onsubmit={save}>
-			<CircumferenceInput value={$value} onChange={handleChange} />
+			<CircumferenceInput value={$value} autofocus onChange={handleChange} />
 
 			<Buttons>
 				<Button label={locale.editSave()} type="submit" onClick={save} disabled={$busy} />

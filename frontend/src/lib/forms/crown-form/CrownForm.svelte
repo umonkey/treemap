@@ -19,7 +19,7 @@
 		<p>{$loadError}</p>
 	{:else}
 		<form class="form" onsubmit={save}>
-			<CanopyInput value={$value} onChange={handleChange} />
+			<CanopyInput value={$value} autofocus onChange={handleChange} />
 
 			<Buttons>
 				<Button label={locale.editSave()} type="submit" onClick={save} disabled={$busy} />

@@ -7,6 +7,7 @@
 		label = undefined,
 		hint = undefined,
 		help = undefined,
+		autofocus,
 		onChange = () => {}
 	} = $props<{
 		value: number | null;
@@ -14,6 +15,7 @@
 		label?: string | undefined;
 		hint?: string | undefined;
 		help?: string | undefined;
+		autofocus?: boolean;
 		onChange: (value: number) => void;
 	}>();
 
@@ -28,7 +30,8 @@
 	<label>
 		<span>{label}</span>
 		<div class="group">
-			<input class="form" type="number" {value} {placeholder} onchange={handleChange} />
+			<!-- svelte-ignore a11y_autofocus -->
+			<input class="form" type="number" {value} {placeholder} {autofocus} onchange={handleChange} />
 			{#if help}
 				<HelpButton {help} />
 			{/if}
