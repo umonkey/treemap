@@ -21,7 +21,7 @@ import YellowIcon from '$lib/map/icons/dot-yellow.svg';
 // Only start clustering when showing this number of trees.
 const MIN_CLUSTER_SIZE = 200;
 
-const MAX_CLUSTER_ZOOM = 17;
+const MAX_CLUSTER_ZOOM = 18;
 
 type MarkerMap = {
 	[key: string]: Marker;
