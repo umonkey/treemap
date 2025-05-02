@@ -49,6 +49,8 @@
 	.gallery {
 		position: relative;
 		box-sizing: border-box;
+		width: 100%;
+		aspect-ratio: 1/1;
 	}
 
 	.imgno {
