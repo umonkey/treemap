@@ -91,6 +91,7 @@
 			width: 300px;
 			height: 100vh;
 			border-radius: 0px;
+			border-left: 1px solid var(--sep-color);
 		}
 	}
 </style>
