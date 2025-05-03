@@ -80,11 +80,17 @@
 		}
 	}
 
+	/**
+	 * This is for desktops.
+	 */
 	@media (min-width: 481px) {
 		.preview {
-			position: absolute;
-			bottom: 0;
-			left: 0;
+			position: fixed;
+			top: 0;
+			right: 0;
+			width: 300px;
+			height: 100vh;
+			border-radius: 0px;
 		}
 	}
 </style>

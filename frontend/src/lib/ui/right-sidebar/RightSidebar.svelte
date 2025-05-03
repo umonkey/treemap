@@ -18,7 +18,7 @@
 		flex-shrink: 0;
 		flex-grow: 0;
 
-		padding: calc(2 * var(--gap));
+		padding: 0;
 		box-sizing: border-box;
 		border-left: 1px solid var(--sep-color);
 
