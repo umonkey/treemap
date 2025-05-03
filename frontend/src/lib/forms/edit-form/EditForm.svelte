@@ -62,9 +62,3 @@
 		</Buttons>
 	{/if}
 </div>
-
-<style>
-	.form {
-		padding: 0 var(--gap) var(--gap);
-	}
-</style>

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { routes } from '$lib/routes';
-	import { Header } from '$lib/ui';
+	import { Header, NarrowPage } from '$lib/ui';
 </script>
 
 <svelte:head>
@@ -9,7 +9,7 @@
 
 <Header title="Tree Map" />
 
-<div class="padded">
+<NarrowPage>
 	<h1>Data reports</h1>
 
 	<ul>
@@ -26,7 +26,7 @@
 	<ul>
 		<li><a href={routes.statsMismatch()}>Trees with unknown species</a></li>
 	</ul>
-</div>
+</NarrowPage>
 
 <style>
 	ul {

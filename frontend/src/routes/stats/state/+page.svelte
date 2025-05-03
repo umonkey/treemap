@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { loadStateStats } from '$lib/hooks';
 	import { routes } from '$lib/routes';
-	import { Header } from '$lib/ui';
+	import { Header, NarrowPage } from '$lib/ui';
 
 	const { loading, error, data, reload } = loadStateStats();
 	$effect(() => {
@@ -15,7 +15,7 @@
 
 <Header title="Trees by state" />
 
-<div class="padded">
+<NarrowPage>
 	<h1>Trees by state</h1>
 
 	{#if $loading}
@@ -46,11 +46,12 @@
 			</tbody>
 		</table>
 	{/if}
-</div>
+</NarrowPage>
 
 <style>
 	table {
 		line-height: 1.5;
+		width: 100%;
 	}
 
 	th.l,

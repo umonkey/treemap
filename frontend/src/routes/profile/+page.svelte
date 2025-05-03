@@ -1,7 +1,7 @@
 <script lang="ts">
 	import SignIn from '$lib/components/auth/SignIn.svelte';
 	import SignOut from '$lib/components/auth/SignOut.svelte';
-	import { Header } from '$lib/ui';
+	import { Header, NarrowPage } from '$lib/ui';
 	import { loadMe } from '$lib/hooks';
 	import { locale } from '$lib/locale';
 
@@ -18,33 +18,35 @@
 
 <Header title="Profile" />
 
-{#if $loading}
-	<!-- loading --->
-{:else if $statusCode === 401}
-	<div class="container signedOut">
-		<p>{locale.profileSignInPrompt()}</p>
-		<SignIn />
-	</div>
-{:else if $error}
-	<p>{$error.description}</p>
-{:else if $data}
-	<img class="header" src="/header.jpg" alt="header background" />
-
-	<div class="container signedIn">
-		<img class="userpic" src={$data.picture} alt="userpic" />
-
-		<h1>{$data.name}</h1>
-		<div class="stats">
-			{locale.profileTrees($data.trees_count)}, {locale.profileUpdates($data.updates_count)}, {locale.profilePhotos(
-				$data.files_count
-			)}.
+<NarrowPage>
+	{#if $loading}
+		<!-- loading --->
+	{:else if $statusCode === 401}
+		<div class="container signedOut">
+			<p>{locale.profileSignInPrompt()}</p>
+			<SignIn />
 		</div>
+	{:else if $error}
+		<p>{$error.description}</p>
+	{:else if $data}
+		<img class="header" src="/header.jpg" alt="header background" />
 
-		<div class="actions">
-			<SignOut />
+		<div class="container signedIn">
+			<img class="userpic" src={$data.picture} alt="userpic" />
+
+			<h1>{$data.name}</h1>
+			<div class="stats">
+				{locale.profileTrees($data.trees_count)}, {locale.profileUpdates($data.updates_count)}, {locale.profilePhotos(
+					$data.files_count
+				)}.
+			</div>
+
+			<div class="actions">
+				<SignOut />
+			</div>
 		</div>
-	</div>
-{/if}
+	{/if}
+</NarrowPage>
 
 <style>
 	img.header {

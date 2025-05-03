@@ -6,11 +6,10 @@
 	import { formatSpecies } from '$lib/utils/trees';
 	import { toast } from '@zerodevx/svelte-toast';
 
-	import { CommentForm } from '$lib/ui';
+	import { CommentForm, NarrowPage, TreeContextMenu } from '$lib/ui';
 	import Comment from '$lib/components/tree/Comment.svelte';
 	import Tabs from '$lib/components/tree/Tabs.svelte';
 	import Title from '$lib/components/tree/Title.svelte';
-	import { Header, TreeContextMenu } from '$lib/ui';
 
 	const { data } = $props();
 	const tree = data.tree;
@@ -35,26 +34,23 @@
 	};
 </script>
 
-<svelte:head>
-	<title>{formatSpecies(tree.species)} - Details</title>
-</svelte:head>
+<NarrowPage title={formatSpecies(tree.species)} nopadding>
+	<Title title={formatSpecies(tree.species)} address={tree.address} />
+	<Tabs tree={tree.id} active="comments" />
+	<TreeContextMenu id={tree.id} />
 
-<Header title="Tree" />
-<Title title={formatSpecies(tree.species)} address={tree.address} />
-<Tabs tree={tree.id} active="comments" />
-<TreeContextMenu id={tree.id} />
+	<div class="container">
+		{#if comments.length > 0}
+			{#each comments as comment}
+				<Comment {comment} />
+			{/each}
+		{:else}
+			<p>{locale.noComments()}</p>
+		{/if}
 
-<div class="container">
-	{#if comments.length > 0}
-		{#each comments as comment}
-			<Comment {comment} />
-		{/each}
-	{:else}
-		<p>{locale.noComments()}</p>
-	{/if}
-
-	<CommentForm {onSubmit} />
-</div>
+		<CommentForm {onSubmit} />
+	</div>
+</NarrowPage>
 
 <style>
 	.container {

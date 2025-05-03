@@ -3,7 +3,7 @@
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
 	import { rewriteHash } from '$lib/utils/rewrite';
-	import { ModeSwitcher } from '$lib/ui';
+	import { ModeSwitcher, NarrowPage } from '$lib/ui';
 
 	import AppInstallButton from '$lib/components/AppInstallButton.svelte';
 	import { Header } from '$lib/ui';
@@ -21,7 +21,7 @@
 
 <Header title={locale.homeTitle()} back={false} />
 
-<div class="home">
+<NarrowPage>
 	<h1>{locale.appTitle()}</h1>
 
 	{#if navigator.language === 'ru-RU'}
@@ -60,10 +60,4 @@
 	<AppInstallButton />
 
 	<ModeSwitcher />
-</div>
-
-<style>
-	.home {
-		padding: 0 var(--gap);
-	}
-</style>
+</NarrowPage>

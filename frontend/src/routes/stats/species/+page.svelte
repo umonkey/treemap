@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { loadSpeciesStats } from '$lib/hooks';
 	import { routes } from '$lib/routes';
-	import { Header } from '$lib/ui';
+	import { Header, NarrowPage } from '$lib/ui';
 
 	const { loading, error, data, reload, reorder } = loadSpeciesStats();
 
@@ -16,7 +16,7 @@
 
 <Header title="Statistics" />
 
-<div class="padded">
+<NarrowPage>
 	<h1>Trees by species</h1>
 
 	{#if $loading}
@@ -41,11 +41,12 @@
 			</tbody>
 		</table>
 	{/if}
-</div>
+</NarrowPage>
 
 <style>
 	table {
 		line-height: 1.5;
+		width: 100%;
 	}
 
 	th.l,

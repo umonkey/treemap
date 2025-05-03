@@ -3,12 +3,9 @@
 	import { validateStoredToken } from '$lib/utils/auth';
 	import { SvelteToast } from '@zerodevx/svelte-toast';
 	import { onMount } from 'svelte';
+	import { Layout } from '$lib/ui';
 
 	import GoogleTracker from '$lib/components/GoogleTracker.svelte';
-	import LeftSideBar from '$lib/components/LeftSideBar.svelte';
-	import MobileNav from '$lib/components/MobileNav.svelte';
-	import MobileSidebar from '$lib/components/MobileSidebar.svelte';
-	import RightSideBar from '$lib/components/RightSideBar.svelte';
 	import LocationTracker from '$lib/components/map/LocationTracker.svelte';
 
 	import '$lib/styles/variables.css';
@@ -21,22 +18,11 @@
 	});
 </script>
 
-<div class="layout">
-	<LeftSideBar />
-
-	<main>
-		<article>
-			{@render children()}
-		</article>
-
-		<MobileNav />
-	</main>
-
-	<RightSideBar />
-</div>
+<Layout>
+	{@render children()}
+</Layout>
 
 <SvelteToast />
-<MobileSidebar />
 <GoogleTracker />
 <LocationTracker />
 
@@ -65,27 +51,8 @@
 		}
 	}
 
-	.layout {
-		display: flex;
-		flex-direction: row;
-		margin: 0 auto;
-		max-width: calc(600px + 2 * 300px);
-		box-sizing: border-box;
-
-		main {
-			width: 100%;
-			min-height: 100dvh;
-		}
-	}
-
 	:global(.padded) {
 		padding-left: var(--gap);
 		padding-right: var(--gap);
-	}
-
-	@media (max-width: 480px) {
-		article {
-			padding-bottom: 50px;
-		}
 	}
 </style>

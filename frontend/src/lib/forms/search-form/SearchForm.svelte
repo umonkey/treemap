@@ -95,8 +95,6 @@
 
 <style>
 	.search {
-		margin-top: var(--gap);
-		padding: 0 var(--gap);
 		li {
 			margin: 0 0 var(--gap);
 		}

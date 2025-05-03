@@ -49,31 +49,33 @@
 {#if $loading}
 	<!-- loading ... -->
 {:else}
-	<LocationInput
-		value={$location}
-		label={locale.addConfirmLocation()}
-		onChange={handleLocationChange}
-	/>
-	<SpeciesInput value={$tree.species} onChange={handleSpeciesChange} />
-	<HeightInput value={$tree.height} onChange={handleHeightChange} />
-	<CanopyInput value={$tree.diameter} onChange={handleDiameterChange} />
-	<CircumferenceInput value={$tree.circumference} onChange={handleCircumferenceChange} />
-	<StateInput value={$tree.state} onChange={handleStateChange} />
-	<YearInput value={$tree.year} onChange={handleYearChange} />
-	<NotesInput value={$tree.notes} onChange={handleNotesChange} />
+	<div class="form">
+		<LocationInput
+			value={$location}
+			label={locale.addConfirmLocation()}
+			onChange={handleLocationChange}
+		/>
+		<SpeciesInput value={$tree.species} onChange={handleSpeciesChange} />
+		<HeightInput value={$tree.height} onChange={handleHeightChange} />
+		<CanopyInput value={$tree.diameter} onChange={handleDiameterChange} />
+		<CircumferenceInput value={$tree.circumference} onChange={handleCircumferenceChange} />
+		<StateInput value={$tree.state} onChange={handleStateChange} />
+		<YearInput value={$tree.year} onChange={handleYearChange} />
+		<NotesInput value={$tree.notes} onChange={handleNotesChange} />
 
-	<Buttons>
-		<Button
-			type="submit"
-			label={locale.addConfirmButton()}
-			onClick={handleConfirm}
-			disabled={$saving}
-		/>
-		<Button
-			type="cancel"
-			label={locale.addCancelButton()}
-			onClick={handleCancel}
-			disabled={$saving}
-		/>
-	</Buttons>
+		<Buttons>
+			<Button
+				type="submit"
+				label={locale.addConfirmButton()}
+				onClick={handleConfirm}
+				disabled={$saving}
+			/>
+			<Button
+				type="cancel"
+				label={locale.addCancelButton()}
+				onClick={handleCancel}
+				disabled={$saving}
+			/>
+		</Buttons>
+	</div>
 {/if}

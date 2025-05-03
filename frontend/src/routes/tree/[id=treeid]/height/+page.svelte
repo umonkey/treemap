@@ -1,17 +1,11 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
 	import { HeightForm } from '$lib/forms';
-	import { Header } from '$lib/ui';
+	import { NarrowPage } from '$lib/ui';
 
 	const { data } = $props();
 </script>
 
-<svelte:head>
-	<title>{locale.measureTitle()}</title>
-</svelte:head>
-
-<Header title={locale.measureTitle()} />
-
-<div class="padded measure">
+<NarrowPage title={locale.measureTitle()}>
 	<HeightForm id={data.id} />
-</div>
+</NarrowPage>

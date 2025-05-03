@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Header } from '$lib/ui';
+	import { NarrowPage } from '$lib/ui';
 	import NewTreesListItem from '$lib/components/updates/NewTreesListItem.svelte';
 	import Tabs from '$lib/components/updates/Tabs.svelte';
 	import { locale } from '$lib/locale';
@@ -8,18 +8,15 @@
 	const { trees } = data;
 </script>
 
-<svelte:head>
-	<title>{locale.updatesNewTitle()}</title>
-</svelte:head>
+<NarrowPage title={locale.updatesNewTitle()} nopadding>
+	<Tabs active="new" />
 
-<Header title={locale.updatesNewTitle()} />
-<Tabs active="new" />
-
-<div class="trees padded">
-	{#each trees as tree}
-		<NewTreesListItem {tree} />
-	{/each}
-</div>
+	<div class="trees padded">
+		{#each trees as tree}
+			<NewTreesListItem {tree} />
+		{/each}
+	</div>
+</NarrowPage>
 
 <style>
 	.trees {

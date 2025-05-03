@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Buttons, Button, Header } from '$lib/ui';
+	import { Buttons, Button, Header, NarrowPage } from '$lib/ui';
 	import { ModeEnum } from '$lib/enums';
 	import { goto, routes } from '$lib/routes';
 	import { modeStore } from '$lib/stores/modeStore';
@@ -16,7 +16,7 @@
 
 <Header title="Mapper Mode" />
 
-<div class="mapper-mode padded">
+<NarrowPage>
 	<p>You are going to enter the mapper mode.</p>
 	<p>This mode lets you add new trees and update data for existing trees.</p>
 	<p>
@@ -29,4 +29,4 @@
 		<Button label="Continue" onClick={handleClick} />
 		<Button label="Help" link="https://myga.am/mapping.html" type="cancel" />
 	</Buttons>
-</div>
+</NarrowPage>

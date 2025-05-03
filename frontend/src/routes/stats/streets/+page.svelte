@@ -46,6 +46,7 @@
 <style>
 	table {
 		line-height: 1.5;
+		width: 100%;
 	}
 
 	th.l,

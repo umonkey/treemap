@@ -4,7 +4,7 @@
 	import type { ITree } from '$lib/types';
 	import { formatCentimeters, formatState } from '$lib/utils/trees';
 	import AuthWrapper from '$lib/components/auth/AuthWrapper.svelte';
-	import { CircumferenceEditor, Header, StateEditor } from '$lib/ui';
+	import { CircumferenceEditor, NarrowPage, StateEditor } from '$lib/ui';
 	import { CircumferenceIcon, EditIcon, HelpIcon, StateIcon } from '$lib/icons';
 
 	const { data } = $props();
@@ -26,13 +26,7 @@
 	};
 </script>
 
-<svelte:head>
-	<title>{locale.measureTitle()}</title>
-</svelte:head>
-
-<Header title={locale.measureTitle()} />
-
-<div class="padded measure">
+<NarrowPage title={locale.measureTitle()}>
 	<AuthWrapper>
 		{#if tab === 'circumference'}
 			<CircumferenceEditor {tree} {onClose} />
@@ -56,7 +50,7 @@
 			</div>
 		{/if}
 	</AuthWrapper>
-</div>
+</NarrowPage>
 
 <style>
 	.form {

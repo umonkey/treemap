@@ -3,7 +3,7 @@
 	import Question from '$lib/components/learn/Question.svelte';
 	import Results from '$lib/components/learn/Results.svelte';
 	import SoundPlayer from '$lib/components/learn/SoundPlayer.svelte';
-	import { Header } from '$lib/ui';
+	import { NarrowPage } from '$lib/ui';
 
 	import { getRandomQuestions } from '$lib/learn/questions';
 	import { locale } from '$lib/locale';
@@ -28,13 +28,7 @@
 	};
 </script>
 
-<svelte:head>
-	<title>{locale.learnTitle()}</title>
-</svelte:head>
-
-<Header title={locale.learnTitle()} />
-
-<div class="question padded">
+<NarrowPage title={locale.learnTitle()}>
 	<ProgressBar total={questions.length} complete={idx} />
 
 	{#if idx === questions.length}
@@ -42,12 +36,6 @@
 	{:else}
 		<Question question={questions[idx]} {onCorrect} {onWrong} />
 	{/if}
-</div>
 
-<SoundPlayer />
-
-<style>
-	.padded {
-		margin-top: var(--gap);
-	}
-</style>
+	<SoundPlayer />
+</NarrowPage>

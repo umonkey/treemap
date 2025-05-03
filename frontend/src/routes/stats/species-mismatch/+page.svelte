@@ -1,7 +1,7 @@
 <script lang="ts">
 	import NewTreesListItem from '$lib/components/updates/NewTreesListItem.svelte';
 	import { loadSpeciesMismatch } from '$lib/hooks';
-	import { Header } from '$lib/ui';
+	import { Header, NarrowPage } from '$lib/ui';
 
 	const { loading, error, data, reload } = loadSpeciesMismatch();
 
@@ -16,7 +16,7 @@
 
 <Header title="Species mismatches" />
 
-<div class="trees padded">
+<NarrowPage>
 	{#if $loading}
 		<p>Loading...</p>
 	{:else if $error}
@@ -30,10 +30,4 @@
 			{/each}
 		{/if}
 	{/if}
-</div>
-
-<style>
-	.trees {
-		margin: var(--gap) 0;
-	}
-</style>
+</NarrowPage>

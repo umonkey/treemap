@@ -3,7 +3,7 @@
 	import { fileStore, isUploading, storedFiles, uploadMessage } from '$lib/stores/fileStore';
 	import { startUpload } from '$lib/utils/fileUploader';
 	import AuthWrapper from '$lib/components/auth/AuthWrapper.svelte';
-	import { FilePicker, Header } from '$lib/ui';
+	import { FilePicker, NarrowPage } from '$lib/ui';
 	import { UploadForm } from '$lib/forms';
 	import { CloseIcon } from '$lib/icons';
 
@@ -30,13 +30,7 @@
 	};
 </script>
 
-<svelte:head>
-	<title>{locale.photoTitle()}</title>
-</svelte:head>
-
-<Header title={locale.photoTitle()} />
-
-<div class="padded">
+<NarrowPage title={locale.photoTitle()}>
 	<AuthWrapper>
 		<div class="form">
 			<p>{locale.photoIntro()}</p>
@@ -73,7 +67,7 @@
 
 		<UploadForm id={tree.id} />
 	</AuthWrapper>
-</div>
+</NarrowPage>
 
 <style>
 	.grid {
