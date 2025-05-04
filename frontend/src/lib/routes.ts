@@ -1,5 +1,21 @@
 export { goto } from '$app/navigation';
 
+type Params = {
+	[key: string]: string | undefined | null;
+};
+
+const build = (path: string, params: Params) => {
+	const qs = new URLSearchParams();
+
+	for (const [k, v] of Object.entries(params)) {
+		if (v !== undefined && v !== null) {
+			qs.append(k, v);
+		}
+	}
+
+	return `${path}?${qs.toString()}`;
+};
+
 export const routes = {
 	changedTrees: () => '/updates/changes',
 	comments: () => '/updates/comments',
@@ -7,7 +23,11 @@ export const routes = {
 	home: () => '/',
 	learn: () => '/learn',
 	map: () => '/map',
-	mapPreview: (id: string) => `/map?preview=${id}`,
+	mapPreview: (id: string, search: string | undefined | null) =>
+		build('/map', {
+			preview: id,
+			q: search
+		}),
 	modeMapper: () => '/mode/mapper',
 	newTrees: () => '/updates/new',
 	search: '/search',

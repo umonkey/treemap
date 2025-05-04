@@ -5,6 +5,8 @@ import { writable } from 'svelte/store';
 import { mapBus } from '$lib/buses';
 import { routes, goto } from '$lib/routes';
 import { setLastTree } from '$lib/stores/mapStore';
+import { searchStore } from '$lib/stores';
+import { get } from 'svelte/store';
 import type { ILatLng, MountFn, DestroyFn } from '$lib/types';
 
 export const hooks = (mount: MountFn, destroy: DestroyFn) => {
@@ -47,11 +49,15 @@ export const hooks = (mount: MountFn, destroy: DestroyFn) => {
 	// which will center the tree and update the marker.
 	const handleTreeClick = (id: string) => {
 		console.debug(`[map] Received click on tree ${id}, updating preview.`);
-		goto(routes.mapPreview(id));
+		goto(routes.mapPreview(id, get(searchStore)));
+	};
+
+	const handleSearchQuery = (query: string | null) => {
+		searchStore.set(query ?? undefined);
 	};
 
 	mount(() => mapBus.on('select', handleTreeClick));
 	destroy(() => mapBus.off('select', handleTreeClick));
 
-	return { pins, handlePreviewChange };
+	return { pins, handlePreviewChange, handleSearchQuery };
 };

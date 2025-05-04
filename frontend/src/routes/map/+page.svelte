@@ -7,11 +7,12 @@
 	import { onMount, onDestroy } from 'svelte';
 
 	const { data } = $props();
-	const { pins, handlePreviewChange } = hooks(onMount, onDestroy);
+	const { pins, handlePreviewChange, handleSearchQuery } = hooks(onMount, onDestroy);
 
 	const title = data.searchQuery ? locale.mapTitleQuery(data.searchQuery) : locale.mapTitle();
 
 	$effect(() => handlePreviewChange(data.preview));
+	$effect(() => handleSearchQuery(data.searchQuery));
 </script>
 
 <svelte:head>

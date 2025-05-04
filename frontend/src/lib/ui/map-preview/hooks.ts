@@ -1,7 +1,8 @@
 import { writable } from 'svelte/store';
 import type { ITree } from '$lib/types';
 import { apiClient } from '$lib/api';
-import { routes, goto } from '$lib/routes';
+import { goto } from '$lib/routes';
+import { mapHome } from '$lib/map';
 
 export const hook = () => {
 	const visible = writable<boolean>(false);
@@ -9,7 +10,7 @@ export const hook = () => {
 	const error = writable<string | null>(null);
 
 	const handleClose = () => {
-		goto(routes.map());
+		goto(mapHome());
 	};
 
 	const reload = (id: string | null) => {

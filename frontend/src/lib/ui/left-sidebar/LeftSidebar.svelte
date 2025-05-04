@@ -3,6 +3,7 @@
 	import { routes } from '$lib/routes';
 	import { BellIcon, HomeIcon, MapIcon, SearchIcon, UserIcon } from '$lib/icons';
 	import { mapLastTree } from '$lib/stores/mapStore';
+	import { searchStore } from '$lib/stores';
 	import Logo from '$lib/assets/trees-of-yerevan.svelte';
 </script>
 
@@ -23,7 +24,14 @@
 			</li>
 			{#if $mapLastTree}
 				<li>
-					<a href={routes.mapPreview($mapLastTree)}>
+					<a href={routes.mapPreview($mapLastTree, $searchStore)}>
+						<span class="icon"><MapIcon /></span>
+						<span>{locale.sideExplore()}</span>
+					</a>
+				</li>
+			{:else if $searchStore}
+				<li>
+					<a href={routes.searchQuery($searchStore)}>
 						<span class="icon"><MapIcon /></span>
 						<span>{locale.sideExplore()}</span>
 					</a>
