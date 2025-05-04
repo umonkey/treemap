@@ -77,91 +77,94 @@
 </div>
 
 <style>
-	.sidebar.hidden {
-		display: none;
-	}
-
-	.overlay {
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100vw;
-		height: 100dvh;
-		z-index: var(--z-mobile-sidebar);
-
-		background-color: rgba(0, 0, 0, 0.5);
-		backdrop-filter: blur(2px);
-	}
-
-	aside {
-		position: fixed;
-		top: 0;
-		left: 0;
-		height: 100%;
-		width: 75vw;
-		z-index: var(--z-mobile-sidebar);
-
-		display: flex;
-		flex-direction: column;
-		gap: var(--gap);
-
-		padding: calc(2 * var(--gap));
-		box-sizing: border-box;
-		border-right: 1px solid var(--sep-color);
-
-		text-align: left;
-		font-size: 16px;
-
-		background-color: var(--form-background);
-		color: var(--text-color);
-
-		ul {
-			list-style-type: none;
-			margin: 0;
-			padding: 0;
-			white-space: nowrap;
-			min-width: 200px;
-
-			flex-grow: 1;
-			flex-shrink: 0;
-
-			a {
-				display: flex;
-				flex-direction: row;
-				gap: var(--gap);
-				line-height: 24px;
-				color: inherit;
-				text-decoration: none;
-				padding: 10px 0;
-				margin-bottom: 10px;
-			}
-
-			.icon {
-				flex-basis: 24px;
-				flex-shrink: 0;
-				flex-grow: 0;
-				height: 24px;
-			}
+	.sidebar {
+		&.hidden {
+			display: none;
 		}
 
-		.bottom {
-			flex-grow: 0;
-			flex-shrink: 0;
-			opacity: 0.5;
+		&.overlay {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100vw;
+			height: 100dvh;
+			z-index: var(--z-mobile-sidebar);
 
-			&.links {
-				font-size: 14px;
-				padding: var(--gap) 0;
-				text-align: center;
+			background-color: rgba(0, 0, 0, 0.5);
+			backdrop-filter: blur(2px);
+		}
+
+		aside {
+			position: fixed;
+			top: 0;
+			left: 0;
+			height: 100%;
+			width: 300px;
+			z-index: var(--z-mobile-sidebar);
+
+			display: flex;
+			flex-direction: column;
+			gap: var(--gap);
+
+			padding: calc(2 * var(--gap));
+			box-sizing: border-box;
+			border-right: 1px solid var(--sep-color);
+
+			text-align: left;
+			font-size: 16px;
+
+			background-color: var(--form-background);
+			color: var(--text-color);
+
+			ul {
+				list-style-type: none;
+				margin: 0;
+				padding: 0;
+				white-space: nowrap;
+				min-width: 200px;
+
+				flex-grow: 1;
+				flex-shrink: 0;
 
 				a {
+					display: flex;
+					flex-direction: row;
+					gap: var(--gap);
+					line-height: 24px;
 					color: inherit;
+					text-decoration: none;
+					padding: 10px 0;
+					margin-bottom: 10px;
+				}
+
+				.icon {
+					flex-basis: 24px;
+					flex-shrink: 0;
+					flex-grow: 0;
+					height: 24px;
+				}
+			}
+
+			.bottom {
+				flex-grow: 0;
+				flex-shrink: 0;
+				opacity: 0.5;
+
+				&.links {
+					font-size: 14px;
+					padding: var(--gap) 0;
+					text-align: center;
+
+					a {
+						color: inherit;
+					}
 				}
 			}
 		}
 	}
 
-	@media (min-width: 480px) {
+	/* Hide on desktop */
+	@media (min-width: 1024px) {
 		aside {
 			display: none;
 		}

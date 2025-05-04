@@ -13,25 +13,27 @@
 </aside>
 
 <style>
+	/* Hide by default */
 	aside {
-		flex-basis: 300px;
-		flex-shrink: 0;
-		flex-grow: 0;
-
-		padding: 0;
-		box-sizing: border-box;
-		border-left: 1px solid var(--sep-color);
-
-		text-align: center;
+		display: none;
 	}
 
-	.meta {
-		font-size: 14px;
-	}
-
-	@media (max-width: 480px) {
+	/* Show on desktop */
+	@media (min-width: 1024px) {
 		aside {
-			display: none;
+			flex-basis: 300px;
+			flex-shrink: 0;
+			flex-grow: 0;
+
+			padding: 0;
+			box-sizing: border-box;
+			border-left: 1px solid var(--sep-color);
+
+			text-align: center;
+		}
+
+		.meta {
+			font-size: 14px;
 		}
 	}
 </style>

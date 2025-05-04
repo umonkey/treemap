@@ -65,12 +65,13 @@
 	}
 
 	button.bars {
-		display: none;
+		display: block;
 	}
 
-	@media (max-width: 480px) {
+	/* Hide burger menu on desktop */
+	@media (min-width: 1024px) {
 		button.bars {
-			display: block;
+			display: none;
 		}
 	}
 </style>

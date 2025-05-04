@@ -25,6 +25,13 @@
 	--z-add-button: 10;
 	--z-mobile-sidebar: 11;
 	--z-learn-result: 11;
+
+	/* Screen sizes */
+	--breakpoint-mobile: 480px;
+	--breakpoint-mobile-large: 600px;
+	--breakpoint-tablet: 768px;
+	--breakpoint-desktop: 1024px;
+	--haha: 200px;
 }
 
 @media (prefers-color-scheme: dark) {
