@@ -76,7 +76,7 @@
 	}
 
 	/* Make it narrow on large mobile devices */
-	@media (min-width: 600px) {
+	@media (min-width: 600px) and (max-width: 1023px) {
 		.preview {
 			width: 500px;
 			left: calc((100vw - 500px) / 2);
