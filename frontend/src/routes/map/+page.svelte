@@ -36,14 +36,17 @@
 
 <style>
 	.mapContainer {
-		height: calc(100dvh - 41px);
 		z-index: var(--z-map-preview);
 		position: relative;
+
+		/* Add space (50px) to the bottom nav bar on mobile */
+		height: calc(100dvh - var(--header-height) - var(--bottom-nav-height));
 	}
 
-	@media (max-width: 480px) {
+	@media (min-width: 1024px) {
 		.mapContainer {
-			height: calc(100dvh - 91px);
+			/* No need for bottom nav bar on desktop */
+			height: calc(100dvh - var(--header-height));
 		}
 	}
 </style>

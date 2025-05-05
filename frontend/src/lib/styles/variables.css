@@ -32,6 +32,10 @@
 	--breakpoint-tablet: 768px;
 	--breakpoint-desktop: 1024px;
 	--haha: 200px;
+
+	/* Block sizes */
+	--header-height: 41px;
+	--bottom-nav-height: 50px;
 }
 
 @media (prefers-color-scheme: dark) {
