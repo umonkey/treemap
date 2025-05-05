@@ -19,9 +19,10 @@
 		{:else if $tree}
 			<div class="header">
 				<div class="title">
-					<a href={routes.treeDetails($tree.id)}>{formatSpecies($tree.species)}</a>
+					<a class="species" href={routes.treeDetails($tree.id)}>{formatSpecies($tree.species)}</a>
 					{#if $tree.address}
-						&middot; {$tree.address}{/if}
+						<span class="address">{$tree.address}</span>
+					{/if}
 				</div>
 				<button class="close" onclick={handleClose}><CloseIcon /></button>
 			</div>
@@ -57,6 +58,10 @@
 			.title {
 				flex-grow: 1;
 				flex-shrink: 1;
+
+				.address:before {
+					content: ' · ';
+				}
 			}
 
 			.close {
@@ -95,6 +100,18 @@
 			height: 100vh;
 			border-radius: 0px;
 			border-left: 1px solid var(--sep-color);
+
+			.title {
+				display: flex;
+				flex-direction: column;
+				gap: var(--gap);
+				margin-bottom: var(--gap);
+
+				/* Hide the middot added for smaller devices */
+				.address:before {
+					display: none;
+				}
+			}
 		}
 	}
 </style>
