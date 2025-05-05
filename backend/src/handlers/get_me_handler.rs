@@ -12,7 +12,9 @@ impl GetMeHandler {
         let user = self.users.get(user_id).await?.ok_or(Error::UserNotFound)?;
 
         Ok(MeResponse {
+            id: user.id.to_string(),
             name: user.name,
+            email: user.email,
             picture: user.picture,
             trees_count: user.trees_count,
             comments_count: user.comments_count,

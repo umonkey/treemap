@@ -75,7 +75,9 @@ export interface ITreeUpdatePayload {
 }
 
 export interface IMeResponse {
+	id: string;
 	name: string;
+	email: string;
 	picture: string;
 	trees_count: number;
 	comments_count: number;
