@@ -67,7 +67,7 @@
 		border-radius: 50%;
 	}
 
-	@media (min-width: 480px) {
+	@media (min-width: 1024px) {
 		nav {
 			display: none;
 		}

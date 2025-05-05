@@ -49,7 +49,7 @@
 	/**
 	 * Desktop styles.  Navigation bar padding not needed.
 	 */
-	@media (min-width: 768px) {
+	@media (min-width: 1024px) {
 		.layout {
 			article {
 				padding-bottom: 0px;
