@@ -327,7 +327,7 @@ export class Markers {
 	 * Split trees into 100 separate buckets (clustering).
 	 */
 	private splitBuckets(trees: ITree[]): ClusterGroup[] {
-		const divider = CLUSTER_GRID[this.map.getZoom() - 1];
+		const divider = CLUSTER_GRID[this.map.getZoom() - 1] ?? CLUSTER_GRID[0];
 
 		const buckets: {
 			[key: string]: ClusterGroup;
