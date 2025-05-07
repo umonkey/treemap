@@ -10,6 +10,7 @@
 
 	import '$lib/styles/variables.css';
 	import '$lib/styles/forms.css';
+	import '$lib/styles/colors.css';
 
 	const { children } = $props();
 
@@ -29,8 +30,6 @@
 <style>
 	:global {
 		:root {
-			--gap: 10px;
-
 			font-size: 15px;
 			font-family: 'Inter Variable', sans-serif;
 		}
