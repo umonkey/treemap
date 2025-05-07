@@ -1,14 +1,15 @@
 <script module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import AddressInput from './AddressInput.svelte';
+	import CanopyInput from './CanopyInput.svelte';
 	import { fn } from '@storybook/test';
 
 	// More on how to set up stories at: https://storybook.js.org/docs/writing-stories
 	const { Story } = defineMeta({
-		title: 'UI/AddressInput',
-		component: AddressInput,
+		title: 'UI/CanopyInput',
+		component: CanopyInput,
 		argTypes: {
-			value: { control: 'text' }
+			value: { control: 'text' },
+			autofocus: { control: 'boolean' }
 		},
 		args: {
 			onChange: fn()
@@ -16,5 +17,4 @@
 	});
 </script>
 
-<!-- More on writing stories with args: https://storybook.js.org/docs/writing-stories/args -->
-<Story name="Primary" args={{ value: 'not set' }} />
+<Story name="Primary" args={{ value: 1.23 }} />

@@ -9,9 +9,12 @@
 		component: Button,
 		argTypes: {
 			label: { control: 'text' },
-			type: { control: 'select', options: ['submit', 'button', 'reset', 'cancel', 'secondary', 'tertiary'] },
+			type: {
+				control: 'select',
+				options: ['submit', 'button', 'reset', 'cancel', 'secondary', 'tertiary']
+			},
 			link: { control: 'text' },
-			disabled: { control: 'boolean' },
+			disabled: { control: 'boolean' }
 		},
 		args: {
 			onClick: fn()
