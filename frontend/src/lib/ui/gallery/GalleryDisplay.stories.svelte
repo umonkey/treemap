@@ -29,8 +29,8 @@
 	}}
 	parameters={{
 		viewport: {
-			defaultViewport: 'fullscreen',
-		},
+			defaultViewport: 'fullscreen'
+		}
 	}}
 />
 
@@ -52,7 +52,7 @@
 	}}
 	parameters={{
 		viewport: {
-			defaultViewport: 'mobile1',
-		},
+			defaultViewport: 'mobile1'
+		}
 	}}
 />
