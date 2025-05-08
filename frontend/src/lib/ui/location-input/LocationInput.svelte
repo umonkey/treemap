@@ -41,7 +41,7 @@
 	$effect(() => (currentValue = value));
 </script>
 
-<div class="input">
+<div class="input form">
 	<label>
 		<span>{label ?? locale.locationLabel()}</span>
 
