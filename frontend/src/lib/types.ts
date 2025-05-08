@@ -199,3 +199,9 @@ export interface IRawError {
 		description: string;
 	};
 }
+
+export interface IGalleryItem {
+	small: string;
+	large: string;
+	label: string;
+}
