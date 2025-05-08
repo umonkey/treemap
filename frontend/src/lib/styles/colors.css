@@ -36,4 +36,8 @@
 :root {
 	background-color: var(--background-color);
 	color: var(--text-color);
+
+	a {
+		color: var(--link-color);
+	}
 }

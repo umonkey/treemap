@@ -40,6 +40,8 @@
 
 <style>
 	.mode-switcher {
+		max-width: var(--narrow-width);
+
 		h2 {
 			margin-top: 40px;
 			font-weight: 400;

@@ -18,6 +18,7 @@
 	/* Block sizes */
 	--header-height: 41px;
 	--bottom-nav-height: 50px;
+	--narrow-width: 600px;
 
 	/* Other sizes */
 	--gap: 10px;

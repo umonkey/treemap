@@ -41,10 +41,6 @@
 			margin: 0;
 		}
 
-		a {
-			color: var(--link-color);
-		}
-
 		p {
 			line-height: 1.5em;
 		}
