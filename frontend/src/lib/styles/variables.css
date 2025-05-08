@@ -1,22 +1,4 @@
 :root {
-	/* Colors */
-	--background-color: #fff;
-	--form-background: #f1f3f5;
-	--form-border: #1083fe;
-	--icon-color-secondary: #6f869f;
-	--link-color: #1083fe;
-	--sep-color: #d4dbe2;
-	--tab-color: #1083fe;
-	--tab-hover-color: #f1f3f5;
-	--text-color-inactive: #42576c;
-	--text-color: #0b0f14;
-	--color-progress-bg: #36464f;
-	--color-progress-fg: #95d237;
-	--color-learn-wrong-bg: #ef5554;
-	--color-learn-wrong-fg: #000;
-	--color-learn-correct-bg: #92d333;
-	--color-learn-correct-fg: #000;
-
 	/* Z-indexes */
 	--z-map: 2;
 	--z-menu: 6;
@@ -36,19 +18,8 @@
 	/* Block sizes */
 	--header-height: 41px;
 	--bottom-nav-height: 50px;
-}
+	--narrow-width: 600px;
 
-@media (prefers-color-scheme: dark) {
-	:root {
-		--background-color: #14191f;
-		--form-background: #1e2936;
-		--form-border: #208bfe;
-		--icon-color-secondary: #788ea5;
-		--link-color: #208bfe;
-		--sep-color: #2e4052;
-		--tab-color: #208bfe;
-		--tab-hover-color: #1e2936;
-		--text-color-inactive: #aebbc9;
-		--text-color: #f1f3f5;
-	}
+	/* Other sizes */
+	--gap: 10px;
 }

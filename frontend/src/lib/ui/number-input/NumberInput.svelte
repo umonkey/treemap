@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { HelpButton } from '$lib/ui';
+	import '$lib/styles/forms.css';
 
 	const {
 		value,
@@ -26,7 +27,7 @@
 	};
 </script>
 
-<div class="input">
+<div class="input form">
 	<label>
 		<span>{label}</span>
 		<div class="group">

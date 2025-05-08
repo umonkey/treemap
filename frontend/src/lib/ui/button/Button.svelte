@@ -1,4 +1,6 @@
 <script lang="ts">
+	import '$lib/styles/colors.css';
+
 	const {
 		label,
 		type = 'submit',

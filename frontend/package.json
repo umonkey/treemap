@@ -13,11 +13,20 @@
 		"format-check": "prettier --check .",
 		"lint": "eslint . --report-unused-disable-directives --max-warnings 0 --color",
 		"test:unit": "vitest",
-		"test": "npm run test:unit -- --run"
+		"test": "npm run test:unit -- --run",
+		"storybook": "storybook dev -p 6006",
+		"build-storybook": "storybook build"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
+		"@chromatic-com/storybook": "^3.2.6",
 		"@eslint/compat": "^1.2.3",
+		"@storybook/addon-essentials": "^8.6.12",
+		"@storybook/addon-svelte-csf": "^5.0.0",
+		"@storybook/blocks": "^8.6.12",
+		"@storybook/svelte": "^8.6.12",
+		"@storybook/sveltekit": "^8.6.12",
+		"@storybook/test": "^8.6.12",
 		"@sveltejs/adapter-auto": "^3.0.0",
 		"@sveltejs/adapter-static": "^3.0.6",
 		"@sveltejs/kit": "^2.9.0",
@@ -27,11 +36,13 @@
 		"@zerodevx/svelte-toast": "^0.9.6",
 		"eslint": "^9.7.0",
 		"eslint-config-prettier": "^9.1.0",
+		"eslint-plugin-storybook": "^0.12.0",
 		"eslint-plugin-svelte": "^2.36.0",
 		"globals": "^15.0.0",
 		"jsdom": "^26.0.0",
 		"prettier": "^3.3.2",
 		"prettier-plugin-svelte": "^3.2.6",
+		"storybook": "^8.6.12",
 		"svelte": "^5.0.0",
 		"svelte-check": "^4.0.0",
 		"typescript": "^5.0.0",
@@ -47,5 +58,10 @@
 		"@types/leaflet": "^1.9.15",
 		"leaflet": "^1.9.4",
 		"mitt": "^3.0.1"
+	},
+	"eslintConfig": {
+		"extends": [
+			"plugin:storybook/recommended"
+		]
 	}
 }

@@ -4,8 +4,9 @@
 	import SignIn from '$lib/components/auth/SignIn.svelte';
 	import { Button, Buttons, CommentInput } from '$lib/ui';
 
-	const { onSubmit } = $props<{
+	const { onSubmit, authenticated } = $props<{
 		onSubmit: (message: string) => void;
+		authenticated?: boolean;
 	}>();
 
 	let message = $state('');
@@ -19,7 +20,7 @@
 	};
 </script>
 
-{#if $isAuthenticated}
+{#if $isAuthenticated || !!authenticated}
 	<p>{locale.commentPrompt()}</p>
 	<div class="form">
 		<CommentInput value={message} onChange={handleChange} />
