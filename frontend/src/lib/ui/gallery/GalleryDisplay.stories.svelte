@@ -3,7 +3,7 @@
 	import GalleryDisplay from './GalleryDisplay.svelte';
 
 	const { Story } = defineMeta({
-		title: 'UI/GalleryDisplay',
+		title: 'UI/Gallery',
 		component: GalleryDisplay,
 		argTypes: {
 			files: { control: 'object' }
