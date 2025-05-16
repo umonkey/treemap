@@ -1,3 +1,8 @@
+//! This is the backend server.
+//!
+//! It first handles the API routes, then the static files,
+//! then the default action which is to serve the index file.
+
 use crate::actions::*;
 use crate::services::*;
 use crate::utils::{get_payload_size, get_server_addr, get_server_port, get_workers};
@@ -83,6 +88,7 @@ pub async fn serve_command() {
             .service(update_tree_location_action)
             .service(update_tree_state_action)
             .service(get_user_action)
+            .service(tree_page_action)
             .service(
                 Files::new("/", "./static")
                     .prefer_utf8(true)
