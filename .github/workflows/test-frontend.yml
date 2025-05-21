@@ -38,3 +38,9 @@ jobs:
       run: |
         cd frontend
         make test
+
+    - name: Run Storybook + Chromatic
+      uses: chromaui/action@latest
+      with:
+        projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+        workingDir: frontend
