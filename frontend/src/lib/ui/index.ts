@@ -8,6 +8,7 @@ export { default as CircumferenceInput } from './circumference-input/Circumferen
 export { default as CommentForm } from './comment-form/CommentForm.svelte';
 export { default as CommentInput } from './comment-input/CommentInput.svelte';
 export { default as FilePicker } from './file-picker/FilePicker.svelte';
+export { default as FileUploader } from './file-uploader/FileUploader.svelte';
 export { default as FilteredChangeList } from './filtered-change-list/FilteredChangeList.svelte';
 export { default as Gallery } from './gallery/Gallery.svelte';
 export { default as GalleryPreview } from './gallery-preview/GalleryPreview.svelte';
@@ -15,6 +16,7 @@ export { default as Header } from './header/Header.svelte';
 export { default as HeightInput } from './height-input/HeightInput.svelte';
 export { default as HelpButton } from './help-button/HelpButton.svelte';
 export { default as Layout } from './layout/Layout.svelte';
+export { default as LazyImage } from './lazy-image/LazyImage.svelte';
 export { default as LeftSidebar } from './left-sidebar/LeftSidebar.svelte';
 export { default as LocationInput } from './location-input/LocationInput.svelte';
 export { default as LocationPicker } from './location-picker/LocationPicker.svelte';
