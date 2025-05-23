@@ -15,7 +15,8 @@
 		NotesInput,
 		SpeciesInput,
 		StateInput,
-		YearInput
+		YearInput,
+		Form
 	} from '$lib/ui';
 
 	const { id } = $props<{
@@ -44,7 +45,7 @@
 {:else if $loadError}
 	<p>{$loadError}</p>
 {:else}
-	<div class="form">
+	<Form>
 		<p>{locale.replaceHint()}</p>
 		<hr />
 
@@ -67,7 +68,7 @@
 		{#if $saveError}
 			<p>{$saveError}</p>
 		{/if}
-	</div>
+	</Form>
 {/if}
 
 <style>

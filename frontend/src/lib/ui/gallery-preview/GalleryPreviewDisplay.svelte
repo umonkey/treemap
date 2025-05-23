@@ -1,6 +1,6 @@
 <script lang="ts">
 	import DefaultImage from '$lib/assets/tree.jpg';
-	import LazyImage from '$lib/components/LazyImage.svelte';
+	import { LazyImage } from '$lib/ui';
 	import { UploadIcon } from '$lib/icons';
 	import { routes } from '$lib/routes';
 

@@ -23,6 +23,9 @@
 		flex-basis: 30px;
 		flex-shrink: 0;
 		flex-grow: 0;
+
+		max-width: 30px;
+
 		background: transparent;
 		border: none;
 		color: var(--icon-color-secondary);

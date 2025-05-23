@@ -10,6 +10,7 @@ pub struct AppState {
     tokens: Arc<TokenService>,
     pub add_comment_handler: Arc<AddCommentHandler>,
     pub add_file_handler: Arc<AddFileHandler>,
+    pub add_photos_handler: Arc<AddPhotosHandler>,
     pub add_training_handler: Arc<AddTrainingHandler>,
     pub add_trees_handler: Arc<AddTreesHandler>,
     pub delete_file_handler: Arc<DeleteFileHandler>,
@@ -52,6 +53,7 @@ pub struct AppState {
     pub update_tree_circumference_handler: Arc<UpdateTreeCircumferenceHandler>,
     pub update_tree_thumbnail_handler: Arc<UpdateTreeThumbnailHandler>,
     pub update_tree_state_handler: Arc<UpdateTreeStateHandler>,
+    pub upload_handler: Arc<UploadHandler>,
 }
 
 impl AppState {
@@ -61,6 +63,7 @@ impl AppState {
             tokens: locator.get::<TokenService>()?,
             add_comment_handler: locator.get::<AddCommentHandler>()?,
             add_file_handler: locator.get::<AddFileHandler>()?,
+            add_photos_handler: locator.get::<AddPhotosHandler>()?,
             add_training_handler: locator.get::<AddTrainingHandler>()?,
             add_trees_handler: locator.get::<AddTreesHandler>()?,
             delete_file_handler: locator.get::<DeleteFileHandler>()?,
@@ -103,6 +106,7 @@ impl AppState {
             update_tree_circumference_handler: locator.get::<UpdateTreeCircumferenceHandler>()?,
             update_tree_thumbnail_handler: locator.get::<UpdateTreeThumbnailHandler>()?,
             update_tree_state_handler: locator.get::<UpdateTreeStateHandler>()?,
+            upload_handler: locator.get::<UploadHandler>()?,
         })
     }
 

@@ -5,3 +5,11 @@
 <div class="buttons">
 	{@render children()}
 </div>
+
+<style>
+	.buttons {
+		gap: var(--gap);
+		display: flex;
+		flex-direction: row;
+	}
+</style>

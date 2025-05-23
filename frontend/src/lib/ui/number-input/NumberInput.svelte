@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { HelpButton } from '$lib/ui';
-	import '$lib/styles/forms.css';
+	import { FormElement } from '$lib/ui';
 
 	const {
 		value,
@@ -27,27 +26,14 @@
 	};
 </script>
 
-<div class="input form">
-	<label>
-		<span>{label}</span>
-		<div class="group">
-			<!-- svelte-ignore a11y_autofocus -->
-			<input class="form" type="number" {value} {placeholder} {autofocus} onchange={handleChange} />
-			{#if help}
-				<HelpButton {help} />
-			{/if}
-		</div>
-	</label>
-
-	{#if hint}
-		<div class="hint">{hint}</div>
-	{/if}
-</div>
-
-<style>
-	.group {
-		display: flex;
-		flex-direction: row;
-		gap: var(--gap);
-	}
-</style>
+<FormElement {label} {hint} {help}>
+	<!-- svelte-ignore a11y_autofocus -->
+	<input
+		class="form-element"
+		type="number"
+		{value}
+		{placeholder}
+		{autofocus}
+		onchange={handleChange}
+	/>
+</FormElement>

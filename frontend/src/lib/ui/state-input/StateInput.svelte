@@ -20,7 +20,7 @@
 	};
 </script>
 
-<div class="input">
+<div class="input form">
 	<label>
 		{#if label}<span>{locale.stateLabel()}</span>{/if}
 		<div class="group">
@@ -41,7 +41,6 @@
 <style>
 	label {
 		display: block;
-		margin-top: calc(2 * var(--gap));
 	}
 
 	span {

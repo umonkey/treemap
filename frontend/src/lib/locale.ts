@@ -530,6 +530,10 @@ class EnglishLocale {
 	public replaceSuccess(): string {
 		return 'The tree was replaced.';
 	}
+
+	public photosAdded(): string {
+		return 'Finished uploading all photos. They will show shortly.';
+	}
 }
 
 class RussianLocale extends EnglishLocale {
@@ -1055,6 +1059,10 @@ class RussianLocale extends EnglishLocale {
 
 	public replaceSuccess(): string {
 		return 'Дерево заменено.';
+	}
+
+	public photosAdded(): string {
+		return 'Загрузка завершена. Фотографии скоро появятся.';
 	}
 }
 

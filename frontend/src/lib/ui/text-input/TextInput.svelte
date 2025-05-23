@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { HelpButton } from '$lib/ui';
-	import '$lib/styles/forms.css';
+	import { FormElement } from '$lib/ui';
 
 	const {
 		value = '',
@@ -30,29 +29,10 @@
 	};
 </script>
 
-<div class="input form">
-	<label>
-		<span>{label}</span>
-
-		{#if multiline}
-			<textarea class="form" {placeholder} onchange={handleChange}>{value}</textarea>
-		{:else}
-			<div class="group">
-				<input class="form" {type} {value} {placeholder} onchange={handleChange} />
-				<HelpButton {help} />
-			</div>
-		{/if}
-	</label>
-
-	{#if hint}
-		<div class="hint">{hint}</div>
+<FormElement {label} {hint} {help}>
+	{#if multiline}
+		<textarea {placeholder} onchange={handleChange}>{value}</textarea>
+	{:else}
+		<input {type} {value} {placeholder} onchange={handleChange} />
 	{/if}
-</div>
-
-<style>
-	.group {
-		display: flex;
-		flex-direction: row;
-		gap: var(--gap);
-	}
-</style>
+</FormElement>

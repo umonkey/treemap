@@ -23,7 +23,7 @@ export const routes = {
 	home: () => '/',
 	learn: () => '/learn',
 	map: () => '/map',
-	mapPreview: (id: string, search: string | undefined | null) =>
+	mapPreview: (id: string, search?: string | undefined | null) =>
 		build('/map', {
 			preview: id,
 			q: search

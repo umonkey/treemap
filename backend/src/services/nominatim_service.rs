@@ -1,6 +1,6 @@
 use crate::services::*;
 use crate::types::*;
-use log::{debug, error};
+use log::{debug, error, info};
 use reqwest::header::{HeaderMap, HeaderValue};
 use serde::Deserialize;
 
@@ -59,7 +59,13 @@ impl NominatimService {
             }
         };
 
-        Ok(json.address.road)
+        if let Some(value) = json.address.road {
+            info!("Resolved {},{} as: {}", lat, lon, value);
+            Ok(Some(value))
+        } else {
+            info!("Could not resolve {},{} to an address.", lat, lon);
+            Ok(None)
+        }
     }
 }
 

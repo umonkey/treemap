@@ -35,10 +35,39 @@
 {/if}
 
 <style>
-	a.tretiary {
-		border-color: rgba(16, 131, 254, 0.2);
-		background-color: transparent;
-		color: var(--form-border);
-		text-decoration: underline;
+	.button {
+		background-color: var(--form-border);
+		border: 1px solid var(--form-border);
+		color: var(--form-background);
+		outline: none;
+		padding: 0.5rem 1rem;
+		cursor: pointer;
+		border-radius: 6px;
+		text-decoration: none;
+		font-family: inherit;
+		font-size: 14px;
+		box-sizing: border-box;
+		display: inline-block;
+
+		&.cancel {
+			background-color: transparent;
+			color: var(--form-border);
+		}
+
+		&.secondary {
+			background-color: transparent;
+			color: var(--form-border);
+		}
+
+		&.tretiary {
+			border-color: rgba(16, 131, 254, 0.2);
+			background-color: transparent;
+			color: var(--form-border);
+			text-decoration: underline;
+		}
+
+		&:disabled {
+			opacity: 0.5;
+		}
 	}
 </style>

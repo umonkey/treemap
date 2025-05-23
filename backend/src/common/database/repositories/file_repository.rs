@@ -1,3 +1,5 @@
+//! Access to the `files` table, where tree photos are stored.
+
 use crate::common::database::queries::*;
 use crate::services::*;
 use crate::types::*;

@@ -31,6 +31,9 @@ preview:
 serve:
 	VITE_API_ROOT=$(API_ROOT) VITE_ENVIRONMENT=development npm run dev -- --host
 
+storybook:
+	VITE_API_ROOT=$(API_ROOT) VITE_ENVIRONMENT=development npm run storybook
+
 test:
 ifneq (,$(FILTER))
 	VITE_API_ROOT="https://api.treemaps.app/" npm run test:unit -- run $(FILTER)
