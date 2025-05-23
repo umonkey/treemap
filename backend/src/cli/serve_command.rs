@@ -87,6 +87,7 @@ pub async fn serve_command() {
             .service(update_tree_diameter_action)
             .service(update_tree_location_action)
             .service(update_tree_state_action)
+            .service(upload_action)
             .service(get_user_action)
             .service(tree_page_action)
             .service(

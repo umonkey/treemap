@@ -68,6 +68,20 @@ CREATE TABLE IF NOT EXISTS files (
 CREATE INDEX IF NOT EXISTS files_tree_id ON files (tree_id);
 
 
+-- File uploads.
+-- This is a temporary table used to store the file upload ticket.
+-- Uploaded files are then used to create photos for trees.
+-- The ticket id is also the file name.
+-- Records older than 7 days are deleted by a cron job.
+CREATE TABLE IF NOT EXISTS files (
+    `id` INT NOT NULL,
+    `added_at` INT NOT NULL,
+    `added_by` INT NOT NULL,
+    `size` INT NOT NULL,
+    PRIMARY KEY(`id`)
+);
+
+
 -- Upload tickets.
 -- Ticket id is also the file name.
 CREATE TABLE IF NOT EXISTS upload_tickets (
