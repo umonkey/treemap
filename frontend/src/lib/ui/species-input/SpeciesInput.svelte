@@ -57,7 +57,7 @@
 	onMount(() => reload());
 </script>
 
-<div class="input">
+<div class="input form">
 	<label class:drop={showOptions}>
 		<span>{locale.speciesLabel()}</span>
 		<input
@@ -99,7 +99,6 @@
 <style>
 	label {
 		display: block;
-		margin-top: calc(2 * var(--gap));
 	}
 
 	span {

@@ -132,6 +132,7 @@ export interface IAddTreesRequest {
 	diameter: number | null;
 	year: number | null;
 	state: string | null;
+	files: string[];
 }
 
 export interface IReplaceTreeRequest {

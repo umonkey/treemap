@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { LazyImage } from '$lib/ui';
-	import { CircumferenceIcon } from '$lib/icons';
+	import { CircumferenceIcon, SpinnerIcon } from '$lib/icons';
 	import FALLBACK from '$lib/assets/tree.jpg';
 
 	const { items, onRetry, small } = $props<{
@@ -20,6 +20,11 @@
 			<div class="img">
 				<LazyImage src={item.src} fallback={FALLBACK} alt="preview" />
 			</div>
+			{#if item.busy}
+				<div class="spinner">
+					<SpinnerIcon />
+				</div>
+			{/if}
 			{#if item.error}
 				<button class="retry" onclick={() => onRetry(idx)}>
 					<CircumferenceIcon />
@@ -65,8 +70,8 @@
 		border-radius: 8px;
 		overflow: hidden;
 
-		&.uploading {
-			opacity: 0.5;
+		&.uploading .img {
+			opacity: 0.2;
 		}
 
 		&.error .img {
@@ -75,6 +80,7 @@
 		}
 	}
 
+	.spinner,
 	.retry {
 		position: absolute;
 		top: 0;
@@ -85,7 +91,9 @@
 
 		box-sizing: border-box;
 		padding: 10px;
+	}
 
+	.retry {
 		background-color: transparent;
 		outline: none;
 		border: none;

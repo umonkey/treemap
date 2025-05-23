@@ -32,16 +32,22 @@ button.button:disabled {
 }
 
 .buttons {
-	margin: var(--gap) 0;
 	gap: var(--gap);
 	display: flex;
 	flex-direction: row;
 }
 
 .form {
+	display: flex;
+	flex-direction: column;
+	gap: calc(2 * var(--gap));
+
+	.form {
+		display: block;
+	}
+
 	label {
 		display: block;
-		margin-top: calc(2 * var(--gap));
 
 		& > span {
 			display: block;
