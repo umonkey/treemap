@@ -7,17 +7,21 @@
 		title: 'UI/FileUploader',
 		component: FileUploader,
 		argTypes: {
-			disabled: { control: 'boolean' }
+			disabled: { control: 'boolean' },
+			small: { control: 'boolean' }
 		},
 		args: {
-			onFileSelected: fn()
+			onChange: fn(),
+			onBusy: fn()
 		}
 	});
 </script>
 
+<Story name="Primary" />
+
 <Story
-	name="Primary"
+	name="Small"
 	args={{
-		value: 'no comment'
+		small: true
 	}}
 />

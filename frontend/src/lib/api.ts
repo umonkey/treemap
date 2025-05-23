@@ -23,7 +23,8 @@ import type {
 	ITreeDefaults,
 	ITreeFile,
 	ITreeList,
-	ITreeUpdatePayload
+	ITreeUpdatePayload,
+	IUploadResponse
 } from '$lib/types';
 import { Response } from '$lib/types_response';
 import { get } from 'svelte/store';
@@ -323,6 +324,10 @@ export class ApiClient {
 		});
 	}
 
+	/**
+	 * This is deprecated.
+	 * Please use uploadSingleFile for now.
+	 **/
 	public async uploadFile(tree: string, file: File): Promise<IResponse<void>> {
 		const headers: HeadersInit = {
 			'Content-Type': 'application/json',
@@ -333,6 +338,25 @@ export class ApiClient {
 		const body = new Blob([buffer], { type: file.type });
 
 		return await this.request('POST', `v1/trees/${tree}/files`, {
+			body,
+			headers
+		});
+	}
+
+	/**
+	 * This is how you upload all files.
+	 * The response is the file id, which is then used for adding photos to trees.
+	 */
+	public async uploadSingleFile(file: File): Promise<IResponse<IUploadResponse>> {
+		const headers: HeadersInit = {
+			'Content-Type': 'application/json',
+			...this.getAuthHeaders()
+		};
+
+		const buffer = await file.arrayBuffer();
+		const body = new Blob([buffer], { type: file.type });
+
+		return await this.request('POST', `v1/upload`, {
 			body,
 			headers
 		});

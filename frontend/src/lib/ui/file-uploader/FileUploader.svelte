@@ -1,14 +1,22 @@
 <script lang="ts">
 	import { CameraIcon } from '$lib/icons';
-	import { LazyImage } from '$lib/ui';
 	import { load } from './hooks';
-	import FALLBACK from '$lib/assets/tree.jpg';
+	import { FileUploaderDisplay } from '$lib/ui';
 
-	const { input, files, handleChange } = load();
+	const { onBusy, onChange, small } = $props<{
+		onChange: (files: string[]) => void;
+		onBusy: (busy: boolean) => void;
+		small?: boolean;
+	}>();
+
+	const { input, items, handleChange, handleRetry } = load({
+		onBusy,
+		onChange
+	});
 </script>
 
-<div class="uploader">
-	<label class="item button">
+<div class="uploader" class:small={!!small}>
+	<label>
 		<CameraIcon />
 
 		<input
@@ -20,11 +28,14 @@
 		/>
 	</label>
 
-	{#each $files as file}
-		<div class="item preview">
-			<LazyImage src={URL.createObjectURL(file)} fallback={FALLBACK} alt="preview" />
-		</div>
-	{/each}
+	<FileUploaderDisplay
+		items={$items.map((item) => ({
+			src: URL.createObjectURL(item.file),
+			busy: item.uploading,
+			error: item.error
+		}))}
+		onRetry={handleRetry}
+	/>
 
 	<div class="filler"></div>
 </div>
@@ -35,22 +46,33 @@
 		flex-direction: row;
 		gap: 10px;
 		justify-content: normal;
+
+		height: 100px;
+
+		/* Testing mobile UI in Storybook */
+		&.small {
+			height: 50px;
+		}
 	}
 
-	.item {
-		flex-shrink: 0;
-		flex-grow: 0;
-		flex-basis: 100px;
+	label {
+		height: 100%;
 		aspect-ratio: 1;
-		box-sizing: border-box;
-		border-radius: 8px;
-		overflow: hidden;
-	}
 
-	.button {
+		margin: 0;
+		padding: 0;
+
 		background-color: #444;
 		padding: 10px;
 		cursor: pointer;
+		border-radius: 8px;
+		box-sizing: border-box;
+
+		input {
+			visibility: hidden;
+			width: 0;
+			height: 0;
+		}
 	}
 
 	.filler {
@@ -58,15 +80,9 @@
 		flex-grow: 1;
 	}
 
-	input {
-		visibility: hidden;
-		width: 0;
-		height: 0;
-	}
-
 	@media (max-width: 1023px) {
-		.item {
-			flex-basis: 50px;
+		.uploader {
+			height: 50px;
 		}
 	}
 </style>

@@ -205,3 +205,11 @@ export interface IGalleryItem {
 	large: string;
 	label: string;
 }
+
+/**
+ * File upload response.
+ * The id is used for creating new photos.
+ */
+export interface IUploadResponse {
+	id: string;
+}
