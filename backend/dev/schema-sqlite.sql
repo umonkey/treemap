@@ -73,7 +73,7 @@ CREATE INDEX IF NOT EXISTS files_tree_id ON files (tree_id);
 -- Uploaded files are then used to create photos for trees.
 -- The ticket id is also the file name.
 -- Records older than 7 days are deleted by a cron job.
-CREATE TABLE IF NOT EXISTS files (
+CREATE TABLE IF NOT EXISTS uploads (
     `id` INT NOT NULL,
     `added_at` INT NOT NULL,
     `added_by` INT NOT NULL,
