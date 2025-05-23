@@ -6,7 +6,7 @@
 
 	import { hooks } from './hooks';
 	import { locale } from '$lib/locale';
-	import { FileUploader } from '$lib/ui';
+	import { Form, FileUploader } from '$lib/ui';
 
 	import {
 		Button,
@@ -53,7 +53,7 @@
 {#if $loading}
 	<!-- loading ... -->
 {:else}
-	<div class="form">
+	<Form>
 		<LocationInput
 			value={$location}
 			label={locale.addConfirmLocation()}
@@ -83,5 +83,5 @@
 				disabled={$saving || $uploading}
 			/>
 		</Buttons>
-	</div>
+	</Form>
 {/if}

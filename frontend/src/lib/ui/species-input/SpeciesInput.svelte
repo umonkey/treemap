@@ -10,11 +10,16 @@
 	import { locale } from '$lib/locale';
 	import type { ISpecies } from '$lib/types';
 	import { onMount } from 'svelte';
+	import { FormElement } from '$lib/ui';
 
 	const { value, onChange } = $props<{
 		value: string;
 		onChange: (value: string) => void;
 	}>();
+
+	// This is the editable input value.
+	// We change it on autocomplete clicks, etc.
+	let currentValue = $state<string>(value);
 
 	const { data: suggested, reload } = loadSuggestedSpecies();
 
@@ -32,13 +37,17 @@
 		});
 	};
 
-	const handleOptionClick = (selectedValue: string) => {
+	// This is called when the user clicks an autocomplete suggestion.
+	const handleOptionClick = (v: string) => {
 		showOptions = false;
-		onChange(selectedValue);
+		currentValue = v;
+		onChange(v);
 	};
 
-	const handleSuggestionClick = (sug: string) => {
-		onChange(sug);
+	const handleSuggestionClick = (v: string) => {
+		showOptions = false;
+		currentValue = v;
+		onChange(v);
 	};
 
 	const handleFocusOut = () => {
@@ -55,35 +64,38 @@
 	};
 
 	onMount(() => reload());
+
+	$effect(() => {
+		currentValue = value;
+	});
 </script>
 
-<div class="input form">
+<FormElement label={locale.speciesLabel()} hint={locale.speciesHint()}>
 	<label class:drop={showOptions}>
-		<span>{locale.speciesLabel()}</span>
 		<input
 			type="text"
 			autocomplete="off"
-			{value}
+			value={currentValue}
 			placeholder={locale.speciesPrompt()}
 			oninput={handleInput}
 			onfocusout={handleFocusOut}
 			onchange={handleChange}
 		/>
-
-		{#if showOptions}
-			<ul class="options" aria-label="suggestions">
-				{#each options as option}
-					<!-- svelte-ignore a11y_click_events_have_key_events -->
-					<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-					<li onclick={() => handleOptionClick(option.name)}>
-						{option.name} <small>~ {option.local}</small>
-					</li>
-				{/each}
-			</ul>
-		{/if}
 	</label>
 
-	{#if $suggested}
+	{#if showOptions && options.length > 0}
+		<ul class="options" aria-label="suggestions">
+			{#each options as option}
+				<!-- svelte-ignore a11y_click_events_have_key_events -->
+				<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+				<li onclick={() => handleOptionClick(option.name)}>
+					{option.name} <small>~ {option.local}</small>
+				</li>
+			{/each}
+		</ul>
+	{/if}
+
+	{#if $suggested && $suggested.length > 0}
 		<ul class="suggested" aria-label="history">
 			{#each $suggested as option}
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -92,18 +104,11 @@
 			{/each}
 		</ul>
 	{/if}
-
-	<div class="hint">{locale.speciesHint()}</div>
-</div>
+</FormElement>
 
 <style>
 	label {
 		display: block;
-	}
-
-	span {
-		display: block;
-		margin-bottom: var(--gap);
 	}
 
 	input {
@@ -124,13 +129,6 @@
 		border-bottom-left-radius: 0;
 		border-bottom-right-radius: 0;
 		border-bottom: none;
-	}
-
-	.hint {
-		color: var(--text-color-inactive);
-		font-size: 0.85em;
-		line-height: 125%;
-		margin-top: var(--gap);
 	}
 
 	.options {

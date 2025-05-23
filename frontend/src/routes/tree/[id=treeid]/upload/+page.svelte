@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
 	import AuthWrapper from '$lib/components/auth/AuthWrapper.svelte';
-	import { Button, Buttons, NarrowPage, FileUploader } from '$lib/ui';
+	import { Button, Buttons, NarrowPage, Form, FileUploader } from '$lib/ui';
 	import { UploadForm } from '$lib/forms';
 	import { load } from './hooks';
 
@@ -14,7 +14,7 @@
 
 <NarrowPage title={locale.photoTitle()}>
 	<AuthWrapper>
-		<div class="form">
+		<Form>
 			<p>{locale.photoIntro()}</p>
 
 			<FileUploader onBusy={handleBusy} onChange={handleChange} />
@@ -27,7 +27,7 @@
 					disabled={!$canSubmit}
 				/>
 			</Buttons>
-		</div>
+		</Form>
 
 		<UploadForm id={tree.id} />
 	</AuthWrapper>

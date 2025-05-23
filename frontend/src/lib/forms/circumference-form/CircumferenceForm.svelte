@@ -1,6 +1,6 @@
 <script lang="ts">
 	import AuthWrapper from '$lib/components/auth/AuthWrapper.svelte';
-	import { CircumferenceInput, Button, Buttons, FilteredChangeList } from '$lib/ui';
+	import { CircumferenceInput, Button, Buttons, Form, FilteredChangeList } from '$lib/ui';
 	import { locale } from '$lib/locale';
 	import { editor } from './hooks';
 
@@ -18,14 +18,14 @@
 	{:else if $loadError}
 		<p>{$loadError}</p>
 	{:else}
-		<form class="form" onsubmit={save}>
+		<Form onSubmit={save}>
 			<CircumferenceInput value={$value} autofocus onChange={handleChange} />
 
 			<Buttons>
 				<Button label={locale.editSave()} type="submit" onClick={save} disabled={$busy} />
 				<Button label={locale.editCancel()} type="cancel" onClick={close} />
 			</Buttons>
-		</form>
+		</Form>
 
 		{#if $saveError}
 			<p>{$saveError}</p>

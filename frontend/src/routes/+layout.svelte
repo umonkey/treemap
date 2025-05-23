@@ -9,7 +9,6 @@
 	import LocationTracker from '$lib/components/map/LocationTracker.svelte';
 
 	import '$lib/styles/variables.css';
-	import '$lib/styles/forms.css';
 	import '$lib/styles/colors.css';
 
 	const { children } = $props();
