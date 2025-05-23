@@ -343,6 +343,19 @@ export class ApiClient {
 		});
 	}
 
+	// Add previously uploaded files as photos to a tree.
+	public async addPhotos(tree_id: string, files: string[]): Promise<IResponse<void>> {
+		const headers: HeadersInit = {
+			'Content-Type': 'application/json',
+			...this.getAuthHeaders()
+		};
+
+		return await this.request('POST', `v1/trees/${tree_id}/photos`, {
+			body: JSON.stringify({ files }),
+			headers
+		});
+	}
+
 	/**
 	 * This is how you upload all files.
 	 * The response is the file id, which is then used for adding photos to trees.
