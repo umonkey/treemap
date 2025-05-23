@@ -56,6 +56,8 @@ impl AddPhotoHandler {
             error!("Could not add file {}: {:?}", file_id, e);
         })?;
 
+        self.uploads.delete(&source).await?;
+
         info!(
             "File {} successfully processed, added to tree {}.",
             source.id, tree_id

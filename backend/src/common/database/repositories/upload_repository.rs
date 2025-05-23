@@ -31,6 +31,12 @@ impl UploadRepository {
         self.db.add_record(query).await?;
         Ok(())
     }
+
+    pub async fn delete(&self, file: &UploadRecord) -> Result<()> {
+        let query = DeleteQuery::new(TABLE).with_condition("id", Value::from(file.id as i64));
+
+        self.db.delete(query).await
+    }
 }
 
 impl Locatable for UploadRepository {
