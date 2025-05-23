@@ -64,6 +64,13 @@ impl QueueConsumer {
                 self.update_tree_address_handler.handle(message.id).await?;
             }
 
+            Ok(Some(QueueCommand::AddPhoto(message))) => {
+                debug!(
+                    "TODO: add file {} to tree {}",
+                    message.file_id, message.tree_id
+                );
+            }
+
             Ok(None) => {
                 debug!("Unknown message: {}", msg);
             }
