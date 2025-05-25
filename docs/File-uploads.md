@@ -1,0 +1,15 @@
+# File Uploads
+
+This file describes how file uploads are working, step by step.
+
+## Workflow
+
+(1) The user uploads file bodies by sending them using `POST /v1/upload` endpoint.
+The file is saved in local file system and recorded in the [[uploads table|Database-structure#uploads]].
+The files are not connected to any tree at this point.
+This allows us to upload the files in the background, while the user still fills in new tree details.
+
+(2) When a tree is added, or updated, an array of upload ids is provided to the related API, e.g. `/v1/trees`.
+The ids are not saved anywhere directly, but sent to the queue for processing.
+
+(3) The queue consumer reads source files by id, creates all required file versions (e.g., small and large), and saves them in the additional file storage.
