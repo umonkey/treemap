@@ -8,15 +8,9 @@ import L from 'leaflet';
 export const addLocateMeCircle = (map: L.Map) => {
 	console.debug('[map] Adding my location display.');
 
-	let circle: L.Layer | null = null;
 	let dot: L.Layer | null = null;
 
 	const unsubscribe = locationStore.subscribe((pos) => {
-		if (circle) {
-			map.removeLayer(circle);
-			circle = null;
-		}
-
 		if (dot) {
 			map.removeLayer(dot);
 			dot = null;
@@ -27,14 +21,6 @@ export const addLocateMeCircle = (map: L.Map) => {
 		}
 
 		console.debug(`[map] Location changed to ${pos.lat},${pos.lng}`);
-
-		circle = L.circle(pos, {
-			radius: pos.accuracy,
-			color: '#136AEC',
-			fillColor: '#136AEC',
-			fillOpacity: 0.15,
-			weight: 0
-		}).addTo(map);
 
 		dot = L.circleMarker(pos, {
 			weight: 2,

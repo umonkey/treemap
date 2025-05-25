@@ -137,7 +137,7 @@
 			cursor: pointer;
 
 			color: #fff;
-            outline: none;
+			outline: none;
 
 			:global(svg) {
 				width: 30px;
