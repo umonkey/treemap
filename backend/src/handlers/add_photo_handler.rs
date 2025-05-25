@@ -6,7 +6,7 @@ use crate::common::database::repositories::*;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::*;
-use log::{error, info};
+use log::{debug, error, info};
 use std::sync::Arc;
 
 const SMALL_SIZE: u32 = 1000;
@@ -17,6 +17,7 @@ pub struct AddPhotoHandler {
     uploads: Arc<UploadRepository>,
     storage: Arc<dyn FileStorageInterface>,
     thumbnailer: Arc<ThumbnailerService>,
+    trees: Arc<TreeRepository>,
 }
 
 impl AddPhotoHandler {
@@ -58,10 +59,28 @@ impl AddPhotoHandler {
 
         self.uploads.delete(&source).await?;
 
+        self.update_thumbnail(tree_id, small_id, source.added_by)
+            .await?;
+
         info!(
             "File {} successfully processed, added to tree {}.",
             source.id, tree_id
         );
+
+        Ok(())
+    }
+
+    async fn update_thumbnail(&self, tree_id: u64, file_id: u64, user_id: u64) -> Result<()> {
+        if let Some(tree) = self.trees.get(tree_id).await? {
+            if tree.thumbnail_id.is_some() {
+                debug!("Tree {tree_id} has a thumbnail, not updating.");
+                return Ok(());
+            }
+
+            self.trees
+                .update_thumbnail(tree_id, file_id, user_id)
+                .await?;
+        }
 
         Ok(())
     }
@@ -89,6 +108,7 @@ impl Locatable for AddPhotoHandler {
             uploads: locator.get::<UploadRepository>()?,
             storage: locator.get::<FileStorageSelector>()?.driver(),
             thumbnailer: locator.get::<ThumbnailerService>()?,
+            trees: locator.get::<TreeRepository>()?,
         })
     }
 }
