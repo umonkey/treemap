@@ -1,12 +1,12 @@
 <script module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import GalleryDisplay from './GalleryDisplay.svelte';
+	import { GallerySlides } from '$lib/ui';
 
 	const { Story } = defineMeta({
-		title: 'UI/Gallery',
-		component: GalleryDisplay,
+		title: 'UI/GallerySlides',
+		component: GallerySlides,
 		argTypes: {
-			files: { control: 'object' }
+			slides: { control: 'object' }
 		}
 	});
 </script>
@@ -14,7 +14,7 @@
 <Story
 	name="Primary"
 	args={{
-		items: [
+		slides: [
 			{
 				small: 'https://placecats.com/neo/500/500',
 				large: 'https://placecats.com/neo/500/500',
@@ -37,7 +37,7 @@
 <Story
 	name="Mobile"
 	args={{
-		items: [
+		slides: [
 			{
 				small: 'https://placecats.com/neo/500/500',
 				large: 'https://placecats.com/neo/500/500',
