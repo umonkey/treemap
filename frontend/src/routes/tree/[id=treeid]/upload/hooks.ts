@@ -14,6 +14,8 @@ export const load = (treeId: string) => {
 	// Set when the form has files and can be submitted.
 	const canSubmit = writable<boolean>(false);
 
+	const hasFiles = writable<boolean>(false);
+
 	const handleBusy = (value: boolean) => {
 		busy.set(value);
 		canSubmit.set(!value && get(uploads).length > 0);
@@ -22,6 +24,7 @@ export const load = (treeId: string) => {
 	const handleChange = (value: string[]) => {
 		uploads.set(value);
 		canSubmit.set(value.length > 0 && !get(busy));
+		hasFiles.set(value.length > 0);
 	};
 
 	const handleSubmit = () => {
@@ -43,5 +46,5 @@ export const load = (treeId: string) => {
 			});
 	};
 
-	return { canSubmit, handleBusy, handleChange, handleSubmit };
+	return { canSubmit, handleBusy, handleChange, handleSubmit, hasFiles };
 };

@@ -404,7 +404,7 @@ class EnglishLocale {
 	}
 
 	public photoIntro(): string {
-		return 'Here you can upload multiple photos of this tree.';
+		return 'Please click the camera icon to take all the photos, then upload them.';
 	}
 
 	public photoTitle(): string {
@@ -918,7 +918,7 @@ class RussianLocale extends EnglishLocale {
 	}
 
 	public photoIntro(): string {
-		return 'Здесь можно загрузить фотографии дерева.';
+		return 'Используй значок камеры, чтобы сделать нужные фотографии, потом загрузи их.';
 	}
 
 	public photoTitle(): string {
@@ -1436,7 +1436,7 @@ class ArmenianLocale extends EnglishLocale {
 	}
 
 	public photoIntro(): string {
-		return 'Այստեղ Դուք կարող եք վերբեռնել այս ծառի բազմաթիվ լուսանկարներ:';
+		return 'Խնդրում ենք սեղմել տեսախցիկի պատկերակին, նկարեք բոլոր լուսանկարները, այնուհետև վերբեռնեք դրանք։';
 	}
 
 	public photoTitle(): string {
