@@ -1,7 +1,5 @@
 <script lang="ts">
-	import SignIn from '$lib/components/auth/SignIn.svelte';
-	import SignOut from '$lib/components/auth/SignOut.svelte';
-	import { Header, NarrowPage } from '$lib/ui';
+	import { Header, NarrowPage, SignInButton, SignOutButton } from '$lib/ui';
 	import { loadMe } from '$lib/hooks';
 	import { locale } from '$lib/locale';
 
@@ -24,7 +22,7 @@
 	{:else if $statusCode === 401}
 		<div class="container signedOut">
 			<p>{locale.profileSignInPrompt()}</p>
-			<SignIn />
+			<SignInButton />
 		</div>
 	{:else if $error}
 		<p>{$error.description}</p>
@@ -42,7 +40,7 @@
 			</div>
 
 			<div class="actions">
-				<SignOut />
+				<SignOutButton />
 			</div>
 		</div>
 	{/if}

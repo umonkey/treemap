@@ -1,7 +1,6 @@
 <script lang="ts">
-	import AuthWrapper from '$lib/components/auth/AuthWrapper.svelte';
 	import Tabs from '$lib/components/updates/Tabs.svelte';
-	import { NarrowPage } from '$lib/ui';
+	import { NarrowPage, AuthWrapper } from '$lib/ui';
 </script>
 
 <NarrowPage title="Updates" nopadding>

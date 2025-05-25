@@ -3,8 +3,7 @@
 	import { getTree, treeStore } from '$lib/stores/treeStore';
 	import type { ITree } from '$lib/types';
 	import { formatCentimeters, formatState } from '$lib/utils/trees';
-	import AuthWrapper from '$lib/components/auth/AuthWrapper.svelte';
-	import { CircumferenceEditor, NarrowPage, Form, StateEditor } from '$lib/ui';
+	import { CircumferenceEditor, NarrowPage, Form, StateEditor, AuthWrapper } from '$lib/ui';
 	import { CircumferenceIcon, EditIcon, HelpIcon, StateIcon } from '$lib/icons';
 
 	const { data } = $props();

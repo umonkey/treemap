@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
-	import AuthWrapper from '$lib/components/auth/AuthWrapper.svelte';
-	import { Button, Buttons, NarrowPage, Form, FileUploader } from '$lib/ui';
+	import { Button, Buttons, NarrowPage, Form, FileUploader, AuthWrapper } from '$lib/ui';
 	import { UploadForm } from '$lib/forms';
 	import { load } from './hooks';
 

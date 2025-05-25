@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
 	import { MoveForm } from '$lib/forms';
-	import { NarrowPage } from '$lib/ui';
-	import AuthWrapper from '$lib/components/auth/AuthWrapper.svelte';
+	import { NarrowPage, AuthWrapper } from '$lib/ui';
 
 	const { data } = $props();
 </script>

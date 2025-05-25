@@ -1,6 +1,5 @@
 <script lang="ts">
-	import AuthWrapper from '$lib/components/auth/AuthWrapper.svelte';
-	import { Button, Buttons, TreeSheet, FilteredChangeList } from '$lib/ui';
+	import { Button, Buttons, TreeSheet, FilteredChangeList, AuthWrapper } from '$lib/ui';
 	import { locale } from '$lib/locale';
 	import { stateUpdater } from '$lib/actions';
 

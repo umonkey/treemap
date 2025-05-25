@@ -1,4 +1,5 @@
 export { default as AddressInput } from './address-input/AddressInput.svelte';
+export { default as AuthWrapper } from './auth-wrapper/AuthWrapper.svelte';
 export { default as Button } from './button/Button.svelte';
 export { default as Buttons } from './buttons/Buttons.svelte';
 export { default as CanopyInput } from './canopy-input/CanopyInput.svelte';
@@ -32,6 +33,8 @@ export { default as NarrowPage } from './narrow-page/NarrowPage.svelte';
 export { default as NotesInput } from './notes-input/NotesInput.svelte';
 export { default as NumberInput } from './number-input/NumberInput.svelte';
 export { default as RightSidebar } from './right-sidebar/RightSidebar.svelte';
+export { default as SignInButton } from './sign-in-button/SignInButton.svelte';
+export { default as SignOutButton } from './sign-out-button/SignOutButton.svelte';
 export { default as SpeciesInput } from './species-input/SpeciesInput.svelte';
 export { default as StateEditor } from './state-editor/StateEditor.svelte';
 export { default as StateInput } from './state-input/StateInput.svelte';

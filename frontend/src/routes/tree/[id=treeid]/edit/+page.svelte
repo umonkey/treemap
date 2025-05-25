@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { EditForm } from '$lib/forms';
-	import { NarrowPage } from '$lib/ui';
+	import { NarrowPage, AuthWrapper } from '$lib/ui';
 	import { locale } from '$lib/locale';
-	import AuthWrapper from '$lib/components/auth/AuthWrapper.svelte';
 
 	const { data } = $props();
 </script>

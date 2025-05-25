@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
 	import { isAuthenticated } from '$lib/stores/authStore';
-	import SignIn from '$lib/components/auth/SignIn.svelte';
-	import { Button, Buttons, CommentInput, Form } from '$lib/ui';
+	import { Button, Buttons, CommentInput, Form, SignInButton } from '$lib/ui';
 
 	const { onSubmit, authenticated } = $props<{
 		onSubmit: (message: string) => void;
@@ -37,5 +36,5 @@
 	</Form>
 {:else}
 	<p>{locale.commentSignIn()}</p>
-	<SignIn />
+	<SignInButton />
 {/if}

@@ -1,6 +1,5 @@
 <script lang="ts">
-	import AuthWrapper from '$lib/components/auth/AuthWrapper.svelte';
-	import { CanopyInput, Button, Buttons, Form, FilteredChangeList } from '$lib/ui';
+	import { CanopyInput, Button, Buttons, Form, FilteredChangeList, AuthWrapper } from '$lib/ui';
 	import { locale } from '$lib/locale';
 	import { editor } from './hooks';
 

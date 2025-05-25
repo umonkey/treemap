@@ -1,7 +1,6 @@
 <script lang="ts">
-	import AuthWrapper from '$lib/components/auth/AuthWrapper.svelte';
 	import { AddForm } from '$lib/forms';
-	import { Header, NarrowPage } from '$lib/ui';
+	import { Header, NarrowPage, AuthWrapper } from '$lib/ui';
 	import { locale } from '$lib/locale';
 
 	const { data } = $props<{
