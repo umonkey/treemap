@@ -1,3 +1,5 @@
+//! Access to the comments table.
+
 use crate::common::database::queries::*;
 use crate::services::*;
 use crate::types::*;
@@ -29,6 +31,11 @@ impl CommentRepository {
     pub async fn find_by_tree(&self, tree_id: u64) -> Result<Vec<CommentRecord>> {
         let query = SelectQuery::new(TABLE).with_condition("tree_id", Value::from(tree_id as i64));
         self.query_multiple(query).await
+    }
+
+    pub async fn count_by_tree(&self, tree_id: u64) -> Result<u64> {
+        let query = CountQuery::new(TABLE).with_condition("tree_id", Value::from(tree_id as i64));
+        self.db.count(query).await
     }
 
     async fn query_multiple(&self, query: SelectQuery) -> Result<Vec<CommentRecord>> {

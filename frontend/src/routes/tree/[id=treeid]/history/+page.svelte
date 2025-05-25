@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { formatSpecies } from '$lib/utils/trees';
 	import { loadTreeHistory } from '$lib/hooks';
-	import Tabs from '$lib/components/tree/Tabs.svelte';
 	import Title from '$lib/components/tree/Title.svelte';
-	import { ChangeList, NarrowPage, TreeContextMenu } from '$lib/ui';
+	import { ChangeList, NarrowPage, TreeTabs, TreeContextMenu } from '$lib/ui';
 
 	const { data } = $props();
 	const { loading, tree, changes, error, reload } = loadTreeHistory();
@@ -20,7 +19,7 @@
 		<p>Error loading tree: {$error.description}</p>
 	{:else}
 		<Title title={formatSpecies($tree.species)} address={$tree.address} />
-		<Tabs tree={$tree.id} active="history" />
+		<TreeTabs tree={$tree.id} active="history" comment_count={$tree?.comment_count ?? 0} />
 		<TreeContextMenu id={$tree.id} />
 
 		<div class="padded">

@@ -41,4 +41,5 @@ export { default as StateInput } from './state-input/StateInput.svelte';
 export { default as TextInput } from './text-input/TextInput.svelte';
 export { default as TreeContextMenu } from './tree-context-menu/TreeContextMenu.svelte';
 export { default as TreeSheet } from './tree-sheet/TreeSheet.svelte';
+export { default as TreeTabs } from './tree-tabs/TreeTabs.svelte';
 export { default as YearInput } from './year-input/YearInput.svelte';

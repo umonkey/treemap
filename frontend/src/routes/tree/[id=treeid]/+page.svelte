@@ -7,9 +7,8 @@
 	import Description from '$lib/components/tree/Description.svelte';
 	import Links from '$lib/components/tree/Links.svelte';
 	import Properties from '$lib/components/tree/Properties.svelte';
-	import Tabs from '$lib/components/tree/Tabs.svelte';
 	import Title from '$lib/components/tree/Title.svelte';
-	import { Gallery, TreeContextMenu, NarrowPage } from '$lib/ui';
+	import { Gallery, TreeContextMenu, TreeTabs, NarrowPage } from '$lib/ui';
 	import { onMount } from 'svelte';
 
 	const { data } = $props();
@@ -24,7 +23,7 @@
 
 <NarrowPage title={locale.treeShortTitle()} nopadding>
 	<Title title={formatSpecies(tree.species)} address={tree.address} />
-	<Tabs tree={tree.id} active="details" />
+	<TreeTabs tree={tree.id} active="details" comment_count={tree.comment_count} />
 	<Gallery id={tree.id} />
 	<Actions {tree} />
 	<Properties {tree} />

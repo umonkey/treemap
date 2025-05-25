@@ -27,7 +27,8 @@
 <style>
 	.tabs {
 		border-bottom: solid 1px var(--sep-color);
-		font-size: 16px;
+		font-size: 14px;
+		font-weight: 400;
 
 		ul {
 			list-style-type: none;
@@ -37,10 +38,9 @@
 			flex-direction: row;
 
 			li {
-				line-height: 40px;
+				line-height: 30px;
 				cursor: pointer;
 				color: var(--text-color-inactive);
-				font-weight: 600;
 				padding: 0 calc(1.5 * var(--gap));
 
 				a {

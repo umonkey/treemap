@@ -6,9 +6,8 @@
 	import { formatSpecies } from '$lib/utils/trees';
 	import { toast } from '@zerodevx/svelte-toast';
 
-	import { CommentForm, NarrowPage, TreeContextMenu } from '$lib/ui';
+	import { CommentForm, NarrowPage, TreeContextMenu, TreeTabs } from '$lib/ui';
 	import Comment from '$lib/components/tree/Comment.svelte';
-	import Tabs from '$lib/components/tree/Tabs.svelte';
 	import Title from '$lib/components/tree/Title.svelte';
 
 	const { data } = $props();
@@ -36,7 +35,7 @@
 
 <NarrowPage title={formatSpecies(tree.species)} nopadding>
 	<Title title={formatSpecies(tree.species)} address={tree.address} />
-	<Tabs tree={tree.id} active="comments" />
+	<TreeTabs tree={tree.id} active="comments" comment_count={tree.comment_count} />
 	<TreeContextMenu id={tree.id} />
 
 	<div class="container">

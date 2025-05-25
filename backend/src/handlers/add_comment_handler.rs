@@ -8,6 +8,7 @@ use std::sync::Arc;
 pub struct AddCommentHandler {
     comments: Arc<CommentRepository>,
     users: Arc<UserRepository>,
+    trees: Arc<TreeRepository>,
 }
 
 impl AddCommentHandler {
@@ -27,6 +28,11 @@ impl AddCommentHandler {
 
         self.users.increment_comment_count(req.user_id).await?;
 
+        let comments = self.comments.count_by_tree(req.tree_id).await?;
+        self.trees
+            .update_comment_count(req.tree_id, comments)
+            .await?;
+
         info!("Comment {} added to tree {}", id, req.tree_id);
 
         Ok(())
@@ -38,6 +44,7 @@ impl Locatable for AddCommentHandler {
         Ok(Self {
             comments: locator.get::<CommentRepository>()?,
             users: locator.get::<UserRepository>()?,
+            trees: locator.get::<TreeRepository>()?,
         })
     }
 }

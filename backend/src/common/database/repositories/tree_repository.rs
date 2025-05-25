@@ -3,7 +3,7 @@ use crate::common::database::repositories::*;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::get_timestamp;
-use log::error;
+use log::{debug, error};
 use rusqlite::types::Value;
 use std::sync::Arc;
 
@@ -240,6 +240,21 @@ impl TreeRepository {
 
     pub async fn increment_likes(&self, tree_id: u64, value: i64) -> Result<()> {
         self.increment(tree_id, "like_count", value).await
+    }
+
+    pub async fn update_comment_count(&self, tree_id: u64, count: u64) -> Result<()> {
+        let query = UpdateQuery::new(TABLE)
+            .with_condition("id", Value::from(tree_id as i64))
+            .with_value("comment_count", Value::from(count as i64));
+
+        self.db.update(query).await.map_err(|e| {
+            error!("Error updating comment count for a tree: {}", e);
+            e
+        })?;
+
+        debug!("Comment count for tree {tree_id} set to {count}");
+
+        Ok(())
     }
 
     async fn increment(&self, tree_id: u64, key: &str, value: i64) -> Result<()> {

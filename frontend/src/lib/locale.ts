@@ -215,7 +215,11 @@ class EnglishLocale {
 		return 'Map';
 	}
 
-	public treeTabsComments(): string {
+	public treeTabsComments(count: number): string {
+		if (count > 0) {
+			return `Comments (${count})`;
+		}
+
 		return 'Comments';
 	}
 
@@ -745,7 +749,11 @@ class RussianLocale extends EnglishLocale {
 		return 'Карта';
 	}
 
-	public treeTabsComments(): string {
+	public treeTabsComments(count: number): string {
+		if (count > 0) {
+			return `Комменты (${count})`;
+		}
+
 		return 'Комменты';
 	}
 
@@ -1275,8 +1283,12 @@ class ArmenianLocale extends EnglishLocale {
 		return 'Քարտեզ';
 	}
 
-	public treeTabsComments(): string {
-		return 'Մեկնաբանություններ';
+	public treeTabsComments(count: number): string {
+		if (count > 0) {
+			return `Զրույց (${count})`;
+		}
+
+		return 'Զրույց';
 	}
 
 	public treeTabsChanges(): string {
