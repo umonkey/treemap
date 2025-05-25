@@ -4,7 +4,7 @@
 
 	const { Story } = defineMeta({
 		title: 'UI/SignInButton',
-		component: SignInButton,
+		component: SignInButton
 	});
 </script>
 

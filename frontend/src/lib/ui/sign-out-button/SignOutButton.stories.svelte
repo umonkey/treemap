@@ -4,7 +4,7 @@
 
 	const { Story } = defineMeta({
 		title: 'UI/SignOutButton',
-		component: SignOutButton,
+		component: SignOutButton
 	});
 </script>
 

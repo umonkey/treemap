@@ -25,6 +25,7 @@
 			bind:this={$input}
 			onchange={handleChange}
 			capture="environment"
+			multiple
 		/>
 	</label>
 
