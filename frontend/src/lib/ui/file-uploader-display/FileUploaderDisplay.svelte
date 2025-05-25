@@ -99,4 +99,14 @@
 		border: none;
 		color: #fff;
 	}
+
+	@media (max-width: 1023px) {
+		.items {
+			height: 50px;
+
+			.item {
+				flex-basis: 50px;
+			}
+		}
+	}
 </style>
