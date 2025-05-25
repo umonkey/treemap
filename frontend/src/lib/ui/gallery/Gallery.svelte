@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { hooks } from './hooks';
-	import GalleryDisplay from './GalleryDisplay.svelte';
+	import { GallerySlides } from '$lib/ui';
 
 	const { id } = $props<{ id: string }>();
 	const { loading, error, slides, reload } = hooks();
@@ -14,7 +14,7 @@
 	{:else if $error}
 		<p>{$error}</p>
 	{:else}
-		<GalleryDisplay items={$slides} />
+		<GallerySlides slides={$slides} />
 	{/if}
 </div>
 
