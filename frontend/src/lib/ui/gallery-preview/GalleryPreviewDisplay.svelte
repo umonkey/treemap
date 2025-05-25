@@ -1,6 +1,6 @@
 <script lang="ts">
 	import DefaultImage from '$lib/assets/tree.jpg';
-	import LazyImage from '$lib/components/LazyImage.svelte';
+	import { LazyImage } from '$lib/ui';
 	import { UploadIcon } from '$lib/icons';
 	import { routes } from '$lib/routes';
 
@@ -80,7 +80,7 @@
 
 				&.upload {
 					background-color: rgba(0, 0, 0, 0.25);
-					padding: 5px;
+					padding: 20px;
 					box-sizing: border-box;
 				}
 			}

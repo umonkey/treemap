@@ -132,6 +132,7 @@ export interface IAddTreesRequest {
 	diameter: number | null;
 	year: number | null;
 	state: string | null;
+	files: string[];
 }
 
 export interface IReplaceTreeRequest {
@@ -204,4 +205,12 @@ export interface IGalleryItem {
 	small: string;
 	large: string;
 	label: string;
+}
+
+/**
+ * File upload response.
+ * The id is used for creating new photos.
+ */
+export interface IUploadResponse {
+	id: string;
 }

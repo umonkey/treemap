@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { apiClient } from '$lib/api';
-	import { Button } from '$lib/ui';
+	import { Button, Buttons, Form } from '$lib/ui';
 	import { HelpIcon } from '$lib/icons';
 	import { locale } from '$lib/locale';
 	import { addTrees } from '$lib/stores/treeStore';
@@ -35,8 +35,9 @@
 	};
 </script>
 
-<form class="form" onsubmit={onSave}>
+<Form onSubmit={onSave}>
 	<label for="control">{locale.measureTrunk()}</label>
+
 	<div class="row">
 		<!-- svelte-ignore a11y_autofocus -->
 		<input id="control" type="number" bind:value autofocus />
@@ -44,40 +45,9 @@
 			><HelpIcon /></a
 		>
 	</div>
-	<div class="actions">
+
+	<Buttons>
 		<Button label={locale.editSave()} type="submit" onClick={onSave} />
 		<Button label={locale.editCancel()} type="cancel" onClick={onClose} />
-	</div>
-</form>
-
-<style>
-	.form {
-		display: flex;
-		flex-direction: column;
-		gap: var(--gap);
-
-		.row {
-			display: flex;
-			flex-direction: row;
-			gap: var(--gap);
-			align-items: center;
-		}
-
-		label {
-			display: block;
-			padding: 0;
-			margin: 0;
-			line-height: 38px;
-		}
-
-		:global(svg) {
-			width: 30px;
-			height: 30px;
-			display: block;
-		}
-	}
-
-	a.icon {
-		color: inherit;
-	}
-</style>
+	</Buttons>
+</Form>

@@ -10,7 +10,8 @@
 		NotesInput,
 		StateInput,
 		YearInput,
-		SpeciesInput
+		SpeciesInput,
+		Form
 	} from '$lib/ui';
 	import { hooks } from './hooks';
 
@@ -39,7 +40,7 @@
 	$effect(() => reload(id));
 </script>
 
-<div class="form">
+<Form>
 	{#if $loading}
 		<!-- Loading... -->
 	{:else}
@@ -61,4 +62,4 @@
 			<Button type="cancel" label={locale.editCancel()} onClick={handleCancel} disabled={$saving} />
 		</Buttons>
 	{/if}
-</div>
+</Form>

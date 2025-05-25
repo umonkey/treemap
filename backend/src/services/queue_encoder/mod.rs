@@ -45,6 +45,29 @@ impl QueueCommand {
                 )))
             }
 
+            "AddPhoto" => {
+                let tree_id = params["tree_id"]
+                    .as_u64()
+                    .ok_or("missing tree_id")
+                    .map_err(|e| {
+                        error!("Error extracting tree id: {}, payload={}", e, json);
+                        Error::Queue
+                    })?;
+
+                let file_id = params["file_id"]
+                    .as_u64()
+                    .ok_or("missing file_id")
+                    .map_err(|e| {
+                        error!("Error extracting file id: {}, payload={}", e, json);
+                        Error::Queue
+                    })?;
+
+                Ok(Some(QueueCommand::AddPhoto(AddPhotoMessage {
+                    tree_id,
+                    file_id,
+                })))
+            }
+
             _ => {
                 error!("Could not parse message: {}", json);
                 Ok(None)

@@ -1,0 +1,88 @@
+<script lang="ts">
+	import { CameraIcon } from '$lib/icons';
+	import { load } from './hooks';
+	import { FileUploaderDisplay } from '$lib/ui';
+
+	const { onBusy, onChange, small } = $props<{
+		onChange: (files: string[]) => void;
+		onBusy: (busy: boolean) => void;
+		small?: boolean;
+	}>();
+
+	const { input, items, handleChange, handleRetry } = load({
+		onBusy,
+		onChange
+	});
+</script>
+
+<div class="uploader" class:small={!!small}>
+	<label>
+		<CameraIcon />
+
+		<input
+			type="file"
+			accept="image/jpeg"
+			bind:this={$input}
+			onchange={handleChange}
+			capture="environment"
+		/>
+	</label>
+
+	<FileUploaderDisplay
+		items={$items.map((item) => ({
+			src: URL.createObjectURL(item.file),
+			busy: item.uploading,
+			error: item.error
+		}))}
+		onRetry={handleRetry}
+	/>
+
+	<div class="filler"></div>
+</div>
+
+<style>
+	.uploader {
+		display: flex;
+		flex-direction: row;
+		gap: 10px;
+		justify-content: normal;
+
+		height: 100px;
+
+		/* Testing mobile UI in Storybook */
+		&.small {
+			height: 50px;
+		}
+	}
+
+	label {
+		height: 100%;
+		aspect-ratio: 1;
+
+		margin: 0;
+		padding: 0;
+
+		background-color: #444;
+		padding: 10px;
+		cursor: pointer;
+		border-radius: 8px;
+		box-sizing: border-box;
+
+		input {
+			visibility: hidden;
+			width: 0;
+			height: 0;
+		}
+	}
+
+	.filler {
+		flex-shrink: 1;
+		flex-grow: 1;
+	}
+
+	@media (max-width: 1023px) {
+		.uploader {
+			height: 50px;
+		}
+	}
+</style>

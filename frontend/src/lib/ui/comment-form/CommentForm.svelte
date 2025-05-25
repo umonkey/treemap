@@ -2,7 +2,7 @@
 	import { locale } from '$lib/locale';
 	import { isAuthenticated } from '$lib/stores/authStore';
 	import SignIn from '$lib/components/auth/SignIn.svelte';
-	import { Button, Buttons, CommentInput } from '$lib/ui';
+	import { Button, Buttons, CommentInput, Form } from '$lib/ui';
 
 	const { onSubmit, authenticated } = $props<{
 		onSubmit: (message: string) => void;
@@ -22,13 +22,19 @@
 
 {#if $isAuthenticated || !!authenticated}
 	<p>{locale.commentPrompt()}</p>
-	<div class="form">
+
+	<Form>
 		<CommentInput value={message} onChange={handleChange} />
 
 		<Buttons>
-			<Button onClick={onButtonClicked} label={locale.commentSubmit()} disabled={!message} />
+			<Button
+				type="submit"
+				onClick={onButtonClicked}
+				label={locale.commentSubmit()}
+				disabled={!message}
+			/>
 		</Buttons>
-	</div>
+	</Form>
 {:else}
 	<p>{locale.commentSignIn()}</p>
 	<SignIn />

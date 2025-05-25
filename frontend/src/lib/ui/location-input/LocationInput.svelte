@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { LocationPicker } from '$lib/ui';
+	import { LocationPicker, FormElement } from '$lib/ui';
 	import { MapIcon } from '$lib/icons';
 	import { locale } from '$lib/locale';
 	import type { ILatLng } from '$lib/types';
@@ -41,24 +41,16 @@
 	$effect(() => (currentValue = value));
 </script>
 
-<div class="input form">
-	<label>
-		<span>{label ?? locale.locationLabel()}</span>
+<FormElement label={label ?? locale.locationLabel()} {hint}>
+	<div class="group">
+		<input type="text" value={formatLocation(currentValue)} readonly={true} />
+		<button type="button" onclick={toggleMap}><MapIcon /></button>
+	</div>
 
-		<div class="group">
-			<input type="text" value={formatLocation(currentValue)} readonly={true} />
-			<button type="button" onclick={toggleMap}><MapIcon /></button>
-		</div>
-
-		{#if showMap}
-			<LocationPicker center={value} pin={value} onMove={handleMove} />
-		{/if}
-	</label>
-
-	{#if hint}
-		<div class="hint">{hint}</div>
+	{#if showMap}
+		<LocationPicker center={value} pin={value} onMove={handleMove} />
 	{/if}
-</div>
+</FormElement>
 
 <style>
 	.group {

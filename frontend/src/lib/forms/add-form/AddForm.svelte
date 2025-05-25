@@ -6,6 +6,7 @@
 
 	import { hooks } from './hooks';
 	import { locale } from '$lib/locale';
+	import { Form, FileUploader } from '$lib/ui';
 
 	import {
 		Button,
@@ -40,7 +41,10 @@
 		handleYearChange,
 		handleConfirm,
 		handleCancel,
-		saving
+		handleUploading,
+		handleUploaded,
+		saving,
+		uploading
 	} = hooks();
 
 	$effect(() => reload(lat, lng));
@@ -49,7 +53,7 @@
 {#if $loading}
 	<!-- loading ... -->
 {:else}
-	<div class="form">
+	<Form>
 		<LocationInput
 			value={$location}
 			label={locale.addConfirmLocation()}
@@ -63,19 +67,21 @@
 		<YearInput value={$tree.year} onChange={handleYearChange} />
 		<NotesInput value={$tree.notes} onChange={handleNotesChange} />
 
+		<FileUploader onChange={handleUploaded} onBusy={handleUploading} />
+
 		<Buttons>
 			<Button
 				type="submit"
 				label={locale.addConfirmButton()}
 				onClick={handleConfirm}
-				disabled={$saving}
+				disabled={$saving || $uploading}
 			/>
 			<Button
 				type="cancel"
 				label={locale.addCancelButton()}
 				onClick={handleCancel}
-				disabled={$saving}
+				disabled={$saving || $uploading}
 			/>
 		</Buttons>
-	</div>
+	</Form>
 {/if}
