@@ -1,6 +1,5 @@
-use serde::{Deserialize, Serialize};
-
 use crate::types::LatLon;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct AddTreeRequest {
@@ -14,4 +13,6 @@ pub struct AddTreeRequest {
     pub user_id: u64,
     pub year: Option<i64>,
     pub address: Option<String>,
+    #[serde(default)]
+    pub files: Vec<String>,
 }

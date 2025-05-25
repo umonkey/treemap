@@ -21,6 +21,8 @@ struct RequestPayload {
     pub state: String,
     pub year: Option<i64>,
     pub address: Option<String>,
+    #[serde(default)]
+    pub files: Vec<String>,
 }
 
 #[post("/v1/trees")]
@@ -43,6 +45,7 @@ pub async fn add_trees_action(
             state: payload.state.clone(),
             user_id,
             year: payload.year,
+            files: payload.files.clone(),
             address: payload.address.clone(),
         })
         .await?;
