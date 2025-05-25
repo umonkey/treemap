@@ -2,6 +2,7 @@
 	import { routes } from '$lib/routes';
 	import { fileAttribution } from '$lib/utils/strings';
 	import { hooks } from './hooks';
+	import { Buttons, Button } from '$lib/ui';
 
 	const { id } = $props<{ id: string }>();
 	const { loading, tree, thumbnail, error, reload, handleMakeThumbnail, handleDelete } = hooks();
@@ -24,20 +25,20 @@
 				</a>
 				<div class="props">
 					<div class="by">{fileAttribution(file)}</div>
-					<div class="actions">
-						<button
-							class="button"
-							type="button"
+
+					<Buttons>
+						<Button
 							disabled={file.small_id === $thumbnail}
-							onclick={() => handleMakeThumbnail(file)}>Make thumbnail</button
-						>
-						<button
-							class="button"
-							type="button"
+							onClick={() => handleMakeThumbnail(file)}
+							label="Make thumbnail"
+						/>
+
+						<Button
 							disabled={file.small_id === $thumbnail}
-							onclick={() => handleDelete(file.id)}>Delete</button
-						>
-					</div>
+							onClick={() => handleDelete(file.id)}
+							label="Delete"
+						/>
+					</Buttons>
 				</div>
 			</div>
 		{/each}
