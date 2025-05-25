@@ -80,7 +80,7 @@
 
 				&.upload {
 					background-color: rgba(0, 0, 0, 0.25);
-					padding: 5px;
+					padding: 20px;
 					box-sizing: border-box;
 				}
 			}
