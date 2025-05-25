@@ -13,3 +13,5 @@ This allows us to upload the files in the background, while the user still fills
 The ids are not saved anywhere directly, but sent to the queue for processing.
 
 (3) The queue consumer reads source files by id, creates all required file versions (e.g., small and large), and saves them in the additional file storage.
+The original file record is then deleted from the `uploads` table, but a record with the same id is created in the `files` table.
+This is how the source file is moved from uploads to photos.
