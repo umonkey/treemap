@@ -1,0 +1,37 @@
+# Send changes to the master branch to Chromatic.
+
+name: Chromatic
+
+on:
+  push:
+    branches-ignore:
+      - master
+    paths: 'frontend/**'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Cache node_modules
+      id: node-cache
+      uses: actions/cache@v4
+      with:
+        path: '**/node_modules'
+        key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
+
+    - name: Install new dependencies
+      run: |
+        cd frontend
+        npm ci
+
+    - name: Run Storybook + Chromatic
+      uses: chromaui/action@latest
+      with:
+        projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+        workingDir: frontend
