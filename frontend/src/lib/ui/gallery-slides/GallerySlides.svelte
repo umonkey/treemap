@@ -137,6 +137,7 @@
 			cursor: pointer;
 
 			color: #fff;
+            outline: none;
 
 			:global(svg) {
 				width: 30px;
@@ -147,7 +148,7 @@
 
 		.left {
 			left: 0;
-			right: 33%;
+			right: 66%;
 			justify-content: left;
 		}
 
