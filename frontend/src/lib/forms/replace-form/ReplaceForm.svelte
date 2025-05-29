@@ -11,6 +11,7 @@
 		Buttons,
 		CanopyInput,
 		CircumferenceInput,
+		FileUploader,
 		HeightInput,
 		NotesInput,
 		SpeciesInput,
@@ -35,6 +36,9 @@
 		currentState,
 		year,
 		notes,
+		handleUploading,
+		handleUploaded,
+		uploading,
 		save,
 		close
 	} = editor(id);
@@ -60,9 +64,21 @@
 		<YearInput value={$year} onChange={(value: number) => year.set(value)} />
 		<NotesInput value={$notes} onChange={(value: string) => notes.set(value)} />
 
+		<FileUploader onChange={handleUploaded} onBusy={handleUploading} />
+
 		<Buttons>
-			<Button type="submit" label={locale.addConfirmButton()} onClick={save} disabled={$busy} />
-			<Button type="cancel" label={locale.addCancelButton()} onClick={close} disabled={$busy} />
+			<Button
+				type="submit"
+				label={locale.addConfirmButton()}
+				onClick={save}
+				disabled={$busy || $uploading}
+			/>
+			<Button
+				type="cancel"
+				label={locale.addCancelButton()}
+				onClick={close}
+				disabled={$busy || $uploading}
+			/>
 		</Buttons>
 
 		{#if $saveError}

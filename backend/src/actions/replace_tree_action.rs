@@ -19,6 +19,8 @@ struct RequestPayload {
     pub diameter: Option<f64>,
     pub state: String,
     pub year: Option<i64>,
+    #[serde(default)]
+    pub files: Vec<String>,
 }
 
 #[put("/v1/trees/{id}/replace")]
@@ -40,6 +42,7 @@ pub async fn replace_tree_action(
             diameter: payload.diameter,
             state: payload.state.clone(),
             year: payload.year,
+            files: payload.files.clone(),
         })
         .await?;
 

@@ -19,6 +19,9 @@ export const editor = (tree_id: string) => {
 	const saveError = writable<string | undefined>(undefined);
 	const tree = writable<ITree | undefined>(undefined);
 
+	const uploading = writable<boolean>(false);
+	const uploads = writable<string[]>([]);
+
 	const species = writable<string>('');
 	const height = writable<number>(0);
 	const diameter = writable<number>(0);
@@ -53,6 +56,16 @@ export const editor = (tree_id: string) => {
 			});
 	};
 
+	// Upload in progress, set the busy flag to prevent form submit.
+	const handleUploading = (value: boolean) => {
+		uploading.set(value);
+	};
+
+	// Some files finished uploading.
+	const handleUploaded = (value: string[]) => {
+		uploads.set(value);
+	};
+
 	const save = async () => {
 		busy.set(true);
 		saveError.set(undefined);
@@ -64,7 +77,8 @@ export const editor = (tree_id: string) => {
 			diameter: get(diameter),
 			state: get(currentState),
 			year: get(year),
-			notes: get(notes)
+			notes: get(notes),
+			files: get(uploads)
 		} as IReplaceTreeRequest;
 
 		await apiClient
@@ -75,9 +89,9 @@ export const editor = (tree_id: string) => {
 					toast.push(locale.replaceSuccess());
 
 					if (res.data.trees.length === 2) {
-						goto(routes.treeHistory(res.data.trees[1].id));
+						goto(routes.treeDetails(res.data.trees[1].id));
 					} else {
-						goto(routes.treeHistory(tree_id));
+						goto(routes.treeDetails(tree_id));
 					}
 				} else if (res.error) {
 					saveError.set(res.error.description);
@@ -107,6 +121,9 @@ export const editor = (tree_id: string) => {
 		year,
 		notes,
 		reload,
+		handleUploading,
+		handleUploaded,
+		uploading,
 		save,
 		close
 	};

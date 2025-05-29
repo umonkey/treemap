@@ -11,4 +11,5 @@ pub struct ReplaceTreeRequest {
     pub species: String,
     pub state: String,
     pub year: Option<i64>,
+    pub files: Vec<String>,
 }
