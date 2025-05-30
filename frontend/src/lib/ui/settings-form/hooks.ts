@@ -2,6 +2,7 @@ import type { IMeResponse } from '$lib/types';
 import { apiClient } from '$lib/api';
 import { get, writable } from 'svelte/store';
 import { routes, goto } from '$lib/routes';
+import { toast } from '@zerodevx/svelte-toast';
 
 export const hooks = () => {
 	const loading = writable<boolean>(true);
@@ -45,6 +46,7 @@ export const hooks = () => {
 
 				if (status === 202) {
 					console.info('Profile info updated.');
+					toast.push(locale.settingsUpdated());
 					goto(routes.profile());
 				} else if (e) {
 					saveError.set(e.description);

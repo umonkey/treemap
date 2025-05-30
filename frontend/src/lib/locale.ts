@@ -550,6 +550,10 @@ class EnglishLocale {
 	public settingsTitle(): string {
 		return 'Settings';
 	}
+
+	public settingsUpdated(): string {
+		return 'Settings updated.';
+	}
 }
 
 class RussianLocale extends EnglishLocale {
@@ -1092,6 +1096,10 @@ class RussianLocale extends EnglishLocale {
 	public settingsTitle(): string {
 		return 'Настройки';
 	}
+
+	public settingsUpdated(): string {
+		return 'Настройки обновлены.';
+	}
 }
 
 class ArmenianLocale extends EnglishLocale {
@@ -1525,6 +1533,10 @@ class ArmenianLocale extends EnglishLocale {
 
 	public settingsTitle(): string {
 		return 'Կարգավորումներ';
+	}
+
+	public settingsUpdated(): string {
+		return 'Կարգավորումները թարմացված են։';
 	}
 }
 
