@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { CameraIcon } from '$lib/icons';
+	import { CameraIcon, GalleryIcon } from '$lib/icons';
 	import { load } from './hooks';
 	import { FileUploaderDisplay } from '$lib/ui';
 
@@ -18,6 +18,19 @@
 <div class="uploader" class:small={!!small}>
 	<label>
 		<CameraIcon />
+
+		<input
+			type="file"
+			accept="image/jpeg"
+			bind:this={$input}
+			onchange={handleChange}
+			capture="environment"
+			multiple
+		/>
+	</label>
+
+	<label class="gallery">
+		<GalleryIcon />
 
 		<input
 			type="file"
@@ -84,6 +97,12 @@
 	@media (max-width: 1023px) {
 		.uploader {
 			height: 50px;
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.gallery {
+			display: none;
 		}
 	}
 </style>

@@ -12,6 +12,7 @@ export { default as DiameterIcon } from './DiameterIcon.svelte';
 export { default as DotsIcon } from './DotsIcon.svelte';
 export { default as EditIcon } from './EditIcon.svelte';
 export { default as ExpandIcon } from './ExpandIcon.svelte';
+export { default as GalleryIcon } from './GalleryIcon.svelte';
 export { default as HeartIcon } from './HeartIcon.svelte';
 export { default as HeartSolidIcon } from './HeartSolidIcon.svelte';
 export { default as HeightIcon } from './HeightIcon.svelte';
