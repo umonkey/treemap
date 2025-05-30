@@ -11,7 +11,7 @@
 		single?: boolean;
 	}>();
 
-	const { input, items, handleChange, handleRetry } = load({
+	const { items, handleChange, handleRetry } = load({
 		onBusy,
 		onChange
 	});
@@ -28,7 +28,6 @@
 		<input
 			type="file"
 			accept="image/jpeg"
-			bind:this={$input}
 			onchange={handleChange}
 			capture="environment"
 			multiple={!single}
@@ -38,14 +37,7 @@
 	<label class="gallery">
 		<GalleryIcon />
 
-		<input
-			type="file"
-			accept="image/jpeg"
-			bind:this={$input}
-			onchange={handleChange}
-			capture="environment"
-			multiple
-		/>
+		<input type="file" accept="image/jpeg" onchange={handleChange} multiple={!single} />
 	</label>
 
 	<FileUploaderDisplay

@@ -26,9 +26,6 @@ export const load = ({
 	onBusy: (value: boolean) => void;
 	onChange: (ids: string[]) => void;
 }) => {
-	// The hidden file picker component.
-	const input = writable<HTMLInputElement | null>(null);
-
 	// This is files received from the file picker.
 	// We use them to create thumbnails, and to upload data to the backend.
 	// We aren't reporting this to the parent component.
@@ -143,5 +140,5 @@ export const load = ({
 			});
 	};
 
-	return { input, items, uploads, handleChange, handleRetry };
+	return { items, uploads, handleChange, handleRetry };
 };
