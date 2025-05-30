@@ -25,3 +25,11 @@
 		small: true
 	}}
 />
+
+<Story
+	name="Label"
+	args={{
+		label: 'Update profile picture:',
+		single: true
+	}}
+/>

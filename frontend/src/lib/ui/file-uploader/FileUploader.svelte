@@ -3,10 +3,12 @@
 	import { load } from './hooks';
 	import { FileUploaderDisplay } from '$lib/ui';
 
-	const { onBusy, onChange, small } = $props<{
+	const { label, onBusy, onChange, small, single } = $props<{
+		label?: string;
 		onChange: (files: string[]) => void;
 		onBusy: (busy: boolean) => void;
 		small?: boolean;
+		single?: boolean;
 	}>();
 
 	const { input, items, handleChange, handleRetry } = load({
@@ -14,6 +16,10 @@
 		onChange
 	});
 </script>
+
+{#if label}
+	<div class="label">{label}</div>
+{/if}
 
 <div class="uploader" class:small={!!small}>
 	<label>
@@ -25,7 +31,7 @@
 			bind:this={$input}
 			onchange={handleChange}
 			capture="environment"
-			multiple
+			multiple={!single}
 		/>
 	</label>
 
@@ -55,6 +61,11 @@
 </div>
 
 <style>
+	.label {
+		margin: 0 0 var(--gap) 0;
+		opacity: 0.75;
+	}
+
 	.uploader {
 		display: flex;
 		flex-direction: row;

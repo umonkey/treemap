@@ -18,6 +18,7 @@ pub struct QueueConsumer {
     resize_image_handler: Arc<ResizeImageHandler>,
     update_tree_address_handler: Arc<UpdateTreeAddressHandler>,
     add_photo_handler: Arc<AddPhotoHandler>,
+    update_userpic_handler: Arc<UpdateUserpicHandler>,
 }
 
 impl QueueConsumer {
@@ -71,6 +72,12 @@ impl QueueConsumer {
                     .await?;
             }
 
+            Ok(Some(QueueCommand::UpdateUserpic(message))) => {
+                self.update_userpic_handler
+                    .handle(message.user_id, message.file_id)
+                    .await?;
+            }
+
             Ok(None) => {
                 debug!("Unknown message: {}", msg);
             }
@@ -91,6 +98,7 @@ impl Locatable for QueueConsumer {
             resize_image_handler: locator.get::<ResizeImageHandler>()?,
             update_tree_address_handler: locator.get::<UpdateTreeAddressHandler>()?,
             add_photo_handler: locator.get::<AddPhotoHandler>()?,
+            update_userpic_handler: locator.get::<UpdateUserpicHandler>()?,
         })
     }
 }

@@ -51,7 +51,7 @@
 				</a>
 			</li>
 			<li>
-				<a href="/profile">
+				<a href={routes.profile()}>
 					<span class="icon"><UserIcon /></span>
 					<span>{locale.sideProfile()}</span>
 				</a>

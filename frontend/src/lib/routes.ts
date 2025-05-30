@@ -30,6 +30,8 @@ export const routes = {
 		}),
 	modeMapper: () => '/mode/mapper',
 	newTrees: () => '/updates/new',
+	profile: () => '/profile',
+	settings: () => '/settings',
 	search: '/search',
 	searchAddress: (query: string) => `/map?q=addr:"${query}"`,
 	searchQuery: (query: string) => `/map?q=${query}`,

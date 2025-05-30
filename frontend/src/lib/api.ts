@@ -127,6 +127,23 @@ export class ApiClient {
 		});
 	}
 
+	// Update user's display name and profile picture.
+	public async updateSettings({
+		name,
+		picture
+	}: {
+		name: string;
+		picture: string | null;
+	}): Promise<IResponse<void>> {
+		return await this.request('PUT', `v1/settings`, {
+			body: JSON.stringify({ name, picture }),
+			headers: {
+				'Content-Type': 'application/json',
+				...this.getAuthHeaders()
+			}
+		});
+	}
+
 	public async getMeLikes(): Promise<IResponse<ILikeList>> {
 		return await this.request('GET', 'v1/me/likes', {
 			headers: {

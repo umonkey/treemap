@@ -65,6 +65,32 @@ impl UserRepository {
         Ok(())
     }
 
+    pub async fn update_name(&self, user_id: u64, name: &str) -> Result<()> {
+        let query = UpdateQuery::new(TABLE)
+            .with_condition("id", Value::from(user_id as i64))
+            .with_value("name", Value::from(name.to_string()));
+
+        self.db.update(query).await.map_err(|e| {
+            error!("Error updating a user: {}", e);
+            e
+        })?;
+
+        Ok(())
+    }
+
+    pub async fn update_userpic(&self, user_id: u64, value: &str) -> Result<()> {
+        let query = UpdateQuery::new(TABLE)
+            .with_condition("id", Value::from(user_id as i64))
+            .with_value("picture", Value::from(value.to_string()));
+
+        self.db.update(query).await.map_err(|e| {
+            error!("Error updating a user: {}", e);
+            e
+        })?;
+
+        Ok(())
+    }
+
     pub async fn increment_tree_count(&self, user_id: u64) -> Result<()> {
         self.increment(user_id, "trees_count", 1).await
     }

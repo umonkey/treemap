@@ -542,6 +542,14 @@ class EnglishLocale {
 	public photosAdded(): string {
 		return 'Finished uploading all photos. They will show shortly.';
 	}
+
+	public settingsButton(): string {
+		return 'Settings';
+	}
+
+	public settingsTitle(): string {
+		return 'Settings';
+	}
 }
 
 class RussianLocale extends EnglishLocale {
@@ -1076,6 +1084,14 @@ class RussianLocale extends EnglishLocale {
 	public photosAdded(): string {
 		return 'Загрузка завершена. Фотографии скоро появятся.';
 	}
+
+	public settingsButton(): string {
+		return 'Настройки';
+	}
+
+	public settingsTitle(): string {
+		return 'Настройки';
+	}
 }
 
 class ArmenianLocale extends EnglishLocale {
@@ -1501,6 +1517,14 @@ class ArmenianLocale extends EnglishLocale {
 
 	public centimeters(value: string): string {
 		return `${value} սմ`;
+	}
+
+	public settingsButton(): string {
+		return 'Կարգեր';
+	}
+
+	public settingsTitle(): string {
+		return 'Կարգավորումներ';
 	}
 }
 

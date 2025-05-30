@@ -68,6 +68,29 @@ impl QueueCommand {
                 })))
             }
 
+            "UpdateUserpic" => {
+                let user_id = params["user_id"]
+                    .as_u64()
+                    .ok_or("missing user_id")
+                    .map_err(|e| {
+                        error!("Error extracting user id: {}, payload={}", e, json);
+                        Error::Queue
+                    })?;
+
+                let file_id = params["file_id"]
+                    .as_u64()
+                    .ok_or("missing file_id")
+                    .map_err(|e| {
+                        error!("Error extracting file id: {}, payload={}", e, json);
+                        Error::Queue
+                    })?;
+
+                Ok(Some(QueueCommand::UpdateUserpic(UpdateUserpicMessage {
+                    user_id,
+                    file_id,
+                })))
+            }
+
             _ => {
                 error!("Could not parse message: {}", json);
                 Ok(None)

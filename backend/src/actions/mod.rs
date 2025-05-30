@@ -1,5 +1,7 @@
 mod add_comment_action;
 mod add_file_action;
+mod update_settings_action;
+pub use update_settings_action::*;
 mod add_photos_action;
 mod add_training_action;
 mod add_trees_action;
