@@ -32,6 +32,8 @@ export { default as ModeSwitcher } from './mode-switcher/ModeSwitcher.svelte';
 export { default as NarrowPage } from './narrow-page/NarrowPage.svelte';
 export { default as NotesInput } from './notes-input/NotesInput.svelte';
 export { default as NumberInput } from './number-input/NumberInput.svelte';
+export { default as ProfileHeader } from './profile-header/ProfileHeader.svelte';
+export { default as ProfilePage } from './profile-page/ProfilePage.svelte';
 export { default as RightSidebar } from './right-sidebar/RightSidebar.svelte';
 export { default as SignInButton } from './sign-in-button/SignInButton.svelte';
 export { default as SignOutButton } from './sign-out-button/SignOutButton.svelte';
