@@ -211,6 +211,10 @@ class EnglishLocale {
 		return 'Details';
 	}
 
+	public treeTabsStreetView(): string {
+		return '360°';
+	}
+
 	public treeTabsMap(): string {
 		return 'Map';
 	}

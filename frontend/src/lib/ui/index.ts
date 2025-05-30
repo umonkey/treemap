@@ -38,6 +38,8 @@ export { default as SignOutButton } from './sign-out-button/SignOutButton.svelte
 export { default as SpeciesInput } from './species-input/SpeciesInput.svelte';
 export { default as StateEditor } from './state-editor/StateEditor.svelte';
 export { default as StateInput } from './state-input/StateInput.svelte';
+export { default as StreetView } from './street-view/StreetView.svelte';
+export { default as StreetViewPage } from './street-view-page/StreetViewPage.svelte';
 export { default as TextInput } from './text-input/TextInput.svelte';
 export { default as TreeContextMenu } from './tree-context-menu/TreeContextMenu.svelte';
 export { default as TreeSheet } from './tree-sheet/TreeSheet.svelte';

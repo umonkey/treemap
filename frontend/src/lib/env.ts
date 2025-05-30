@@ -8,3 +8,7 @@ export const GTM_ID = import.meta.env.VITE_GTM_ID ?? 'G-CEJ6L6RMWG';
 export const ENVIRONMENT = import.meta.env.VITE_ENVIRONMENT ?? 'development';
 
 export const OSM_AUTH_CLIENT_ID = 'mCL7JIK8ky2_7g6vC9t2cI-jUh1nsA1nK5bQ2AA2VK8';
+
+// Goole Maps Embed API key.
+// Restricted to yerevam.treemaps.app
+export const MAPS_KEY = 'AIzaSyBatIJw8enkS9rXnssEsFjSCuATGOxE6ec';

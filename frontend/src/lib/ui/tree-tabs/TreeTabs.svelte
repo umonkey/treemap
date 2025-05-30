@@ -16,6 +16,11 @@
 			url: routes.treeDetails(tree)
 		},
 		{
+			id: '360',
+			title: locale.treeTabsStreetView(),
+			url: routes.treeStreetView(tree)
+		},
+		{
 			id: 'comments',
 			title: locale.treeTabsComments(comment_count ?? 0),
 			url: routes.treeComments(tree)
