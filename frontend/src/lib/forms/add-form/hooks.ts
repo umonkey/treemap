@@ -155,7 +155,7 @@ export const hooks = () => {
 
 		apiClient.addTree(req).then((res) => {
 			if (res.status >= 200 && res.status < 400 && res.data) {
-				toast.push('Tree tree.');
+				toast.push('Tree added.');
 
 				if (get(isMapperMode)) {
 					goto(routes.mapPreview(res.data.trees[0].id));
