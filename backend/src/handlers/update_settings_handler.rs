@@ -23,12 +23,12 @@ impl UpdateSettingsHandler {
         if let Some(file_id) = &req.picture {
             let file_id = file_id.parse::<u64>().map_err(|_| Error::BadImage)?;
 
-            let message = UpdateUserpicMessage {
-                user_id: req.user_id,
-                file_id,
-            };
-
-            self.queue.push(&message.encode()).await?;
+            self.queue
+                .push(QueueCommand::UpdateUserpic(UpdateUserpicMessage {
+                    user_id: req.user_id,
+                    file_id,
+                }))
+                .await?;
         }
 
         Ok(())

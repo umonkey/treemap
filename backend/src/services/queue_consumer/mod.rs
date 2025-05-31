@@ -6,7 +6,7 @@
 use crate::handlers::*;
 use crate::services::*;
 use crate::types::*;
-use log::{debug, error, info};
+use log::{error, info};
 use std::sync::Arc;
 use std::time::Duration;
 
@@ -57,37 +57,29 @@ impl QueueConsumer {
      * Decode the message from JSON and process it.
      */
     async fn process_message(&self, msg: &str) -> Result<()> {
-        match QueueCommand::decode(msg) {
-            Ok(Some(QueueCommand::ResizeImage(message))) => {
+        match QueueCommand::decode(msg)? {
+            QueueCommand::ResizeImage(message) => {
                 self.resize_image_handler.handle(message.id).await?;
             }
 
-            Ok(Some(QueueCommand::UpdateTreeAddress(message))) => {
+            QueueCommand::UpdateTreeAddress(message) => {
                 self.update_tree_address_handler.handle(message.id).await?;
             }
 
-            Ok(Some(QueueCommand::AddPhoto(message))) => {
+            QueueCommand::AddPhoto(message) => {
                 self.add_photo_handler
                     .handle(message.tree_id, message.file_id)
                     .await?;
             }
 
-            Ok(Some(QueueCommand::UpdateUserpic(message))) => {
+            QueueCommand::UpdateUserpic(message) => {
                 self.update_userpic_handler
                     .handle(message.user_id, message.file_id)
                     .await?;
             }
 
-            Ok(Some(QueueCommand::AddStory(message))) => {
+            QueueCommand::AddStory(message) => {
                 info!("Received AddStory command: {:?}", message);
-            }
-
-            Ok(None) => {
-                debug!("Unknown message: {}", msg);
-            }
-
-            Err(e) => {
-                error!("Error while decoding message: {:?}", e);
             }
         }
 

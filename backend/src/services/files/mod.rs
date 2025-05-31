@@ -67,9 +67,11 @@ impl FileService {
     }
 
     async fn schedule_file_processing(&self, file_id: u64) -> Result<()> {
-        let msg = ResizeImageMessage { id: file_id };
-
-        self.queue.push(&msg.encode()).await?;
+        self.queue
+            .push(QueueCommand::ResizeImage(ResizeImageMessage {
+                id: file_id,
+            }))
+            .await?;
 
         Ok(())
     }

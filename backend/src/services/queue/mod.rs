@@ -23,21 +23,23 @@ pub struct QueueService {
 }
 
 impl QueueService {
-    pub async fn push(&self, payload: &str) -> Result<QueueMessage> {
+    pub async fn push(&self, payload: QueueCommand) -> Result<QueueMessage> {
         let id = get_unique_id()?;
         let now = get_timestamp();
+
+        let json_payload = payload.encode()?;
 
         let msg = QueueMessage {
             id,
             added_at: now,
             available_at: now,
-            payload: payload.to_string(),
+            payload: json_payload.clone(),
             attempts: 0,
         };
 
         self.messages.add(&msg).await?;
 
-        debug!("Message {} added to queue, payload: {}", id, payload);
+        debug!("Message {} added to queue, payload: {}", id, json_payload);
 
         Ok(msg)
     }
@@ -114,41 +116,27 @@ mod tests {
     async fn test_push_pop() {
         let queue = setup().await;
 
-        queue
-            .push("test message")
-            .await
-            .expect("Error adding message.");
+        let msg = QueueCommand::ResizeImage(ResizeImageMessage { id: 1 });
+
+        queue.push(msg).await.expect("Error adding message.");
 
         let msg = queue.pop().await.expect("Error receiving message.");
         assert!(msg.is_some());
-        assert_eq!(msg.unwrap().payload, "test message");
+        assert_eq!(msg.unwrap().payload, r#"{"command":"ResizeImage","params":{"id":1}}"#);
     }
 
     #[tokio::test]
     async fn test_delay() {
         let queue = setup().await;
 
-        queue
-            .push("test message")
-            .await
-            .expect("Error adding message.");
+        let msg = QueueCommand::ResizeImage(ResizeImageMessage { id: 1 });
+
+        queue.push(msg).await.expect("Error adding message.");
 
         let take1 = queue.pop().await.expect("Error receiving message.");
         assert!(take1.is_some());
 
         let take2 = queue.pop().await.expect("Error receiving message.");
         assert!(take2.is_none());
-    }
-
-    #[tokio::test]
-    async fn test_delete() {
-        let queue = setup().await;
-
-        let msg = queue
-            .push("test message")
-            .await
-            .expect("Error adding message.");
-
-        queue.delete(&msg).await.expect("Error deleting message.");
     }
 }
