@@ -122,7 +122,10 @@ mod tests {
 
         let msg = queue.pop().await.expect("Error receiving message.");
         assert!(msg.is_some());
-        assert_eq!(msg.unwrap().payload, r#"{"command":"ResizeImage","params":{"id":1}}"#);
+        assert_eq!(
+            msg.unwrap().payload,
+            r#"{"command":"ResizeImage","params":{"id":1}}"#
+        );
     }
 
     #[tokio::test]

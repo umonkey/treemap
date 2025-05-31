@@ -18,6 +18,7 @@ pub struct AddPhotoHandler {
     storage: Arc<dyn FileStorageInterface>,
     thumbnailer: Arc<ThumbnailerService>,
     trees: Arc<TreeRepository>,
+    queue: Arc<QueueService>,
 }
 
 impl AddPhotoHandler {
@@ -62,6 +63,8 @@ impl AddPhotoHandler {
         self.update_thumbnail(tree_id, small_id, source.added_by)
             .await?;
 
+        self.add_story(source.added_by, tree_id, small_id).await?;
+
         info!(
             "File {} successfully processed, added to tree {}.",
             source.id, tree_id
@@ -99,6 +102,22 @@ impl AddPhotoHandler {
             Err(_) => Err(Error::FileUpload),
         }
     }
+
+    async fn add_story(&self, user_id: u64, tree_id: u64, file_id: u64) -> Result<()> {
+        let added_at = get_timestamp();
+
+        self.queue
+            .push(QueueCommand::AddStory(AddStoryMessage {
+                user_id,
+                tree_id,
+                file_id,
+                added_at,
+                text: None,
+            }))
+            .await?;
+
+        Ok(())
+    }
 }
 
 impl Locatable for AddPhotoHandler {
@@ -109,6 +128,7 @@ impl Locatable for AddPhotoHandler {
             storage: locator.get::<FileStorageSelector>()?.driver(),
             thumbnailer: locator.get::<ThumbnailerService>()?,
             trees: locator.get::<TreeRepository>()?,
+            queue: locator.get::<QueueService>()?,
         })
     }
 }
