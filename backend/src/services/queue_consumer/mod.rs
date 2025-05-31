@@ -15,9 +15,10 @@ const DELAY: u64 = 1;
 
 pub struct QueueConsumer {
     queue: Arc<QueueService>,
+    add_photo_handler: Arc<AddPhotoHandler>,
+    add_story_handler: Arc<AddStoryHandler>,
     resize_image_handler: Arc<ResizeImageHandler>,
     update_tree_address_handler: Arc<UpdateTreeAddressHandler>,
-    add_photo_handler: Arc<AddPhotoHandler>,
     update_userpic_handler: Arc<UpdateUserpicHandler>,
 }
 
@@ -79,7 +80,7 @@ impl QueueConsumer {
             }
 
             QueueCommand::AddStory(message) => {
-                info!("Received AddStory command: {:?}", message);
+                self.add_story_handler.handle(message).await?;
             }
         }
 
@@ -95,6 +96,7 @@ impl Locatable for QueueConsumer {
             update_tree_address_handler: locator.get::<UpdateTreeAddressHandler>()?,
             add_photo_handler: locator.get::<AddPhotoHandler>()?,
             update_userpic_handler: locator.get::<UpdateUserpicHandler>()?,
+            add_story_handler: locator.get::<AddStoryHandler>()?,
         })
     }
 }
