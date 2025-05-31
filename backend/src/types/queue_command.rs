@@ -27,12 +27,23 @@ pub struct UpdateUserpicMessage {
     pub file_id: u64,
 }
 
+// Attempt to send a photo as a story.
+#[derive(Debug, Deserialize, Serialize)]
+pub struct AddStoryMessage {
+    pub user_id: u64,
+    pub tree_id: u64,
+    pub file_id: u64,
+    pub added_at: u64,
+    pub text: Option<String>,
+}
+
 #[derive(Debug, Serialize)]
 pub enum QueueCommand {
     ResizeImage(ResizeImageMessage),
     UpdateTreeAddress(UpdateTreeAddressMessage),
     AddPhoto(AddPhotoMessage),
     UpdateUserpic(UpdateUserpicMessage),
+    AddStory(AddStoryMessage),
 }
 
 impl ResizeImageMessage {
@@ -79,6 +90,21 @@ impl UpdateUserpicMessage {
             "params": {
                 "user_id": self.user_id,
                 "file_id": self.file_id,
+            },
+        })
+        .to_string()
+    }
+}
+
+impl AddStoryMessage {
+    pub fn encode(&self) -> String {
+        json!({
+            "command": "AddStory",
+            "params": {
+                "user_id": self.user_id,
+                "tree_id": self.tree_id,
+                "file_id": self.file_id,
+                "added_at": self.added_at,
             },
         })
         .to_string()

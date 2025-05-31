@@ -174,3 +174,13 @@ CREATE TABLE IF NOT EXISTS training (
 );
 CREATE INDEX IF NOT EXISTS IDX_training_user_id ON training (user_id);
 CREATE INDEX IF NOT EXISTS IDX_training_added_at ON training (added_at);
+
+CREATE TABLE IF NOT EXISTS stories (
+    `id` INT NOT NULL,
+    `user_id` INT NOT NULL,
+    `added_at` INT NOT NULL,
+    `photo_id` INT NOT NULL,
+    `text` TEXT NULL,
+    PRIMARY KEY(`id`)
+);
+CREATE INDEX IF NOT EXISTS IDX_stories_added_at ON stories (added_at);

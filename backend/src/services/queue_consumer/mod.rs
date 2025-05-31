@@ -78,6 +78,10 @@ impl QueueConsumer {
                     .await?;
             }
 
+            Ok(Some(QueueCommand::AddStory(message))) => {
+                info!("Received AddStory command: {:?}", message);
+            }
+
             Ok(None) => {
                 debug!("Unknown message: {}", msg);
             }

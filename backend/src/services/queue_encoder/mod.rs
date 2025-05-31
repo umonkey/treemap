@@ -1,94 +1,50 @@
 use crate::types::*;
-use log::error;
+use log::{error, trace};
+use serde::{Deserialize, de::DeserializeOwned};
+use serde_json::Value;
+
+/// This is used for simpler parsing.
+#[derive(Debug, Deserialize)]
+pub struct MessageHeader {
+    command: String,
+    params: serde_json::Value,
+}
 
 impl QueueCommand {
     pub fn decode(json: &str) -> Result<Option<Self>> {
-        let value: serde_json::Value = serde_json::from_str(json).map_err(|e| {
-            error!("Error parsing message: {}, payload={}", e, json);
+        trace!("Decoding a queue command from JSON: {json}");
+
+        let header: MessageHeader = serde_json::from_str(json).map_err(|e| {
+            error!("Error parsing message header: {}, payload={}", e, json);
             Error::Queue
         })?;
 
-        let command = value["command"]
-            .as_str()
-            .ok_or("missing command")
-            .map_err(|e| {
-                error!("Error extracting message command: {}, payload={}", e, json);
-                Error::Queue
-            })?;
+        trace!("Parsed header: {:?}", header);
 
-        let params = value["params"]
-            .as_object()
-            .ok_or("missing params")
-            .map_err(|e| {
-                error!("Error extracting message params: {}, payload={}", e, json);
-                Error::Queue
-            })?;
-
-        match command {
+        match header.command.as_str() {
             "ResizeImage" => {
-                let id = params["id"].as_u64().ok_or("missing id").map_err(|e| {
-                    error!("Error extracting image id: {}, payload={}", e, json);
-                    Error::Queue
-                })?;
-
-                Ok(Some(QueueCommand::ResizeImage(ResizeImageMessage { id })))
+                let msg = Self::decode_params::<ResizeImageMessage>(header.params)?;
+                Ok(Some(QueueCommand::ResizeImage(msg)))
             }
 
             "UpdateTreeAddress" => {
-                let id = params["id"].as_u64().ok_or("missing id").map_err(|e| {
-                    error!("Error extracting tree id: {}, payload={}", e, json);
-                    Error::Queue
-                })?;
-
-                Ok(Some(QueueCommand::UpdateTreeAddress(
-                    UpdateTreeAddressMessage { id },
-                )))
+                let msg = Self::decode_params::<UpdateTreeAddressMessage>(header.params)?;
+                Ok(Some(QueueCommand::UpdateTreeAddress(msg)))
             }
 
             "AddPhoto" => {
-                let tree_id = params["tree_id"]
-                    .as_u64()
-                    .ok_or("missing tree_id")
-                    .map_err(|e| {
-                        error!("Error extracting tree id: {}, payload={}", e, json);
-                        Error::Queue
-                    })?;
-
-                let file_id = params["file_id"]
-                    .as_u64()
-                    .ok_or("missing file_id")
-                    .map_err(|e| {
-                        error!("Error extracting file id: {}, payload={}", e, json);
-                        Error::Queue
-                    })?;
-
-                Ok(Some(QueueCommand::AddPhoto(AddPhotoMessage {
-                    tree_id,
-                    file_id,
-                })))
+                let msg = Self::decode_params::<AddPhotoMessage>(header.params)?;
+                Ok(Some(QueueCommand::AddPhoto(msg)))
             }
 
             "UpdateUserpic" => {
-                let user_id = params["user_id"]
-                    .as_u64()
-                    .ok_or("missing user_id")
-                    .map_err(|e| {
-                        error!("Error extracting user id: {}, payload={}", e, json);
-                        Error::Queue
-                    })?;
+                let msg = Self::decode_params::<UpdateUserpicMessage>(header.params)?;
+                Ok(Some(QueueCommand::UpdateUserpic(msg)))
+            }
 
-                let file_id = params["file_id"]
-                    .as_u64()
-                    .ok_or("missing file_id")
-                    .map_err(|e| {
-                        error!("Error extracting file id: {}, payload={}", e, json);
-                        Error::Queue
-                    })?;
-
-                Ok(Some(QueueCommand::UpdateUserpic(UpdateUserpicMessage {
-                    user_id,
-                    file_id,
-                })))
+            "AddStory" => {
+                let msg = Self::decode_params::<AddStoryMessage>(header.params)?;
+                Ok(Some(QueueCommand::AddStory(msg)))
             }
 
             _ => {
@@ -97,12 +53,29 @@ impl QueueCommand {
             }
         }
     }
+
+    fn decode_params<T>(value: Value) -> Result<T>
+    where
+        T: DeserializeOwned
+    {
+        let msg: T = serde_json::from_value(value.clone())
+            .map_err(|e| {
+                error!("Error parsing AddStory message: {}, payload={}", e, value);
+                Error::Queue
+            })?;
+
+        Ok(msg)
+    }
 }
 
 #[cfg(test)]
 #[allow(unreachable_patterns)]
 mod tests {
     use super::*;
+
+    fn setup() {
+        env_logger::try_init().expect("Failed to initialize logger");
+    }
 
     #[test]
     fn test_decode_resize_image() {
@@ -129,5 +102,29 @@ mod tests {
             message.encode(),
             r#"{"command":"ResizeImage","params":{"id":12345}}"#
         );
+    }
+
+    #[test]
+    fn test_decode_add_story() {
+        setup();
+
+        let json = AddStoryMessage {
+            user_id: 1,
+            tree_id: 2,
+            file_id: 3,
+            added_at: 1234567890,
+            text: Some("Test story".to_string()),
+        }.encode();
+
+        let command = QueueCommand::decode(&json)
+            .expect("Error parsing command.")
+            .expect("No command found.");
+
+        let msg = match command {
+            QueueCommand::AddStory(message) => message,
+            _ => panic!("Expected AddStory, got {:?}", command),
+        };
+
+        assert_eq!(msg.tree_id, 2);
     }
 }
