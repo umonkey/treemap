@@ -1,8 +1,8 @@
 use crate::types::{Attributes, Result};
 use rusqlite::types::Value;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct CommentRecord {
     pub id: u64,
     pub tree_id: u64,
@@ -13,13 +13,7 @@ pub struct CommentRecord {
 
 impl CommentRecord {
     pub fn from_attributes(attributes: &Attributes) -> Result<Self> {
-        Ok(Self {
-            id: attributes.require_u64("id")?,
-            tree_id: attributes.require_u64("tree_id")?,
-            added_at: attributes.require_u64("added_at")?,
-            added_by: attributes.require_u64("added_by")?,
-            message: attributes.require_string("message")?,
-        })
+        attributes.deserialize::<Self>()
     }
 
     pub fn to_attributes(&self) -> Attributes {

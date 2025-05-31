@@ -3,12 +3,14 @@ mod env;
 mod id;
 mod osm;
 mod requests;
+mod serializers;
 mod strings;
 pub use dates::*;
 pub use env::*;
 pub use id::*;
 pub use osm::*;
 pub use requests::*;
+pub use serializers::*;
 pub use strings::*;
 
 pub fn fix_circumference(value: Option<f64>) -> Option<f64> {

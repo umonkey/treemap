@@ -2,9 +2,9 @@
 
 use crate::types::{Attributes, Result};
 use rusqlite::types::Value;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Default, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct TreeRecord {
     pub id: u64,
     pub osm_id: Option<u64>,
@@ -36,28 +36,7 @@ pub struct TreeRecord {
 
 impl TreeRecord {
     pub fn from_attributes(attributes: &Attributes) -> Result<Self> {
-        Ok(Self {
-            id: attributes.require_u64("id")?,
-            osm_id: attributes.get_u64("osm_id")?,
-            lat: attributes.require_f64("lat")?,
-            lon: attributes.require_f64("lon")?,
-            species: attributes.require_string("species")?,
-            notes: attributes.get_string("notes")?,
-            height: attributes.get_f64("height")?,
-            circumference: attributes.get_f64("circumference")?,
-            diameter: attributes.get_f64("diameter")?,
-            state: attributes.require_string("state")?,
-            added_at: attributes.require_u64("added_at")?,
-            updated_at: attributes.require_u64("updated_at")?,
-            added_by: attributes.require_u64("added_by")?,
-            thumbnail_id: attributes.get_u64("thumbnail_id")?,
-            year: attributes.get_i64("year")?,
-            address: attributes.get_string("address")?,
-            like_count: attributes.get_i64("like_count")?.unwrap_or(0),
-            comment_count: attributes.get_u64("comment_count")?.unwrap_or(0),
-            replaces: attributes.get_u64("replaces")?,
-            replaced_by: attributes.get_u64("replaced_by")?,
-        })
+        attributes.deserialize::<Self>()
     }
 
     pub fn to_attributes(&self) -> Attributes {

@@ -1,8 +1,8 @@
 use crate::types::{Attributes, Result};
 use rusqlite::types::Value;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Default, Serialize)]
+#[derive(Debug, Default, Deserialize, Serialize)]
 pub struct UserRecord {
     pub id: u64,
     pub email: String,
@@ -16,16 +16,7 @@ pub struct UserRecord {
 
 impl UserRecord {
     pub fn from_attributes(attributes: &Attributes) -> Result<Self> {
-        Ok(Self {
-            id: attributes.require_u64("id")?,
-            email: attributes.require_string("email")?,
-            name: attributes.require_string("name")?,
-            picture: attributes.require_string("picture")?,
-            trees_count: attributes.require_i64("trees_count")?,
-            comments_count: attributes.require_i64("comments_count")?,
-            updates_count: attributes.require_i64("updates_count")?,
-            files_count: attributes.require_i64("files_count")?,
-        })
+        attributes.deserialize::<Self>()
     }
 
     pub fn to_attributes(&self) -> Attributes {

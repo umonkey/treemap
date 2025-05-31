@@ -1,8 +1,8 @@
 use crate::types::{Attributes, Result};
 use rusqlite::types::Value;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Default, Serialize)]
+#[derive(Debug, Default, Deserialize, Serialize)]
 pub struct StoryRecord {
     pub id: u64,
     pub user_id: u64,
@@ -14,14 +14,7 @@ pub struct StoryRecord {
 
 impl StoryRecord {
     pub fn from_attributes(attributes: &Attributes) -> Result<Self> {
-        Ok(Self {
-            id: attributes.require_u64("id")?,
-            user_id: attributes.require_u64("user_id")?,
-            tree_id: attributes.require_u64("tree_id")?,
-            file_id: attributes.require_u64("file_id")?,
-            added_at: attributes.require_u64("added_at")?,
-            text: attributes.get_string("text")?,
-        })
+        attributes.deserialize::<Self>()
     }
 
     pub fn to_attributes(&self) -> Attributes {
