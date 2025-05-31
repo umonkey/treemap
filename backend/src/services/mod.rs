@@ -9,7 +9,6 @@ mod osm_reader;
 mod overpass;
 mod queue;
 mod queue_consumer;
-mod queue_encoder;
 mod thumbnailer;
 mod tokens;
 mod tree_list_loader;

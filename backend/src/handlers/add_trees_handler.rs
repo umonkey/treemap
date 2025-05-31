@@ -71,8 +71,11 @@ impl AddTreesHandler {
     }
 
     async fn schedule_address_update(&self, tree_id: u64) -> Result<()> {
-        let msg = UpdateTreeAddressMessage { id: tree_id };
-        self.queue.push(&msg.encode()).await?;
+        self.queue
+            .push(QueueCommand::UpdateTreeAddress(UpdateTreeAddressMessage {
+                id: tree_id,
+            }))
+            .await?;
 
         info!("Scheduled address update for tree {}", tree_id);
 
@@ -86,8 +89,9 @@ impl AddTreesHandler {
                 Ok(file_id) => {
                     info!("Scheduling file {} for tree {}", file_id, tree_id);
 
-                    let message = AddPhotoMessage { tree_id, file_id };
-                    self.queue.push(&message.encode()).await?;
+                    self.queue
+                        .push(QueueCommand::AddPhoto(AddPhotoMessage { tree_id, file_id }))
+                        .await?;
                 }
 
                 Err(e) => {

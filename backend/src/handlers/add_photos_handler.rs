@@ -37,8 +37,10 @@ impl AddPhotosHandler {
     }
 
     async fn send_file(&self, tree_id: u64, file_id: u64) -> Result<()> {
-        let message = AddPhotoMessage { tree_id, file_id };
-        self.queue.push(&message.encode()).await?;
+        self.queue
+            .push(QueueCommand::AddPhoto(AddPhotoMessage { tree_id, file_id }))
+            .await?;
+
         Ok(())
     }
 }

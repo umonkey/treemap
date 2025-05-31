@@ -1,8 +1,8 @@
 use crate::types::*;
 use rusqlite::types::Value;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Default, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct PropRecord {
     pub id: u64,
     pub tree_id: u64,
@@ -14,14 +14,7 @@ pub struct PropRecord {
 
 impl PropRecord {
     pub fn from_attributes(attributes: &Attributes) -> Result<Self> {
-        Ok(Self {
-            id: attributes.require_u64("id")?,
-            tree_id: attributes.require_u64("tree_id")?,
-            added_at: attributes.require_u64("added_at")?,
-            added_by: attributes.require_u64("added_by")?,
-            name: attributes.require_string("name")?,
-            value: attributes.require_string("value")?,
-        })
+        attributes.deserialize::<Self>()
     }
 
     pub fn to_attributes(&self) -> Attributes {

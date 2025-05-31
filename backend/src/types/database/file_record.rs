@@ -2,9 +2,9 @@
 
 use crate::types::*;
 use rusqlite::types::Value;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Default, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct FileRecord {
     pub id: u64,
     pub tree_id: u64,
@@ -18,16 +18,7 @@ pub struct FileRecord {
 
 impl FileRecord {
     pub fn from_attributes(attributes: &Attributes) -> Result<Self> {
-        Ok(Self {
-            id: attributes.require_u64("id")?,
-            tree_id: attributes.require_u64("tree_id")?,
-            added_at: attributes.require_u64("added_at")?,
-            added_by: attributes.require_u64("added_by")?,
-            deleted_at: attributes.get_u64("deleted_at")?,
-            deleted_by: attributes.get_u64("deleted_by")?,
-            small_id: attributes.require_u64("small_id")?,
-            large_id: attributes.require_u64("large_id")?,
-        })
+        attributes.deserialize::<Self>()
     }
 
     pub fn to_attributes(&self) -> Attributes {

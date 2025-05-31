@@ -2,10 +2,11 @@ use crate::types::*;
 use crate::utils::*;
 use log::debug;
 use rusqlite::types::Value;
+use serde::Deserialize;
 
 const DEFAULT_SPECIES: &str = "Unknown tree";
 
-#[derive(Clone, Debug, Default, PartialEq)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq)]
 pub struct OsmTreeRecord {
     pub id: u64,
     pub lat: f64,
@@ -33,18 +34,7 @@ impl OsmTreeRecord {
     }
 
     pub fn from_attributes(attributes: &Attributes) -> Result<Self> {
-        Ok(Self {
-            id: attributes.require_u64("id")?,
-            lat: osm_round_coord(attributes.require_f64("lat")?),
-            lon: osm_round_coord(attributes.require_f64("lon")?),
-            genus: attributes.get_string("genus")?,
-            species: attributes.get_string("species")?,
-            species_wikidata: attributes.get_string("species_wikidata")?,
-            height: attributes.get_f64("height")?,
-            circumference: attributes.get_f64("circumference")?,
-            diameter_crown: attributes.get_f64("diameter_crown")?,
-            image: attributes.get_string("image")?,
-        })
+        attributes.deserialize::<Self>()
     }
 
     pub fn to_attributes(&self) -> Attributes {

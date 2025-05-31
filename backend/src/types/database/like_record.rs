@@ -1,11 +1,13 @@
 use crate::types::{Attributes, Result};
+use crate::utils::de_bool;
 use rusqlite::types::Value;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Default, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct LikeRecord {
     pub tree_id: u64,
     pub user_id: u64,
+    #[serde(deserialize_with = "de_bool")]
     pub state: bool,
     pub updated_at: u64,
 }
@@ -13,12 +15,7 @@ pub struct LikeRecord {
 impl LikeRecord {
     #[allow(unused)]
     pub fn from_attributes(attributes: &Attributes) -> Result<Self> {
-        Ok(Self {
-            tree_id: attributes.require_u64("tree_id")?,
-            user_id: attributes.require_u64("user_id")?,
-            state: attributes.require_i64("state")? != 0,
-            updated_at: attributes.require_u64("updated_at")?,
-        })
+        attributes.deserialize::<Self>()
     }
 
     pub fn to_attributes(&self) -> Attributes {
