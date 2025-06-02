@@ -8,7 +8,6 @@ export { default as CircumferenceEditor } from './circumference-editor/Circumfer
 export { default as CircumferenceInput } from './circumference-input/CircumferenceInput.svelte';
 export { default as CommentForm } from './comment-form/CommentForm.svelte';
 export { default as CommentInput } from './comment-input/CommentInput.svelte';
-export { default as FilePicker } from './file-picker/FilePicker.svelte';
 export { default as FileUploader } from './file-uploader/FileUploader.svelte';
 export { default as FileUploaderDisplay } from './file-uploader-display/FileUploaderDisplay.svelte';
 export { default as FilteredChangeList } from './filtered-change-list/FilteredChangeList.svelte';
