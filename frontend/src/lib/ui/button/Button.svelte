@@ -43,7 +43,6 @@
 		border: 1px solid var(--form-border);
 		color: var(--form-background);
 		outline: none;
-		padding: 0.5rem 1rem;
 		cursor: pointer;
 		border-radius: 6px;
 		text-decoration: none;
@@ -52,7 +51,8 @@
 		display: inline-block;
 
 		font-size: 14px;
-		line-height: 14px;
+		line-height: 20px;
+		padding: 7px 15px;
 
 		/* SVG icons sometimes expand the button. */
 		height: 34px;
