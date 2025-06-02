@@ -37,8 +37,10 @@
 
 			<Buttons>
 				<Button link={routes.treeDetails($tree.id)}>{locale.mapPreviewDetails()}</Button>
-				<Button type="secondary" onClick={() => handleShareTree($tree.id)}><ShareIcon /></Button>
-				<Button type="secondary" onClick={handleContextMenu}><SettingsIcon /></Button>
+				<Button type="secondary" onClick={() => handleShareTree($tree.id)} square
+					><ShareIcon /></Button
+				>
+				<Button type="secondary" onClick={handleContextMenu} square><SettingsIcon /></Button>
 			</Buttons>
 
 			<TreeContextMenu id={$tree.id} />

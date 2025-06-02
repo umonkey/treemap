@@ -7,13 +7,15 @@
 		type = 'submit',
 		onClick,
 		link,
-		disabled = false
+		disabled = false,
+		square = false
 	} = $props<{
 		children: Snippet;
 		type: 'submit' | 'button' | 'reset' | 'cancel' | 'secondary' | 'tertiary';
 		onClick: () => void;
 		disabled?: boolean;
 		link?: string;
+		square?: boolean;
 	}>();
 
 	const className = `button ${type}`;
@@ -28,12 +30,22 @@
 </script>
 
 {#if link}
-	<a href={link} disabled={!!disabled} class={className} target={getTarget()}>
+	<a
+		href={link}
+		disabled={!!disabled}
+		class={className}
+		target={getTarget()}
+		class:square={!!square}
+	>
 		{@render children()}
 	</a>
 {:else}
-	<button type="button" disabled={!!disabled} class={className} onclick={onClick}
-		>{@render children()}</button
+	<button
+		type="button"
+		disabled={!!disabled}
+		class={className}
+		onclick={onClick}
+		class:square={!!square}>{@render children()}</button
 	>
 {/if}
 
@@ -76,6 +88,13 @@
 
 		&:disabled {
 			opacity: 0.5;
+		}
+
+		&.square {
+			aspect-ratio: 1;
+			line-height: 14px;
+			padding: 7px;
+			overflow: hidden;
 		}
 	}
 </style>
