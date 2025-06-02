@@ -10,6 +10,8 @@
 
 	import '$lib/styles/variables.css';
 	import '$lib/styles/colors.css';
+	import '$lib/styles/fonts.css';
+	import '$lib/styles/defaults.css';
 
 	const { children } = $props();
 
@@ -25,28 +27,3 @@
 <SvelteToast />
 <GoogleTracker />
 <LocationTracker />
-
-<style>
-	:global {
-		:root {
-			font-size: 15px;
-			font-family: 'Inter Variable', sans-serif;
-		}
-
-		body {
-			background-color: var(--background-color);
-			color: var(--text-color);
-			padding: 0;
-			margin: 0;
-		}
-
-		p {
-			line-height: 1.5em;
-		}
-	}
-
-	:global(.padded) {
-		padding-left: var(--gap);
-		padding-right: var(--gap);
-	}
-</style>

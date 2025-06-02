@@ -17,7 +17,7 @@
 			<img src={item.small} alt="See how good is this tree." />
 
 			{#if idx > 0}
-				<!-- svelte-ignore a11y-no-static-element-interactions -->
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<div class="nav left" onclick={handleLeft}>
 					<LeftButtonIcon />
@@ -25,8 +25,8 @@
 			{/if}
 
 			{#if idx < slides.length - 1}
-				<!-- svelte-ignore a11y-no-static-element-interactions -->
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
 				<div class="nav right" onclick={handleRight}>
 					<RightButtonIcon />
 				</div>

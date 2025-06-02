@@ -1,0 +1,15 @@
+body {
+	background-color: var(--background-color);
+	color: var(--text-color);
+	padding: 0;
+	margin: 0;
+}
+
+p {
+	line-height: 1.5em;
+}
+
+.padded {
+	padding-left: var(--gap);
+	padding-right: var(--gap);
+}
