@@ -3,6 +3,7 @@
 	import { routes } from '$lib/routes';
 	import Logo from '$lib/assets/trees-of-yerevan.svelte';
 	import { BellIcon, HomeIcon, MapIcon, SearchIcon, UserIcon } from '$lib/icons';
+	import '$lib/styles/animations.css';
 
 	const { visible, last_tree, search, onClose } = $props<{
 		visible: boolean;
@@ -81,6 +82,8 @@
 
 <style>
 	.sidebar {
+		animation: fadeIn 0.1s ease-in-out;
+
 		&.hidden {
 			display: none;
 		}

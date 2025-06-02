@@ -12,6 +12,7 @@
 		TreeIcon
 	} from '$lib/icons';
 	import '$lib/styles/colors.css';
+	import '$lib/styles/animations.css';
 
 	const { id, visible, onClose } = $props<{
 		id: string;
@@ -66,6 +67,8 @@
 		background-color: rgba(0, 0, 0, 0.5);
 		backdrop-filter: blur(2px);
 		z-index: var(--z-menu);
+
+		animation: fadeIn 0.1s ease-in-out;
 
 		.menu {
 			background-color: var(--form-background);
