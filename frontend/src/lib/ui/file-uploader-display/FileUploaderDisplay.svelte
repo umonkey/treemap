@@ -3,19 +3,27 @@
 	import { CircumferenceIcon, SpinnerIcon } from '$lib/icons';
 	import FALLBACK from '$lib/assets/tree.jpg';
 
+	type Item = {
+		src: string;
+		busy: boolean;
+		error: boolean;
+	};
+
 	const { items, onRetry, small } = $props<{
-		items: {
-			src: string;
-			busy: boolean;
-			error: boolean;
-		}[];
+		items: Item[];
 		onRetry: (index: number) => void;
 		small?: boolean;
 	}>();
+
+	const reversed = (items: Item[]) => {
+		let copy = [...items];
+		copy.reverse();
+		return copy;
+	};
 </script>
 
 <div class="items" class:small={!!small}>
-	{#each items as item, idx}
+	{#each reversed(items) as item, idx}
 		<div class="item preview" class:uploading={item.busy} class:error={item.error}>
 			<div class="img">
 				<LazyImage src={item.src} fallback={FALLBACK} alt="preview" />
