@@ -51,7 +51,6 @@
 	.gallery {
 		height: 75px;
 		line-height: 75px;
-		margin-top: var(--gap);
 	}
 
 	.images {
@@ -66,6 +65,8 @@
 		.tile {
 			width: 75px;
 			height: 75px;
+			border-radius: 4px;
+			overflow: hidden;
 
 			a {
 				display: block;

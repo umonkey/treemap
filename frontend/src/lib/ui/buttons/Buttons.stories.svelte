@@ -12,6 +12,6 @@
 </script>
 
 <Story name="Primary">
-	<Button label="Click Me" type="submit" />
-	<Button label="Cancel" type="cancel" />
+	<Button type="submit">Click Me</Button>
+	<Button type="cancel">Cancel</Button>
 </Story>

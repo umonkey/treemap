@@ -26,12 +26,9 @@
 		<CommentInput value={message} onChange={handleChange} />
 
 		<Buttons>
-			<Button
-				type="submit"
-				onClick={onButtonClicked}
-				label={locale.commentSubmit()}
-				disabled={!message}
-			/>
+			<Button type="submit" onClick={onButtonClicked} disabled={!message}
+				>{locale.commentSubmit()}</Button
+			>
 		</Buttons>
 	</Form>
 {:else}

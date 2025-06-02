@@ -1,13 +1,15 @@
 <script lang="ts">
-	import { GalleryPreview } from '$lib/ui';
-	import { CloseIcon } from '$lib/icons';
+	import { GalleryPreview, Buttons, Button, TreeContextMenu } from '$lib/ui';
+	import { CloseIcon, ShareIcon, SettingsIcon } from '$lib/icons';
 	import { routes } from '$lib/routes';
 	import { formatSpecies, shortDetails } from '$lib/utils/trees';
+	import { handleShareTree } from '$lib/hooks';
+	import { locale } from '$lib/locale';
 	import { hook } from './hooks';
 	import '$lib/styles/variables.css';
 
 	const { id } = $props<{ id: string }>();
-	const { visible, error, tree, handleClose, reload } = hook();
+	const { visible, error, tree, handleClose, handleContextMenu, reload } = hook();
 
 	$effect(() => reload(id));
 </script>
@@ -17,23 +19,39 @@
 		{#if $error}
 			<p>{$error}</p>
 		{:else if $tree}
-			<div class="header">
-				<div class="title">
-					<a class="species" href={routes.treeDetails($tree.id)}>{formatSpecies($tree.species)}</a>
-					{#if $tree.address}
-						<span class="address">{$tree.address}</span>
-					{/if}
+			<div class="block">
+				<div class="header">
+					<div class="title">{formatSpecies($tree.species)}</div>
+					<button class="close" onclick={handleClose}><CloseIcon /></button>
 				</div>
-				<button class="close" onclick={handleClose}><CloseIcon /></button>
+
+				<div class="props">
+					{#if $tree.address}
+						<div class="line">{$tree.address}</div>
+					{/if}
+					<div class="line">{shortDetails($tree)}</div>
+				</div>
 			</div>
-			<div class="props">{shortDetails($tree)}</div>
+
 			<GalleryPreview id={$tree.id} />
+
+			<Buttons>
+				<Button link={routes.treeDetails($tree.id)}>{locale.mapPreviewDetails()}</Button>
+				<Button type="secondary" onClick={handleShareTree}><ShareIcon /></Button>
+				<Button type="secondary" onClick={handleContextMenu}><SettingsIcon /></Button>
+			</Buttons>
+
+			<TreeContextMenu id={$tree.id} />
 		{/if}
 	</div>
 {/if}
 
 <style>
 	.preview {
+		display: flex;
+		flex-direction: column;
+		gap: var(--gap);
+
 		padding: var(--gap);
 		line-height: 1.5em;
 		z-index: var(--z-map-preview);
@@ -55,15 +73,6 @@
 			display: flex;
 			flex-direction: row;
 
-			.title {
-				flex-grow: 1;
-				flex-shrink: 1;
-
-				.address:before {
-					content: ' · ';
-				}
-			}
-
 			.close {
 				flex-basis: 30px;
 				flex-grow: 0;
@@ -75,7 +84,29 @@
 
 				background-color: transparent;
 				border: none;
-				color: var(--sep-color);
+				color: #fff;
+				opacity: 0.5;
+			}
+		}
+
+		.title {
+			flex-grow: 1;
+			flex-shrink: 1;
+			font-size: 120%;
+			line-height: 30px;
+
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		.props {
+			opacity: 0.7;
+
+			.line {
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
 			}
 		}
 	}
@@ -106,11 +137,6 @@
 				flex-direction: column;
 				gap: var(--gap);
 				margin-bottom: var(--gap);
-
-				/* Hide the middot added for smaller devices */
-				.address:before {
-					display: none;
-				}
 			}
 		}
 	}

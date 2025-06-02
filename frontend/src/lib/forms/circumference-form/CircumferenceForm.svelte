@@ -28,8 +28,8 @@
 			<CircumferenceInput value={$value} autofocus onChange={handleChange} />
 
 			<Buttons>
-				<Button label={locale.editSave()} type="submit" onClick={save} disabled={$busy} />
-				<Button label={locale.editCancel()} type="cancel" onClick={close} />
+				<Button type="submit" onClick={save} disabled={$busy}>{locale.editSave()}</Button>
+				<Button type="cancel" onClick={close}>{locale.editCancel()}</Button>
 			</Buttons>
 		</Form>
 

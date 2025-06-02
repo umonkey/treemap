@@ -47,7 +47,7 @@
 	</div>
 
 	<Buttons>
-		<Button label={locale.editSave()} type="submit" onClick={onSave} />
-		<Button label={locale.editCancel()} type="cancel" onClick={onClose} />
+		<Button type="submit" onClick={onSave}>{locale.editSave()}</Button>
+		<Button type="cancel" onClick={onClose}>{locale.editCancel()}</Button>
 	</Buttons>
 </Form>

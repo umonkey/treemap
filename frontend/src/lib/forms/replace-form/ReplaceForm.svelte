@@ -67,18 +67,12 @@
 		<FileUploader onChange={handleUploaded} onBusy={handleUploading} />
 
 		<Buttons>
-			<Button
-				type="submit"
-				label={locale.addConfirmButton()}
-				onClick={save}
-				disabled={$busy || $uploading}
-			/>
-			<Button
-				type="cancel"
-				label={locale.addCancelButton()}
-				onClick={close}
-				disabled={$busy || $uploading}
-			/>
+			<Button type="submit" onClick={save} disabled={$busy || $uploading}
+				>{locale.addConfirmButton()}</Button
+			>
+			<Button type="cancel" onClick={close} disabled={$busy || $uploading}
+				>{locale.addCancelButton()}</Button
+			>
 		</Buttons>
 
 		{#if $saveError}

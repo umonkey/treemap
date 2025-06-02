@@ -34,8 +34,8 @@
 			/>
 
 			<Buttons>
-				<Button label={locale.editSave()} type="submit" onClick={handleSave} disabled={$saving} />
-				<Button label={locale.editCancel()} type="cancel" onClick={handleCancel} />
+				<Button type="submit" onClick={handleSave} disabled={$saving}>{locale.editSave()}</Button>
+				<Button type="cancel" onClick={handleCancel}>{locale.editCancel()}</Button>
 			</Buttons>
 		</Form>
 

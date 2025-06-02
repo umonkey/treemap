@@ -29,7 +29,7 @@
 
 		<Buttons>
 			<SignOutButton />
-			<Button label={locale.settingsButton()} link={routes.settings()} type="secondary" />
+			<Button link={routes.settings()} type="secondary">{locale.settingsButton()}</Button>
 		</Buttons>
 	</div>
 </div>

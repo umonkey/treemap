@@ -26,7 +26,7 @@
 	<p>Please keep in mind that all changes are logged.</p>
 
 	<Buttons>
-		<Button label="Continue" onClick={handleClick} />
-		<Button label="Help" link="https://myga.am/mapping.html" type="cancel" />
+		<Button onClick={handleClick}>Continue</Button>
+		<Button link="https://myga.am/mapping.html" type="cancel">Help</Button>
 	</Buttons>
 </NarrowPage>

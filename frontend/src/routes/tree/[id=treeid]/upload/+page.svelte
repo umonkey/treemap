@@ -20,12 +20,9 @@
 
 			{#if $hasFiles}
 				<Buttons>
-					<Button
-						label={locale.photoUpload()}
-						type="submit"
-						onClick={handleSubmit}
-						disabled={!$canSubmit}
-					/>
+					<Button type="submit" onClick={handleSubmit} disabled={!$canSubmit}
+						>{locale.photoUpload()}</Button
+					>
 				</Buttons>
 			{/if}
 		</Form>

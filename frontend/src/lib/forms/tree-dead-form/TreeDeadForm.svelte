@@ -24,8 +24,8 @@
 			<p>{locale.deadUploadHint()}</p>
 
 			<Buttons>
-				<Button label={locale.deadConfirm()} onClick={save} disabled={$busy} />
-				<Button type="cancel" label={locale.editCancel()} onClick={close} />
+				<Button onClick={save} disabled={$busy}>{locale.deadConfirm()}</Button>
+				<Button type="cancel" onClick={close}>{locale.editCancel()}</Button>
 			</Buttons>
 		{/if}
 

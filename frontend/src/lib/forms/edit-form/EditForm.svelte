@@ -58,8 +58,8 @@
 		<NotesInput value={$updated.notes} onChange={handleNotesChange} />
 
 		<Buttons>
-			<Button type="submit" label={locale.editSave()} onClick={handleConfirm} disabled={$saving} />
-			<Button type="cancel" label={locale.editCancel()} onClick={handleCancel} disabled={$saving} />
+			<Button type="submit" onClick={handleConfirm} disabled={$saving}>{locale.editSave()}</Button>
+			<Button type="cancel" onClick={handleCancel} disabled={$saving}>{locale.editCancel()}</Button>
 		</Buttons>
 	{/if}
 </Form>

@@ -29,15 +29,12 @@
 					<Buttons>
 						<Button
 							disabled={file.small_id === $thumbnail}
-							onClick={() => handleMakeThumbnail(file)}
-							label="Make thumbnail"
-						/>
+							onClick={() => handleMakeThumbnail(file)}>Make thumbnail</Button
+						>
 
-						<Button
-							disabled={file.small_id === $thumbnail}
-							onClick={() => handleDelete(file.id)}
-							label="Delete"
-						/>
+						<Button disabled={file.small_id === $thumbnail} onClick={() => handleDelete(file.id)}
+							>Delete</Button
+						>
 					</Buttons>
 				</div>
 			</div>

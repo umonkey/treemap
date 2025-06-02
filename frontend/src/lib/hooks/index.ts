@@ -1,3 +1,4 @@
+export { handleShareTree } from './shareTree';
 export { loadMe } from './loadMe';
 export { loadSpeciesMismatch } from './loadSpeciesMismatch';
 export { loadSpeciesStats } from './loadSpeciesStats';

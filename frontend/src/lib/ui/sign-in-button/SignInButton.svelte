@@ -25,4 +25,4 @@
 	};
 </script>
 
-<Button onClick={onSignIn} label={locale.signInWithGoogle()} />
+<Button onClick={onSignIn}>{locale.signInWithGoogle()}</Button>

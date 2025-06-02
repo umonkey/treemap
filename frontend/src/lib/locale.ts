@@ -554,6 +554,10 @@ class EnglishLocale {
 	public settingsUpdated(): string {
 		return 'Settings updated.';
 	}
+
+	public mapPreviewDetails(): string {
+		return 'Details';
+	}
 }
 
 class RussianLocale extends EnglishLocale {
@@ -1100,6 +1104,10 @@ class RussianLocale extends EnglishLocale {
 	public settingsUpdated(): string {
 		return 'Настройки обновлены.';
 	}
+
+	public mapPreviewDetails(): string {
+		return 'Детали';
+	}
 }
 
 class ArmenianLocale extends EnglishLocale {
@@ -1537,6 +1545,10 @@ class ArmenianLocale extends EnglishLocale {
 
 	public settingsUpdated(): string {
 		return 'Կարգավորումները թարմացված են։';
+	}
+
+	public mapPreviewDetails(): string {
+		return 'Մանրամասն';
 	}
 }
 

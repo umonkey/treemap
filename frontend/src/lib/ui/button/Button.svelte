@@ -1,14 +1,15 @@
 <script lang="ts">
+	import type { Snippet } from 'svelte';
 	import '$lib/styles/colors.css';
 
 	const {
-		label,
+		children,
 		type = 'submit',
 		onClick,
 		link,
 		disabled = false
 	} = $props<{
-		label: string;
+		children: Snippet;
 		type: 'submit' | 'button' | 'reset' | 'cancel' | 'secondary' | 'tertiary';
 		onClick: () => void;
 		disabled?: boolean;
@@ -28,10 +29,12 @@
 
 {#if link}
 	<a href={link} disabled={!!disabled} class={className} target={getTarget()}>
-		{label}
+		{@render children()}
 	</a>
 {:else}
-	<button type="button" disabled={!!disabled} class={className} onclick={onClick}>{label}</button>
+	<button type="button" disabled={!!disabled} class={className} onclick={onClick}
+		>{@render children()}</button
+	>
 {/if}
 
 <style>
@@ -45,9 +48,14 @@
 		border-radius: 6px;
 		text-decoration: none;
 		font-family: inherit;
-		font-size: 14px;
 		box-sizing: border-box;
 		display: inline-block;
+
+		font-size: 14px;
+		line-height: 14px;
+
+		/* SVG icons sometimes expand the button. */
+		height: 34px;
 
 		&.cancel {
 			background-color: transparent;

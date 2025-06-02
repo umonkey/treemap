@@ -19,7 +19,7 @@
 	</div>
 
 	<Buttons>
-		<Button label={locale.editSave()} type="submit" onClick={save} />
-		<Button label={locale.editCancel()} type="cancel" onClick={close} />
+		<Button type="submit" onClick={save}>{locale.editSave()}</Button>
+		<Button type="cancel" onClick={close}>{locale.editCancel()}</Button>
 	</Buttons>
 </Form>

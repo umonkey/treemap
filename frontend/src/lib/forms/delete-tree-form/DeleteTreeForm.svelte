@@ -24,8 +24,8 @@
 			<p>{locale.deleteUploadHint()}</p>
 
 			<Buttons>
-				<Button label={locale.deleteConfirm()} onClick={save} disabled={$busy} />
-				<Button type="cancel" label={locale.editCancel()} onClick={close} />
+				<Button onClick={save} disabled={$busy}>{locale.deleteConfirm()}</Button>
+				<Button type="cancel" onClick={close}>{locale.editCancel()}</Button>
 			</Buttons>
 
 			<FilteredChangeList changes={$history} name="state" />

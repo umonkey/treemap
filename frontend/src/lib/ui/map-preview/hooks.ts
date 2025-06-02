@@ -1,8 +1,9 @@
-import { writable } from 'svelte/store';
 import type { ITree } from '$lib/types';
 import { apiClient } from '$lib/api';
 import { goto } from '$lib/routes';
 import { mapHome } from '$lib/map';
+import { menuState } from '$lib/stores/treeMenu';
+import { writable } from 'svelte/store';
 
 export const hook = () => {
 	const visible = writable<boolean>(false);
@@ -32,5 +33,9 @@ export const hook = () => {
 		});
 	};
 
-	return { visible, error, tree, reload, handleClose };
+	const handleContextMenu = () => {
+		menuState.set(true);
+	};
+
+	return { visible, error, tree, reload, handleClose, handleContextMenu };
 };
