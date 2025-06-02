@@ -1,6 +1,7 @@
 :root {
 	/* Z-indexes */
 	--z-map: 2;
+	--z-crosshair: 5;
 	--z-menu: 6;
 	--z-mobile-nav: 7;
 	--z-map-preview: 8;

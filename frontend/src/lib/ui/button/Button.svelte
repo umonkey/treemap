@@ -52,7 +52,7 @@
 
 		font-size: 14px;
 		line-height: 20px;
-		padding: 7px 15px;
+		padding: 6px 15px;
 
 		/* SVG icons sometimes expand the button. */
 		height: 34px;

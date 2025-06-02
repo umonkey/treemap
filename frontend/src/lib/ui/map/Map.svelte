@@ -66,7 +66,7 @@
 		position: absolute;
 		left: 50%;
 		top: 50%;
-		z-index: 50;
+		z-index: var(--z-crosshair);
 		transform: translate(-50%, -50%);
 	}
 
