@@ -37,7 +37,7 @@
 
 			<Buttons>
 				<Button link={routes.treeDetails($tree.id)}>{locale.mapPreviewDetails()}</Button>
-				<Button type="secondary" onClick={handleShareTree}><ShareIcon /></Button>
+				<Button type="secondary" onClick={() => handleShareTree($tree.id)}><ShareIcon /></Button>
 				<Button type="secondary" onClick={handleContextMenu}><SettingsIcon /></Button>
 			</Buttons>
 

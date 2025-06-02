@@ -35,7 +35,7 @@
 	</div>
 	<div><a href={routes.treeComments(tree.id)}><ChatIcon /></a></div>
 	<div><a href={routes.treeUploadPhotos(tree.id)}><CameraIcon /></a></div>
-	<div><ShareButton /></div>
+	<div><ShareButton id={tree.id} /></div>
 	{#if FEATURES.bookmarks}
 		<div class="sep"></div>
 		<div><SaveIcon /></div>

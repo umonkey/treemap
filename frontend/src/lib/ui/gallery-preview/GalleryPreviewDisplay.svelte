@@ -67,6 +67,8 @@
 			height: 75px;
 			border-radius: 4px;
 			overflow: hidden;
+			flex-shrink: 0;
+			flex-grow: 0;
 
 			a {
 				display: block;

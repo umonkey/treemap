@@ -1,9 +1,11 @@
 <script lang="ts">
 	import { ShareIcon } from '$lib/icons';
 	import { handleShareTree } from '$lib/hooks';
+
+	const { id } = $props<{ id: string }>();
 </script>
 
-<button type="button" onclick={handleShareTree} title="Share this page">
+<button type="button" onclick={() => handleShareTree(id)} title="Share this page">
 	<ShareIcon />
 </button>
 
