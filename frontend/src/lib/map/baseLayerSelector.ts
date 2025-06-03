@@ -43,7 +43,8 @@ export const addLayerSelection = (map: L.Map) => {
 
 	const osmVector = new MaptilerLayer({
 		apiKey: MAPTILER_KEY,
-		style: 'openstreetmap'
+		style: 'openstreetmap',
+		language: ' en'
 	});
 
 	const google = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
