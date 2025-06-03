@@ -31,6 +31,17 @@ export const addLayerSelection = (map: L.Map) => {
 		}
 	);
 
+	const osmBasic = L.tileLayer(
+		'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+		{
+			attribution:
+				'&copy; <a href="https://myga.am/">Kanach Yerevan</a> &amp; <a href="https://www.openstreetmap.org/copyright">OSM</a>',
+			minZoom: 9,
+			maxZoom: 25,
+			maxNativeZoom: 19
+		}
+	);
+
 	const google = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
 		attribution:
 			'&copy; <a href="https://myga.am/">Kanach Yerevan</a> &amp; <a href="https://maps.google.com/copyright">Google</a>',
@@ -54,6 +65,7 @@ export const addLayerSelection = (map: L.Map) => {
 	const baseMaps = {
 		'OSM Dark': osmDark,
 		'OSM Light': osmLight,
+		'OSM Basic': osmBasic,
 		Satellite: google
 	};
 
