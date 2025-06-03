@@ -190,13 +190,17 @@ export class Markers {
 	}
 
 	// Add trees as individual markers, clustering off.
+	//
+	// Trunks are added on top of crowns, to make them clickable.
 	private getMarkersToShow(trees: ITree[]) {
-		const res = [];
+		const crowns = [];
+		const trunks = [];
 
 		for (const tree of trees) {
 			const point = L.circle([tree.lat, tree.lon], this.getTreeCircleProps(tree));
+			const trunk = L.circle([tree.lat, tree.lon], this.getTrunkProps(tree));
 
-			point.on('click', () => {
+			const clickHandler = () => {
 				mapBus.emit('select', tree.id);
 
 				// Force map center change.
@@ -215,12 +219,16 @@ export class Markers {
 						lng: tree.lon
 					});
 				}
-			});
+			};
 
-			res.push(point);
+			point.on('click', clickHandler);
+			trunk.on('click', clickHandler);
+
+			crowns.push(point);
+			trunks.push(trunk);
 		}
 
-		return res;
+		return [...crowns, ...trunks];
 	}
 
 	private getClusterGroupsToShow(trees: ITree[]) {
@@ -304,7 +312,7 @@ export class Markers {
 	private getTreeCircleProps(tree: ITree) {
 		// Default color is for healthy trees.
 		const props = {
-			radius: 10,
+			radius: 0.5,
 			fillColor: '#228B22',
 			color: '#228B22',
 			weight: 1,
@@ -327,6 +335,28 @@ export class Markers {
 			props.fillColor = '#8B4513';
 			props.fillOpacity = 0.2;
 		}
+
+		// console.debug(`[map] Tree ${tree.id} crown=${props.radius}`);
+
+		return props;
+	}
+
+	// Returns props for a tree circle, used in the map component.
+	private getTrunkProps(tree: ITree) {
+		const props = {
+			radius: 0.05,
+			fillColor: '#000',
+			color: '#000',
+			weight: 1,
+			opacity: 1,
+			fillOpacity: 0.5
+		};
+
+		if (tree.circumference) {
+			props.radius = Math.max(0.05, tree.circumference / 2 / Math.PI);
+		}
+
+		// console.debug(`[map] Tree ${tree.id} trunk=${props.radius}`);
 
 		return props;
 	}
