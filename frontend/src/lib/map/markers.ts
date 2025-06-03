@@ -336,6 +336,11 @@ export class Markers {
 			props.fillOpacity = 0.2;
 		}
 
+		if (!tree.diameter) {
+			props.opacity = 0.25;
+			props.fillOpacity = 0.25;
+		}
+
 		// console.debug(`[map] Tree ${tree.id} crown=${props.radius}`);
 
 		return props;
@@ -349,11 +354,14 @@ export class Markers {
 			color: '#000',
 			weight: 1,
 			opacity: 1,
-			fillOpacity: 0.5
+			fillOpacity: 0.8
 		};
 
 		if (tree.circumference) {
 			props.radius = Math.max(0.05, tree.circumference / 2 / Math.PI);
+		} else {
+			props.opacity = 0.25;
+			props.fillOpacity = 0.25;
 		}
 
 		// console.debug(`[map] Tree ${tree.id} trunk=${props.radius}`);
