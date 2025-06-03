@@ -6,26 +6,12 @@
 import { apiClient } from '$lib/api';
 import type { ITree } from '$lib/types';
 import L from 'leaflet';
-import type { LatLngBounds, Map, Marker } from 'leaflet';
+import type { LatLngBounds, Map } from 'leaflet';
 import { mapBus } from '$lib/buses';
 import { mapLastTree } from '$lib/stores/mapStore';
 import { get } from 'svelte/store';
 import { markerStore } from '$lib/stores/markerStore';
 import { clusterStore } from '$lib/stores/clusterStore';
-
-import BlackIcon from '$lib/map/icons/dot-black.svg';
-import GreenIcon from '$lib/map/icons/dot-green.svg';
-import RedIcon from '$lib/map/icons/dot-red.svg';
-import YellowIcon from '$lib/map/icons/dot-yellow.svg';
-
-// Only start clustering when showing this number of trees.
-const MIN_CLUSTER_SIZE = 200;
-
-const MAX_CLUSTER_ZOOM = 18;
-
-type MarkerMap = {
-	[key: string]: Marker;
-};
 
 const CLUSTER_GRID: {
 	[key: number]: number;
@@ -98,44 +84,14 @@ const expand = (bounds: LatLngBounds) => {
 export class Markers {
 	private map;
 
-	private markerMap: MarkerMap = {};
 	private searchQuery: string | undefined = undefined;
 	private bounds: LatLngBounds | undefined = undefined;
-
-	private greenIcon;
-	private yellowIcon;
-	private redIcon;
-	private blackIcon;
 
 	private oldClusterGroups: L.Layer[] = [];
 
 	constructor(map: Map, searchQuery: string | undefined) {
 		this.map = map;
 		this.searchQuery = searchQuery;
-
-		this.greenIcon = L.icon({
-			iconUrl: GreenIcon,
-			iconSize: [20, 20],
-			iconAnchor: [10, 10]
-		});
-
-		this.yellowIcon = L.icon({
-			iconUrl: YellowIcon,
-			iconSize: [20, 20],
-			iconAnchor: [10, 10]
-		});
-
-		this.redIcon = L.icon({
-			iconUrl: RedIcon,
-			iconSize: [20, 20],
-			iconAnchor: [10, 10]
-		});
-
-		this.blackIcon = L.icon({
-			iconUrl: BlackIcon,
-			iconSize: [20, 20],
-			iconAnchor: [10, 10]
-		});
 
 		map.on('moveend', () => this.onMoveEnd());
 
@@ -219,22 +175,6 @@ export class Markers {
 		}
 	}
 
-	private getTreeIcon(tree: ITree) {
-		if (tree.state === 'dead' || tree.state === 'gone' || tree.state === 'stomp') {
-			return this.blackIcon;
-		}
-
-		if (tree.state === 'sick') {
-			return this.redIcon;
-		}
-
-		if (tree.state === 'deformed') {
-			return this.yellowIcon;
-		}
-
-		return this.greenIcon;
-	}
-
 	/**
 	 * Returns individual trees or cluster groups, depending
 	 * on the map zoom level.
@@ -242,20 +182,19 @@ export class Markers {
 	private getItemsToShow(trees: ITree[]) {
 		const enabled = get(clusterStore);
 
-		if (enabled && this.map.getZoom() < MAX_CLUSTER_ZOOM && trees.length >= MIN_CLUSTER_SIZE) {
+		if (enabled) {
 			return this.getClusterGroupsToShow(trees);
 		}
 
 		return this.getMarkersToShow(trees);
 	}
 
+	// Add trees as individual markers, clustering off.
 	private getMarkersToShow(trees: ITree[]) {
 		const res = [];
 
 		for (const tree of trees) {
-			const point = L.marker([tree.lat, tree.lon], {
-				icon: this.getTreeIcon(tree)
-			});
+			const point = L.circle([tree.lat, tree.lon], this.getTreeCircleProps(tree));
 
 			point.on('click', () => {
 				mapBus.emit('select', tree.id);
@@ -361,14 +300,34 @@ export class Markers {
 		return Object.values(buckets);
 	}
 
-	private getClusterGroupRadius(): number {
-		const container = this.map.getContainer();
+	// Returns props for a tree circle, used in the map component.
+	private getTreeCircleProps(tree: ITree) {
+		// Default color is for healthy trees.
+		const props = {
+			radius: 10,
+			fillColor: '#228B22',
+			color: '#228B22',
+			weight: 1,
+			opacity: 1,
+			fillOpacity: 0.5
+		};
 
-		const width = container.clientWidth;
-		const height = container.clientHeight;
+		props.radius = Math.max(0.5, (tree.diameter ?? 4) / 2);
 
-		const min = Math.min(width, height);
+		if (tree.state === 'stomp') {
+			props.color = '#000';
+			props.fillColor = '#000';
+			props.fillOpacity = 0.2;
+			props.radius = 1;
+		} else if (tree.state === 'sick' || tree.state === 'deformed') {
+			props.color = '#228B22';
+			props.fillColor = '#FFD700';
+		} else if (tree.state === 'dead') {
+			props.color = '#8B4513';
+			props.fillColor = '#8B4513';
+			props.fillOpacity = 0.2;
+		}
 
-		return min / 10 / 2 - 5;
+		return props;
 	}
 }

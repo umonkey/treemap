@@ -53,7 +53,8 @@ export const hook = (element: string, mount: MountFn, destroy: DestroyFn) => {
 		const zoom = get(mapZoom);
 
 		const em = L.map(element, {
-			maxBounds: getMaxBounds()
+			maxBounds: getMaxBounds(),
+			renderer: L.canvas()
 		}).setView([center.lat, center.lng], zoom);
 
 		map.set(em);
