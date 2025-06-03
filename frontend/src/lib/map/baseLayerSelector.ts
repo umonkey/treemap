@@ -2,6 +2,8 @@ import { baseLayer, droneLayer, mapLayerStore } from '$lib/stores/mapLayerStore'
 import { clusterStore } from '$lib/stores/clusterStore';
 import L from 'leaflet';
 import { get } from 'svelte/store';
+import { MAPTILER_KEY } from '$lib/env';
+import { MaptilerLayer } from '@maptiler/leaflet-maptilersdk';
 
 const getDefaultLayer = (): string => {
 	const isDark = window?.matchMedia('(prefers-color-scheme: dark)')?.matches ?? false;
@@ -31,16 +33,18 @@ export const addLayerSelection = (map: L.Map) => {
 		}
 	);
 
-	const osmBasic = L.tileLayer(
-		'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-		{
-			attribution:
-				'&copy; <a href="https://myga.am/">Kanach Yerevan</a> &amp; <a href="https://www.openstreetmap.org/copyright">OSM</a>',
-			minZoom: 9,
-			maxZoom: 25,
-			maxNativeZoom: 19
-		}
-	);
+	const osmBasic = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		attribution:
+			'&copy; <a href="https://myga.am/">Kanach Yerevan</a> &amp; <a href="https://www.openstreetmap.org/copyright">OSM</a>',
+		minZoom: 9,
+		maxZoom: 25,
+		maxNativeZoom: 19
+	});
+
+	const osmVector = new MaptilerLayer({
+		apiKey: MAPTILER_KEY,
+		style: 'openstreetmap'
+	});
 
 	const google = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
 		attribution:
@@ -66,6 +70,7 @@ export const addLayerSelection = (map: L.Map) => {
 		'OSM Dark': osmDark,
 		'OSM Light': osmLight,
 		'OSM Basic': osmBasic,
+		'OSM Vector': osmVector,
 		Satellite: google
 	};
 
@@ -80,6 +85,10 @@ export const addLayerSelection = (map: L.Map) => {
 		osmDark.addTo(map);
 	} else if (currentLayer === 'Satellite') {
 		google.addTo(map);
+	} else if (currentLayer === 'OSM Basic') {
+		osmBasic.addTo(map);
+	} else if (currentLayer === 'OSM Vector') {
+		osmVector.addTo(map);
 	} else {
 		osmLight.addTo(map);
 	}
