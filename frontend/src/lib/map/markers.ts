@@ -11,61 +11,6 @@ import { mapBus } from '$lib/buses';
 import { mapLastTree } from '$lib/stores/mapStore';
 import { get } from 'svelte/store';
 import { markerStore } from '$lib/stores/markerStore';
-import { clusterStore } from '$lib/stores/clusterStore';
-
-const CLUSTER_GRID: {
-	[key: number]: number;
-} = {
-	0: 52.428,
-	1: 26.214,
-	2: 13.107,
-	3: 6.5535,
-	4: 3.2768,
-	5: 1.6384,
-	6: 0.8192,
-	7: 0.4096,
-	8: 0.2048,
-	9: 0.1024,
-	10: 0.0512,
-	11: 0.0256,
-	12: 0.0128,
-	13: 0.0064,
-	14: 0.0032,
-	15: 0.0016,
-	16: 0.0008,
-	17: 0.0004,
-	18: 0.0001220703125
-};
-
-const CLUSTER_RADIUS: {
-	[key: number]: number;
-} = {
-	6: 32000,
-	7: 16000,
-	8: 8000,
-	9: 4000,
-	10: 2000,
-	11: 1000,
-	12: 500,
-	13: 250,
-	14: 125,
-	15: 62.5,
-	16: 31.25,
-	17: 15.625
-};
-
-type ClusterGroup = {
-	lat: number;
-	lon: number;
-	radius: number;
-	count: number;
-
-	// Additional props for panning.
-	n: number;
-	e: number;
-	s: number;
-	w: number;
-};
 
 // Expand current map bounds by 100% in all directions, one extra screen.
 // This makes us load some extra markers, which makes panning more natural.
@@ -87,7 +32,7 @@ export class Markers {
 	private searchQuery: string | undefined = undefined;
 	private bounds: LatLngBounds | undefined = undefined;
 
-	private oldClusterGroups: L.Layer[] = [];
+	private oldMarkers: L.Layer[] = [];
 
 	constructor(map: Map, searchQuery: string | undefined) {
 		this.map = map;
@@ -164,35 +109,21 @@ export class Markers {
 		const items = this.getItemsToShow(trees);
 
 		// Remove old items.
-		for (const item of this.oldClusterGroups) {
+		for (const item of this.oldMarkers) {
 			this.map.removeLayer(item);
 		}
 
 		// Add new items.
 		for (const item of items) {
 			this.map.addLayer(item);
-			this.oldClusterGroups.push(item);
+			this.oldMarkers.push(item);
 		}
 	}
 
-	/**
-	 * Returns individual trees or cluster groups, depending
-	 * on the map zoom level.
-	 */
-	private getItemsToShow(trees: ITree[]) {
-		const enabled = get(clusterStore);
-
-		if (enabled) {
-			return this.getClusterGroupsToShow(trees);
-		}
-
-		return this.getMarkersToShow(trees);
-	}
-
-	// Add trees as individual markers, clustering off.
+	// Add trees as individual markers.
 	//
 	// Trunks are added on top of crowns, to make them clickable.
-	private getMarkersToShow(trees: ITree[]) {
+	private getItemsToShow(trees: ITree[]): L.Layer[] {
 		const crowns = [];
 		const trunks = [];
 
@@ -229,83 +160,6 @@ export class Markers {
 		}
 
 		return [...crowns, ...trunks];
-	}
-
-	private getClusterGroupsToShow(trees: ITree[]) {
-		const res = [];
-		const groups = this.splitBuckets(trees);
-
-		const maxValue = Math.max(...groups.map((g) => g.count));
-		console.debug(`[map] Clustering trees, max group size=${maxValue}.`);
-
-		for (const group of groups) {
-			const opacity = (group.count / maxValue) * 0.5 + 0.3;
-
-			const bounds = L.latLngBounds(L.latLng(group.n, group.w), L.latLng(group.s, group.e));
-
-			const onClick = () => {
-				this.map.fitBounds(bounds);
-			};
-
-			const r = L.rectangle(bounds, {
-				color: '#080',
-				stroke: false,
-				fillOpacity: opacity
-			}).on('click', onClick);
-
-			const label = L.divIcon({
-				html: group.count.toString(),
-				className: 'cluster-count',
-				iconSize: [40, 40]
-			});
-
-			const marker = L.marker([group.lat, group.lon], {
-				icon: label
-			}).on('click', onClick);
-
-			res.push(r);
-			res.push(marker);
-		}
-
-		return res;
-	}
-
-	/**
-	 * Split trees into 100 separate buckets (clustering).
-	 */
-	private splitBuckets(trees: ITree[]): ClusterGroup[] {
-		const divider = CLUSTER_GRID[this.map.getZoom() - 1] ?? CLUSTER_GRID[0];
-
-		const buckets: {
-			[key: string]: ClusterGroup;
-		} = {};
-
-		const radius = CLUSTER_RADIUS[this.map.getZoom()] ?? 100;
-
-		for (const tree of trees) {
-			const y = Math.round(tree.lat / divider) * divider;
-			const x = Math.round(tree.lon / divider) * divider;
-
-			const id = `${x},${y}`;
-
-			const bucket = buckets[id] || {
-				lat: y,
-				lon: x,
-				count: 0,
-				radius,
-
-				n: y + divider / 2,
-				e: x + divider / 2,
-				s: y - divider / 2,
-				w: x - divider / 2
-			};
-
-			bucket.count++;
-
-			buckets[id] = bucket;
-		}
-
-		return Object.values(buckets);
 	}
 
 	// Returns props for a tree circle, used in the map component.

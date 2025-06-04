@@ -1,5 +1,4 @@
 import { baseLayer, droneLayer, mapLayerStore } from '$lib/stores/mapLayerStore';
-import { clusterStore } from '$lib/stores/clusterStore';
 import L from 'leaflet';
 import { get } from 'svelte/store';
 import { MAPTILER_KEY } from '$lib/env';
@@ -65,8 +64,6 @@ export const addLayerSelection = (map: L.Map) => {
 		opacity: 0.9
 	});
 
-	const cluster = L.layerGroup([]).addTo(map);
-
 	const baseMaps = {
 		'OSM Dark': osmDark,
 		'OSM Light': osmLight,
@@ -76,8 +73,7 @@ export const addLayerSelection = (map: L.Map) => {
 	};
 
 	const overlays = {
-		Drone: drone,
-		Cluster: cluster
+		Drone: drone
 	};
 
 	const currentLayer = get(baseLayer) ?? getDefaultLayer();
@@ -114,10 +110,6 @@ export const addLayerSelection = (map: L.Map) => {
 				return value;
 			});
 		}
-
-		if (event.name === 'Cluster') {
-			clusterStore.update(() => true);
-		}
 	});
 
 	map.on('overlayremove', (event) => {
@@ -126,10 +118,6 @@ export const addLayerSelection = (map: L.Map) => {
 				value.drone = false;
 				return value;
 			});
-		}
-
-		if (event.name === 'Cluster') {
-			clusterStore.update(() => false);
 		}
 	});
 };

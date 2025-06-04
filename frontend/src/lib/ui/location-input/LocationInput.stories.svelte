@@ -1,4 +1,4 @@
-<script module>
+<script lang="ts" module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import LocationInput from './LocationInput.svelte';
 	import { fn } from '@storybook/test';
@@ -13,26 +13,40 @@
 			open: { control: 'boolean' }
 		},
 		args: {
+			label: 'Location',
+			hint: 'Please choose a location',
+			value: { lat: 40.181389, lng: 44.514444 },
 			onChange: fn()
+		},
+		parameters: {
+			viewport: {
+				defaultViewport: 'mobile1'
+			}
 		}
 	});
 </script>
 
-<Story
-	name="Primary"
-	args={{
-		value: { lat: 40.181389, lng: 44.514444 },
-		label: 'Location',
-		hint: 'Please choose a location'
-	}}
-/>
+{#snippet padded(args)}
+	<div class="padded">
+		<LocationInput {...args} />
+	</div>
+{/snippet}
+
+<Story name="Primary" args={{ simpleChild: true }} template={padded} />
 
 <Story
 	name="Open"
 	args={{
-		value: { lat: 40.181389, lng: 44.514444 },
-		label: 'Location',
-		hint: 'Please choose a location',
-		open: true
+		open: true,
+		simpleChild: true
 	}}
+	template={padded}
 />
+
+<style>
+	.padded {
+		padding: 10px;
+		max-width: 480px;
+		box-sizing: border-box;
+	}
+</style>
