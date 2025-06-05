@@ -3,7 +3,7 @@
 	import { baseLayer } from '$lib/stores/mapLayerStore';
 	import { onDestroy, onMount, type Snippet } from 'svelte';
 	import { hook } from './hooks';
-	import { MapLayers } from '$lib/ui';
+	import { MapLayers, MapMyPosition } from '$lib/ui';
 
 	const {
 		center,
@@ -37,6 +37,7 @@
 
 	{#if map}
 		<MapLayers />
+		<MapMyPosition />
 
 		{#if children}
 			{@render children()}

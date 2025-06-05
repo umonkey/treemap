@@ -15,7 +15,6 @@ import type { ILatLng, MountFn, DestroyFn } from '$lib/types';
 import { MAX_BOUNDS } from '$lib/constants';
 import { Markers } from '$lib/map/markers';
 import { addLocateMeButton } from '$lib/map/addLocateMeButton';
-import { addLocateMeCircle } from '$lib/map/addLocateMeCircle';
 import { addResizeObserver } from '$lib/map/resizeObserver';
 import { get } from 'svelte/store';
 import { locationBus, mapBus } from '$lib/buses';
@@ -59,7 +58,6 @@ export const hook = (element: string, mount: MountFn, destroy: DestroyFn) => {
 		em.attributionControl.setPrefix('');
 
 		addResizeObserver(em);
-		addLocateMeCircle(em);
 		addLocateMeButton(em);
 
 		markers.set(new Markers(em, undefined));
