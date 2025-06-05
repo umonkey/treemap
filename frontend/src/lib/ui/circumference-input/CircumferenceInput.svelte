@@ -13,6 +13,8 @@
 	label={locale.circumferenceLabel()}
 	value={value ? value * 100 : null}
 	{autofocus}
+	placeholder="0.0"
+	step="0.5"
 	onChange={(value: number) => onChange(value / 100)}
 	hint={locale.circumferenceHint()}
 	help={locale.helpCircumference()}

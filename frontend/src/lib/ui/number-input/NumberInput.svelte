@@ -7,6 +7,7 @@
 		label = undefined,
 		hint = undefined,
 		help = undefined,
+		step = '0.1',
 		autofocus,
 		onChange = () => {}
 	} = $props<{
@@ -16,6 +17,7 @@
 		hint?: string | undefined;
 		help?: string | undefined;
 		autofocus?: boolean;
+		step?: string;
 		onChange: (value: number) => void;
 	}>();
 
@@ -34,6 +36,7 @@
 		{value}
 		{placeholder}
 		{autofocus}
+		{step}
 		onchange={handleChange}
 	/>
 </FormElement>
