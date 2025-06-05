@@ -66,8 +66,7 @@ export const editor = (tree_id: string) => {
 					addTrees([res.data]);
 					console.debug(`[crown editor] Tree ${tree_id} updated.`);
 					toast.push(locale.measureCanopyUpdated());
-					console.debug('GOTO', routes.treeHistory(tree_id));
-					goto(routes.treeHistory(tree_id));
+					goto(routes.mapPreview(tree_id));
 				} else if (res.error) {
 					saveError.set(res.error.description);
 					console.error(

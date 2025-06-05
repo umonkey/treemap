@@ -65,7 +65,7 @@ export const editor = (tree_id: string) => {
 			.then((res) => {
 				if (res.status >= 200 && res.status < 300 && res.data) {
 					toast.push(locale.measureLocationUpdated());
-					goto(routes.treeDetails(tree_id));
+					goto(routes.mapPreview(tree_id));
 				} else if (res.error) {
 					saveError.set(res.error.description);
 				}

@@ -52,6 +52,6 @@ describe('circumference-form/hooks', async () => {
 		await save();
 		expect(update_called).toBe(true);
 
-		expect(mockedGoto).toHaveBeenCalledWith('/tree/tree1/history');
+		expect(mockedGoto).toHaveBeenCalledWith('/map?preview=tree1');
 	});
 });

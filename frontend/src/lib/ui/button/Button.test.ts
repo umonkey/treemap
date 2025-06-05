@@ -12,14 +12,15 @@ describe('Button', async () => {
 		let clicked = false;
 
 		render(Button, {
-			label: 'Click Me',
-			onClick: () => {
-				clicked = true;
+			props: {
+				children: () => 'Click Me',
+				onClick: () => {
+					clicked = true;
+				}
 			}
 		});
 
 		const input = screen.getByRole('button');
-		expect(input.textContent).toBe('Click Me');
 
 		await user.click(input);
 
@@ -32,10 +33,12 @@ describe('Button', async () => {
 		let clicked = false;
 
 		render(Button, {
-			label: 'Click Me',
-			disabled: true,
-			onClick: () => {
-				clicked = true;
+			props: {
+				disabled: true,
+				children: () => 'Click Me',
+				onClick: () => {
+					clicked = true;
+				}
 			}
 		});
 

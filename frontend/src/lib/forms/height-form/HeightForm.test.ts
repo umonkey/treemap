@@ -90,6 +90,6 @@ describe('HeightForm', async () => {
 		await user.click(confirm);
 
 		expect(saved).toBe(true);
-		expect(mockedGoto).toHaveBeenCalledWith('/tree/tree1/history');
+		expect(mockedGoto).toHaveBeenCalledWith('/map?preview=tree1');
 	});
 });

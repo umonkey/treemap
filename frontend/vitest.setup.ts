@@ -35,3 +35,26 @@ Object.defineProperty(window, 'matchMedia', {
 		dispatchEvent: vi.fn()
 	}))
 });
+
+// Mock this for the maplibre package.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+window.URL.createObjectURL = (obj: Blob | MediaSource): string => 'blob:foobar';
+
+// Mock ServiceWorkers, also required by maplibre.
+global.Worker = vi.fn().mockImplementation((url: string) => {
+	return {
+		postMessage: vi.fn(),
+		terminate: vi.fn(),
+		onmessage: null,
+		onerror: null,
+		onmessageerror: null,
+		onclose: null,
+		addEventListener: vi.fn(),
+		removeEventListener: vi.fn(),
+		start: vi.fn(),
+		stop: vi.fn(),
+		url
+	};
+});
+
+import 'vitest-canvas-mock';
