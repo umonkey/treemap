@@ -12,7 +12,7 @@ export const updateCrownDiameter = (id: string) => {
 			busy.set(true);
 			await apiClient.updateTreeDiameter(id, value);
 			toast.push(locale.measureCanopyUpdated());
-			goto(routes.treeHistory(id));
+			goto(routes.mapPreview(id));
 		} catch (e) {
 			console.error(`Error updating tree canopy: ${e}`);
 			toast.push('Error updating tree canopy.');
@@ -22,7 +22,7 @@ export const updateCrownDiameter = (id: string) => {
 	};
 
 	const handleCancel = () => {
-		goto(routes.treeHistory(id));
+		goto(routes.mapPreview(id));
 	};
 
 	return { busy, handleConfirm, handleCancel };

@@ -38,6 +38,6 @@ describe('actions/updateCrownDiameter', async () => {
 		expect(get(busy)).toBe(false);
 		expect(called).toBe(true);
 
-		expect(mockedGoto).toHaveBeenCalledWith('/tree/tree1/history');
+		expect(mockedGoto).toHaveBeenCalledWith('/map?preview=tree1');
 	});
 });

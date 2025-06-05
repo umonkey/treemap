@@ -103,7 +103,7 @@ export const editor = (tree_id: string) => {
 	};
 
 	const close = () => {
-		goto(routes.treeHistory(tree_id));
+		goto(routes.mapPreview(tree_id));
 	};
 
 	reload(tree_id);

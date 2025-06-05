@@ -12,7 +12,7 @@ export const markDead = (id: string) => {
 			busy.set(true);
 			await apiClient.updateTreeState(id, 'dead');
 			toast.push(locale.deadNotification());
-			goto(routes.treeHistory(id));
+			goto(routes.mapPreview(id));
 		} catch (e) {
 			console.error(`Error deleting tree: ${e}`);
 			toast.push('Error deleting tree.');
@@ -22,7 +22,7 @@ export const markDead = (id: string) => {
 	};
 
 	const handleCancel = () => {
-		goto(routes.treeHistory(id));
+		goto(routes.mapPreview(id));
 	};
 
 	return { busy, handleConfirm, handleCancel };

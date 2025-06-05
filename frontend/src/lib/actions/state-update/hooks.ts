@@ -66,7 +66,7 @@ export const stateUpdater = (tree_id: string, state: string) => {
 	};
 
 	const close = () => {
-		goto(routes.treeHistory(tree_id));
+		goto(routes.mapPreview(tree_id));
 	};
 
 	reload(tree_id);

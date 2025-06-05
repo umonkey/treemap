@@ -35,7 +35,7 @@ export const editor = (tree: ITree) => {
 			.then((res) => {
 				addTrees([res]);
 				toast.push(locale.measureStateUpdated());
-				goto(routes.treeHistory(tree.id));
+				goto(routes.mapPreview(tree.id));
 			})
 			.catch(() => {
 				toast.push('Error saving changes.');
@@ -43,7 +43,7 @@ export const editor = (tree: ITree) => {
 	};
 
 	const close = () => {
-		goto(routes.treeHistory(tree.id));
+		goto(routes.mapPreview(tree.id));
 	};
 
 	const handleChange = (e: Event) => {
