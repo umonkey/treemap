@@ -4,6 +4,7 @@
 	import { onDestroy, onMount, type Snippet } from 'svelte';
 	import { hook } from './hooks';
 	import type { ILatLng } from '$lib/types';
+	import { MapLayers } from '$lib/ui';
 
 	const {
 		center,
@@ -43,6 +44,7 @@
 	></div>
 
 	{#if children && map}
+		<MapLayers />
 		{@render children()}
 	{/if}
 </div>

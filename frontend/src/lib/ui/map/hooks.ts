@@ -14,7 +14,6 @@ import type { Map, Marker } from 'leaflet';
 import type { ILatLng, MountFn, DestroyFn } from '$lib/types';
 import { MAX_BOUNDS } from '$lib/constants';
 import { Markers } from '$lib/map/markers';
-import { addLayerSelection } from '$lib/map/baseLayerSelector';
 import { addLocateMeButton } from '$lib/map/addLocateMeButton';
 import { addLocateMeCircle } from '$lib/map/addLocateMeCircle';
 import { addResizeObserver } from '$lib/map/resizeObserver';
@@ -60,7 +59,6 @@ export const hook = (element: string, mount: MountFn, destroy: DestroyFn) => {
 		map.set(em);
 		em.attributionControl.setPrefix('');
 
-		addLayerSelection(em);
 		addResizeObserver(em);
 		addLocateMeCircle(em);
 		addLocateMeButton(em);
