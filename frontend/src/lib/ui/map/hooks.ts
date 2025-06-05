@@ -23,7 +23,8 @@ import { get } from 'svelte/store';
 import { locationBus, mapBus } from '$lib/buses';
 import { mapCenter, mapZoom, mapStore } from '$lib/stores/mapStore';
 import { writable } from 'svelte/store';
-import { addPins } from '$lib/map';
+import { addPins, mapKey } from '$lib/map';
+import { setContext } from 'svelte';
 
 const getMaxBounds = () => {
 	const c1 = L.latLng(MAX_BOUNDS[0][0], MAX_BOUNDS[0][1]);
@@ -100,6 +101,10 @@ export const hook = (element: string, mount: MountFn, destroy: DestroyFn) => {
 				};
 			});
 		});
+
+		// Set the map context for plugins.
+		setContext(mapKey, em);
+		console.debug('[map] Map context set.');
 	});
 
 	// Clean up on component removal.
@@ -199,5 +204,18 @@ export const hook = (element: string, mount: MountFn, destroy: DestroyFn) => {
 		get(markers)?.setSearchQuery(value);
 	};
 
-	return { map, destroy, update, handleCenter, handlePinsChange, handleSearch, handleCanAdd };
+	const handleElementChange = (element: HTMLDivElement | undefined) => {
+		console.debug('[Map] Changing map element', element);
+	};
+
+	return {
+		map,
+		destroy,
+		update,
+		handleCenter,
+		handlePinsChange,
+		handleSearch,
+		handleCanAdd,
+		handleElementChange
+	};
 };
