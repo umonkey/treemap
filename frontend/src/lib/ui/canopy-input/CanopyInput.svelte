@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { locale } from "$lib/locale";
-	import { NumberInput } from "$lib/ui";
+	import { locale } from '$lib/locale';
+	import { NumberInput } from '$lib/ui';
 
 	const { value, autofocus, onChange } = $props<{
 		value: number | null;

@@ -2,14 +2,14 @@
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
 	import {
-		CircumferenceIcon,
-		DiameterIcon,
 		EditIcon,
-		HeightIcon,
 		MapIcon,
 		SkullIcon,
 		TrashIcon,
-		TreeIcon
+		TreeIcon,
+		MeasureHeight,
+		MeasureDiameter,
+		MeasureGrith
 	} from '$lib/icons';
 	import '$lib/styles/colors.css';
 	import '$lib/styles/animations.css';
@@ -27,18 +27,28 @@
 	<div class="canvas" onclick={onClose}>
 		<div class="menu">
 			<ul>
-				<li>
-					<MapIcon /> <a href={routes.treeMove(id)}>{locale.contextMove()}</a>
+				<li class="measure">
+					<p>Measure:</p>
+					<div class="icons">
+						<div class="icon">
+							<a href={routes.treeHeight(id)}>
+								<MeasureHeight />
+							</a>
+						</div>
+						<div class="icon">
+							<a href={routes.treeDiameter(id)}>
+								<MeasureDiameter />
+							</a>
+						</div>
+						<div class="icon">
+							<a href={routes.treeCircumference(id)}>
+								<MeasureGrith />
+							</a>
+						</div>
+					</div>
 				</li>
 				<li class="sep">
-					<HeightIcon /> <a href={routes.treeHeight(id)}>{locale.contextHeight()}</a>
-				</li>
-				<li>
-					<DiameterIcon /> <a href={routes.treeDiameter(id)}>{locale.contextDiameter()}</a>
-				</li>
-				<li>
-					<CircumferenceIcon />
-					<a href={routes.treeCircumference(id)}>{locale.contextCircumference()}</a>
+					<MapIcon /> <a href={routes.treeMove(id)}>{locale.contextMove()}</a>
 				</li>
 				<li class="sep">
 					<SkullIcon /> <a href={routes.treeDead(id)}>{locale.contextDead()}</a>
@@ -99,7 +109,7 @@
 				line-height: 20px;
 			}
 
-			:global(svg) {
+			:global(li > svg) {
 				width: 20px;
 				height: 20px;
 			}
@@ -109,6 +119,41 @@
 			margin-top: 5px;
 			padding-top: 10px;
 			border-top: solid 1px rgba(0, 0, 0, 0.2);
+		}
+
+		li.measure {
+			display: flex;
+			flex-direction: column;
+
+			a {
+				color: inherit;
+				display: block;
+				aspect-ratio: 1;
+			}
+
+			p {
+				margin: 0;
+				text-align: center;
+				opacity: 0.5;
+			}
+
+			.icons {
+				display: flex;
+				flex-direction: row;
+				width: 100%;
+				gap: 10px;
+
+				.icon {
+					flex-grow: 1;
+					flex-shrink: 1;
+
+					:global(svg) {
+						width: 100%;
+						height: 100%;
+						aspect-ratio: 1;
+					}
+				}
+			}
 		}
 	}
 </style>
