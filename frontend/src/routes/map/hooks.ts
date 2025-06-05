@@ -56,8 +56,16 @@ export const hooks = (mount: MountFn, destroy: DestroyFn) => {
 		searchStore.set(query ?? undefined);
 	};
 
+	const handleAddTree = (pos: ILatLng) => {
+		goto(routes.treeAdd(pos.lat, pos.lng));
+	};
+
+	const handleAddRow = (start: ILatLng, end: ILatLng) => {
+		goto(routes.addRow(start, end));
+	};
+
 	mount(() => mapBus.on('select', handleTreeClick));
 	destroy(() => mapBus.off('select', handleTreeClick));
 
-	return { pins, handlePreviewChange, handleSearchQuery };
+	return { pins, handlePreviewChange, handleSearchQuery, handleAddTree, handleAddRow };
 };

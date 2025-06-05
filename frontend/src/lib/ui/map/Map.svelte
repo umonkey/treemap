@@ -3,7 +3,6 @@
 	import { baseLayer } from '$lib/stores/mapLayerStore';
 	import { onDestroy, onMount, type Snippet } from 'svelte';
 	import { hook } from './hooks';
-	import CROSSHAIR from '$lib/assets/crosshair.svg';
 	import type { ILatLng } from '$lib/types';
 
 	const {
@@ -11,20 +10,16 @@
 		className = 'default',
 		pins,
 		searchQuery = undefined,
-		crosshair = false,
-		canAdd = false,
 		children = undefined
 	} = $props<{
 		center: [number, number];
 		className: string;
 		pins?: ILatLng[];
 		searchQuery?: string | undefined;
-		crosshair?: boolean | undefined;
-		canAdd?: boolean | undefined;
 		children?: Snippet | undefined;
 	}>();
 
-	const { handleCenter, handlePinsChange, handleSearch, handleCanAdd, handleElementChange } = hook(
+	const { handleCenter, handlePinsChange, handleSearch, handleElementChange } = hook(
 		'map',
 		onMount,
 		onDestroy
@@ -34,7 +29,6 @@
 
 	$effect(() => handleCenter(center));
 	$effect(() => handlePinsChange(pins));
-	$effect(() => handleCanAdd(canAdd));
 	$effect(() => handleSearch(searchQuery));
 	$effect(() => handleElementChange(map));
 </script>
@@ -50,10 +44,6 @@
 
 	{#if children && map}
 		{@render children()}
-	{/if}
-
-	{#if crosshair}
-		<img src={CROSSHAIR} class="crosshair" alt="" />
 	{/if}
 </div>
 
@@ -76,16 +66,6 @@
 
 	#map.dark {
 		background-color: #080808;
-	}
-
-	.crosshair {
-		width: 30px;
-		height: 30px;
-		position: absolute;
-		left: 50%;
-		top: 50%;
-		z-index: var(--z-crosshair);
-		transform: translate(-50%, -50%);
 	}
 
 	:global {

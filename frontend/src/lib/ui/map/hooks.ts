@@ -18,7 +18,6 @@ import { addLayerSelection } from '$lib/map/baseLayerSelector';
 import { addLocateMeButton } from '$lib/map/addLocateMeButton';
 import { addLocateMeCircle } from '$lib/map/addLocateMeCircle';
 import { addResizeObserver } from '$lib/map/resizeObserver';
-import { addTreeButton } from '$lib/map/addTreeButton';
 import { get } from 'svelte/store';
 import { locationBus, mapBus } from '$lib/buses';
 import { mapCenter, mapZoom, mapStore } from '$lib/stores/mapStore';
@@ -190,16 +189,6 @@ export const hook = (element: string, mount: MountFn, destroy: DestroyFn) => {
 		}
 	};
 
-	// Enable adding trees.
-	const handleCanAdd = (enabled: boolean) => {
-		const m = get(map);
-
-		if (enabled && m) {
-			console.debug('[map] Adding tree button');
-			addTreeButton(m);
-		}
-	};
-
 	const handleSearch = (value: string | undefined) => {
 		get(markers)?.setSearchQuery(value);
 	};
@@ -215,7 +204,6 @@ export const hook = (element: string, mount: MountFn, destroy: DestroyFn) => {
 		handleCenter,
 		handlePinsChange,
 		handleSearch,
-		handleCanAdd,
 		handleElementChange
 	};
 };

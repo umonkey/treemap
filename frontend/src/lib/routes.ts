@@ -1,4 +1,5 @@
 export { goto } from '$app/navigation';
+import type { ILatLng } from '$lib/types';
 
 type Params = {
 	[key: string]: string | undefined | null;
@@ -46,6 +47,13 @@ export const routes = {
 	statsState: () => '/stats/state',
 	statsStreets: () => '/stats/streets',
 	treeAdd: (lat: number, lng: number) => `/add?lat=${lat}&lng=${lng}`,
+	addRow: (start: ILatLng, end: ILatLng) =>
+		build('/add/row', {
+			alat: start.lat.toString(),
+			alng: start.lng.toString(),
+			blat: end.lat.toString(),
+			blng: end.lng.toString()
+		}),
 	treeComments: (id: string) => `/tree/${id}/comments`,
 	treeDead: (id: string) => `/tree/${id}/dead`,
 	treeDelete: (id: string) => `/tree/${id}/delete`,
