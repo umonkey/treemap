@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Header, Map, MapPreview, MapAddTree, MapAddRow, MapCenter } from '$lib/ui';
+	import { Header, Map, MapPreview, MapAddTree, MapAddRow, MapCenter, MapPin } from '$lib/ui';
 	import { locale } from '$lib/locale';
 	import { mapCenter, mapZoom } from '$lib/stores/mapStore';
 	import { isMapperMode } from '$lib/stores/modeStore';
@@ -7,7 +7,7 @@
 	import { onMount, onDestroy } from 'svelte';
 
 	const { data } = $props();
-	const { pins, handlePreviewChange, handleSearchQuery, handleAddTree, handleAddRow } = hooks(
+	const { pin, handlePreviewChange, handleSearchQuery, handleAddTree, handleAddRow } = hooks(
 		onMount,
 		onDestroy
 	);
@@ -25,7 +25,11 @@
 <Header {title} />
 
 <div class="mapContainer">
-	<Map center={$mapCenter} pins={$pins} zoom={$mapZoom} searchQuery={data.searchQuery}>
+	<Map center={$mapCenter} zoom={$mapZoom} searchQuery={data.searchQuery}>
+		{#if $pin}
+			<MapPin center={$pin} />
+		{/if}
+
 		{#if $isMapperMode}
 			<MapCenter />
 			<MapAddTree onConfirm={handleAddTree} />

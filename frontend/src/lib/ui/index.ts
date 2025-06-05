@@ -29,6 +29,7 @@ export { default as MapAddRow } from './map-add-row/MapAddRow.svelte';
 export { default as MapAddTree } from './map-add-tree/MapAddTree.svelte';
 export { default as MapCenter } from './map-center/MapCenter.svelte';
 export { default as MapLayers } from './map-layers/MapLayers.svelte';
+export { default as MapPin } from './map-pin/MapPin.svelte';
 export { default as MapPreview } from './map-preview/MapPreview.svelte';
 export { default as MobileSidebar } from './mobile-sidebar/MobileSidebar.svelte';
 export { default as ModeSwitcher } from './mode-switcher/ModeSwitcher.svelte';

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Map } from '$lib/ui';
+	import { Map, MapCenter, MapPin } from '$lib/ui';
 	import type { ILatLng } from '$lib/types';
 	import { onMount, onDestroy } from 'svelte';
 	import { hooks } from './hooks';
@@ -14,7 +14,13 @@
 </script>
 
 <div class="mapContainer">
-	<Map {center} pins={pin ? [pin] : []} zoom={19} crosshair={true} />
+	<Map {center} zoom={19} crosshair={true}>
+		<MapCenter />
+
+		{#if pin}
+			<MapPin center={pin} />
+		{/if}
+	</Map>
 </div>
 
 <style>

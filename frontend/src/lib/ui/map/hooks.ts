@@ -21,7 +21,7 @@ import { get } from 'svelte/store';
 import { locationBus, mapBus } from '$lib/buses';
 import { mapCenter, mapZoom, mapStore } from '$lib/stores/mapStore';
 import { writable } from 'svelte/store';
-import { addPins, mapKey } from '$lib/map';
+import { mapKey } from '$lib/map';
 import { setContext } from 'svelte';
 
 const getMaxBounds = () => {
@@ -42,7 +42,6 @@ export const hook = (element: string, mount: MountFn, destroy: DestroyFn) => {
 	const lastMarkerPos = writable<[number, number] | null>(null);
 	const lastMarkerElement = writable<Marker | null>(null);
 	const markers = writable<Markers | undefined>(undefined);
-	const { updatePins } = addPins();
 
 	// Initialize the map component on mount.
 	mount(() => {
@@ -178,15 +177,6 @@ export const hook = (element: string, mount: MountFn, destroy: DestroyFn) => {
 		get(map)?.panTo(pos);
 	};
 
-	// Update pin markers.
-	const handlePinsChange = (pins?: ILatLng[]) => {
-		const m = get(map);
-
-		if (m !== null) {
-			updatePins(m, pins ?? []);
-		}
-	};
-
 	const handleSearch = (value: string | undefined) => {
 		get(markers)?.setSearchQuery(value);
 	};
@@ -200,7 +190,6 @@ export const hook = (element: string, mount: MountFn, destroy: DestroyFn) => {
 		destroy,
 		update,
 		handleCenter,
-		handlePinsChange,
 		handleSearch,
 		handleElementChange
 	};

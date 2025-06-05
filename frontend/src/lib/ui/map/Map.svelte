@@ -3,33 +3,25 @@
 	import { baseLayer } from '$lib/stores/mapLayerStore';
 	import { onDestroy, onMount, type Snippet } from 'svelte';
 	import { hook } from './hooks';
-	import type { ILatLng } from '$lib/types';
 	import { MapLayers } from '$lib/ui';
 
 	const {
 		center,
 		className = 'default',
-		pins,
 		searchQuery = undefined,
 		children = undefined
 	} = $props<{
 		center: [number, number];
 		className: string;
-		pins?: ILatLng[];
 		searchQuery?: string | undefined;
 		children?: Snippet | undefined;
 	}>();
 
-	const { handleCenter, handlePinsChange, handleSearch, handleElementChange } = hook(
-		'map',
-		onMount,
-		onDestroy
-	);
+	const { handleCenter, handleSearch, handleElementChange } = hook('map', onMount, onDestroy);
 
 	let map: HTMLDivElement = $state<HTMLDivElement | undefined>(undefined);
 
 	$effect(() => handleCenter(center));
-	$effect(() => handlePinsChange(pins));
 	$effect(() => handleSearch(searchQuery));
 	$effect(() => handleElementChange(map));
 </script>
@@ -43,9 +35,12 @@
 		class:light={$baseLayer !== 'OSM Dark'}
 	></div>
 
-	{#if children && map}
+	{#if map}
 		<MapLayers />
-		{@render children()}
+
+		{#if children}
+			{@render children()}
+		{/if}
 	{/if}
 </div>
 

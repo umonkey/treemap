@@ -10,7 +10,7 @@ import { get } from 'svelte/store';
 import type { ILatLng, MountFn, DestroyFn } from '$lib/types';
 
 export const hooks = (mount: MountFn, destroy: DestroyFn) => {
-	const pins = writable<ILatLng[]>([]);
+	const pin = writable<ILatLng | null>(null);
 
 	// This is called when the preview id changes in the URL.
 	// We need to let the preview control know about this,
@@ -23,7 +23,7 @@ export const hooks = (mount: MountFn, destroy: DestroyFn) => {
 
 		// No tree selected for preview.
 		if (tree_id === null) {
-			pins.set([]);
+			pin.set(null);
 			return;
 		}
 
@@ -35,12 +35,10 @@ export const hooks = (mount: MountFn, destroy: DestroyFn) => {
 				lng: res.data.lon
 			});
 
-			pins.set([
-				{
-					lat: res.data.lat,
-					lng: res.data.lon
-				}
-			]);
+			pin.set({
+				lat: res.data.lat,
+				lng: res.data.lon
+			});
 		}
 	};
 
@@ -67,5 +65,5 @@ export const hooks = (mount: MountFn, destroy: DestroyFn) => {
 	mount(() => mapBus.on('select', handleTreeClick));
 	destroy(() => mapBus.off('select', handleTreeClick));
 
-	return { pins, handlePreviewChange, handleSearchQuery, handleAddTree, handleAddRow };
+	return { pin, handlePreviewChange, handleSearchQuery, handleAddTree, handleAddRow };
 };
