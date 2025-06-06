@@ -1,14 +1,15 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { hooks } from './hooks';
+	import { onMount } from 'svelte';
 	import type { ILatLng } from '$lib/types';
 	import { MapButton } from '$lib/ui';
+	import ICON from '$lib/assets/tree.svg';
 
 	const { onConfirm } = $props<{
 		onConfirm: (pos: ILatLng) => void;
 	}>();
 
-	hooks(onMount, onConfirm);
+	const { handleClick } = hooks({ onMount, onConfirm });
 </script>
 
-<MapButton onClick={() => alert('CLICK')} />
+<MapButton onClick={handleClick} icon={ICON} />
