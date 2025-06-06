@@ -111,8 +111,16 @@ class EnglishLocale {
 		return 'Add Tree';
 	}
 
+	public addRowTitle(): string {
+		return 'Add a row of trees';
+	}
+
 	public addConfirmButton(): string {
 		return 'Add tree';
+	}
+
+	public addRowConfirmButton(): string {
+		return 'Add trees';
 	}
 
 	public addCancelButton(): string {
@@ -141,6 +149,10 @@ class EnglishLocale {
 
 	public heightLabel(): string {
 		return 'Height, m';
+	}
+
+	public rowSizeLabel(): string {
+		return 'Trees in the row';
 	}
 
 	public canopyLabel(): string {
@@ -558,6 +570,22 @@ class EnglishLocale {
 	public mapPreviewDetails(): string {
 		return 'Details';
 	}
+
+	public rowStepInfo(count: number, step: number): string {
+		return `You will add ${count} trees, spaced ${step.toFixed(1)} meters apart.`;
+	}
+
+	public rowLength(value: number): string {
+		return `Length: ${value.toFixed(1)} m`;
+	}
+
+	public addRowIntro(): string {
+		return 'Move the map to set the end of the row.';
+	}
+
+	public addContinueButton(): string {
+		return 'Continue';
+	}
 }
 
 class RussianLocale extends EnglishLocale {
@@ -667,6 +695,10 @@ class RussianLocale extends EnglishLocale {
 
 	public addTitle(): string {
 		return 'Добавить дерево';
+	}
+
+	public addRowTitle(): string {
+		return 'Добавить ряд деревьев';
 	}
 
 	public addConfirmButton(): string {
@@ -1108,6 +1140,30 @@ class RussianLocale extends EnglishLocale {
 	public mapPreviewDetails(): string {
 		return 'Детали';
 	}
+
+	public rowSizeLabel(): string {
+		return 'Количество деревьев';
+	}
+
+	public rowStepInfo(count: number, step: number): string {
+		return `Добавим ${count} деревьев, с шагом ${step.toFixed(1)} метров.`;
+	}
+
+	public addRowConfirmButton(): string {
+		return 'Добавить ряд';
+	}
+
+	public rowLength(value: number): string {
+		return `Длина: ${value.toFixed(1)} м`;
+	}
+
+	public addContinueButton(): string {
+		return 'Продолжить';
+	}
+
+	public addRowIntro(): string {
+		return 'Двигай карту чтобы указать конец ряда.';
+	}
 }
 
 class ArmenianLocale extends EnglishLocale {
@@ -1213,6 +1269,10 @@ class ArmenianLocale extends EnglishLocale {
 
 	public addTitle(): string {
 		return 'Ավելացնել ծառ';
+	}
+
+	public addRowTitle(): string {
+		return 'Ավելացրե՛ք ծառերի մի շարք';
 	}
 
 	public addConfirmButton(): string {
@@ -1549,6 +1609,30 @@ class ArmenianLocale extends EnglishLocale {
 
 	public mapPreviewDetails(): string {
 		return 'Մանրամասն';
+	}
+
+	public rowSizeLabel(): string {
+		return 'Ծառերի քանակը';
+	}
+
+	public rowStepInfo(count: number, step: number): string {
+		return `Դուք կտնկեք ${count} ծառ՝ ${step.toFixed(1)} մետր միջակայքով։`;
+	}
+
+	public addRowConfirmButton(): string {
+		return 'Ավելացնել';
+	}
+
+	public rowLength(value: number): string {
+		return `Երկարություն: ${value.toFixed(1)} ն`;
+	}
+
+	public addContinueButton(): string {
+		return 'Շարունակել';
+	}
+
+	public addRowIntro(): string {
+		return 'Տեղաշարժե՛ք քարտեզը՝ շարքի վերջը նշելու համար։';
 	}
 }
 

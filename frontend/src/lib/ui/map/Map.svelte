@@ -1,55 +1,70 @@
 <script lang="ts">
 	import 'leaflet/dist/leaflet.css';
 	import { baseLayer } from '$lib/stores/mapLayerStore';
-	import { onDestroy, onMount } from 'svelte';
+	import { onMount, type Snippet } from 'svelte';
 	import { hook } from './hooks';
-	import CROSSHAIR from '$lib/assets/crosshair.svg';
-	import type { ILatLng } from '$lib/types';
+	import {
+		MapLayers,
+		MapMyPosition,
+		MapResizeObserver,
+		MapState,
+		MapMarkerLoader,
+		MapTrees
+	} from '$lib/ui';
 
 	const {
 		center,
 		className = 'default',
-		pins,
-		searchQuery = undefined,
-		crosshair = false,
-		canAdd = false
+		children = undefined
 	} = $props<{
 		center: [number, number];
 		className: string;
-		pins?: ILatLng[];
-		searchQuery?: string | undefined;
-		crosshair?: boolean | undefined;
-		canAdd?: boolean | undefined;
+		children?: Snippet | undefined;
 	}>();
 
-	const { handleCenter, handlePinsChange, handleSearch, handleCanAdd } = hook(
-		'map',
-		onMount,
-		onDestroy
-	);
+	const { handleCenter } = hook('map', onMount);
+
+	// We need this to track when the map is ready, so we can render children.
+	let map: HTMLDivElement = $state<HTMLDivElement | undefined>(undefined);
 
 	$effect(() => handleCenter(center));
-	$effect(() => handlePinsChange(pins));
-	$effect(() => handleCanAdd(canAdd));
-	$effect(() => handleSearch(searchQuery));
 </script>
 
-<div
-	id="map"
-	class={className}
-	class:dark={$baseLayer === 'OSM Dark'}
-	class:light={$baseLayer !== 'OSM Dark'}
-></div>
+<div class="wrapper">
+	<div
+		id="map"
+		bind:this={map}
+		class={className}
+		class:dark={$baseLayer === 'OSM Dark'}
+		class:light={$baseLayer !== 'OSM Dark'}
+	></div>
 
-{#if crosshair}
-	<img src={CROSSHAIR} class="crosshair" alt="" />
-{/if}
+	{#if map}
+		<MapResizeObserver />
+		<MapLayers />
+		<MapMyPosition />
+		<MapState />
+		<MapMarkerLoader />
+		<MapTrees />
+
+		{#if children}
+			{@render children()}
+		{/if}
+	{/if}
+</div>
 
 <style>
+	.wrapper {
+		width: 100%;
+		height: 100%;
+		position: relative;
+	}
+
 	#map {
 		height: 100%;
 		width: 100%;
 		z-index: 1;
+		outline: none;
 	}
 
 	#map.light {
@@ -58,16 +73,6 @@
 
 	#map.dark {
 		background-color: #080808;
-	}
-
-	.crosshair {
-		width: 30px;
-		height: 30px;
-		position: absolute;
-		left: 50%;
-		top: 50%;
-		z-index: var(--z-crosshair);
-		transform: translate(-50%, -50%);
 	}
 
 	:global {
