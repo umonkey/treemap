@@ -9,14 +9,12 @@
 //
 // So we use the map bus instead.
 
-import L from 'leaflet';
-import type { Map, Marker } from 'leaflet';
-import type { ILatLng, MountFn, DestroyFn } from '$lib/types';
+import L, { type Map } from 'leaflet';
+import type { ILatLng, MountFn } from '$lib/types';
 import { MAX_BOUNDS } from '$lib/constants';
-import { get } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 import { locationBus, mapBus } from '$lib/buses';
 import { mapCenter, mapZoom } from '$lib/stores/mapStore';
-import { writable } from 'svelte/store';
 import { mapKey } from '$lib/map';
 import { setContext } from 'svelte';
 
@@ -27,16 +25,8 @@ const getMaxBounds = () => {
 	return L.latLngBounds(c1, c2);
 };
 
-const lldiff = (a: [number, number] | null, b: [number, number] | null): boolean => {
-	const _a = a || [0, 0];
-	const _b = b || [0, 0];
-	return _a[0] !== _b[0] || _a[1] !== _b[1];
-};
-
-export const hook = (element: string, mount: MountFn, destroy: DestroyFn) => {
+export const hook = (element: string, mount: MountFn) => {
 	const map = writable<Map | null>(null);
-	const lastMarkerPos = writable<[number, number] | null>(null);
-	const lastMarkerElement = writable<Marker | null>(null);
 
 	// Initialize the map component on mount.
 	mount(() => {
@@ -80,70 +70,21 @@ export const hook = (element: string, mount: MountFn, destroy: DestroyFn) => {
 		// Set the map context for plugins.
 		setContext(mapKey, em);
 		console.debug('[map] Map context set.');
-	});
 
-	// Clean up on component removal.
-	destroy(() => {
-		console.debug('[map] Destroying the map component.');
-		mapBus.off('center', handleCenter);
-		mapBus.off('fit', handleFit);
+		// Disconnect handlers on shutdown.
+		return () => {
+			console.debug('[map] Destroying the map component.');
 
-		try {
-			get(map)?.remove();
-		} catch (e) {
-			console.error('[map] Error removing map:', e);
-		}
-	});
+			mapBus.off('center', handleCenter);
+			mapBus.off('fit', handleFit);
 
-	// Update the component when parameters change.
-	const update = ({
-		center,
-		zoom,
-		marker
-	}: {
-		center: [number, number];
-		zoom: number;
-		marker: [number, number] | null;
-	}) => {
-		const m = get(map);
-
-		if (m === null) {
-			console.error('[map] Map is not initialized');
-			return; // never happens
-		}
-
-		if (center[0] != m.getCenter().lat || center[1] != m.getCenter().lng || zoom != m.getZoom()) {
-			console.debug('[map] Updating map center', center, m.getCenter());
-			m.panTo(center);
-			// m.setView(center, zoom);
-		}
-
-		if (lldiff(get(lastMarkerPos), marker)) {
-			console.debug(`[map] Updating marker to ${marker}`);
-
-			const removeMarker = get(lastMarkerElement);
-
-			if (marker) {
-				const ctl = L.marker(marker, {
-					icon: L.icon({
-						iconUrl: '/icons/marker-icon-2x.png',
-						iconSize: [25, 41],
-						iconAnchor: [12, 41]
-					})
-				}).addTo(m);
-
-				lastMarkerPos.set(marker);
-				lastMarkerElement.set(ctl);
-			} else {
-				lastMarkerPos.set(null);
-				lastMarkerElement.set(null);
+			try {
+				get(map)?.remove();
+			} catch (e) {
+				console.error('[map] Error removing map:', e);
 			}
-
-			if (removeMarker) {
-				m.removeLayer(removeMarker);
-			}
-		}
-	};
+		};
+	});
 
 	const handleCenter = (pos: ILatLng) => {
 		const center = get(map)?.getCenter();
@@ -173,8 +114,6 @@ export const hook = (element: string, mount: MountFn, destroy: DestroyFn) => {
 
 	return {
 		map,
-		destroy,
-		update,
 		handleCenter
 	};
 };

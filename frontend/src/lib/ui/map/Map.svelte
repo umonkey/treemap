@@ -1,7 +1,7 @@
 <script lang="ts">
 	import 'leaflet/dist/leaflet.css';
 	import { baseLayer } from '$lib/stores/mapLayerStore';
-	import { onDestroy, onMount, type Snippet } from 'svelte';
+	import { onMount, type Snippet } from 'svelte';
 	import { hook } from './hooks';
 	import {
 		MapLayers,
@@ -22,7 +22,7 @@
 		children?: Snippet | undefined;
 	}>();
 
-	const { handleCenter } = hook('map', onMount, onDestroy);
+	const { handleCenter } = hook('map', onMount);
 
 	// We need this to track when the map is ready, so we can render children.
 	let map: HTMLDivElement = $state<HTMLDivElement | undefined>(undefined);
