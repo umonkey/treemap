@@ -80,10 +80,7 @@ export const hooks = ({
 	};
 
 	const handleActiveChange = (value: boolean) => {
-		console.debug(
-			`[map] Button active state changed to ${value}`,
-			get(button)?.getContainer()?.firstChild
-		);
+		console.debug(`[map] Button active state changed to ${value}`);
 
 		const em = get(button)?.getContainer()?.firstChild as HTMLAnchorElement | null;
 

@@ -1,15 +1,18 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { hooks } from './hooks';
-	import { Button } from '$lib/ui';
+	import { Button, MapButton } from '$lib/ui';
 	import type { ILatLng } from '$lib/types';
+	import ICON from '$lib/assets/ruler.svg';
 
 	const { onConfirm } = $props<{
 		onConfirm: (start: ILatLng, end: ILatLng) => void;
 	}>();
 
-	const { start, distance, handleConfirm } = hooks(onMount);
+	const { start, distance, handleClick, handleConfirm } = hooks({ onMount });
 </script>
+
+<MapButton icon={ICON} position="topleft" active={!!$start} onClick={handleClick} />
 
 {#if $distance !== null}
 	<div class="info">
@@ -39,5 +42,14 @@
 		border-radius: 5px;
 		padding: 10px 20px;
 		background-color: rgba(255, 255, 255, 0.75);
+	}
+
+	@media (max-width: 800px) {
+		.info {
+			flex-direction: column;
+			width: 80%;
+			max-width: 400px;
+			text-align: center;
+		}
 	}
 </style>

@@ -1,10 +1,8 @@
 import L from 'leaflet';
 import type { Map } from 'leaflet';
-import { getContext } from 'svelte';
 import { get, writable } from 'svelte/store';
 import type { ILatLng, MountFn } from '$lib/types';
-import { mapKey } from '$lib/map';
-import RULER from '$lib/icons/RulerIcon.svg';
+import { getMap } from '$lib/map';
 
 type ConfirmFn = (start: ILatLng, end: ILatLng) => void;
 
@@ -24,7 +22,7 @@ const getDistance = (p1: ILatLng, p2: ILatLng): number => {
 	return Math.round(R * c * 100) / 100; // Distance in meters
 };
 
-export const hooks = (mount: MountFn) => {
+export const hooks = ({ onMount }: { onMount: MountFn }) => {
 	// Starting point of the row.
 	const start = writable<ILatLng | null>(null);
 
@@ -42,7 +40,7 @@ export const hooks = (mount: MountFn) => {
 	const distance = writable<number | null>(null);
 
 	// Map instance, set during initialization.
-	const map = writable<Map | null>(null);
+	let map: Map;
 
 	const updateLine = (map: Map, p1: ILatLng, p2: ILatLng) => {
 		get(line)?.remove();
@@ -61,9 +59,8 @@ export const hooks = (mount: MountFn) => {
 		distance.set(getDistance(p1, p2));
 	};
 
-	const handleClick = (e: Event) => {
-		e.preventDefault();
-
+	// Handle the start/stop button click.
+	const handleClick = () => {
 		if (get(start) !== null) {
 			start.set(null);
 			end.set(null);
@@ -72,29 +69,17 @@ export const hooks = (mount: MountFn) => {
 			return;
 		}
 
-		const center = get(map)?.getCenter();
-
-		if (!center) {
-			console.debug('[MapAddRow] Map center not available.');
-			return;
-		}
+		const center = map.getCenter();
 
 		start.set({
 			lat: center.lat,
 			lng: center.lng
 		});
 
-		console.debug(`[MapAddRow] Row start updated: ${center.lat},${center.lng}.`);
+		console.debug(`[map] Row start updated: ${center.lat},${center.lng}.`);
 	};
 
 	const handleMove = () => {
-		const m = get(map);
-
-		if (m === null) {
-			console.debug('[MapAddRow] Map is not initialized');
-			return;
-		}
-
 		const p1 = get(start);
 
 		if (p1 === null) {
@@ -102,7 +87,7 @@ export const hooks = (mount: MountFn) => {
 			return;
 		}
 
-		const center = m.getCenter();
+		const center = map.getCenter();
 
 		const p2 = {
 			lat: center.lat,
@@ -110,62 +95,22 @@ export const hooks = (mount: MountFn) => {
 		};
 
 		end.set(p2);
-		updateLine(m, p1, p2);
+		updateLine(map, p1, p2);
 	};
 
-	// Adds the button to the map.
-	const initialize = () => {
-		const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+	onMount(() => {
+		map = getMap();
 
-		const button = L.DomUtil.create('a', 'leaflet-tree-button', container);
+		map.on('moveend', handleMove);
 
-		button.href = '#';
-		button.type = 'button';
-
-		const image = L.DomUtil.create('img', 'leaflet-control-button-icon', button);
-		image.src = RULER;
-		image.width = 15;
-		image.height = 30;
-
-		L.DomEvent.disableClickPropagation(button);
-
-		// Clicking the button starts the process of adding a row of trees.
-		L.DomEvent.on(button, 'click', handleClick);
-
-		return container;
-	};
-
-	mount(() => {
-		const m = getContext<Map>(mapKey) ?? null;
-
-		if (m) {
-			console.debug('[MapAddRow] Mounting.');
-
-			map.set(m);
-
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			(L.Control as any).RowButton = L.Control.extend({
-				options: {
-					position: 'topleft'
-				},
-
-				onAdd: initialize
-			});
-
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			const control = new (L.Control as any).RowButton();
-			control.addTo(m);
-
-			button.set(control);
-
-			// When the map moves, update the end of the row.
-			m.on('moveend', handleMove);
-		}
-
-		// Remove the button on unmount, so that it doesn't duplicate in Storybook.
 		return () => {
 			get(button)?.remove();
-			get(map)?.off('moveend', handleMove);
+			get(line)?.remove();
+
+			start.set(null);
+			end.set(null);
+
+			map.off('moveend', handleMove);
 		};
 	});
 
@@ -178,5 +123,5 @@ export const hooks = (mount: MountFn) => {
 		}
 	};
 
-	return { start, distance, handleConfirm };
+	return { start, distance, handleClick, handleConfirm };
 };
