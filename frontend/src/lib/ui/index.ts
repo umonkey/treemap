@@ -27,6 +27,7 @@ export { default as LocationPicker } from './location-picker/LocationPicker.svel
 export { default as Map } from './map/Map.svelte';
 export { default as MapAddRow } from './map-add-row/MapAddRow.svelte';
 export { default as MapAddTree } from './map-add-tree/MapAddTree.svelte';
+export { default as MapButton } from './map-button/MapButton.svelte';
 export { default as MapCenter } from './map-center/MapCenter.svelte';
 export { default as MapFullscreen } from './map-fullscreen/MapFullscreen.svelte';
 export { default as MapLayers } from './map-layers/MapLayers.svelte';

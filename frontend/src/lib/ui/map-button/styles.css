@@ -1,0 +1,13 @@
+.customMapButton {
+	img {
+		width: 30px;
+		height: 30px;
+		padding: 5px;
+		box-sizing: border-box;
+	}
+
+	&.active {
+		background-color: rgba(0, 128, 0, 0.5);
+		color: #fff;
+	}
+}
