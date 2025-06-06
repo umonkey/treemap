@@ -14,7 +14,6 @@ import type { Map, Marker } from 'leaflet';
 import type { ILatLng, MountFn, DestroyFn } from '$lib/types';
 import { MAX_BOUNDS } from '$lib/constants';
 import { Markers } from '$lib/map/markers';
-import { addResizeObserver } from '$lib/map/resizeObserver';
 import { get } from 'svelte/store';
 import { locationBus, mapBus } from '$lib/buses';
 import { mapCenter, mapZoom, mapStore } from '$lib/stores/mapStore';
@@ -55,8 +54,6 @@ export const hook = (element: string, mount: MountFn, destroy: DestroyFn) => {
 
 		map.set(em);
 		em.attributionControl.setPrefix('');
-
-		addResizeObserver(em);
 
 		markers.set(new Markers(em, undefined));
 

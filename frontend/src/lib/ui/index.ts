@@ -34,6 +34,7 @@ export { default as MapLocateMe } from './map-locate-me/MapLocateMe.svelte';
 export { default as MapMyPosition } from './map-my-position/MapMyPosition.svelte';
 export { default as MapPin } from './map-pin/MapPin.svelte';
 export { default as MapPreview } from './map-preview/MapPreview.svelte';
+export { default as MapResizeObserver } from './map-resize-observer/MapResizeObserver.svelte';
 export { default as MobileSidebar } from './mobile-sidebar/MobileSidebar.svelte';
 export { default as ModeSwitcher } from './mode-switcher/ModeSwitcher.svelte';
 export { default as NarrowPage } from './narrow-page/NarrowPage.svelte';
