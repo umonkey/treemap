@@ -14,7 +14,7 @@
 </script>
 
 <div class="mapContainer">
-	<Map {center} zoom={19} crosshair={true}>
+	<Map {center} zoom={19}>
 		<MapCenter />
 		<MapFullscreen />
 

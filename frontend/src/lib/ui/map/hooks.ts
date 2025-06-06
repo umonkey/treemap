@@ -59,6 +59,7 @@ export const hook = (element: string, mount: MountFn, destroy: DestroyFn) => {
 
 		// Set up bus handlers.
 		mapBus.on('center', handleCenter);
+		mapBus.on('fit', handleFit);
 
 		// Start geo-location.
 		//
@@ -100,6 +101,7 @@ export const hook = (element: string, mount: MountFn, destroy: DestroyFn) => {
 	destroy(() => {
 		console.debug('[map] Destroying the map component.');
 		mapBus.off('center', handleCenter);
+		mapBus.off('fit', handleFit);
 		get(map)?.remove();
 	});
 
@@ -168,6 +170,15 @@ export const hook = (element: string, mount: MountFn, destroy: DestroyFn) => {
 
 		console.debug(`[map] Request to center: ${pos.lat},${pos.lng}`);
 		get(map)?.panTo(pos);
+	};
+
+	// External party asking to show a particular area.
+	const handleFit = (bounds: { start: ILatLng; end: ILatLng }) => {
+		console.debug('[map] Request to fit bounds', bounds);
+		get(map)?.fitBounds([
+			[bounds.start.lat, bounds.start.lng],
+			[bounds.end.lat, bounds.end.lng]
+		]);
 	};
 
 	const handleSearch = (value: string | undefined) => {

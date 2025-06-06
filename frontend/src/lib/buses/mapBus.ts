@@ -4,6 +4,10 @@ import type { ILatLng } from '$lib/types';
 type MapBusEvent = {
 	center: ILatLng;
 	select: string;
+	fit: {
+		start: ILatLng;
+		end: ILatLng;
+	};
 	onMoved: {
 		lat: number;
 		lon: number;
