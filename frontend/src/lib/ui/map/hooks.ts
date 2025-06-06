@@ -102,7 +102,12 @@ export const hook = (element: string, mount: MountFn, destroy: DestroyFn) => {
 		console.debug('[map] Destroying the map component.');
 		mapBus.off('center', handleCenter);
 		mapBus.off('fit', handleFit);
-		get(map)?.remove();
+
+		try {
+			get(map)?.remove();
+		} catch (e) {
+			console.error('[map] Error removing map:', e);
+		}
 	});
 
 	// Update the component when parameters change.
@@ -185,16 +190,11 @@ export const hook = (element: string, mount: MountFn, destroy: DestroyFn) => {
 		get(markers)?.setSearchQuery(value);
 	};
 
-	const handleElementChange = (element: HTMLDivElement | undefined) => {
-		console.debug('[Map] Changing map element', element);
-	};
-
 	return {
 		map,
 		destroy,
 		update,
 		handleCenter,
-		handleSearch,
-		handleElementChange
+		handleSearch
 	};
 };

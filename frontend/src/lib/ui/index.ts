@@ -47,6 +47,7 @@ export { default as NumberInput } from './number-input/NumberInput.svelte';
 export { default as ProfileHeader } from './profile-header/ProfileHeader.svelte';
 export { default as ProfilePage } from './profile-page/ProfilePage.svelte';
 export { default as RightSidebar } from './right-sidebar/RightSidebar.svelte';
+export { default as RowSizeInput } from './row-size-input/RowSizeInput.svelte';
 export { default as SettingsForm } from './settings-form/SettingsForm.svelte';
 export { default as SettingsPage } from './settings-page/SettingsPage.svelte';
 export { default as SignInButton } from './sign-in-button/SignInButton.svelte';

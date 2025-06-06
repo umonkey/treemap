@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { AddForm } from '$lib/forms';
-	import { Header, NarrowPage, AuthWrapper } from '$lib/ui';
+	import { AddRowForm, Header, NarrowPage, AuthWrapper } from '$lib/ui';
 	import { locale } from '$lib/locale';
 
 	import type { ILatLng } from '$lib/types';
@@ -14,13 +13,13 @@
 </script>
 
 <svelte:head>
-	<title>{locale.addTitle()}</title>
+	<title>{locale.addRowTitle()}</title>
 </svelte:head>
 
-<Header title={locale.addTitle()} />
+<Header title={locale.addRowTitle()} />
 
 <NarrowPage>
 	<AuthWrapper>
-		<AddForm lat={data.lat} lng={data.lng} />
+		<AddRowForm start={data.start} end={data.end} />
 	</AuthWrapper>
 </NarrowPage>

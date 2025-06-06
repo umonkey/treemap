@@ -3,6 +3,7 @@ import { type ILatLng } from '$lib/types';
 
 const coord = (value: string | null): number => {
 	if (!value) {
+		console.error('[row] Missing value.');
 		return error(400);
 	}
 

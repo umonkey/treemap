@@ -17,13 +17,13 @@
 		children?: Snippet | undefined;
 	}>();
 
-	const { handleCenter, handleSearch, handleElementChange } = hook('map', onMount, onDestroy);
+	const { handleCenter, handleSearch } = hook('map', onMount, onDestroy);
 
+	// We need this to track when the map is ready, so we can render children.
 	let map: HTMLDivElement = $state<HTMLDivElement | undefined>(undefined);
 
 	$effect(() => handleCenter(center));
 	$effect(() => handleSearch(searchQuery));
-	$effect(() => handleElementChange(map));
 </script>
 
 <div class="wrapper">
@@ -57,6 +57,7 @@
 		height: 100%;
 		width: 100%;
 		z-index: 1;
+		outline: none;
 	}
 
 	#map.light {

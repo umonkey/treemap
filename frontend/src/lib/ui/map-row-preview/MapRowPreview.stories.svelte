@@ -1,7 +1,6 @@
 <script lang="ts" module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import { MapRowPreview } from '$lib/ui';
-	import { DEFAULT_MAP_CENTER } from '$lib/constants';
 
 	const { Story } = defineMeta({
 		title: 'Map/MapRowPreview',

@@ -7,7 +7,7 @@
 	import { hooks } from './hooks';
 	import { locale } from '$lib/locale';
 	import type { ILatLng } from '$lib/types';
-	import { Form, Map, MapFullscreen, MapRow } from '$lib/ui';
+	import { Form, MapRowPreview, RowSizeInput } from '$lib/ui';
 
 	import {
 		Button,
@@ -15,7 +15,6 @@
 		CanopyInput,
 		CircumferenceInput,
 		HeightInput,
-		LocationInput,
 		NotesInput,
 		SpeciesInput,
 		StateInput,
@@ -28,50 +27,53 @@
 	}>();
 
 	const {
-		loading,
-		location,
-		tree,
+		count,
+		step,
+		distance,
+		handleConfirm,
+		handleCancel,
+		handleCountChange,
+		saving,
 		handleSpeciesChange,
 		handleHeightChange,
 		handleDiameterChange,
 		handleCircumferenceChange,
 		handleStateChange,
-		handleNotesChange,
 		handleYearChange,
-		handleConfirm,
-		handleCancel,
-		saving
-	} = hooks();
+		handleNotesChange
+	} = hooks({
+		start,
+		end
+	});
 </script>
 
-{#if $loading}
-	<!-- loading ... -->
-{:else}
-	<Form>
-		<Map center={start} zoom={19}>
-			<MapFullscreen />
-		</Map>
+<Form>
+	<MapRowPreview {start} {end} count={$count} />
 
-		<LocationInput
-			value={$location}
-			label={locale.addConfirmLocation()}
-			onChange={handleLocationChange}
-		/>
-		<SpeciesInput value={$tree.species} onChange={handleSpeciesChange} />
-		<HeightInput value={$tree.height} onChange={handleHeightChange} />
-		<CanopyInput value={$tree.diameter} onChange={handleDiameterChange} />
-		<CircumferenceInput value={$tree.circumference} onChange={handleCircumferenceChange} />
-		<StateInput value={$tree.state} onChange={handleStateChange} />
-		<YearInput value={$tree.year} onChange={handleYearChange} />
-		<NotesInput value={$tree.notes} onChange={handleNotesChange} />
+	<RowSizeInput value={$count} {distance} onChange={handleCountChange} />
 
-		<Buttons>
-			<Button type="submit" onClick={handleConfirm} disabled={$saving}
-				>{locale.addConfirmButton()}</Button
-			>
-			<Button type="cancel" onClick={handleCancel} disabled={$saving}
-				>{locale.addCancelButton()}</Button
-			>
-		</Buttons>
-	</Form>
-{/if}
+	<SpeciesInput value="" onChange={handleSpeciesChange} />
+	<HeightInput value={0} onChange={handleHeightChange} />
+	<CanopyInput value={0} onChange={handleDiameterChange} />
+	<CircumferenceInput value={0} onChange={handleCircumferenceChange} />
+	<StateInput value="unknown" onChange={handleStateChange} />
+	<YearInput value={null} onChange={handleYearChange} />
+	<NotesInput value={null} onChange={handleNotesChange} />
+
+	<p>{locale.rowStepInfo($count, $step)}</p>
+
+	<Buttons>
+		<Button type="submit" onClick={handleConfirm} disabled={$saving}
+			>{locale.addRowConfirmButton()}</Button
+		>
+		<Button type="cancel" onClick={handleCancel} disabled={$saving}
+			>{locale.addCancelButton()}</Button
+		>
+	</Buttons>
+</Form>
+
+<style>
+	p {
+		margin: 0;
+	}
+</style>

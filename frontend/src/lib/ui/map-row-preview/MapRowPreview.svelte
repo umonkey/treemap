@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { ILatLng } from '$lib/types';
-	import { onMount } from 'svelte';
 	import { Map, MapRow, MapMyPosition, MapFullscreen } from '$lib/ui';
 	import { hooks } from './hooks';
 

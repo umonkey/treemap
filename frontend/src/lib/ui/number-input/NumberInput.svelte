@@ -7,6 +7,8 @@
 		label = undefined,
 		hint = undefined,
 		help = undefined,
+		min = '0',
+		max = undefined,
 		step = '0.1',
 		autofocus,
 		onChange = () => {}
@@ -36,6 +38,8 @@
 		{value}
 		{placeholder}
 		{autofocus}
+		{min}
+		{max}
 		{step}
 		onchange={handleChange}
 	/>
