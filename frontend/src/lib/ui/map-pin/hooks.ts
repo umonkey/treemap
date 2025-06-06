@@ -18,6 +18,10 @@ export const hooks = (mount: MountFn) => {
 		}
 
 		map.set(m);
+
+		return () => {
+			get(pin)?.remove();
+		};
 	});
 
 	const handleChange = (pos: ILatLng) => {
