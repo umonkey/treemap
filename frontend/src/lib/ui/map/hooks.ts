@@ -16,7 +16,7 @@ import { MAX_BOUNDS } from '$lib/constants';
 import { Markers } from '$lib/map/markers';
 import { get } from 'svelte/store';
 import { locationBus, mapBus } from '$lib/buses';
-import { mapCenter, mapZoom, mapStore } from '$lib/stores/mapStore';
+import { mapCenter, mapZoom } from '$lib/stores/mapStore';
 import { writable } from 'svelte/store';
 import { mapKey } from '$lib/map';
 import { setContext } from 'svelte';
@@ -78,17 +78,6 @@ export const hook = (element: string, mount: MountFn, destroy: DestroyFn) => {
 				lat: c.lat,
 				lon: c.lng,
 				zoom: em.getZoom()
-			});
-
-			mapStore.update((state) => {
-				return {
-					...state,
-					center: {
-						lat: c.lat,
-						lng: c.lng
-					},
-					zoom: em.getZoom()
-				};
 			});
 		});
 
