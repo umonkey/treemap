@@ -30,6 +30,7 @@ export { default as MapAddTree } from './map-add-tree/MapAddTree.svelte';
 export { default as MapCenter } from './map-center/MapCenter.svelte';
 export { default as MapFullscreen } from './map-fullscreen/MapFullscreen.svelte';
 export { default as MapLayers } from './map-layers/MapLayers.svelte';
+export { default as MapLocateMe } from './map-locate-me/MapLocateMe.svelte';
 export { default as MapMyPosition } from './map-my-position/MapMyPosition.svelte';
 export { default as MapPin } from './map-pin/MapPin.svelte';
 export { default as MapPreview } from './map-preview/MapPreview.svelte';

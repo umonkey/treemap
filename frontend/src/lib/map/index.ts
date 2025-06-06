@@ -1,4 +1,3 @@
-export { addPins } from './addPins';
 export { mapHome } from './home';
 export { getContext } from 'svelte';
 
