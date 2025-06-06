@@ -4,6 +4,7 @@ import type { ILatLng } from '$lib/types';
 type MapBusEvent = {
 	center: ILatLng;
 	select: string;
+	closePreview: void;
 	fit: {
 		start: ILatLng;
 		end: ILatLng;

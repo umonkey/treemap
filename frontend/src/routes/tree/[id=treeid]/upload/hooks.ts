@@ -36,7 +36,7 @@ export const load = (treeId: string) => {
 				if (res.status === 202) {
 					uploads.set([]);
 					toast.push(locale.photosAdded());
-					goto(routes.treeDetails(treeId));
+					goto(routes.mapPreview(treeId));
 				} else if (res.error) {
 					console.error(`Error uploading photos: ${res.error.description}`);
 				}

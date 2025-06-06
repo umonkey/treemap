@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { GalleryPreview, Buttons, Button, TreeContextMenu } from '$lib/ui';
 	import { CloseIcon, ShareIcon, SettingsIcon } from '$lib/icons';
 	import { routes } from '$lib/routes';
@@ -9,7 +10,7 @@
 	import '$lib/styles/variables.css';
 
 	const { id } = $props<{ id: string }>();
-	const { visible, error, tree, handleClose, handleContextMenu, reload } = hook();
+	const { visible, error, tree, handleClose, handleContextMenu, reload } = hook({ onMount });
 
 	$effect(() => reload(id));
 </script>

@@ -4,8 +4,10 @@ import { goto } from '$lib/routes';
 import { mapHome } from '$lib/map';
 import { menuState } from '$lib/stores/treeMenu';
 import { writable } from 'svelte/store';
+import { mapBus } from '$lib/buses';
+import type { MountFn } from '$lib/types';
 
-export const hook = () => {
+export const hook = ({ onMount }: { onMount: MountFn }) => {
 	const visible = writable<boolean>(false);
 	const tree = writable<ITree | null>(null);
 	const error = writable<string | null>(null);
@@ -36,6 +38,19 @@ export const hook = () => {
 	const handleContextMenu = () => {
 		menuState.set(true);
 	};
+
+	// A third party asks to close the preview.
+	const handleClosePreview = () => {
+		visible.set(false);
+	};
+
+	onMount(() => {
+		mapBus.on('closePreview', handleClosePreview);
+
+		return () => {
+			mapBus.off('closePreview', handleClosePreview);
+		};
+	});
 
 	return { visible, error, tree, reload, handleClose, handleContextMenu };
 };
