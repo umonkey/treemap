@@ -9,7 +9,8 @@
 		MapResizeObserver,
 		MapState,
 		MapMarkerLoader,
-		MapTrees
+		MapTrees,
+		MapLocateMe
 	} from '$lib/ui';
 
 	const {
@@ -42,8 +43,10 @@
 	{#if map}
 		<MapResizeObserver />
 		<MapLayers />
-		<MapMyPosition />
 		<MapState />
+
+		<MapLocateMe />
+		<MapMyPosition />
 		<MapMarkerLoader />
 		<MapTrees />
 
