@@ -63,7 +63,7 @@ const getTrunkProps = (tree: ITree) => {
 };
 
 export const hooks = ({ onMount }: { onMount: MountFn }) => {
-	let map: Map;
+	const map = writable<Map | null>(null);
 
 	// Previously rendered items, to remove on update.
 	const previous = writable<LayerGroup | null>(null);
@@ -112,16 +112,34 @@ export const hooks = ({ onMount }: { onMount: MountFn }) => {
 	};
 
 	const handleChange = (trees: ITree[]) => {
+		const m = get(map);
+
+		if (m === null) {
+			console.debug('[map] Map is not initialized, skipping rendering trees.');
+			return;
+		}
+
+		console.debug(`[map] Rendering ${trees.length} trees.`);
+
 		const layer = renderTrees(trees);
 
 		get(previous)?.remove();
 		previous.set(layer);
 
-		layer.addTo(map);
+		try {
+			layer.addTo(m);
+		} catch (e) {
+			console.error('[map] Error adding layer to map:', e);
+		}
 	};
 
 	onMount(() => {
-		map = getMap();
+		map.set(getMap());
 		markerStore.subscribe(handleChange);
+
+		return () => {
+			console.debug('[map] Unsubscribing from markerStore.');
+			map.set(null);
+		};
 	});
 };

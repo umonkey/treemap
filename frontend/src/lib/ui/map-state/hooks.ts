@@ -10,7 +10,7 @@ export const hooks = ({ onMount }: { onMount: MountFn }) => {
 	let map: Map;
 
 	const handleMove = () => {
-		console.debug('[map] Map moved, updating mapStore.');
+		console.debug('[map] Map moved, saving state.');
 
 		const center = map.getCenter();
 		const zoom = map.getZoom();
