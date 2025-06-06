@@ -3,27 +3,31 @@
 	import { baseLayer } from '$lib/stores/mapLayerStore';
 	import { onDestroy, onMount, type Snippet } from 'svelte';
 	import { hook } from './hooks';
-	import { MapLayers, MapMyPosition, MapResizeObserver, MapState } from '$lib/ui';
+	import {
+		MapLayers,
+		MapMyPosition,
+		MapResizeObserver,
+		MapState,
+		MapMarkerLoader,
+		MapTrees
+	} from '$lib/ui';
 
 	const {
 		center,
 		className = 'default',
-		searchQuery = undefined,
 		children = undefined
 	} = $props<{
 		center: [number, number];
 		className: string;
-		searchQuery?: string | undefined;
 		children?: Snippet | undefined;
 	}>();
 
-	const { handleCenter, handleSearch } = hook('map', onMount, onDestroy);
+	const { handleCenter } = hook('map', onMount, onDestroy);
 
 	// We need this to track when the map is ready, so we can render children.
 	let map: HTMLDivElement = $state<HTMLDivElement | undefined>(undefined);
 
 	$effect(() => handleCenter(center));
-	$effect(() => handleSearch(searchQuery));
 </script>
 
 <div class="wrapper">
@@ -40,6 +44,8 @@
 		<MapLayers />
 		<MapMyPosition />
 		<MapState />
+		<MapMarkerLoader />
+		<MapTrees />
 
 		{#if children}
 			{@render children()}

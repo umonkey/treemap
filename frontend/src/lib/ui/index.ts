@@ -33,6 +33,7 @@ export { default as MapCenter } from './map-center/MapCenter.svelte';
 export { default as MapFullscreen } from './map-fullscreen/MapFullscreen.svelte';
 export { default as MapLayers } from './map-layers/MapLayers.svelte';
 export { default as MapLocateMe } from './map-locate-me/MapLocateMe.svelte';
+export { default as MapMarkerLoader } from './map-marker-loader/MapMarkerLoader.svelte';
 export { default as MapMyPosition } from './map-my-position/MapMyPosition.svelte';
 export { default as MapPin } from './map-pin/MapPin.svelte';
 export { default as MapPreview } from './map-preview/MapPreview.svelte';
@@ -40,6 +41,7 @@ export { default as MapResizeObserver } from './map-resize-observer/MapResizeObs
 export { default as MapRow } from './map-row/MapRow.svelte';
 export { default as MapRowPreview } from './map-row-preview/MapRowPreview.svelte';
 export { default as MapState } from './map-state/MapState.svelte';
+export { default as MapTrees } from './map-trees/MapTrees.svelte';
 export { default as MobileSidebar } from './mobile-sidebar/MobileSidebar.svelte';
 export { default as ModeSwitcher } from './mode-switcher/ModeSwitcher.svelte';
 export { default as NarrowPage } from './narrow-page/NarrowPage.svelte';

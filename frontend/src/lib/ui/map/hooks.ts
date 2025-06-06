@@ -13,7 +13,6 @@ import L from 'leaflet';
 import type { Map, Marker } from 'leaflet';
 import type { ILatLng, MountFn, DestroyFn } from '$lib/types';
 import { MAX_BOUNDS } from '$lib/constants';
-import { Markers } from '$lib/map/markers';
 import { get } from 'svelte/store';
 import { locationBus, mapBus } from '$lib/buses';
 import { mapCenter, mapZoom } from '$lib/stores/mapStore';
@@ -38,7 +37,6 @@ export const hook = (element: string, mount: MountFn, destroy: DestroyFn) => {
 	const map = writable<Map | null>(null);
 	const lastMarkerPos = writable<[number, number] | null>(null);
 	const lastMarkerElement = writable<Marker | null>(null);
-	const markers = writable<Markers | undefined>(undefined);
 
 	// Initialize the map component on mount.
 	mount(() => {
@@ -54,8 +52,6 @@ export const hook = (element: string, mount: MountFn, destroy: DestroyFn) => {
 
 		map.set(em);
 		em.attributionControl.setPrefix('');
-
-		markers.set(new Markers(em, undefined));
 
 		// Set up bus handlers.
 		mapBus.on('center', handleCenter);
@@ -175,15 +171,10 @@ export const hook = (element: string, mount: MountFn, destroy: DestroyFn) => {
 		]);
 	};
 
-	const handleSearch = (value: string | undefined) => {
-		get(markers)?.setSearchQuery(value);
-	};
-
 	return {
 		map,
 		destroy,
 		update,
-		handleCenter,
-		handleSearch
+		handleCenter
 	};
 };
