@@ -7,7 +7,8 @@
 	}
 
 	&.active,
-	&.active:hover {
+	&.active:hover,
+	&.active:focus {
 		background-color: rgba(0, 128, 0, 0.5);
 		color: #fff;
 	}

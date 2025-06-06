@@ -1,7 +1,10 @@
+import { toast } from '@zerodevx/svelte-toast';
+import { apiClient } from '$lib/api';
 import { get, writable } from 'svelte/store';
 import { getDistance } from '$lib/utils';
-import type { ILatLng } from '$lib/types';
+import type { ILatLng, ILatLon, IAddTreesRequest } from '$lib/types';
 import { goto, routes } from '$lib/routes';
+import { spreadDots } from '$lib/map';
 
 export const hooks = ({ start, end }: { start: ILatLng; end: ILatLng }) => {
 	const count = writable<number>(3);
@@ -64,7 +67,40 @@ export const hooks = ({ start, end }: { start: ILatLng; end: ILatLng }) => {
 		notes.set(value);
 	};
 
-	const handleConfirm = () => {};
+	const handleConfirm = async () => {
+		const points: ILatLon[] = spreadDots(start, end, get(count)).map((point) => ({
+			lat: point.lat,
+			lon: point.lng
+		}));
+
+		const req = {
+			points,
+			species: get(species) ?? 'Unknown',
+			height: get(height),
+			diameter: get(diameter),
+			circumference: get(circumference),
+			state: get(state) ?? 'unknown',
+			notes: get(notes),
+			year: get(year),
+			files: []
+		} as IAddTreesRequest;
+
+		try {
+			saving.set(true);
+
+			const { status, data: d, error: e } = await apiClient.addTree(req);
+
+			if (status >= 200 && status < 300 && d) {
+				toast.push('Trees added.');
+				goto(routes.mapPreview(d.trees[0].id));
+			} else if (e) {
+				console.error(`Error ${status} adding trees.`);
+				toast.push('Error adding trees.');
+			}
+		} finally {
+			saving.set(false);
+		}
+	};
 
 	const handleCancel = () => {
 		goto(routes.map());

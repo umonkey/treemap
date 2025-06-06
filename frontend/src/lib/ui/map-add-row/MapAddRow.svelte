@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { hooks } from './hooks';
 	import { Button, MapButton } from '$lib/ui';
+	import { locale } from '$lib/locale';
 	import type { ILatLng } from '$lib/types';
 	import ICON from '$lib/assets/ruler.svg';
 
@@ -16,12 +17,12 @@
 
 {#if $distance !== null}
 	<div class="info">
-		<div class="distance">Length: {$distance.toFixed(2)} m</div>
-		<Button onClick={() => handleConfirm(onConfirm)}>Continue</Button>
+		<div class="distance">{locale.rowLength($distance)}</div>
+		<Button onClick={() => handleConfirm(onConfirm)}>{locale.addContinueButton()}</Button>
 	</div>
 {:else if $start !== null}
 	<div class="info">
-		<div class="distance">Move the map to send the end of the row.</div>
+		<div class="distance">{locale.addRowIntro()}</div>
 	</div>
 {/if}
 

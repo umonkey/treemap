@@ -574,6 +574,18 @@ class EnglishLocale {
 	public rowStepInfo(count: number, step: number): string {
 		return `You will add ${count} trees, spaced ${step.toFixed(1)} meters apart.`;
 	}
+
+	public rowLength(value: number): string {
+		return `Length: ${value.toFixed(1)} m`;
+	}
+
+	public addRowIntro(): string {
+		return 'Move the map to set the end of the row.';
+	}
+
+	public addContinueButton(): string {
+		return 'Continue';
+	}
 }
 
 class RussianLocale extends EnglishLocale {
@@ -1140,6 +1152,18 @@ class RussianLocale extends EnglishLocale {
 	public addRowConfirmButton(): string {
 		return 'Добавить ряд';
 	}
+
+	public rowLength(value: number): string {
+		return `Длина: ${value.toFixed(1)} м`;
+	}
+
+	public addContinueButton(): string {
+		return 'Продолжить';
+	}
+
+	public addRowIntro(): string {
+		return 'Двигай карту чтобы указать конец ряда.';
+	}
 }
 
 class ArmenianLocale extends EnglishLocale {
@@ -1597,6 +1621,18 @@ class ArmenianLocale extends EnglishLocale {
 
 	public addRowConfirmButton(): string {
 		return 'Ավելացնել';
+	}
+
+	public rowLength(value: number): string {
+		return `Երկարություն: ${value.toFixed(1)} ն`;
+	}
+
+	public addContinueButton(): string {
+		return 'Շարունակել';
+	}
+
+	public addRowIntro(): string {
+		return 'Տեղաշարժե՛ք քարտեզը՝ շարքի վերջը նշելու համար։';
 	}
 }
 
