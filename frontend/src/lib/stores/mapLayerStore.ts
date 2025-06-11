@@ -10,7 +10,7 @@ const getDefaultState = (): IMapLayers => {
 	const isDark = window?.matchMedia('(prefers-color-scheme: dark)')?.matches ?? false;
 
 	return {
-		base: isDark ? 'OSM Dark' : 'OSM Light',
+		base: isDark ? 'OSM Dark' : 'OSM Basic',
 		drone: false
 	};
 };
