@@ -28,6 +28,10 @@
 				control: { type: 'boolean' },
 				description: 'Whether the button is active or not'
 			},
+			disabled: {
+				control: { type: 'boolean' },
+				description: 'Whether the button is disabled or not'
+			},
 			onClick: {
 				action: 'clicked',
 				description: 'Function to call when the button is clicked'
@@ -37,6 +41,7 @@
 			position: 'topleft',
 			icon: ICON1,
 			active: false,
+			disabled: false,
 			onClick: fn()
 		}
 	});

@@ -2,12 +2,17 @@ import type { Map } from 'leaflet';
 import { get, writable } from 'svelte/store';
 import type { ILatLng, MountFn } from '$lib/types';
 import { getMap } from '$lib/map';
+import { locationStore } from '$lib/stores';
 
 export const hooks = ({ onMount }: { onMount: MountFn }) => {
 	let map: Map;
 
 	// Last received position, to pan to.
 	const lastPosition = writable<ILatLng | null>(null);
+
+	locationStore.subscribe((position) => {
+		lastPosition.set(position ? { lat: position.lat, lng: position.lng } : null);
+	});
 
 	// Handle the button click.
 	const handleClick = () => {
@@ -25,5 +30,5 @@ export const hooks = ({ onMount }: { onMount: MountFn }) => {
 		map = getMap();
 	});
 
-	return { handleClick };
+	return { handleClick, lastPosition };
 };

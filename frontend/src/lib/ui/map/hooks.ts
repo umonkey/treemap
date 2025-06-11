@@ -13,7 +13,7 @@ import L, { type Map } from 'leaflet';
 import type { ILatLng, MountFn } from '$lib/types';
 import { MAX_BOUNDS } from '$lib/constants';
 import { get, writable } from 'svelte/store';
-import { locationBus, mapBus } from '$lib/buses';
+import { mapBus } from '$lib/buses';
 import { mapCenter, mapZoom } from '$lib/stores/mapStore';
 import { mapKey } from '$lib/map';
 import { setContext } from 'svelte';
@@ -46,13 +46,6 @@ export const hook = (element: string, mount: MountFn) => {
 		// Set up bus handlers.
 		mapBus.on('center', handleCenter);
 		mapBus.on('fit', handleFit);
-
-		// Start geo-location.
-		//
-		// Note that we don't stop it.  Once you open a map, we keep tracking your
-		// location in background, so when you jump between map and other pages,
-		// your location is still up to date.
-		locationBus.emit('start');
 
 		// Track and report map moves.
 		em.on('moveend', () => {

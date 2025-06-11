@@ -4,7 +4,7 @@
 	import { MapButton } from '$lib/ui';
 	import ICON from '$lib/assets/locate.svg';
 
-	const { handleClick } = hooks({ onMount });
+	const { handleClick, lastPosition } = hooks({ onMount });
 </script>
 
-<MapButton icon={ICON} position="topleft" onClick={handleClick} />
+<MapButton icon={ICON} position="topleft" onClick={handleClick} disabled={!$lastPosition} />

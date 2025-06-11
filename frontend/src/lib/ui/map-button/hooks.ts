@@ -26,9 +26,7 @@ export const hooks = ({
 	const initialize = () => {
 		const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
 
-		const button = L.DomUtil.create('a', 'customMapButton', container);
-
-		button.href = '#';
+		const button = L.DomUtil.create('button', 'customMapButton', container);
 		button.type = 'button';
 
 		const image = L.DomUtil.create('img', 'customMapButtonIcon', button);
@@ -79,6 +77,11 @@ export const hooks = ({
 		get(button)?.setPosition(value);
 	};
 
+	const handleDisabledChange = (value: boolean) => {
+		console.debug(`[map] Button disabled state changed to ${value}`);
+		get(button)?.getContainer()?.firstChild?.toggleAttribute('disabled', value);
+	};
+
 	const handleActiveChange = (value: boolean) => {
 		console.debug(`[map] Button active state changed to ${value}`);
 
@@ -91,5 +94,5 @@ export const hooks = ({
 		}
 	};
 
-	return { handleImageChange, handlePositionChange, handleActiveChange };
+	return { handleImageChange, handlePositionChange, handleActiveChange, handleDisabledChange };
 };

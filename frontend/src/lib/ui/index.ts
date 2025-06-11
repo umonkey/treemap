@@ -25,6 +25,7 @@ export { default as LazyImage } from './lazy-image/LazyImage.svelte';
 export { default as LeftSidebar } from './left-sidebar/LeftSidebar.svelte';
 export { default as LocationInput } from './location-input/LocationInput.svelte';
 export { default as LocationPicker } from './location-picker/LocationPicker.svelte';
+export { default as LocationTracker } from './location-tracker/LocationTracker.svelte';
 export { default as Map } from './map/Map.svelte';
 export { default as MapAddRow } from './map-add-row/MapAddRow.svelte';
 export { default as MapAddTree } from './map-add-tree/MapAddTree.svelte';

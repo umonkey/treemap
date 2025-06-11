@@ -1,4 +1,18 @@
-.customMapButton {
+button.customMapButton {
+	width: 30px;
+	height: 30px;
+	padding: 0;
+	border: none;
+	background-color: #fff;
+	line-height: 30px;
+	display: block;
+	cursor: pointer;
+	outline: none;
+
+	&:disabled img {
+		opacity: 0.5;
+	}
+
 	img {
 		width: 30px;
 		height: 30px;

@@ -3,10 +3,9 @@
 	import { validateStoredToken } from '$lib/utils/auth';
 	import { SvelteToast } from '@zerodevx/svelte-toast';
 	import { onMount } from 'svelte';
-	import { Layout } from '$lib/ui';
+	import { Layout, LocationTracker } from '$lib/ui';
 
 	import GoogleTracker from '$lib/components/GoogleTracker.svelte';
-	import LocationTracker from '$lib/components/map/LocationTracker.svelte';
 
 	import '$lib/styles/variables.css';
 	import '$lib/styles/colors.css';
