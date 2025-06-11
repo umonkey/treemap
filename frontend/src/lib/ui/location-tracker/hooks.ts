@@ -65,6 +65,7 @@ export const hooks = ({ onMount }: { onMount: MountFn }) => {
 
 	onMount(() => {
 		window.addEventListener('focus', handleStart);
+		window.addEventListener('visibilitychange', handleStart);
 		console.debug('[GEO] LocationTracker mounted.');
 
 		// Don't wait for a signal, start tracking immediately.
@@ -72,6 +73,7 @@ export const hooks = ({ onMount }: { onMount: MountFn }) => {
 
 		return () => {
 			window.removeEventListener('focus', handleStart);
+			window.removeEventListener('visibilitychange', handleStart);
 			console.debug('[GEO] LocationTracker destroyed.');
 		};
 	});
