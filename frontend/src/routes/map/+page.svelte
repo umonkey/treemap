@@ -1,5 +1,14 @@
 <script lang="ts">
-	import { Header, Map, MapPreview, MapAddTree, MapAddRow, MapCenter, MapPin } from '$lib/ui';
+	import {
+		Header,
+		Map,
+		MapPreview,
+		MapAddTree,
+		MapAddRow,
+		MapCenter,
+		MapPin,
+		MapSearch
+	} from '$lib/ui';
 	import { locale } from '$lib/locale';
 	import { mapCenter, mapZoom } from '$lib/stores/mapStore';
 	import { isMapperMode } from '$lib/stores/modeStore';
@@ -29,6 +38,8 @@
 		{#if $pin}
 			<MapPin center={$pin} />
 		{/if}
+
+		<MapSearch />
 
 		{#if $isMapperMode}
 			<MapCenter />

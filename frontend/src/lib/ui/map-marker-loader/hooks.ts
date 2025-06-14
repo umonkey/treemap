@@ -60,8 +60,14 @@ export const hooks = ({ onMount }: { onMount: MountFn }) => {
 		// Trigger the initial load of markers.
 		reload();
 
+		// Reload markers on search.
+		const unsubscribe = searchStore.subscribe(() => {
+			reload();
+		});
+
 		return () => {
 			map.off('moveend', handleMove);
+			unsubscribe();
 		};
 	});
 };

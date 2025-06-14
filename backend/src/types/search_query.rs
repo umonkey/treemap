@@ -4,7 +4,7 @@
 //! search features.
 
 use crate::types::TreeRecord;
-use crate::utils::split_words;
+use crate::utils::{split_words, get_timestamp};
 
 #[derive(Debug, Default)]
 pub struct SearchQuery {
@@ -28,6 +28,11 @@ pub struct SearchQuery {
     pub all: bool,
     pub address: Option<String>,
     pub species: Option<String>,
+
+    pub added_by_me: bool,
+
+    pub added_after: Option<u64>,
+    pub updated_after: Option<u64>,
 }
 
 impl SearchQuery {
@@ -69,6 +74,16 @@ impl SearchQuery {
                 res.noaddr = true;
             } else if word == "no:height" {
                 res.noheight = true;
+            } else if word == "added:me" {
+                res.added_by_me = true;
+            } else if let Some(value) = word.strip_prefix("added:") {
+                if let Ok(value) = value.parse::<u64>() {
+                    res.added_after = Some(get_timestamp() - value);
+                }
+            } else if let Some(value) = word.strip_prefix("updated:") {
+                if let Ok(value) = value.parse::<u64>() {
+                    res.updated_after = Some(get_timestamp() - value);
+                }
             } else if word.contains("all") {
                 res.all = true;
             } else if let Some(value) = word.strip_prefix("addr:") {
@@ -83,7 +98,7 @@ impl SearchQuery {
         res
     }
 
-    pub fn r#match(&self, tree: &TreeRecord) -> bool {
+    pub fn r#match(&self, tree: &TreeRecord, user_id: u64) -> bool {
         if !self.match_text(tree) {
             return false;
         }
@@ -136,6 +151,22 @@ impl SearchQuery {
 
         if let Some(value) = &self.species {
             if !tree.species.to_lowercase().contains(value) {
+                return false;
+            }
+        }
+
+        if self.added_by_me && tree.added_by != user_id {
+            return false;
+        }
+
+        if let Some(value) = &self.added_after {
+            if tree.added_at < *value {
+                return false;
+            }
+        }
+
+        if let Some(value) = &self.updated_after {
+            if tree.updated_at < *value {
                 return false;
             }
         }
@@ -302,7 +333,7 @@ mod tests {
             ..default_tree()
         };
 
-        assert_eq!(query.r#match(&tree), true);
+        assert_eq!(query.r#match(&tree, 0), true);
     }
 
     #[test]
@@ -315,7 +346,7 @@ mod tests {
             ..default_tree()
         };
 
-        assert_eq!(query.r#match(&tree1), true);
+        assert_eq!(query.r#match(&tree1, 0), true);
 
         let tree2 = TreeRecord {
             species: "Thuja plicata".to_string(),
@@ -324,7 +355,7 @@ mod tests {
         };
 
         assert_eq!(
-            query.r#match(&tree2),
+            query.r#match(&tree2, 0),
             false,
             "tree has thumbnail and must not match"
         );
@@ -336,42 +367,54 @@ mod tests {
 
         assert_eq!(
             true,
-            query.r#match(&TreeRecord {
-                height: None,
-                circumference: Some(2.0),
-                diameter: Some(3.0),
-                ..default_tree()
-            })
+            query.r#match(
+                &TreeRecord {
+                    height: None,
+                    circumference: Some(2.0),
+                    diameter: Some(3.0),
+                    ..default_tree()
+                },
+                0
+            )
         );
 
         assert_eq!(
             true,
-            query.r#match(&TreeRecord {
-                height: Some(1.0),
-                circumference: None,
-                diameter: Some(3.0),
-                ..default_tree()
-            })
+            query.r#match(
+                &TreeRecord {
+                    height: Some(1.0),
+                    circumference: None,
+                    diameter: Some(3.0),
+                    ..default_tree()
+                },
+                0
+            )
         );
 
         assert_eq!(
             true,
-            query.r#match(&TreeRecord {
-                height: Some(1.0),
-                circumference: Some(2.0),
-                diameter: None,
-                ..default_tree()
-            })
+            query.r#match(
+                &TreeRecord {
+                    height: Some(1.0),
+                    circumference: Some(2.0),
+                    diameter: None,
+                    ..default_tree()
+                },
+                0
+            )
         );
 
         assert_eq!(
             false,
-            query.r#match(&TreeRecord {
-                height: Some(1.0),
-                circumference: Some(2.0),
-                diameter: Some(3.0),
-                ..default_tree()
-            }),
+            query.r#match(
+                &TreeRecord {
+                    height: Some(1.0),
+                    circumference: Some(2.0),
+                    diameter: Some(3.0),
+                    ..default_tree()
+                },
+                0
+            ),
             "the tree has all metrics and must not match"
         );
     }
@@ -382,18 +425,24 @@ mod tests {
 
         assert_eq!(
             true,
-            query.r#match(&TreeRecord {
-                state: "healthy".to_string(),
-                ..default_tree()
-            })
+            query.r#match(
+                &TreeRecord {
+                    state: "healthy".to_string(),
+                    ..default_tree()
+                },
+                0
+            )
         );
 
         assert_eq!(
             false,
-            query.r#match(&TreeRecord {
-                state: "sick".to_string(),
-                ..default_tree()
-            })
+            query.r#match(
+                &TreeRecord {
+                    state: "sick".to_string(),
+                    ..default_tree()
+                },
+                0
+            )
         );
     }
 
@@ -403,18 +452,24 @@ mod tests {
 
         assert_eq!(
             true,
-            query.r#match(&TreeRecord {
-                state: "deformed".to_string(),
-                ..default_tree()
-            })
+            query.r#match(
+                &TreeRecord {
+                    state: "deformed".to_string(),
+                    ..default_tree()
+                },
+                0
+            )
         );
 
         assert_eq!(
             false,
-            query.r#match(&TreeRecord {
-                state: "healthy".to_string(),
-                ..default_tree()
-            })
+            query.r#match(
+                &TreeRecord {
+                    state: "healthy".to_string(),
+                    ..default_tree()
+                },
+                0
+            )
         );
     }
 
@@ -424,18 +479,24 @@ mod tests {
 
         assert_eq!(
             true,
-            query.r#match(&TreeRecord {
-                state: "sick".to_string(),
-                ..default_tree()
-            })
+            query.r#match(
+                &TreeRecord {
+                    state: "sick".to_string(),
+                    ..default_tree()
+                },
+                0
+            )
         );
 
         assert_eq!(
             false,
-            query.r#match(&TreeRecord {
-                state: "healthy".to_string(),
-                ..default_tree()
-            })
+            query.r#match(
+                &TreeRecord {
+                    state: "healthy".to_string(),
+                    ..default_tree()
+                },
+                0
+            )
         );
     }
 
@@ -445,18 +506,24 @@ mod tests {
 
         assert_eq!(
             true,
-            query.r#match(&TreeRecord {
-                state: "dead".to_string(),
-                ..default_tree()
-            })
+            query.r#match(
+                &TreeRecord {
+                    state: "dead".to_string(),
+                    ..default_tree()
+                },
+                0
+            )
         );
 
         assert_eq!(
             false,
-            query.r#match(&TreeRecord {
-                state: "healthy".to_string(),
-                ..default_tree()
-            })
+            query.r#match(
+                &TreeRecord {
+                    state: "healthy".to_string(),
+                    ..default_tree()
+                },
+                0
+            )
         );
     }
 
@@ -466,18 +533,24 @@ mod tests {
 
         assert_eq!(
             true,
-            query.r#match(&TreeRecord {
-                state: "stomp".to_string(),
-                ..default_tree()
-            })
+            query.r#match(
+                &TreeRecord {
+                    state: "stomp".to_string(),
+                    ..default_tree()
+                },
+                0
+            )
         );
 
         assert_eq!(
             false,
-            query.r#match(&TreeRecord {
-                state: "healthy".to_string(),
-                ..default_tree()
-            })
+            query.r#match(
+                &TreeRecord {
+                    state: "healthy".to_string(),
+                    ..default_tree()
+                },
+                0
+            )
         );
     }
 
@@ -487,18 +560,24 @@ mod tests {
 
         assert_eq!(
             true,
-            query.r#match(&TreeRecord {
-                state: "gone".to_string(),
-                ..default_tree()
-            })
+            query.r#match(
+                &TreeRecord {
+                    state: "gone".to_string(),
+                    ..default_tree()
+                },
+                0
+            )
         );
 
         assert_eq!(
             false,
-            query.r#match(&TreeRecord {
-                state: "healthy".to_string(),
-                ..default_tree()
-            })
+            query.r#match(
+                &TreeRecord {
+                    state: "healthy".to_string(),
+                    ..default_tree()
+                },
+                0
+            )
         );
     }
 
@@ -508,18 +587,24 @@ mod tests {
 
         assert_eq!(
             false,
-            query.r#match(&TreeRecord {
-                state: "gone".to_string(),
-                ..default_tree()
-            })
+            query.r#match(
+                &TreeRecord {
+                    state: "gone".to_string(),
+                    ..default_tree()
+                },
+                0
+            )
         );
 
         assert_eq!(
             true,
-            query.r#match(&TreeRecord {
-                state: "healthy".to_string(),
-                ..default_tree()
-            })
+            query.r#match(
+                &TreeRecord {
+                    state: "healthy".to_string(),
+                    ..default_tree()
+                },
+                0
+            )
         );
     }
 
@@ -529,18 +614,24 @@ mod tests {
 
         assert_eq!(
             true,
-            query.r#match(&TreeRecord {
-                state: "unknown".to_string(),
-                ..default_tree()
-            })
+            query.r#match(
+                &TreeRecord {
+                    state: "unknown".to_string(),
+                    ..default_tree()
+                },
+                0
+            )
         );
 
         assert_eq!(
             false,
-            query.r#match(&TreeRecord {
-                state: "healthy".to_string(),
-                ..default_tree()
-            })
+            query.r#match(
+                &TreeRecord {
+                    state: "healthy".to_string(),
+                    ..default_tree()
+                },
+                0
+            )
         );
     }
 
@@ -550,18 +641,24 @@ mod tests {
 
         assert_eq!(
             true,
-            query.r#match(&TreeRecord {
-                state: "gone".to_string(),
-                ..default_tree()
-            })
+            query.r#match(
+                &TreeRecord {
+                    state: "gone".to_string(),
+                    ..default_tree()
+                },
+                0
+            )
         );
 
         assert_eq!(
             true,
-            query.r#match(&TreeRecord {
-                state: "healthy".to_string(),
-                ..default_tree()
-            })
+            query.r#match(
+                &TreeRecord {
+                    state: "healthy".to_string(),
+                    ..default_tree()
+                },
+                0
+            )
         );
     }
 
@@ -571,20 +668,26 @@ mod tests {
 
         assert_eq!(
             true,
-            query.r#match(&TreeRecord {
-                species: "Thuja plicata".to_string(),
-                notes: Some("Imported from OSM".to_string()),
-                ..default_tree()
-            })
+            query.r#match(
+                &TreeRecord {
+                    species: "Thuja plicata".to_string(),
+                    notes: Some("Imported from OSM".to_string()),
+                    ..default_tree()
+                },
+                0
+            )
         );
 
         assert_eq!(
             false,
-            query.r#match(&TreeRecord {
-                species: "Thuja plicata".to_string(),
-                notes: Some("Big tree".to_string()),
-                ..default_tree()
-            })
+            query.r#match(
+                &TreeRecord {
+                    species: "Thuja plicata".to_string(),
+                    notes: Some("Big tree".to_string()),
+                    ..default_tree()
+                },
+                0
+            )
         );
     }
 
@@ -594,20 +697,26 @@ mod tests {
 
         assert_eq!(
             true,
-            query.r#match(&TreeRecord {
-                species: "Thuja plicata".to_string(),
-                circumference: None,
-                ..default_tree()
-            })
+            query.r#match(
+                &TreeRecord {
+                    species: "Thuja plicata".to_string(),
+                    circumference: None,
+                    ..default_tree()
+                },
+                0
+            )
         );
 
         assert_eq!(
             false,
-            query.r#match(&TreeRecord {
-                species: "Thuja plicata".to_string(),
-                circumference: Some(2.0),
-                ..default_tree()
-            })
+            query.r#match(
+                &TreeRecord {
+                    species: "Thuja plicata".to_string(),
+                    circumference: Some(2.0),
+                    ..default_tree()
+                },
+                0
+            )
         );
     }
 
@@ -617,20 +726,26 @@ mod tests {
 
         assert_eq!(
             true,
-            query.r#match(&TreeRecord {
-                species: "Thuja plicata".to_string(),
-                address: Some("test".to_string()),
-                ..default_tree()
-            })
+            query.r#match(
+                &TreeRecord {
+                    species: "Thuja plicata".to_string(),
+                    address: Some("test".to_string()),
+                    ..default_tree()
+                },
+                0
+            )
         );
 
         assert_eq!(
             false,
-            query.r#match(&TreeRecord {
-                species: "Thuja plicata".to_string(),
-                address: None,
-                ..default_tree()
-            })
+            query.r#match(
+                &TreeRecord {
+                    species: "Thuja plicata".to_string(),
+                    address: None,
+                    ..default_tree()
+                },
+                0
+            )
         );
     }
 
@@ -640,20 +755,26 @@ mod tests {
 
         assert_eq!(
             false,
-            query.r#match(&TreeRecord {
-                species: "Thuja plicata".to_string(),
-                address: Some("test".to_string()),
-                ..default_tree()
-            })
+            query.r#match(
+                &TreeRecord {
+                    species: "Thuja plicata".to_string(),
+                    address: Some("test".to_string()),
+                    ..default_tree()
+                },
+                0
+            )
         );
 
         assert_eq!(
             true,
-            query.r#match(&TreeRecord {
-                species: "Thuja plicata".to_string(),
-                address: None,
-                ..default_tree()
-            })
+            query.r#match(
+                &TreeRecord {
+                    species: "Thuja plicata".to_string(),
+                    address: None,
+                    ..default_tree()
+                },
+                0
+            )
         );
     }
 
@@ -665,29 +786,38 @@ mod tests {
 
         assert_eq!(
             true,
-            query.r#match(&TreeRecord {
-                species: "Thuja plicata".to_string(),
-                address: Some("Some Street".to_string()),
-                ..default_tree()
-            })
+            query.r#match(
+                &TreeRecord {
+                    species: "Thuja plicata".to_string(),
+                    address: Some("Some Street".to_string()),
+                    ..default_tree()
+                },
+                0
+            )
         );
 
         assert_eq!(
             false,
-            query.r#match(&TreeRecord {
-                species: "Thuja plicata".to_string(),
-                address: Some("other street".to_string()),
-                ..default_tree()
-            })
+            query.r#match(
+                &TreeRecord {
+                    species: "Thuja plicata".to_string(),
+                    address: Some("other street".to_string()),
+                    ..default_tree()
+                },
+                0
+            )
         );
 
         assert_eq!(
             false,
-            query.r#match(&TreeRecord {
-                species: "Thuja plicata".to_string(),
-                address: None,
-                ..default_tree()
-            })
+            query.r#match(
+                &TreeRecord {
+                    species: "Thuja plicata".to_string(),
+                    address: None,
+                    ..default_tree()
+                },
+                0
+            )
         );
     }
 
@@ -699,18 +829,105 @@ mod tests {
 
         assert_eq!(
             true,
-            query.r#match(&TreeRecord {
-                species: "Thuja plicata".to_string(),
-                ..default_tree()
-            })
+            query.r#match(
+                &TreeRecord {
+                    species: "Thuja plicata".to_string(),
+                    ..default_tree()
+                },
+                0
+            )
         );
 
         assert_eq!(
             false,
-            query.r#match(&TreeRecord {
-                species: "Thuja orientalis".to_string(),
-                ..default_tree()
-            })
+            query.r#match(
+                &TreeRecord {
+                    species: "Thuja orientalis".to_string(),
+                    ..default_tree()
+                },
+                0
+            )
+        );
+    }
+
+    #[test]
+    fn test_added_by_me() {
+        let query = SearchQuery::from_string("added:me");
+
+        assert_eq!(
+            true,
+            query.r#match(
+                &TreeRecord {
+                    added_by: 1,
+                    ..default_tree()
+                },
+                1
+            )
+        );
+
+        assert_eq!(
+            false,
+            query.r#match(
+                &TreeRecord {
+                    added_by: 1,
+                    ..default_tree()
+                },
+                2
+            )
+        );
+    }
+
+    #[test]
+    fn test_added_after() {
+        let query = SearchQuery::from_string("added:3600");
+
+        assert_eq!(
+            true,
+            query.r#match(
+                &TreeRecord {
+                    added_at: get_timestamp(),
+                    ..default_tree()
+                },
+                0
+            )
+        );
+
+        assert_eq!(
+            false,
+            query.r#match(
+                &TreeRecord {
+                    added_at: get_timestamp() - 3601,
+                    ..default_tree()
+                },
+                0
+            )
+        );
+    }
+
+    #[test]
+    fn test_updated_after() {
+        let query = SearchQuery::from_string("updated:3600");
+
+        assert_eq!(
+            true,
+            query.r#match(
+                &TreeRecord {
+                    updated_at: get_timestamp(),
+                    ..default_tree()
+                },
+                0
+            )
+        );
+
+        assert_eq!(
+            false,
+            query.r#match(
+                &TreeRecord {
+                    updated_at: get_timestamp() - 3601,
+                    ..default_tree()
+                },
+                0
+            )
         );
     }
 }

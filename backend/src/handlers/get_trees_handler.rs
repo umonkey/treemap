@@ -9,12 +9,12 @@ pub struct GetTreesHandler {
 }
 
 impl GetTreesHandler {
-    pub async fn handle(&self, request: &GetTreesRequest) -> Result<TreeList> {
+    pub async fn handle(&self, request: &GetTreesRequest, user_id: u64) -> Result<TreeList> {
         let mut trees = self.trees.get_by_bounds(request.bounds()).await?;
 
         if let Some(search) = &request.search {
             let query = SearchQuery::from_string(search);
-            trees.retain(|t| query.r#match(t));
+            trees.retain(|t| query.r#match(t, user_id));
         } else {
             trees.retain(Self::is_visible);
         }

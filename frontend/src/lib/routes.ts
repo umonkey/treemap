@@ -33,7 +33,7 @@ export const routes = {
 	newTrees: () => '/updates/new',
 	profile: () => '/profile',
 	settings: () => '/settings',
-	search: '/search',
+	search: () => '/search',
 	searchAddress: (query: string) => `/map?q=addr:"${query}"`,
 	searchQuery: (query: string) => `/map?q=${query}`,
 	searchSpecies: (query: string) => `/map?q=species:"${query}"`,
