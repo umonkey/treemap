@@ -114,9 +114,5 @@
 
 			transform: none;
 		}
-
-		:global(.leaflet-control-layers-expanded) {
-			top: 50px;
-		}
 	}
 </style>
