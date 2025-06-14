@@ -28,7 +28,7 @@
 			Without <a href={routes.searchQuery('no:height')}>height</a>,
 			<a href={routes.searchQuery('no:diameter')}>diameter</a>,
 			<a href={routes.searchQuery('no:circumference')}>grith</a>,
-			<a href={routes.searchQuery('no:image')}>images</a>,
+			<a href={routes.searchQuery('noimage')}>images</a>,
 			<a href={routes.searchQuery('unknown')}>species</a>
 			or just <a href={routes.searchQuery('incomplete')}>incomplete</a>.
 		</div>
