@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { routes } from '$lib/routes';
 	import { hooks } from './hooks';
+	import { onMount } from 'svelte';
 
-	const { focused, value, handleReset, handleFocus, handleBlur, handleChange } = hooks();
+	const { focused, value, handleReset, handleFocus, handleBlur, handleChange } = hooks({ onMount });
 </script>
 
 <div class="search" class:focused={$focused}>
@@ -104,15 +105,30 @@
 		}
 	}
 
+	/**
+	 * Some hot fixes for mobile devices.
+	 **/
 	@media (max-width: 600px) {
 		.search {
 			position: absolute;
 			top: 10px;
-			left: 50px;
-			right: 65px;
+			left: 10px;
+			right: 10px;
 			min-width: auto;
 
 			transform: none;
+		}
+
+		/**
+		 * The search bar takes whole device width.
+		 * We need to move other controls down a bit.
+		 **/
+		:global(.leaflet-container.has-search .leaflet-right.leaflet-top) {
+			top: 40px;
+		}
+
+		:global(.leaflet-container.has-search .leaflet-left.leaflet-top) {
+			top: 40px;
 		}
 	}
 </style>
