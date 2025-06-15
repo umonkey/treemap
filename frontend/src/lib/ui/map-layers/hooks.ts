@@ -1,3 +1,5 @@
+// Makes different base layers available for the map.
+
 import L, { type Map } from 'leaflet';
 import type { MountFn } from '$lib/types';
 import { MAPTILER_KEY } from '$lib/env';
@@ -6,9 +8,41 @@ import { baseLayer, droneLayer, mapLayerStore } from '$lib/stores/mapLayerStore'
 import { get } from 'svelte/store';
 import { mapKey, getContext } from '$lib/map';
 
+// Enables vector tiles from MapTiler.
+//
+// Please note that we did try this, and it looks great, zooms smoothly, but the initial rendering takes
+// time.  Like when you navigate from a map page to a non-map page (e.g. home, or the new tree form),
+// then back to the map, it takes seconds to render the map again.  Which is noticeable and degrades
+// UX significantly.
+//
+// The right solution is to switch to MapLibre GL completely, which would take significant development effort,
+// which we postpone for now.  For now, we just stick to raster tiles.
+const MAPTILER_USE_VECTOR = false;
+
 const getDefaultLayer = (): string => {
 	const isDark = window?.matchMedia('(prefers-color-scheme: dark)')?.matches ?? false;
 	return isDark ? 'OSM Dark' : 'OSM Light';
+};
+
+const getMapTilerLayer = () => {
+	if (MAPTILER_USE_VECTOR) {
+		return new MaptilerLayer({
+			apiKey: MAPTILER_KEY,
+			style: 'openstreetmap',
+			language: 'en'
+		});
+	}
+
+	return L.tileLayer(
+		`https://api.maptiler.com/maps/openstreetmap/{z}/{x}/{y}@2x.jpg?key=${MAPTILER_KEY}`,
+		{
+			attribution:
+				'&copy; <a href="https://myga.am/">Kanach Yerevan</a> &amp; <a href="https://www.openstreetmap.org/copyright">OSM</a>',
+			minZoom: 9,
+			maxZoom: 25,
+			maxNativeZoom: 22
+		}
+	);
 };
 
 export const hooks = (mount: MountFn) => {
@@ -35,11 +69,7 @@ export const hooks = (mount: MountFn) => {
 			}
 		);
 
-		const osmBasic = new MaptilerLayer({
-			apiKey: MAPTILER_KEY,
-			style: 'openstreetmap',
-			language: ' en'
-		});
+		const osmBasic = getMapTilerLayer();
 
 		const google = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
 			attribution:
