@@ -6,7 +6,7 @@
 use crate::handlers::*;
 use crate::services::*;
 use crate::types::*;
-use log::{debug, error, info};
+use log::{error, info};
 use std::sync::Arc;
 use std::time::Duration;
 
@@ -15,9 +15,10 @@ const DELAY: u64 = 1;
 
 pub struct QueueConsumer {
     queue: Arc<QueueService>,
+    add_photo_handler: Arc<AddPhotoHandler>,
+    add_story_handler: Arc<AddStoryHandler>,
     resize_image_handler: Arc<ResizeImageHandler>,
     update_tree_address_handler: Arc<UpdateTreeAddressHandler>,
-    add_photo_handler: Arc<AddPhotoHandler>,
     update_userpic_handler: Arc<UpdateUserpicHandler>,
 }
 
@@ -57,33 +58,29 @@ impl QueueConsumer {
      * Decode the message from JSON and process it.
      */
     async fn process_message(&self, msg: &str) -> Result<()> {
-        match QueueCommand::decode(msg) {
-            Ok(Some(QueueCommand::ResizeImage(message))) => {
+        match QueueCommand::decode(msg)? {
+            QueueCommand::ResizeImage(message) => {
                 self.resize_image_handler.handle(message.id).await?;
             }
 
-            Ok(Some(QueueCommand::UpdateTreeAddress(message))) => {
+            QueueCommand::UpdateTreeAddress(message) => {
                 self.update_tree_address_handler.handle(message.id).await?;
             }
 
-            Ok(Some(QueueCommand::AddPhoto(message))) => {
+            QueueCommand::AddPhoto(message) => {
                 self.add_photo_handler
                     .handle(message.tree_id, message.file_id)
                     .await?;
             }
 
-            Ok(Some(QueueCommand::UpdateUserpic(message))) => {
+            QueueCommand::UpdateUserpic(message) => {
                 self.update_userpic_handler
                     .handle(message.user_id, message.file_id)
                     .await?;
             }
 
-            Ok(None) => {
-                debug!("Unknown message: {}", msg);
-            }
-
-            Err(e) => {
-                error!("Error while decoding message: {:?}", e);
+            QueueCommand::AddStory(message) => {
+                self.add_story_handler.handle(message).await?;
             }
         }
 
@@ -99,6 +96,7 @@ impl Locatable for QueueConsumer {
             update_tree_address_handler: locator.get::<UpdateTreeAddressHandler>()?,
             add_photo_handler: locator.get::<AddPhotoHandler>()?,
             update_userpic_handler: locator.get::<UpdateUserpicHandler>()?,
+            add_story_handler: locator.get::<AddStoryHandler>()?,
         })
     }
 }

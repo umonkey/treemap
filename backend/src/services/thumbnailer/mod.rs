@@ -96,7 +96,7 @@ impl ThumbnailerService {
             Ok(value) => value,
 
             Err(e) => {
-                debug!("Error reading EXIF data: {}.", e);
+                debug!("Could not read EXIF data: {:?}.", e);
                 return Ok(None);
             }
         };

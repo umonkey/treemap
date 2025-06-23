@@ -98,8 +98,11 @@ impl UpdateTreeHandler {
     }
 
     async fn schedule_address_update(&self, tree_id: u64) -> Result<()> {
-        let msg = UpdateTreeAddressMessage { id: tree_id };
-        self.queue.push(&msg.encode()).await?;
+        self.queue
+            .push(QueueCommand::UpdateTreeAddress(UpdateTreeAddressMessage {
+                id: tree_id,
+            }))
+            .await?;
 
         info!("Scheduled address update for tree {}", tree_id);
 

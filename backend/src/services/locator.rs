@@ -12,7 +12,7 @@
 
 use crate::types::Error;
 use crate::types::Result;
-use log::{debug, error};
+use log::{debug, error, trace};
 use std::any::Any;
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
@@ -65,7 +65,7 @@ impl Locator {
                 if let Some(value) = hash.get(&id) {
                     return match value.downcast_ref::<Arc<T>>() {
                         Some(instance) => {
-                            debug!("Found existing {} in the map.", id);
+                            trace!("Found existing {} in the map.", id);
                             Ok(instance.clone())
                         }
                         None => {

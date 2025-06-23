@@ -2,9 +2,9 @@
 
 use crate::types::*;
 use rusqlite::types::Value;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct QueueMessage {
     pub id: u64,
     pub added_at: u64,
@@ -15,13 +15,7 @@ pub struct QueueMessage {
 
 impl QueueMessage {
     pub fn from_attributes(attributes: &Attributes) -> Result<Self> {
-        Ok(Self {
-            id: attributes.require_u64("id")?,
-            added_at: attributes.require_u64("added_at")?,
-            available_at: attributes.require_u64("available_at")?,
-            payload: attributes.require_string("payload")?,
-            attempts: attributes.require_u64("attempts")?,
-        })
+        attributes.deserialize::<Self>()
     }
 
     pub fn to_attributes(&self) -> Attributes {

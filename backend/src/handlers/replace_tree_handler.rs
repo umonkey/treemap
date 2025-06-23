@@ -65,8 +65,9 @@ impl ReplaceTreeHandler {
                 Ok(file_id) => {
                     info!("Scheduling file {} for tree {}", file_id, tree_id);
 
-                    let message = AddPhotoMessage { tree_id, file_id };
-                    self.queue.push(&message.encode()).await?;
+                    self.queue
+                        .push(QueueCommand::AddPhoto(AddPhotoMessage { tree_id, file_id }))
+                        .await?;
                 }
 
                 Err(e) => {
