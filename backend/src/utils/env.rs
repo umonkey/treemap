@@ -10,7 +10,6 @@ const OSM_CHANGESET_SIZE: &str = "OSM_CHANGESET_SIZE";
 const OVERPASS_ENDPOINT: &str = "TREEMAP_OVERPASS_ENDPOINT";
 const OVERPASS_QUERY: &str = "TREEMAP_OVERPASS_QUERY";
 const PAYLOAD_SIZE: &str = "PAYLOAD_SIZE";
-const SERVER_PORT: &str = "TREEMAP_PORT";
 const SQLITE_PATH: &str = "TREEMAP_SQLITE_PATH";
 const WORKERS: &str = "TREEMAP_WORKERS";
 
@@ -21,7 +20,6 @@ const DEFAULT_OVERPASS_ENDPONT: &str = "https://overpass-api.de/api/interpreter"
 const DEFAULT_OVERPASS_QUERY: &str =
     "[out:json];node[natural=tree](40.052848, 44.294472, 40.300476, 44.807396);out;";
 const DEFAULT_PAYLOAD_SIZE: usize = 50_485_760;
-const DEFAULT_PORT: u16 = 8000;
 const DEFAULT_WORKERS: usize = 1;
 
 pub fn get_sqlite_path() -> Result<String> {
@@ -44,20 +42,6 @@ pub fn get_workers() -> usize {
                 WORKERS, DEFAULT_WORKERS
             );
             DEFAULT_WORKERS
-        }
-    }
-}
-
-pub fn get_server_port() -> u16 {
-    match env::var(SERVER_PORT) {
-        Ok(v) => v.parse::<u16>().unwrap_or(DEFAULT_PORT),
-
-        Err(_) => {
-            warn!(
-                "Environment variable {} not set, using default {}.",
-                SERVER_PORT, DEFAULT_PORT
-            );
-            DEFAULT_PORT
         }
     }
 }
