@@ -32,7 +32,8 @@ pub struct Config {
     pub sqlite_path: Option<String>,
 
     // The number of web worker threads to spawn.
-    pub workers: Option<usize>,
+    #[serde(default = "default_workers")]
+    pub workers: usize,
 }
 
 impl Config {
@@ -76,6 +77,10 @@ fn default_server_addr() -> String {
 
 fn default_server_port() -> u16 {
     8000
+}
+
+fn default_workers() -> usize {
+    1
 }
 
 #[cfg(test)]
