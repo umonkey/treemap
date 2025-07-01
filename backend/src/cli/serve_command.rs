@@ -6,7 +6,7 @@
 use crate::actions::*;
 use crate::config::Config;
 use crate::services::*;
-use crate::utils::{get_payload_size, get_server_port, get_workers};
+use crate::utils::{get_payload_size, get_workers};
 use actix_cors::Cors;
 use actix_files::Files;
 use actix_web::{middleware::DefaultHeaders, web::PayloadConfig, App, HttpServer};
@@ -21,8 +21,8 @@ pub async fn serve_command() {
         .expect("Error reading configuration.");
 
     let workers = get_workers();
-    let host_addr = config.server_addr.clone().unwrap_or("0.0.0.0".to_string());
-    let host_port = get_server_port();
+    let host_addr = config.server_addr.clone();
+    let host_port: u16 = config.server_port;
 
     info!(
         "Running {} worker(s) at {}:{}.",
