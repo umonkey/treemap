@@ -1,3 +1,4 @@
+/// Reads configuration from the config.toml file.
 use crate::services::{Locatable, Locator};
 use crate::types::{Error, Result};
 use log::error;
@@ -33,7 +34,7 @@ impl Config {
     }
 
     pub fn from_file(path: &str) -> Result<Self> {
-        let mut file = fs::File::open("config.toml").map_err(|e| {
+        let mut file = fs::File::open(path).map_err(|e| {
             error!("Error opening {}: {}", path, e);
             Error::Config
         })?;

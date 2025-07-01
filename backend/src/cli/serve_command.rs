@@ -4,8 +4,9 @@
 //! then the default action which is to serve the index file.
 
 use crate::actions::*;
+use crate::config::Config;
 use crate::services::*;
-use crate::utils::{get_payload_size, get_server_addr, get_server_port, get_workers};
+use crate::utils::{get_payload_size, get_server_port, get_workers};
 use actix_cors::Cors;
 use actix_files::Files;
 use actix_web::{middleware::DefaultHeaders, web::PayloadConfig, App, HttpServer};
@@ -14,16 +15,19 @@ use std::sync::Arc;
 use std::time::Duration;
 
 pub async fn serve_command() {
+    let locator = Arc::new(Locator::new());
+    let config = locator
+        .get::<Config>()
+        .expect("Error reading configuration.");
+
     let workers = get_workers();
-    let host_addr = get_server_addr();
+    let host_addr = config.server_addr.clone().unwrap_or("0.0.0.0".to_string());
     let host_port = get_server_port();
 
     info!(
         "Running {} worker(s) at {}:{}.",
         workers, host_addr, host_port
     );
-
-    let locator = Arc::new(Locator::new());
 
     // Create the web server, passing it a closure that will initialize the shared
     // data for each new thread.  When all threads are busy, Actix will create
