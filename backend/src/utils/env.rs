@@ -10,12 +10,10 @@ const OSM_CHANGESET_SIZE: &str = "OSM_CHANGESET_SIZE";
 const OVERPASS_ENDPOINT: &str = "TREEMAP_OVERPASS_ENDPOINT";
 const OVERPASS_QUERY: &str = "TREEMAP_OVERPASS_QUERY";
 const PAYLOAD_SIZE: &str = "PAYLOAD_SIZE";
-const SERVER_ADDR: &str = "TREEMAP_ADDR";
 const SERVER_PORT: &str = "TREEMAP_PORT";
 const SQLITE_PATH: &str = "TREEMAP_SQLITE_PATH";
 const WORKERS: &str = "TREEMAP_WORKERS";
 
-const DEFAULT_ADDR: &str = "0.0.0.0";
 const DEFAULT_BOT_USER_ID: u64 = 0;
 const DEFAULT_FILE_FOLDER: &str = "var/files";
 const DEFAULT_JWT_SECRET: &str = "secret";
@@ -46,20 +44,6 @@ pub fn get_workers() -> usize {
                 WORKERS, DEFAULT_WORKERS
             );
             DEFAULT_WORKERS
-        }
-    }
-}
-
-pub fn get_server_addr() -> String {
-    match env::var(SERVER_ADDR) {
-        Ok(v) => v,
-
-        Err(_) => {
-            warn!(
-                "Environment variable {} not set, using default: {}.",
-                SERVER_ADDR, DEFAULT_ADDR
-            );
-            DEFAULT_ADDR.to_string()
         }
     }
 }
