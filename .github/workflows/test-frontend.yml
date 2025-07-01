@@ -1,17 +1,16 @@
-name: test-frontend
+name: "Frontend tests"
 
 on:
-  push:
-    branches-ignore:
-      - master
+  pull_request:
     paths: 'frontend/**'
+  workflow_dispatch:
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
   build:
-
+    name: "Linter"
     runs-on: ubuntu-latest
 
     steps:
@@ -31,17 +30,57 @@ jobs:
         cd frontend
         npm ci
 
-    - name: Run linter
+    - name: Run tests
       run: |
         cd frontend
         make lint
+
+  unit:
+    name: "Unit tests"
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Cache node_modules
+      id: node-cache
+      uses: actions/cache@v4
+      with:
+        path: '**/node_modules'
+        key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
+
+    - name: Install new dependencies
+      run: |
+        cd frontend
+        npm ci
 
     - name: Run unit tests
       run: |
         cd frontend
         make test
 
-    - name: Run Storybook + Chromatic
+  chromatic:
+    name: "Chromatic"
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Cache node_modules
+      id: node-cache
+      uses: actions/cache@v4
+      with:
+        path: '**/node_modules'
+        key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
+
+    - name: Install new dependencies
+      run: |
+        cd frontend
+        npm ci
+
+    - name: Run tests
       uses: chromaui/action@latest
       with:
         projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
