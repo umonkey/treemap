@@ -18,11 +18,6 @@
 			value: { lat: 40.181389, lng: 44.514444 },
 			onChange: fn()
 		},
-		parameters: {
-			viewport: {
-				defaultViewport: 'mobile1'
-			}
-		}
 	});
 </script>
 
