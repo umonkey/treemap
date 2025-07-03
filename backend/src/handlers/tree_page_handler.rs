@@ -120,7 +120,7 @@ impl TreePageHandler {
                 "There once was a {} tree at {}, {}.",
                 tree.species, tree.lat, tree.lon
             ),
-            "stomp" => format!(
+            "stump" => format!(
                 "What's left of a {} tree at {}, {}.",
                 tree.species, tree.lat, tree.lon
             ),

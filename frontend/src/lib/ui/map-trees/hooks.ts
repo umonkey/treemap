@@ -20,7 +20,7 @@ const getTreeCircleProps = (tree: ITree) => {
 
 	props.radius = Math.max(0.5, (tree.diameter ?? 4) / 2);
 
-	if (tree.state === 'stomp') {
+	if (tree.state === 'stump') {
 		props.color = '#000';
 		props.fillColor = '#000';
 		props.fillOpacity = 0.2;

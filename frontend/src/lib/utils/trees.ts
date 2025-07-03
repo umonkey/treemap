@@ -112,7 +112,7 @@ export const formatState = (value: string | null): string => {
 		return locale.stateGone();
 	}
 
-	if (value === 'stomp') {
+	if (value === 'stump') {
 		return locale.stateStomp();
 	}
 
