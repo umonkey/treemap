@@ -8,6 +8,7 @@ node_modules
 /.svelte-kit
 /build
 /linter.log
+storybook-static
 
 # OS
 .DS_Store
