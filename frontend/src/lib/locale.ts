@@ -196,7 +196,7 @@ class EnglishLocale {
 	}
 
 	public stateStomp(): string {
-		return 'stomp';
+		return 'stump';
 	}
 
 	public yearLabel(): string {

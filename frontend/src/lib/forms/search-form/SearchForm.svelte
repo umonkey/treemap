@@ -35,7 +35,7 @@
 				<a href={routes.searchQuery('dead')}>мёртвые</a>
 				или
 				<a href={routes.searchQuery('gone')}>удалённые</a>
-				деревья, или <a href={routes.searchQuery('stomp')}>пни</a>
+				деревья, или <a href={routes.searchQuery('stump')}>пни</a>
 			</li>
 			<li>
 				<a href={routes.searchSpecies('quercus')}>Дубы</a> или
@@ -69,7 +69,7 @@
 				<a href={routes.searchQuery('dead')}>dead</a>
 				or
 				<a href={routes.searchQuery('gone')}>gone</a>
-				trees, or <a href={routes.searchQuery('stomp')}>stomps</a>
+				trees, or <a href={routes.searchQuery('stump')}>stumps</a>
 			</li>
 			<li>
 				<a href={routes.searchSpecies('quercus')}>Oaks</a> or

@@ -22,7 +22,7 @@ pub struct SearchQuery {
     pub dead: bool,
     pub deformed: bool,
     pub healthy: bool,
-    pub stomp: bool,
+    pub stump: bool,
     pub gone: bool,
     pub unknown: bool,
     pub all: bool,
@@ -60,8 +60,8 @@ impl SearchQuery {
                 res.sick = true;
             } else if word.contains("dead") {
                 res.dead = true;
-            } else if word.contains("stomp") {
-                res.stomp = true;
+            } else if word.contains("stump") {
+                res.stump = true;
             } else if word.contains("gone") {
                 res.gone = true;
             } else if word.contains("state:unknown") {
@@ -176,7 +176,7 @@ impl SearchQuery {
                 && !self.dead
                 && !self.deformed
                 && !self.healthy
-                && !self.stomp
+                && !self.stump
                 && !self.gone
                 && !self.unknown
                 && tree.state == "gone"
@@ -200,7 +200,7 @@ impl SearchQuery {
                 return false;
             }
 
-            if self.stomp && tree.state != "stomp" {
+            if self.stump && tree.state != "stump" {
                 return false;
             }
 
@@ -528,14 +528,14 @@ mod tests {
     }
 
     #[test]
-    fn test_stomp() {
-        let query = SearchQuery::from_string("stomp");
+    fn test_stump() {
+        let query = SearchQuery::from_string("stump");
 
         assert_eq!(
             true,
             query.r#match(
                 &TreeRecord {
-                    state: "stomp".to_string(),
+                    state: "stump".to_string(),
                     ..default_tree()
                 },
                 0

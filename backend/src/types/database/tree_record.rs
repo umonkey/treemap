@@ -110,7 +110,7 @@ impl TreeRecord {
     }
 
     pub fn is_existing(&self) -> bool {
-        self.state != "gone" && self.state != "stomp"
+        self.state != "gone" && self.state != "stump"
     }
 
     pub fn get_genus(&self) -> Option<String> {
