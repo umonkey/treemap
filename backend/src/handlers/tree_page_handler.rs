@@ -62,7 +62,7 @@ impl TreePageHandler {
         );
 
         if let Some(image) = tree.thumbnail_id {
-            html.push_str(format!("<meta name=\"og:image\" content=\"https://yerevan.treemaps.app/v1/files/{}.jpg\">", image).as_str());
+            html.push_str(format!("<meta name=\"og:image\" content=\"https://yerevan.treemaps.app/v1/files/{image}.jpg\">").as_str());
         }
 
         html.push_str("<meta name=\"twitter:card\" content=\"summary_large_image\">");
@@ -90,7 +90,7 @@ impl TreePageHandler {
         );
 
         if let Some(image) = tree.thumbnail_id {
-            html.push_str(format!("<meta name=\"twitter:image\" content=\"https://yerevan.treemaps.app/v1/files/{}.jpg\">", image).as_str());
+            html.push_str(format!("<meta name=\"twitter:image\" content=\"https://yerevan.treemaps.app/v1/files/{image}.jpg\">").as_str());
         }
 
         Ok(html)

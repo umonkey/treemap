@@ -32,7 +32,7 @@ impl UpdateTreeLocationHandler {
                 .add(&PropRecord {
                     tree_id,
                     name: "location".to_string(),
-                    value: format!("{},{}", lat, lon).to_string(),
+                    value: format!("{lat},{lon}").to_string(),
                     added_by: user_id,
                     ..Default::default()
                 })

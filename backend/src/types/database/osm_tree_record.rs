@@ -98,15 +98,9 @@ impl OsmTreeRecord {
         key: &str,
         node_id: u64,
     ) -> Option<f64> {
-        let value = match tags.get(key) {
-            Some(value) => value,
-            None => return None,
-        };
+        let value = tags.get(key)?;
 
-        let value = match value.as_str() {
-            Some(value) => value,
-            None => return None,
-        };
+        let value = value.as_str()?;
 
         if let Ok(value) = value.parse::<f64>() {
             return Some(value);
@@ -136,15 +130,9 @@ impl OsmTreeRecord {
     }
 
     fn get_string(tags: &serde_json::Map<String, serde_json::Value>, key: &str) -> Option<String> {
-        let value = match tags.get(key) {
-            Some(value) => value,
-            None => return None,
-        };
+        let value = tags.get(key)?;
 
-        let value = match value.as_str() {
-            Some(value) => value,
-            None => return None,
-        };
+        let value = value.as_str()?;
 
         Some(value.to_string())
     }

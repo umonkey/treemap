@@ -32,7 +32,7 @@ impl ReplaceQuery {
         let mut params = Vec::new();
 
         for (column, value) in &self.attributes.props {
-            columns.push(format!("`{}`", column).to_string());
+            columns.push(format!("`{column}`").to_string());
             placeholders.push("?".to_string());
             params.push(value.clone());
         }

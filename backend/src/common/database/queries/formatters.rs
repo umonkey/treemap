@@ -7,7 +7,7 @@ pub fn format_where(conditions: &Attributes) -> (String, Vec<Value>) {
     let mut params: Vec<Value> = Vec::new();
 
     for (key, value) in &conditions.props {
-        where_parts.push(format!("`{}` = ?", key));
+        where_parts.push(format!("`{key}` = ?"));
         params.push(value.clone());
     }
 
@@ -23,7 +23,7 @@ pub fn format_order(order: &HashMap<String, String>) -> String {
     let mut order_parts: Vec<String> = Vec::new();
 
     for (key, value) in order {
-        order_parts.push(format!("`{}` {}", key, value));
+        order_parts.push(format!("`{key}` {value}"));
     }
 
     if order_parts.is_empty() {
@@ -36,10 +36,10 @@ pub fn format_order(order: &HashMap<String, String>) -> String {
 pub fn format_limit(limit: &Option<i64>, offset: &Option<i64>) -> String {
     if let Some(limit) = limit {
         if let Some(offset) = offset {
-            return format!(" LIMIT {} OFFSET {}", limit, offset);
+            return format!(" LIMIT {limit} OFFSET {offset}");
         }
 
-        return format!(" LIMIT {}", limit);
+        return format!(" LIMIT {limit}");
     }
 
     "".to_string()
@@ -50,7 +50,7 @@ pub fn format_set(conditions: &Attributes) -> (String, Vec<Value>) {
     let mut params: Vec<Value> = Vec::new();
 
     for (key, value) in &conditions.props {
-        set_parts.push(format!("`{}` = ?", key));
+        set_parts.push(format!("`{key}` = ?"));
         params.push(value.clone());
     }
 

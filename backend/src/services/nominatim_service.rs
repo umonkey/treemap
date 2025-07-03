@@ -25,8 +25,7 @@ pub struct NominatimService {
 impl NominatimService {
     pub async fn get_street_address(&self, lat: f64, lon: f64) -> Result<Option<String>> {
         let url = format!(
-            "https://nominatim.openstreetmap.org/reverse?format=json&lat={}&lon={}&zoom=18&addressdetails=1",
-            lat, lon
+            "https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lon}&zoom=18&addressdetails=1"
         );
 
         debug!("Requesting address from Nominatim: {}", url);

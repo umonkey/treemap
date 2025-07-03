@@ -88,7 +88,7 @@ impl LoginGoogleHandler {
     }
 
     fn get_login_headers(&self, token: &str) -> Result<HeaderMap> {
-        let auth_header = match HeaderValue::from_str(format!("Bearer {}", token).as_str()) {
+        let auth_header = match HeaderValue::from_str(format!("Bearer {token}").as_str()) {
             Ok(h) => h,
 
             Err(e) => {

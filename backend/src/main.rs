@@ -76,7 +76,7 @@ async fn main() -> std::io::Result<()> {
         }
 
         _ => {
-            println!("Command {} not understood.", command);
+            println!("Command {command} not understood.");
         }
     };
 

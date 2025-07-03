@@ -4,7 +4,7 @@
 //! search features.
 
 use crate::types::TreeRecord;
-use crate::utils::{split_words, get_timestamp};
+use crate::utils::{get_timestamp, split_words};
 
 #[derive(Debug, Default)]
 pub struct SearchQuery {
