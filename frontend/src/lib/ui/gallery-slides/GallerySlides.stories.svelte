@@ -50,9 +50,4 @@
 			}
 		]
 	}}
-	parameters={{
-		viewport: {
-			defaultViewport: 'mobile1'
-		}
-	}}
 />
