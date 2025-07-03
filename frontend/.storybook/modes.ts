@@ -1,14 +1,14 @@
 export const chromaticModes = {
 	mobile: {
 		viewport: {
-			width: 384,
-			height: 854
+			width: '384px',
+			height: '854px'
 		}
 	},
 	desktop: {
 		viewport: {
-			width: 1280,
-			height: 720
+			width: '1280px',
+			height: '720px'
 		}
 	}
 };
