@@ -22,7 +22,7 @@ impl OsmClient {
         };
 
         let url = "https://api.openstreetmap.org/api/0.6/changeset/create";
-        let body: String = format!("<osm>{}</osm>", changeset);
+        let body: String = format!("<osm>{changeset}</osm>");
 
         let res = self.put(url, body.as_str()).await?;
 
@@ -40,10 +40,7 @@ impl OsmClient {
     }
 
     pub async fn close_changeset(&self, id: u64) -> Result<()> {
-        let url = format!(
-            "https://api.openstreetmap.org/api/0.6/changeset/{}/close",
-            id
-        );
+        let url = format!("https://api.openstreetmap.org/api/0.6/changeset/{id}/close");
         self.put(url.as_str(), "").await?;
         Ok(())
     }
@@ -143,7 +140,7 @@ impl OsmClient {
     }
 
     pub async fn get_node(&self, id: u64) -> Result<Option<OsmElement>> {
-        let url = format!("https://api.openstreetmap.org/api/0.6/node/{}.json", id);
+        let url = format!("https://api.openstreetmap.org/api/0.6/node/{id}.json");
 
         let response = match self.client.get(url.to_string()).send().await {
             Ok(response) => response,
@@ -212,7 +209,7 @@ impl OsmClient {
         let response = match self
             .client
             .put(url)
-            .header("Authorization", format!("bearer {}", token))
+            .header("Authorization", format!("bearer {token}"))
             .body(body.to_string())
             .send()
             .await
@@ -295,25 +292,25 @@ impl OsmClient {
 
         if let Some(value) = tree.height {
             if value > 0.0 {
-                xml.push_str(&format!("<tag k=\"height\" v=\"{}\" />", value));
+                xml.push_str(&format!("<tag k=\"height\" v=\"{value}\" />"));
             }
         }
 
         if let Some(value) = tree.circumference {
             if value > 0.0 {
-                xml.push_str(&format!("<tag k=\"circumference\" v=\"{}\" />", value));
+                xml.push_str(&format!("<tag k=\"circumference\" v=\"{value}\" />"));
             }
         }
 
         if let Some(value) = tree.diameter {
             if value > 0.0 {
-                xml.push_str(&format!("<tag k=\"diameter_crown\" v=\"{}\" />", value));
+                xml.push_str(&format!("<tag k=\"diameter_crown\" v=\"{value}\" />"));
             }
         }
 
         // https://wiki.openstreetmap.org/wiki/Key:image
         let url = format!("https://yerevan.treemaps.app/tree/{}", tree.id);
-        xml.push_str(&format!("<tag k=\"image\" v=\"{}\" />", url));
+        xml.push_str(&format!("<tag k=\"image\" v=\"{url}\" />"));
 
         xml.push_str("</node>");
         Ok(xml)
@@ -337,11 +334,11 @@ impl OsmClient {
         let mut comment = comment.to_string();
 
         if let Ok(hashtag) = get_osm_hashtag() {
-            comment.push_str(&format!("\n\n #{}", hashtag));
+            comment.push_str(&format!("\n\n #{hashtag}"));
         }
 
         if let Ok(activity) = get_osm_activity() {
-            comment.push_str(&format!("\n\n{}", activity));
+            comment.push_str(&format!("\n\n{activity}"));
         }
 
         comment
