@@ -290,38 +290,38 @@ mod tests {
     fn test_query() {
         let query = SearchQuery::from_string("hello world");
         assert_eq!(query.words, vec!["hello", "world"]);
-        assert_eq!(query.nometrics, false);
-        assert_eq!(query.noimages, false);
+        assert!(!query.nometrics);
+        assert!(!query.noimages);
     }
 
     #[test]
     fn test_nophoto() {
         let query = SearchQuery::from_string("hello world nophoto");
         assert_eq!(query.words, vec!["hello", "world"]);
-        assert_eq!(query.noimages, true);
+        assert!(query.noimages);
     }
 
     #[test]
     fn test_nometric() {
         let query = SearchQuery::from_string("hello world  nometrics");
         assert_eq!(query.words, vec!["hello", "world"]);
-        assert_eq!(query.nometrics, true);
+        assert!(query.nometrics);
     }
 
     #[test]
     fn test_combined() {
         let query = SearchQuery::from_string("thuja  plicata  nometrics nophoto");
         assert_eq!(query.words, vec!["thuja", "plicata"]);
-        assert_eq!(query.nometrics, true);
-        assert_eq!(query.noimages, true);
+        assert!(query.nometrics);
+        assert!(query.noimages);
     }
 
     #[test]
     fn test_empty() {
         let query = SearchQuery::from_string("");
         assert_eq!(query.words.len(), 0);
-        assert_eq!(query.nometrics, false);
-        assert_eq!(query.noimages, false);
+        assert!(!query.nometrics);
+        assert!(!query.noimages);
     }
 
     #[test]
@@ -333,7 +333,7 @@ mod tests {
             ..default_tree()
         };
 
-        assert_eq!(query.r#match(&tree, 0), true);
+        assert!(query.r#match(&tree, 0));
     }
 
     #[test]
@@ -346,7 +346,7 @@ mod tests {
             ..default_tree()
         };
 
-        assert_eq!(query.r#match(&tree1, 0), true);
+        assert!(query.r#match(&tree1, 0));
 
         let tree2 = TreeRecord {
             species: "Thuja plicata".to_string(),
@@ -354,9 +354,8 @@ mod tests {
             ..default_tree()
         };
 
-        assert_eq!(
-            query.r#match(&tree2, 0),
-            false,
+        assert!(
+            !query.r#match(&tree2, 0),
             "tree has thumbnail and must not match"
         );
     }
@@ -365,48 +364,38 @@ mod tests {
     fn test_match_nometrics() {
         let query = SearchQuery::from_string("nometrics");
 
-        assert_eq!(
-            true,
-            query.r#match(
-                &TreeRecord {
-                    height: None,
-                    circumference: Some(2.0),
-                    diameter: Some(3.0),
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(query.r#match(
+            &TreeRecord {
+                height: None,
+                circumference: Some(2.0),
+                diameter: Some(3.0),
+                ..default_tree()
+            },
+            0
+        ));
 
-        assert_eq!(
-            true,
-            query.r#match(
-                &TreeRecord {
-                    height: Some(1.0),
-                    circumference: None,
-                    diameter: Some(3.0),
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(query.r#match(
+            &TreeRecord {
+                height: Some(1.0),
+                circumference: None,
+                diameter: Some(3.0),
+                ..default_tree()
+            },
+            0
+        ));
 
-        assert_eq!(
-            true,
-            query.r#match(
-                &TreeRecord {
-                    height: Some(1.0),
-                    circumference: Some(2.0),
-                    diameter: None,
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(query.r#match(
+            &TreeRecord {
+                height: Some(1.0),
+                circumference: Some(2.0),
+                diameter: None,
+                ..default_tree()
+            },
+            0
+        ));
 
-        assert_eq!(
-            false,
-            query.r#match(
+        assert!(
+            !query.r#match(
                 &TreeRecord {
                     height: Some(1.0),
                     circumference: Some(2.0),
@@ -423,359 +412,281 @@ mod tests {
     fn test_healthy() {
         let query = SearchQuery::from_string("healthy");
 
-        assert_eq!(
-            true,
-            query.r#match(
-                &TreeRecord {
-                    state: "healthy".to_string(),
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(query.r#match(
+            &TreeRecord {
+                state: "healthy".to_string(),
+                ..default_tree()
+            },
+            0
+        ));
 
-        assert_eq!(
-            false,
-            query.r#match(
-                &TreeRecord {
-                    state: "sick".to_string(),
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(!query.r#match(
+            &TreeRecord {
+                state: "sick".to_string(),
+                ..default_tree()
+            },
+            0
+        ));
     }
 
     #[test]
     fn test_deformed() {
         let query = SearchQuery::from_string("deformed");
 
-        assert_eq!(
-            true,
-            query.r#match(
-                &TreeRecord {
-                    state: "deformed".to_string(),
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(query.r#match(
+            &TreeRecord {
+                state: "deformed".to_string(),
+                ..default_tree()
+            },
+            0
+        ));
 
-        assert_eq!(
-            false,
-            query.r#match(
-                &TreeRecord {
-                    state: "healthy".to_string(),
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(!query.r#match(
+            &TreeRecord {
+                state: "healthy".to_string(),
+                ..default_tree()
+            },
+            0
+        ));
     }
 
     #[test]
     fn test_sick() {
         let query = SearchQuery::from_string("Sick");
 
-        assert_eq!(
-            true,
-            query.r#match(
-                &TreeRecord {
-                    state: "sick".to_string(),
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(query.r#match(
+            &TreeRecord {
+                state: "sick".to_string(),
+                ..default_tree()
+            },
+            0
+        ));
 
-        assert_eq!(
-            false,
-            query.r#match(
-                &TreeRecord {
-                    state: "healthy".to_string(),
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(!query.r#match(
+            &TreeRecord {
+                state: "healthy".to_string(),
+                ..default_tree()
+            },
+            0
+        ));
     }
 
     #[test]
     fn test_dead() {
         let query = SearchQuery::from_string("dead");
 
-        assert_eq!(
-            true,
-            query.r#match(
-                &TreeRecord {
-                    state: "dead".to_string(),
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(query.r#match(
+            &TreeRecord {
+                state: "dead".to_string(),
+                ..default_tree()
+            },
+            0
+        ));
 
-        assert_eq!(
-            false,
-            query.r#match(
-                &TreeRecord {
-                    state: "healthy".to_string(),
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(!query.r#match(
+            &TreeRecord {
+                state: "healthy".to_string(),
+                ..default_tree()
+            },
+            0
+        ));
     }
 
     #[test]
     fn test_stump() {
         let query = SearchQuery::from_string("stump");
 
-        assert_eq!(
-            true,
-            query.r#match(
-                &TreeRecord {
-                    state: "stump".to_string(),
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(query.r#match(
+            &TreeRecord {
+                state: "stump".to_string(),
+                ..default_tree()
+            },
+            0
+        ));
 
-        assert_eq!(
-            false,
-            query.r#match(
-                &TreeRecord {
-                    state: "healthy".to_string(),
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(!query.r#match(
+            &TreeRecord {
+                state: "healthy".to_string(),
+                ..default_tree()
+            },
+            0
+        ));
     }
 
     #[test]
     fn test_gone() {
         let query = SearchQuery::from_string("gone");
 
-        assert_eq!(
-            true,
-            query.r#match(
-                &TreeRecord {
-                    state: "gone".to_string(),
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(query.r#match(
+            &TreeRecord {
+                state: "gone".to_string(),
+                ..default_tree()
+            },
+            0
+        ));
 
-        assert_eq!(
-            false,
-            query.r#match(
-                &TreeRecord {
-                    state: "healthy".to_string(),
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(!query.r#match(
+            &TreeRecord {
+                state: "healthy".to_string(),
+                ..default_tree()
+            },
+            0
+        ));
     }
 
     #[test]
     fn test_non_gone() {
         let query = SearchQuery::from_string("");
 
-        assert_eq!(
-            false,
-            query.r#match(
-                &TreeRecord {
-                    state: "gone".to_string(),
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(!query.r#match(
+            &TreeRecord {
+                state: "gone".to_string(),
+                ..default_tree()
+            },
+            0
+        ));
 
-        assert_eq!(
-            true,
-            query.r#match(
-                &TreeRecord {
-                    state: "healthy".to_string(),
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(query.r#match(
+            &TreeRecord {
+                state: "healthy".to_string(),
+                ..default_tree()
+            },
+            0
+        ));
     }
 
     #[test]
     fn test_unknown() {
         let query = SearchQuery::from_string("state:unknown");
 
-        assert_eq!(
-            true,
-            query.r#match(
-                &TreeRecord {
-                    state: "unknown".to_string(),
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(query.r#match(
+            &TreeRecord {
+                state: "unknown".to_string(),
+                ..default_tree()
+            },
+            0
+        ));
 
-        assert_eq!(
-            false,
-            query.r#match(
-                &TreeRecord {
-                    state: "healthy".to_string(),
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(!query.r#match(
+            &TreeRecord {
+                state: "healthy".to_string(),
+                ..default_tree()
+            },
+            0
+        ));
     }
 
     #[test]
     fn test_all() {
         let query = SearchQuery::from_string("all");
 
-        assert_eq!(
-            true,
-            query.r#match(
-                &TreeRecord {
-                    state: "gone".to_string(),
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(query.r#match(
+            &TreeRecord {
+                state: "gone".to_string(),
+                ..default_tree()
+            },
+            0
+        ));
 
-        assert_eq!(
-            true,
-            query.r#match(
-                &TreeRecord {
-                    state: "healthy".to_string(),
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(query.r#match(
+            &TreeRecord {
+                state: "healthy".to_string(),
+                ..default_tree()
+            },
+            0
+        ));
     }
 
     #[test]
     fn test_notes() {
         let query = SearchQuery::from_string("osm");
 
-        assert_eq!(
-            true,
-            query.r#match(
-                &TreeRecord {
-                    species: "Thuja plicata".to_string(),
-                    notes: Some("Imported from OSM".to_string()),
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(query.r#match(
+            &TreeRecord {
+                species: "Thuja plicata".to_string(),
+                notes: Some("Imported from OSM".to_string()),
+                ..default_tree()
+            },
+            0
+        ));
 
-        assert_eq!(
-            false,
-            query.r#match(
-                &TreeRecord {
-                    species: "Thuja plicata".to_string(),
-                    notes: Some("Big tree".to_string()),
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(!query.r#match(
+            &TreeRecord {
+                species: "Thuja plicata".to_string(),
+                notes: Some("Big tree".to_string()),
+                ..default_tree()
+            },
+            0
+        ));
     }
 
     #[test]
     fn test_nocirc() {
         let query = SearchQuery::from_string("no:circumference");
 
-        assert_eq!(
-            true,
-            query.r#match(
-                &TreeRecord {
-                    species: "Thuja plicata".to_string(),
-                    circumference: None,
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(query.r#match(
+            &TreeRecord {
+                species: "Thuja plicata".to_string(),
+                circumference: None,
+                ..default_tree()
+            },
+            0
+        ));
 
-        assert_eq!(
-            false,
-            query.r#match(
-                &TreeRecord {
-                    species: "Thuja plicata".to_string(),
-                    circumference: Some(2.0),
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(!query.r#match(
+            &TreeRecord {
+                species: "Thuja plicata".to_string(),
+                circumference: Some(2.0),
+                ..default_tree()
+            },
+            0
+        ));
     }
 
     #[test]
     fn test_hasaddr() {
         let query = SearchQuery::from_string("has:addr");
 
-        assert_eq!(
-            true,
-            query.r#match(
-                &TreeRecord {
-                    species: "Thuja plicata".to_string(),
-                    address: Some("test".to_string()),
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(query.r#match(
+            &TreeRecord {
+                species: "Thuja plicata".to_string(),
+                address: Some("test".to_string()),
+                ..default_tree()
+            },
+            0
+        ));
 
-        assert_eq!(
-            false,
-            query.r#match(
-                &TreeRecord {
-                    species: "Thuja plicata".to_string(),
-                    address: None,
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(!query.r#match(
+            &TreeRecord {
+                species: "Thuja plicata".to_string(),
+                address: None,
+                ..default_tree()
+            },
+            0
+        ));
     }
 
     #[test]
     fn test_noaddr() {
         let query = SearchQuery::from_string("no:addr");
 
-        assert_eq!(
-            false,
-            query.r#match(
-                &TreeRecord {
-                    species: "Thuja plicata".to_string(),
-                    address: Some("test".to_string()),
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(!query.r#match(
+            &TreeRecord {
+                species: "Thuja plicata".to_string(),
+                address: Some("test".to_string()),
+                ..default_tree()
+            },
+            0
+        ));
 
-        assert_eq!(
-            true,
-            query.r#match(
-                &TreeRecord {
-                    species: "Thuja plicata".to_string(),
-                    address: None,
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(query.r#match(
+            &TreeRecord {
+                species: "Thuja plicata".to_string(),
+                address: None,
+                ..default_tree()
+            },
+            0
+        ));
     }
 
     #[test]
@@ -784,41 +695,32 @@ mod tests {
 
         assert_eq!(Some("some street"), query.address.as_deref());
 
-        assert_eq!(
-            true,
-            query.r#match(
-                &TreeRecord {
-                    species: "Thuja plicata".to_string(),
-                    address: Some("Some Street".to_string()),
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(query.r#match(
+            &TreeRecord {
+                species: "Thuja plicata".to_string(),
+                address: Some("Some Street".to_string()),
+                ..default_tree()
+            },
+            0
+        ));
 
-        assert_eq!(
-            false,
-            query.r#match(
-                &TreeRecord {
-                    species: "Thuja plicata".to_string(),
-                    address: Some("other street".to_string()),
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(!query.r#match(
+            &TreeRecord {
+                species: "Thuja plicata".to_string(),
+                address: Some("other street".to_string()),
+                ..default_tree()
+            },
+            0
+        ));
 
-        assert_eq!(
-            false,
-            query.r#match(
-                &TreeRecord {
-                    species: "Thuja plicata".to_string(),
-                    address: None,
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(!query.r#match(
+            &TreeRecord {
+                species: "Thuja plicata".to_string(),
+                address: None,
+                ..default_tree()
+            },
+            0
+        ));
     }
 
     #[test]
@@ -827,107 +729,83 @@ mod tests {
 
         assert_eq!(Some("thuja plicata"), query.species.as_deref());
 
-        assert_eq!(
-            true,
-            query.r#match(
-                &TreeRecord {
-                    species: "Thuja plicata".to_string(),
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(query.r#match(
+            &TreeRecord {
+                species: "Thuja plicata".to_string(),
+                ..default_tree()
+            },
+            0
+        ));
 
-        assert_eq!(
-            false,
-            query.r#match(
-                &TreeRecord {
-                    species: "Thuja orientalis".to_string(),
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(!query.r#match(
+            &TreeRecord {
+                species: "Thuja orientalis".to_string(),
+                ..default_tree()
+            },
+            0
+        ));
     }
 
     #[test]
     fn test_added_by_me() {
         let query = SearchQuery::from_string("added:me");
 
-        assert_eq!(
-            true,
-            query.r#match(
-                &TreeRecord {
-                    added_by: 1,
-                    ..default_tree()
-                },
-                1
-            )
-        );
+        assert!(query.r#match(
+            &TreeRecord {
+                added_by: 1,
+                ..default_tree()
+            },
+            1
+        ));
 
-        assert_eq!(
-            false,
-            query.r#match(
-                &TreeRecord {
-                    added_by: 1,
-                    ..default_tree()
-                },
-                2
-            )
-        );
+        assert!(!query.r#match(
+            &TreeRecord {
+                added_by: 1,
+                ..default_tree()
+            },
+            2
+        ));
     }
 
     #[test]
     fn test_added_after() {
         let query = SearchQuery::from_string("added:3600");
 
-        assert_eq!(
-            true,
-            query.r#match(
-                &TreeRecord {
-                    added_at: get_timestamp(),
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(query.r#match(
+            &TreeRecord {
+                added_at: get_timestamp(),
+                ..default_tree()
+            },
+            0
+        ));
 
-        assert_eq!(
-            false,
-            query.r#match(
-                &TreeRecord {
-                    added_at: get_timestamp() - 3601,
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(!query.r#match(
+            &TreeRecord {
+                added_at: get_timestamp() - 3601,
+                ..default_tree()
+            },
+            0
+        ));
     }
 
     #[test]
     fn test_updated_after() {
         let query = SearchQuery::from_string("updated:3600");
 
-        assert_eq!(
-            true,
-            query.r#match(
-                &TreeRecord {
-                    updated_at: get_timestamp(),
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(query.r#match(
+            &TreeRecord {
+                updated_at: get_timestamp(),
+                ..default_tree()
+            },
+            0
+        ));
 
-        assert_eq!(
-            false,
-            query.r#match(
-                &TreeRecord {
-                    updated_at: get_timestamp() - 3601,
-                    ..default_tree()
-                },
-                0
-            )
-        );
+        assert!(!query.r#match(
+            &TreeRecord {
+                updated_at: get_timestamp() - 3601,
+                ..default_tree()
+            },
+            0
+        ));
     }
 }

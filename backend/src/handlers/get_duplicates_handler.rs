@@ -13,23 +13,23 @@ impl GetDuplicatesHandler {
     pub async fn handle(&self) -> Result<DuplicatesResponse> {
         // Get all trees from the database
         let trees = self.trees.all().await?;
-        
+
         // HashMap to store coordinate -> tree_ids mapping
         let mut location_map: HashMap<String, Vec<u64>> = HashMap::new();
-        
+
         // Process each tree
         for tree in trees {
             // Round coordinates using OSM standard (7 decimal places)
             let rounded_lat = osm_round_coord(tree.lat);
             let rounded_lon = osm_round_coord(tree.lon);
-            
+
             // Create location key
-            let location_key = format!("{},{}", rounded_lat, rounded_lon);
-            
+            let location_key = format!("{rounded_lat},{rounded_lon}");
+
             // Add tree ID to the location
-            location_map.entry(location_key).or_insert_with(Vec::new).push(tree.id);
+            location_map.entry(location_key).or_default().push(tree.id);
         }
-        
+
         // Collect locations with more than 1 tree
         let mut duplicates = Vec::new();
         for (location_key, tree_ids) in location_map {
@@ -37,13 +37,14 @@ impl GetDuplicatesHandler {
                 // Parse coordinates back from the key
                 let coords: Vec<&str> = location_key.split(',').collect();
                 if coords.len() == 2 {
-                    if let (Ok(lat), Ok(lon)) = (coords[0].parse::<f64>(), coords[1].parse::<f64>()) {
+                    if let (Ok(lat), Ok(lon)) = (coords[0].parse::<f64>(), coords[1].parse::<f64>())
+                    {
                         duplicates.push(DuplicateLocation::new(lat, lon, tree_ids));
                     }
                 }
             }
         }
-        
+
         Ok(DuplicatesResponse::new(duplicates))
     }
 }
@@ -88,8 +89,8 @@ mod tests {
         for (id, lat, lon) in test_trees {
             let rounded_lat = osm_round_coord(lat);
             let rounded_lon = osm_round_coord(lon);
-            let location_key = format!("{},{}", rounded_lat, rounded_lon);
-            location_map.entry(location_key).or_insert_with(Vec::new).push(id);
+            let location_key = format!("{rounded_lat},{rounded_lon}");
+            location_map.entry(location_key).or_default().push(id);
         }
 
         // Collect duplicates
