@@ -215,3 +215,11 @@ export interface IGalleryItem {
 export interface IUploadResponse {
 	id: string;
 }
+
+export type DuplicateList = {
+	duplicates: {
+		lat: number;
+		lon: number;
+		tree_ids: string[];
+	}[];
+};

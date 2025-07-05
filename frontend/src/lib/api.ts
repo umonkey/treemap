@@ -24,7 +24,8 @@ import type {
 	ITreeFile,
 	ITreeList,
 	ITreeUpdatePayload,
-	IUploadResponse
+	IUploadResponse,
+	DuplicateList
 } from '$lib/types';
 import { Response } from '$lib/types_response';
 import { get } from 'svelte/store';
@@ -461,6 +462,11 @@ export class ApiClient {
 				...this.getAuthHeaders()
 			}
 		});
+	}
+
+	public async getDuplicates(): Promise<IResponse<DuplicateList>> {
+		const res = await this.request<DuplicateList>('GET', 'v1/duplicates');
+		return res;
 	}
 
 	/**
