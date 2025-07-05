@@ -9,7 +9,7 @@ pub struct DuplicatesResponse {
 pub struct DuplicateLocation {
     pub lat: f64,
     pub lon: f64,
-    pub tree_ids: Vec<u64>,
+    pub tree_ids: Vec<String>,
 }
 
 impl DuplicatesResponse {
@@ -19,7 +19,7 @@ impl DuplicatesResponse {
 }
 
 impl DuplicateLocation {
-    pub fn new(lat: f64, lon: f64, tree_ids: Vec<u64>) -> Self {
+    pub fn new(lat: f64, lon: f64, tree_ids: Vec<String>) -> Self {
         Self { lat, lon, tree_ids }
     }
 }

@@ -2,6 +2,7 @@ use crate::common::database::repositories::*;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::osm_round_coord;
+use log::debug;
 use std::collections::HashMap;
 use std::sync::Arc;
 
@@ -15,10 +16,14 @@ impl GetDuplicatesHandler {
         let trees = self.trees.all().await?;
 
         // HashMap to store coordinate -> tree_ids mapping
-        let mut location_map: HashMap<String, Vec<u64>> = HashMap::new();
+        let mut location_map: HashMap<String, Vec<String>> = HashMap::new();
 
         // Process each tree
         for tree in trees {
+            if !Self::is_visible(&tree) {
+                continue; // Skip trees that are not visible
+            }
+
             // Round coordinates using OSM standard (7 decimal places)
             let rounded_lat = osm_round_coord(tree.lat);
             let rounded_lon = osm_round_coord(tree.lon);
@@ -27,7 +32,10 @@ impl GetDuplicatesHandler {
             let location_key = format!("{rounded_lat},{rounded_lon}");
 
             // Add tree ID to the location
-            location_map.entry(location_key).or_default().push(tree.id);
+            location_map
+                .entry(location_key)
+                .or_default()
+                .push(tree.id.to_string());
         }
 
         // Collect locations with more than 1 tree
@@ -45,7 +53,13 @@ impl GetDuplicatesHandler {
             }
         }
 
+        debug!("Returning {} duplicate trees.", duplicates.len());
+
         Ok(DuplicatesResponse::new(duplicates))
+    }
+
+    fn is_visible(tree: &TreeRecord) -> bool {
+        tree.state != "gone"
     }
 }
 
