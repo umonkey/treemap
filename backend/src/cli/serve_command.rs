@@ -50,6 +50,7 @@ pub async fn serve_command() {
             .service(add_training_action)
             .service(add_trees_action)
             .service(delete_file_action)
+            .service(get_duplicates_action)
             .service(get_new_comments_action)
             .service(get_tree_comments_action)
             .service(get_file_jpg)
