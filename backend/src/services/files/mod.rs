@@ -88,7 +88,7 @@ impl Locatable for FileService {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use env_logger;
+
     use std::env;
     use std::path::Path;
 
@@ -97,7 +97,7 @@ mod tests {
         env::set_var("TREEMAP_SQLITE_PATH", ":memory:");
         env::set_var("AWS_ACCESS_KEY_ID", "");
 
-        if let Err(_) = env_logger::try_init() {
+        if env_logger::try_init().is_err() {
             debug!("env_logger already initialized.");
         };
 

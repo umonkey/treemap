@@ -132,12 +132,12 @@ impl Locatable for ThumbnailerService {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use env_logger;
+
     use image::DynamicImage;
     use log::debug;
 
     fn setup() -> ThumbnailerService {
-        if let Err(_) = env_logger::try_init() {
+        if env_logger::try_init().is_err() {
             debug!("env_logger already initialized.");
         };
 
@@ -164,7 +164,7 @@ mod tests {
 
         let data = include_bytes!("test/tree.jpg");
         let resized = thumbnailer
-            .resize(&data.to_vec(), 100)
+            .resize(data.as_ref(), 100)
             .expect("Error resizing image.");
 
         let image = read_image(resized);
@@ -184,7 +184,7 @@ mod tests {
 
         let data = include_bytes!("test/tree.jpg");
         let resized = thumbnailer
-            .resize(&data.to_vec(), 2000)
+            .resize(data.as_ref(), 2000)
             .expect("Error resizing image.");
 
         let image = read_image(resized);
@@ -198,7 +198,7 @@ mod tests {
 
         let data = include_bytes!("test/rotated.jpg");
         let resized = thumbnailer
-            .resize(&data.to_vec(), 100)
+            .resize(data.as_ref(), 100)
             .expect("Error resizing image.");
 
         let image = read_image(resized);
@@ -212,7 +212,7 @@ mod tests {
         let thumbnailer = setup();
 
         let data = include_bytes!("test/broken.jpg");
-        let resized = thumbnailer.resize(&data.to_vec(), 100);
+        let resized = thumbnailer.resize(data.as_ref(), 100);
 
         assert!(resized.is_err());
     }

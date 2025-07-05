@@ -117,7 +117,7 @@ mod tests {
                 assert_eq!(message.id, 12345);
             }
 
-            _ => panic!("Expected ResizeImage, got {:?}", command),
+            _ => panic!("Expected ResizeImage, got {command:?}"),
         }
     }
 
