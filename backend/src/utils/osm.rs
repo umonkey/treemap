@@ -4,11 +4,6 @@ pub fn osm_round_coord(coord: f64) -> f64 {
     (coord * 10_000_000.0).round() / 10_000_000.0
 }
 
-// Round coordinates to 6 decimal places for duplicate detection
-pub fn round_coord_6_digits(coord: f64) -> f64 {
-    (coord * 1_000_000.0).round() / 1_000_000.0
-}
-
 pub fn get_osm_genus(species: &str) -> Option<String> {
     if species.to_lowercase().contains("unknown") {
         return None;
