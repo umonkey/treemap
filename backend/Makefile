@@ -11,6 +11,9 @@ help:
 	@echo "make test          -- run unit tests"
 	@echo "make test-coverage -- run unit tests with coverage collection"
 
+autofix:
+	cargo clippy --fix
+
 build:
 	cargo build --release
 
