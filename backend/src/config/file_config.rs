@@ -21,7 +21,9 @@ pub struct Config {
     pub osm_token: Option<String>,
     pub overpass_endpoint: Option<String>,
     pub overpass_query: Option<String>,
-    pub payload_size: Option<usize>,
+
+    #[serde(default = "default_payload_size")]
+    pub payload_size: usize,
 
     #[serde(default = "default_server_addr")]
     pub server_addr: String,
@@ -81,6 +83,10 @@ fn default_server_port() -> u16 {
 
 fn default_workers() -> usize {
     1
+}
+
+fn default_payload_size() -> usize {
+    50_485_760
 }
 
 #[cfg(test)]

@@ -3,6 +3,8 @@
 # Define the bot user id, which will be used to perform automated actions.
 # Normally you run the app, sign up as a bot, then put the user id here.
 # Then the automated operations, such as OSM pulls, will become available.
+#
+# If this is not set, OSM interaction will not work.
 #bot_user_id = 12345678
 
 # Where to store temporary files, before they are uploaded to the external S3 storage.
@@ -10,3 +12,6 @@
 
 # The number of worker threads.  Normally set to the number of threads your CPU has.
 #worker_threads = 1
+
+# Max request payload size, defaults to 50M.
+#payload_size = 50485760

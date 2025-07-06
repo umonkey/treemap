@@ -6,7 +6,6 @@
 use crate::actions::*;
 use crate::config::Config;
 use crate::services::*;
-use crate::utils::get_payload_size;
 use actix_cors::Cors;
 use actix_files::Files;
 use actix_web::{middleware::DefaultHeaders, web::PayloadConfig, App, HttpServer};
@@ -45,7 +44,7 @@ pub async fn serve_command() {
                 let locator = locator.clone();
                 async move { AppState::new(locator).await }
             })
-            .app_data(PayloadConfig::new(get_payload_size()))
+            .app_data(PayloadConfig::new(config.payload_size))
             // Prioritize because of collisions with wildcards later.
             .service(get_tree_stats_action)
             .service(add_comment_action)
