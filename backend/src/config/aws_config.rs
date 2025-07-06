@@ -12,6 +12,7 @@ impl AwsConfig {
         let key = secrets.require("FILES_KEY")?;
         let secret = secrets.require("FILES_SECRET")?;
         let region = secrets.require("FILES_REGION")?;
+        let endpoint = secrets.require("FILES_ENDPOINT")?;
 
         let credentials = Credentials::new(&key, &secret, None, None, Self::get_app());
         let credentials = SharedCredentialsProvider::new(credentials);
@@ -25,6 +26,7 @@ impl AwsConfig {
             .credentials_provider(credentials)
             .timeout_config(timeout)
             .behavior_version(BehaviorVersion::latest())
+            .endpoint_url(endpoint)
             .build();
 
         Ok(config)

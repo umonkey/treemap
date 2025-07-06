@@ -90,7 +90,7 @@ impl FileStorageInterface for S3FileStorage {
             .await;
 
         if let Err(e) = res {
-            error!("Error uploading file {id} to S3: {e}");
+            error!("Error uploading file {id} to S3: {:?}", e);
             return Err(Error::FileUpload);
         }
 
