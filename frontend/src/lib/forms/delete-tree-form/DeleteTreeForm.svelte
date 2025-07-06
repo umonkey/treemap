@@ -15,17 +15,10 @@
 		id: string;
 	}>();
 
-	const { loading, busy, error, history, tree, save, close } = stateUpdater(id, 'gone');
-
-	let comment = $state('');
-
-	const handleCommentChange = (value: string) => {
-		comment = value;
-	};
-
-	const handleSave = () => {
-		save(comment.trim() || undefined);
-	};
+	const { loading, busy, error, history, tree, save, close, handleCommentChange } = stateUpdater(
+		id,
+		'gone'
+	);
 </script>
 
 <AuthWrapper>
@@ -41,10 +34,10 @@
 
 			<p>{locale.deleteUploadHint()}</p>
 
-			<CommentInput value={comment} onChange={handleCommentChange} />
+			<CommentInput value={''} hint={locale.deleteCommentHint()} onChange={handleCommentChange} />
 
 			<Buttons>
-				<Button onClick={handleSave} disabled={$busy}>{locale.deleteConfirm()}</Button>
+				<Button onClick={save} disabled={$busy}>{locale.deleteConfirm()}</Button>
 				<Button type="cancel" onClick={close}>{locale.editCancel()}</Button>
 			</Buttons>
 

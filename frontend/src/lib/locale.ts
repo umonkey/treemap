@@ -447,6 +447,10 @@ class EnglishLocale {
 		return 'Please also upload a photo confirming that the tree is gone.';
 	}
 
+	public deleteCommentHint(): string {
+		return 'Optional comment, e.g.: duplicate tree, added by error.';
+	}
+
 	public deadTitle(): string {
 		return 'Dead tree';
 	}
