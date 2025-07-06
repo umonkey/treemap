@@ -112,8 +112,8 @@ mod tests {
         for (location_key, tree_ids) in location_map {
             if tree_ids.len() > 1 {
                 let coords: Vec<&str> = location_key.split(',').collect();
-                let lat = coords[0].parse::<f64>().unwrap();
-                let lon = coords[1].parse::<f64>().unwrap();
+                let lat = coords[0].parse::<f64>().expect("Error reading lat");
+                let lon = coords[1].parse::<f64>().expect("Error reading lon");
                 duplicates.push((lat, lon, tree_ids));
             }
         }
@@ -126,7 +126,7 @@ mod tests {
             (*lat - 40.1813891).abs() < 0.0000001 && (*lon - 44.5144444).abs() < 0.0000001
         });
         assert!(duplicate1.is_some());
-        let (_, _, tree_ids1) = duplicate1.unwrap();
+        let (_, _, tree_ids1) = duplicate1.expect("Error getting duplicates.");
         assert_eq!(tree_ids1.len(), 2);
         assert!(tree_ids1.contains(&1));
         assert!(tree_ids1.contains(&2));
@@ -136,7 +136,7 @@ mod tests {
             (*lat - 38.7749000).abs() < 0.0000001 && (*lon + 123.4194000).abs() < 0.0000001
         });
         assert!(duplicate2.is_some());
-        let (_, _, tree_ids2) = duplicate2.unwrap();
+        let (_, _, tree_ids2) = duplicate2.expect("Error getting duplicates.");
         assert_eq!(tree_ids2.len(), 2);
         assert!(tree_ids2.contains(&4));
         assert!(tree_ids2.contains(&5));

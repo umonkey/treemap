@@ -314,9 +314,18 @@ export class ApiClient {
 		return res;
 	}
 
-	public async updateTreeState(id: string, value: string | null): Promise<IResponse<ITree>> {
+	public async updateTreeState(
+		id: string,
+		value: string | null,
+		comment?: string
+	): Promise<IResponse<ITree>> {
+		const payload: { value: string | null; comment?: string } = { value };
+		if (comment && comment.trim()) {
+			payload.comment = comment.trim();
+		}
+
 		const res = await this.request<ITree>('PUT', `v1/trees/${id}/state`, {
-			body: JSON.stringify({ value }),
+			body: JSON.stringify(payload),
 			headers: {
 				'Content-Type': 'application/json',
 				...this.getAuthHeaders()

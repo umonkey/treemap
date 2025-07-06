@@ -107,7 +107,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_add_file() {
-        let service = setup().await.unwrap();
+        let service = setup().await.expect("Failed to create FileService");
         let body = include_bytes!("test/tree.jpg").to_vec();
 
         let req = AddFileRequest {

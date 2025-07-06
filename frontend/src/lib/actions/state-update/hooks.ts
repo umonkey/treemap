@@ -7,7 +7,7 @@ import { addUsers } from '$lib/stores/userStore';
 import { apiClient } from '$lib/api';
 import { locale } from '$lib/locale';
 import { toast } from '@zerodevx/svelte-toast';
-import { writable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 
 export const stateUpdater = (tree_id: string, state: string) => {
 	const loading = writable<boolean>(true);
@@ -15,6 +15,7 @@ export const stateUpdater = (tree_id: string, state: string) => {
 	const busy = writable<boolean>(false);
 	const tree = writable<ITree | undefined>(undefined);
 	const history = writable<IChange[]>([]);
+	const comment = writable<string | undefined>(undefined);
 
 	const reload = async (tree_id: string) => {
 		console.debug(`[height editor] Reloading tree ${tree_id}`);
@@ -46,11 +47,15 @@ export const stateUpdater = (tree_id: string, state: string) => {
 		});
 	};
 
+	const handleCommentChange = (value: string) => {
+		comment.set(value);
+	};
+
 	const save = async () => {
 		busy.set(true);
 
 		await apiClient
-			.updateTreeState(tree_id, state)
+			.updateTreeState(tree_id, state, get(comment)?.trim() || undefined)
 			.then((res) => {
 				if (res.status === 200 && res.data) {
 					addTrees([res.data]);
@@ -71,5 +76,5 @@ export const stateUpdater = (tree_id: string, state: string) => {
 
 	reload(tree_id);
 
-	return { loading, busy, tree, history, reload, save, close };
+	return { loading, busy, tree, history, reload, save, close, handleCommentChange };
 };

@@ -1,5 +1,13 @@
 <script lang="ts">
-	import { Button, Buttons, TreeSheet, FilteredChangeList, AuthWrapper } from '$lib/ui';
+	import {
+		Button,
+		Buttons,
+		Form,
+		TreeSheet,
+		FilteredChangeList,
+		AuthWrapper,
+		CommentInput
+	} from '$lib/ui';
 	import { locale } from '$lib/locale';
 	import { stateUpdater } from '$lib/actions';
 
@@ -7,11 +15,14 @@
 		id: string;
 	}>();
 
-	const { loading, busy, error, history, tree, save, close } = stateUpdater(id, 'gone');
+	const { loading, busy, error, history, tree, save, close, handleCommentChange } = stateUpdater(
+		id,
+		'gone'
+	);
 </script>
 
 <AuthWrapper>
-	<div class="delete-tree">
+	<Form>
 		{#if $error}
 			<p>{$error.description}</p>
 		{:else if $loading}
@@ -23,6 +34,8 @@
 
 			<p>{locale.deleteUploadHint()}</p>
 
+			<CommentInput value={''} hint={locale.deleteCommentHint()} onChange={handleCommentChange} />
+
 			<Buttons>
 				<Button onClick={save} disabled={$busy}>{locale.deleteConfirm()}</Button>
 				<Button type="cancel" onClick={close}>{locale.editCancel()}</Button>
@@ -30,5 +43,11 @@
 
 			<FilteredChangeList changes={$history} name="state" />
 		{/if}
-	</div>
+	</Form>
 </AuthWrapper>
+
+<style>
+	p {
+		margin: 0;
+	}
+</style>

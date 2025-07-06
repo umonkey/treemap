@@ -37,10 +37,6 @@
 </div>
 
 <style>
-	.change-list {
-		margin: calc(var(--gap) * 3) 0 0;
-	}
-
 	h2 {
 		font-size: 125%;
 		font-weight: 400;

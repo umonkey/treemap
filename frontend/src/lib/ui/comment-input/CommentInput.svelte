@@ -2,8 +2,9 @@
 	import { TextInput } from '$lib/ui';
 	import { locale } from '$lib/locale';
 
-	const { value, onChange } = $props<{
+	const { value, hint, onChange } = $props<{
 		value: string;
+		hint?: string;
 		onChange: (value: string) => void;
 	}>();
 
@@ -16,6 +17,6 @@
 	label={locale.commentLabel()}
 	{value}
 	multiline={true}
-	hint={locale.commentHint()}
+	hint={hint ?? locale.commentHint()}
 	onChange={handleChange}
 />

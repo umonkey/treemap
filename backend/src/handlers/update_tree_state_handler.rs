@@ -10,6 +10,7 @@ pub struct UpdateTreeStateHandler {
     trees: Arc<TreeRepository>,
     users: Arc<UserRepository>,
     getter: Arc<GetTreeHandler>,
+    comments: Arc<CommentInjector>,
 }
 
 impl UpdateTreeStateHandler {
@@ -18,6 +19,7 @@ impl UpdateTreeStateHandler {
         tree_id: u64,
         value: String,
         user_id: u64,
+        comment: Option<String>,
     ) -> Result<SingleTreeResponse> {
         // Validate that tree exists.
         let tree = self.trees.get(tree_id).await?.ok_or(Error::TreeNotFound)?;
@@ -48,6 +50,15 @@ impl UpdateTreeStateHandler {
 
         self.users.increment_update_count(user_id).await?;
 
+        // Add comment if provided
+        if let Some(comment_text) = comment {
+            if !comment_text.trim().is_empty() {
+                self.comments
+                    .inject(tree_id, user_id, &comment_text)
+                    .await?;
+            }
+        }
+
         info!(
             "State for tree {} changed to {} by {}.",
             tree_id, value, user_id
@@ -64,6 +75,7 @@ impl Locatable for UpdateTreeStateHandler {
             trees: locator.get::<TreeRepository>()?,
             users: locator.get::<UserRepository>()?,
             getter: locator.get::<GetTreeHandler>()?,
+            comments: locator.get::<CommentInjector>()?,
         })
     }
 }
