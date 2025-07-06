@@ -1,7 +1,8 @@
 use crate::common::database::repositories::*;
+use crate::config::Config;
 use crate::services::*;
 use crate::types::*;
-use crate::utils::{get_bot_user_id, get_timestamp};
+use crate::utils::get_timestamp;
 use log::info;
 use std::sync::Arc;
 
@@ -101,11 +102,13 @@ impl OsmPushHandler {
 
 impl Locatable for OsmPushHandler {
     fn create(locator: &Locator) -> Result<Self> {
+        let config = locator.get::<Config>()?;
+
         Ok(Self {
             osm: locator.get::<OsmClient>()?,
             osm_trees: locator.get::<OsmTreeRepository>()?,
             trees: locator.get::<TreeRepository>()?,
-            user_id: get_bot_user_id(),
+            user_id: config.bot_user_id,
         })
     }
 }

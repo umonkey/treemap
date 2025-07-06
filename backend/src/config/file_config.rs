@@ -13,7 +13,8 @@ use std::io::Read;
 #[allow(unused)]
 #[derive(Debug, Deserialize)]
 pub struct Config {
-    pub bot_user_id: Option<u64>,
+    #[serde(default = "default_bot_user_id")]
+    pub bot_user_id: u64,
 
     #[serde(default = "default_file_folder")]
     pub file_folder: String,
@@ -109,6 +110,10 @@ fn default_file_folder() -> String {
     "var/files".to_string()
 }
 
+fn default_bot_user_id() -> u64 {
+    0
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -124,6 +129,6 @@ mod tests {
         let file = include_str!("./fixtures/config.toml");
         let config = Config::from_string(file).expect("Failed to parse config");
 
-        assert_eq!(config.bot_user_id, Some(123456789));
+        assert_eq!(config.bot_user_id, 123456789);
     }
 }
