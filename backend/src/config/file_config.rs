@@ -1,4 +1,8 @@
-/// Reads configuration from the config.toml file.
+//! Reads configuration from the config.toml file.
+//!
+//! The default config file name is `config.toml`, but it can be overridden using the
+//! `TREEMAP_CONFIG` environment variable, which is normally only used by unit tests.
+
 use crate::services::{Locatable, Locator};
 use crate::types::{Error, Result};
 use log::error;
@@ -10,7 +14,10 @@ use std::io::Read;
 #[derive(Debug, Deserialize)]
 pub struct Config {
     pub bot_user_id: Option<u64>,
-    pub file_folder: Option<String>,
+
+    #[serde(default = "default_file_folder")]
+    pub file_folder: String,
+
     pub jwt_secret: Option<String>,
     pub osm_activity: Option<String>,
     pub osm_changeset_size: Option<u64>,
@@ -40,7 +47,16 @@ pub struct Config {
 
 impl Config {
     pub fn new() -> Result<Self> {
-        Self::from_file("config.toml")
+        Self::from_default_file()
+    }
+
+    pub fn from_default_file() -> Result<Self> {
+        let path: String = match std::env::var("TREEMAP_CONFIG") {
+            Ok(v) => v,
+            Err(_) => "config.toml".to_string(),
+        };
+
+        Self::from_file(&path)
     }
 
     pub fn from_file(path: &str) -> Result<Self> {
@@ -87,6 +103,10 @@ fn default_workers() -> usize {
 
 fn default_payload_size() -> usize {
     50_485_760
+}
+
+fn default_file_folder() -> String {
+    "var/files".to_string()
 }
 
 #[cfg(test)]

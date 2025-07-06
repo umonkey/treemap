@@ -4,7 +4,6 @@ use std::env;
 use crate::types::{Error, Result};
 
 const BOT_USER_ID: &str = "BOT_USER_ID";
-const FILE_FOLDER: &str = "FILE_FOLDER";
 const JWT_SECRET: &str = "JWT_SECRET";
 const OSM_CHANGESET_SIZE: &str = "OSM_CHANGESET_SIZE";
 const OVERPASS_ENDPOINT: &str = "TREEMAP_OVERPASS_ENDPOINT";
@@ -12,7 +11,6 @@ const OVERPASS_QUERY: &str = "TREEMAP_OVERPASS_QUERY";
 const SQLITE_PATH: &str = "TREEMAP_SQLITE_PATH";
 
 const DEFAULT_BOT_USER_ID: u64 = 0;
-const DEFAULT_FILE_FOLDER: &str = "var/files";
 const DEFAULT_JWT_SECRET: &str = "secret";
 const DEFAULT_OVERPASS_ENDPONT: &str = "https://overpass-api.de/api/interpreter";
 const DEFAULT_OVERPASS_QUERY: &str =
@@ -36,17 +34,6 @@ pub fn get_jwt_secret() -> String {
         Err(_) => {
             warn!("Environment variable {} not set, using default: {}. This is very insecure, only OK for a test environment. Read more at <https://github.com/umonkey/treemap/wiki/Configuration#jwt_secret>", JWT_SECRET, DEFAULT_JWT_SECRET);
             DEFAULT_JWT_SECRET.to_string()
-        }
-    }
-}
-
-pub fn get_file_folder() -> String {
-    match env::var(FILE_FOLDER) {
-        Ok(v) => v,
-
-        Err(_) => {
-            warn!("Environment variable {} not set, using default: {}. Read more at <https://github.com/umonkey/treemap/wiki/Configuration#jwt_secret>", FILE_FOLDER, DEFAULT_FILE_FOLDER);
-            DEFAULT_FILE_FOLDER.to_string()
         }
     }
 }

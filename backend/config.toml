@@ -8,7 +8,7 @@
 #bot_user_id = 12345678
 
 # Where to store temporary files, before they are uploaded to the external S3 storage.
-#file_folder = ./var/files
+#file_folder = "var/files"
 
 # The number of worker threads.  Normally set to the number of threads your CPU has.
 #worker_threads = 1

@@ -1,9 +1,10 @@
 use super::file_storage_interface::FileStorageInterface;
+use crate::config::Config;
 use crate::services::{Locatable, Locator};
 use crate::types::*;
-use crate::utils::get_file_folder;
 use async_trait::async_trait;
 use log::{debug, error, info};
+use std::sync::Arc;
 use tokio::fs;
 
 pub struct LocalFileStorage {
@@ -11,16 +12,16 @@ pub struct LocalFileStorage {
 }
 
 impl LocalFileStorage {
-    pub fn new() -> Self {
+    pub fn new(config: Arc<Config>) -> Self {
         Self {
-            folder: get_file_folder(),
+            folder: config.file_folder.clone(),
         }
     }
 }
 
 impl Locatable for LocalFileStorage {
-    fn create(_locator: &Locator) -> Result<Self> {
-        Ok(Self::new())
+    fn create(locator: &Locator) -> Result<Self> {
+        Ok(Self::new(locator.get::<Config>()?))
     }
 }
 
