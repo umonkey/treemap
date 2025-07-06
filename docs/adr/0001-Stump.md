@@ -1,7 +1,7 @@
 # ADR-0001: Standardize Terminology for Felled Trees to 'Stump'
 
-- Date: 2025-07-07
-- Status: Accepted
+* Date: 2025-07-07
+* Status: Accepted
 
 ## Context
 
