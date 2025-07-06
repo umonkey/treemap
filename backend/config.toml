@@ -24,3 +24,20 @@
 # This query is used to pull new nodes from the OSM database.
 # Defaults to Yerevan, Armenia.
 #overpass_query = "[out:json];node[natural=tree](40.052848, 44.294472, 40.300476, 44.807396);out;"
+
+# OSM client id.
+# This is needed for OSM Push.
+# Sign up here: https://www.openstreetmap.org/oauth2/applications
+#osm_client_id = "your_osm_client_id"
+
+# OSM hashtag to add to all uploaded changesets.
+# You are strongly encouraged to use a unique hashtag for your project.
+# Details: https://wiki.openstreetmap.org/wiki/Changeset
+#osm_hashtag = "#YerevanTreeMap"
+
+# Link to your OSM Organized Activity here.
+# This is required for batch uploads.
+#osm_activity = "https://wiki.openstreetmap.org/wiki/Organised_Editing/Activities/Yerevan_Tree_Map"
+
+# This is where OSM redirects you after authorizing the app.
+#osm_redirect_uri = "http://127.0.0.1:8000/auth/callback"

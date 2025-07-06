@@ -1,3 +1,4 @@
+use crate::config::Config;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::*;
@@ -9,6 +10,10 @@ use xml::escape::escape_str_attribute;
 
 pub struct OsmClient {
     client: Client,
+    client_id: String,
+    redirect_uri: String,
+    hashtag: Option<String>,
+    activity: Option<String>,
 }
 
 impl OsmClient {
@@ -87,9 +92,9 @@ impl OsmClient {
             .request_json(&format!(
                 "https://api.openstreetmap.org/oauth/token?grant_type=authorization_code&code={}&client_id={}&client_secret={}&redirect_uri={}",
                 code,
-                get_osm_client_id()?,
+                self.client_id,
                 get_osm_client_secret()?,
-                get_osm_redirect_uri()?
+                self.redirect_uri,
             ))
             .await?;
 
@@ -333,11 +338,11 @@ impl OsmClient {
     fn format_changeset_comment(&self, comment: &str) -> String {
         let mut comment = comment.to_string();
 
-        if let Ok(hashtag) = get_osm_hashtag() {
+        if let Some(hashtag) = &self.hashtag {
             comment.push_str(&format!("\n\n #{hashtag}"));
         }
 
-        if let Ok(activity) = get_osm_activity() {
+        if let Some(activity) = &self.activity {
             comment.push_str(&format!("\n\n{activity}"));
         }
 
@@ -346,9 +351,25 @@ impl OsmClient {
 }
 
 impl Locatable for OsmClient {
-    fn create(_locator: &Locator) -> Result<Self> {
+    fn create(locator: &Locator) -> Result<Self> {
+        let config = locator.get::<Config>()?;
+
         Ok(Self {
             client: reqwest::Client::new(),
+
+            client_id: config.osm_client_id.clone().ok_or_else(|| {
+                error!("Config option osm_client_id not set");
+                Error::Config
+            })?,
+
+            redirect_uri: config.osm_redirect_uri.clone().ok_or_else(|| {
+                error!("Config option osm_redirect_uri not set");
+                Error::Config
+            })?,
+
+            hashtag: config.osm_hashtag.clone(),
+
+            activity: config.osm_activity.clone(),
         })
     }
 }

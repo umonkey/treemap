@@ -30,36 +30,12 @@ pub fn get_jwt_secret() -> String {
     }
 }
 
-pub fn get_osm_client_id() -> Result<String> {
-    env::var("OSM_CLIENT_ID").map_err(|_| Error::EnvNotSet)
-}
-
 pub fn get_osm_client_secret() -> Result<String> {
     env::var("OSM_CLIENT_SECRET").map_err(|_| Error::EnvNotSet)
 }
 
-pub fn get_osm_redirect_uri() -> Result<String> {
-    env::var("OSM_REDIRECT_URI").map_err(|_| Error::EnvNotSet)
-}
-
 pub fn get_osm_token() -> Result<String> {
     env::var("OSM_TOKEN").map_err(|_| Error::EnvNotSet)
-}
-
-pub fn get_osm_hashtag() -> Result<String> {
-    env::var("OSM_HASHTAG").map_err(|_| Error::EnvNotSet)
-}
-
-pub fn get_osm_activity() -> Result<String> {
-    env::var("OSM_ACTIVITY").map_err(|_| Error::EnvNotSet)
-}
-
-pub fn get_dry_run() -> Result<bool> {
-    if let Ok(value) = env::var("DRY") {
-        return Ok(value == "yes");
-    }
-
-    Ok(false)
 }
 
 pub fn get_app_name() -> String {

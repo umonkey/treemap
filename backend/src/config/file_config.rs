@@ -20,16 +20,14 @@ pub struct Config {
     pub file_folder: String,
 
     pub jwt_secret: Option<String>,
-    pub osm_activity: Option<String>,
 
     #[serde(default = "default_osm_changeset_size")]
     pub osm_changeset_size: u64,
 
     pub osm_client_id: Option<String>,
-    pub osm_client_secret: Option<String>,
     pub osm_hashtag: Option<String>,
+    pub osm_activity: Option<String>,
     pub osm_redirect_uri: Option<String>,
-    pub osm_token: Option<String>,
 
     #[serde(default = "default_overpass_endpoint")]
     pub overpass_endpoint: String,
@@ -84,10 +82,12 @@ impl Config {
     }
 
     pub fn from_string(contents: &str) -> Result<Self> {
-        toml::from_str(contents).map_err(|e| {
+        let data = toml::from_str(contents).map_err(|e| {
             error!("Error parsing config string: {}", e);
             Error::Config
-        })
+        })?;
+
+        Ok(data)
     }
 }
 
