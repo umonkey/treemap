@@ -1,7 +1,7 @@
 use super::file_storage_interface::FileStorageInterface;
 use super::local_file_storage::LocalFileStorage;
 use super::s3_file_storage::S3FileStorage;
-use crate::config::Config;
+use crate::config::{Config, Secrets};
 use crate::services::{Locatable, Locator};
 use crate::types::*;
 use std::sync::Arc;
@@ -11,8 +11,8 @@ pub struct FileStorageSelector {
 }
 
 impl FileStorageSelector {
-    pub async fn new(config: Arc<Config>) -> Result<Self> {
-        if let Ok(value) = S3FileStorage::new().await {
+    pub async fn new(config: Arc<Config>, secrets: Arc<Secrets>) -> Result<Self> {
+        if let Ok(value) = S3FileStorage::new(secrets).await {
             return Ok(Self {
                 storage: Arc::new(value),
             });
@@ -30,6 +30,9 @@ impl FileStorageSelector {
 
 impl Locatable for FileStorageSelector {
     fn create(locator: &Locator) -> Result<Self> {
-        futures::executor::block_on(Self::new(locator.get::<Config>()?))
+        futures::executor::block_on(Self::new(
+            locator.get::<Config>()?,
+            locator.get::<Secrets>()?,
+        ))
     }
 }

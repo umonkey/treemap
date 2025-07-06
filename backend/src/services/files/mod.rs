@@ -88,13 +88,9 @@ impl Locatable for FileService {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    use std::env;
     use std::path::Path;
 
     async fn setup() -> Result<Arc<FileService>> {
-        env::set_var("AWS_ACCESS_KEY_ID", "");
-
         if env_logger::try_init().is_err() {
             debug!("env_logger already initialized.");
         };

@@ -3,7 +3,7 @@
 use crate::config::Config;
 use crate::services::{Locatable, Locator};
 use crate::types::{Error, Result};
-use log::{debug, error};
+use log::{debug, warn};
 use std::fs;
 use std::io::Read;
 use std::sync::Arc;
@@ -28,7 +28,7 @@ impl Secrets {
             Ok(v) => v,
 
             Err(e) => {
-                error!("Error opening {}: {}", path, e);
+                warn!("Error opening {}: {}", path, e);
                 return None;
             }
         };
@@ -42,7 +42,7 @@ impl Secrets {
             }
 
             Err(e) => {
-                error!("Error reading {}: {}", path, e);
+                warn!("Error reading {}: {}", path, e);
                 None
             }
         }

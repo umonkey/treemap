@@ -39,11 +39,11 @@
 # OSM hashtag to add to all uploaded changesets.
 # You are strongly encouraged to use a unique hashtag for your project.
 # Details: https://wiki.openstreetmap.org/wiki/Changeset
-#osm_hashtag = "#YerevanTreeMap"
+#osm_hashtag = "YerevanTreeMap"
 
 # Link to your OSM Organized Activity here.
 # This is required for batch uploads.
-#osm_activity = "https://wiki.openstreetmap.org/wiki/Organised_Editing/Activities/Yerevan_Tree_Map"
+#osm_activity = "https://wiki.openstreetmap.org/wiki/Organised_Editing/Activities/Something_Else"
 
 # This is where OSM redirects you after authorizing the app.
 #osm_redirect_uri = "http://127.0.0.1:8000/auth/callback"

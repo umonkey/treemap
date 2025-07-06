@@ -5,13 +5,13 @@
 
 use crate::services::{Locatable, Locator};
 use crate::types::{Error, Result};
-use log::error;
+use log::{error, warn};
 use serde::Deserialize;
 use std::fs;
 use std::io::Read;
 
 #[allow(unused)]
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Default, Deserialize)]
 pub struct Config {
     #[serde(default = "default_bot_user_id")]
     pub bot_user_id: u64,
@@ -76,10 +76,21 @@ impl Config {
     }
 
     pub fn from_file(path: &str) -> Result<Self> {
-        let mut file = fs::File::open(path).map_err(|e| {
-            error!("Error opening {}: {}", path, e);
-            Error::Config
-        })?;
+        let mut file = match fs::File::open(path) {
+            Ok(file) => file,
+
+            Err(e) => match e.kind() {
+                std::io::ErrorKind::NotFound => {
+                    warn!("Config file {} not found, using default config.", path);
+                    return Self::from_string("");
+                }
+
+                _ => {
+                    error!("Error opening {}: {:?}", path, e);
+                    return Err(Error::Config);
+                }
+            },
+        };
 
         let mut contents = String::new();
 
@@ -157,8 +168,8 @@ mod tests {
 
     #[test]
     fn test_missing() {
-        let file = Config::from_file("missing.toml");
-        assert!(file.is_err());
+        let file = Config::from_file("missing.toml").expect("Error reading default config file.");
+        assert_eq!("0.0.0.0", file.server_addr);
     }
 
     #[test]

@@ -11,8 +11,8 @@ use xml::escape::escape_str_attribute;
 
 pub struct OsmClient {
     client: Client,
-    client_id: String,
-    redirect_uri: String,
+    client_id: Option<String>,
+    redirect_uri: Option<String>,
     hashtag: Option<String>,
     activity: Option<String>,
     secrets: Arc<Secrets>,
@@ -90,13 +90,23 @@ impl OsmClient {
     }
 
     pub async fn get_token(&self, code: &str) -> Result<String> {
+        let client_id = self.client_id.as_ref().ok_or_else(|| {
+            error!("OSM client id not set.");
+            Error::EnvNotSet
+        })?;
+
+        let redirect_uri = self.redirect_uri.as_ref().ok_or_else(|| {
+            error!("OSM redirect URI not set.");
+            Error::EnvNotSet
+        })?;
+
         let json = self
             .request_json(&format!(
                 "https://api.openstreetmap.org/oauth/token?grant_type=authorization_code&code={}&client_id={}&client_secret={}&redirect_uri={}",
                 code,
-                self.client_id,
+                client_id,
                 self.secrets.require("OSM_CLIENT_SECRET")?,
-                self.redirect_uri,
+                redirect_uri,
             ))
             .await?;
 
@@ -359,19 +369,9 @@ impl Locatable for OsmClient {
 
         Ok(Self {
             client: reqwest::Client::new(),
-
-            client_id: config.osm_client_id.clone().ok_or_else(|| {
-                error!("Config option osm_client_id not set");
-                Error::Config
-            })?,
-
-            redirect_uri: config.osm_redirect_uri.clone().ok_or_else(|| {
-                error!("Config option osm_redirect_uri not set");
-                Error::Config
-            })?,
-
+            client_id: config.osm_client_id.clone(),
+            redirect_uri: config.osm_redirect_uri.clone(),
             hashtag: config.osm_hashtag.clone(),
-
             activity: config.osm_activity.clone(),
             secrets,
         })
