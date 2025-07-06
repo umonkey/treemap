@@ -1,9 +1,8 @@
 use super::file_storage_interface::FileStorageInterface;
-use crate::config::Secrets;
+use crate::config::{AwsConfig, Secrets};
 use crate::services::{Locatable, Locator};
 use crate::types::*;
 use async_trait::async_trait;
-use aws_config::{BehaviorVersion, Region};
 use aws_sdk_s3::primitives::ByteStream;
 use aws_sdk_s3::types::ObjectCannedAcl;
 use aws_sdk_s3::Client;
@@ -17,21 +16,12 @@ pub struct S3FileStorage {
 
 impl S3FileStorage {
     pub async fn new(secrets: Arc<Secrets>) -> Result<Self> {
-        let s3_bucket = secrets.require("S3_BUCKET")?;
-        let s3_region = secrets.require("S3_REGION")?;
-        let s3_endpoint = secrets.require("S3_ENDPOINT")?;
+        let s3_bucket = secrets.require("FILES_BUCKET")?;
 
-        let s3_config = aws_config::defaults(BehaviorVersion::latest())
-            .region(Region::new(s3_region.clone()))
-            .endpoint_url(s3_endpoint.clone())
-            .load()
-            .await;
-
+        let s3_config = AwsConfig::files(secrets)?;
         let client = Client::new(&s3_config);
 
-        info!(
-            "S3 client initialized, bucket={s3_bucket} region={s3_region} endpoint={s3_endpoint}."
-        );
+        info!("S3 client initialized.");
 
         Ok(Self {
             client,

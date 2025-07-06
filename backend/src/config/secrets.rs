@@ -58,7 +58,7 @@ impl Secrets {
 
     pub fn require(&self, name: &str) -> Result<String> {
         match self.get(name) {
-            Some(value) => Ok(value),
+            Some(value) => Ok(value.trim().to_string()),
             None => Err(Error::EnvNotSet),
         }
     }
