@@ -41,7 +41,7 @@ impl UploadLocalFiles {
                 .expect("Error writing files.");
         }
 
-        info!("Copied {} files.", count);
+        info!("Copied {count} files.");
 
         Ok(())
     }
@@ -63,13 +63,13 @@ impl UploadLocalFiles {
                         Ok(id) => res.push(id),
 
                         Err(e) => {
-                            warn!("Error parsing file name: {}", e);
+                            warn!("Error parsing file name: {e}");
                         }
                     }
                 }
 
                 Err(e) => {
-                    error!("Error listing files: {}", e);
+                    error!("Error listing files: {e}");
                 }
             }
         }

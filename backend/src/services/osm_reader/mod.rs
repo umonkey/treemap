@@ -43,7 +43,7 @@ impl OsmReaderService {
             Ok(doc) => doc,
 
             Err(e) => {
-                error!("Error querying OSM: {:?}", e);
+                error!("Error querying OSM: {e:?}");
                 return Err(Error::OsmExchange);
             }
         };
@@ -96,7 +96,7 @@ impl OsmReaderService {
             added += 1;
         }
 
-        info!("Matched OSM trees: {} added, {} updated.", added, updated);
+        info!("Matched OSM trees: {added} added, {updated} updated.");
 
         Ok(())
     }
@@ -159,7 +159,7 @@ impl OsmReaderService {
         let msg = UpdateTreeAddressMessage { id: tree_id };
         self.queue.push(&msg.encode()).await?;
 
-        info!("Scheduled address update for tree {}", tree_id);
+        info!("Scheduled address update for tree {tree_id}");
 
         Ok(())
     }

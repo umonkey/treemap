@@ -9,7 +9,7 @@ pub struct ThumbnailerService;
 
 impl ThumbnailerService {
     pub fn resize(&self, data: &[u8], size: u32) -> Result<Vec<u8>> {
-        debug!("Reading an image to resize it to {} px.", size);
+        debug!("Reading an image to resize it to {size} px.");
 
         let img = self.decode(data)?;
 
@@ -27,7 +27,7 @@ impl ThumbnailerService {
             .to_rgb8()
             .write_to(&mut Cursor::new(&mut buf), image::ImageFormat::Jpeg)
             .map_err(|e| {
-                error!("Error writing image: {:?}", e);
+                error!("Error writing image: {e:?}");
                 Error::ImageResize
             })?;
 
@@ -49,7 +49,7 @@ impl ThumbnailerService {
         let format = match reader.with_guessed_format() {
             Ok(value) => value,
             Err(e) => {
-                error!("Error guessing image format: {:?}", e);
+                error!("Error guessing image format: {e:?}");
                 return Err(Error::BadImage);
             }
         };
@@ -58,7 +58,7 @@ impl ThumbnailerService {
             Ok(value) => value,
 
             Err(e) => {
-                error!("Panic during decoding an image: {:?}.", e);
+                error!("Panic during decoding an image: {e:?}.");
                 return Err(Error::BadImage);
             }
         };
@@ -67,7 +67,7 @@ impl ThumbnailerService {
             Ok(value) => value,
 
             Err(e) => {
-                error!("Error decoding image: {:?}", e);
+                error!("Error decoding image: {e:?}");
                 return Err(Error::BadImage);
             }
         };
@@ -96,7 +96,7 @@ impl ThumbnailerService {
             Ok(value) => value,
 
             Err(e) => {
-                debug!("Error reading EXIF data: {}.", e);
+                debug!("Error reading EXIF data: {e}.");
                 return Ok(None);
             }
         };

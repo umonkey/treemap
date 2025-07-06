@@ -35,12 +35,12 @@ impl OsmClient {
 
         match res.parse::<u64>() {
             Ok(id) => {
-                info!("Created OSM changeset {}", id);
+                info!("Created OSM changeset {id}");
                 Ok(id)
             }
 
             Err(e) => {
-                error!("Error parsing OSM changeset ID: {:?}", e);
+                error!("Error parsing OSM changeset ID: {e:?}");
                 Err(Error::OsmExchange)
             }
         }
@@ -68,7 +68,7 @@ impl OsmClient {
             }
 
             Err(e) => {
-                error!("Error parsing OSM node id: {:?}", e);
+                error!("Error parsing OSM node id: {e:?}");
                 Err(Error::OsmExchange)
             }
         }
@@ -148,7 +148,7 @@ impl OsmClient {
                 Ok(element) => res.push(element),
 
                 Err(e) => {
-                    error!("Error parsing OSM element: {:?}", e);
+                    error!("Error parsing OSM element: {e:?}");
                 }
             };
         }
@@ -163,18 +163,18 @@ impl OsmClient {
             Ok(response) => response,
 
             Err(e) => {
-                error!("Error querying OSM API: {}; URL: {}", e, url);
+                error!("Error querying OSM API: {e}; URL: {url}");
                 return Err(Error::OsmExchange);
             }
         };
 
         if response.status() == 410 {
-            debug!("OSM node {} is gone.", id);
+            debug!("OSM node {id} is gone.");
             return Ok(None);
         }
 
         if response.status() == 404 {
-            debug!("OSM node {} not found.", id);
+            debug!("OSM node {id} not found.");
             return Ok(None);
         }
 
@@ -191,7 +191,7 @@ impl OsmClient {
             Ok(json) => json,
 
             Err(e) => {
-                error!("Error parsing OSM API response JSON: {:?}", e);
+                error!("Error parsing OSM API response JSON: {e:?}");
                 return Err(Error::OsmExchange);
             }
         };
@@ -210,7 +210,7 @@ impl OsmClient {
                 Ok(element) => return Ok(Some(element)),
 
                 Err(e) => {
-                    error!("Error parsing OSM element: {:?}", e);
+                    error!("Error parsing OSM element: {e:?}");
                 }
             };
         }
@@ -221,7 +221,7 @@ impl OsmClient {
     async fn put(&self, url: &str, body: &str) -> Result<String> {
         let token = self.secrets.require("OSM_TOKEN")?;
 
-        debug!("OSM PUT: {}; body: {}", url, body);
+        debug!("OSM PUT: {url}; body: {body}");
 
         let response = match self
             .client
@@ -234,7 +234,7 @@ impl OsmClient {
             Ok(response) => response,
 
             Err(e) => {
-                error!("Error querying OSM API: {}", e);
+                error!("Error querying OSM API: {e}");
                 return Err(Error::OsmExchange);
             }
         };
@@ -250,7 +250,7 @@ impl OsmClient {
         }
 
         response.text().await.map_err(|e| {
-            error!("Error parsing OSM API response text: {:?}", e);
+            error!("Error parsing OSM API response text: {e:?}");
             Error::OsmExchange
         })
     }
@@ -260,7 +260,7 @@ impl OsmClient {
             Ok(response) => response,
 
             Err(e) => {
-                error!("Error querying OSM API: {}", e);
+                error!("Error querying OSM API: {e}");
                 return Err(Error::OsmExchange);
             }
         };
@@ -278,7 +278,7 @@ impl OsmClient {
             Ok(json) => json,
 
             Err(e) => {
-                error!("Error parsing OSM API response JSON: {:?}", e);
+                error!("Error parsing OSM API response JSON: {e:?}");
                 return Err(Error::OsmExchange);
             }
         };

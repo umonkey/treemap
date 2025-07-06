@@ -32,7 +32,7 @@ impl QueueConsumer {
                 Ok(Some(msg)) => {
                     match self.process_message(msg.payload.as_str()).await {
                         Ok(_) => self.delete_message(&msg).await,
-                        Err(e) => error!("Error while processing message: {:?}", e),
+                        Err(e) => error!("Error while processing message: {e:?}"),
                     };
                 }
 
@@ -41,7 +41,7 @@ impl QueueConsumer {
                 }
 
                 Err(e) => {
-                    error!("Error while processing queue message: {:?}", e);
+                    error!("Error while processing queue message: {e:?}");
                 }
             }
         }
@@ -49,7 +49,7 @@ impl QueueConsumer {
 
     async fn delete_message(&self, msg: &QueueMessage) {
         if let Err(e) = self.queue.delete(msg).await {
-            error!("Error deleting message from queue: {}", e);
+            error!("Error deleting message from queue: {e}");
         }
     }
 
@@ -79,11 +79,11 @@ impl QueueConsumer {
             }
 
             Ok(None) => {
-                debug!("Unknown message: {}", msg);
+                debug!("Unknown message: {msg}");
             }
 
             Err(e) => {
-                error!("Error while decoding message: {:?}", e);
+                error!("Error while decoding message: {e:?}");
             }
         }
 

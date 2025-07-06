@@ -19,7 +19,7 @@ impl OsmTreeRepository {
             Ok(Some(props)) => Ok(Some(OsmTreeRecord::from_attributes(&props)?)),
             Ok(None) => Ok(None),
             Err(err) => {
-                error!("Error reading a tree: {}", err);
+                error!("Error reading a tree: {err}");
                 Err(err)
             }
         }
@@ -39,7 +39,7 @@ impl OsmTreeRepository {
             .with_values(tree.to_attributes());
 
         self.db.update(query).await.map_err(|e| {
-            error!("Error updating an OSM tree: {}", e);
+            error!("Error updating an OSM tree: {e}");
             e
         })?;
 

@@ -33,10 +33,10 @@ impl PropRepository {
         let query = InsertQuery::new(TABLE).with_values(prop.to_attributes());
 
         self.db.add_record(query).await.inspect_err(|e| {
-            log::error!("Error adding prop record: {:?}", e);
+            log::error!("Error adding prop record: {e:?}");
         })?;
 
-        log::info!("Tree prop added: {:?}", prop);
+        log::info!("Tree prop added: {prop:?}");
 
         Ok(())
     }
@@ -56,7 +56,7 @@ impl PropRepository {
             .iter()
             .map(|props| {
                 PropRecord::from_attributes(props).map_err(|e| {
-                    log::debug!("Error parsing prop record: {:?}", e);
+                    log::debug!("Error parsing prop record: {e:?}");
                     Error::DatabaseStructure
                 })
             })

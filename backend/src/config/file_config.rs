@@ -81,12 +81,12 @@ impl Config {
 
             Err(e) => match e.kind() {
                 std::io::ErrorKind::NotFound => {
-                    warn!("Config file {} not found, using default config.", path);
+                    warn!("Config file {path} not found, using default config.");
                     return Self::from_string("");
                 }
 
                 _ => {
-                    error!("Error opening {}: {:?}", path, e);
+                    error!("Error opening {path}: {e:?}");
                     return Err(Error::Config);
                 }
             },
@@ -95,7 +95,7 @@ impl Config {
         let mut contents = String::new();
 
         file.read_to_string(&mut contents).map_err(|e| {
-            error!("Error reading {}: {}", path, e);
+            error!("Error reading {path}: {e}");
             Error::Config
         })?;
 
@@ -104,7 +104,7 @@ impl Config {
 
     pub fn from_string(contents: &str) -> Result<Self> {
         let data = toml::from_str(contents).map_err(|e| {
-            error!("Error parsing config string: {}", e);
+            error!("Error parsing config string: {e}");
             Error::Config
         })?;
 

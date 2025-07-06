@@ -28,7 +28,7 @@ impl Secrets {
             Ok(v) => v,
 
             Err(e) => {
-                warn!("Error opening {}: {}", path, e);
+                warn!("Error opening {path}: {e}");
                 return None;
             }
         };
@@ -37,12 +37,12 @@ impl Secrets {
 
         match file.read_to_string(&mut contents) {
             Ok(value) => {
-                debug!("Read secret from {}", path);
+                debug!("Read secret from {path}");
                 Some(contents)
             }
 
             Err(e) => {
-                warn!("Error reading {}: {}", path, e);
+                warn!("Error reading {path}: {e}");
                 None
             }
         }

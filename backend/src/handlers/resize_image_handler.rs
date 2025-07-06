@@ -17,7 +17,7 @@ pub struct ResizeImageHandler {
 
 impl ResizeImageHandler {
     pub async fn handle(&self, file_id: u64) -> Result<()> {
-        debug!("Going to resize images for file {}.", file_id);
+        debug!("Going to resize images for file {file_id}.");
 
         match self.files.get(file_id).await {
             Ok(Some(file)) => {
@@ -29,7 +29,7 @@ impl ResizeImageHandler {
                 let large = self.thumbnailer.resize(&body, LARGE_SIZE)?;
                 let large_id = self.write_file(&large).await?;
 
-                debug!("Updating file {} with new image ids.", file_id);
+                debug!("Updating file {file_id} with new image ids.");
 
                 let updated = FileRecord {
                     small_id,
@@ -48,12 +48,12 @@ impl ResizeImageHandler {
             }
 
             Ok(None) => {
-                error!("File {} not found, cannot resize images.", file_id);
+                error!("File {file_id} not found, cannot resize images.");
                 Ok(())
             }
 
             Err(e) => {
-                error!("Error resizing images for file {}: {:?}", file_id, e);
+                error!("Error resizing images for file {file_id}: {e:?}");
                 Ok(())
             }
         }

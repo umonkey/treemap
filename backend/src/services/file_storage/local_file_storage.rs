@@ -34,7 +34,7 @@ impl FileStorageInterface for LocalFileStorage {
             Ok(()) => (),
 
             Err(e) => {
-                error!("Error creating folder: {:?}", e);
+                error!("Error creating folder: {e:?}");
                 return Err(Error::FileUpload);
             }
         };
@@ -46,7 +46,7 @@ impl FileStorageInterface for LocalFileStorage {
             }
 
             Err(e) => {
-                error!("Error writing file: {:?}", e);
+                error!("Error writing file: {e:?}");
                 Err(Error::FileUpload)
             }
         }
@@ -62,12 +62,12 @@ impl FileStorageInterface for LocalFileStorage {
             }
 
             Err(ref e) if e.kind() == std::io::ErrorKind::NotFound => {
-                debug!("File {} not found.", id);
+                debug!("File {id} not found.");
                 Err(Error::FileNotFound)
             }
 
             Err(e) => {
-                error!("Error reading file {}: {:?}", id, e);
+                error!("Error reading file {id}: {e:?}");
                 Err(Error::FileDownload)
             }
         }

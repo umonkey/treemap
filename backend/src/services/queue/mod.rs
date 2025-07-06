@@ -37,7 +37,7 @@ impl QueueService {
 
         self.messages.add(&msg).await?;
 
-        debug!("Message {} added to queue, payload: {}", id, payload);
+        debug!("Message {id} added to queue, payload: {payload}");
 
         Ok(msg)
     }

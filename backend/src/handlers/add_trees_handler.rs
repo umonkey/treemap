@@ -74,7 +74,7 @@ impl AddTreesHandler {
         let msg = UpdateTreeAddressMessage { id: tree_id };
         self.queue.push(&msg.encode()).await?;
 
-        info!("Scheduled address update for tree {}", tree_id);
+        info!("Scheduled address update for tree {tree_id}");
 
         Ok(())
     }
@@ -84,7 +84,7 @@ impl AddTreesHandler {
         for file in files {
             match file.parse::<u64>() {
                 Ok(file_id) => {
-                    info!("Scheduling file {} for tree {}", file_id, tree_id);
+                    info!("Scheduling file {file_id} for tree {tree_id}");
 
                     let message = AddPhotoMessage { tree_id, file_id };
                     self.queue.push(&message.encode()).await?;
@@ -92,8 +92,7 @@ impl AddTreesHandler {
 
                 Err(e) => {
                     error!(
-                        "Error parsing file ID '{}': {} -- cannot attach to tree {}.",
-                        file, e, tree_id
+                        "Error parsing file ID '{file}': {e} -- cannot attach to tree {tree_id}."
                     );
                 }
             }

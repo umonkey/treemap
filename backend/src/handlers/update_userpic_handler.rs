@@ -25,7 +25,7 @@ impl UpdateUserpicHandler {
             .get(file_id)
             .await
             .inspect_err(|e| {
-                error!("Could not find source file {}: {:?}", file_id, e);
+                error!("Could not find source file {file_id}: {e:?}");
             })?
             .ok_or(Error::FileNotFound)?;
 

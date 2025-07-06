@@ -26,7 +26,7 @@ impl AddPhotosHandler {
 
         for file in &req.files {
             let file_id: u64 = file.parse().map_err(|e| {
-                error!("Error processing file ID {}: {}", file, e);
+                error!("Error processing file ID {file}: {e}");
                 Error::BadRequest
             })?;
 

@@ -39,7 +39,7 @@ impl CommentInjector {
         let comments = self.comments.count_by_tree(tree_id).await?;
         self.trees.update_comment_count(tree_id, comments).await?;
 
-        info!("Comment {} added to tree {}", id, tree_id);
+        info!("Comment {id} added to tree {tree_id}");
 
         Ok(id)
     }

@@ -72,8 +72,8 @@ impl OsmPushChangesHandler {
                 // Update our existing record to avoid duplicate updates.
                 self.osm_trees.update(&tree).await?;
             } else {
-                debug!("Source node: {:?}", node);
-                debug!("Updated node: {:?}", node_with_changes);
+                debug!("Source node: {node:?}");
+                debug!("Updated node: {node_with_changes:?}");
             }
         }
 

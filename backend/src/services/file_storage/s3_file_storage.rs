@@ -62,14 +62,14 @@ impl FileStorageInterface for S3FileStorage {
                     }
 
                     Err(e) => {
-                        error!("Error reading file: {}", e);
+                        error!("Error reading file: {e}");
                         Err(Error::FileDownload)
                     }
                 }
             }
 
             Err(e) => {
-                error!("Error downloading file: {}", e);
+                error!("Error downloading file: {e}");
                 Err(Error::FileDownload)
             }
         }
@@ -90,7 +90,7 @@ impl FileStorageInterface for S3FileStorage {
             .await;
 
         if let Err(e) = res {
-            error!("Error uploading file {} to S3: {}", id, e);
+            error!("Error uploading file {id} to S3: {e}");
             return Err(Error::FileUpload);
         }
 

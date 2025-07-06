@@ -31,8 +31,8 @@ impl TokenService {
             Ok(token) => Ok(token.claims),
 
             Err(e) => {
-                error!("Error decoding token: {}", e);
-                debug!("Token payload: {}", encoded);
+                error!("Error decoding token: {e}");
+                debug!("Token payload: {encoded}");
                 Err(e.into())
             }
         }

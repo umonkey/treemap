@@ -23,10 +23,7 @@ pub async fn serve_command() {
     let host_addr = config.server_addr.clone();
     let host_port: u16 = config.server_port;
 
-    info!(
-        "Running {} worker(s) at {}:{}.",
-        workers, host_addr, host_port
-    );
+    info!("Running {workers} worker(s) at {host_addr}:{host_port}.");
 
     // Create the web server, passing it a closure that will initialize the shared
     // data for each new thread.  When all threads are busy, Actix will create

@@ -75,7 +75,7 @@ impl OsmTreeRecord {
         let tags = node["tags"].as_object()?;
 
         if !tags.contains_key("natural") || tags["natural"] != "tree" {
-            debug!("Node is not a tree: {:?}", id);
+            debug!("Node is not a tree: {id:?}");
             return None;
         }
 
@@ -112,7 +112,7 @@ impl OsmTreeRecord {
             }
         }
 
-        debug!("Could not parse {} for node {}: {:?}", key, node_id, value);
+        debug!("Could not parse {key} for node {node_id}: {value:?}");
 
         None
     }

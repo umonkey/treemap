@@ -66,13 +66,13 @@ impl LoginGoogleHandler {
             .get("https://www.googleapis.com/oauth2/v1/userinfo")
             .headers(headers);
 
-        debug!("Request: {:?}", req);
+        debug!("Request: {req:?}");
 
         let res = match req.send().await {
             Ok(res) => res,
 
             Err(e) => {
-                debug!("Failed to get user info from Google: {:?}", e);
+                debug!("Failed to get user info from Google: {e:?}");
                 return Err(Error::GoogleUserInfo);
             }
         };
@@ -81,7 +81,7 @@ impl LoginGoogleHandler {
             Ok(u) => Ok(u),
 
             Err(e) => {
-                debug!("Failed to parse Google response: {:?}", e);
+                debug!("Failed to parse Google response: {e:?}");
                 Err(Error::GoogleUserInfo)
             }
         }
@@ -92,7 +92,7 @@ impl LoginGoogleHandler {
             Ok(h) => h,
 
             Err(e) => {
-                debug!("Failed to create auth header: {}", e);
+                debug!("Failed to create auth header: {e}");
                 return Err(Error::BadAuthToken);
             }
         };

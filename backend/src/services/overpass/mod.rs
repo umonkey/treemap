@@ -41,7 +41,7 @@ impl OverpassClient {
             match OsmTreeRecord::from_overpass(element) {
                 Some(tree) => trees.push(tree),
                 None => {
-                    error!("Error parsing OSM node: {:?}", element);
+                    error!("Error parsing OSM node: {element:?}");
                 }
             }
         }
@@ -50,13 +50,13 @@ impl OverpassClient {
     }
 
     async fn read_json(&self, url: &str) -> Result<Value> {
-        debug!("Sending Overpass query to: {}", url);
+        debug!("Sending Overpass query to: {url}");
 
         let response = match self.client.get(url).send().await {
             Ok(response) => response,
 
             Err(e) => {
-                error!("Error sending Overpass query: {}", e);
+                error!("Error sending Overpass query: {e}");
                 return Err(Error::OsmExchange);
             }
         };
@@ -70,7 +70,7 @@ impl OverpassClient {
             Ok(json) => json,
 
             Err(e) => {
-                error!("Error parsing Overpass response JSON: {:?}", e);
+                error!("Error parsing Overpass response JSON: {e:?}");
                 return Err(Error::OsmExchange);
             }
         };
@@ -83,7 +83,7 @@ impl OverpassClient {
             Ok(url) => Ok(url.to_string()),
 
             Err(e) => {
-                error!("Error building Overpass query URL: {}", e);
+                error!("Error building Overpass query URL: {e}");
                 Err(Error::OsmExchange)
             }
         }

@@ -65,11 +65,11 @@ impl Locator {
                 if let Some(value) = hash.get(&id) {
                     return match value.downcast_ref::<Arc<T>>() {
                         Some(instance) => {
-                            debug!("Found existing {} in the map.", id);
+                            debug!("Found existing {id} in the map.");
                             Ok(instance.clone())
                         }
                         None => {
-                            error!("Error downcasting {} from the map.", id);
+                            error!("Error downcasting {id} from the map.");
                             Err(Error::DependencyLoad)
                         }
                     };
@@ -77,7 +77,7 @@ impl Locator {
             }
 
             Err(e) => {
-                error!("Error locking service map: {:?}", e);
+                error!("Error locking service map: {e:?}");
                 return Err(Error::DependencyLoad);
             }
         }
@@ -87,12 +87,12 @@ impl Locator {
         match self.map.lock() {
             Ok(mut hash) => {
                 hash.insert(id.clone(), Arc::new(instance.clone()));
-                debug!("Created new instance of {}.", id);
+                debug!("Created new instance of {id}.");
                 Ok(instance)
             }
 
             Err(e) => {
-                error!("Error locking service map: {:?}", e);
+                error!("Error locking service map: {e:?}");
                 Err(Error::DependencyLoad)
             }
         }

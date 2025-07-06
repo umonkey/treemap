@@ -43,7 +43,7 @@ impl SqliteDatabase {
     }
 
     async fn create_file_pool(path: &str) -> Result<Pool> {
-        info!("Using SQLite database from {}.", path);
+        info!("Using SQLite database from {path}.");
 
         let pool = match PoolBuilder::new()
             .path(path)
@@ -53,7 +53,7 @@ impl SqliteDatabase {
         {
             Ok(value) => value,
             Err(e) => {
-                error!("Error connecting to the database: {:?}", e);
+                error!("Error connecting to the database: {e:?}");
                 return Err(Error::DatabaseConnect);
             }
         };
@@ -67,7 +67,7 @@ impl SqliteDatabase {
         let pool = match PoolBuilder::new().num_conns(1).open().await {
             Ok(value) => value,
             Err(e) => {
-                error!("Error connecting to the database: {}", e);
+                error!("Error connecting to the database: {e}");
                 return Err(Error::DatabaseConnect);
             }
         };
@@ -97,7 +97,7 @@ impl SqliteDatabase {
         match res {
             Ok(_) => Ok(()),
             Err(e) => {
-                error!("Error executing SQL script: {}", e);
+                error!("Error executing SQL script: {e}");
                 Err(Error::DatabaseQuery)
             }
         }
@@ -150,13 +150,13 @@ impl DatabaseInterface for SqliteDatabase {
                     Ok(value) => value,
 
                     Err(e) => {
-                        error!("Error preparing SQL statement: {}", e);
+                        error!("Error preparing SQL statement: {e}");
                         return Err(e);
                     }
                 };
 
                 let mut rows = stmt.query(params_from_iter(params.iter())).map_err(|e| {
-                    error!("Error executing SQL statement: {}", e);
+                    error!("Error executing SQL statement: {e}");
                     e
                 })?;
 
@@ -189,7 +189,7 @@ impl DatabaseInterface for SqliteDatabase {
                     Ok(_) => (),
 
                     Err(e) => {
-                        error!("Error adding a record to the database: {}", e);
+                        error!("Error adding a record to the database: {e}");
                         return Err(e);
                     }
                 };
@@ -210,7 +210,7 @@ impl DatabaseInterface for SqliteDatabase {
                     Ok(_) => (),
 
                     Err(e) => {
-                        error!("Error replacing a record to the database: {}", e);
+                        error!("Error replacing a record to the database: {e}");
                         return Err(e);
                     }
                 };
@@ -231,7 +231,7 @@ impl DatabaseInterface for SqliteDatabase {
                     Ok(_) => (),
 
                     Err(e) => {
-                        error!("Error updating database: {}", e);
+                        error!("Error updating database: {e}");
                         return Err(e);
                     }
                 };
@@ -252,7 +252,7 @@ impl DatabaseInterface for SqliteDatabase {
                     Ok(_) => (),
 
                     Err(e) => {
-                        error!("Error deleting record: {}", e);
+                        error!("Error deleting record: {e}");
                         return Err(e);
                     }
                 };
@@ -273,7 +273,7 @@ impl DatabaseInterface for SqliteDatabase {
                     Ok(_) => (),
 
                     Err(e) => {
-                        error!("Error incrementing a value: {}", e);
+                        error!("Error incrementing a value: {e}");
                         return Err(e);
                     }
                 };
@@ -298,13 +298,13 @@ impl DatabaseInterface for SqliteDatabase {
                     Ok(value) => value,
 
                     Err(e) => {
-                        error!("Error preparing SQL statement: {}", e);
+                        error!("Error preparing SQL statement: {e}");
                         return Err(e);
                     }
                 };
 
                 let mut rows = stmt.query(params_from_iter(params.iter())).map_err(|e| {
-                    error!("Error executing SQL statement: {}", e);
+                    error!("Error executing SQL statement: {e}");
                     e
                 })?;
 
@@ -326,7 +326,7 @@ impl DatabaseInterface for SqliteDatabase {
                 Ok(value) => value,
 
                 Err(e) => {
-                    error!("Error preparing SQL statement: {}", e);
+                    error!("Error preparing SQL statement: {e}");
                     return Err(e);
                 },
             };
@@ -335,7 +335,7 @@ impl DatabaseInterface for SqliteDatabase {
                 Ok(value) => value,
 
                 Err(e) => {
-                    error!("Error executing SQL statement: {}", e);
+                    error!("Error executing SQL statement: {e}");
                     return Err(e);
                 },
             };
@@ -370,7 +370,7 @@ impl DatabaseInterface for SqliteDatabase {
                 Ok(value) => value,
 
                 Err(e) => {
-                    error!("Error preparing SQL statement: {}", e);
+                    error!("Error preparing SQL statement: {e}");
                     return Err(e);
                 },
             };
@@ -379,7 +379,7 @@ impl DatabaseInterface for SqliteDatabase {
                 Ok(value) => value,
 
                 Err(e) => {
-                    error!("Error executing SQL statement: {}", e);
+                    error!("Error executing SQL statement: {e}");
                     return Err(e);
                 },
             };
@@ -402,7 +402,7 @@ impl DatabaseInterface for SqliteDatabase {
                 Ok(value) => value,
 
                 Err(e) => {
-                    error!("Error preparing SQL statement: {}", e);
+                    error!("Error preparing SQL statement: {e}");
                     return Err(e);
                 },
             };
@@ -411,7 +411,7 @@ impl DatabaseInterface for SqliteDatabase {
                 Ok(value) => value,
 
                 Err(e) => {
-                    error!("Error executing SQL statement: {}", e);
+                    error!("Error executing SQL statement: {e}");
                     return Err(e);
                 },
             };
@@ -436,7 +436,7 @@ impl DatabaseInterface for SqliteDatabase {
                 Ok(value) => value,
 
                 Err(e) => {
-                    error!("Error preparing SQL statement: {}", e);
+                    error!("Error preparing SQL statement: {e}");
                     return Err(e);
                 },
             };
@@ -445,7 +445,7 @@ impl DatabaseInterface for SqliteDatabase {
                 Ok(value) => value,
 
                 Err(e) => {
-                    error!("Error executing SQL statement: {}", e);
+                    error!("Error executing SQL statement: {e}");
                     return Err(e);
                 },
             };
@@ -473,7 +473,7 @@ impl DatabaseInterface for SqliteDatabase {
                 Ok(value) => value,
 
                 Err(e) => {
-                    error!("Error preparing SQL statement: {}", e);
+                    error!("Error preparing SQL statement: {e}");
                     return Err(e);
                 },
             };
@@ -482,7 +482,7 @@ impl DatabaseInterface for SqliteDatabase {
                 Ok(value) => value,
 
                 Err(e) => {
-                    error!("Error executing SQL statement: {}", e);
+                    error!("Error executing SQL statement: {e}");
                     return Err(e);
                 },
             };
@@ -507,7 +507,7 @@ impl DatabaseInterface for SqliteDatabase {
                 Ok(value) => value,
 
                 Err(e) => {
-                    error!("Error preparing SQL statement: {}", e);
+                    error!("Error preparing SQL statement: {e}");
                     return Err(e);
                 },
             };
@@ -516,7 +516,7 @@ impl DatabaseInterface for SqliteDatabase {
                 Ok(value) => value,
 
                 Err(e) => {
-                    error!("Error executing SQL statement: {}", e);
+                    error!("Error executing SQL statement: {e}");
                     return Err(e);
                 },
             };

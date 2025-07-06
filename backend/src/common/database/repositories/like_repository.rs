@@ -36,7 +36,7 @@ impl LikeRepository {
             Ok(Some(props)) => Ok(Some(LikeRecord::from_attributes(&props)?)),
             Ok(None) => Ok(None),
             Err(err) => {
-                error!("Error reading a like: {}", err);
+                error!("Error reading a like: {err}");
                 Err(err)
             }
         }

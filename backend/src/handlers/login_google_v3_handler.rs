@@ -62,10 +62,7 @@ impl LoginGoogleV3Handler {
             .origin()
             .unicode_serialization();
 
-        debug!(
-            "Auth callback: origin={}, token={}, target={}",
-            origin, token, target
-        );
+        debug!("Auth callback: origin={origin}, token={token}, target={target}");
 
         let callback = format!("{origin}/auth?token={token}&state={target}");
         Ok(callback)
@@ -79,13 +76,13 @@ impl LoginGoogleV3Handler {
             .get("https://www.googleapis.com/oauth2/v1/userinfo")
             .headers(headers);
 
-        debug!("Request: {:?}", req);
+        debug!("Request: {req:?}");
 
         let res = match req.send().await {
             Ok(res) => res,
 
             Err(e) => {
-                debug!("Failed to get user info from Google: {:?}", e);
+                debug!("Failed to get user info from Google: {e:?}");
                 return Err(Error::GoogleUserInfo);
             }
         };
@@ -94,7 +91,7 @@ impl LoginGoogleV3Handler {
             Ok(u) => Ok(u),
 
             Err(e) => {
-                debug!("Failed to parse Google response: {:?}", e);
+                debug!("Failed to parse Google response: {e:?}");
                 Err(Error::GoogleUserInfo)
             }
         }
@@ -105,7 +102,7 @@ impl LoginGoogleV3Handler {
             Ok(h) => h,
 
             Err(e) => {
-                debug!("Failed to create auth header: {}", e);
+                debug!("Failed to create auth header: {e}");
                 return Err(Error::BadAuthToken);
             }
         };
