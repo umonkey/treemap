@@ -4,12 +4,10 @@ use std::env;
 use crate::types::{Error, Result};
 
 const JWT_SECRET: &str = "JWT_SECRET";
-const OVERPASS_ENDPOINT: &str = "TREEMAP_OVERPASS_ENDPOINT";
 const OVERPASS_QUERY: &str = "TREEMAP_OVERPASS_QUERY";
 const SQLITE_PATH: &str = "TREEMAP_SQLITE_PATH";
 
 const DEFAULT_JWT_SECRET: &str = "secret";
-const DEFAULT_OVERPASS_ENDPONT: &str = "https://overpass-api.de/api/interpreter";
 const DEFAULT_OVERPASS_QUERY: &str =
     "[out:json];node[natural=tree](40.052848, 44.294472, 40.300476, 44.807396);out;";
 
@@ -31,17 +29,6 @@ pub fn get_jwt_secret() -> String {
         Err(_) => {
             warn!("Environment variable {} not set, using default: {}. This is very insecure, only OK for a test environment. Read more at <https://github.com/umonkey/treemap/wiki/Configuration#jwt_secret>", JWT_SECRET, DEFAULT_JWT_SECRET);
             DEFAULT_JWT_SECRET.to_string()
-        }
-    }
-}
-
-pub fn get_overpass_endpoint() -> String {
-    match env::var(OVERPASS_ENDPOINT) {
-        Ok(v) => v,
-
-        Err(_) => {
-            warn!("Environment variable {} not set, using default: {}. Read more at <https://github.com/umonkey/treemap/wiki/Configuration#overpass_endpoint>", OVERPASS_ENDPOINT, DEFAULT_OVERPASS_ENDPONT);
-            DEFAULT_OVERPASS_ENDPONT.to_string()
         }
     }
 }

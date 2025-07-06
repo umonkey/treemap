@@ -30,7 +30,10 @@ pub struct Config {
     pub osm_hashtag: Option<String>,
     pub osm_redirect_uri: Option<String>,
     pub osm_token: Option<String>,
-    pub overpass_endpoint: Option<String>,
+
+    #[serde(default = "default_overpass_endpoint")]
+    pub overpass_endpoint: String,
+
     pub overpass_query: Option<String>,
 
     #[serde(default = "default_payload_size")]
@@ -119,6 +122,10 @@ fn default_bot_user_id() -> u64 {
 
 fn default_osm_changeset_size() -> u64 {
     1
+}
+
+fn default_overpass_endpoint() -> String {
+    "https://overpass-api.de/api/interpreter".to_string()
 }
 
 #[cfg(test)]
