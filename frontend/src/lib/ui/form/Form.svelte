@@ -1,19 +1,19 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import { hooks } from './hooks';
 
-	const { children, onSubmit } = $props<{
+	type Props = {
 		children: Snippet;
 		onSubmit?: () => void;
-	}>();
-
-	const handleSubmit = () => {
-		if (onSubmit) {
-			onSubmit();
-		}
 	};
+
+	const { children, onSubmit }: Props = $props();
+
+	const { handleSubmit, handleKeyDown } = hooks({ onSubmit });
 </script>
 
-<form onsubmit={handleSubmit}>
+<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+<form onsubmit={handleSubmit} onkeydown={handleKeyDown}>
 	{@render children()}
 </form>
 

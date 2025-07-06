@@ -11,7 +11,7 @@
 </script>
 
 <AuthWrapper>
-	<Form>
+	<Form onSubmit={save}>
 		{#if $error}
 			<p>{$error.description}</p>
 		{:else if $loading}
