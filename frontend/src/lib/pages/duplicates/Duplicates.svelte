@@ -19,7 +19,7 @@
 				<ol>
 					{#each dup.tree_ids as id}
 						<li>
-							<a href={routes.mapPreview(id)}>{id}</a>
+							<a href={routes.treeDetails(id)}>{id}</a>
 						</li>
 					{/each}
 				</ol>
