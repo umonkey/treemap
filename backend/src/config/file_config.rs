@@ -47,6 +47,9 @@ pub struct Config {
     #[serde(default = "default_sqlite_path")]
     pub sqlite_path: String,
 
+    #[serde(default = "default_secrets_path")]
+    pub secrets_path: String,
+
     // The number of web worker threads to spawn.
     #[serde(default = "default_workers")]
     pub workers: usize,
@@ -142,6 +145,10 @@ fn default_overpass_query() -> String {
 
 fn default_sqlite_path() -> String {
     "var/database.sqlite".to_string()
+}
+
+fn default_secrets_path() -> String {
+    ".secrets".to_string()
 }
 
 #[cfg(test)]

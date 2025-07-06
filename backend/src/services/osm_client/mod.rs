@@ -1,4 +1,4 @@
-use crate::config::Config;
+use crate::config::{Config, Secrets};
 use crate::services::*;
 use crate::types::*;
 use crate::utils::*;
@@ -6,6 +6,7 @@ use crate::utils::{get_app_name, get_app_version};
 use log::{debug, error, info};
 use reqwest::Client;
 use serde_json::Value;
+use std::sync::Arc;
 use xml::escape::escape_str_attribute;
 
 pub struct OsmClient {
@@ -14,6 +15,7 @@ pub struct OsmClient {
     redirect_uri: String,
     hashtag: Option<String>,
     activity: Option<String>,
+    secrets: Arc<Secrets>,
 }
 
 impl OsmClient {
@@ -93,7 +95,7 @@ impl OsmClient {
                 "https://api.openstreetmap.org/oauth/token?grant_type=authorization_code&code={}&client_id={}&client_secret={}&redirect_uri={}",
                 code,
                 self.client_id,
-                get_osm_client_secret()?,
+                self.secrets.require("OSM_CLIENT_SECRET")?,
                 self.redirect_uri,
             ))
             .await?;
@@ -207,7 +209,7 @@ impl OsmClient {
     }
 
     async fn put(&self, url: &str, body: &str) -> Result<String> {
-        let token = get_osm_token()?;
+        let token = self.secrets.require("OSM_TOKEN")?;
 
         debug!("OSM PUT: {}; body: {}", url, body);
 
@@ -353,6 +355,7 @@ impl OsmClient {
 impl Locatable for OsmClient {
     fn create(locator: &Locator) -> Result<Self> {
         let config = locator.get::<Config>()?;
+        let secrets = locator.get::<Secrets>()?;
 
         Ok(Self {
             client: reqwest::Client::new(),
@@ -370,6 +373,7 @@ impl Locatable for OsmClient {
             hashtag: config.osm_hashtag.clone(),
 
             activity: config.osm_activity.clone(),
+            secrets,
         })
     }
 }
