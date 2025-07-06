@@ -15,3 +15,12 @@
 
 # Max request payload size, defaults to 50M.
 #payload_size = 50485760
+
+# Default Overpass API endpoint to use for OSM data queries.
+# This is used when pulling new nodes from the OSM database.
+#overpass_endpoint = "https://overpass-api.de/api/interpreter"
+
+# Default Overpass API query.
+# This query is used to pull new nodes from the OSM database.
+# Defaults to Yerevan, Armenia.
+#overpass_query = "[out:json];node[natural=tree](40.052848, 44.294472, 40.300476, 44.807396);out;"

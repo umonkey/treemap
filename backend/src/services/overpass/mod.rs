@@ -1,7 +1,6 @@
 use crate::config::Config;
 use crate::services::*;
 use crate::types::*;
-use crate::utils::get_overpass_query;
 use log::{debug, error};
 use serde_json::Value;
 use url::Url;
@@ -13,13 +12,13 @@ pub struct OverpassClient {
 }
 
 impl OverpassClient {
-    pub fn new(endpoint: String) -> Self {
+    pub fn new(endpoint: String, query: String) -> Self {
         let client = reqwest::Client::new();
 
         Self {
             client,
             endpoint,
-            query: get_overpass_query(),
+            query,
         }
     }
 
@@ -95,6 +94,9 @@ impl Locatable for OverpassClient {
     fn create(locator: &Locator) -> Result<Self> {
         let config = locator.get::<Config>()?;
 
-        Ok(Self::new(config.overpass_endpoint.clone()))
+        Ok(Self::new(
+            config.overpass_endpoint.clone(),
+            config.overpass_query.clone(),
+        ))
     }
 }
