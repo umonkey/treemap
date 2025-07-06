@@ -22,9 +22,16 @@ pub async fn update_tree_state_action(
     req: HttpRequest,
 ) -> Result<Json<SingleTreeResponse>> {
     let user_id = state.get_user_id(&req)?;
+
     let tree = state
         .update_tree_state_handler
-        .handle(path.id, payload.value.clone(), user_id, payload.comment.clone())
+        .handle(
+            path.id,
+            payload.value.clone(),
+            user_id,
+            payload.comment.clone(),
+        )
         .await?;
+
     Ok(Json(tree))
 }

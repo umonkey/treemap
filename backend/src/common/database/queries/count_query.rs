@@ -41,7 +41,6 @@ mod tests {
         let query = CountQuery {
             table_name: "trees".to_string(),
             conditions: Attributes::from(&[("id".to_string(), Value::from(1))]),
-            ..Default::default()
         };
 
         let (query, params) = query.build();

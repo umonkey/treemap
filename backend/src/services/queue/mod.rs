@@ -119,9 +119,13 @@ mod tests {
             .await
             .expect("Error adding message.");
 
-        let msg = queue.pop().await.expect("Error receiving message.");
-        assert!(msg.is_some());
-        assert_eq!(msg.unwrap().payload, "test message");
+        let msg = queue
+            .pop()
+            .await
+            .expect("Error receiving message.")
+            .expect("Empty message received.");
+
+        assert_eq!(msg.payload, "test message");
     }
 
     #[tokio::test]

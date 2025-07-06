@@ -61,7 +61,6 @@ mod tests {
             conditions: Attributes::from(&[("id".to_string(), Value::from(5))]),
             key: "count".to_string(),
             value: -1,
-            ..Default::default()
         };
 
         let (query, params) = query.build();

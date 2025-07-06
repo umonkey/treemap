@@ -1,5 +1,5 @@
 use crate::common::database::repositories::*;
-use crate::handlers::{GetTreeHandler, AddCommentHandler};
+use crate::handlers::{AddCommentHandler, GetTreeHandler};
 use crate::services::*;
 use crate::types::*;
 use log::info;
@@ -58,7 +58,7 @@ impl UpdateTreeStateHandler {
                     message: comment_text,
                     user_id,
                 };
-                
+
                 self.add_comment.handle(comment_request).await?;
             }
         }
