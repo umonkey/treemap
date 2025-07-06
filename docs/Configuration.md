@@ -22,3 +22,16 @@ docker run --detach -p 8002:8000 \
     --name treemap \
     ghcr.io/umonkey/treemap:latest
 ```
+
+## Database setup
+
+The database is read from an SQLite file `var/database.sqlite`.
+(The name of this file can be changed in the config file.)
+
+To initialize the file when creating a new server, run the following script:
+
+``` sh
+sqlite3 var/database.sqlite < dev/schema-sqlite.sql
+```
+
+This will create an empty database with the correct schema.
