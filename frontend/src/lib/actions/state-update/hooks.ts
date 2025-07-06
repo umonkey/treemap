@@ -46,11 +46,11 @@ export const stateUpdater = (tree_id: string, state: string) => {
 		});
 	};
 
-	const save = async () => {
+	const save = async (comment?: string) => {
 		busy.set(true);
 
 		await apiClient
-			.updateTreeState(tree_id, state)
+			.updateTreeState(tree_id, state, comment)
 			.then((res) => {
 				if (res.status === 200 && res.data) {
 					addTrees([res.data]);

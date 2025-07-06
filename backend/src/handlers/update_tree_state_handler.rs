@@ -1,5 +1,5 @@
 use crate::common::database::repositories::*;
-use crate::handlers::GetTreeHandler;
+use crate::handlers::{GetTreeHandler, AddCommentHandler};
 use crate::services::*;
 use crate::types::*;
 use log::info;
@@ -10,6 +10,7 @@ pub struct UpdateTreeStateHandler {
     trees: Arc<TreeRepository>,
     users: Arc<UserRepository>,
     getter: Arc<GetTreeHandler>,
+    add_comment: Arc<AddCommentHandler>,
 }
 
 impl UpdateTreeStateHandler {
@@ -18,6 +19,7 @@ impl UpdateTreeStateHandler {
         tree_id: u64,
         value: String,
         user_id: u64,
+        comment: Option<String>,
     ) -> Result<SingleTreeResponse> {
         // Validate that tree exists.
         let tree = self.trees.get(tree_id).await?.ok_or(Error::TreeNotFound)?;
@@ -48,6 +50,19 @@ impl UpdateTreeStateHandler {
 
         self.users.increment_update_count(user_id).await?;
 
+        // Add comment if provided
+        if let Some(comment_text) = comment {
+            if !comment_text.trim().is_empty() {
+                let comment_request = AddCommentRequest {
+                    tree_id,
+                    message: comment_text,
+                    user_id,
+                };
+                
+                self.add_comment.handle(comment_request).await?;
+            }
+        }
+
         info!(
             "State for tree {} changed to {} by {}.",
             tree_id, value, user_id
@@ -64,6 +79,7 @@ impl Locatable for UpdateTreeStateHandler {
             trees: locator.get::<TreeRepository>()?,
             users: locator.get::<UserRepository>()?,
             getter: locator.get::<GetTreeHandler>()?,
+            add_comment: locator.get::<AddCommentHandler>()?,
         })
     }
 }

@@ -11,6 +11,7 @@ pub struct PathInfo {
 #[derive(Debug, Deserialize)]
 struct RequestPayload {
     pub value: String,
+    pub comment: Option<String>,
 }
 
 #[put("/v1/trees/{id}/state")]
@@ -23,7 +24,7 @@ pub async fn update_tree_state_action(
     let user_id = state.get_user_id(&req)?;
     let tree = state
         .update_tree_state_handler
-        .handle(path.id, payload.value.clone(), user_id)
+        .handle(path.id, payload.value.clone(), user_id, payload.comment.clone())
         .await?;
     Ok(Json(tree))
 }
