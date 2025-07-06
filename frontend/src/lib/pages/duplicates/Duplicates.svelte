@@ -9,9 +9,7 @@
 
 {#if $loading}
 	<p>Checking...</p>
-{:else if $data.duplicates.length === 0}
-	<p>Congratulations, there are no duplicate trees!</p>
-{:else}
+{:else if $data?.duplicates?.length > 0}
 	<p>
 		This page lists trees that have been identified as duplicates, sharing the same coordinates.
 	</p>
@@ -33,6 +31,8 @@
 			</dd>
 		{/each}
 	</dl>
+{:else}
+	<p>Congratulations, there are no duplicate trees!</p>
 {/if}
 
 <style>

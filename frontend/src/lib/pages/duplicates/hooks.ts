@@ -1,8 +1,9 @@
 import { apiClient } from '$lib/api';
 import { writable } from 'svelte/store';
+import type { DuplicateList } from '$lib/types';
 
 export const hooks = () => {
-	const data = writable<string>('');
+	const data = writable<DuplicateList | undefined>(undefined);
 	const error = writable<string | null>(null);
 	const loading = writable<boolean>(false);
 
