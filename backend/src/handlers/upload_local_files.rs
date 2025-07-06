@@ -1,20 +1,26 @@
+use crate::config::Config;
 use crate::services::*;
 use crate::types::*;
-use crate::utils::get_file_folder;
 use log::{error, info, warn};
 use std::sync::Arc;
 
 pub struct UploadLocalFiles {
     local: Arc<dyn FileStorageInterface>,
     remote: Arc<dyn FileStorageInterface>,
+    file_folder: String,
 }
 
 impl UploadLocalFiles {
     pub fn new(
         local: Arc<dyn FileStorageInterface>,
         remote: Arc<dyn FileStorageInterface>,
+        config: Arc<Config>,
     ) -> Self {
-        Self { local, remote }
+        Self {
+            local,
+            remote,
+            file_folder: config.file_folder.clone(),
+        }
     }
 
     pub async fn handle(&self) -> Result<()> {
@@ -35,14 +41,14 @@ impl UploadLocalFiles {
                 .expect("Error writing files.");
         }
 
-        info!("Copied {} files.", count);
+        info!("Copied {count} files.");
 
         Ok(())
     }
 
     fn find_file_ids(&self) -> Result<Vec<u64>> {
         let mut res: Vec<u64> = Vec::new();
-        let pattern = format!("{}/[0-9]*", get_file_folder());
+        let pattern = format!("{}/[0-9]*", self.file_folder);
 
         for entry in glob::glob(pattern.as_str()).expect("Error listing files.") {
             match entry {
@@ -57,13 +63,13 @@ impl UploadLocalFiles {
                         Ok(id) => res.push(id),
 
                         Err(e) => {
-                            warn!("Error parsing file name: {}", e);
+                            warn!("Error parsing file name: {e}");
                         }
                     }
                 }
 
                 Err(e) => {
-                    error!("Error listing files: {}", e);
+                    error!("Error listing files: {e}");
                 }
             }
         }
@@ -74,8 +80,10 @@ impl UploadLocalFiles {
 
 impl Locatable for UploadLocalFiles {
     fn create(locator: &Locator) -> Result<Self> {
-        let local = locator.get::<LocalFileStorage>()?;
-        let remote = locator.get::<S3FileStorage>()?;
-        Ok(Self::new(local, remote))
+        Ok(Self::new(
+            locator.get::<LocalFileStorage>()?,
+            locator.get::<S3FileStorage>()?,
+            locator.get::<Config>()?,
+        ))
     }
 }

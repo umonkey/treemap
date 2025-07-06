@@ -34,7 +34,7 @@ impl LoginGoogleV2Handler {
         let jwks = match Jwks::from_jwks_url(jwks_url).await {
             Ok(value) => value,
             Err(e) => {
-                error!("Error fetching JWKS: {:?}", e);
+                error!("Error fetching JWKS: {e:?}");
                 return Err(Error::BadAuthToken);
             }
         };
@@ -42,7 +42,7 @@ impl LoginGoogleV2Handler {
         let jwk = match jwks.keys.get(kid).ok_or(Error::BadAuthToken) {
             Ok(value) => value,
             Err(e) => {
-                error!("Error fetching JWKS key: {:?}", e);
+                error!("Error fetching JWKS key: {e:?}");
                 return Err(Error::BadAuthToken);
             }
         };
@@ -54,7 +54,7 @@ impl LoginGoogleV2Handler {
             match decode::<GoogleIdToken>(&req.token, &jwk.decoding_key, &validation) {
                 Ok(value) => value,
                 Err(e) => {
-                    error!("Error decoding token: {:?}", e);
+                    error!("Error decoding token: {e:?}");
                     return Err(Error::BadAuthToken);
                 }
             };

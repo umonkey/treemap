@@ -157,7 +157,7 @@ impl TreeRepository {
             .with_value("updated_at", Value::from(get_timestamp() as i64));
 
         self.db.update(query).await.map_err(|e| {
-            error!("Error updating a tree: {}", e);
+            error!("Error updating a tree: {e}");
             e
         })?;
 
@@ -171,7 +171,7 @@ impl TreeRepository {
             .with_value("replaced_by", Value::from(new_id as i64));
 
         self.db.update(query).await.map_err(|e| {
-            error!("Error updating a tree: {}", e);
+            error!("Error updating a tree: {e}");
             e
         })?;
 
@@ -192,7 +192,7 @@ impl TreeRepository {
             .with_value("lon", Value::from(lon));
 
         self.db.update(query).await.map_err(|e| {
-            error!("Error updating a tree: {}", e);
+            error!("Error updating a tree: {e}");
             e
         })?;
 
@@ -217,7 +217,7 @@ impl TreeRepository {
             .with_value("thumbnail_id", Value::from(thumbnail_id as i64));
 
         self.db.update(query).await.map_err(|e| {
-            error!("Error updating a tree: {}", e);
+            error!("Error updating a tree: {e}");
             e
         })?;
 
@@ -231,17 +231,14 @@ impl TreeRepository {
             .with_value("osm_id", Value::from(osm_id as i64));
 
         self.db.update(query).await.map_err(|e| {
-            error!("Error updating a tree: {}", e);
+            error!("Error updating a tree: {e}");
             e
         })?;
 
         self.add_tree_prop(tree_id, "osm_id", &osm_id.to_string(), user_id)
             .await?;
 
-        info!(
-            "Tree {} linked to OSM node {} by user {}.",
-            tree_id, osm_id, user_id
-        );
+        info!("Tree {tree_id} linked to OSM node {osm_id} by user {user_id}.");
 
         Ok(())
     }
@@ -256,7 +253,7 @@ impl TreeRepository {
             .with_value("comment_count", Value::from(count as i64));
 
         self.db.update(query).await.map_err(|e| {
-            error!("Error updating comment count for a tree: {}", e);
+            error!("Error updating comment count for a tree: {e}");
             e
         })?;
 
@@ -272,7 +269,7 @@ impl TreeRepository {
             .with_value(value);
 
         self.db.increment(query).await.map_err(|e| {
-            error!("Error incrementing {} for tree {}: {}", key, tree_id, e);
+            error!("Error incrementing {key} for tree {tree_id}: {e}");
             e
         })?;
 
@@ -284,7 +281,7 @@ impl TreeRepository {
             Ok(Some(props)) => Ok(Some(TreeRecord::from_attributes(&props)?)),
             Ok(None) => Ok(None),
             Err(err) => {
-                error!("Error reading a tree: {}", err);
+                error!("Error reading a tree: {err}");
                 Err(err)
             }
         }

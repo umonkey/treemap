@@ -24,11 +24,11 @@ impl Attributes {
             Some(Value::Real(value)) => Ok(Some(*value)),
             Some(Value::Null) => Ok(None),
             None => {
-                debug!("Attribute {} not found.", key);
+                debug!("Attribute {key} not found.");
                 Err(Error::DatabaseStructure)
             }
             value => {
-                debug!("Attribute {} is of unexpected type: {:?}", key, value);
+                debug!("Attribute {key} is of unexpected type: {value:?}");
                 Err(Error::DatabaseStructure)
             }
         }
@@ -39,11 +39,11 @@ impl Attributes {
             Some(Value::Integer(value)) => Ok(Some(*value)),
             Some(Value::Null) => Ok(None),
             None => {
-                debug!("Attribute {} not found.", key);
+                debug!("Attribute {key} not found.");
                 Err(Error::DatabaseStructure)
             }
             value => {
-                debug!("Attribute {} is of unexpected type: {:?}", key, value);
+                debug!("Attribute {key} is of unexpected type: {value:?}");
                 Err(Error::DatabaseStructure)
             }
         }
@@ -54,11 +54,11 @@ impl Attributes {
             Some(Value::Integer(value)) => Ok(Some(*value as u64)),
             Some(Value::Null) => Ok(None),
             None => {
-                debug!("Attribute {} not found.", key);
+                debug!("Attribute {key} not found.");
                 Err(Error::DatabaseStructure)
             }
             value => {
-                debug!("Attribute {} is of unexpected type: {:?}", key, value);
+                debug!("Attribute {key} is of unexpected type: {value:?}");
                 Err(Error::DatabaseStructure)
             }
         }
@@ -69,11 +69,11 @@ impl Attributes {
             Some(Value::Text(value)) => Ok(Some(value.to_string())),
             Some(Value::Null) => Ok(None),
             None => {
-                debug!("Attribute {} not found.", key);
+                debug!("Attribute {key} not found.");
                 Err(Error::DatabaseStructure)
             }
             value => {
-                debug!("Attribute {} is of unexpected type: {:?}.", key, value);
+                debug!("Attribute {key} is of unexpected type: {value:?}.");
                 Err(Error::DatabaseStructure)
             }
         }

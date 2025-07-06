@@ -15,9 +15,10 @@
 //! 4. If a local tree is found, update it.
 
 use crate::common::database::repositories::*;
+use crate::config::Config;
 use crate::services::*;
 use crate::types::*;
-use crate::utils::{get_bot_user_id, get_timestamp, get_unique_id};
+use crate::utils::{get_timestamp, get_unique_id};
 use log::{error, info};
 use std::sync::Arc;
 
@@ -42,7 +43,7 @@ impl OsmReaderService {
             Ok(doc) => doc,
 
             Err(e) => {
-                error!("Error querying OSM: {:?}", e);
+                error!("Error querying OSM: {e:?}");
                 return Err(Error::OsmExchange);
             }
         };
@@ -95,7 +96,7 @@ impl OsmReaderService {
             added += 1;
         }
 
-        info!("Matched OSM trees: {} added, {} updated.", added, updated);
+        info!("Matched OSM trees: {added} added, {updated} updated.");
 
         Ok(())
     }
@@ -158,7 +159,7 @@ impl OsmReaderService {
         let msg = UpdateTreeAddressMessage { id: tree_id };
         self.queue.push(&msg.encode()).await?;
 
-        info!("Scheduled address update for tree {}", tree_id);
+        info!("Scheduled address update for tree {tree_id}");
 
         Ok(())
     }
@@ -166,11 +167,13 @@ impl OsmReaderService {
 
 impl Locatable for OsmReaderService {
     fn create(locator: &Locator) -> Result<Self> {
+        let config = locator.get::<Config>()?;
+
         Ok(Self {
             trees: locator.get::<TreeRepository>()?,
             overpass_client: locator.get::<OverpassClient>()?,
             queue: locator.get::<QueueService>()?,
-            user_id: get_bot_user_id(),
+            user_id: config.bot_user_id,
             osm_trees: locator.get::<OsmTreeRepository>()?,
         })
     }

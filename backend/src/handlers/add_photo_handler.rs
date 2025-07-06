@@ -27,7 +27,7 @@ impl AddPhotoHandler {
             .get(file_id)
             .await
             .inspect_err(|e| {
-                error!("Could not find source file {}: {:?}", file_id, e);
+                error!("Could not find source file {file_id}: {e:?}");
             })?
             .ok_or(Error::FileNotFound)?;
 
@@ -54,7 +54,7 @@ impl AddPhotoHandler {
         };
 
         self.files.add(&rec).await.inspect_err(|e| {
-            error!("Could not add file {}: {:?}", file_id, e);
+            error!("Could not add file {file_id}: {e:?}");
         })?;
 
         self.uploads.delete(&source).await?;

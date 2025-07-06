@@ -32,10 +32,7 @@ impl UpdateTreeCircumferenceHandler {
 
         self.users.increment_update_count(user_id).await?;
 
-        info!(
-            "Circumference for tree {} changed to {} by {}.",
-            tree_id, value, user_id
-        );
+        info!("Circumference for tree {tree_id} changed to {value} by {user_id}.");
 
         self.getter.handle(tree_id).await
     }

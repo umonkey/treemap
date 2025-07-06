@@ -1,6 +1,6 @@
+use crate::config::Config;
 use crate::services::*;
 use crate::types::*;
-use crate::utils::{get_overpass_endpoint, get_overpass_query};
 use log::{debug, error};
 use serde_json::Value;
 use url::Url;
@@ -12,13 +12,13 @@ pub struct OverpassClient {
 }
 
 impl OverpassClient {
-    pub fn new() -> Self {
+    pub fn new(endpoint: String, query: String) -> Self {
         let client = reqwest::Client::new();
 
         Self {
             client,
-            endpoint: get_overpass_endpoint(),
-            query: get_overpass_query(),
+            endpoint,
+            query,
         }
     }
 
@@ -41,7 +41,7 @@ impl OverpassClient {
             match OsmTreeRecord::from_overpass(element) {
                 Some(tree) => trees.push(tree),
                 None => {
-                    error!("Error parsing OSM node: {:?}", element);
+                    error!("Error parsing OSM node: {element:?}");
                 }
             }
         }
@@ -50,13 +50,13 @@ impl OverpassClient {
     }
 
     async fn read_json(&self, url: &str) -> Result<Value> {
-        debug!("Sending Overpass query to: {}", url);
+        debug!("Sending Overpass query to: {url}");
 
         let response = match self.client.get(url).send().await {
             Ok(response) => response,
 
             Err(e) => {
-                error!("Error sending Overpass query: {}", e);
+                error!("Error sending Overpass query: {e}");
                 return Err(Error::OsmExchange);
             }
         };
@@ -70,7 +70,7 @@ impl OverpassClient {
             Ok(json) => json,
 
             Err(e) => {
-                error!("Error parsing Overpass response JSON: {:?}", e);
+                error!("Error parsing Overpass response JSON: {e:?}");
                 return Err(Error::OsmExchange);
             }
         };
@@ -83,7 +83,7 @@ impl OverpassClient {
             Ok(url) => Ok(url.to_string()),
 
             Err(e) => {
-                error!("Error building Overpass query URL: {}", e);
+                error!("Error building Overpass query URL: {e}");
                 Err(Error::OsmExchange)
             }
         }
@@ -91,7 +91,12 @@ impl OverpassClient {
 }
 
 impl Locatable for OverpassClient {
-    fn create(_locator: &Locator) -> Result<Self> {
-        Ok(Self::new())
+    fn create(locator: &Locator) -> Result<Self> {
+        let config = locator.get::<Config>()?;
+
+        Ok(Self::new(
+            config.overpass_endpoint.clone(),
+            config.overpass_query.clone(),
+        ))
     }
 }

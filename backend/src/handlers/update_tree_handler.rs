@@ -62,7 +62,7 @@ impl UpdateTreeHandler {
             ..old
         };
 
-        info!("Updating tree: {:?}", new);
+        info!("Updating tree: {new:?}");
 
         self.trees.update(&new, req.user_id).await?;
 
@@ -101,7 +101,7 @@ impl UpdateTreeHandler {
         let msg = UpdateTreeAddressMessage { id: tree_id };
         self.queue.push(&msg.encode()).await?;
 
-        info!("Scheduled address update for tree {}", tree_id);
+        info!("Scheduled address update for tree {tree_id}");
 
         Ok(())
     }

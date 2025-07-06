@@ -3,9 +3,9 @@
 //! This is only executed using a dedicated CLI command.
 
 use crate::common::database::repositories::*;
+use crate::config::Config;
 use crate::services::*;
 use crate::types::*;
-use crate::utils::*;
 use log::{info, warn};
 use std::sync::Arc;
 
@@ -68,10 +68,12 @@ impl UpdateTreeAddressesHandler {
 
 impl Locatable for UpdateTreeAddressesHandler {
     fn create(locator: &Locator) -> Result<Self> {
+        let config = locator.get::<Config>()?;
+
         Ok(Self {
             trees: locator.get::<TreeRepository>()?,
             nominatim: locator.get::<NominatimService>()?,
-            user_id: get_bot_user_id(),
+            user_id: config.bot_user_id,
         })
     }
 }

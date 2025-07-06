@@ -45,10 +45,7 @@ impl UpdateTreeLocationHandler {
 
         self.users.increment_update_count(user_id).await?;
 
-        info!(
-            "Location for tree {} changed to {},{} by {}.",
-            tree_id, lat, lon, user_id
-        );
+        info!("Location for tree {tree_id} changed to {lat},{lon} by {user_id}.");
 
         self.getter.handle(tree_id).await
     }

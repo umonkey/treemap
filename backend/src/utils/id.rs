@@ -9,7 +9,7 @@ pub fn get_unique_id() -> Result<u64> {
         Ok(id) => Ok(id),
 
         Err(e) => {
-            error!("Could not generate unique id: {}", e);
+            error!("Could not generate unique id: {e}");
             Err(Error::UniqueId)
         }
     }

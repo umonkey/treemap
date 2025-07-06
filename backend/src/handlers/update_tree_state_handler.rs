@@ -59,10 +59,7 @@ impl UpdateTreeStateHandler {
             }
         }
 
-        info!(
-            "State for tree {} changed to {} by {}.",
-            tree_id, value, user_id
-        );
+        info!("State for tree {tree_id} changed to {value} by {user_id}.");
 
         self.getter.handle(tree_id).await
     }

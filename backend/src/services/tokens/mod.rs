@@ -1,19 +1,19 @@
+use crate::config::Secrets;
 use crate::services::{Locatable, Locator};
 use crate::types::*;
-use crate::utils::get_jwt_secret;
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
 use log::{debug, error};
+use std::sync::Arc;
 
 #[derive(Clone)]
 pub struct TokenService {
     sym_enc: EncodingKey,
-    #[allow(unused)]
     sym_dec: DecodingKey,
 }
 
 impl TokenService {
-    pub fn new() -> Self {
-        let secret = get_jwt_secret();
+    pub fn new(secrets: Arc<Secrets>) -> Self {
+        let secret = secrets.get_default("JWT_SECRET", "secret");
 
         Self {
             sym_enc: EncodingKey::from_secret(secret.as_ref()),
@@ -31,8 +31,8 @@ impl TokenService {
             Ok(token) => Ok(token.claims),
 
             Err(e) => {
-                error!("Error decoding token: {}", e);
-                debug!("Token payload: {}", encoded);
+                error!("Error decoding token: {e}");
+                debug!("Token payload: {encoded}");
                 Err(e.into())
             }
         }
@@ -40,7 +40,7 @@ impl TokenService {
 }
 
 impl Locatable for TokenService {
-    fn create(_locator: &Locator) -> Result<Self> {
-        Ok(Self::new())
+    fn create(locator: &Locator) -> Result<Self> {
+        Ok(Self::new(locator.get::<Secrets>()?))
     }
 }

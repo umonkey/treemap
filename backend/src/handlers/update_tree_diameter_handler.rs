@@ -47,10 +47,7 @@ impl UpdateTreeDiameterHandler {
 
         self.users.increment_update_count(user_id).await?;
 
-        info!(
-            "Diameter for tree {} changed to {} by {}.",
-            tree_id, value, user_id
-        );
+        info!("Diameter for tree {tree_id} changed to {value} by {user_id}.");
 
         self.getter.handle(tree_id).await
     }

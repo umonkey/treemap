@@ -12,9 +12,9 @@
 //! (5) If it does, push the changes to OSM.
 
 use crate::common::database::repositories::*;
+use crate::config::Config;
 use crate::services::*;
 use crate::types::*;
-use crate::utils::*;
 use log::{debug, info, warn};
 use std::sync::Arc;
 
@@ -23,16 +23,15 @@ pub struct OsmPushChangesHandler {
     osm_trees: Arc<OsmTreeRepository>,
     trees: Arc<TreeRepository>,
     changeset_size: u64,
-    dry_run: bool,
 }
 
 impl OsmPushChangesHandler {
-    pub async fn handle(&self) -> Result<()> {
-        self.push_updates().await?;
+    pub async fn handle(&self, dry_run: bool) -> Result<()> {
+        self.push_updates(dry_run).await?;
         Ok(())
     }
 
-    pub async fn push_updates(&self) -> Result<()> {
+    pub async fn push_updates(&self, dry_run: bool) -> Result<()> {
         let trees = self.get_changed_trees().await?;
 
         if trees.is_empty() {
@@ -52,7 +51,7 @@ impl OsmPushChangesHandler {
             trees.len()
         );
 
-        let changeset = self.get_changeset_id().await?;
+        let changeset = self.get_changeset_id(dry_run).await?;
 
         for tree in trees {
             let node = match self.osm.get_node(tree.id).await? {
@@ -66,27 +65,27 @@ impl OsmPushChangesHandler {
 
             let node_with_changes = self.merge_changes(node.clone(), &tree);
 
-            if !self.dry_run {
+            if !dry_run {
                 // Send updates to OSM.
                 self.osm.update_tree(changeset, &node_with_changes).await?;
 
                 // Update our existing record to avoid duplicate updates.
                 self.osm_trees.update(&tree).await?;
             } else {
-                debug!("Source node: {:?}", node);
-                debug!("Updated node: {:?}", node_with_changes);
+                debug!("Source node: {node:?}");
+                debug!("Updated node: {node_with_changes:?}");
             }
         }
 
-        if !self.dry_run {
+        if !dry_run {
             self.osm.close_changeset(changeset).await?;
         }
 
         Ok(())
     }
 
-    async fn get_changeset_id(&self) -> Result<u64> {
-        if self.dry_run {
+    async fn get_changeset_id(&self, dry_run: bool) -> Result<u64> {
+        if dry_run {
             return Ok(0);
         }
 
@@ -214,12 +213,13 @@ impl OsmPushChangesHandler {
 
 impl Locatable for OsmPushChangesHandler {
     fn create(locator: &Locator) -> Result<Self> {
+        let config = locator.get::<Config>()?;
+
         Ok(Self {
             osm: locator.get::<OsmClient>()?,
             osm_trees: locator.get::<OsmTreeRepository>()?,
             trees: locator.get::<TreeRepository>()?,
-            changeset_size: get_osm_changeset_size(),
-            dry_run: get_dry_run()?,
+            changeset_size: config.osm_changeset_size,
         })
     }
 }

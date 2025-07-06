@@ -21,7 +21,7 @@ impl FileService {
     pub async fn add_file(&self, req: AddFileRequest) -> Result<FileRecord> {
         let id = self.write_file(&req.file).await?;
 
-        debug!("Going to add file {} to the database.", id);
+        debug!("Going to add file {id} to the database.");
 
         let file_record = FileRecord {
             id,
@@ -47,7 +47,7 @@ impl FileService {
      * Read file contents from the local file system or remote.
      */
     pub async fn get_file(&self, id: u64) -> Result<Vec<u8>> {
-        debug!("Reading file {} from storage.", id);
+        debug!("Reading file {id} from storage.");
         self.storage.read_file(id).await
     }
 
@@ -88,15 +88,9 @@ impl Locatable for FileService {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    use std::env;
     use std::path::Path;
 
     async fn setup() -> Result<Arc<FileService>> {
-        env::set_var("FILE_FOLDER", "var/test-files");
-        env::set_var("TREEMAP_SQLITE_PATH", ":memory:");
-        env::set_var("AWS_ACCESS_KEY_ID", "");
-
         if env_logger::try_init().is_err() {
             debug!("env_logger already initialized.");
         };

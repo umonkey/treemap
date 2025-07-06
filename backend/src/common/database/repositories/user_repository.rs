@@ -44,7 +44,7 @@ impl UserRepository {
         let query = InsertQuery::new(TABLE).with_values(user.to_attributes());
 
         self.db.add_record(query).await.map_err(|e| {
-            error!("Error creating a user: {}", e);
+            error!("Error creating a user: {e}");
             e
         })?;
 
@@ -58,7 +58,7 @@ impl UserRepository {
             .with_values(user.to_attributes());
 
         self.db.update(query).await.map_err(|e| {
-            error!("Error updating a user: {}", e);
+            error!("Error updating a user: {e}");
             e
         })?;
 
@@ -71,7 +71,7 @@ impl UserRepository {
             .with_value("name", Value::from(name.to_string()));
 
         self.db.update(query).await.map_err(|e| {
-            error!("Error updating a user: {}", e);
+            error!("Error updating a user: {e}");
             e
         })?;
 
@@ -84,7 +84,7 @@ impl UserRepository {
             .with_value("picture", Value::from(value.to_string()));
 
         self.db.update(query).await.map_err(|e| {
-            error!("Error updating a user: {}", e);
+            error!("Error updating a user: {e}");
             e
         })?;
 
@@ -114,7 +114,7 @@ impl UserRepository {
             .with_value(value);
 
         self.db.increment(query).await.map_err(|e| {
-            error!("Error incrementing {} for user {}: {}", key, user_id, e);
+            error!("Error incrementing {key} for user {user_id}: {e}");
             e
         })?;
 
@@ -126,7 +126,7 @@ impl UserRepository {
             Ok(Some(props)) => Ok(Some(UserRecord::from_attributes(&props)?)),
             Ok(None) => Ok(None),
             Err(err) => {
-                error!("Error reading a user: {}", err);
+                error!("Error reading a user: {err}");
                 Err(err)
             }
         }

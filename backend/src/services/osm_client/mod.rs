@@ -1,3 +1,4 @@
+use crate::config::{Config, Secrets};
 use crate::services::*;
 use crate::types::*;
 use crate::utils::*;
@@ -5,10 +6,16 @@ use crate::utils::{get_app_name, get_app_version};
 use log::{debug, error, info};
 use reqwest::Client;
 use serde_json::Value;
+use std::sync::Arc;
 use xml::escape::escape_str_attribute;
 
 pub struct OsmClient {
     client: Client,
+    client_id: Option<String>,
+    redirect_uri: Option<String>,
+    hashtag: Option<String>,
+    activity: Option<String>,
+    secrets: Arc<Secrets>,
 }
 
 impl OsmClient {
@@ -28,12 +35,12 @@ impl OsmClient {
 
         match res.parse::<u64>() {
             Ok(id) => {
-                info!("Created OSM changeset {}", id);
+                info!("Created OSM changeset {id}");
                 Ok(id)
             }
 
             Err(e) => {
-                error!("Error parsing OSM changeset ID: {:?}", e);
+                error!("Error parsing OSM changeset ID: {e:?}");
                 Err(Error::OsmExchange)
             }
         }
@@ -61,7 +68,7 @@ impl OsmClient {
             }
 
             Err(e) => {
-                error!("Error parsing OSM node id: {:?}", e);
+                error!("Error parsing OSM node id: {e:?}");
                 Err(Error::OsmExchange)
             }
         }
@@ -83,13 +90,23 @@ impl OsmClient {
     }
 
     pub async fn get_token(&self, code: &str) -> Result<String> {
+        let client_id = self.client_id.as_ref().ok_or_else(|| {
+            error!("OSM client id not set.");
+            Error::EnvNotSet
+        })?;
+
+        let redirect_uri = self.redirect_uri.as_ref().ok_or_else(|| {
+            error!("OSM redirect URI not set.");
+            Error::EnvNotSet
+        })?;
+
         let json = self
             .request_json(&format!(
                 "https://api.openstreetmap.org/oauth/token?grant_type=authorization_code&code={}&client_id={}&client_secret={}&redirect_uri={}",
                 code,
-                get_osm_client_id()?,
-                get_osm_client_secret()?,
-                get_osm_redirect_uri()?
+                client_id,
+                self.secrets.require("OSM_CLIENT_SECRET")?,
+                redirect_uri,
             ))
             .await?;
 
@@ -131,7 +148,7 @@ impl OsmClient {
                 Ok(element) => res.push(element),
 
                 Err(e) => {
-                    error!("Error parsing OSM element: {:?}", e);
+                    error!("Error parsing OSM element: {e:?}");
                 }
             };
         }
@@ -146,18 +163,18 @@ impl OsmClient {
             Ok(response) => response,
 
             Err(e) => {
-                error!("Error querying OSM API: {}; URL: {}", e, url);
+                error!("Error querying OSM API: {e}; URL: {url}");
                 return Err(Error::OsmExchange);
             }
         };
 
         if response.status() == 410 {
-            debug!("OSM node {} is gone.", id);
+            debug!("OSM node {id} is gone.");
             return Ok(None);
         }
 
         if response.status() == 404 {
-            debug!("OSM node {} not found.", id);
+            debug!("OSM node {id} not found.");
             return Ok(None);
         }
 
@@ -174,7 +191,7 @@ impl OsmClient {
             Ok(json) => json,
 
             Err(e) => {
-                error!("Error parsing OSM API response JSON: {:?}", e);
+                error!("Error parsing OSM API response JSON: {e:?}");
                 return Err(Error::OsmExchange);
             }
         };
@@ -193,7 +210,7 @@ impl OsmClient {
                 Ok(element) => return Ok(Some(element)),
 
                 Err(e) => {
-                    error!("Error parsing OSM element: {:?}", e);
+                    error!("Error parsing OSM element: {e:?}");
                 }
             };
         }
@@ -202,9 +219,9 @@ impl OsmClient {
     }
 
     async fn put(&self, url: &str, body: &str) -> Result<String> {
-        let token = get_osm_token()?;
+        let token = self.secrets.require("OSM_TOKEN")?;
 
-        debug!("OSM PUT: {}; body: {}", url, body);
+        debug!("OSM PUT: {url}; body: {body}");
 
         let response = match self
             .client
@@ -217,7 +234,7 @@ impl OsmClient {
             Ok(response) => response,
 
             Err(e) => {
-                error!("Error querying OSM API: {}", e);
+                error!("Error querying OSM API: {e}");
                 return Err(Error::OsmExchange);
             }
         };
@@ -233,7 +250,7 @@ impl OsmClient {
         }
 
         response.text().await.map_err(|e| {
-            error!("Error parsing OSM API response text: {:?}", e);
+            error!("Error parsing OSM API response text: {e:?}");
             Error::OsmExchange
         })
     }
@@ -243,7 +260,7 @@ impl OsmClient {
             Ok(response) => response,
 
             Err(e) => {
-                error!("Error querying OSM API: {}", e);
+                error!("Error querying OSM API: {e}");
                 return Err(Error::OsmExchange);
             }
         };
@@ -261,7 +278,7 @@ impl OsmClient {
             Ok(json) => json,
 
             Err(e) => {
-                error!("Error parsing OSM API response JSON: {:?}", e);
+                error!("Error parsing OSM API response JSON: {e:?}");
                 return Err(Error::OsmExchange);
             }
         };
@@ -333,11 +350,11 @@ impl OsmClient {
     fn format_changeset_comment(&self, comment: &str) -> String {
         let mut comment = comment.to_string();
 
-        if let Ok(hashtag) = get_osm_hashtag() {
+        if let Some(hashtag) = &self.hashtag {
             comment.push_str(&format!("\n\n #{hashtag}"));
         }
 
-        if let Ok(activity) = get_osm_activity() {
+        if let Some(activity) = &self.activity {
             comment.push_str(&format!("\n\n{activity}"));
         }
 
@@ -346,9 +363,17 @@ impl OsmClient {
 }
 
 impl Locatable for OsmClient {
-    fn create(_locator: &Locator) -> Result<Self> {
+    fn create(locator: &Locator) -> Result<Self> {
+        let config = locator.get::<Config>()?;
+        let secrets = locator.get::<Secrets>()?;
+
         Ok(Self {
             client: reqwest::Client::new(),
+            client_id: config.osm_client_id.clone(),
+            redirect_uri: config.osm_redirect_uri.clone(),
+            hashtag: config.osm_hashtag.clone(),
+            activity: config.osm_activity.clone(),
+            secrets,
         })
     }
 }

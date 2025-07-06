@@ -13,10 +13,7 @@ pub struct UnlikeTreeHandler {
 impl UnlikeTreeHandler {
     pub async fn handle(&self, tree_id: u64, user_id: u64) -> Result<()> {
         if !self.has_like(tree_id, user_id).await? {
-            debug!(
-                "Duplicate unlike for tree {} from user {}.",
-                tree_id, user_id
-            );
+            debug!("Duplicate unlike for tree {tree_id} from user {user_id}.");
             return Ok(());
         }
 

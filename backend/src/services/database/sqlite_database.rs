@@ -8,15 +8,17 @@
 //! @docs https://docs.rs/async-sqlite/latest/async_sqlite/
 
 use crate::common::database::queries::*;
+use crate::config::Config;
 use crate::services::*;
 use crate::types::*;
-use crate::utils::{get_sqlite_path, get_timestamp};
+use crate::utils::get_timestamp;
 use async_sqlite::{JournalMode, Pool, PoolBuilder};
 use async_trait::async_trait;
 use log::{debug, error, info};
 use rusqlite::params_from_iter;
 use rusqlite::types::Value;
 use std::cmp::Ordering;
+use std::sync::Arc;
 
 const SUGGEST_WINDOW: u64 = 3600 * 24; // 24 hours
 
@@ -25,8 +27,8 @@ pub struct SqliteDatabase {
 }
 
 impl SqliteDatabase {
-    pub async fn new() -> Result<Self> {
-        let path = get_sqlite_path()?;
+    pub async fn new(config: Arc<Config>) -> Result<Self> {
+        let path = config.sqlite_path.clone();
 
         Ok(Self {
             pool: Self::create_pool(&path).await?,
@@ -41,7 +43,7 @@ impl SqliteDatabase {
     }
 
     async fn create_file_pool(path: &str) -> Result<Pool> {
-        info!("Using SQLite database from {}.", path);
+        info!("Using SQLite database from {path}.");
 
         let pool = match PoolBuilder::new()
             .path(path)
@@ -51,7 +53,7 @@ impl SqliteDatabase {
         {
             Ok(value) => value,
             Err(e) => {
-                error!("Error connecting to the database: {:?}", e);
+                error!("Error connecting to the database: {e:?}");
                 return Err(Error::DatabaseConnect);
             }
         };
@@ -65,7 +67,7 @@ impl SqliteDatabase {
         let pool = match PoolBuilder::new().num_conns(1).open().await {
             Ok(value) => value,
             Err(e) => {
-                error!("Error connecting to the database: {}", e);
+                error!("Error connecting to the database: {e}");
                 return Err(Error::DatabaseConnect);
             }
         };
@@ -95,7 +97,7 @@ impl SqliteDatabase {
         match res {
             Ok(_) => Ok(()),
             Err(e) => {
-                error!("Error executing SQL script: {}", e);
+                error!("Error executing SQL script: {e}");
                 Err(Error::DatabaseQuery)
             }
         }
@@ -123,8 +125,9 @@ impl SqliteDatabase {
 }
 
 impl Locatable for SqliteDatabase {
-    fn create(_locator: &Locator) -> Result<Self> {
-        futures::executor::block_on(Self::new())
+    fn create(locator: &Locator) -> Result<Self> {
+        let config = locator.get::<Config>()?;
+        futures::executor::block_on(Self::new(config))
     }
 }
 
@@ -147,13 +150,13 @@ impl DatabaseInterface for SqliteDatabase {
                     Ok(value) => value,
 
                     Err(e) => {
-                        error!("Error preparing SQL statement: {}", e);
+                        error!("Error preparing SQL statement: {e}");
                         return Err(e);
                     }
                 };
 
                 let mut rows = stmt.query(params_from_iter(params.iter())).map_err(|e| {
-                    error!("Error executing SQL statement: {}", e);
+                    error!("Error executing SQL statement: {e}");
                     e
                 })?;
 
@@ -186,7 +189,7 @@ impl DatabaseInterface for SqliteDatabase {
                     Ok(_) => (),
 
                     Err(e) => {
-                        error!("Error adding a record to the database: {}", e);
+                        error!("Error adding a record to the database: {e}");
                         return Err(e);
                     }
                 };
@@ -207,7 +210,7 @@ impl DatabaseInterface for SqliteDatabase {
                     Ok(_) => (),
 
                     Err(e) => {
-                        error!("Error replacing a record to the database: {}", e);
+                        error!("Error replacing a record to the database: {e}");
                         return Err(e);
                     }
                 };
@@ -228,7 +231,7 @@ impl DatabaseInterface for SqliteDatabase {
                     Ok(_) => (),
 
                     Err(e) => {
-                        error!("Error updating database: {}", e);
+                        error!("Error updating database: {e}");
                         return Err(e);
                     }
                 };
@@ -249,7 +252,7 @@ impl DatabaseInterface for SqliteDatabase {
                     Ok(_) => (),
 
                     Err(e) => {
-                        error!("Error deleting record: {}", e);
+                        error!("Error deleting record: {e}");
                         return Err(e);
                     }
                 };
@@ -270,7 +273,7 @@ impl DatabaseInterface for SqliteDatabase {
                     Ok(_) => (),
 
                     Err(e) => {
-                        error!("Error incrementing a value: {}", e);
+                        error!("Error incrementing a value: {e}");
                         return Err(e);
                     }
                 };
@@ -295,13 +298,13 @@ impl DatabaseInterface for SqliteDatabase {
                     Ok(value) => value,
 
                     Err(e) => {
-                        error!("Error preparing SQL statement: {}", e);
+                        error!("Error preparing SQL statement: {e}");
                         return Err(e);
                     }
                 };
 
                 let mut rows = stmt.query(params_from_iter(params.iter())).map_err(|e| {
-                    error!("Error executing SQL statement: {}", e);
+                    error!("Error executing SQL statement: {e}");
                     e
                 })?;
 
@@ -323,7 +326,7 @@ impl DatabaseInterface for SqliteDatabase {
                 Ok(value) => value,
 
                 Err(e) => {
-                    error!("Error preparing SQL statement: {}", e);
+                    error!("Error preparing SQL statement: {e}");
                     return Err(e);
                 },
             };
@@ -332,7 +335,7 @@ impl DatabaseInterface for SqliteDatabase {
                 Ok(value) => value,
 
                 Err(e) => {
-                    error!("Error executing SQL statement: {}", e);
+                    error!("Error executing SQL statement: {e}");
                     return Err(e);
                 },
             };
@@ -367,7 +370,7 @@ impl DatabaseInterface for SqliteDatabase {
                 Ok(value) => value,
 
                 Err(e) => {
-                    error!("Error preparing SQL statement: {}", e);
+                    error!("Error preparing SQL statement: {e}");
                     return Err(e);
                 },
             };
@@ -376,7 +379,7 @@ impl DatabaseInterface for SqliteDatabase {
                 Ok(value) => value,
 
                 Err(e) => {
-                    error!("Error executing SQL statement: {}", e);
+                    error!("Error executing SQL statement: {e}");
                     return Err(e);
                 },
             };
@@ -399,7 +402,7 @@ impl DatabaseInterface for SqliteDatabase {
                 Ok(value) => value,
 
                 Err(e) => {
-                    error!("Error preparing SQL statement: {}", e);
+                    error!("Error preparing SQL statement: {e}");
                     return Err(e);
                 },
             };
@@ -408,7 +411,7 @@ impl DatabaseInterface for SqliteDatabase {
                 Ok(value) => value,
 
                 Err(e) => {
-                    error!("Error executing SQL statement: {}", e);
+                    error!("Error executing SQL statement: {e}");
                     return Err(e);
                 },
             };
@@ -433,7 +436,7 @@ impl DatabaseInterface for SqliteDatabase {
                 Ok(value) => value,
 
                 Err(e) => {
-                    error!("Error preparing SQL statement: {}", e);
+                    error!("Error preparing SQL statement: {e}");
                     return Err(e);
                 },
             };
@@ -442,7 +445,7 @@ impl DatabaseInterface for SqliteDatabase {
                 Ok(value) => value,
 
                 Err(e) => {
-                    error!("Error executing SQL statement: {}", e);
+                    error!("Error executing SQL statement: {e}");
                     return Err(e);
                 },
             };
@@ -470,7 +473,7 @@ impl DatabaseInterface for SqliteDatabase {
                 Ok(value) => value,
 
                 Err(e) => {
-                    error!("Error preparing SQL statement: {}", e);
+                    error!("Error preparing SQL statement: {e}");
                     return Err(e);
                 },
             };
@@ -479,7 +482,7 @@ impl DatabaseInterface for SqliteDatabase {
                 Ok(value) => value,
 
                 Err(e) => {
-                    error!("Error executing SQL statement: {}", e);
+                    error!("Error executing SQL statement: {e}");
                     return Err(e);
                 },
             };
@@ -504,7 +507,7 @@ impl DatabaseInterface for SqliteDatabase {
                 Ok(value) => value,
 
                 Err(e) => {
-                    error!("Error preparing SQL statement: {}", e);
+                    error!("Error preparing SQL statement: {e}");
                     return Err(e);
                 },
             };
@@ -513,7 +516,7 @@ impl DatabaseInterface for SqliteDatabase {
                 Ok(value) => value,
 
                 Err(e) => {
-                    error!("Error executing SQL statement: {}", e);
+                    error!("Error executing SQL statement: {e}");
                     return Err(e);
                 },
             };
@@ -545,16 +548,14 @@ impl Clone for SqliteDatabase {
 mod tests {
     use super::*;
 
-    use std::env;
-
     async fn setup() -> SqliteDatabase {
-        env::set_var("TREEMAP_SQLITE_PATH", ":memory:");
-
         if env_logger::try_init().is_err() {
             debug!("env_logger already initialized.");
         };
 
-        let db = SqliteDatabase::new()
+        let config = Config::from_default_file().expect("Error reading config");
+
+        let db = SqliteDatabase::new(Arc::new(config))
             .await
             .expect("Error creating database.");
 

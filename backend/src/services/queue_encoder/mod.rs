@@ -4,7 +4,7 @@ use log::error;
 impl QueueCommand {
     pub fn decode(json: &str) -> Result<Option<Self>> {
         let value: serde_json::Value = serde_json::from_str(json).map_err(|e| {
-            error!("Error parsing message: {}, payload={}", e, json);
+            error!("Error parsing message: {e}, payload={json}");
             Error::Queue
         })?;
 
@@ -12,7 +12,7 @@ impl QueueCommand {
             .as_str()
             .ok_or("missing command")
             .map_err(|e| {
-                error!("Error extracting message command: {}, payload={}", e, json);
+                error!("Error extracting message command: {e}, payload={json}");
                 Error::Queue
             })?;
 
@@ -20,14 +20,14 @@ impl QueueCommand {
             .as_object()
             .ok_or("missing params")
             .map_err(|e| {
-                error!("Error extracting message params: {}, payload={}", e, json);
+                error!("Error extracting message params: {e}, payload={json}");
                 Error::Queue
             })?;
 
         match command {
             "ResizeImage" => {
                 let id = params["id"].as_u64().ok_or("missing id").map_err(|e| {
-                    error!("Error extracting image id: {}, payload={}", e, json);
+                    error!("Error extracting image id: {e}, payload={json}");
                     Error::Queue
                 })?;
 
@@ -36,7 +36,7 @@ impl QueueCommand {
 
             "UpdateTreeAddress" => {
                 let id = params["id"].as_u64().ok_or("missing id").map_err(|e| {
-                    error!("Error extracting tree id: {}, payload={}", e, json);
+                    error!("Error extracting tree id: {e}, payload={json}");
                     Error::Queue
                 })?;
 
@@ -50,7 +50,7 @@ impl QueueCommand {
                     .as_u64()
                     .ok_or("missing tree_id")
                     .map_err(|e| {
-                        error!("Error extracting tree id: {}, payload={}", e, json);
+                        error!("Error extracting tree id: {e}, payload={json}");
                         Error::Queue
                     })?;
 
@@ -58,7 +58,7 @@ impl QueueCommand {
                     .as_u64()
                     .ok_or("missing file_id")
                     .map_err(|e| {
-                        error!("Error extracting file id: {}, payload={}", e, json);
+                        error!("Error extracting file id: {e}, payload={json}");
                         Error::Queue
                     })?;
 
@@ -73,7 +73,7 @@ impl QueueCommand {
                     .as_u64()
                     .ok_or("missing user_id")
                     .map_err(|e| {
-                        error!("Error extracting user id: {}, payload={}", e, json);
+                        error!("Error extracting user id: {e}, payload={json}");
                         Error::Queue
                     })?;
 
@@ -81,7 +81,7 @@ impl QueueCommand {
                     .as_u64()
                     .ok_or("missing file_id")
                     .map_err(|e| {
-                        error!("Error extracting file id: {}, payload={}", e, json);
+                        error!("Error extracting file id: {e}, payload={json}");
                         Error::Queue
                     })?;
 
@@ -92,7 +92,7 @@ impl QueueCommand {
             }
 
             _ => {
-                error!("Could not parse message: {}", json);
+                error!("Could not parse message: {json}");
                 Ok(None)
             }
         }

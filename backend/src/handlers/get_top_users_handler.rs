@@ -33,7 +33,7 @@ impl GetTopUsersHandler {
         let ids: Result<Vec<u64>> = rows.iter().map(|row| row.require_u64("added_by")).collect();
 
         ids.map_err(|e| {
-            error!("Error getting monthly active users: {}", e);
+            error!("Error getting monthly active users: {e}");
             e
         })
     }
@@ -48,7 +48,7 @@ impl GetTopUsersHandler {
         let ids: Result<Vec<u64>> = rows.iter().map(|row| row.require_u64("id")).collect();
 
         ids.map_err(|e| {
-            error!("Error getting top users: {}", e);
+            error!("Error getting top users: {e}");
             e
         })
     }

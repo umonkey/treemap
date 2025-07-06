@@ -28,7 +28,7 @@ impl NominatimService {
             "https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lon}&zoom=18&addressdetails=1"
         );
 
-        debug!("Requesting address from Nominatim: {}", url);
+        debug!("Requesting address from Nominatim: {url}");
 
         let mut headers = HeaderMap::new();
         headers.insert("User-Agent", HeaderValue::from_static(USER_AGENT));
@@ -39,7 +39,7 @@ impl NominatimService {
             Ok(response) => response,
 
             Err(e) => {
-                error!("Error contacting Nominatim: {}", e);
+                error!("Error contacting Nominatim: {e}");
                 return Err(Error::AddressNotFound);
             }
         };
@@ -53,16 +53,16 @@ impl NominatimService {
             Ok(json) => json,
 
             Err(e) => {
-                error!("Error parsing Nominatim response: {:?}", e);
+                error!("Error parsing Nominatim response: {e:?}");
                 return Err(Error::AddressNotFound);
             }
         };
 
         if let Some(value) = json.address.road {
-            info!("Resolved {},{} as: {}", lat, lon, value);
+            info!("Resolved {lat},{lon} as: {value}");
             Ok(Some(value))
         } else {
-            info!("Could not resolve {},{} to an address.", lat, lon);
+            info!("Could not resolve {lat},{lon} to an address.");
             Ok(None)
         }
     }

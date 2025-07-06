@@ -13,7 +13,7 @@ impl LoginOsmHandler {
 
         let token = self.osm.get_token(&code).await?;
 
-        info!("OSM token: {}", token);
+        info!("OSM token: {token}");
 
         Ok(())
     }

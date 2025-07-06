@@ -5,3 +5,5 @@
 /database.*
 /target
 /var
+/.secrets
+/config.toml

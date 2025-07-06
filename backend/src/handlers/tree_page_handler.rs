@@ -139,7 +139,7 @@ impl TreePageHandler {
         let path = "static/index.html";
 
         let body = fs::read_to_string(path).await.map_err(|e| {
-            error!("Error reading file: {:?}", e);
+            error!("Error reading file: {e:?}");
             Error::FileNotFound
         })?;
 

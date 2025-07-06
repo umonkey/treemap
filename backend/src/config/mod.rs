@@ -1,3 +1,6 @@
-mod s3_config;
-
-pub use self::s3_config::*;
+mod aws_config;
+mod file_config;
+mod secrets;
+pub use aws_config::*;
+pub use file_config::*;
+pub use secrets::*;

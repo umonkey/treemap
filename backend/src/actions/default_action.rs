@@ -9,7 +9,7 @@ pub async fn default_action() -> Result<HttpResponse> {
     let path = "static/index.html";
 
     let body = fs::read(path).await.map_err(|e| {
-        error!("Error reading file: {:?}", e);
+        error!("Error reading file: {e:?}");
         Error::FileNotFound
     })?;
 
