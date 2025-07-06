@@ -19,6 +19,7 @@ pub enum Error {
     DatabaseQuery,
     DatabaseStructure,
     DependencyLoad,
+    DuplicateTree,
     EnvNotSet,
     FileDownload,
     FileNotFound,
@@ -66,6 +67,9 @@ impl Error {
             }
             Error::DependencyLoad => {
                 r#"{"error":{"code":"DependencyLoad","description":"Error loading a dependency."}}"#
+            }
+            Error::DuplicateTree => {
+                r#"{"error":{"code":"DuplicateTree","description":"A tree with these coordinates already exists."}}"#
             }
             Error::EnvNotSet => {
                 r#"{"error":{"code":"EnvNotSet","description":"Environment variable not set."}}"#
@@ -145,6 +149,7 @@ impl ResponseError for Error {
             Error::DatabaseQuery => StatusCode::INTERNAL_SERVER_ERROR,
             Error::DatabaseStructure => StatusCode::INTERNAL_SERVER_ERROR,
             Error::DependencyLoad => StatusCode::INTERNAL_SERVER_ERROR,
+            Error::DuplicateTree => StatusCode::CONFLICT,
             Error::EnvNotSet => StatusCode::INTERNAL_SERVER_ERROR,
             Error::FileDownload => StatusCode::NOT_FOUND,
             Error::FileNotFound => StatusCode::NOT_FOUND,
@@ -177,6 +182,7 @@ impl fmt::Display for Error {
             Error::DatabaseQuery => write!(f, "DatabaseQuery"),
             Error::DatabaseStructure => write!(f, "DatabaseStructure"),
             Error::DependencyLoad => write!(f, "DependencyLoad"),
+            Error::DuplicateTree => write!(f, "DuplicateTree"),
             Error::EnvNotSet => write!(f, "EnvNotSet"),
             Error::FileDownload => write!(f, "FileDownload"),
             Error::FileNotFound => write!(f, "FileNotFound"),

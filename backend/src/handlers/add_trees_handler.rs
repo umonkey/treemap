@@ -11,7 +11,7 @@ use log::{debug, error, info};
 use std::sync::Arc;
 
 pub struct AddTreesHandler {
-    trees: Arc<TreeRepository>,
+    trees: Arc<TreeInjector>,
     users: Arc<UserRepository>,
     queue: Arc<QueueService>,
 }
@@ -105,7 +105,7 @@ impl AddTreesHandler {
 impl Locatable for AddTreesHandler {
     fn create(locator: &Locator) -> Result<Self> {
         Ok(Self {
-            trees: locator.get::<TreeRepository>()?,
+            trees: locator.get::<TreeInjector>()?,
             users: locator.get::<UserRepository>()?,
             queue: locator.get::<QueueService>()?,
         })
