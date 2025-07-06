@@ -136,6 +136,9 @@ impl TreeRepository {
         self.query_multiple(query).await
     }
 
+    /// Add a new tree.
+    ///
+    /// Makes sure that there's no existing tree with the same coordinates.
     pub async fn add(&self, tree: &TreeRecord) -> Result<()> {
         let query = InsertQuery::new(TABLE).with_values(tree.to_attributes());
 
