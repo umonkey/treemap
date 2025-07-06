@@ -135,8 +135,12 @@ mod locator_tests {
         setup();
 
         let locator = Locator::new();
-        locator.get::<TestService>().expect("Failed to get TestService");
-        locator.get::<TestService>().expect("Failed to get TestService again");
+        locator
+            .get::<TestService>()
+            .expect("Failed to get TestService");
+        locator
+            .get::<TestService>()
+            .expect("Failed to get TestService again");
     }
 
     #[test]

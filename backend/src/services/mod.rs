@@ -1,4 +1,5 @@
 mod app;
+mod comment_injector;
 mod database;
 mod file_storage;
 mod files;
@@ -14,6 +15,7 @@ mod thumbnailer;
 mod tokens;
 mod tree_list_loader;
 pub use app::*;
+pub use comment_injector::*;
 pub use database::*;
 pub use file_storage::*;
 pub use files::*;

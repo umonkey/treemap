@@ -1,5 +1,5 @@
 use crate::common::database::repositories::*;
-use crate::handlers::{AddCommentHandler, GetTreeHandler};
+use crate::handlers::GetTreeHandler;
 use crate::services::*;
 use crate::types::*;
 use log::info;
@@ -10,7 +10,7 @@ pub struct UpdateTreeStateHandler {
     trees: Arc<TreeRepository>,
     users: Arc<UserRepository>,
     getter: Arc<GetTreeHandler>,
-    add_comment: Arc<AddCommentHandler>,
+    comments: Arc<CommentInjector>,
 }
 
 impl UpdateTreeStateHandler {
@@ -53,13 +53,9 @@ impl UpdateTreeStateHandler {
         // Add comment if provided
         if let Some(comment_text) = comment {
             if !comment_text.trim().is_empty() {
-                let comment_request = AddCommentRequest {
-                    tree_id,
-                    message: comment_text,
-                    user_id,
-                };
-
-                self.add_comment.handle(comment_request).await?;
+                self.comments
+                    .inject(tree_id, user_id, &comment_text)
+                    .await?;
             }
         }
 
@@ -79,7 +75,7 @@ impl Locatable for UpdateTreeStateHandler {
             trees: locator.get::<TreeRepository>()?,
             users: locator.get::<UserRepository>()?,
             getter: locator.get::<GetTreeHandler>()?,
-            add_comment: locator.get::<AddCommentHandler>()?,
+            comments: locator.get::<CommentInjector>()?,
         })
     }
 }
