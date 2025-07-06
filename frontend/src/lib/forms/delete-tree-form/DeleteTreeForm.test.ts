@@ -1,9 +1,9 @@
 import DeleteTreeForm from './DeleteTreeForm.svelte';
 import userEvent from '@testing-library/user-event';
 import { DEFAULT_TREE } from '$lib/constants';
-import { afterEach, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { apiClient } from '$lib/api';
-import { cleanup, render, screen } from '@testing-library/svelte';
+import { render, screen } from '@testing-library/svelte';
 import { goto } from '$app/navigation';
 import { authStore } from '$lib/stores/authStore';
 
@@ -16,11 +16,6 @@ vi.mock('$app/navigation', async () => {
 const mockedGoto = vi.mocked(goto);
 
 describe('DeleteTreeForm', async () => {
-	afterEach(() => {
-		cleanup();
-		vi.clearAllMocks();
-	});
-
 	test('handle form without comment', async () => {
 		const user = userEvent.setup();
 
@@ -40,18 +35,20 @@ describe('DeleteTreeForm', async () => {
 			data: { props: [], users: [] }
 		});
 
-		apiClient.updateTreeState = vi.fn().mockImplementation(async (id: string, value: string, comment?: string) => {
-			expect(id).toBe('tree1');
-			expect(value).toBe('gone');
-			capturedComment = comment;
+		apiClient.updateTreeState = vi
+			.fn()
+			.mockImplementation(async (id: string, value: string, comment?: string) => {
+				expect(id).toBe('tree1');
+				expect(value).toBe('gone');
+				capturedComment = comment;
 
-			saved = true;
+				saved = true;
 
-			return {
-				status: 200,
-				data: DEFAULT_TREE
-			};
-		});
+				return {
+					status: 200,
+					data: DEFAULT_TREE
+				};
+			});
 
 		authStore.set({
 			token: 'secret',
@@ -93,18 +90,20 @@ describe('DeleteTreeForm', async () => {
 			data: { props: [], users: [] }
 		});
 
-		apiClient.updateTreeState = vi.fn().mockImplementation(async (id: string, value: string, comment?: string) => {
-			expect(id).toBe('tree1');
-			expect(value).toBe('gone');
-			capturedComment = comment;
+		apiClient.updateTreeState = vi
+			.fn()
+			.mockImplementation(async (id: string, value: string, comment?: string) => {
+				expect(id).toBe('tree1');
+				expect(value).toBe('gone');
+				capturedComment = comment;
 
-			saved = true;
+				saved = true;
 
-			return {
-				status: 200,
-				data: DEFAULT_TREE
-			};
-		});
+				return {
+					status: 200,
+					data: DEFAULT_TREE
+				};
+			});
 
 		authStore.set({
 			token: 'secret',
@@ -116,16 +115,13 @@ describe('DeleteTreeForm', async () => {
 			id: 'tree1'
 		});
 
-		// Wait for form to load
-		await screen.findByRole('button', { name: /confirm/i });
+		const confirm = await screen.findByRole('button', {
+			name: /confirm/i
+		});
 
 		// Find the comment input and type a comment
 		const commentInput = await screen.findByRole('textbox');
 		await user.type(commentInput, 'duplicate of tree123');
-
-		const confirm = await screen.findByRole('button', {
-			name: /confirm/i
-		});
 
 		await user.click(confirm);
 

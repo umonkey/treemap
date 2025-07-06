@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button, Buttons, TreeSheet, FilteredChangeList, AuthWrapper } from '$lib/ui';
+	import { Button, Buttons, Form, TreeSheet, FilteredChangeList, AuthWrapper } from '$lib/ui';
 	import { locale } from '$lib/locale';
 	import { stateUpdater } from '$lib/actions';
 
@@ -11,7 +11,7 @@
 </script>
 
 <AuthWrapper>
-	<div class="delete-tree">
+	<Form>
 		{#if $error}
 			<p>{$error.description}</p>
 		{:else if $loading}
@@ -30,5 +30,11 @@
 		{/if}
 
 		<FilteredChangeList changes={$history} name="state" />
-	</div>
+	</Form>
 </AuthWrapper>
+
+<style>
+	p {
+		margin: 0;
+	}
+</style>

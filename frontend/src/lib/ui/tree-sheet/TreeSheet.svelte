@@ -32,7 +32,6 @@
 <style>
 	.tree-sheet {
 		border-spacing: 0;
-		margin: var(--gap) 0;
 
 		th,
 		td {

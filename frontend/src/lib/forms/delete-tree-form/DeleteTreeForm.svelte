@@ -1,5 +1,13 @@
 <script lang="ts">
-	import { Button, Buttons, TreeSheet, FilteredChangeList, AuthWrapper, CommentInput } from '$lib/ui';
+	import {
+		Button,
+		Buttons,
+		Form,
+		TreeSheet,
+		FilteredChangeList,
+		AuthWrapper,
+		CommentInput
+	} from '$lib/ui';
 	import { locale } from '$lib/locale';
 	import { stateUpdater } from '$lib/actions';
 
@@ -8,20 +16,20 @@
 	}>();
 
 	const { loading, busy, error, history, tree, save, close } = stateUpdater(id, 'gone');
-	
+
 	let comment = $state('');
-	
+
 	const handleCommentChange = (value: string) => {
 		comment = value;
 	};
-	
+
 	const handleSave = () => {
 		save(comment.trim() || undefined);
 	};
 </script>
 
 <AuthWrapper>
-	<div class="delete-tree">
+	<Form>
 		{#if $error}
 			<p>{$error.description}</p>
 		{:else if $loading}
@@ -33,9 +41,7 @@
 
 			<p>{locale.deleteUploadHint()}</p>
 
-			<div class="comment-section">
-				<CommentInput value={comment} onChange={handleCommentChange} />
-			</div>
+			<CommentInput value={comment} onChange={handleCommentChange} />
 
 			<Buttons>
 				<Button onClick={handleSave} disabled={$busy}>{locale.deleteConfirm()}</Button>
@@ -44,15 +50,11 @@
 
 			<FilteredChangeList changes={$history} name="state" />
 		{/if}
-	</div>
+	</Form>
 </AuthWrapper>
 
 <style>
-	.comment-section {
-		margin: 1rem 0;
-		padding: 1rem;
-		border: 1px solid #e0e0e0;
-		border-radius: 4px;
-		background-color: #f9f9f9;
+	p {
+		margin: 0;
 	}
 </style>
