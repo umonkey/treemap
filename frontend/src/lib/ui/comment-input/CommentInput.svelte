@@ -2,9 +2,10 @@
 	import { TextInput } from '$lib/ui';
 	import { locale } from '$lib/locale';
 
-	const { value, onChange } = $props<{
+	const { value, onChange, onKeyDown } = $props<{
 		value: string;
 		onChange: (value: string) => void;
+		onKeyDown?: (event: KeyboardEvent) => void;
 	}>();
 
 	const handleChange = (value: string) => {
@@ -18,4 +19,5 @@
 	multiline={true}
 	hint={locale.commentHint()}
 	onChange={handleChange}
+	onKeyDown={onKeyDown}
 />

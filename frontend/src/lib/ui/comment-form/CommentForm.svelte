@@ -17,13 +17,22 @@
 	const handleChange = (value: string) => {
 		message = value;
 	};
+
+	const handleKeyDown = (event: KeyboardEvent) => {
+		if (event.key === 'Enter' && event.ctrlKey) {
+			event.preventDefault();
+			if (message.trim()) {
+				onSubmit(message);
+			}
+		}
+	};
 </script>
 
 {#if $isAuthenticated || !!authenticated}
 	<p>{locale.commentPrompt()}</p>
 
 	<Form>
-		<CommentInput value={message} onChange={handleChange} />
+		<CommentInput value={message} onChange={handleChange} onKeyDown={handleKeyDown} />
 
 		<Buttons>
 			<Button type="submit" onClick={onButtonClicked} disabled={!message}

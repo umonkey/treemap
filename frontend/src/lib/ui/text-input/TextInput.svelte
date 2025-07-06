@@ -9,7 +9,8 @@
 		multiline = false,
 		hint = '',
 		help,
-		onChange
+		onChange,
+		onKeyDown
 	} = $props<{
 		value: string | number;
 		placeholder: string;
@@ -19,6 +20,7 @@
 		hint: string;
 		help?: string;
 		onChange: (value: string) => void;
+		onKeyDown?: (event: KeyboardEvent) => void;
 	}>();
 
 	const handleChange = (e: Event) => {
@@ -27,12 +29,18 @@
 			onChange(em.value ?? '');
 		}
 	};
+
+	const handleKeyDown = (e: KeyboardEvent) => {
+		if (onKeyDown) {
+			onKeyDown(e);
+		}
+	};
 </script>
 
 <FormElement {label} {hint} {help}>
 	{#if multiline}
-		<textarea {placeholder} onchange={handleChange}>{value}</textarea>
+		<textarea {placeholder} {value} onchange={handleChange} onkeydown={handleKeyDown}></textarea>
 	{:else}
-		<input {type} {value} {placeholder} onchange={handleChange} />
+		<input {type} {value} {placeholder} onchange={handleChange} onkeydown={handleKeyDown} />
 	{/if}
 </FormElement>
