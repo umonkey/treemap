@@ -1,23 +1,10 @@
-use log::{error, warn};
+use crate::types::{Error, Result};
+use log::warn;
 use std::env;
 
-use crate::types::{Error, Result};
-
 const JWT_SECRET: &str = "JWT_SECRET";
-const SQLITE_PATH: &str = "TREEMAP_SQLITE_PATH";
 
 const DEFAULT_JWT_SECRET: &str = "secret";
-
-pub fn get_sqlite_path() -> Result<String> {
-    match env::var(SQLITE_PATH) {
-        Ok(v) => Ok(v),
-
-        Err(_) => {
-            error!("Environment variable {} not set, cannot connect to the database. Read more at <https://github.com/umonkey/treemap/wiki/Configuration#sqlite_path>", SQLITE_PATH);
-            Err(Error::EnvNotSet)
-        }
-    }
-}
 
 pub fn get_jwt_secret() -> String {
     match env::var(JWT_SECRET) {

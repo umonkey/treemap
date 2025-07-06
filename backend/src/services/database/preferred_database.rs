@@ -1,5 +1,6 @@
 use super::database_interface::*;
 use super::sqlite_database::*;
+use crate::config::Config;
 use crate::services::*;
 use crate::types::*;
 use std::sync::Arc;
@@ -15,8 +16,9 @@ impl PreferredDatabase {
 }
 
 impl Locatable for PreferredDatabase {
-    fn create(_locator: &Locator) -> Result<Self> {
-        let db = futures::executor::block_on(SqliteDatabase::new())?;
+    fn create(locator: &Locator) -> Result<Self> {
+        let config = locator.get::<Config>()?;
+        let db = futures::executor::block_on(SqliteDatabase::new(config))?;
         Ok(Self { db: Arc::new(db) })
     }
 }

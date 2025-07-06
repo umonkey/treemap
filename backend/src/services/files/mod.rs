@@ -93,8 +93,6 @@ mod tests {
     use std::path::Path;
 
     async fn setup() -> Result<Arc<FileService>> {
-        env::set_var("TREEMAP_CONFIG", "tests/config.toml");
-        env::set_var("TREEMAP_SQLITE_PATH", ":memory:");
         env::set_var("AWS_ACCESS_KEY_ID", "");
 
         if env_logger::try_init().is_err() {

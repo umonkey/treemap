@@ -44,7 +44,8 @@ pub struct Config {
     #[serde(default = "default_server_port")]
     pub server_port: u16,
 
-    pub sqlite_path: Option<String>,
+    #[serde(default = "default_sqlite_path")]
+    pub sqlite_path: String,
 
     // The number of web worker threads to spawn.
     #[serde(default = "default_workers")]
@@ -56,6 +57,12 @@ impl Config {
         Self::from_default_file()
     }
 
+    #[cfg(test)]
+    pub fn from_default_file() -> Result<Self> {
+        Self::from_file("tests/config.toml")
+    }
+
+    #[cfg(not(test))]
     pub fn from_default_file() -> Result<Self> {
         let path: String = match std::env::var("TREEMAP_CONFIG") {
             Ok(v) => v,
@@ -131,6 +138,10 @@ fn default_overpass_endpoint() -> String {
 
 fn default_overpass_query() -> String {
     "[out:json];node[natural=tree](40.052848, 44.294472, 40.300476, 44.807396);out;".to_string()
+}
+
+fn default_sqlite_path() -> String {
+    "var/database.sqlite".to_string()
 }
 
 #[cfg(test)]

@@ -8,15 +8,17 @@
 //! @docs https://docs.rs/async-sqlite/latest/async_sqlite/
 
 use crate::common::database::queries::*;
+use crate::config::Config;
 use crate::services::*;
 use crate::types::*;
-use crate::utils::{get_sqlite_path, get_timestamp};
+use crate::utils::get_timestamp;
 use async_sqlite::{JournalMode, Pool, PoolBuilder};
 use async_trait::async_trait;
 use log::{debug, error, info};
 use rusqlite::params_from_iter;
 use rusqlite::types::Value;
 use std::cmp::Ordering;
+use std::sync::Arc;
 
 const SUGGEST_WINDOW: u64 = 3600 * 24; // 24 hours
 
@@ -25,8 +27,8 @@ pub struct SqliteDatabase {
 }
 
 impl SqliteDatabase {
-    pub async fn new() -> Result<Self> {
-        let path = get_sqlite_path()?;
+    pub async fn new(config: Arc<Config>) -> Result<Self> {
+        let path = config.sqlite_path.clone();
 
         Ok(Self {
             pool: Self::create_pool(&path).await?,
@@ -123,8 +125,9 @@ impl SqliteDatabase {
 }
 
 impl Locatable for SqliteDatabase {
-    fn create(_locator: &Locator) -> Result<Self> {
-        futures::executor::block_on(Self::new())
+    fn create(locator: &Locator) -> Result<Self> {
+        let config = locator.get::<Config>()?;
+        futures::executor::block_on(Self::new(config))
     }
 }
 
@@ -545,16 +548,14 @@ impl Clone for SqliteDatabase {
 mod tests {
     use super::*;
 
-    use std::env;
-
     async fn setup() -> SqliteDatabase {
-        env::set_var("TREEMAP_SQLITE_PATH", ":memory:");
-
         if env_logger::try_init().is_err() {
             debug!("env_logger already initialized.");
         };
 
-        let db = SqliteDatabase::new()
+        let config = Config::from_default_file().expect("Error reading config");
+
+        let db = SqliteDatabase::new(Arc::new(config))
             .await
             .expect("Error creating database.");
 

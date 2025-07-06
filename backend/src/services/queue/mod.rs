@@ -88,11 +88,7 @@ impl Locatable for QueueService {
 mod tests {
     use super::*;
 
-    use std::env;
-
     async fn setup() -> Arc<QueueService> {
-        env::set_var("TREEMAP_SQLITE_PATH", ":memory:");
-
         if env_logger::try_init().is_err() {
             debug!("env_logger already initialized.");
         };
