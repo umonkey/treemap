@@ -50,7 +50,7 @@ docker run --rm \
     -e VITE_ENVIRONMENT="production" \
     --network=host \
     --ulimit nofile=5000:5000 \
-    node:20-alpine3.18 \
+    docker.io/library/node:24-alpine3.22 \
     sh -c "npm ci && npm run build"
 
 # (5) Build the final Docker image.
