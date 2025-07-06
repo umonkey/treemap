@@ -12,6 +12,7 @@
 //! (5) If it does, push the changes to OSM.
 
 use crate::common::database::repositories::*;
+use crate::config::Config;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::*;
@@ -214,11 +215,13 @@ impl OsmPushChangesHandler {
 
 impl Locatable for OsmPushChangesHandler {
     fn create(locator: &Locator) -> Result<Self> {
+        let config = locator.get::<Config>()?;
+
         Ok(Self {
             osm: locator.get::<OsmClient>()?,
             osm_trees: locator.get::<OsmTreeRepository>()?,
             trees: locator.get::<TreeRepository>()?,
-            changeset_size: get_osm_changeset_size(),
+            changeset_size: config.osm_changeset_size,
             dry_run: get_dry_run()?,
         })
     }

@@ -21,7 +21,10 @@ pub struct Config {
 
     pub jwt_secret: Option<String>,
     pub osm_activity: Option<String>,
-    pub osm_changeset_size: Option<u64>,
+
+    #[serde(default = "default_osm_changeset_size")]
+    pub osm_changeset_size: u64,
+
     pub osm_client_id: Option<String>,
     pub osm_client_secret: Option<String>,
     pub osm_hashtag: Option<String>,
@@ -112,6 +115,10 @@ fn default_file_folder() -> String {
 
 fn default_bot_user_id() -> u64 {
     0
+}
+
+fn default_osm_changeset_size() -> u64 {
+    1
 }
 
 #[cfg(test)]
