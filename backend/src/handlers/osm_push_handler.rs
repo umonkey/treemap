@@ -1,7 +1,7 @@
 use crate::common::database::repositories::*;
 use crate::services::*;
 use crate::types::*;
-use crate::utils::get_timestamp;
+use crate::utils::{get_bot_user_id, get_timestamp};
 use log::info;
 use std::sync::Arc;
 
@@ -14,6 +14,7 @@ pub struct OsmPushHandler {
     osm: Arc<OsmClient>,
     osm_trees: Arc<OsmTreeRepository>,
     trees: Arc<TreeRepository>,
+    user_id: u64,
 }
 
 impl OsmPushHandler {
@@ -38,7 +39,9 @@ impl OsmPushHandler {
         for tree in trees {
             let osm_id = self.osm.create_tree(changeset, &tree).await?;
 
-            self.trees.update_osm_id(tree.id, osm_id).await?;
+            self.trees
+                .update_osm_id(tree.id, osm_id, self.user_id)
+                .await?;
 
             self.osm_trees
                 .add(&OsmTreeRecord {
@@ -102,6 +105,7 @@ impl Locatable for OsmPushHandler {
             osm: locator.get::<OsmClient>()?,
             osm_trees: locator.get::<OsmTreeRepository>()?,
             trees: locator.get::<TreeRepository>()?,
+            user_id: get_bot_user_id(),
         })
     }
 }

@@ -3,7 +3,7 @@ use crate::common::database::repositories::*;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::get_timestamp;
-use log::{debug, error};
+use log::{debug, error, info};
 use rusqlite::types::Value;
 use std::sync::Arc;
 
@@ -225,7 +225,7 @@ impl TreeRepository {
             .await
     }
 
-    pub async fn update_osm_id(&self, tree_id: u64, osm_id: u64) -> Result<()> {
+    pub async fn update_osm_id(&self, tree_id: u64, osm_id: u64, user_id: u64) -> Result<()> {
         let query = UpdateQuery::new(TABLE)
             .with_condition("id", Value::from(tree_id as i64))
             .with_value("osm_id", Value::from(osm_id as i64));
@@ -234,6 +234,14 @@ impl TreeRepository {
             error!("Error updating a tree: {}", e);
             e
         })?;
+
+        self.add_tree_prop(tree_id, "osm_id", &osm_id.to_string(), user_id)
+            .await?;
+
+        info!(
+            "Tree {} linked to OSM node {} by user {}.",
+            tree_id, osm_id, user_id
+        );
 
         Ok(())
     }

@@ -111,16 +111,8 @@ impl OsmReaderService {
         };
 
         self.trees
-            .update(
-                &TreeRecord {
-                    osm_id: Some(node.id),
-                    ..closest.clone()
-                },
-                self.user_id,
-            )
+            .update_osm_id(closest.id, node.id, self.user_id)
             .await?;
-
-        info!("Tree {} linked to OSM node {}.", closest.id, node.id);
 
         Ok(true)
     }
