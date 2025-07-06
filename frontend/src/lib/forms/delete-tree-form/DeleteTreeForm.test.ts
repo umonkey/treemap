@@ -1,5 +1,4 @@
 import DeleteTreeForm from './DeleteTreeForm.svelte';
-import type { IResponse, ISingleTree, ITree } from '$lib/types';
 import userEvent from '@testing-library/user-event';
 import { DEFAULT_TREE } from '$lib/constants';
 import { afterEach, describe, expect, test, vi } from 'vitest';

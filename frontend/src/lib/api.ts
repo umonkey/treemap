@@ -315,7 +315,7 @@ export class ApiClient {
 	}
 
 	public async updateTreeState(id: string, value: string | null, comment?: string): Promise<IResponse<ITree>> {
-		const payload: any = { value };
+		const payload: { value: string | null; comment?: string } = { value };
 		if (comment && comment.trim()) {
 			payload.comment = comment.trim();
 		}
