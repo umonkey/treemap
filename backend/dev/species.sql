@@ -10,6 +10,7 @@ INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Albizia julibr
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Betula', 'Birch', 'берёза;береза', 'Q25243');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Buxus', 'Boxwood', 'самшит', 'Q158703');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Catalpa', 'Catalpa', 'катальпа', 'Q158072');
+INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Cercis canadensis', 'Eastern redbud', 'багряник канадский', 'Q2452407');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Cercis siliquastrum', 'Judas tree', 'багряник европейский', 'Q29488');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Cercis', 'Cercis', 'багряник', 'Q29033');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Cornus sanguinea', 'Bloody dogwood', 'кизильник;дёрен;свидина', 'Q161416');

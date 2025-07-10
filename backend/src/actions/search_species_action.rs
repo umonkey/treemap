@@ -1,8 +1,10 @@
-use actix_web::{get, web::Data, web::Json, web::Query};
-use serde::Deserialize;
+//! Returns species that contain a substring.
+//! This is normally used by the species autocomplete control.
 
 use crate::services::AppState;
 use crate::types::{PublicSpeciesInfo, Result};
+use actix_web::{get, web::Data, web::Json, web::Query};
+use serde::Deserialize;
 
 #[derive(Deserialize)]
 struct QueryParams {

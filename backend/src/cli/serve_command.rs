@@ -81,6 +81,7 @@ pub async fn serve_command() {
             .service(move_tree_action)
             .service(replace_tree_action)
             .service(search_species_action)
+            .service(search_streets_action)
             .service(suggest_species_action)
             .service(update_settings_action)
             .service(update_tree_action)

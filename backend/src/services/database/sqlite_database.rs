@@ -357,6 +357,45 @@ impl DatabaseInterface for SqliteDatabase {
         Ok(species)
     }
 
+    async fn find_streets(&self, query: &str) -> Result<Vec<String>> {
+        let pattern = format!("%{}%", query.trim().to_lowercase());
+
+        let streets = self
+            .pool
+            .conn(move |conn| {
+                let mut stmt = match conn.prepare(
+                    "SELECT DISTINCT address FROM trees WHERE state <> 'gone' AND address LIKE ?1 ORDER BY address LIMIT 10",
+                ) {
+                    Ok(value) => value,
+
+                    Err(e) => {
+                        error!("Error preparing SQL statement: {e}");
+                        return Err(e);
+                    }
+                };
+
+                let mut rows = match stmt.query([pattern]) {
+                    Ok(value) => value,
+
+                    Err(e) => {
+                        error!("Error executing SQL statement: {e}");
+                        return Err(e);
+                    }
+                };
+
+                let mut streets: Vec<String> = Vec::new();
+
+                while let Some(row) = rows.next()? {
+                    streets.push(row.get(0)?);
+                }
+
+                Ok(streets)
+            })
+            .await?;
+
+        Ok(streets)
+    }
+
     /**
      * Find most recent species added by a specific user.
      */

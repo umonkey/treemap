@@ -108,6 +108,7 @@ export const hooks = () => {
 		updated.update((t) => {
 			if (t) {
 				t.address = value || null;
+				console.debug(`[edit form] Address updated to: ${value}`);
 			}
 
 			return t;

@@ -90,6 +90,10 @@ export interface ISpecies {
 	local: string;
 }
 
+export interface IStreet {
+	name: string;
+}
+
 export interface IComment {
 	id: string;
 	tree_id: number;

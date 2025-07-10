@@ -4,8 +4,12 @@
 	import { routes } from '$lib/routes';
 
 	import SearchBar from '$lib/components/SearchBar.svelte';
+	import { Form, StreetInput, SpeciesInput, Buttons, Button } from '$lib/ui';
+	import { hooks } from './hooks';
 
 	let query = $state<string>('');
+
+	const { handleStreetChange, handleSpeciesChange, handleSubmit } = hooks();
 
 	const handleSearch = (value: string) => {
 		goto(routes.searchQuery(value));
@@ -91,6 +95,15 @@
 			<li><a href={routes.searchQuery('incomplete')}>Missing any data</a></li>
 		</ul>
 	{/if}
+
+	<Form onSubmit={handleSubmit}>
+		<SpeciesInput onChange={handleSpeciesChange} />
+		<StreetInput onChange={handleStreetChange} />
+
+		<Buttons>
+			<Button onClick={handleSubmit}>Search</Button>
+		</Buttons>
+	</Form>
 </div>
 
 <style>

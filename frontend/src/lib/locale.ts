@@ -139,12 +139,20 @@ class EnglishLocale {
 		return 'Species';
 	}
 
+	public streetLabel(): string {
+		return 'Street';
+	}
+
 	public speciesPrompt(): string {
 		return 'Type a latin or local name';
 	}
 
 	public speciesHint(): string {
 		return 'Enter the latin genus of the tree.';
+	}
+
+	public streetHint(): string {
+		return 'Enter the English name of the street.';
 	}
 
 	public heightLabel(): string {
@@ -719,6 +727,10 @@ class RussianLocale extends EnglishLocale {
 
 	public speciesLabel(): string {
 		return 'Название вида';
+	}
+
+	public streetLabel(): string {
+		return 'Улица';
 	}
 
 	public speciesPrompt(): string {
@@ -1297,6 +1309,10 @@ class ArmenianLocale extends EnglishLocale {
 
 	public speciesLabel(): string {
 		return 'Տեսակ';
+	}
+
+	public streetLabel(): string {
+		return 'Փողոց';
 	}
 
 	public speciesPrompt(): string {
