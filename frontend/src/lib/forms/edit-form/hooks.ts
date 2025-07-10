@@ -104,6 +104,16 @@ export const hooks = () => {
 		});
 	};
 
+	const handleAddressChange = (value: string) => {
+		updated.update((t) => {
+			if (t) {
+				t.address = value || null;
+			}
+
+			return t;
+		});
+	};
+
 	const handleConfirm = () => {
 		const u = get(updated);
 
@@ -147,6 +157,7 @@ export const hooks = () => {
 		handleNotesChange,
 		handleLocationChange,
 		handleYearChange,
+		handleAddressChange,
 		handleConfirm,
 		handleCancel,
 		loading,
