@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
 	import {
-		AddressInput,
 		Button,
 		Buttons,
 		CanopyInput,
@@ -12,6 +11,7 @@
 		StateInput,
 		YearInput,
 		SpeciesInput,
+		StreetInput,
 		Form
 	} from '$lib/ui';
 	import { hooks } from './hooks';
@@ -42,7 +42,7 @@
 	$effect(() => reload(id));
 </script>
 
-<Form>
+<Form onSubmit={handleConfirm}>
 	{#if $loading}
 		<!-- Loading... -->
 	{:else}
@@ -58,7 +58,7 @@
 			onChange={handleLocationChange}
 		/>
 
-		<AddressInput value={$tree.address} onChange={handleAddressChange} />
+		<StreetInput value={$tree.address} onChange={handleAddressChange} />
 
 		<NotesInput value={$updated.notes} onChange={handleNotesChange} />
 

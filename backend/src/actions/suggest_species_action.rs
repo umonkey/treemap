@@ -1,7 +1,9 @@
-use actix_web::{get, web::Data, web::Json, HttpRequest};
+//! Suggest species action.
+//! This returns species suggested for the user, based on their recently added trees.
 
 use crate::services::AppState;
 use crate::types::Result;
+use actix_web::{get, web::Data, web::Json, HttpRequest};
 
 #[get("/v1/species/suggest")]
 pub async fn suggest_species_action(

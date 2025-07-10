@@ -16,6 +16,7 @@ pub trait DatabaseInterface: Send + Sync {
     async fn sql(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>>;
 
     async fn find_species(&self, query: &str) -> Result<Vec<SpeciesRecord>>;
+    async fn find_streets(&self, query: &str) -> Result<Vec<String>>;
 
     async fn find_recent_species(&self, user_id: u64) -> Result<Vec<String>>;
 

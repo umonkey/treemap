@@ -15,6 +15,7 @@ import type {
 	IResponse,
 	ISingleTree,
 	ISpecies,
+	IStreet,
 	ISpeciesStats,
 	IStateStats,
 	IStats,
@@ -405,6 +406,11 @@ export class ApiClient {
 	public async searchSpecies(query: string): Promise<IResponse<ISpecies[]>> {
 		const params = new URLSearchParams({ query });
 		return await this.request('GET', `v1/species/search?${params}`);
+	}
+
+	public async searchStreets(query: string): Promise<IResponse<IStreet[]>> {
+		const params = new URLSearchParams({ query });
+		return await this.request('GET', `v1/streets/search?${params}`);
 	}
 
 	public async suggestSpecies(): Promise<IResponse<string[]>> {
