@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
 	import {
+		AddressInput,
 		Button,
 		Buttons,
 		CanopyInput,
@@ -34,7 +35,8 @@
 		handleLocationChange,
 		handleConfirm,
 		handleCancel,
-		handleYearChange
+		handleYearChange,
+		handleAddressChange
 	} = hooks();
 
 	$effect(() => reload(id));
@@ -55,6 +57,9 @@
 			pin={{ lat: $tree.lat, lng: $tree.lon }}
 			onChange={handleLocationChange}
 		/>
+
+		<AddressInput value={$tree.address} onChange={handleAddressChange} />
+
 		<NotesInput value={$updated.notes} onChange={handleNotesChange} />
 
 		<Buttons>
