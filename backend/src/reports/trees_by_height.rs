@@ -7,7 +7,7 @@ use std::collections::HashMap;
 
 #[derive(Serialize)]
 pub struct TreesByHeightReport {
-    pub height: u64,
+    pub value: u64,
     pub count: usize,
 }
 
@@ -18,7 +18,7 @@ impl TreesByHeightReporter {
         let map = self.aggregate(trees);
         let mut res = self.convert(map);
 
-        res.sort_by(|a, b| a.height.cmp(&b.height));
+        res.sort_by(|a, b| a.value.cmp(&b.value));
 
         Ok(res)
     }
@@ -44,8 +44,8 @@ impl TreesByHeightReporter {
     fn convert(&self, map: HashMap<u64, usize>) -> Vec<TreesByHeightReport> {
         let mut result: Vec<TreesByHeightReport> = Vec::new();
 
-        for (height, count) in map {
-            result.push(TreesByHeightReport { height, count });
+        for (value, count) in map {
+            result.push(TreesByHeightReport { value, count });
         }
 
         result
@@ -97,10 +97,10 @@ mod tests {
         assert!(!report.is_empty());
         assert_eq!(report.len(), 2);
 
-        assert_eq!(report[0].height, 1);
+        assert_eq!(report[0].value, 1);
         assert_eq!(report[0].count, 2);
 
-        assert_eq!(report[1].height, 2);
+        assert_eq!(report[1].value, 2);
         assert_eq!(report[1].count, 1);
     }
 }
