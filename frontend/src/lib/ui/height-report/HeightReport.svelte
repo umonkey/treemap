@@ -1,16 +1,17 @@
 <script lang="ts">
 	type Props = {
+		title: string;
 		data: {
 			value: number;
 			count: number;
 		}[];
 	};
 
-	const { data }: Props = $props();
+	const { data, title }: Props = $props();
 </script>
 
 {#if data}
-	<h3>Trees by height</h3>
+	<h3>{title}</h3>
 
 	<ul>
 		{#each data as { value, count }}
