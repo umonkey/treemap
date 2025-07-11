@@ -213,8 +213,8 @@ impl SearchQuery {
             }
         }
 
-        if self.incomplete && Self::is_tree_incomplete(tree) {
-            return true;
+        if self.incomplete && !Self::is_tree_incomplete(tree) {
+            return false;
         }
 
         true
