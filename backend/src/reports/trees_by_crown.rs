@@ -1,4 +1,5 @@
 //! This class reports distribution of trees by value.
+//! Ignores stumps.
 
 use crate::services::*;
 use crate::types::*;
@@ -27,6 +28,10 @@ impl TreesByCrownReporter {
         let mut map: HashMap<u64, usize> = HashMap::new();
 
         for tree in trees {
+            if tree.state == "stump" {
+                continue;
+            }
+
             let value = tree.diameter.unwrap_or(0.0);
 
             if value <= 0.0 {

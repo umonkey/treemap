@@ -1,5 +1,6 @@
 //! This class reports distribution of trees by trunk grith.
 //! The size is reported in cm, rounder by 10.
+//! Ignores stumps.
 
 use crate::services::*;
 use crate::types::*;
@@ -28,6 +29,10 @@ impl TreesByGrithReporter {
         let mut map: HashMap<u64, usize> = HashMap::new();
 
         for tree in trees {
+            if tree.state == "stump" {
+                continue;
+            }
+
             let size = tree.circumference.unwrap_or(0.0);
 
             if size <= 0.0 {

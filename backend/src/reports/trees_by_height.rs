@@ -1,4 +1,5 @@
 //! This class reports distribution of trees by height.
+//! Ignores stumps.
 
 use crate::services::*;
 use crate::types::*;
@@ -27,6 +28,10 @@ impl TreesByHeightReporter {
         let mut map: HashMap<u64, usize> = HashMap::new();
 
         for tree in trees {
+            if tree.state == "stump" {
+                continue;
+            }
+
             let height = tree.height.unwrap_or(0.0);
 
             if height <= 0.0 {
