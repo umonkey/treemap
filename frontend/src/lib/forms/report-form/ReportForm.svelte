@@ -1,17 +1,22 @@
 <script lang="ts">
-	import { Form, Buttons, Button, StreetInput, StreetReport } from '$lib/ui';
+	import { Form, StreetInput, StreetReport } from '$lib/ui';
 	import { hooks } from './hooks';
 
-	const { report, handleStreetChange, handleSubmit } = hooks();
+	type Props = {
+		address: string | undefined;
+	};
+
+	const { address }: Props = $props();
+	const { report, handleStreetChange, reload } = hooks();
+
+	$effect(() => {
+		reload(address);
+	});
 </script>
 
 <div class="report">
 	<Form>
-		<StreetInput onChange={handleStreetChange} />
-
-		<Buttons>
-			<Button onClick={handleSubmit}>Generate</Button>
-		</Buttons>
+		<StreetInput value={address} onChange={handleStreetChange} />
 	</Form>
 </div>
 
