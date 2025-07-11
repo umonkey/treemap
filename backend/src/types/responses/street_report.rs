@@ -11,4 +11,5 @@ pub struct StreetReport {
     pub heights: Vec<TreesByHeightReport>,
     pub crowns: Vec<TreesByCrownReport>,
     pub griths: Vec<TreesByGrithReport>,
+    pub species: Vec<TreesBySpeciesReport>,
 }
