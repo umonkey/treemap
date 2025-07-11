@@ -9,4 +9,5 @@ pub struct StreetReport {
     pub total: usize,
     pub states: Vec<TreesByStateReport>,
     pub heights: Vec<TreesByHeightReport>,
+    pub crowns: Vec<TreesByCrownReport>,
 }
