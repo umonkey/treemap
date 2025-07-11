@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { Form, Buttons, Button, StreetInput } from '$lib/ui';
+	import { Form, Buttons, Button, StreetInput, StreetReport } from '$lib/ui';
 	import { hooks } from './hooks';
 
-	const { handleStreetChange, handleSubmit } = hooks();
+	const { report, handleStreetChange, handleSubmit } = hooks();
 </script>
 
 <div class="report">
@@ -14,3 +14,7 @@
 		</Buttons>
 	</Form>
 </div>
+
+{#if $report}
+	<StreetReport data={$report} />
+{/if}

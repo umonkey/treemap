@@ -26,7 +26,8 @@ import type {
 	ITreeList,
 	ITreeUpdatePayload,
 	IUploadResponse,
-	DuplicateList
+	DuplicateList,
+	StreetReport
 } from '$lib/types';
 import { Response } from '$lib/types_response';
 import { get } from 'svelte/store';
@@ -116,7 +117,7 @@ export class ApiClient {
 		return await this.request('GET', 'v1/stats/streets');
 	}
 
-	public async getStreetReport(address: string): Promise<IResponse<IStreetStats[]>> {
+	public async getStreetReport(address: string): Promise<IResponse<StreetReport>> {
 		const params = new URLSearchParams({ address });
 		return await this.request('GET', `v1/streets/report?${params.toString()}`);
 	}
