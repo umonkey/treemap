@@ -8,4 +8,5 @@ pub struct StreetReport {
     pub street: String,
     pub total: usize,
     pub states: Vec<TreesByStateReport>,
+    pub heights: Vec<TreesByHeightReport>,
 }
