@@ -1,15 +1,17 @@
 //! This class reports distribution of trees by state.
 
-use std::collections::HashMap;
+use crate::services::*;
 use crate::types::*;
+use serde::Serialize;
+use std::collections::HashMap;
 
+#[derive(Serialize)]
 pub struct TreesByStateReport {
     pub state: String,
     pub count: usize,
 }
 
-pub struct TreesByStateReporter {
-}
+pub struct TreesByStateReporter {}
 
 impl TreesByStateReporter {
     pub fn report(&self, trees: &Vec<TreeRecord>) -> Result<Vec<TreesByStateReport>> {
@@ -42,13 +44,16 @@ impl TreesByStateReporter {
         let mut result: Vec<TreesByStateReport> = Vec::new();
 
         for (state, count) in map {
-            result.push(TreesByStateReport {
-                state,
-                count,
-            });
+            result.push(TreesByStateReport { state, count });
         }
 
         result
+    }
+}
+
+impl Locatable for TreesByStateReporter {
+    fn create(_locator: &Locator) -> Result<Self> {
+        Ok(Self {})
     }
 }
 

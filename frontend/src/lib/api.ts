@@ -116,6 +116,11 @@ export class ApiClient {
 		return await this.request('GET', 'v1/stats/streets');
 	}
 
+	public async getStreetReport(address: string): Promise<IResponse<IStreetStats[]>> {
+		const params = new URLSearchParams({ address });
+		return await this.request('GET', `v1/streets/report?${params.toString()}`);
+	}
+
 	public async getStateStats(): Promise<IResponse<IStateStats[]>> {
 		return await this.request('GET', 'v1/stats/state');
 	}

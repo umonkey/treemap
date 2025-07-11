@@ -63,6 +63,7 @@ pub async fn serve_command() {
             .service(get_species_stats_action)
             .service(get_species_mismatch_action)
             .service(get_state_stats_action)
+            .service(get_street_report_action)
             .service(get_top_circumference_action)
             .service(get_top_diameter_action)
             .service(get_top_height_action)
