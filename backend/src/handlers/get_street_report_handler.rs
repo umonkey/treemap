@@ -8,6 +8,7 @@ use std::sync::Arc;
 
 pub struct GetStreetReportHandler {
     trees: Arc<TreeRepository>,
+    area: Arc<TreesAreaReporter>,
     by_state: Arc<TreesByStateReporter>,
     by_height: Arc<TreesByHeightReporter>,
     by_crown: Arc<TreesByCrownReporter>,
@@ -27,6 +28,7 @@ impl GetStreetReportHandler {
         Ok(StreetReport {
             street: street.to_string(),
             total: trees.len(),
+            area: self.area.report(&trees)?,
             states: by_state,
             heights: by_height,
             crowns: by_crown,
@@ -59,6 +61,7 @@ impl Locatable for GetStreetReportHandler {
     fn create(locator: &Locator) -> Result<Self> {
         Ok(Self {
             trees: locator.get::<TreeRepository>()?,
+            area: locator.get::<TreesAreaReporter>()?,
             by_state: locator.get::<TreesByStateReporter>()?,
             by_height: locator.get::<TreesByHeightReporter>()?,
             by_crown: locator.get::<TreesByCrownReporter>()?,

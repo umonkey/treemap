@@ -36,6 +36,14 @@ describe('bar-chart/hooks.ts', () => {
 					}
 				},
 				responsive: true,
+				scales: {
+					x: {
+						ticks: {
+							minRotation: 90,
+							maxRotation: 90
+						}
+					}
+				},
 				maintainAspectRatio: false
 			}
 		});

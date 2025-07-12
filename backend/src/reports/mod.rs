@@ -1,8 +1,10 @@
+mod trees_area;
 mod trees_by_crown;
 mod trees_by_grith;
 mod trees_by_height;
 mod trees_by_species;
 mod trees_by_state;
+pub use trees_area::*;
 pub use trees_by_crown::*;
 pub use trees_by_grith::*;
 pub use trees_by_height::*;

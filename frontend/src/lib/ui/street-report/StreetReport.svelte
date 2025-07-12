@@ -11,7 +11,7 @@
 
 <div class="report">
 	<h2>Report: {data.street}</h2>
-	<p>Total trees: {data.total}</p>
+	<p>There are {data.total} trees, providing {data.area} m² of shadow.</p>
 
 	<StateReport data={data.states} />
 	<HeightReport data={data.heights} title="Trees by height" />
