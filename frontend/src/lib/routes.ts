@@ -14,6 +14,12 @@ const build = (path: string, params: Params) => {
 		}
 	}
 
+	const query = qs.toString();
+
+	if (!query) {
+		return path;
+	}
+
 	return `${path}?${qs.toString()}`;
 };
 
@@ -32,6 +38,7 @@ export const routes = {
 	modeMapper: () => '/mode/mapper',
 	newTrees: () => '/updates/new',
 	profile: () => '/profile',
+	streetReport: (street?: string) => build('/report', { address: street }),
 	settings: () => '/settings',
 	search: () => '/search',
 	searchAddress: (query: string) => `/map?q=addr:"${query}"`,

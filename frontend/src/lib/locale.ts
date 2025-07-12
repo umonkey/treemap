@@ -47,6 +47,10 @@ class EnglishLocale {
 		return 'Search';
 	}
 
+	public reportTitle(): string {
+		return 'Street Report';
+	}
+
 	public searchPrompt(): string {
 		return 'Search trees...';
 	}
@@ -647,6 +651,10 @@ class RussianLocale extends EnglishLocale {
 
 	public searchTitle(): string {
 		return 'Поиск';
+	}
+
+	public reportTitle(): string {
+		return 'Отчёт по улице';
 	}
 
 	public searchPrompt(): string {
