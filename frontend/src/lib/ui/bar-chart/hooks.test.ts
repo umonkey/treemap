@@ -11,7 +11,7 @@ describe('bar-chart/hooks.ts', () => {
 			{
 				label: 'second',
 				value: 10
-			},
+			}
 		];
 
 		const res = formatChartProps(input);
@@ -22,20 +22,22 @@ describe('bar-chart/hooks.ts', () => {
 			data: {
 				labels: ['first (33%)', 'second (67%)'],
 
-				datasets: [{
-					data: [5, 10],
-				}],
+				datasets: [
+					{
+						data: [5, 10]
+					}
+				]
 			},
 
 			options: {
 				plugins: {
 					legend: {
-						display: false,
-					},
+						display: false
+					}
 				},
 				responsive: true,
-				maintainAspectRatio: false,
-			},
+				maintainAspectRatio: false
+			}
 		});
 	});
 });

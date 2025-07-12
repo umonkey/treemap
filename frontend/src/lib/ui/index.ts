@@ -62,6 +62,7 @@ export { default as SettingsPage } from './settings-page/SettingsPage.svelte';
 export { default as SignInButton } from './sign-in-button/SignInButton.svelte';
 export { default as SignOutButton } from './sign-out-button/SignOutButton.svelte';
 export { default as SpeciesInput } from './species-input/SpeciesInput.svelte';
+export { default as SpeciesReport } from './species-report/SpeciesReport.svelte';
 export { default as StateEditor } from './state-editor/StateEditor.svelte';
 export { default as StateInput } from './state-input/StateInput.svelte';
 export { default as StateReport } from './state-report/StateReport.svelte';

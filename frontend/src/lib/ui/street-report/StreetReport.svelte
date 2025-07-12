@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { StreetReport } from '$lib/types';
-	import { StateReport, HeightReport } from '$lib/ui';
+	import { StateReport, HeightReport, SpeciesReport } from '$lib/ui';
 
 	type Props = {
 		data: StreetReport;
@@ -17,4 +17,5 @@
 	<HeightReport data={data.heights} title="Trees by height" />
 	<HeightReport data={data.crowns} title="Trees by crown diameter" />
 	<HeightReport data={data.griths} title="Trees by trunk grith" />
+	<SpeciesReport data={data.species} />
 </div>
