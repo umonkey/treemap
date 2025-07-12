@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { formatNumber, pc } from './hooks';
+	import { routes } from '$lib/routes';
 
 	type Props = {
 		data: {
@@ -9,9 +10,10 @@
 			diameter: number;
 			girth: number;
 		}[];
+		street: string;
 	};
 
-	const { data }: Props = $props();
+	const { data, street }: Props = $props();
 
 	const total = data.reduce((sum, { count }) => sum + count, 0);
 </script>
@@ -33,7 +35,9 @@
 		<tbody>
 			{#each data as { species, count, height, diameter, girth }}
 				<tr>
-					<td>{species}</td>
+					<td
+						><a href={routes.searchQuery(`addr:"${street}" species:"${species}"`)}>{species}</a></td
+					>
 					<td>{count}</td>
 					<td>{pc(count, total)}</td>
 					<td>{formatNumber(height)}</td>
