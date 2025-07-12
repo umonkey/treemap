@@ -33,6 +33,16 @@ export const formatChartProps = (items: Item[]) => {
 					display: false
 				}
 			},
+
+			scales: {
+				x: {
+					ticks: {
+						minRotation: 90,
+						maxRotation: 90
+					}
+				}
+			},
+
 			responsive: true,
 			maintainAspectRatio: false
 		}

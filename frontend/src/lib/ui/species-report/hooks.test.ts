@@ -19,11 +19,11 @@ describe('species-report/hooks.ts', () => {
 		expect(res).toStrictEqual([
 			{
 				label: 'oak',
-				value: 5,
+				value: 5
 			},
 			{
 				label: 'elm',
-				value: 10,
+				value: 10
 			}
 		]);
 	});

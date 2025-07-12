@@ -22,7 +22,7 @@
 
 <style>
 	.chart {
-		height: 200px;
 		width: 100%;
+		aspect-ratio: 1/1;
 	}
 </style>
