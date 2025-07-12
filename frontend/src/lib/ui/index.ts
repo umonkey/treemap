@@ -1,6 +1,7 @@
 export { default as AddRowForm } from './add-row-form/AddRowForm.svelte';
 export { default as AddressInput } from './address-input/AddressInput.svelte';
 export { default as AuthWrapper } from './auth-wrapper/AuthWrapper.svelte';
+export { default as BarChart } from './bar-chart/BarChart.svelte';
 export { default as Button } from './button/Button.svelte';
 export { default as Buttons } from './buttons/Buttons.svelte';
 export { default as CanopyInput } from './canopy-input/CanopyInput.svelte';

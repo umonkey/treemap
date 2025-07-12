@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { BarChart } from '$lib/ui';
+	import { formatData } from './hooks';
+
 	type Props = {
 		title: string;
 		data: {
@@ -13,11 +16,14 @@
 {#if data}
 	<h3>{title}</h3>
 
-	<ul>
-		{#each data as { value, count }}
-			<li>
-				{value} m: {count}
-			</li>
-		{/each}
-	</ul>
+	<div class="chart">
+		<BarChart data={formatData(data)} />
+	</div>
 {/if}
+
+<style>
+	.chart {
+		width: 100%;
+		aspect-ratio: 2 / 1;
+	}
+</style>
