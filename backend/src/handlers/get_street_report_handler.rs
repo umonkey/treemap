@@ -12,7 +12,7 @@ pub struct GetStreetReportHandler {
     by_state: Arc<TreesByStateReporter>,
     by_height: Arc<TreesByHeightReporter>,
     by_crown: Arc<TreesByCrownReporter>,
-    by_grith: Arc<TreesByGrithReporter>,
+    by_girth: Arc<TreesByGirthReporter>,
     by_species: Arc<TreesBySpeciesReporter>,
 }
 
@@ -23,7 +23,7 @@ impl GetStreetReportHandler {
         let by_state = self.by_state.report(&trees)?;
         let by_height = self.by_height.report(&trees)?;
         let by_crown = self.by_crown.report(&trees)?;
-        let by_grith = self.by_grith.report(&trees)?;
+        let by_girth = self.by_girth.report(&trees)?;
 
         Ok(StreetReport {
             street: street.to_string(),
@@ -32,7 +32,7 @@ impl GetStreetReportHandler {
             states: by_state,
             heights: by_height,
             crowns: by_crown,
-            griths: by_grith,
+            girths: by_girth,
             species: self.by_species.report(&trees)?,
         })
     }
@@ -65,7 +65,7 @@ impl Locatable for GetStreetReportHandler {
             by_state: locator.get::<TreesByStateReporter>()?,
             by_height: locator.get::<TreesByHeightReporter>()?,
             by_crown: locator.get::<TreesByCrownReporter>()?,
-            by_grith: locator.get::<TreesByGrithReporter>()?,
+            by_girth: locator.get::<TreesByGirthReporter>()?,
             by_species: locator.get::<TreesBySpeciesReporter>()?,
         })
     }

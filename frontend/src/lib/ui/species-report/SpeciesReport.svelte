@@ -1,28 +1,75 @@
 <script lang="ts">
-	import { BarChart } from '$lib/ui';
-	import { formatData } from './hooks';
+	import { formatNumber, pc } from './hooks';
 
 	type Props = {
 		data: {
-			state: string;
+			species: string;
 			count: number;
+			height: number;
+			diameter: number;
+			girth: number;
 		}[];
 	};
 
 	const { data }: Props = $props();
+
+	const total = data.reduce((sum, { count }) => sum + count, 0);
 </script>
 
 {#if data}
 	<h3>Trees by species</h3>
 
-	<div class="chart">
-		<BarChart data={formatData(data)} />
-	</div>
+	<table>
+		<thead>
+			<tr>
+				<th>Species</th>
+				<th>Count</th>
+				<th>%</th>
+				<th>Avg. Height, m</th>
+				<th>Avg. Crown ø, m</th>
+				<th>Avg. Girth, cm</th>
+			</tr>
+		</thead>
+		<tbody>
+			{#each data as { species, count, height, diameter, girth }}
+				<tr>
+					<td>{species}</td>
+					<td>{count}</td>
+					<td>{pc(count, total)}</td>
+					<td>{formatNumber(height)}</td>
+					<td>{formatNumber(diameter)}</td>
+					<td>{Math.round(girth * 100)}</td>
+				</tr>
+			{/each}
+		</tbody>
+	</table>
 {/if}
 
 <style>
-	.chart {
+	table {
+		border-collapse: collapse;
+	}
+
+	tr {
+		border-bottom: 1px solid var(--sep-color);
+	}
+
+	th {
+		font-weight: normal;
+		opacity: 0.5;
+	}
+
+	th,
+	td {
+		text-align: right;
+		padding: 4px 0 4px 20px;
+		vertical-align: top;
+	}
+
+	th:first-child,
+	td:first-child {
+		text-align: left;
 		width: 100%;
-		aspect-ratio: 1/1;
+		padding-left: 0;
 	}
 </style>

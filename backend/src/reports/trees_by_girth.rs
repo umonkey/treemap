@@ -1,4 +1,4 @@
-//! This class reports distribution of trees by trunk grith.
+//! This class reports distribution of trees by trunk girth.
 //! The size is reported in cm, rounder by 10.
 //! Ignores stumps.
 
@@ -8,15 +8,15 @@ use serde::Serialize;
 use std::collections::HashMap;
 
 #[derive(Serialize)]
-pub struct TreesByGrithReport {
+pub struct TreesByGirthReport {
     pub value: u64,
     pub count: usize,
 }
 
-pub struct TreesByGrithReporter {}
+pub struct TreesByGirthReporter {}
 
-impl TreesByGrithReporter {
-    pub fn report(&self, trees: &Vec<TreeRecord>) -> Result<Vec<TreesByGrithReport>> {
+impl TreesByGirthReporter {
+    pub fn report(&self, trees: &Vec<TreeRecord>) -> Result<Vec<TreesByGirthReport>> {
         let map = self.aggregate(trees);
         let mut res = self.convert(map);
 
@@ -47,18 +47,18 @@ impl TreesByGrithReporter {
         map
     }
 
-    fn convert(&self, map: HashMap<u64, usize>) -> Vec<TreesByGrithReport> {
-        let mut result: Vec<TreesByGrithReport> = Vec::new();
+    fn convert(&self, map: HashMap<u64, usize>) -> Vec<TreesByGirthReport> {
+        let mut result: Vec<TreesByGirthReport> = Vec::new();
 
         for (value, count) in map {
-            result.push(TreesByGrithReport { value, count });
+            result.push(TreesByGirthReport { value, count });
         }
 
         result
     }
 }
 
-impl Locatable for TreesByGrithReporter {
+impl Locatable for TreesByGirthReporter {
     fn create(_locator: &Locator) -> Result<Self> {
         Ok(Self {})
     }
@@ -68,8 +68,8 @@ impl Locatable for TreesByGrithReporter {
 mod tests {
     use super::*;
 
-    fn setup() -> TreesByGrithReporter {
-        TreesByGrithReporter {}
+    fn setup() -> TreesByGirthReporter {
+        TreesByGirthReporter {}
     }
 
     #[test]

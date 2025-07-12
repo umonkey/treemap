@@ -11,7 +11,7 @@ pub struct TreesBySpeciesReport {
     pub count: usize,
     pub height: f64,
     pub diameter: f64,
-    pub grith: f64,
+    pub girth: f64,
 }
 
 pub struct TreesBySpeciesReporter {}
@@ -64,7 +64,7 @@ impl TreesBySpeciesReporter {
         let mut count: usize = 0;
         let mut heights: Vec<f64> = Vec::new();
         let mut diameters: Vec<f64> = Vec::new();
-        let mut griths: Vec<f64> = Vec::new();
+        let mut girths: Vec<f64> = Vec::new();
 
         let trees = self.filter_by_species(species, trees);
 
@@ -83,9 +83,9 @@ impl TreesBySpeciesReporter {
                 }
             }
 
-            if let Some(grith) = tree.circumference {
-                if grith > 0.0 {
-                    griths.push(grith);
+            if let Some(girth) = tree.circumference {
+                if girth > 0.0 {
+                    girths.push(girth);
                 }
             }
         }
@@ -102,7 +102,7 @@ impl TreesBySpeciesReporter {
             count,
             height: Self::avg(&heights),
             diameter: Self::avg(&diameters),
-            grith: Self::avg(&griths),
+            girth: Self::avg(&girths),
         }
     }
 
@@ -180,6 +180,6 @@ mod tests {
         assert_eq!(report[0].count, 3);
         assert_eq!(report[0].height, 1.4);
         assert_eq!(report[0].diameter, 1.4);
-        assert_eq!(report[0].grith, 0.0);
+        assert_eq!(report[0].girth, 0.0);
     }
 }
