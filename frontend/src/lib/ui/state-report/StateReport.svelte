@@ -25,4 +25,8 @@
 		height: 200px;
 		width: 100%;
 	}
+
+	h3 {
+		margin-top: 50px;
+	}
 </style>

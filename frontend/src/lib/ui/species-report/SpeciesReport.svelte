@@ -72,4 +72,8 @@
 		width: 100%;
 		padding-left: 0;
 	}
+
+	h3 {
+		margin-top: 50px;
+	}
 </style>

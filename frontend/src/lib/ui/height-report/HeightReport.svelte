@@ -26,4 +26,8 @@
 		width: 100%;
 		aspect-ratio: 2 / 1;
 	}
+
+	h3 {
+		margin-top: 50px;
+	}
 </style>

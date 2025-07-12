@@ -19,6 +19,7 @@
 		<li><a href={routes.statsDiameter()}>Top by diameter</a></li>
 		<li><a href={routes.statsCircumference()}>Top by trunk circumference</a></li>
 		<li><a href={routes.statsState()}>Group by state</a></li>
+		<li><a href={routes.streetReport()}>Street report</a></li>
 	</ul>
 
 	<h2>Moderation queue</h2>
