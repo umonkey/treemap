@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { StateChart } from '$lib/ui';
+	import { PieChart } from '$lib/ui';
+	import { formatData } from './hooks';
 
 	type Props = {
 		data: {
@@ -15,7 +16,7 @@
 	<h3>Trees by state</h3>
 
 	<div class="chart">
-		<StateChart {data} />
+		<PieChart data={formatData(data)} />
 	</div>
 {/if}
 

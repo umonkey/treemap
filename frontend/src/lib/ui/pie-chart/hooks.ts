@@ -1,6 +1,6 @@
 type Item = {
-	state: string;
-	count: number;
+	label: string;
+	value: number;
 };
 
 const formatLabel = (state: string, count: number, total: number) => {
@@ -9,10 +9,10 @@ const formatLabel = (state: string, count: number, total: number) => {
 };
 
 export const formatChartProps = (items: Item[]) => {
-	const total = items.reduce((sum, item) => sum + item.count, 0);
+	const total = items.reduce((sum, item) => sum + item.value, 0);
 
-	const labels = items.map((item) => formatLabel(item.state, item.count, total));
-	const values = items.map((item) => item.count);
+	const labels = items.map((item) => formatLabel(item.label, item.value, total));
+	const values = items.map((item) => item.value);
 
 	return {
 		type: 'pie',
@@ -22,7 +22,7 @@ export const formatChartProps = (items: Item[]) => {
 
 			datasets: [
 				{
-					label: 'Number of trees',
+					// label: 'Number of trees',
 					data: values
 				}
 			]
@@ -35,7 +35,7 @@ export const formatChartProps = (items: Item[]) => {
 				}
 			},
 			responsive: true,
-			maintainAspectRatio: false,
+			maintainAspectRatio: false
 		}
 	};
 };

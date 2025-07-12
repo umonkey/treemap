@@ -1,10 +1,10 @@
 <script module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import StateChart from './StateChart.svelte';
+	import PieChart from './PieChart.svelte';
 
 	const { Story } = defineMeta({
-		title: 'Charts/StateChart',
-		component: StateChart,
+		title: 'Charts/PieChart',
+		component: PieChart,
 		argTypes: {
 			data: { control: 'object' }
 		}
@@ -16,24 +16,24 @@
 	args={{
 		data: [
 			{
-				state: 'deformed',
-				count: 5
+				label: 'deformed',
+				value: 5
 			},
 			{
-				state: 'healthy',
-				count: 288
+				label: 'healthy',
+				value: 288
 			},
 			{
-				state: 'sick',
-				count: 5
+				label: 'sick',
+				value: 5
 			},
 			{
-				state: 'stump',
-				count: 7
+				label: 'stump',
+				value: 7
 			},
 			{
-				state: 'unknown',
-				count: 2
+				label: 'unknown',
+				value: 2
 			}
 		]
 	}}

@@ -4,8 +4,8 @@
 
 	type Props = {
 		data: {
-			state: string;
-			count: number;
+			label: string;
+			value: number;
 		}[];
 	};
 
