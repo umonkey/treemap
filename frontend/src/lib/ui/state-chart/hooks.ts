@@ -35,7 +35,7 @@ export const formatChartProps = (items: Item[]) => {
 				}
 			},
 			responsive: true,
-			maintainAspectRatio: true,
+			maintainAspectRatio: false,
 		}
 	};
 };
