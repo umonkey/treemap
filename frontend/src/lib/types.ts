@@ -227,3 +227,36 @@ export type DuplicateList = {
 		tree_ids: string[];
 	}[];
 };
+
+export type StreetReport = {
+	street: string;
+	total: number;
+
+	states: {
+		state: string;
+		count: number;
+	}[];
+
+	heights: {
+		value: number;
+		count: number;
+	}[];
+
+	crowns: {
+		value: number;
+		count: number;
+	}[];
+
+	griths: {
+		value: number;
+		count: number;
+	}[];
+
+	species: {
+		species: string;
+		count: number;
+		height: number;
+		diameter: number;
+		grith: number;
+	}[];
+};
