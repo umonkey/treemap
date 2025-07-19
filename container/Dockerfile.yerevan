@@ -1,14 +1,14 @@
-# Build the target deployment image.
+# Build the target deployment image for "Trees of Yerevan".
 #
 # Note that the image is compiled from pre-build binaries and static files.
 # There are separate build steps to produce those, se commends below.
 
 FROM docker.io/library/alpine:3.22
-#LABEL maintainer="hex@umonkey.net"
-#LABEL org.opencontainers.image.source=https://github.com/umonkey/treemap
-#LABEL org.opencontainers.image.description="A simple self-contained backend and frontend image using an SQLite database."
+LABEL maintainer="hex@umonkey.net"
+LABEL org.opencontainers.image.source=https://github.com/umonkey/treemap
+LABEL org.opencontainers.image.description="A simple self-contained backend and frontend image using an SQLite database."
 
-RUN apk add --no-cache sqlite supervisor
+RUN apk add --no-cache sqlite supervisor logrotate
 
 WORKDIR /app
 

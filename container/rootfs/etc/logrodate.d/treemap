@@ -1,0 +1,11 @@
+/app/var/logs/*.log {
+    daily
+    dateext
+    dateformat -%Y%m%d
+    compress
+    delaycompress
+    missingok
+    notifempty
+    copytruncate
+    rotate 365
+}
