@@ -1,0 +1,25 @@
+# fly.toml app configuration file generated for treemap-blue-frog-3927 on 2025-07-21T14:39:28+04:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'treemap-blue-frog-3927'
+primary_region = 'waw'
+
+[build]
+  image = "ghcr.io/umonkey/treemap:latest"
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[vm]]
+  size = 'shared-cpu-1x'
+
+[mounts]
+  source = "treemaps_var"
+  destination = "/app/var"
