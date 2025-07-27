@@ -437,7 +437,7 @@ impl DatabaseInterface for SqliteDatabase {
 
     async fn get_species_stats(&self) -> Result<Vec<(String, u64)>> {
         let res = self.pool.conn(move |conn| {
-            let mut stmt = match conn.prepare("SELECT species, COUNT(1) AS cnt FROM trees WHERE state <> 'gone' GROUP BY species ORDER BY cnt DESC, LOWER(species)") {
+            let mut stmt = match conn.prepare("SELECT species, COUNT(1) AS cnt FROM trees WHERE state <> 'gone' AND state <> 'stump' GROUP BY TRIM(LOWER(species)) ORDER BY cnt DESC, LOWER(species)") {
                 Ok(value) => value,
 
                 Err(e) => {
@@ -620,5 +620,20 @@ mod tests {
 
         assert_eq!(species.len(), 1, "Could not find species for oak.");
         assert_eq!("Quercus robur", species[0].name);
+    }
+
+    #[tokio::test]
+    async fn test_species_stats() {
+        let db = setup().await;
+
+        db.execute(include_str!("./fixtures/test_species_stats.sql").to_string())
+            .await
+            .expect("Error adding species.");
+
+        let res = db.get_species_stats().await.expect("Error getting report.");
+
+        assert_eq!(res.len(), 1, "Could not find species for oak.");
+        assert_eq!("Quercus robur", res[0].0);
+        assert_eq!(2, res[0].1);
     }
 }

@@ -1,3 +1,11 @@
+//! Provides a report on species distribution.
+//!
+//! This reads all non-deleted species from the database, groups them by genus / species,
+//! and provides total counts for both.
+//!
+//! Gone trees and stumps are excluded from the count.
+
+use crate::common::reports::format_species_report;
 use crate::services::*;
 use crate::types::*;
 use std::sync::Arc;
@@ -8,17 +16,9 @@ pub struct GetSpeciesStatsHandler {
 
 impl GetSpeciesStatsHandler {
     pub async fn handle(&self) -> Result<Vec<SpeciesStatsResponse>> {
-        let res = self.db.get_species_stats().await?;
-
-        let res = res
-            .iter()
-            .map(|(species, count)| SpeciesStatsResponse {
-                species: species.clone(),
-                count: *count,
-            })
-            .collect();
-
-        Ok(res)
+        let items = self.db.get_species_stats().await?;
+        let report = format_species_report(items);
+        Ok(report)
     }
 }
 
