@@ -1,3 +1,10 @@
+//! Provides a report on species distribution.
+//!
+//! This reads all non-deleted species from the database, groups them by genus / species,
+//! and provides total counts for both.
+//!
+//! Gone trees and stumps are excluded from the count.
+
 use crate::services::*;
 use crate::types::*;
 use std::sync::Arc;
