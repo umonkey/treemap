@@ -1,8 +1,13 @@
 # Deployment
 
-The best option to deploy the application is to use Docker.
-The whole application for a small to medium sized community can be run on a single consumer grade server.
+This document describes some tested deployment options.
 
-You can look at the `fly.toml` file in this repository for an example of how to deploy a dockerized version to [Fly.io][1].
+
+## Fly.io
+
+[Fly.io][1] is a cloud platform which is focused on running dockerized applications.
+The best option for a small sized community is to pack the whole application into a single Docker container and deploy it to Fly.io.
+
+You can look at the `fly.toml` file in this repository for an example of how to do that.
 
 [1]: https://fly.io/
