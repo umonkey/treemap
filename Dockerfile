@@ -26,6 +26,9 @@ RUN --mount=type=cache,target=/root/.npm \
 
 # Build the final image.
 FROM docker.io/library/alpine:3.22
+LABEL maintainer="hex@umonkey.net"
+LABEL org.opencontainers.image.source=https://github.com/umonkey/treemap
+LABEL org.opencontainers.image.description="A simple self-contained backend and frontend image using an SQLite database."
 RUN apk add --no-cache sqlite supervisor logrotate
 WORKDIR /app
 COPY --from=backend /app/bin/treemap /app/bin/treemap
