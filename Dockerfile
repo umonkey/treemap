@@ -1,4 +1,10 @@
 # This file builds the container image for Trees of Yerevan.
+#
+# This file utilizes BuildKit features to cache dependencies and speed up builds,
+# so you don't need to rebuild the backend from scratch on every change.
+#
+# This file also uses multi-staged builds to keep the final image small and focused,
+# and further parallelize the build process.
 
 # Build the backend.
 FROM docker.io/library/rust:1.88-alpine3.22 AS backend
