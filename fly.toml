@@ -1,6 +1,6 @@
-# fly.toml app configuration file generated for treemap-blue-frog-3927 on 2025-07-21T14:39:28+04:00
+# Deploy *Trees of Yerevan* to Fly.io
 #
-# Please note that this deployment uses a pre-built container image created on previous CI/CD steps.
+# The application is packaged as a single Docker container, which runs both frontend and backend.
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 

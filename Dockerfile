@@ -25,7 +25,7 @@ RUN --mount=type=cache,target=/root/.npm \
     && npm ci && npm run build
 
 # Build the final image.
-FROM docker.io/library/alpine:3.22
+FROM docker.io/library/alpine:3.22 AS app
 LABEL maintainer="hex@umonkey.net"
 LABEL org.opencontainers.image.source=https://github.com/umonkey/treemap
 LABEL org.opencontainers.image.description="A simple self-contained backend and frontend image using an SQLite database."
