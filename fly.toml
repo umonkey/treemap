@@ -2,6 +2,10 @@
 #
 # The application is packaged as a single Docker container, which runs both frontend and backend.
 #
+# Some hints:
+# - Use `fly logs` to view the logs of your application.
+# - Use `fly ssh console` to access the machine running your application.
+#
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 
 app = 'treemap-blue-frog-3927'
