@@ -5,7 +5,7 @@ SCHEMA="/app/schema-sqlite.sql"
 DATABASE="/app/var/database.sqlite"
 
 cd /app
-mkdir -p /app/var
+mkdir -p /app/var/logs
 
 if [ ! -f $DATABASE ]; then
     echo "Initializing the database..."
