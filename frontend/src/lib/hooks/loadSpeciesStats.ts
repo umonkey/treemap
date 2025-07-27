@@ -31,7 +31,7 @@ export const loadSpeciesStats = () => {
 				return items.sort((a, b) => b.count - a.count);
 			}
 
-			return items.sort((a, b) => a.species.localeCompare(b.species));
+			return items.sort((a, b) => a.name.localeCompare(b.name));
 		});
 	};
 

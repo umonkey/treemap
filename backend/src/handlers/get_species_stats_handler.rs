@@ -13,8 +13,9 @@ impl GetSpeciesStatsHandler {
         let res = res
             .iter()
             .map(|(species, count)| SpeciesStatsResponse {
-                species: species.clone(),
+                name: species.clone(),
                 count: *count,
+                subspecies: vec![],
             })
             .collect();
 

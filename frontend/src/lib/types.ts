@@ -156,8 +156,12 @@ export interface ITreeList {
 }
 
 export interface ISpeciesStats {
-	species: string;
+	name: string;
 	count: number;
+	subspecies: {
+		name: string;
+		count: number;
+	}[];
 }
 
 export interface IStreetStats {

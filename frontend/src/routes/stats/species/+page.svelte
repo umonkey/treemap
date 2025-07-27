@@ -32,9 +32,9 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each $data as { species, count }}
+				{#each $data as { name, count }}
 					<tr>
-						<td class="l"><a href={routes.searchSpecies(species)}>{species}</a></td>
+						<td class="l"><a href={routes.searchSpecies(name)}>{name}</a></td>
 						<td class="r">{count}</td>
 					</tr>
 				{/each}
