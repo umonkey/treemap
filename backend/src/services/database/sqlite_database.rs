@@ -594,12 +594,21 @@ impl DatabaseInterface for SqliteDatabase {
         Ok(heatmap)
     }
 
-    async fn get_user_heatmap(&self, after: u64, before: u64, user_id: u64) -> Result<Vec<(String, u64)>> {
+    async fn get_user_heatmap(
+        &self,
+        after: u64,
+        before: u64,
+        user_id: u64,
+    ) -> Result<Vec<(String, u64)>> {
         let query = "SELECT DATE(added_at, 'unixepoch') AS date, COUNT(distinct tree_id) AS count FROM trees_props WHERE added_at >= ? AND added_at < ? AND added_by = ? GROUP BY date ORDER BY date";
         let rows = self
             .sql(
                 query,
-                &[Value::from(after as i64), Value::from(before as i64), Value::from(user_id as i64)],
+                &[
+                    Value::from(after as i64),
+                    Value::from(before as i64),
+                    Value::from(user_id as i64),
+                ],
             )
             .await?;
 

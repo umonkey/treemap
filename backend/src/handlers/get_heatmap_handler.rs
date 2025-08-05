@@ -11,22 +11,31 @@ pub struct GetHeatmapHandler {
 
 impl GetHeatmapHandler {
     pub async fn handle(&self) -> Result<Vec<HeatmapResponse>> {
-        let today = Self::get_today();
+        let (after, before) = Self::get_dates();
+        let res = self.db.get_heatmap(after, before).await?;
+        Ok(Self::format_data(res))
+    }
 
+    pub async fn handle_user(&self, user_id: u64) -> Result<Vec<HeatmapResponse>> {
+        let (after, before) = Self::get_dates();
+        let res = self.db.get_user_heatmap(after, before, user_id).await?;
+        Ok(Self::format_data(res))
+    }
+
+    fn format_data(data: Vec<(String, u64)>) -> Vec<HeatmapResponse> {
+        data.into_iter()
+            .map(|(date, value)| HeatmapResponse {
+                date: date.to_string(),
+                value,
+            })
+            .collect()
+    }
+
+    fn get_dates() -> (u64, u64) {
+        let today = Self::get_today();
         let after = today - 364 * 86400; // 364 days for full 52 weeks
         let before = today + 86400; // include data for today
-
-        let res = self.db.get_heatmap(after, before).await?;
-
-        let res = res
-            .iter()
-            .map(|(date, value)| HeatmapResponse {
-                date: date.clone(),
-                value: *value,
-            })
-            .collect();
-
-        Ok(res)
+        (after, before)
     }
 
     fn get_today() -> u64 {
