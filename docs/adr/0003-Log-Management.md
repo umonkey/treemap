@@ -1,4 +1,4 @@
-# ADR-001: Backend Log Management and Rotation
+# ADR-0003: Backend Log Management and Rotation
 
 - Status: Accepted
 - Date: 2025-07-19
