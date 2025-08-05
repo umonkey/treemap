@@ -602,6 +602,14 @@ class EnglishLocale {
 	public addContinueButton(): string {
 		return 'Continue';
 	}
+
+	public globalHeatmapHeader(): string {
+		return 'Recent activity';
+	}
+
+	public learnContributions(): string {
+		return 'Learn how we count contributions';
+	}
 }
 
 class RussianLocale extends EnglishLocale {
@@ -1188,6 +1196,14 @@ class RussianLocale extends EnglishLocale {
 	public addRowIntro(): string {
 		return 'Двигай карту чтобы указать конец ряда.';
 	}
+
+	public globalHeatmapHeader(): string {
+		return 'Недавняя активность';
+	}
+
+	public learnContributions(): string {
+		return 'Узнать как мы это считаем';
+	}
 }
 
 class ArmenianLocale extends EnglishLocale {
@@ -1661,6 +1677,14 @@ class ArmenianLocale extends EnglishLocale {
 
 	public addRowIntro(): string {
 		return 'Տեղաշարժե՛ք քարտեզը՝ շարքի վերջը նշելու համար։';
+	}
+
+	public globalHeatmapHeader(): string {
+		return 'Վերջին ակտիվություն';
+	}
+
+	public learnContributions(): string {
+		return 'Իմացեք, թե ինչպես ենք մենք հաշվում ներդրումները';
 	}
 }
 

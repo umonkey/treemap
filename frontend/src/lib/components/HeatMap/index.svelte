@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { formatData } from './hooks';
 	import { type IHeatMap } from '$lib/types';
+	import { locale } from '$lib/locale';
 
 	type Props = {
 		title?: string;
@@ -35,7 +36,7 @@
 </div>
 
 {#if docs}
-	<div class="docs"><a href={docs} target="_blank">Learn how we count contributions</a></div>
+	<div class="docs"><a href={docs} target="_blank">{locale.learnContributions()}</a></div>
 {/if}
 
 <style>

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { hooks } from './hooks';
+	import { locale } from '$lib/locale';
 	import HeatMap from '../HeatMap/index.svelte';
 
 	const { data, error, loading } = hooks();
@@ -9,7 +10,7 @@
 	<!-- loading -->
 {:else if $data}
 	<HeatMap
-		title="Recent activity"
+		title={locale.globalHeatmapHeader()}
 		data={$data}
 		docs="https://github.com/umonkey/treemap/wiki/Heat-maps"
 	/>
