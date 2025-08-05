@@ -56,6 +56,7 @@ pub async fn serve_command() {
             .service(get_file_jpg)
             .service(get_file)
             .service(get_file_status_action)
+            .service(get_heatmap_action)
             .service(get_me_action)
             .service(get_me_likes_action)
             .service(get_new_trees_action)
