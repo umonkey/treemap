@@ -39,7 +39,7 @@ const getGrade = (value: number, maxScale: number): number => {
 		return 0;
 	}
 
-	const grade = (Math.log(value + 1) * 4) / maxScale;
+	const grade = (Math.log(value + 1) * 3) / maxScale;
 	return Math.floor(grade) + 1;
 };
 
