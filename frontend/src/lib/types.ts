@@ -216,6 +216,11 @@ export interface IGalleryItem {
 	label: string;
 }
 
+export interface IHeatMap {
+	date: string;
+	value: number;
+}
+
 /**
  * File upload response.
  * The id is used for creating new photos.

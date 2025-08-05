@@ -60,6 +60,7 @@
 		"@maptiler/leaflet-maptilersdk": "^4.1.0",
 		"@sentry/sveltekit": "^8.45.0",
 		"@types/leaflet": "^1.9.15",
+		"cal-heatmap": "^4.2.4",
 		"chart.js": "^4.5.0",
 		"leaflet": "^1.9.4",
 		"mitt": "^3.0.1"

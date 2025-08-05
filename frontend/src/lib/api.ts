@@ -6,6 +6,7 @@ import type {
 	IAddTreesRequest,
 	IChangeList,
 	ICommentList,
+	IHeatMap,
 	ILikeList,
 	ILoginResponse,
 	IMarkers,
@@ -87,6 +88,14 @@ export class ApiClient {
 
 	public async getTreeDefaults(): Promise<IResponse<ITreeDefaults>> {
 		return await this.request<ITreeDefaults>('GET', 'v1/trees/defaults');
+	}
+
+	public async getHeatMap(): Promise<IResponse<IHeatMap[]>> {
+		return await this.request('GET', 'v1/heatmap');
+	}
+
+	public async getUserHeatMap(id: number): Promise<IResponse<IHeatMap[]>> {
+		return await this.request('GET', `v1/users/${id}/heatmap`);
 	}
 
 	public async getStats(): Promise<IResponse<IStats>> {

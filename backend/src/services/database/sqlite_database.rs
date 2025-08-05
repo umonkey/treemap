@@ -573,6 +573,55 @@ impl DatabaseInterface for SqliteDatabase {
 
         Ok(res)
     }
+
+    async fn get_heatmap(&self, after: u64, before: u64) -> Result<Vec<(String, u64)>> {
+        let query = "SELECT DATE(added_at, 'unixepoch') AS date, COUNT(distinct tree_id) AS count FROM trees_props WHERE added_at >= ? AND added_at < ? GROUP BY date ORDER BY date";
+        let rows = self
+            .sql(
+                query,
+                &[Value::from(after as i64), Value::from(before as i64)],
+            )
+            .await?;
+
+        let mut heatmap = Vec::new();
+
+        for row in rows {
+            let date = row.require_string("date")?;
+            let count = row.require_u64("count")?;
+            heatmap.push((date, count));
+        }
+
+        Ok(heatmap)
+    }
+
+    async fn get_user_heatmap(
+        &self,
+        after: u64,
+        before: u64,
+        user_id: u64,
+    ) -> Result<Vec<(String, u64)>> {
+        let query = "SELECT DATE(added_at, 'unixepoch') AS date, COUNT(distinct tree_id) AS count FROM trees_props WHERE added_at >= ? AND added_at < ? AND added_by = ? GROUP BY date ORDER BY date";
+        let rows = self
+            .sql(
+                query,
+                &[
+                    Value::from(after as i64),
+                    Value::from(before as i64),
+                    Value::from(user_id as i64),
+                ],
+            )
+            .await?;
+
+        let mut heatmap = Vec::new();
+
+        for row in rows {
+            let date = row.require_string("date")?;
+            let count = row.require_u64("count")?;
+            heatmap.push((date, count));
+        }
+
+        Ok(heatmap)
+    }
 }
 
 impl Clone for SqliteDatabase {
@@ -635,5 +684,45 @@ mod tests {
         assert_eq!(res.len(), 1, "Could not find species for oak.");
         assert_eq!("Quercus robur", res[0].0);
         assert_eq!(2, res[0].1);
+    }
+
+    #[tokio::test]
+    async fn test_heatmap() {
+        let db = setup().await;
+
+        db.execute(include_str!("./fixtures/test_heatmap.sql").to_string())
+            .await
+            .expect("Error adding heatmap input.");
+
+        let res = db
+            .get_heatmap(1754298465, 1754384866)
+            .await
+            .expect("Error getting heatmap.");
+
+        assert_eq!(res.len(), 2, "Wrong number of heatmap entries.");
+        assert_eq!("2025-08-04", res[0].0);
+        assert_eq!(1, res[0].1);
+        assert_eq!("2025-08-05", res[1].0);
+        assert_eq!(2, res[1].1);
+    }
+
+    #[tokio::test]
+    async fn test_user_heatmap() {
+        let db = setup().await;
+
+        db.execute(include_str!("./fixtures/test_heatmap.sql").to_string())
+            .await
+            .expect("Error adding heatmap input.");
+
+        let res = db
+            .get_user_heatmap(1754298465, 1754384866, 1)
+            .await
+            .expect("Error getting heatmap.");
+
+        assert_eq!(res.len(), 2, "Wrong number of heatmap entries.");
+        assert_eq!("2025-08-04", res[0].0);
+        assert_eq!(1, res[0].1);
+        assert_eq!("2025-08-05", res[1].0);
+        assert_eq!(1, res[1].1);
     }
 }

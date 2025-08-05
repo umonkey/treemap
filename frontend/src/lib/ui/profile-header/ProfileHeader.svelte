@@ -35,6 +35,10 @@
 </div>
 
 <style>
+	img.header {
+		width: 100%;
+	}
+
 	img.userpic {
 		width: 90px;
 		height: 90px;
