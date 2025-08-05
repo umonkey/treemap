@@ -575,7 +575,7 @@ impl DatabaseInterface for SqliteDatabase {
     }
 
     async fn get_heatmap(&self, after: u64, before: u64) -> Result<Vec<(String, u64)>> {
-        let query = "SELECT DATE(added_at, 'unixepoch') AS date, COUNT(1) AS count FROM trees_props WHERE added_at >= ? AND added_at < ? GROUP BY date ORDER BY date";
+        let query = "SELECT DATE(added_at, 'unixepoch') AS date, COUNT(distinct tree_id) AS count FROM trees_props WHERE added_at >= ? AND added_at < ? GROUP BY date ORDER BY date";
         let rows = self
             .sql(
                 query,
@@ -665,7 +665,10 @@ mod tests {
             .await
             .expect("Error adding heatmap input.");
 
-        let res = db.get_heatmap(1754298465, 1754384866).await.expect("Error getting heatmap.");
+        let res = db
+            .get_heatmap(1754298465, 1754384866)
+            .await
+            .expect("Error getting heatmap.");
 
         assert_eq!(res.len(), 2, "Wrong number of heatmap entries.");
         assert_eq!("2025-08-04", res[0].0);
