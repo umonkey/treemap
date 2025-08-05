@@ -1,3 +1,6 @@
+// Code that generates a heat map based on daily update counts.
+// Uses log() to scale the values for better visualization.
+
 import { type IHeatMap } from '$lib/types';
 
 type Cell = {
@@ -31,16 +34,16 @@ const getNextWeek = (date: Date): Date => {
 	return week;
 };
 
-const getGrade = (value: number, maxValue: number): number => {
+const getGrade = (value: number, maxScale: number): number => {
 	if (!value) {
 		return 0;
 	}
 
-	const grade = (value * 4) / maxValue;
+	const grade = (Math.log(value + 1) * 4) / maxScale;
 	return Math.floor(grade) + 1;
 };
 
-const getInputValue = (values: IHeatMap[], date: Date, maxValue: number): Cell => {
+const getInputValue = (values: IHeatMap[], date: Date, maxScale: number): Cell => {
 	const d = date.toISOString().split('T')[0];
 
 	for (const value of values) {
@@ -48,7 +51,7 @@ const getInputValue = (values: IHeatMap[], date: Date, maxValue: number): Cell =
 			return {
 				date: d,
 				value: value.value.toString(),
-				grade: getGrade(value.value, maxValue),
+				grade: getGrade(value.value, maxScale),
 				title: `${value.value} trees updated on ${d}`
 			};
 		}
@@ -62,15 +65,15 @@ const getInputValue = (values: IHeatMap[], date: Date, maxValue: number): Cell =
 	};
 };
 
-const getMaxValue = (items: IHeatMap[]): number => {
-	const values = items.map((v) => v.value);
+const getMaxScale = (items: IHeatMap[]): number => {
+	const values = items.map((v) => Math.log(v.value + 1));
 	return Math.max(...values);
 };
 
 export const formatData = (values: IHeatMap[]): Cell[][] => {
 	const firstDate = getWeekStart(getMinDate(values));
 	const lastDate = getNextWeek(getMaxDate(values));
-	const maxValue = getMaxValue(values);
+	const maxScale = getMaxScale(values);
 
 	const rows: Cell[][] = [[], [], [], [], [], [], []];
 
@@ -79,7 +82,7 @@ export const formatData = (values: IHeatMap[]): Cell[][] => {
 		currentDate.setDate(currentDate.getDate() + row);
 
 		while (currentDate < lastDate) {
-			const value = getInputValue(values, currentDate, maxValue);
+			const value = getInputValue(values, currentDate, maxScale);
 			rows[row].push(value);
 			currentDate.setDate(currentDate.getDate() + 7);
 		}
