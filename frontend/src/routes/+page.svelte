@@ -4,6 +4,7 @@
 	import { routes } from '$lib/routes';
 	import { rewriteHash } from '$lib/utils/rewrite';
 	import { ModeSwitcher, NarrowPage } from '$lib/ui';
+	import GlobalHeatMap from '$lib/components/GlobalHeatMap/index.svelte';
 
 	import AppInstallButton from '$lib/components/AppInstallButton.svelte';
 	import { Header } from '$lib/ui';
@@ -58,6 +59,8 @@
 	{/if}
 
 	<AppInstallButton />
+
+	<GlobalHeatMap />
 
 	<ModeSwitcher />
 </NarrowPage>
