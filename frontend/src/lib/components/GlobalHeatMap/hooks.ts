@@ -3,8 +3,8 @@ import { type IHeatMap } from '$lib/types';
 import { apiClient } from '$lib/api';
 
 export const hooks = () => {
-	const data = writable<IHeatMap|undefined>(undefined);
-	const error = writable<string|undefined>(undefined);
+	const data = writable<IHeatMap | undefined>(undefined);
+	const error = writable<string | undefined>(undefined);
 	const loading = writable<boolean>(false);
 
 	const reload = async () => {

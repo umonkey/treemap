@@ -1,9 +1,5 @@
 import { type IHeatMap } from '$lib/types';
 
-type InputMap = {
-	[key: string]: IHeatMap[];
-};
-
 type Cell = {
 	date: string;
 	value: string;
@@ -12,13 +8,13 @@ type Cell = {
 };
 
 const getMinDate = (values: IHeatMap[]): Date => {
-	const dates = values.map(v => v.date);
+	const dates = values.map((v) => v.date);
 	dates.sort();
 	return new Date(dates[0]);
 };
 
 const getMaxDate = (values: IHeatMap[]): Date => {
-	const dates = values.map(v => v.date);
+	const dates = values.map((v) => v.date);
 	dates.sort();
 	return new Date(dates[dates.length - 1]);
 };
@@ -33,11 +29,15 @@ const getNextWeek = (date: Date): Date => {
 	const week = getWeekStart(date);
 	week.setDate(week.getDate() + 7);
 	return week;
-}
+};
 
 const getGrade = (value: number, maxValue: number): number => {
-	const grade = value * 5 / maxValue;
-	return Math.floor(grade);
+	if (!value) {
+		return 0;
+	}
+
+	const grade = (value * 4) / maxValue;
+	return Math.floor(grade) + 1;
 };
 
 const getInputValue = (values: IHeatMap[], date: Date, maxValue: number): Cell => {
@@ -49,7 +49,7 @@ const getInputValue = (values: IHeatMap[], date: Date, maxValue: number): Cell =
 				date: d,
 				value: value.value.toString(),
 				grade: getGrade(value.value, maxValue),
-				title: `${value.value} updates on ${d}`,
+				title: `${value.value} trees updated on ${d}`
 			};
 		}
 	}
@@ -58,33 +58,13 @@ const getInputValue = (values: IHeatMap[], date: Date, maxValue: number): Cell =
 		date: d,
 		value: '-',
 		grade: 0,
-		title: `No data for ${d}`,
+		title: `No updates for ${d}`
 	};
 };
 
 const getMaxValue = (items: IHeatMap[]): number => {
-	let values = items.map(v => v.value);
+	const values = items.map((v) => v.value);
 	return Math.max(...values);
-}
-
-export const getRandomData = (): IHeatMap[] => {
-	const data = [];
-
-	let currentDate = new Date('2024-08-04');
-
-	while (data.length < 365) {
-		const d = currentDate.toISOString().split('T')[0];
-		const v = Math.floor(Math.random() * 100);
-
-		data.push({
-			date: d,
-			value: v,
-		});
-
-		currentDate.setDate(currentDate.getDate() + 1);
-	}
-
-	return data;
 };
 
 export const formatData = (values: IHeatMap[]): Cell[][] => {
@@ -102,7 +82,7 @@ export const formatData = (values: IHeatMap[]): Cell[][] => {
 			const value = getInputValue(values, currentDate, maxValue);
 			rows[row].push(value);
 			currentDate.setDate(currentDate.getDate() + 7);
-		};
+		}
 	}
 
 	return rows;

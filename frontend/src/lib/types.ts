@@ -219,7 +219,7 @@ export interface IGalleryItem {
 export interface IHeatMap {
 	date: string;
 	value: number;
-};
+}
 
 /**
  * File upload response.

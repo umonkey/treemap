@@ -8,7 +8,11 @@
 {#if $loading}
 	<!-- loading -->
 {:else if $data}
-	<HeatMap data={$data} />
+	<HeatMap
+		title="Recent activity"
+		data={$data}
+		docs="https://github.com/umonkey/treemap/wiki/Heat-maps"
+	/>
 {:else if $error}
 	<p>Error loading heat map: {error}</p>
 {:else}

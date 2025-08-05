@@ -1,4 +1,7 @@
 :root {
+	/* This enables using the light-dark() function. */
+	color-scheme: light dark;
+
 	/* Colors */
 	--background-color: #fff;
 	--form-background: #f1f3f5;
