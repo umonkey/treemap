@@ -610,6 +610,22 @@ class EnglishLocale {
 	public learnContributions(): string {
 		return 'Learn how we count contributions';
 	}
+
+	public shortMonday(): string {
+		return 'Mon';
+	}
+
+	public shortWednesday(): string {
+		return 'Wed';
+	}
+
+	public shortFriday(): string {
+		return 'Fri';
+	}
+
+	public shortSunday(): string {
+		return 'Sun';
+	}
 }
 
 class RussianLocale extends EnglishLocale {
@@ -1203,6 +1219,22 @@ class RussianLocale extends EnglishLocale {
 
 	public learnContributions(): string {
 		return 'Узнать как мы это считаем';
+	}
+
+	public shortMonday(): string {
+		return 'Пн';
+	}
+
+	public shortWednesday(): string {
+		return 'Ср';
+	}
+
+	public shortFriday(): string {
+		return 'Пт';
+	}
+
+	public shortSunday(): string {
+		return 'Вс';
 	}
 }
 

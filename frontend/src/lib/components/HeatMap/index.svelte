@@ -9,7 +9,15 @@
 		docs?: string;
 	};
 
-	const days = ['Mon', '', 'Wed', '', 'Fri', '', 'Sun'];
+	const days = [
+		locale.shortMonday(),
+		'',
+		locale.shortWednesday(),
+		'',
+		locale.shortFriday(),
+		'',
+		locale.shortSunday()
+	];
 
 	const { title, data, docs }: Props = $props();
 </script>
