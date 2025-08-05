@@ -94,6 +94,10 @@ export class ApiClient {
 		return await this.request('GET', 'v1/heatmap');
 	}
 
+	public async getUserHeatMap(id: number): Promise<IResponse<IHeatMap[]>> {
+		return await this.request('GET', `v1/users/${id}/heatmap`);
+	}
+
 	public async getStats(): Promise<IResponse<IStats>> {
 		return await this.request('GET', 'v1/trees/stats');
 	}

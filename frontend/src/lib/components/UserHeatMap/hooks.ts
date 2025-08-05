@@ -2,7 +2,7 @@ import { writable } from 'svelte/store';
 import { type IHeatMap } from '$lib/types';
 import { apiClient } from '$lib/api';
 
-export const hooks = () => {
+export const hooks = (user_id: number) => {
 	const data = writable<IHeatMap[]>([]);
 	const error = writable<string | undefined>(undefined);
 	const loading = writable<boolean>(false);
@@ -11,7 +11,7 @@ export const hooks = () => {
 		loading.set(true);
 
 		try {
-			const { status, data: d, error: e } = await apiClient.getHeatMap();
+			const { status, data: d, error: e } = await apiClient.getUserHeatMap(user_id);
 
 			if (status === 200 && d) {
 				data.set(d);

@@ -2,6 +2,7 @@
 	import { Header, NarrowPage, SignInButton, ProfileHeader } from '$lib/ui';
 	import { loadMe } from '$lib/hooks';
 	import { locale } from '$lib/locale';
+	import UserHeatMap from '$lib/components/UserHeatMap/index.svelte';
 
 	const { loading, error, data, statusCode, reload } = loadMe();
 
@@ -34,5 +35,7 @@
 			updates_count={$data.updates_count}
 			files_count={$data.files_count}
 		/>
+
+		<UserHeatMap id={$data.id} />
 	{/if}
 </NarrowPage>
