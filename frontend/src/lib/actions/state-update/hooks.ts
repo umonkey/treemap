@@ -59,7 +59,7 @@ export const stateUpdater = (tree_id: string, state: string) => {
 			.then((res) => {
 				if (res.status === 200 && res.data) {
 					addTrees([res.data]);
-					toast.push(locale.measureHeightUpdated());
+					toast.push(locale.measureStateUpdated());
 					goto(routes.mapPreview(tree_id));
 				} else if (res.error) {
 					error.set(res.error.description);
