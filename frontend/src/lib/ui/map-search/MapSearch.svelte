@@ -59,6 +59,13 @@
 			height: 30px;
 			line-height: 30px;
 
+			/**
+			 * Fix colors according to other map controls.
+			 * They are always black on white, regardless of the theme.
+			 **/
+			background-color: #fff;
+			color: #000;
+
 			input {
 				flex-grow: 1;
 				flex-shrink: 1;
@@ -75,6 +82,12 @@
 				border: none;
 				cursor: pointer;
 				background-color: transparent;
+			}
+
+			input,
+			button {
+				background-color: inherit;
+				color: inherit;
 			}
 		}
 
