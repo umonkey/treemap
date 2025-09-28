@@ -10,6 +10,7 @@ INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Albizia julibr
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Betula', 'Birch', 'берёза;береза', 'Q25243');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Buxus', 'Boxwood', 'самшит', 'Q158703');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Catalpa', 'Catalpa', 'катальпа', 'Q158072');
+INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Celtis caucasica', 'Caucasian hackberry', 'nettle tree;каркас кавказский', 'Q4215118');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Cercis canadensis', 'Eastern redbud', 'багряник канадский', 'Q2452407');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Cercis siliquastrum', 'Judas tree', 'багряник европейский', 'Q29488');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Cercis', 'Cercis', 'багряник', 'Q29033');
@@ -29,6 +30,7 @@ INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Juglans', 'Wal
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Juniperus virginiana', 'Red cedar', 'можжевельник;виргинский', 'Q157522');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Juniperus', 'Juniper', 'можжевельник', 'Q25662');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Koelreuteria paniculata', 'Varnish tree', 'кёльрейтерия;кельрейтерия;метельчатая', 'Q844835');
+INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Ligustrum', 'Privet', 'бирючина', 'Q753099');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Maclur pomifera', 'Osage orange', 'маклюра;адамово яблоко', 'Q1066106');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Magnolia', 'Magnolia', 'магнолия', 'Q157017');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Malus domestica', 'Apple', 'яблоня;яблоко', 'Q18674606');
@@ -54,6 +56,8 @@ INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Prunus domesti
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Prunus persica', 'Peach', 'персик;нектарин', 'Q13189');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Prunus serrulata', 'Sakura', 'сакура;cherry blossom', 'Q871991');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Prunus', 'Plum', 'слива', 'Q190545');
+INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Quercus castaneifolia', 'Chestnut-leaved oak', 'дуб;каштанолистный', 'Q1010050');
+INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Quercus macranthera', 'Caucasian oak', 'дуб;крупнопыльниковый;иранский;кавказский;персидский;восточный', 'Q1105707');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Quercus robur', 'Pedunculate oak', 'дуб;черешчатый', 'Q165145');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Quercus rubra', 'Northern red oak', 'дуб;красный', 'Q147525');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Quercus', 'Oak', 'дуб', 'Q12004');
@@ -71,6 +75,5 @@ INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Ulmus glabra',
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Ulmus parvifolia', 'Lacebark elm', 'вяз;мелколистный;карагач;chinese;sieboldii', 'Q1074099');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Ulmus', 'Elm', 'вяз;карагач', 'Q131113');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Vitis vinifera', 'Grape', 'виноград', 'Q30046');
-INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Yucca', 'Yucca', 'юкка', 'Q156317
-INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Ligustrum', 'Privet', 'бирючина', 'Q753099');
-COMMITQ156317;
+INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Yucca', 'Yucca', 'юкка', 'Q156317');
+COMMIT;
