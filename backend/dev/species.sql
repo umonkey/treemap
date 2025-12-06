@@ -66,7 +66,7 @@ INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Robinia pseudo
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Rosa', 'Rose', 'роза;шиповник', 'Q34687');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Salix', 'Willow', 'ива;sallow;osier', 'Q36050');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Sorbus aucuparia', 'Rowan', 'рябина', 'Q146198');
-INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Styphnolobium japonicum', 'Japanese pagoda tree', 'софора японская;', 'Q288558');
+INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Styphnolobium japonicum', 'Japanese pagoda tree', 'софора японская', 'Q288558');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Syringa vulgaris', 'Lilac', 'сирень', 'Q157449');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Thuja occidentalis', 'Northern white cedar', 'туя;cedar', 'Q147468');
 INSERT INTO species (name, local, keywords, wikidata_id) VALUES ('Thuja', 'Cedar', 'туя;биота;cedar', 'Q147255');
