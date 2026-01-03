@@ -40,6 +40,9 @@ jobs:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
 
+      - name: Check wrangler
+        run: npx wrangler whoami
+
       - name: Install dependencies
         run: npm ci
 
