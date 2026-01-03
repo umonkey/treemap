@@ -1,4 +1,4 @@
-# ADR-0004: Use Cloudflare Pages for Static Frontend Hosting
+# ADR-0005: Use Cloudflare Pages for Static Frontend Hosting
 
 - Date: 2026-01-04
 - Status: Accepted
