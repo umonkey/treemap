@@ -1,0 +1,54 @@
+# This workflow builds and deploys the frontend to Cloudflare Pages.
+#
+# The access token should be configured in the CLOUDFLARE_PAGES_TOKEN secret here:
+# https://github.com/umonkey/treemap/settings/secrets/actions
+#
+# Configure Cloudflare Pages:
+# https://dash.cloudflare.com/d98a16a0928f8e884bf6bd54edc13181/workers-and-pages
+
+name: Deploy Frontend
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'frontend/**'
+  pull_request:
+    paths:
+      - 'frontend/**'
+  workflow_dispatch:
+
+env:
+  VITE_API_ROOT: "https://yerevan.treemaps.app/"
+  VITE_ENVIRONMENT: "production"
+  CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_PAGES_TOKEN }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Check wrangler
+        run: npx wrangler whoami
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: npx wrangler pages deploy ./build --project-name=trees-of-yerevan --branch=master
