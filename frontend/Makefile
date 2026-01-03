@@ -18,9 +18,6 @@ deploy:
 	git -C ../../umonkey.github.io/ commit -m "Deploy"
 	git -C ../../umonkey.github.io/ push
 
-deploy-cloudflare:
-	npx wrangler pages deploy ./build --project-name=trees-of-yerevan --branch=master
-
 install:
 	npm ci
 
