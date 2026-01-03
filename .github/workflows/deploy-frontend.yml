@@ -34,11 +34,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Cache node_modules
+      - name: Cache dependencies
         uses: actions/cache@v4
         with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
+          path: |
+            **/node_modules
+            ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Check wrangler
         run: npx wrangler whoami
