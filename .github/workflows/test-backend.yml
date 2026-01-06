@@ -7,6 +7,8 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  SCCACHE_GHA_ENABLED: "true"
+  RUSTC_WRAPPER: "sccache"
 
 jobs:
   linter:
@@ -18,6 +20,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: Run sccache-cache
+      uses: mozilla-actions/sccache-action@v0.0.7
 
     # Adds cache with some defaults, see https://github.com/marketplace/actions/rust-cache
     - uses: Swatinem/rust-cache@v2
@@ -36,6 +41,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: Run sccache-cache
+      uses: mozilla-actions/sccache-action@v0.0.7
 
     # Adds cache with some defaults, see https://github.com/marketplace/actions/rust-cache
     - uses: Swatinem/rust-cache@v2
