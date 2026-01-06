@@ -7,4 +7,3 @@
 /var
 /.secrets
 /config.toml
-/.unittest.db

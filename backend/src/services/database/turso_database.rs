@@ -33,6 +33,8 @@ impl TursoDatabase {
 
         info!("Connected to a Turso database at {url}");
 
+        Self::setup_pool(&pool).await?;
+
         Ok(Self {
             pool: Arc::new(pool),
         })
@@ -47,10 +49,7 @@ impl TursoDatabase {
 
         info!("Using an SQLite database in {path}");
 
-        if cfg!(test) {
-            let schema = include_str!("../../../dev/schema-sqlite.sql");
-            Self::execute_pool(&pool, schema.to_string()).await?;
-        }
+        Self::setup_pool(&pool).await?;
 
         Ok(Self {
             pool: Arc::new(pool),
@@ -69,8 +68,7 @@ impl TursoDatabase {
 
         info!("Created a temporary SQLite database in {path}.");
 
-        let schema = include_str!("../../../dev/schema-sqlite.sql");
-        Self::execute_pool(&pool, schema.to_string()).await?;
+        Self::setup_pool(&pool).await?;
 
         info!("Database schema initialized.");
 
@@ -121,7 +119,30 @@ impl TursoDatabase {
 
     fn get_temporary_path() -> String {
         let id = get_unique_id().unwrap_or(0);
-        format!("/tmp/.treemap-db-{id}")
+        format!("var/test-{id}.db")
+    }
+
+    async fn setup_pool(pool: &Database) -> Result<()> {
+        let conn = pool.connect()?;
+
+        conn.execute_batch("PRAGMA busy_timeout = 5000;").await.inspect_err(|e| {
+            error!("Error setting busy_timeout: {e}");
+        })?;
+
+        conn.execute_batch("PRAGMA journal_mode = WAL;").await.inspect_err(|e| {
+            error!("Error setting journal_mode: {e}");
+        })?;
+
+        conn.execute_batch("PRAGMA synchronous = NORMAL;").await.inspect_err(|e| {
+            error!("Error setting synchronous: {e}");
+        })?;
+
+        if cfg!(test) {
+            let schema = include_str!("../../../dev/schema-sqlite.sql");
+            conn.execute_batch(schema).await?;
+        }
+
+        Ok(())
     }
 }
 
@@ -419,10 +440,6 @@ mod tests {
         let db = TursoDatabase::from_memory()
             .await
             .expect("Error creating database.");
-
-        db.execute(include_str!("../../../dev/schema-sqlite.sql").to_string())
-            .await
-            .expect("Error installing fixtures.");
 
         db.execute(include_str!("./fixtures/init.sql").to_string())
             .await

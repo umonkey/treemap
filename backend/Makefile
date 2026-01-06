@@ -48,6 +48,7 @@ ifneq (,$(FILTER))
 	RUST_LOG="debug" cargo test -- $(FILTER) --nocapture --test-threads=1 --color=always
 else
 	RUST_LOG="warn" cargo test -- --color=always
+	rm -f var/test-*.db
 endif
 	rm -f var/test-files/*
 
