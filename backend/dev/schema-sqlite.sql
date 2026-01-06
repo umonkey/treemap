@@ -2,6 +2,8 @@
 -- Use `make sqlite-schema` to apply.
 -- See this page for docs: https://github.com/umonkey/treemap/wiki/Database-structure
 
+BEGIN;
+
 CREATE TABLE IF NOT EXISTS trees (
     `id` INT NOT NULL,
     `osm_id` INT NULL,
@@ -174,3 +176,5 @@ CREATE TABLE IF NOT EXISTS training (
 );
 CREATE INDEX IF NOT EXISTS IDX_training_user_id ON training (user_id);
 CREATE INDEX IF NOT EXISTS IDX_training_added_at ON training (added_at);
+
+COMMIT;

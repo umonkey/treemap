@@ -4580,6 +4580,7 @@ dependencies = [
  "serde",
  "serde_json",
  "snowflaker",
+ "tempfile",
  "tokio",
  "toml",
  "url",

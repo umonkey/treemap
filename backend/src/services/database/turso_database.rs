@@ -7,6 +7,7 @@ use crate::infra::database::{Attributes, Value};
 use crate::services::*;
 use crate::types::*;
 use crate::utils::get_timestamp;
+use crate::utils::get_unique_id;
 use async_trait::async_trait;
 use libsql::params_from_iter;
 use libsql::{Builder, Database};
@@ -46,19 +47,32 @@ impl TursoDatabase {
 
         info!("Using an SQLite database in {path}");
 
+        if cfg!(test) {
+            let schema = include_str!("../../../dev/schema-sqlite.sql");
+            Self::execute_pool(&pool, schema.to_string()).await?;
+        }
+
         Ok(Self {
             pool: Arc::new(pool),
         })
     }
 
     // Creates a client for a local database.
+    // NB: this creates a new database per connection.
     pub async fn from_memory() -> Result<Self> {
-        let pool = Builder::new_local(":memory:").build().await.map_err(|e| {
+        let path = Self::get_temporary_path();
+
+        let pool = Builder::new_local(&path).build().await.map_err(|e| {
             error!("Error opening an in-memory SQLite database: {e}");
             Error::DatabaseConnect
         })?;
 
-        info!("Using an in-memory SQLite database.");
+        info!("Created a temporary SQLite database in {path}.");
+
+        let schema = include_str!("../../../dev/schema-sqlite.sql");
+        Self::execute_pool(&pool, schema.to_string()).await?;
+
+        info!("Database schema initialized.");
 
         Ok(Self {
             pool: Arc::new(pool),
@@ -71,7 +85,9 @@ impl TursoDatabase {
     }
 
     async fn execute_pool(pool: &Database, script: String) -> Result<()> {
-        let conn = pool.connect()?;
+        let conn = pool.connect().inspect_err(|e| {
+            error!("Error connecting to SQLite: {e}");
+        })?;
 
         conn.execute_batch(&script).await.inspect_err(|e| {
             error!("Error executing SQL script: {e}");
@@ -101,6 +117,11 @@ impl TursoDatabase {
         }
 
         Ok(res)
+    }
+
+    fn get_temporary_path() -> String {
+        let id = get_unique_id().unwrap_or(0);
+        format!("/tmp/.treemap-db-{id}")
     }
 }
 
@@ -399,9 +420,15 @@ mod tests {
             .await
             .expect("Error creating database.");
 
+        db.execute(include_str!("../../../dev/schema-sqlite.sql").to_string())
+            .await
+            .expect("Error installing fixtures.");
+
         db.execute(include_str!("./fixtures/init.sql").to_string())
             .await
             .expect("Error installing fixtures.");
+
+        info!("SQLite database initialized.");
 
         db
     }

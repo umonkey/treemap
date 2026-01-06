@@ -8,8 +8,8 @@ use super::turso_database::*;
 use crate::config::{Config, Secrets};
 use crate::services::*;
 use crate::types::*;
-use std::sync::Arc;
 use log::error;
+use std::sync::Arc;
 
 pub struct PreferredDatabase {
     pub db: Arc<dyn DatabaseInterface>,
