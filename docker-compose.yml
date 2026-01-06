@@ -1,4 +1,6 @@
-# This file runs both frontend and backend to run the Trees of Yerevan
+# Trees of Yerevan startup file.
+#
+# This file starts both frontend and backend to run the Trees of Yerevan
 # application in a dev environment.
 #
 # The web UI is available at:
