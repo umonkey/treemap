@@ -1,7 +1,6 @@
-import { PUBLIC_FILE_BASE_URL } from '$env/static/public';
+import { PUBLIC_API_ROOT, PUBLIC_FILE_BASE_URL } from '$env/static/public';
 
-export const API_ROOT = import.meta.env.VITE_API_ROOT ?? 'https://yerevan.treemaps.app/';
-export const AUTH_CALLBACK = `${API_ROOT}v3/login/google`;
+export const AUTH_CALLBACK = `${PUBLIC_API_ROOT}v3/login/google`;
 export const AUTH_CLIENT_ID =
 	import.meta.env.VITE_AUTH_CLIENT_ID ??
 	'999312923392-6k26jala2pe5dk9u7o63o8nvts3a7f1f.apps.googleusercontent.com';
@@ -21,5 +20,6 @@ export const MAPS_KEY = 'AIzaSyBatIJw8enkS9rXnssEsFjSCuATGOxE6ec';
 export const MAPTILER_KEY = import.meta.env.VITE_MAPTILER_KEY ?? 'Be5pkF1cxLOmxuHCu5aM';
 
 export const config = {
-	fileBaseUrl: PUBLIC_FILE_BASE_URL ?? 'http://127.0.0.1:8000/v1/files/',
+	apiRoot: PUBLIC_API_ROOT,
+	fileBaseUrl: PUBLIC_FILE_BASE_URL
 };

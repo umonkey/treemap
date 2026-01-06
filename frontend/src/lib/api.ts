@@ -1,4 +1,4 @@
-import { API_ROOT } from '$lib/env';
+import { config } from '$lib/env';
 import { authStore, isAuthenticated } from '$lib/stores/authStore';
 import { addUsers } from '$lib/stores/userStore';
 import { addTrees, getTree } from '$lib/stores/treeStore';
@@ -37,8 +37,7 @@ export class ApiClient {
 	private root: string;
 
 	constructor() {
-		this.root = API_ROOT;
-		// console.debug(`[api] Root: ${this.root}`);
+		this.root = config.apiRoot;
 	}
 
 	// Return a single tree.

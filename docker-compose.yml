@@ -29,11 +29,6 @@ services:
     restart: unless-stopped
     ports:
       - "5173:5173"
-    environment:
-      - NODE_ENV=development
-      - VITE_ENVIRONMENT=development
-      - VITE_API_ROOT=http://127.0.0.1:8000/
-      - PUBLIC_FILE_BASE_URL=http://127.0.0.1:8000/v1/files/
     volumes:
       - ./frontend:/app
       - /app/node_modules  # Prevents overwriting node_modules
