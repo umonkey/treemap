@@ -62,3 +62,9 @@ shell:
 test-coverage:
 	RUSTFLAGS="-Cinstrument-coverage" LLVM_PROFILE_FILE="test.profraw" RUST_LOG="warn" cargo test
 	grcov . -s . --binary-path ./target/debug/ -t html --branch --ignore-not-existing -o ./target/debug/coverage/
+
+deploy-fly:
+	fly auth docker
+	docker build -t registry.fly.io/treemap-blue-frog-3927:latest .
+	docker push registry.fly.io/treemap-blue-frog-3927:latest
+	fly deploy --image registry.fly.io/treemap-blue-frog-3927:latest
