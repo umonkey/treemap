@@ -1,4 +1,6 @@
 //! Provides access to file-based and environment-based secrets.
+//!
+//! When adding or removing secrets, please update `docs/Configuration.md`
 
 use crate::config::Config;
 use crate::services::{Locatable, Locator};
