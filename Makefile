@@ -29,7 +29,7 @@ lint:
 	make -C frontend lint
 
 serve:
-	docker run -it --rm -v $(PWD)/var:/app/var -p 8001:8000 ghcr.io/$(CR_USER)/treemap:$(VERSION)
+	docker compose up
 
 serve-local:
 	mkdir -p var
