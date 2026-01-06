@@ -33,8 +33,6 @@ impl TursoDatabase {
 
         info!("Connected to a Turso database at {url}");
 
-        Self::setup_pool(&pool).await?;
-
         Ok(Self {
             pool: Arc::new(pool),
         })
@@ -122,12 +120,10 @@ impl TursoDatabase {
         format!("var/test-{id}.db")
     }
 
+    // Configure the SQLite engine.
+    // Note that this does not work for remote connections.
     async fn setup_pool(pool: &Database) -> Result<()> {
         let conn = pool.connect()?;
-
-        conn.execute_batch("PRAGMA busy_timeout = 5000;").await.inspect_err(|e| {
-            error!("Error setting busy_timeout: {e}");
-        })?;
 
         conn.execute_batch("PRAGMA journal_mode = WAL;").await.inspect_err(|e| {
             error!("Error setting journal_mode: {e}");

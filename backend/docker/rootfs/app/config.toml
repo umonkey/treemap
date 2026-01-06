@@ -2,7 +2,7 @@
 
 # Database configuration.
 # Values: sqlite, turso.
-database = "sqlite"
+database = "turso"
 
 # SQLite database path.
 #sqlite_path = "var/database.sqlite"
@@ -11,7 +11,7 @@ database = "sqlite"
 # Turso is essentially a cloud SQLite.
 # The token will be read from the environment variable TURSO_TOKEN.
 # Details: https://docs.turso.tech/sdk/rust/quickstart
-#turso_url = "libsql://foobar.aws-eu-west-1.turso.io"
+turso_url = "libsql://treemap-umonkey.aws-eu-west-1.turso.io"
 
 # Path to where the file based secrets are stored.
 #secrets_path = ".secrets"
@@ -21,7 +21,9 @@ database = "sqlite"
 # Then the automated operations, such as OSM pulls, will become available.
 #
 # If this is not set, OSM interaction will not work.
-#bot_user_id = 12345678
+bot_user_id = 1
+
+osm_changeset_size = 100
 
 # Where to store temporary files, before they are uploaded to the external S3 storage.
 #file_folder = "var/files"
@@ -53,7 +55,7 @@ database = "sqlite"
 
 # Link to your OSM Organized Activity here.
 # This is required for batch uploads.
-#osm_activity = "https://wiki.openstreetmap.org/wiki/Organised_Editing/Activities/Something_Else"
+#osm_activity = "https://wiki.openstreetmap.org/wiki/Organised_Editing/Activities/Yerevan_Tree_Map"
 
 # This is where OSM redirects you after authorizing the app.
 #osm_redirect_uri = "http://127.0.0.1:8000/auth/callback"
