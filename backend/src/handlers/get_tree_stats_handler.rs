@@ -2,6 +2,7 @@ use crate::common::database::repositories::*;
 use crate::services::*;
 use crate::types::*;
 use std::sync::Arc;
+use log::info;
 
 pub struct GetTreeStatsHandler {
     trees: Arc<TreeRepository>,
@@ -9,9 +10,11 @@ pub struct GetTreeStatsHandler {
 
 impl GetTreeStatsHandler {
     pub async fn handle(&self) -> Result<TreeStatsResponse> {
-        Ok(TreeStatsResponse {
-            count: self.trees.count().await?,
-        })
+        let count = self.trees.count().await?;
+
+        info!("Serving tree stats (health check ok).");
+
+        Ok(TreeStatsResponse { count })
     }
 }
 
