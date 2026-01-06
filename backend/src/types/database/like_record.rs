@@ -1,5 +1,5 @@
-use crate::types::Result;
 use crate::infra::database::{Attributes, Value};
+use crate::types::Result;
 use serde::Serialize;
 
 #[derive(Clone, Debug, Default, Serialize)]

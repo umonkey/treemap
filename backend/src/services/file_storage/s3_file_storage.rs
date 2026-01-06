@@ -41,7 +41,7 @@ impl Locatable for S3FileStorage {
 #[async_trait]
 impl FileStorageInterface for S3FileStorage {
     async fn read_file(&self, id: u64) -> Result<Vec<u8>> {
-        debug!("Reading file {} from S3.", id);
+        debug!("Reading file {id} from S3.");
 
         let res = self
             .client

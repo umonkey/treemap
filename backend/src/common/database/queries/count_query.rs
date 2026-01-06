@@ -24,7 +24,10 @@ impl CountQuery {
     pub fn build(&self) -> (String, Vec<Value>) {
         let (where_query, params) = format_where(&self.conditions);
 
-        let query = format!("SELECT COUNT(1) AS count FROM `{}`{}", self.table_name, where_query,);
+        let query = format!(
+            "SELECT COUNT(1) AS count FROM `{}`{}",
+            self.table_name, where_query,
+        );
 
         (query, params)
     }
@@ -44,7 +47,10 @@ mod tests {
 
         let (query, params) = query.build();
 
-        assert_eq!(query, "SELECT COUNT(1) AS count FROM `trees` WHERE `id` = ?");
+        assert_eq!(
+            query,
+            "SELECT COUNT(1) AS count FROM `trees` WHERE `id` = ?"
+        );
         assert_eq!(1, params.len());
         assert_eq!(Value::from(1), params[0]);
 

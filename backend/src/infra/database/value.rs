@@ -24,6 +24,18 @@ impl From<Value> for LibSqlValue {
     }
 }
 
+impl From<&Value> for LibSqlValue {
+    fn from(v: &Value) -> Self {
+        match v {
+            Value::Null => LibSqlValue::Null,
+            Value::Text(s) => LibSqlValue::Text(s.clone()),
+            Value::Integer(s) => LibSqlValue::Integer(*s),
+            Value::Real(s) => LibSqlValue::Real(*s),
+            Value::Blob(s) => LibSqlValue::Blob(s.clone()),
+        }
+    }
+}
+
 impl From<LibSqlValue> for Value {
     fn from(v: LibSqlValue) -> Self {
         match v {

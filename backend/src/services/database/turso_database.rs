@@ -3,15 +3,14 @@
 //! @docs https://docs.turso.tech/sdk/rust/quickstart
 
 use crate::common::database::queries::*;
+use crate::infra::database::{Attributes, Value};
 use crate::services::*;
 use crate::types::*;
 use crate::utils::get_timestamp;
-use crate::infra::database::{Attributes, Value};
 use async_trait::async_trait;
-use log::{error, info};
-use libsql::{Builder, Database};
 use libsql::params_from_iter;
-use std::cmp::Ordering;
+use libsql::{Builder, Database};
+use log::{error, info};
 use std::sync::Arc;
 
 const SUGGEST_WINDOW: u64 = 3600 * 24; // 24 hours
@@ -23,9 +22,15 @@ pub struct TursoDatabase {
 impl TursoDatabase {
     // Creates a client for a remote database.
     pub async fn from_remote(url: &str, token: &str) -> Result<Self> {
-        let pool = Builder::new_remote(url.to_string(), token.to_string()).build().await?;
+        let pool = Builder::new_remote(url.to_string(), token.to_string())
+            .build()
+            .await
+            .map_err(|e| {
+                error!("Error connecting to a Turso database at {url}: {e}");
+                Error::DatabaseConnect
+            })?;
 
-        info!("Connected to a Turso database at {}", url);
+        info!("Connected to a Turso database at {url}");
 
         Ok(Self {
             pool: Arc::new(pool),
@@ -34,9 +39,12 @@ impl TursoDatabase {
 
     // Creates a client for a local database.
     pub async fn from_local(path: &str) -> Result<Self> {
-        let pool = Builder::new_local(path.to_string()).build().await?;
+        let pool = Builder::new_local(path).build().await.map_err(|e| {
+            error!("Error opening an SQLite database in {path}: {e}");
+            Error::DatabaseConnect
+        })?;
 
-        info!("Using an SQLite database in {}", path);
+        info!("Using an SQLite database in {path}");
 
         Ok(Self {
             pool: Arc::new(pool),
@@ -58,28 +66,19 @@ impl TursoDatabase {
         Ok(())
     }
 
-    /**
-     * Custom case-insensitive collation for SQLite.
-     *
-     * Unlike the LOWER() function, this supports Unicode.
-     */
-    fn case_insensitive_collation(a: &str, b: &str) -> Ordering {
-        a.to_lowercase().cmp(&b.to_lowercase())
-    }
-
     async fn fetch(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>> {
         let conn = self.pool.connect()?;
-
-        // TODO: FIXME
-        // conn.create_collation("case_insensitive", Self::case_insensitive_collation)?;
 
         let mut stmt = conn.prepare(query).await.inspect_err(|e| {
             error!("Error preparing SQL statement: {e}");
         })?;
 
-        let mut rows = stmt.query(params).await.inspect_err(|e| {
-            error!("Error executing SQL statement: {e}");
-        })?;
+        let mut rows = stmt
+            .query(params_from_iter(params))
+            .await
+            .inspect_err(|e| {
+                error!("Error executing SQL statement: {e}");
+            })?;
 
         let mut res: Vec<Attributes> = Vec::new();
 
@@ -113,9 +112,11 @@ impl DatabaseInterface for TursoDatabase {
 
         let (sql, params) = query.build();
 
-        conn.execute(sql.as_str(), params_from_iter(params)).await.inspect_err(|e| {
-            error!("Error adding a record to the database: {e}");
-        })?;
+        conn.execute(sql.as_str(), params_from_iter(params))
+            .await
+            .inspect_err(|e| {
+                error!("Error adding a record to the database: {e}");
+            })?;
 
         Ok(())
     }
@@ -125,9 +126,11 @@ impl DatabaseInterface for TursoDatabase {
 
         let (sql, params) = query.build();
 
-        conn.execute(sql.as_str(), params_from_iter(params)).await.inspect_err(|e| {
-            error!("Error replacing a record to the database: {e}");
-        })?;
+        conn.execute(sql.as_str(), params_from_iter(params))
+            .await
+            .inspect_err(|e| {
+                error!("Error replacing a record to the database: {e}");
+            })?;
 
         Ok(())
     }
@@ -137,9 +140,11 @@ impl DatabaseInterface for TursoDatabase {
 
         let (sql, params) = query.build();
 
-        conn.execute(sql.as_str(), params_from_iter(params)).await.inspect_err(|e| {
-            error!("Error updating database: {e}");
-        })?;
+        conn.execute(sql.as_str(), params_from_iter(params))
+            .await
+            .inspect_err(|e| {
+                error!("Error updating database: {e}");
+            })?;
 
         Ok(())
     }
@@ -149,9 +154,11 @@ impl DatabaseInterface for TursoDatabase {
 
         let (sql, params) = query.build();
 
-        conn.execute(sql.as_str(), params_from_iter(params)).await.inspect_err(|e| {
-            error!("Error deleting record: {e}");
-        })?;
+        conn.execute(sql.as_str(), params_from_iter(params))
+            .await
+            .inspect_err(|e| {
+                error!("Error deleting record: {e}");
+            })?;
 
         Ok(())
     }
@@ -161,9 +168,11 @@ impl DatabaseInterface for TursoDatabase {
 
         let (sql, params) = query.build();
 
-        conn.execute(sql.as_str(), params_from_iter(params)).await.inspect_err(|e| {
-            error!("Error incrementing a value: {e}");
-        })?;
+        conn.execute(sql.as_str(), params_from_iter(params))
+            .await
+            .inspect_err(|e| {
+                error!("Error incrementing a value: {e}");
+            })?;
 
         Ok(())
     }
@@ -177,7 +186,7 @@ impl DatabaseInterface for TursoDatabase {
         let rows = self.fetch(&sql, &params).await?;
 
         if let Some(value) = rows.first() {
-            return Ok(value.require_u64("count")?);
+            return value.require_u64("count");
         }
 
         Ok(0)
@@ -229,7 +238,7 @@ impl DatabaseInterface for TursoDatabase {
         let since = get_timestamp() - SUGGEST_WINDOW;
 
         let rows = self.fetch(
-            "SELECT species, COUNT(1) AS use_count FROM trees WHERE added_by = ? AND added_at >= ? AND LOWER(species) <> 'unknown' GROUP BY species COLLATE case_insensitive ORDER BY use_count DESC LIMIT 10",
+            "SELECT species, COUNT(1) AS use_count FROM trees WHERE added_by = ? AND added_at >= ? AND LOWER(species) <> 'unknown' GROUP BY species ORDER BY use_count DESC LIMIT 10",
             &[Value::from(user_id), Value::from(since)],
         ).await?;
 

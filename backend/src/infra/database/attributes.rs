@@ -1,6 +1,6 @@
+use libsql::Row as LibSqlRow;
 use log::debug;
 use std::collections::HashMap;
-use libsql::Row as LibSqlRow;
 
 use super::value::Value;
 

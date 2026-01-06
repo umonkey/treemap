@@ -1,8 +1,8 @@
 use crate::common::database::queries::*;
+use crate::infra::database::Value;
 use crate::services::*;
 use crate::types::*;
 use log::error;
-use crate::infra::database::Value;
 use std::sync::Arc;
 
 const TABLE: &str = "osm_trees";

@@ -1,7 +1,7 @@
 use crate::common::database::queries::*;
+use crate::infra::database::{Attributes, Value};
 use crate::types::*;
 use async_trait::async_trait;
-use crate::infra::database::{Attributes, Value};
 
 #[async_trait]
 pub trait DatabaseInterface: Send + Sync {

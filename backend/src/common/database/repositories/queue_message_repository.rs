@@ -1,8 +1,8 @@
 use crate::common::database::queries::*;
+use crate::infra::database::Value;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::get_timestamp;
-use crate::infra::database::Value;
 use std::sync::Arc;
 
 const TABLE: &str = "queue_messages";

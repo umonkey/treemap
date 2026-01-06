@@ -1,9 +1,9 @@
 //! Access to the comments table.
 
 use crate::common::database::queries::*;
+use crate::infra::database::Value;
 use crate::services::*;
 use crate::types::*;
-use crate::infra::database::Value;
 use std::sync::Arc;
 
 const TABLE: &str = "comments";

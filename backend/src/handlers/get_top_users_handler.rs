@@ -1,9 +1,9 @@
 use crate::common::database::repositories::*;
+use crate::infra::database::Value;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::get_timestamp;
 use log::error;
-use crate::infra::database::Value;
 use std::sync::Arc;
 
 pub struct GetTopUsersHandler {

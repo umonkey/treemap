@@ -2,8 +2,8 @@
 //! File uploads are not connected to any tree, just orphan files
 //! that are then used to create tree photos by submitting ids.
 
-use crate::types::*;
 use crate::infra::database::{Attributes, Value};
+use crate::types::*;
 use serde::Serialize;
 
 #[derive(Clone, Debug, Default, Serialize)]

@@ -1,9 +1,9 @@
 use crate::common::database::queries::*;
+use crate::infra::database::Value;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::unique_ids;
 use log::error;
-use crate::infra::database::Value;
 use std::sync::Arc;
 
 const TABLE: &str = "users";
