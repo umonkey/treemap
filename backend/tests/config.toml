@@ -3,4 +3,4 @@
 file_folder = "var/test-files"
 
 # Use the in-memory database.
-sqlite_path = ":memory:"
+database = "memory"

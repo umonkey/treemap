@@ -44,6 +44,7 @@ pub struct Config {
     #[serde(default = "default_server_port")]
     pub server_port: u16,
 
+    #[serde(default = "default_database")]
     pub database: String,
 
     #[serde(default = "default_sqlite_path")]
@@ -157,6 +158,10 @@ fn default_overpass_endpoint() -> String {
 
 fn default_overpass_query() -> String {
     "[out:json];node[natural=tree](40.052848, 44.294472, 40.300476, 44.807396);out;".to_string()
+}
+
+fn default_database() -> String {
+    "sqlite".to_string()
 }
 
 fn default_sqlite_path() -> String {

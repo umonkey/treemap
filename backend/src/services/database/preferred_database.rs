@@ -9,6 +9,7 @@ use crate::config::{Config, Secrets};
 use crate::services::*;
 use crate::types::*;
 use std::sync::Arc;
+use log::error;
 
 pub struct PreferredDatabase {
     pub db: Arc<dyn DatabaseInterface>,
@@ -33,11 +34,18 @@ impl Locatable for PreferredDatabase {
             let db = futures::executor::block_on(TursoDatabase::from_remote(&url, &token))?;
 
             Ok(Self { db: Arc::new(db) })
-        } else {
+        } else if config.database == "memory" {
+            let db = futures::executor::block_on(TursoDatabase::from_memory())?;
+
+            Ok(Self { db: Arc::new(db) })
+        } else if config.database == "sqlite" {
             let path = &config.sqlite_path;
             let db = futures::executor::block_on(TursoDatabase::from_local(path))?;
 
             Ok(Self { db: Arc::new(db) })
+        } else {
+            error!("Unknown database type: {}", config.database);
+            Err(Error::Config)
         }
     }
 }
