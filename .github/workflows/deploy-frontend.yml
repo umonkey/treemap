@@ -22,6 +22,7 @@ on:
 env:
   VITE_API_ROOT: "https://yerevan.treemaps.app/"
   VITE_ENVIRONMENT: "production"
+  PUBLIC_FILE_BASE_URL: "https://yerevan.treemaps.app/v1/files/"
   CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_PAGES_TOKEN }}
 
 jobs:

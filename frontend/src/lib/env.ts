@@ -1,3 +1,5 @@
+import { PUBLIC_FILE_BASE_URL } from '$env/static/public';
+
 export const API_ROOT = import.meta.env.VITE_API_ROOT ?? 'https://yerevan.treemaps.app/';
 export const AUTH_CALLBACK = `${API_ROOT}v3/login/google`;
 export const AUTH_CLIENT_ID =
@@ -17,3 +19,7 @@ export const MAPS_KEY = 'AIzaSyBatIJw8enkS9rXnssEsFjSCuATGOxE6ec';
 // MapTiler key.
 // This is used to display vector tiles.
 export const MAPTILER_KEY = import.meta.env.VITE_MAPTILER_KEY ?? 'Be5pkF1cxLOmxuHCu5aM';
+
+export const config = {
+	fileBaseUrl: PUBLIC_FILE_BASE_URL ?? 'http://127.0.0.1:8000/v1/files/',
+};

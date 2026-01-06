@@ -51,6 +51,10 @@ else
 endif
 	rm -f var/test-files/*
 
+# Opens a shell to a running dev backend.
+shell:
+	docker exec -it trees-backend bash
+
 # Some notes on code coverage:
 # https://doc.rust-lang.org/rustc/instrument-coverage.html
 # https://blog.rng0.io/how-to-do-code-coverage-in-rust/
