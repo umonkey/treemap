@@ -19,6 +19,9 @@ dockerfile = "Dockerfile"
     path = "/v1/trees/stats"
     timeout = "1s"
 
+[env]
+  RUST_LOG = "info"
+
 #[[mounts]]
 #destination = "/app/var"
 #source = "treemaps_var"
