@@ -9,7 +9,7 @@ use crate::utils::get_timestamp;
 use crate::infra::database::{Attributes, Value};
 use async_trait::async_trait;
 use log::{error, info};
-use libsql::{Builder, Database, Row};
+use libsql::{Builder, Database};
 use libsql::params_from_iter;
 use std::cmp::Ordering;
 use std::sync::Arc;
@@ -81,10 +81,10 @@ impl TursoDatabase {
             error!("Error executing SQL statement: {e}");
         })?;
 
-        let mut res: Vec<Row> = Vec::new();
+        let mut res: Vec<Attributes> = Vec::new();
 
         while let Some(row) = rows.next().await? {
-            res.push(row);
+            res.push(row.into());
         }
 
         Ok(res)

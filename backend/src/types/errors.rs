@@ -4,7 +4,6 @@ use std::convert::From;
 use std::fmt;
 
 use actix_web::{error::ResponseError, http::header::ContentType, http::StatusCode, HttpResponse};
-use async_sqlite::Error as SqliteError;
 
 #[derive(Debug)]
 pub enum Error {
@@ -115,12 +114,6 @@ impl Error {
                 r#"{"error":{"code":"UserNotFound","description":"User record not found, or deleted."}}"#
             }
         }
-    }
-}
-
-impl From<SqliteError> for Error {
-    fn from(_: SqliteError) -> Self {
-        Error::DatabaseQuery
     }
 }
 

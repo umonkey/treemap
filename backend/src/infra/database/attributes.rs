@@ -1,5 +1,6 @@
 use log::debug;
 use std::collections::HashMap;
+use libsql::Row as LibSqlRow;
 
 use super::value::Value;
 
@@ -107,5 +108,22 @@ impl Attributes {
             Some(Value::Text(value)) => Ok(value.to_string()),
             _ => Err(Error::DatabaseStructure),
         }
+    }
+}
+
+// Convert SQLite rows into local.
+impl From<LibSqlRow> for Attributes {
+    fn from(v: LibSqlRow) -> Self {
+        let mut props = HashMap::<String, Value>::new();
+
+        for idx in 0..v.column_count() {
+            if let Some(name) = v.column_name(idx) {
+                if let Ok(value) = v.get_value(idx) {
+                    props.insert(name.to_string(), Value::from(value));
+                }
+            }
+        }
+
+        Self { props }
     }
 }
