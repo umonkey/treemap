@@ -1,4 +1,5 @@
 use jsonwebtoken::errors::Error as JwtError;
+use libsql::Error as LibSqlError;
 use std::convert::From;
 use std::fmt;
 
@@ -119,6 +120,12 @@ impl Error {
 
 impl From<SqliteError> for Error {
     fn from(_: SqliteError) -> Self {
+        Error::DatabaseQuery
+    }
+}
+
+impl From<LibSqlError> for Error {
+    fn from(_: LibSqlError) -> Self {
         Error::DatabaseQuery
     }
 }

@@ -1,7 +1,7 @@
 use crate::types::*;
 use crate::utils::*;
 use log::debug;
-use rusqlite::types::Value;
+use crate::infra::database::{Attributes, Value};
 
 const DEFAULT_SPECIES: &str = "Unknown tree";
 

@@ -3,7 +3,7 @@
 //! that are then used to create tree photos by submitting ids.
 
 use crate::types::*;
-use rusqlite::types::Value;
+use crate::infra::database::{Attributes, Value};
 use serde::Serialize;
 
 #[derive(Clone, Debug, Default, Serialize)]

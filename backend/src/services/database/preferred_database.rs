@@ -1,6 +1,12 @@
+//! Database client factory.
+//!
+//! This code does not implement any database, but it creates the right
+//! driver according to the configuration.
+
 use super::database_interface::*;
 use super::sqlite_database::*;
-use crate::config::Config;
+use super::turso_database::*;
+use crate::config::{Config, Secrets};
 use crate::services::*;
 use crate::types::*;
 use std::sync::Arc;
@@ -18,7 +24,14 @@ impl PreferredDatabase {
 impl Locatable for PreferredDatabase {
     fn create(locator: &Locator) -> Result<Self> {
         let config = locator.get::<Config>()?;
-        let db = futures::executor::block_on(SqliteDatabase::new(config))?;
-        Ok(Self { db: Arc::new(db) })
+
+        if config.database == "turso" {
+            let secrets = locator.get::<Secrets>()?;
+            let db = futures::executor::block_on(TursoDatabase::new(config, secrets))?;
+            Ok(Self { db: Arc::new(db) })
+        } else {
+            let db = futures::executor::block_on(SqliteDatabase::new(config))?;
+            Ok(Self { db: Arc::new(db) })
+        }
     }
 }

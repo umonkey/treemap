@@ -2,7 +2,7 @@ use crate::common::database::queries::*;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::get_timestamp;
-use rusqlite::types::Value;
+use crate::infra::database::Value;
 use std::sync::Arc;
 
 const TABLE: &str = "queue_messages";

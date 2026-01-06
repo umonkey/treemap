@@ -3,7 +3,7 @@ use crate::services::*;
 use crate::types::*;
 use crate::utils::get_timestamp;
 use log::error;
-use rusqlite::types::Value;
+use crate::infra::database::Value;
 use std::sync::Arc;
 
 pub struct GetTopUsersHandler {

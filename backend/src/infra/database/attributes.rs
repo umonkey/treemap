@@ -1,7 +1,9 @@
-use crate::types::*;
 use log::debug;
-use rusqlite::types::Value;
 use std::collections::HashMap;
+
+use super::value::Value;
+
+use crate::types::*;
 
 #[derive(Clone, Debug, Default)]
 pub struct Attributes {

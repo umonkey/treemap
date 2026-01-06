@@ -16,7 +16,8 @@ use async_sqlite::{JournalMode, Pool, PoolBuilder};
 use async_trait::async_trait;
 use log::{debug, error, info};
 use rusqlite::params_from_iter;
-use rusqlite::types::Value;
+use rusqlite::types::Value as RuSqliteValue;
+use crate::infra::database::{Attributes, Value};
 use std::cmp::Ordering;
 use std::sync::Arc;
 

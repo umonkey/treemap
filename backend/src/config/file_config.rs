@@ -44,8 +44,13 @@ pub struct Config {
     #[serde(default = "default_server_port")]
     pub server_port: u16,
 
+    pub database: String,
+
     #[serde(default = "default_sqlite_path")]
     pub sqlite_path: String,
+
+    // Cloud SQLite URL.
+    pub turso_url: Option<String>,
 
     #[serde(default = "default_secrets_path")]
     pub secrets_path: String,

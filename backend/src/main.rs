@@ -3,6 +3,7 @@ mod cli;
 mod common;
 mod config;
 mod handlers;
+mod infra;
 mod reports;
 mod services;
 mod types;

@@ -1,5 +1,4 @@
-use crate::types::Attributes;
-use rusqlite::types::Value;
+use crate::infra::database::{Attributes, Value};
 use std::collections::HashMap;
 
 pub fn format_where(conditions: &Attributes) -> (String, Vec<Value>) {

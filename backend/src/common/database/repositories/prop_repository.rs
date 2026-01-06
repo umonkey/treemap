@@ -2,7 +2,7 @@ use crate::common::database::queries::*;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::{get_timestamp, get_unique_id};
-use rusqlite::types::Value;
+use crate::infra::database::Value;
 use std::sync::Arc;
 
 const TABLE: &str = "trees_props";

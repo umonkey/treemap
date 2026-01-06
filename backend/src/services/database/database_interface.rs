@@ -1,7 +1,7 @@
 use crate::common::database::queries::*;
 use crate::types::*;
 use async_trait::async_trait;
-use rusqlite::types::Value;
+use crate::infra::database::{Attributes, Value};
 
 #[async_trait]
 pub trait DatabaseInterface: Send + Sync {
