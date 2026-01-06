@@ -3,7 +3,7 @@
 
 use libsql::Value as LibSqlValue;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Value {
     Null,
     Integer(i64),

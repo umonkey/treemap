@@ -51,6 +51,20 @@ impl TursoDatabase {
         })
     }
 
+    // Creates a client for a local database.
+    pub async fn from_memory() -> Result<Self> {
+        let pool = Builder::new_local(":memory:").build().await.map_err(|e| {
+            error!("Error opening an in-memory SQLite database: {e}");
+            Error::DatabaseConnect
+        })?;
+
+        info!("Using an in-memory SQLite database.");
+
+        Ok(Self {
+            pool: Arc::new(pool),
+        })
+    }
+
     #[allow(unused)]
     pub async fn execute(&self, script: String) -> Result<()> {
         Self::execute_pool(&self.pool, script).await
@@ -374,15 +388,14 @@ impl Clone for TursoDatabase {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use log::debug;
 
     async fn setup() -> TursoDatabase {
         if env_logger::try_init().is_err() {
             debug!("env_logger already initialized.");
         };
 
-        let config = Config::from_default_file().expect("Error reading config");
-
-        let db = TursoDatabase::new(Arc::new(config))
+        let db = TursoDatabase::from_memory()
             .await
             .expect("Error creating database.");
 
