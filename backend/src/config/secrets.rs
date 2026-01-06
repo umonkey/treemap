@@ -48,11 +48,11 @@ impl Secrets {
 
         let file_path = format!("{path}/{key}");
 
-        let mut file = match fs::File::open(file_path) {
+        let mut file = match fs::File::open(&file_path) {
             Ok(v) => v,
 
             Err(e) => {
-                warn!("Error reading secret from {path}: {e}");
+                warn!("Error reading secret from {file_path}: {e}");
                 return None;
             }
         };
