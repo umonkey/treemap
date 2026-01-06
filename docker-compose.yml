@@ -1,3 +1,12 @@
+# This file runs both frontend and backend to run the Trees of Yerevan
+# application in a dev environment.
+#
+# The web UI is available at:
+# http://127.0.0.1:5173/
+#
+# The backend needs to be rebuild and restarted on every change, the frontend
+# works in hot-reload mode.
+
 services:
   backend:
     build:
@@ -8,7 +17,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - uploads:/uploads
+      - var:/app/var
     environment:
       - RUST_LOG=info,treemap=debug
       - TREEMAP_SQLITE_PATH=/app/var/database.sqlite
@@ -23,7 +32,7 @@ services:
     environment:
       - NODE_ENV=development
       - VITE_ENVIRONMENT=development
-      - API_ROOT="http://127.0.0.1:8000/"
+      - VITE_API_ROOT=http://127.0.0.1:8000/
     volumes:
       - ./frontend:/app
       - /app/node_modules  # Prevents overwriting node_modules
@@ -31,4 +40,4 @@ services:
       - backend
 
 volumes:
-  uploads:
+  var:

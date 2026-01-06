@@ -18,14 +18,17 @@ RUN cargo build --release
 RUN rm -rf src
 
 COPY src src
-RUN touch src/main.rs
 COPY dev dev
+RUN touch src/main.rs
 RUN find -type f && cargo build --release && find target -type f
 
+# STEP 2: Build the Final Image
 FROM docker.io/library/alpine:3.22
-RUN apk add --no-cache sqlite supervisor logrotate
+RUN apk add --no-cache sqlite supervisor logrotate bash
 WORKDIR /app
 COPY --from=builder /app/target/release/treemap bin/treemap
+COPY docker/rootfs/ /
+COPY dev/schema-sqlite.sql /app
 
 ENV RUST_LOG info,treemap=debug
 

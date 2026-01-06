@@ -18,8 +18,7 @@ help:
 	@echo "make publish-image         -- publish the Docker image at ghcr.io"
 
 build:
-	make -C backend build
-	make -C frontend build
+	docker compose build
 
 image-shell:
 	docker run -it --rm -w /app treemap:$(VERSION) sh
@@ -34,3 +33,6 @@ serve:
 serve-local:
 	mkdir -p var
 	docker run -it --rm -v $(PWD)/var:/app/var -p 8001:8000 treemap:$(VERSION)
+
+start:
+	docker compose up
