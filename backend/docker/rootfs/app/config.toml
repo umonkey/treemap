@@ -59,3 +59,7 @@ osm_changeset_size = 100
 
 # This is where OSM redirects you after authorizing the app.
 #osm_redirect_uri = "http://127.0.0.1:8000/auth/callback"
+
+files_bucket = "treemap"
+files_endpoint = "https://fra1.digitaloceanspaces.com"
+files_region = "fra1"
