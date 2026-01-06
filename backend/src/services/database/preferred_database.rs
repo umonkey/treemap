@@ -4,7 +4,6 @@
 //! driver according to the configuration.
 
 use super::database_interface::*;
-use super::sqlite_database::*;
 use super::turso_database::*;
 use crate::config::{Config, Secrets};
 use crate::services::*;
@@ -27,10 +26,17 @@ impl Locatable for PreferredDatabase {
 
         if config.database == "turso" {
             let secrets = locator.get::<Secrets>()?;
-            let db = futures::executor::block_on(TursoDatabase::new(config, secrets))?;
+
+            let url: String = config.turso_url.clone().ok_or(Error::Config)?;
+            let token: String = secrets.require("TURSO_TOKEN")?;
+
+            let db = futures::executor::block_on(TursoDatabase::from_remote(&url, &token))?;
+
             Ok(Self { db: Arc::new(db) })
         } else {
-            let db = futures::executor::block_on(SqliteDatabase::new(config))?;
+            let path = &config.sqlite_path;
+            let db = futures::executor::block_on(TursoDatabase::from_local(path))?;
+
             Ok(Self { db: Arc::new(db) })
         }
     }

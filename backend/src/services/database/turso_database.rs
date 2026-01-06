@@ -3,7 +3,6 @@
 //! @docs https://docs.turso.tech/sdk/rust/quickstart
 
 use crate::common::database::queries::*;
-use crate::config::{Config, Secrets};
 use crate::services::*;
 use crate::types::*;
 use crate::utils::get_timestamp;
@@ -22,13 +21,22 @@ pub struct TursoDatabase {
 }
 
 impl TursoDatabase {
-    pub async fn new(config: Arc<Config>, secrets: Arc<Secrets>) -> Result<Self> {
-        let url = config.turso_url.clone().ok_or(Error::Config)?;
-        let token = secrets.require("TURSO_TOKEN")?;
-
-        let pool = Builder::new_remote(url.clone(), token).build().await?;
+    // Creates a client for a remote database.
+    pub async fn from_remote(url: &str, token: &str) -> Result<Self> {
+        let pool = Builder::new_remote(url.to_string(), token.to_string()).build().await?;
 
         info!("Connected to a Turso database at {}", url);
+
+        Ok(Self {
+            pool: Arc::new(pool),
+        })
+    }
+
+    // Creates a client for a local database.
+    pub async fn from_local(path: &str) -> Result<Self> {
+        let pool = Builder::new_local(path.to_string()).build().await?;
+
+        info!("Using an SQLite database in {}", path);
 
         Ok(Self {
             pool: Arc::new(pool),
@@ -83,16 +91,12 @@ impl TursoDatabase {
     }
 }
 
-impl Locatable for TursoDatabase {
-    fn create(locator: &Locator) -> Result<Self> {
-        let config = locator.get::<Config>()?;
-        let secrets = locator.get::<Secrets>()?;
-        futures::executor::block_on(Self::new(config, secrets))
-    }
-}
-
 #[async_trait]
 impl DatabaseInterface for TursoDatabase {
+    async fn sql(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>> {
+        self.fetch(query, params).await
+    }
+
     async fn get_record(&self, query: SelectQuery) -> Result<Option<Attributes>> {
         let query = query.with_limit(1);
         let records = self.get_records(query).await?;
