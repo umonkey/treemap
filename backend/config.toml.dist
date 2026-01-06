@@ -14,7 +14,7 @@ database = "sqlite"
 #turso_url = "libsql://foobar.aws-eu-west-1.turso.io"
 
 # Path to where the file based secrets are stored.
-#secrets_path = ".secrets"
+#secrets_path = "/run/secrets"
 
 # Define the bot user id, which will be used to perform automated actions.
 # Normally you run the app, sign up as a bot, then put the user id here.

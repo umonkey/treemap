@@ -29,7 +29,7 @@ impl Locatable for PreferredDatabase {
             let secrets = locator.get::<Secrets>()?;
 
             let url: String = config.turso_url.clone().ok_or(Error::Config)?;
-            let token: String = secrets.require("TURSO_TOKEN")?;
+            let token: String = secrets.turso_token.clone().ok_or(Error::Config)?;
 
             let db = futures::executor::block_on(TursoDatabase::from_remote(&url, &token))?;
 

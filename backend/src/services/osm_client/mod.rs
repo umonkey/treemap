@@ -6,7 +6,6 @@ use crate::utils::{get_app_name, get_app_version};
 use log::{debug, error, info};
 use reqwest::Client;
 use serde_json::Value;
-use std::sync::Arc;
 use xml::escape::escape_str_attribute;
 
 pub struct OsmClient {
@@ -15,7 +14,8 @@ pub struct OsmClient {
     redirect_uri: Option<String>,
     hashtag: Option<String>,
     activity: Option<String>,
-    secrets: Arc<Secrets>,
+    osm_client_secret: String,
+    osm_token: String,
 }
 
 impl OsmClient {
@@ -105,7 +105,7 @@ impl OsmClient {
                 "https://api.openstreetmap.org/oauth/token?grant_type=authorization_code&code={}&client_id={}&client_secret={}&redirect_uri={}",
                 code,
                 client_id,
-                self.secrets.require("OSM_CLIENT_SECRET")?,
+                self.osm_client_secret,
                 redirect_uri,
             ))
             .await?;
@@ -219,14 +219,12 @@ impl OsmClient {
     }
 
     async fn put(&self, url: &str, body: &str) -> Result<String> {
-        let token = self.secrets.require("OSM_TOKEN")?;
-
         debug!("OSM PUT: {url}; body: {body}");
 
         let response = match self
             .client
             .put(url)
-            .header("Authorization", format!("bearer {token}"))
+            .header("Authorization", format!("bearer {}", self.osm_token))
             .body(body.to_string())
             .send()
             .await
@@ -367,13 +365,30 @@ impl Locatable for OsmClient {
         let config = locator.get::<Config>()?;
         let secrets = locator.get::<Secrets>()?;
 
+        let osm_client_secret = secrets
+            .osm_client_secret
+            .clone()
+            .ok_or(Error::Config)
+            .inspect_err(|_| {
+                error!("Secret OSM_CLIENT_SECRET not set.");
+            })?;
+
+        let osm_token = secrets
+            .osm_client_secret
+            .clone()
+            .ok_or(Error::Config)
+            .inspect_err(|_| {
+                error!("Secret OSM_CLIENT_SECRET not set.");
+            })?;
+
         Ok(Self {
             client: reqwest::Client::new(),
             client_id: config.osm_client_id.clone(),
             redirect_uri: config.osm_redirect_uri.clone(),
             hashtag: config.osm_hashtag.clone(),
             activity: config.osm_activity.clone(),
-            secrets,
+            osm_client_secret,
+            osm_token,
         })
     }
 }

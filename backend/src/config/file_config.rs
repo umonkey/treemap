@@ -59,6 +59,12 @@ pub struct Config {
     // The number of web worker threads to spawn.
     #[serde(default = "default_workers")]
     pub workers: usize,
+
+    // Remote file storage config.
+    // Keys and secrets are in the Secrets class.
+    pub files_region: Option<String>,
+    pub files_endpoint: Option<String>,
+    pub files_bucket: Option<String>,
 }
 
 impl Config {
@@ -169,7 +175,7 @@ fn default_sqlite_path() -> String {
 }
 
 fn default_secrets_path() -> String {
-    ".secrets".to_string()
+    "/run/secrets".to_string()
 }
 
 #[cfg(test)]

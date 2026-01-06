@@ -125,13 +125,17 @@ impl TursoDatabase {
     async fn setup_pool(pool: &Database) -> Result<()> {
         let conn = pool.connect()?;
 
-        conn.execute_batch("PRAGMA journal_mode = WAL;").await.inspect_err(|e| {
-            error!("Error setting journal_mode: {e}");
-        })?;
+        conn.execute_batch("PRAGMA journal_mode = WAL;")
+            .await
+            .inspect_err(|e| {
+                error!("Error setting journal_mode: {e}");
+            })?;
 
-        conn.execute_batch("PRAGMA synchronous = NORMAL;").await.inspect_err(|e| {
-            error!("Error setting synchronous: {e}");
-        })?;
+        conn.execute_batch("PRAGMA synchronous = NORMAL;")
+            .await
+            .inspect_err(|e| {
+                error!("Error setting synchronous: {e}");
+            })?;
 
         if cfg!(test) {
             let schema = include_str!("../../../dev/schema-sqlite.sql");

@@ -21,7 +21,7 @@ impl FileStorageSelector {
 
     #[cfg(not(test))]
     pub async fn new(config: Arc<Config>, secrets: Arc<Secrets>) -> Result<Self> {
-        if let Ok(value) = S3FileStorage::new(secrets).await {
+        if let Ok(value) = S3FileStorage::new(config.clone(), secrets).await {
             return Ok(Self {
                 storage: Arc::new(value),
             });
