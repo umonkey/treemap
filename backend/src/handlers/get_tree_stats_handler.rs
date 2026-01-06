@@ -1,8 +1,8 @@
 use crate::common::database::repositories::*;
 use crate::services::*;
 use crate::types::*;
-use std::sync::Arc;
 use log::info;
+use std::sync::Arc;
 
 pub struct GetTreeStatsHandler {
     trees: Arc<TreeRepository>,
