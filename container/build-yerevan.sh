@@ -45,6 +45,7 @@ docker run --rm \
     -v $PWD/.cache/npm:/root/.npm \
     -w /app \
     -e VITE_SENTRY_AUTH_TOKEN="$SENTRY_AUTH_TOKEN" \
+    -e PUBLIC_API_ROOT="https://yerevan.treemaps.app/" \
     --network=host \
     --ulimit nofile=5000:5000 \
     docker.io/library/node:24-alpine3.22 \
