@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+cd /app
+bin/treemap osm-pull
+
+# Push new trees.
+#bin/treemap osm-push
+
+# Push updates to existing trees.
+#bin/treemap osm-push-changes

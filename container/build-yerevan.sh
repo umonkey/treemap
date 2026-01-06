@@ -8,7 +8,6 @@
 
 set -e
 
-API_ROOT="https://yerevan.treemaps.app/"
 VERSION="0.1.3"
 
 # (1) Log in to the Container registry.
@@ -45,9 +44,7 @@ docker run --rm \
     -v $PWD/frontend:/app \
     -v $PWD/.cache/npm:/root/.npm \
     -w /app \
-    -e VITE_API_ROOT="$API_ROOT" \
     -e VITE_SENTRY_AUTH_TOKEN="$SENTRY_AUTH_TOKEN" \
-    -e VITE_ENVIRONMENT="production" \
     --network=host \
     --ulimit nofile=5000:5000 \
     docker.io/library/node:24-alpine3.22 \

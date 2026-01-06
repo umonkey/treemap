@@ -1,0 +1,41 @@
+# Trees of Yerevan startup file.
+#
+# This file starts both frontend and backend to run the Trees of Yerevan
+# application in a dev environment.
+#
+# The web UI is available at:
+# http://127.0.0.1:5173/
+#
+# The backend needs to be rebuild and restarted on every change, the frontend
+# works in hot-reload mode.
+
+services:
+  backend:
+    build:
+      context: backend
+    container_name: trees-backend
+    command: /app/startup.sh
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - var:/app/var
+    environment:
+      - RUST_LOG=info,treemap=debug
+      - TREEMAP_SQLITE_PATH=/app/var/database.sqlite
+
+  frontend:
+    build:
+      context: frontend
+    container_name: trees-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules  # Prevents overwriting node_modules
+    depends_on:
+      - backend
+
+volumes:
+  var:

@@ -20,8 +20,6 @@ on:
   workflow_dispatch:
 
 env:
-  VITE_API_ROOT: "https://yerevan.treemaps.app/"
-  VITE_ENVIRONMENT: "production"
   CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_PAGES_TOKEN }}
 
 jobs:

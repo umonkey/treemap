@@ -1,5 +1,6 @@
 export { goto } from '$app/navigation';
 import type { ILatLng } from '$lib/types';
+import { config } from '$lib/env';
 
 type Params = {
 	[key: string]: string | undefined | null;
@@ -26,7 +27,7 @@ const build = (path: string, params: Params) => {
 export const routes = {
 	changedTrees: () => '/updates/changes',
 	comments: () => '/updates/comments',
-	file: (id: string) => `https://yerevan.treemaps.app/v1/files/${id}.jpg`,
+	file: (id: string) => `${config.fileBaseUrl}${id}.jpg`,
 	home: () => '/',
 	learn: () => '/learn',
 	map: () => '/map',
