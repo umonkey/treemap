@@ -14,7 +14,10 @@ pub struct OsmClient {
     redirect_uri: Option<String>,
     hashtag: Option<String>,
     activity: Option<String>,
+
+    // This is the app password, used to retrieve a token.
     osm_client_secret: String,
+
     osm_token: String,
 }
 
