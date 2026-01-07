@@ -24,13 +24,13 @@ impl ThumbnailerService {
             img.height()
         );
 
-        let rotated = self.autorotate(&img, data)?;
-        let resized = rotated.resize(size, size, image::imageops::FilterType::Lanczos3);
+        let rotated = self.autorotate(img, data)?;
+        let resized = rotated.thumbnail(size, size);
 
         let mut buf: Vec<u8> = Vec::new();
 
         resized
-            .to_rgb8()
+            .into_rgb8()
             .write_to(&mut Cursor::new(&mut buf), image::ImageFormat::Jpeg)
             .map_err(|e| {
                 error!("Error writing image: {e:?}");
@@ -83,15 +83,15 @@ impl ThumbnailerService {
         Ok(img)
     }
 
-    fn autorotate(&self, img: &DynamicImage, raw_image: &[u8]) -> Result<DynamicImage> {
+    fn autorotate(&self, img: DynamicImage, raw_image: &[u8]) -> Result<DynamicImage> {
         let rotated = match self.get_orientation(raw_image)? {
-            Some(90) => imageops::rotate90(img),
-            Some(180) => imageops::rotate180(img),
-            Some(270) => imageops::rotate270(img),
-            _ => img.clone().into(),
+            Some(90) => imageops::rotate90(&img).into(),
+            Some(180) => imageops::rotate180(&img).into(),
+            Some(270) => imageops::rotate270(&img).into(),
+            _ => img,
         };
 
-        Ok(rotated.into())
+        Ok(rotated)
     }
 
     fn get_orientation(&self, data: &[u8]) -> Result<Option<u32>> {
