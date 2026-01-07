@@ -80,7 +80,6 @@ pub async fn serve_command() {
             .service(like_tree_action)
             .service(unlike_tree_action)
             .service(login_google_action)
-            .service(login_google_v2_action)
             .service(login_google_v3_action)
             .service(login_osm_action)
             .service(move_tree_action)
