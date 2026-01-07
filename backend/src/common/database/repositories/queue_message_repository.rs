@@ -15,14 +15,13 @@ impl QueueMessageRepository {
     pub async fn pick(&self) -> Result<Option<QueueMessage>> {
         let now = get_timestamp();
 
-        let query = SelectQuery::new(TABLE).with_order("id");
+        let rows = self.db.sql(
+            "SELECT * FROM queue_messages WHERE attempts < 10 AND available_at <= ? ORDER BY added_at LIMIT 1",
+            &[Value::from(now)],
+        ).await?;
 
-        let records = self.query_multiple(query).await?;
-
-        for record in records {
-            if record.attempts < 10 && record.available_at <= now {
-                return Ok(Some(record));
-            }
+        if let Some(row) = rows.into_iter().next() {
+            return Ok(Some(QueueMessage::from_attributes(&row)?));
         }
 
         Ok(None)
@@ -48,15 +47,6 @@ impl QueueMessageRepository {
     pub async fn delete(&self, msg: &QueueMessage) -> Result<()> {
         let query = DeleteQuery::new(TABLE).with_condition("id", Value::from(msg.id as i64));
         self.db.delete(query).await
-    }
-
-    async fn query_multiple(&self, query: SelectQuery) -> Result<Vec<QueueMessage>> {
-        let records = self.db.get_records(query).await?;
-
-        records
-            .iter()
-            .map(|props| QueueMessage::from_attributes(props).map_err(|_| Error::DatabaseStructure))
-            .collect()
     }
 }
 
