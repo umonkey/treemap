@@ -5,6 +5,12 @@
 #
 # Configure Cloudflare Pages:
 # https://dash.cloudflare.com/d98a16a0928f8e884bf6bd54edc13181/workers-and-pages
+#
+# Get a new token here:
+# https://dash.cloudflare.com/profile/api-tokens
+#
+# Configure the repo secret here:
+# https://github.com/umonkey/treemap/settings/secrets/actions
 
 name: Deploy Frontend
 
