@@ -16,6 +16,10 @@ use std::sync::Arc;
 
 const SUGGEST_WINDOW: u64 = 3600 * 24; // 24 hours
 
+// This is where temporary database files are created to simulate
+// the in-memory database, which doesn't really work as we need with libsql.
+const TEMP_DB_DIR: &str = "var/test-files";
+
 pub struct TursoDatabase {
     pool: Arc<Database>,
 }
@@ -119,8 +123,14 @@ impl TursoDatabase {
     }
 
     fn get_temporary_path() -> String {
+        if !std::path::Path::new(TEMP_DB_DIR).is_dir() {
+            if let Err(e) = std::fs::create_dir_all(TEMP_DB_DIR) {
+                error!("Could not create temporary db location {TEMP_DB_DIR}: {e}");
+            }
+        }
+
         let id = get_unique_id().unwrap_or(0);
-        format!("var/test-{id}.db")
+        format!("{TEMP_DB_DIR}/db-{id}.db")
     }
 
     // Configure the SQLite engine.
