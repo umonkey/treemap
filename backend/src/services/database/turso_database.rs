@@ -112,6 +112,9 @@ impl TursoDatabase {
             res.push(row.into());
         }
 
+        // This is a temporary solution for debugging excessive Turso reads.
+        info!("Read {} rows for query: {query}", res.len());
+
         Ok(res)
     }
 

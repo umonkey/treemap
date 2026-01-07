@@ -16,7 +16,7 @@ dockerfile = "Dockerfile"
     grace_period = "10s"
     interval = "1m0s"
     method = "GET"
-    path = "/v1/trees/stats"
+    path = "/health"
     timeout = "1s"
 
 [env]
