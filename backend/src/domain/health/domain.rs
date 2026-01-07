@@ -9,12 +9,13 @@ pub struct GetHealthHandler {
 }
 
 impl GetHealthHandler {
-    pub async fn handle(&self) -> Result<TreeStatsResponse> {
-        let count = self.trees.count().await?;
+    pub async fn handle(&self) -> Result<()> {
+        // This runs a simple query againast the database.
+        // We don't care if it finds anything or not, just that it can connect.
+        self.trees.get(12345).await?;
 
-        info!("Serving tree stats (health check ok).");
-
-        Ok(TreeStatsResponse { count })
+        info!("Health check OK.");
+        Ok(())
     }
 }
 
