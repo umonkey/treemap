@@ -35,6 +35,7 @@ serve:
 	cargo run -- serve
 
 test:
+	mkdir -p var/test-files
 ifneq (,$(FILTER))
 	RUST_LOG="debug" cargo test -- $(FILTER) --nocapture --test-threads=1 --color=always
 else

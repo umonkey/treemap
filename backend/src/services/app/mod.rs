@@ -1,3 +1,4 @@
+use crate::domain::health::*;
 use crate::handlers::*;
 use crate::services::Locator;
 use crate::services::{FileService, TokenService};
@@ -16,6 +17,7 @@ pub struct AppState {
     pub delete_file_handler: Arc<DeleteFileHandler>,
     pub get_duplicates_handler: Arc<GetDuplicatesHandler>,
     pub get_file_status_handler: Arc<GetFileStatusHandler>,
+    pub get_health_handler: Arc<GetHealthHandler>,
     pub get_heatmap_handler: Arc<GetHeatmapHandler>,
     pub get_me_handler: Arc<GetMeHandler>,
     pub get_me_likes_handler: Arc<GetMeLikesHandler>,
@@ -74,6 +76,7 @@ impl AppState {
             delete_file_handler: locator.get::<DeleteFileHandler>()?,
             get_duplicates_handler: locator.get::<GetDuplicatesHandler>()?,
             get_file_status_handler: locator.get::<GetFileStatusHandler>()?,
+            get_health_handler: locator.get::<GetHealthHandler>()?,
             get_heatmap_handler: locator.get::<GetHeatmapHandler>()?,
             get_me_handler: locator.get::<GetMeHandler>()?,
             get_me_likes_handler: locator.get::<GetMeLikesHandler>()?,
