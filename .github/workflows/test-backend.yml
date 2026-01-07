@@ -21,6 +21,12 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Cache target files
+      uses: actions/cache@v4
+      with:
+        path: 'backend/target'
+        key: ${{ runner.os }}-linter-${{ hashFiles('backend/Cargo.lock') }}
+
     - name: Run sccache-cache
       uses: mozilla-actions/sccache-action@v0.0.9
 
@@ -41,6 +47,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: Cache target files
+      uses: actions/cache@v4
+      with:
+        path: 'backend/target'
+        key: ${{ runner.os }}-unit-${{ hashFiles('backend/Cargo.lock') }}
 
     - name: Run sccache-cache
       uses: mozilla-actions/sccache-action@v0.0.9
