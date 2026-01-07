@@ -56,8 +56,8 @@ test-coverage:
 	grcov . -s . --binary-path ./target/debug/ -t html --branch --ignore-not-existing -o ./target/debug/coverage/
 
 deploy-fly:
-	fly auth docker
 	docker build -t registry.fly.io/treemap-blue-frog-3927:$(REVISION) .
+	fly auth docker
 	docker push registry.fly.io/treemap-blue-frog-3927:$(REVISION)
 	fly deploy --image registry.fly.io/treemap-blue-frog-3927:$(REVISION)
 	docker rmi registry.fly.io/treemap-blue-frog-3927:$(REVISION)

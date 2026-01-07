@@ -1,7 +1,7 @@
 use crate::services::{Locatable, Locator};
 use crate::types::*;
 use image::{imageops, io::Reader, DynamicImage};
-use log::{debug, error};
+use log::{debug, error, info};
 use std::io::Cursor;
 use std::panic;
 
@@ -17,6 +17,12 @@ impl ThumbnailerService {
             debug!("Image too small, no need to downsize.");
             return Ok(data.to_vec());
         }
+
+        info!(
+            "Resizing an {}x{} image to {size} px.",
+            img.width(),
+            img.height()
+        );
 
         let rotated = self.autorotate(&img, data)?;
         let resized = rotated.resize(size, size, image::imageops::FilterType::Lanczos3);
