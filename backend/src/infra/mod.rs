@@ -2,3 +2,4 @@
 //! not directly related to the business logic of the application.
 
 pub mod database;
+pub mod queue;

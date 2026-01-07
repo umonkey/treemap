@@ -4,6 +4,7 @@
 //! The files are processed in the background.
 
 use crate::common::database::repositories::*;
+use crate::infra::queue::Queue;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::{fix_circumference, get_timestamp, get_unique_id};
@@ -13,7 +14,7 @@ use std::sync::Arc;
 pub struct AddTreesHandler {
     trees: Arc<TreeInjector>,
     users: Arc<UserRepository>,
-    queue: Arc<QueueService>,
+    queue: Arc<Queue>,
 }
 
 impl AddTreesHandler {
@@ -107,7 +108,7 @@ impl Locatable for AddTreesHandler {
         Ok(Self {
             trees: locator.get::<TreeInjector>()?,
             users: locator.get::<UserRepository>()?,
-            queue: locator.get::<QueueService>()?,
+            queue: locator.get::<Queue>()?,
         })
     }
 }

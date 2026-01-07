@@ -1,4 +1,5 @@
 use crate::common::database::repositories::*;
+use crate::infra::queue::Queue;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::{get_timestamp, get_unique_id};
@@ -6,7 +7,7 @@ use log::{debug, info};
 use std::sync::Arc;
 
 pub struct FileService {
-    queue: Arc<QueueService>,
+    queue: Arc<Queue>,
     storage: Arc<dyn FileStorageInterface>,
     files: Arc<FileRepository>,
 }
@@ -79,7 +80,7 @@ impl Locatable for FileService {
     fn create(locator: &Locator) -> Result<Self> {
         Ok(Self {
             storage: locator.get::<FileStorageSelector>()?.driver(),
-            queue: locator.get::<QueueService>()?,
+            queue: locator.get::<Queue>()?,
             files: locator.get::<FileRepository>()?,
         })
     }

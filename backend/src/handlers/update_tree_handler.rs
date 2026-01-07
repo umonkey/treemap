@@ -1,4 +1,5 @@
 use crate::common::database::repositories::*;
+use crate::infra::queue::Queue;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::{fix_circumference, get_timestamp};
@@ -9,7 +10,7 @@ pub struct UpdateTreeHandler {
     files: Arc<FileRepository>,
     trees: Arc<TreeRepository>,
     users: Arc<UserRepository>,
-    queue: Arc<QueueService>,
+    queue: Arc<Queue>,
 }
 
 impl UpdateTreeHandler {
@@ -113,7 +114,7 @@ impl Locatable for UpdateTreeHandler {
             files: locator.get::<FileRepository>()?,
             trees: locator.get::<TreeRepository>()?,
             users: locator.get::<UserRepository>()?,
-            queue: locator.get::<QueueService>()?,
+            queue: locator.get::<Queue>()?,
         })
     }
 }

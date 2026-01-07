@@ -16,6 +16,7 @@
 
 use crate::common::database::repositories::*;
 use crate::config::Config;
+use crate::infra::queue::Queue;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::{get_timestamp, get_unique_id};
@@ -27,7 +28,7 @@ const DEFAULT_STATE: &str = "healthy";
 pub struct OsmReaderService {
     trees: Arc<TreeRepository>,
     overpass_client: Arc<OverpassClient>,
-    queue: Arc<QueueService>,
+    queue: Arc<Queue>,
     user_id: u64,
     osm_trees: Arc<OsmTreeRepository>,
 }
@@ -172,7 +173,7 @@ impl Locatable for OsmReaderService {
         Ok(Self {
             trees: locator.get::<TreeRepository>()?,
             overpass_client: locator.get::<OverpassClient>()?,
-            queue: locator.get::<QueueService>()?,
+            queue: locator.get::<Queue>()?,
             user_id: config.bot_user_id,
             osm_trees: locator.get::<OsmTreeRepository>()?,
         })

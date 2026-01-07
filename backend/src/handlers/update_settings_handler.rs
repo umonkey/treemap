@@ -1,4 +1,5 @@
 use crate::common::database::repositories::*;
+use crate::infra::queue::Queue;
 use crate::services::*;
 use crate::types::*;
 use log::info;
@@ -6,7 +7,7 @@ use std::sync::Arc;
 
 pub struct UpdateSettingsHandler {
     users: Arc<UserRepository>,
-    queue: Arc<QueueService>,
+    queue: Arc<Queue>,
 }
 
 impl UpdateSettingsHandler {
@@ -39,7 +40,7 @@ impl Locatable for UpdateSettingsHandler {
     fn create(locator: &Locator) -> Result<Self> {
         Ok(Self {
             users: locator.get::<UserRepository>()?,
-            queue: locator.get::<QueueService>()?,
+            queue: locator.get::<Queue>()?,
         })
     }
 }

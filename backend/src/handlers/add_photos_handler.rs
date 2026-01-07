@@ -6,13 +6,14 @@
 //! The files aren't processed immediately; instead, we send them
 //! to a queue.
 
+use crate::infra::queue::Queue;
 use crate::services::*;
 use crate::types::*;
 use log::{error, info};
 use std::sync::Arc;
 
 pub struct AddPhotosHandler {
-    queue: Arc<QueueService>,
+    queue: Arc<Queue>,
 }
 
 impl AddPhotosHandler {
@@ -46,7 +47,7 @@ impl AddPhotosHandler {
 impl Locatable for AddPhotosHandler {
     fn create(locator: &Locator) -> Result<Self> {
         Ok(Self {
-            queue: locator.get::<QueueService>()?,
+            queue: locator.get::<Queue>()?,
         })
     }
 }

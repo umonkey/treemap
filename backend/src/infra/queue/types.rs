@@ -1,7 +1,5 @@
-//! This is how a single queue message is stored in the database.
-
 use crate::infra::database::{Attributes, Value};
-use crate::types::*;
+use crate::types::Result;
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]

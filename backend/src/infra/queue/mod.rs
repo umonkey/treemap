@@ -1,0 +1,10 @@
+//! This module contains code that talk to all supported queue types.
+//! Currently it's only the home grown queue based on the local database.
+
+mod base;
+mod database_queue;
+mod interface;
+mod types;
+
+pub use interface::Queue;
+pub use types::QueueMessage;
