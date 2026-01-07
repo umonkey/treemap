@@ -4,9 +4,7 @@
 use super::base::BaseQueueInterface;
 use super::types::QueueMessage;
 use crate::common::database::queries::{DeleteQuery, InsertQuery, UpdateQuery};
-use crate::infra::database::Value;
-use crate::services::DatabaseInterface;
-use crate::services::PreferredDatabase;
+use crate::infra::database::{Database, Value};
 use crate::services::{Locatable, Locator};
 use crate::types::Result;
 use crate::utils::{get_timestamp, get_unique_id};
@@ -18,7 +16,7 @@ const TABLE: &str = "queue_messages";
 const DELAY: u64 = 60;
 
 pub struct DatabaseQueue {
-    db: Arc<dyn DatabaseInterface>,
+    db: Arc<Database>,
 }
 
 // The actual queue logic for the shared interface.
@@ -86,7 +84,7 @@ impl BaseQueueInterface for DatabaseQueue {
 
 impl Locatable for DatabaseQueue {
     fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<PreferredDatabase>()?.driver();
+        let db = locator.get::<Database>()?;
         let queue = Self { db };
         Ok(queue)
     }

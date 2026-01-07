@@ -1,5 +1,5 @@
 use crate::common::database::repositories::*;
-use crate::infra::database::Value;
+use crate::infra::database::{Database, Value};
 use crate::services::*;
 use crate::types::*;
 use crate::utils::get_timestamp;
@@ -7,7 +7,7 @@ use log::error;
 use std::sync::Arc;
 
 pub struct GetTopUsersHandler {
-    db: Arc<dyn DatabaseInterface>,
+    db: Arc<Database>,
     users: Arc<UserRepository>,
 }
 
@@ -69,7 +69,7 @@ impl GetTopUsersHandler {
 impl Locatable for GetTopUsersHandler {
     fn create(locator: &Locator) -> Result<Self> {
         Ok(Self {
-            db: locator.get::<PreferredDatabase>()?.driver(),
+            db: locator.get::<Database>()?,
             users: locator.get::<UserRepository>()?,
         })
     }

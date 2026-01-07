@@ -3,7 +3,7 @@
 //! tree creation or manipulation.
 
 use crate::common::database::queries::*;
-use crate::infra::database::Value;
+use crate::infra::database::{Database, Value};
 use crate::services::*;
 use crate::types::*;
 use std::sync::Arc;
@@ -11,7 +11,7 @@ use std::sync::Arc;
 const TABLE: &str = "uploads";
 
 pub struct UploadRepository {
-    db: Arc<dyn DatabaseInterface>,
+    db: Arc<Database>,
 }
 
 impl UploadRepository {
@@ -41,7 +41,7 @@ impl UploadRepository {
 
 impl Locatable for UploadRepository {
     fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<PreferredDatabase>()?.driver();
+        let db = locator.get::<Database>()?;
         Ok(Self { db })
     }
 }

@@ -2,9 +2,9 @@
 //!
 //! @docs https://docs.turso.tech/sdk/rust/quickstart
 
+use super::base::DatabaseInterface;
 use crate::common::database::queries::*;
 use crate::infra::database::{Attributes, Value};
-use crate::services::*;
 use crate::types::*;
 use crate::utils::get_timestamp;
 use crate::utils::get_unique_id;
@@ -20,11 +20,11 @@ const SUGGEST_WINDOW: u64 = 3600 * 24; // 24 hours
 // the in-memory database, which doesn't really work as we need with libsql.
 const TEMP_DB_DIR: &str = "var/test-files";
 
-pub struct TursoDatabase {
+pub struct SqliteDatabase {
     pool: Arc<Database>,
 }
 
-impl TursoDatabase {
+impl SqliteDatabase {
     // Creates a client for a remote database.
     pub async fn from_remote(url: &str, token: &str) -> Result<Self> {
         let pool = Builder::new_remote(url.to_string(), token.to_string())
@@ -160,7 +160,7 @@ impl TursoDatabase {
 }
 
 #[async_trait]
-impl DatabaseInterface for TursoDatabase {
+impl DatabaseInterface for SqliteDatabase {
     async fn sql(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>> {
         self.fetch(query, params).await
     }
@@ -432,7 +432,7 @@ impl DatabaseInterface for TursoDatabase {
     }
 }
 
-impl Clone for TursoDatabase {
+impl Clone for SqliteDatabase {
     fn clone(&self) -> Self {
         Self {
             pool: self.pool.clone(),
@@ -445,12 +445,12 @@ mod tests {
     use super::*;
     use log::debug;
 
-    async fn setup() -> TursoDatabase {
+    async fn setup() -> SqliteDatabase {
         if env_logger::try_init().is_err() {
             debug!("env_logger already initialized.");
         };
 
-        let db = TursoDatabase::from_memory()
+        let db = SqliteDatabase::from_memory()
             .await
             .expect("Error creating database.");
 

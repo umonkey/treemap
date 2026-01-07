@@ -1,5 +1,5 @@
 use crate::common::database::queries::*;
-use crate::infra::database::Value;
+use crate::infra::database::{Database, Value};
 use crate::services::*;
 use crate::types::*;
 use crate::utils::unique_ids;
@@ -9,7 +9,7 @@ use std::sync::Arc;
 const TABLE: &str = "users";
 
 pub struct UserRepository {
-    db: Arc<dyn DatabaseInterface>,
+    db: Arc<Database>,
 }
 
 impl UserRepository {
@@ -144,7 +144,7 @@ impl UserRepository {
 
 impl Locatable for UserRepository {
     fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<PreferredDatabase>()?.driver();
+        let db = locator.get::<Database>()?;
         Ok(Self { db })
     }
 }

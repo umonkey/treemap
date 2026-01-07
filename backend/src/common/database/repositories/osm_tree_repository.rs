@@ -1,5 +1,5 @@
 use crate::common::database::queries::*;
-use crate::infra::database::Value;
+use crate::infra::database::{Database, Value};
 use crate::services::*;
 use crate::types::*;
 use log::error;
@@ -8,7 +8,7 @@ use std::sync::Arc;
 const TABLE: &str = "osm_trees";
 
 pub struct OsmTreeRepository {
-    db: Arc<dyn DatabaseInterface>,
+    db: Arc<Database>,
 }
 
 impl OsmTreeRepository {
@@ -62,7 +62,7 @@ impl OsmTreeRepository {
 
 impl Locatable for OsmTreeRepository {
     fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<PreferredDatabase>()?.driver();
+        let db = locator.get::<Database>()?;
         Ok(Self { db })
     }
 }

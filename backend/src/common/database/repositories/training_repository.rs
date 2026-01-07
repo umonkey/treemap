@@ -1,5 +1,5 @@
 use crate::common::database::queries::InsertQuery;
-use crate::infra::database::Value;
+use crate::infra::database::{Database, Value};
 use crate::services::*;
 use crate::types::*;
 use std::sync::Arc;
@@ -7,7 +7,7 @@ use std::sync::Arc;
 const TABLE: &str = "training";
 
 pub struct TrainingRepository {
-    db: Arc<dyn DatabaseInterface>,
+    db: Arc<Database>,
 }
 
 impl TrainingRepository {
@@ -24,7 +24,7 @@ impl TrainingRepository {
 
 impl Locatable for TrainingRepository {
     fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<PreferredDatabase>()?.driver();
+        let db = locator.get::<Database>()?;
         Ok(Self { db })
     }
 }

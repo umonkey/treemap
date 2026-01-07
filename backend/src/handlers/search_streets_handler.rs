@@ -1,11 +1,12 @@
 //! Returns street addresses that contain a substring.
 
+use crate::infra::database::Database;
 use crate::services::*;
 use crate::types::*;
 use std::sync::Arc;
 
 pub struct SearchStreetsHandler {
-    db: Arc<dyn DatabaseInterface>,
+    db: Arc<Database>,
 }
 
 impl SearchStreetsHandler {
@@ -18,7 +19,7 @@ impl SearchStreetsHandler {
 
 impl Locatable for SearchStreetsHandler {
     fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<PreferredDatabase>()?.driver();
+        let db = locator.get::<Database>()?;
         Ok(Self { db })
     }
 }
