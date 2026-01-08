@@ -27,7 +27,7 @@ impl BaseQueueInterface for DatabaseQueue {
         let now = get_timestamp();
 
         let msg = QueueMessage {
-            id,
+            id: id.to_string(),
             added_at: now,
             available_at: now,
             payload: payload.to_string(),
@@ -58,7 +58,8 @@ impl BaseQueueInterface for DatabaseQueue {
     }
 
     async fn delete(&self, msg: &QueueMessage) -> Result<()> {
-        let query = DeleteQuery::new(TABLE).with_condition("id", Value::from(msg.id as i64));
+        let id = msg.id.parse::<i64>().unwrap_or_default();
+        let query = DeleteQuery::new(TABLE).with_condition("id", Value::from(id));
         self.db.delete(query).await?;
 
         debug!("Message {} deleted from queue.", msg.id);
@@ -69,9 +70,10 @@ impl BaseQueueInterface for DatabaseQueue {
     async fn delay(&self, msg: &QueueMessage) -> Result<()> {
         let now = get_timestamp();
         let available_at = now + DELAY * msg.attempts + 1;
+        let id = msg.id.parse::<i64>().unwrap_or_default();
 
         let query = UpdateQuery::new(TABLE)
-            .with_condition("id", Value::from(msg.id))
+            .with_condition("id", Value::from(id))
             .with_value("available_at", Value::from(available_at))
             .with_value("attempts", Value::from(msg.attempts + 1));
 

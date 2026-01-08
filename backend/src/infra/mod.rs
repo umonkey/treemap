@@ -4,3 +4,4 @@
 pub mod database;
 pub mod google_auth;
 pub mod queue;
+pub mod storage;

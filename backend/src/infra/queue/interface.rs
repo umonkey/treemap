@@ -5,7 +5,9 @@
 
 use super::base::BaseQueueInterface;
 use super::database_queue::DatabaseQueue;
+use super::sqs_queue::SqsQueue;
 use super::types::QueueMessage;
+use crate::config::Config;
 use crate::services::{Locatable, Locator};
 use crate::types::Result;
 use std::sync::Arc;
@@ -16,7 +18,14 @@ pub struct Queue {
 
 impl Locatable for Queue {
     fn create(locator: &Locator) -> Result<Self> {
-        let queue = locator.get::<DatabaseQueue>()?;
+        let config = locator.get::<Config>()?;
+
+        let queue: Arc<dyn BaseQueueInterface> = if config.sqs_queue.is_some() {
+            locator.get::<SqsQueue>()?
+        } else {
+            locator.get::<DatabaseQueue>()?
+        };
+
         Ok(Self { queue })
     }
 }

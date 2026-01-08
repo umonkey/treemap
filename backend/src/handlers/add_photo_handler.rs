@@ -3,6 +3,7 @@
 //! This message is sent whenever a user adds a file to a tree as a photo.
 
 use crate::common::database::repositories::*;
+use crate::infra::storage::FileStorage;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::*;
@@ -15,7 +16,7 @@ const LARGE_SIZE: u32 = 2000;
 pub struct AddPhotoHandler {
     files: Arc<FileRepository>,
     uploads: Arc<UploadRepository>,
-    storage: Arc<dyn FileStorageInterface>,
+    storage: Arc<FileStorage>,
     thumbnailer: Arc<ThumbnailerService>,
     trees: Arc<TreeRepository>,
 }
@@ -106,7 +107,7 @@ impl Locatable for AddPhotoHandler {
         Ok(Self {
             files: locator.get::<FileRepository>()?,
             uploads: locator.get::<UploadRepository>()?,
-            storage: locator.get::<FileStorageSelector>()?.driver(),
+            storage: locator.get::<FileStorage>()?,
             thumbnailer: locator.get::<ThumbnailerService>()?,
             trees: locator.get::<TreeRepository>()?,
         })

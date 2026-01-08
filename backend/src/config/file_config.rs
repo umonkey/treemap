@@ -47,6 +47,13 @@ pub struct Config {
     #[serde(default = "default_database")]
     pub database: String,
 
+    #[serde(default = "default_file_storage")]
+    pub file_storage: String,
+
+    // Select the queue engine.
+    #[serde(default = "default_queue")]
+    pub queue: String,
+
     #[serde(default = "default_sqlite_path")]
     pub sqlite_path: String,
 
@@ -173,6 +180,14 @@ fn default_overpass_query() -> String {
 
 fn default_database() -> String {
     "sqlite".to_string()
+}
+
+fn default_queue() -> String {
+    "database".to_string()
+}
+
+fn default_file_storage() -> String {
+    "local".to_string()
 }
 
 fn default_sqlite_path() -> String {

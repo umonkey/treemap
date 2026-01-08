@@ -1,6 +1,5 @@
 mod app;
 mod comment_injector;
-mod file_storage;
 mod files;
 mod locator;
 mod nominatim_service;
@@ -15,7 +14,6 @@ mod tree_injector;
 mod tree_list_loader;
 pub use app::*;
 pub use comment_injector::*;
-pub use file_storage::*;
 pub use files::*;
 pub use locator::*;
 pub use nominatim_service::*;
