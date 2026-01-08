@@ -25,6 +25,10 @@ pub struct Secrets {
 
     // Local authentication.
     pub jwt_secret: Option<String>,
+
+    // Background job queue.
+    pub sqs_key: Option<String>,
+    pub sqs_secret: Option<String>,
 }
 
 impl Secrets {
@@ -38,6 +42,8 @@ impl Secrets {
             osm_token: Self::get(path, "OSM_TOKEN"),
             turso_token: Self::get(path, "TURSO_TOKEN"),
             jwt_secret: Self::get(path, "JWT_SECRET"),
+            sqs_key: Self::get(path, "SQS_KEY"),
+            sqs_secret: Self::get(path, "SQS_SECRET"),
         })
     }
 
