@@ -1,9 +1,9 @@
 use jsonwebtoken::errors::Error as JwtError;
+use libsql::Error as LibSqlError;
 use std::convert::From;
 use std::fmt;
 
 use actix_web::{error::ResponseError, http::header::ContentType, http::StatusCode, HttpResponse};
-use async_sqlite::Error as SqliteError;
 
 #[derive(Debug)]
 pub enum Error {
@@ -117,8 +117,8 @@ impl Error {
     }
 }
 
-impl From<SqliteError> for Error {
-    fn from(_: SqliteError) -> Self {
+impl From<LibSqlError> for Error {
+    fn from(_: LibSqlError) -> Self {
         Error::DatabaseQuery
     }
 }

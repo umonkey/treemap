@@ -29,6 +29,7 @@ WORKDIR /app
 COPY --from=builder /app/target/release/treemap bin/treemap
 COPY docker/rootfs/ /
 COPY dev/schema-sqlite.sql /app
+COPY static /app/static
 
 ENV RUST_LOG info,treemap=debug
 

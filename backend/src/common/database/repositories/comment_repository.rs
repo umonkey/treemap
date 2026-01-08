@@ -1,15 +1,15 @@
 //! Access to the comments table.
 
 use crate::common::database::queries::*;
+use crate::infra::database::{Database, Value};
 use crate::services::*;
 use crate::types::*;
-use rusqlite::types::Value;
 use std::sync::Arc;
 
 const TABLE: &str = "comments";
 
 pub struct CommentRepository {
-    db: Arc<dyn DatabaseInterface>,
+    db: Arc<Database>,
 }
 
 impl CommentRepository {
@@ -53,7 +53,7 @@ impl CommentRepository {
 impl Locatable for CommentRepository {
     fn create(locator: &Locator) -> Result<Self> {
         Ok(Self {
-            db: locator.get::<PreferredDatabase>()?.driver(),
+            db: locator.get::<Database>()?,
         })
     }
 }

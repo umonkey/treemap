@@ -6,12 +6,13 @@
 //! Gone trees and stumps are excluded from the count.
 
 use crate::common::reports::format_species_report;
+use crate::infra::database::Database;
 use crate::services::*;
 use crate::types::*;
 use std::sync::Arc;
 
 pub struct GetSpeciesStatsHandler {
-    db: Arc<dyn DatabaseInterface>,
+    db: Arc<Database>,
 }
 
 impl GetSpeciesStatsHandler {
@@ -24,7 +25,7 @@ impl GetSpeciesStatsHandler {
 
 impl Locatable for GetSpeciesStatsHandler {
     fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<PreferredDatabase>()?.driver();
+        let db = locator.get::<Database>()?;
         Ok(Self { db })
     }
 }

@@ -1,0 +1,30 @@
+app = "treemap-blue-frog-3927"
+primary_region = "fra"
+
+[build]
+dockerfile = "Dockerfile"
+
+[http_service]
+  auto_start_machines = true
+  auto_stop_machines = false
+  force_https = true
+  internal_port = 8_000
+  min_machines_running = 1
+  processes = [ "app" ]
+
+  [[http_service.checks]]
+    grace_period = "10s"
+    interval = "1m0s"
+    method = "GET"
+    path = "/health"
+    timeout = "1s"
+
+[env]
+  RUST_LOG = "info"
+
+#[[mounts]]
+#destination = "/app/var"
+#source = "treemaps_var"
+
+[[vm]]
+size = "shared-cpu-1x"

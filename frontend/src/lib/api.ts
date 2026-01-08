@@ -8,7 +8,6 @@ import type {
 	ICommentList,
 	IHeatMap,
 	ILikeList,
-	ILoginResponse,
 	IMarkers,
 	IMeResponse,
 	IRawError,
@@ -233,17 +232,6 @@ export class ApiClient {
 			headers: {
 				'Content-Type': 'application/json',
 				...this.getAuthHeaders()
-			}
-		});
-	}
-
-	public async loginWithGoogle(token: string): Promise<IResponse<ILoginResponse>> {
-		console.debug('[api] Logging in with Google');
-
-		return await this.request('POST', 'v2/login/google', {
-			body: JSON.stringify({ token }),
-			headers: {
-				'Content-Type': 'application/json'
 			}
 		});
 	}

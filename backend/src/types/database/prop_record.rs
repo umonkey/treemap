@@ -1,5 +1,5 @@
+use crate::infra::database::{Attributes, Value};
 use crate::types::*;
-use rusqlite::types::Value;
 use serde::Serialize;
 
 #[derive(Clone, Debug, Default, Serialize)]

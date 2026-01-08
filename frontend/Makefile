@@ -9,12 +9,8 @@ clean:
 	rm -rf node_modules
 
 deploy:
-	$(MAKE) build
-	rm -rf ../../umonkey.github.io/*
-	cp -r build/* ../../umonkey.github.io/
-	git -C ../../umonkey.github.io/ add .
-	git -C ../../umonkey.github.io/ commit -m "Deploy"
-	git -C ../../umonkey.github.io/ push
+	npm run build
+	npx wrangler pages deploy ./build --project-name=trees-of-yerevan --branch=master
 
 install:
 	npm ci

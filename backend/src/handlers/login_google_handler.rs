@@ -1,9 +1,9 @@
 use crate::common::database::repositories::*;
+use crate::infra::google_auth::{AuthResponse, GoogleAuthClient};
 use crate::services::*;
 use crate::types::*;
 use crate::utils::{get_timestamp, get_unique_id};
 use log::{debug, info};
-use reqwest::header::{HeaderMap, HeaderValue};
 use std::sync::Arc;
 
 const TOKEN_TTL: u64 = 30 * 86400; // 30 days
@@ -11,13 +11,14 @@ const TOKEN_TTL: u64 = 30 * 86400; // 30 days
 pub struct LoginGoogleHandler {
     users: Arc<UserRepository>,
     tokens: Arc<TokenService>,
+    auth: GoogleAuthClient,
 }
 
 impl LoginGoogleHandler {
     pub async fn handle(&self, req: LoginGoogleRequest) -> Result<LoginResponse> {
         debug!("Authenticating a Google user.");
 
-        let userinfo = self.get_google_userinfo(req.token).await?;
+        let userinfo = self.auth.verify_token(&req.token).await?;
         let user = self.get_user(&userinfo).await?;
 
         let token = self.tokens.encode(&TokenClaims {
@@ -32,7 +33,7 @@ impl LoginGoogleHandler {
         })
     }
 
-    async fn get_user(&self, userinfo: &GoogleUserinfoResponse) -> Result<UserRecord> {
+    async fn get_user(&self, userinfo: &AuthResponse) -> Result<UserRecord> {
         if let Some(user) = self.users.get_by_email(&userinfo.email).await? {
             debug!("Found a user with email {}.", userinfo.email);
             return Ok(user);
@@ -57,50 +58,6 @@ impl LoginGoogleHandler {
 
         Ok(user)
     }
-
-    async fn get_google_userinfo(&self, access_token: String) -> Result<GoogleUserinfoResponse> {
-        let client = reqwest::Client::new();
-        let headers = self.get_login_headers(&access_token)?;
-
-        let req = client
-            .get("https://www.googleapis.com/oauth2/v1/userinfo")
-            .headers(headers);
-
-        debug!("Request: {req:?}");
-
-        let res = match req.send().await {
-            Ok(res) => res,
-
-            Err(e) => {
-                debug!("Failed to get user info from Google: {e:?}");
-                return Err(Error::GoogleUserInfo);
-            }
-        };
-
-        match res.json::<GoogleUserinfoResponse>().await {
-            Ok(u) => Ok(u),
-
-            Err(e) => {
-                debug!("Failed to parse Google response: {e:?}");
-                Err(Error::GoogleUserInfo)
-            }
-        }
-    }
-
-    fn get_login_headers(&self, token: &str) -> Result<HeaderMap> {
-        let auth_header = match HeaderValue::from_str(format!("Bearer {token}").as_str()) {
-            Ok(h) => h,
-
-            Err(e) => {
-                debug!("Failed to create auth header: {e}");
-                return Err(Error::BadAuthToken);
-            }
-        };
-
-        let mut headers = HeaderMap::new();
-        headers.insert("Authorization", auth_header);
-        Ok(headers)
-    }
 }
 
 impl Locatable for LoginGoogleHandler {
@@ -108,6 +65,7 @@ impl Locatable for LoginGoogleHandler {
         Ok(Self {
             users: locator.get::<UserRepository>()?,
             tokens: locator.get::<TokenService>()?,
+            auth: GoogleAuthClient::new(),
         })
     }
 }

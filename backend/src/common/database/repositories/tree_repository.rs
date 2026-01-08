@@ -1,16 +1,16 @@
 use crate::common::database::queries::*;
 use crate::common::database::repositories::*;
+use crate::infra::database::{Database, Value};
 use crate::services::*;
 use crate::types::*;
 use crate::utils::get_timestamp;
 use log::{debug, error, info};
-use rusqlite::types::Value;
 use std::sync::Arc;
 
 const TABLE: &str = "trees";
 
 pub struct TreeRepository {
-    db: Arc<dyn DatabaseInterface>,
+    db: Arc<Database>,
     props: Arc<PropRepository>,
 }
 
@@ -418,7 +418,7 @@ impl TreeRepository {
 
 impl Locatable for TreeRepository {
     fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<PreferredDatabase>()?.driver();
+        let db = locator.get::<Database>()?;
         let props = locator.get::<PropRepository>()?;
         Ok(Self { db, props })
     }

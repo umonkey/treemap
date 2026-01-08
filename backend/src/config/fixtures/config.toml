@@ -1,1 +1,2 @@
 bot_user_id = 123456789
+database = "memory"

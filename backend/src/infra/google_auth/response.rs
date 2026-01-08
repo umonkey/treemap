@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize)]
-pub struct GoogleUserinfoResponse {
+pub struct AuthResponse {
     pub id: String,
     pub email: String,
     pub verified_email: bool,

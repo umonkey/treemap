@@ -1,6 +1,5 @@
 use super::formatters::*;
-use crate::types::Attributes;
-use rusqlite::types::Value;
+use crate::infra::database::{Attributes, Value};
 
 #[derive(Debug, Default)]
 pub struct IncrementQuery {

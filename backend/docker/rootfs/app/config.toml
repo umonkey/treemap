@@ -1,0 +1,65 @@
+# This is the default configuration file for the application.
+
+# Database configuration.
+# Values: sqlite, turso.
+database = "turso"
+
+# SQLite database path.
+#sqlite_path = "var/database.sqlite"
+
+# Turso database configuration.
+# Turso is essentially a cloud SQLite.
+# The token will be read from the environment variable TURSO_TOKEN.
+# Details: https://docs.turso.tech/sdk/rust/quickstart
+turso_url = "libsql://treemap-umonkey.aws-eu-west-1.turso.io"
+
+# Path to where the file based secrets are stored.
+#secrets_path = "/run/secrets"
+
+# Define the bot user id, which will be used to perform automated actions.
+# Normally you run the app, sign up as a bot, then put the user id here.
+# Then the automated operations, such as OSM pulls, will become available.
+#
+# If this is not set, OSM interaction will not work.
+bot_user_id = 1
+
+osm_changeset_size = 100
+
+# Where to store temporary files, before they are uploaded to the external S3 storage.
+#file_folder = "var/files"
+
+# The number of worker threads.  Normally set to the number of threads your CPU has.
+#worker_threads = 1
+
+# Max request payload size, defaults to 50M.
+#payload_size = 50485760
+
+# Default Overpass API endpoint to use for OSM data queries.
+# This is used when pulling new nodes from the OSM database.
+#overpass_endpoint = "https://overpass-api.de/api/interpreter"
+
+# Default Overpass API query.
+# This query is used to pull new nodes from the OSM database.
+# Defaults to Yerevan, Armenia.
+#overpass_query = "[out:json];node[natural=tree](40.052848, 44.294472, 40.300476, 44.807396);out;"
+
+# OSM client id.
+# This is needed for OSM Push.
+# Sign up here: https://www.openstreetmap.org/oauth2/applications
+#osm_client_id = "your_osm_client_id"
+
+# OSM hashtag to add to all uploaded changesets.
+# You are strongly encouraged to use a unique hashtag for your project.
+# Details: https://wiki.openstreetmap.org/wiki/Changeset
+#osm_hashtag = "YerevanTreeMap"
+
+# Link to your OSM Organized Activity here.
+# This is required for batch uploads.
+#osm_activity = "https://wiki.openstreetmap.org/wiki/Organised_Editing/Activities/Yerevan_Tree_Map"
+
+# This is where OSM redirects you after authorizing the app.
+#osm_redirect_uri = "http://127.0.0.1:8000/auth/callback"
+
+files_bucket = "treemap"
+files_endpoint = "https://fra1.digitaloceanspaces.com"
+files_region = "fra1"

@@ -1,5 +1,6 @@
 //! Return the heatmap data for the updates.
 
+use crate::infra::database::Database;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::get_timestamp;
@@ -8,7 +9,7 @@ use std::collections::HashMap;
 use std::sync::Arc;
 
 pub struct GetHeatmapHandler {
-    db: Arc<dyn DatabaseInterface>,
+    db: Arc<Database>,
 }
 
 impl GetHeatmapHandler {
@@ -91,7 +92,7 @@ impl GetHeatmapHandler {
 
 impl Locatable for GetHeatmapHandler {
     fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<PreferredDatabase>()?.driver();
+        let db = locator.get::<Database>()?;
         Ok(Self { db })
     }
 }

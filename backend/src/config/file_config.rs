@@ -44,8 +44,14 @@ pub struct Config {
     #[serde(default = "default_server_port")]
     pub server_port: u16,
 
+    #[serde(default = "default_database")]
+    pub database: String,
+
     #[serde(default = "default_sqlite_path")]
     pub sqlite_path: String,
+
+    // Cloud SQLite URL.
+    pub turso_url: Option<String>,
 
     #[serde(default = "default_secrets_path")]
     pub secrets_path: String,
@@ -53,6 +59,12 @@ pub struct Config {
     // The number of web worker threads to spawn.
     #[serde(default = "default_workers")]
     pub workers: usize,
+
+    // Remote file storage config.
+    // Keys and secrets are in the Secrets class.
+    pub files_region: Option<String>,
+    pub files_endpoint: Option<String>,
+    pub files_bucket: Option<String>,
 }
 
 impl Config {
@@ -154,12 +166,16 @@ fn default_overpass_query() -> String {
     "[out:json];node[natural=tree](40.052848, 44.294472, 40.300476, 44.807396);out;".to_string()
 }
 
+fn default_database() -> String {
+    "sqlite".to_string()
+}
+
 fn default_sqlite_path() -> String {
     "var/database.sqlite".to_string()
 }
 
 fn default_secrets_path() -> String {
-    ".secrets".to_string()
+    "/run/secrets".to_string()
 }
 
 #[cfg(test)]

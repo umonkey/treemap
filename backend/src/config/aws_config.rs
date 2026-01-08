@@ -1,18 +1,46 @@
-use crate::config::Secrets;
-use crate::types::Result;
+use crate::config::{Config, Secrets};
+use crate::types::{Error, Result};
 use aws_config::{BehaviorVersion, Region, SdkConfig};
 use aws_credential_types::Credentials;
 use aws_sdk_s3::config::SharedCredentialsProvider;
+use log::error;
 use std::sync::Arc;
 
 pub struct AwsConfig {}
 
 impl AwsConfig {
-    pub fn files(secrets: Arc<Secrets>) -> Result<SdkConfig> {
-        let key = secrets.require("FILES_KEY")?;
-        let secret = secrets.require("FILES_SECRET")?;
-        let region = secrets.require("FILES_REGION")?;
-        let endpoint = secrets.require("FILES_ENDPOINT")?;
+    pub fn files(config: Arc<Config>, secrets: Arc<Secrets>) -> Result<SdkConfig> {
+        let key = secrets
+            .files_key
+            .clone()
+            .ok_or(Error::Config)
+            .inspect_err(|_e| {
+                error!("Secret FILES_KEY not set.");
+            })?;
+
+        let secret = secrets
+            .files_secret
+            .clone()
+            .ok_or(Error::Config)
+            .inspect_err(|_e| {
+                error!("Secret FILES_SECRET not set.");
+            })?;
+
+        let region = config
+            .files_region
+            .clone()
+            .ok_or(Error::Config)
+            .inspect_err(|_e| {
+                error!("Config option FILES_REGION not set.");
+            })?;
+
+        let endpoint = config
+            .files_endpoint
+            .clone()
+            .ok_or(Error::Config)
+            .inspect_err(|_e| {
+                error!("Config option FILES_ENDPOIT not set.");
+            })?;
 
         let credentials = Credentials::new(&key, &secret, None, None, Self::get_app());
         let credentials = SharedCredentialsProvider::new(credentials);

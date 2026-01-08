@@ -1,14 +1,14 @@
 use crate::common::database::queries::*;
+use crate::infra::database::{Database, Value};
 use crate::services::*;
 use crate::types::*;
 use log::error;
-use rusqlite::types::Value;
 use std::sync::Arc;
 
 const TABLE: &str = "likes";
 
 pub struct LikeRepository {
-    db: Arc<dyn DatabaseInterface>,
+    db: Arc<Database>,
 }
 
 impl LikeRepository {
@@ -55,7 +55,7 @@ impl LikeRepository {
 impl Locatable for LikeRepository {
     fn create(locator: &Locator) -> Result<Self> {
         Ok(Self {
-            db: locator.get::<PreferredDatabase>()?.driver(),
+            db: locator.get::<Database>()?,
         })
     }
 }

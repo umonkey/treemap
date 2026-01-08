@@ -7,35 +7,60 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  SCCACHE_GHA_ENABLED: "true"
+  RUSTC_WRAPPER: "sccache"
 
 jobs:
   linter:
     name: "Linter"
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: Cache target files
+      uses: actions/cache@v4
+      with:
+        path: 'backend/target'
+        key: ${{ runner.os }}-linter-${{ hashFiles('backend/Cargo.lock') }}
+
+    - name: Run sccache-cache
+      uses: mozilla-actions/sccache-action@v0.0.9
 
     # Adds cache with some defaults, see https://github.com/marketplace/actions/rust-cache
     - uses: Swatinem/rust-cache@v2
 
     - name: Run tests
       run: |
-        cd backend
         cargo clippy
         cargo fmt --check
 
   unit:
     name: "Unit tests"
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: Cache target files
+      uses: actions/cache@v4
+      with:
+        path: 'backend/target'
+        key: ${{ runner.os }}-unit-${{ hashFiles('backend/Cargo.lock') }}
+
+    - name: Run sccache-cache
+      uses: mozilla-actions/sccache-action@v0.0.9
 
     # Adds cache with some defaults, see https://github.com/marketplace/actions/rust-cache
     - uses: Swatinem/rust-cache@v2
 
     - name: Run tests
       run: |
-        cd backend
+        mkdir -p var
         cargo test --verbose

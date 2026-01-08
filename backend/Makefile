@@ -1,4 +1,4 @@
-DATABASE=var/database.sqlite
+REVISION=$(shell git rev-parse --short HEAD)
 
 help:
 	@echo "make build         -- build the project"
@@ -34,20 +34,12 @@ queue:
 serve:
 	cargo run -- serve
 
-sqlite:
-	sqlite3 $(DATABASE)
-
-sqlite-schema:
-	sqlite3 $(DATABASE) < dev/schema-sqlite.sql
-
-sqlite-seed:
-	sqlite3 $(DATABASE) < dev/seed-sqlite.sql
-
 test:
 ifneq (,$(FILTER))
 	RUST_LOG="debug" cargo test -- $(FILTER) --nocapture --test-threads=1 --color=always
 else
 	RUST_LOG="warn" cargo test -- --color=always
+	rm -f var/test-*.db
 endif
 	rm -f var/test-files/*
 
@@ -61,3 +53,10 @@ shell:
 test-coverage:
 	RUSTFLAGS="-Cinstrument-coverage" LLVM_PROFILE_FILE="test.profraw" RUST_LOG="warn" cargo test
 	grcov . -s . --binary-path ./target/debug/ -t html --branch --ignore-not-existing -o ./target/debug/coverage/
+
+deploy-fly:
+	docker build -t registry.fly.io/treemap-blue-frog-3927:$(REVISION) .
+	fly auth docker
+	docker push registry.fly.io/treemap-blue-frog-3927:$(REVISION)
+	fly deploy --image registry.fly.io/treemap-blue-frog-3927:$(REVISION)
+	docker rmi registry.fly.io/treemap-blue-frog-3927:$(REVISION)

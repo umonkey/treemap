@@ -55,12 +55,6 @@ export interface IStats {
 	count: number;
 }
 
-export interface ILoginResponse {
-	token: string;
-	name: string;
-	picture: string;
-}
-
 export interface ITreeUpdatePayload {
 	lat?: number | null;
 	lon?: number | null;

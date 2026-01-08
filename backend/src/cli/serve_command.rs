@@ -5,6 +5,7 @@
 
 use crate::actions::*;
 use crate::config::Config;
+use crate::domain::health::*;
 use crate::services::*;
 use actix_cors::Cors;
 use actix_files::Files;
@@ -56,6 +57,7 @@ pub async fn serve_command() {
             .service(get_file_jpg)
             .service(get_file)
             .service(get_file_status_action)
+            .service(get_health_action)
             .service(get_heatmap_action)
             .service(get_user_heatmap_action)
             .service(get_me_action)
@@ -78,7 +80,6 @@ pub async fn serve_command() {
             .service(like_tree_action)
             .service(unlike_tree_action)
             .service(login_google_action)
-            .service(login_google_v2_action)
             .service(login_google_v3_action)
             .service(login_osm_action)
             .service(move_tree_action)

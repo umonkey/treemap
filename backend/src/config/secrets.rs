@@ -1,8 +1,10 @@
-//! Provides access to file-based secrest.
+//! Provides access to file-based and environment-based secrets.
+//!
+//! When adding or removing secrets, please update `docs/Configuration.md`
 
 use crate::config::Config;
 use crate::services::{Locatable, Locator};
-use crate::types::{Error, Result};
+use crate::types::Result;
 use log::{debug, warn};
 use std::fs;
 use std::io::Read;
@@ -10,25 +12,47 @@ use std::sync::Arc;
 
 #[allow(unused)]
 pub struct Secrets {
-    path: String,
+    // S3 Bucket access.
+    pub files_key: Option<String>,
+    pub files_secret: Option<String>,
+
+    // OSM API Access.
+    pub osm_client_secret: Option<String>,
+    pub osm_token: Option<String>,
+
+    // Cloud SQLite.
+    pub turso_token: Option<String>,
+
+    // Local authentication.
+    pub jwt_secret: Option<String>,
 }
 
 impl Secrets {
     pub fn new(config: Arc<Config>) -> Result<Self> {
+        let path = &config.secrets_path.clone();
+
         Ok(Self {
-            path: config.secrets_path.clone(),
+            files_key: Self::get(path, "FILES_KEY"),
+            files_secret: Self::get(path, "FILES_SECRET"),
+            osm_client_secret: Self::get(path, "OSM_CLIENT_SECRET"),
+            osm_token: Self::get(path, "OSM_TOKEN"),
+            turso_token: Self::get(path, "TURSO_TOKEN"),
+            jwt_secret: Self::get(path, "JWT_SECRET"),
         })
     }
 
-    #[allow(unused)]
-    pub fn get(&self, name: &str) -> Option<String> {
-        let path = format!("{}/{}", self.path, name);
+    pub fn get(path: &str, key: &str) -> Option<String> {
+        if let Ok(value) = std::env::var(key) {
+            return Some(value);
+        }
 
-        let mut file = match fs::File::open(path.clone()) {
+        let file_path = format!("{path}/{key}");
+
+        let mut file = match fs::File::open(&file_path) {
             Ok(v) => v,
 
             Err(e) => {
-                warn!("Error opening {path}: {e}");
+                warn!("Error reading secret from {file_path}: {e}");
                 return None;
             }
         };
@@ -36,7 +60,7 @@ impl Secrets {
         let mut contents = String::new();
 
         match file.read_to_string(&mut contents) {
-            Ok(value) => {
+            Ok(_value) => {
                 debug!("Read secret from {path}");
                 Some(contents)
             }
@@ -45,21 +69,6 @@ impl Secrets {
                 warn!("Error reading {path}: {e}");
                 None
             }
-        }
-    }
-
-    #[allow(unused)]
-    pub fn get_default(&self, name: &str, value: &str) -> String {
-        match self.get(name) {
-            Some(value) => value,
-            None => value.to_string(),
-        }
-    }
-
-    pub fn require(&self, name: &str) -> Result<String> {
-        match self.get(name) {
-            Some(value) => Ok(value.trim().to_string()),
-            None => Err(Error::EnvNotSet),
         }
     }
 }

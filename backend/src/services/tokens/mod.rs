@@ -13,7 +13,7 @@ pub struct TokenService {
 
 impl TokenService {
     pub fn new(secrets: Arc<Secrets>) -> Self {
-        let secret = secrets.get_default("JWT_SECRET", "secret");
+        let secret = secrets.jwt_secret.clone().unwrap_or("secret".to_string());
 
         Self {
             sym_enc: EncodingKey::from_secret(secret.as_ref()),

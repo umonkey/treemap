@@ -1,3 +1,4 @@
+use crate::domain::health::*;
 use crate::handlers::*;
 use crate::services::Locator;
 use crate::services::{FileService, TokenService};
@@ -16,6 +17,7 @@ pub struct AppState {
     pub delete_file_handler: Arc<DeleteFileHandler>,
     pub get_duplicates_handler: Arc<GetDuplicatesHandler>,
     pub get_file_status_handler: Arc<GetFileStatusHandler>,
+    pub get_health_handler: Arc<GetHealthHandler>,
     pub get_heatmap_handler: Arc<GetHeatmapHandler>,
     pub get_me_handler: Arc<GetMeHandler>,
     pub get_me_likes_handler: Arc<GetMeLikesHandler>,
@@ -40,7 +42,6 @@ pub struct AppState {
     pub get_user_handler: Arc<GetUserHandler>,
     pub like_tree_handler: Arc<LikeTreeHandler>,
     pub login_google_handler: Arc<LoginGoogleHandler>,
-    pub login_google_v2_handler: Arc<LoginGoogleV2Handler>,
     pub login_google_v3_handler: Arc<LoginGoogleV3Handler>,
     pub login_osm_handler: Arc<LoginOsmHandler>,
     pub move_tree_handler: Arc<MoveTreeHandler>,
@@ -74,6 +75,7 @@ impl AppState {
             delete_file_handler: locator.get::<DeleteFileHandler>()?,
             get_duplicates_handler: locator.get::<GetDuplicatesHandler>()?,
             get_file_status_handler: locator.get::<GetFileStatusHandler>()?,
+            get_health_handler: locator.get::<GetHealthHandler>()?,
             get_heatmap_handler: locator.get::<GetHeatmapHandler>()?,
             get_me_handler: locator.get::<GetMeHandler>()?,
             get_me_likes_handler: locator.get::<GetMeLikesHandler>()?,
@@ -98,7 +100,6 @@ impl AppState {
             get_user_handler: locator.get::<GetUserHandler>()?,
             like_tree_handler: locator.get::<LikeTreeHandler>()?,
             login_google_handler: locator.get::<LoginGoogleHandler>()?,
-            login_google_v2_handler: locator.get::<LoginGoogleV2Handler>()?,
             login_google_v3_handler: locator.get::<LoginGoogleV3Handler>()?,
             login_osm_handler: locator.get::<LoginOsmHandler>()?,
             move_tree_handler: locator.get::<MoveTreeHandler>()?,

@@ -1,6 +1,6 @@
-# This config file is used by some unit tests.
+# This config file is used by all unit tests.
 
 file_folder = "var/test-files"
 
 # Use the in-memory database.
-sqlite_path = ":memory:"
+database = "memory"
