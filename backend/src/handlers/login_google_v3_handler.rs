@@ -45,6 +45,7 @@ impl LoginGoogleV3Handler {
             email: userinfo.email.clone(),
             name: userinfo.name.clone(),
             picture: userinfo.picture.clone(),
+            role: "user".to_string(),
             ..Default::default()
         };
 

@@ -102,7 +102,7 @@ impl UserService {
             .await?
             .ok_or(Error::UserNotFound)?;
 
-        if current_user.email != "justin.forest@gmail.com" {
+        if current_user.role != "admin" {
             return Err(Error::AccessDenied);
         }
 
