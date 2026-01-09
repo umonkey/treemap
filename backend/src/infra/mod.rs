@@ -3,4 +3,5 @@
 
 pub mod database;
 pub mod google_auth;
+pub mod osm;
 pub mod queue;

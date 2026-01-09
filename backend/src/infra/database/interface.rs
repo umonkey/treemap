@@ -13,7 +13,7 @@ use crate::common::database::queries::{
 use crate::config::{Config, Secrets};
 use crate::services::*;
 use crate::types::{Error, Result, SpeciesRecord, TreeRecord};
-use log::error;
+use log::{debug, error};
 use std::sync::Arc;
 
 pub struct Database {
@@ -106,8 +106,17 @@ impl Locatable for Database {
         if config.database == "turso" {
             let secrets = locator.get::<Secrets>()?;
 
-            let url: String = config.turso_url.clone().ok_or(Error::Config)?;
-            let token: String = secrets.turso_token.clone().ok_or(Error::Config)?;
+            debug!("Setting up a Turso database.");
+
+            let url: String = config
+                .turso_url
+                .clone()
+                .ok_or(Error::Config("turso_url not set".to_string()))?;
+
+            let token: String = secrets
+                .turso_token
+                .clone()
+                .ok_or(Error::Config("turso_token not set".to_string()))?;
 
             let db = futures::executor::block_on(SqliteDatabase::from_remote(&url, &token))?;
 
@@ -123,7 +132,7 @@ impl Locatable for Database {
             Ok(Self { db: Arc::new(db) })
         } else {
             error!("Unknown database type: {}", config.database);
-            Err(Error::Config)
+            Err(Error::Config("unknown database type".to_string()))
         }
     }
 }

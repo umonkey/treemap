@@ -99,7 +99,7 @@ impl Config {
 
                 _ => {
                     error!("Error opening {path}: {e:?}");
-                    return Err(Error::Config);
+                    return Err(Error::Config("could not open config file".to_string()));
                 }
             },
         };
@@ -108,7 +108,7 @@ impl Config {
 
         file.read_to_string(&mut contents).map_err(|e| {
             error!("Error reading {path}: {e}");
-            Error::Config
+            Error::Config("could not read config file".to_string())
         })?;
 
         Self::from_string(&contents)
@@ -117,7 +117,7 @@ impl Config {
     pub fn from_string(contents: &str) -> Result<Self> {
         let data = toml::from_str(contents).map_err(|e| {
             error!("Error parsing config string: {e}");
-            Error::Config
+            Error::Config("could not parse config file".to_string())
         })?;
 
         Ok(data)

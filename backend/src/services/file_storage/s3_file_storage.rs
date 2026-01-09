@@ -19,7 +19,7 @@ impl S3FileStorage {
         let s3_bucket = config
             .files_bucket
             .clone()
-            .ok_or(Error::Config)
+            .ok_or(Error::Config("FILES_BUCKET not set".to_string()))
             .inspect_err(|_| {
                 error!("Config option FILES_BUCKET not set.");
             })?;

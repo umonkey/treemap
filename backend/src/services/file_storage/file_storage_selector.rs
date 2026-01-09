@@ -5,6 +5,7 @@ use super::s3_file_storage::S3FileStorage;
 use crate::config::{Config, Secrets};
 use crate::services::{Locatable, Locator};
 use crate::types::*;
+use log::debug;
 use std::sync::Arc;
 
 pub struct FileStorageSelector {
@@ -26,6 +27,8 @@ impl FileStorageSelector {
                 storage: Arc::new(value),
             });
         }
+
+        debug!("Could not instantiate S3 file storage, trying local.");
 
         Ok(Self {
             storage: Arc::new(LocalFileStorage::new(config)),

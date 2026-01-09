@@ -43,6 +43,7 @@ impl Secrets {
 
     pub fn get(path: &str, key: &str) -> Option<String> {
         if let Ok(value) = std::env::var(key) {
+            debug!("Secret {key} read from environment.");
             return Some(value);
         }
 
@@ -51,8 +52,8 @@ impl Secrets {
         let mut file = match fs::File::open(&file_path) {
             Ok(v) => v,
 
-            Err(e) => {
-                warn!("Error reading secret from {file_path}: {e}");
+            Err(_) => {
+                warn!("Secret {key} not found anywhere.");
                 return None;
             }
         };
@@ -66,7 +67,7 @@ impl Secrets {
             }
 
             Err(e) => {
-                warn!("Error reading {path}: {e}");
+                warn!("Error reading secret {key} from {path}: {e}");
                 None
             }
         }

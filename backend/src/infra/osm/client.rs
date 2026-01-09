@@ -15,10 +15,13 @@ pub struct OsmClient {
     hashtag: Option<String>,
     activity: Option<String>,
 
-    // This is the app password, used to retrieve a token.
-    osm_client_secret: String,
+    // This is the main API access token.
+    // It is optional so that we don't fail to start the API when OSM sync is not configured.
+    // FIXME: the API should not load this in the first place.
+    osm_token: Option<String>,
 
-    osm_token: String,
+    // This is the app password, used to retrieve a token.
+    osm_client_secret: Option<String>,
 }
 
 impl OsmClient {
@@ -103,13 +106,14 @@ impl OsmClient {
             Error::EnvNotSet
         })?;
 
+        let secret = self.osm_client_secret.as_ref().ok_or_else(|| {
+            error!("OSM Client Secret not set.");
+            Error::EnvNotSet
+        })?;
+
         let json = self
             .request_json(&format!(
-                "https://api.openstreetmap.org/oauth/token?grant_type=authorization_code&code={}&client_id={}&client_secret={}&redirect_uri={}",
-                code,
-                client_id,
-                self.osm_client_secret,
-                redirect_uri,
+                "https://api.openstreetmap.org/oauth/token?grant_type=authorization_code&code={code}&client_id={client_id}&client_secret={secret}&redirect_uri={redirect_uri}",
             ))
             .await?;
 
@@ -227,7 +231,7 @@ impl OsmClient {
         let response = match self
             .client
             .put(url)
-            .header("Authorization", format!("bearer {}", self.osm_token))
+            .header("Authorization", format!("bearer {}", self.get_api_token()?))
             .body(body.to_string())
             .send()
             .await
@@ -361,6 +365,15 @@ impl OsmClient {
 
         comment
     }
+
+    fn get_api_token(&self) -> Result<String> {
+        let token = self.osm_token.as_ref().ok_or_else(|| {
+            error!("OSM API token not set.");
+            Error::Config("OSM token not set".to_string())
+        })?;
+
+        Ok(token.clone())
+    }
 }
 
 impl Locatable for OsmClient {
@@ -368,21 +381,9 @@ impl Locatable for OsmClient {
         let config = locator.get::<Config>()?;
         let secrets = locator.get::<Secrets>()?;
 
-        let osm_client_secret = secrets
-            .osm_client_secret
-            .clone()
-            .ok_or(Error::Config)
-            .inspect_err(|_| {
-                error!("Secret OSM_CLIENT_SECRET not set.");
-            })?;
+        let osm_client_secret = secrets.osm_client_secret.clone();
 
-        let osm_token = secrets
-            .osm_client_secret
-            .clone()
-            .ok_or(Error::Config)
-            .inspect_err(|_| {
-                error!("Secret OSM_CLIENT_SECRET not set.");
-            })?;
+        let osm_token = secrets.osm_client_secret.clone();
 
         Ok(Self {
             client: reqwest::Client::new(),
