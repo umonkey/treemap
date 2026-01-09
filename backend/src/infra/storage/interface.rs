@@ -4,7 +4,6 @@ use super::s3_storage::S3FileStorage;
 use crate::config::Config;
 use crate::services::{Locatable, Locator};
 use crate::types::*;
-use log::error;
 use std::sync::Arc;
 
 pub struct FileStorage {
@@ -43,7 +42,9 @@ impl Locatable for FileStorage {
             return Ok(Self::new(client));
         }
 
-        error!("Unsupported file storage: {}", config.file_storage);
-        Err(Error::Config)
+        Err(Error::Config(format!(
+            "unsupported file storage type: {}",
+            config.file_storage
+        )))
     }
 }

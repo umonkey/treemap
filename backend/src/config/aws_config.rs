@@ -68,7 +68,7 @@ impl AwsConfig {
         let key = secrets
             .sqs_key
             .clone()
-            .ok_or(Error::Config)
+            .ok_or(Error::Config("SQS_KEY not set".to_string()))
             .inspect_err(|_e| {
                 error!("Secret SQS_KEY not set.");
             })?;
@@ -76,7 +76,7 @@ impl AwsConfig {
         let secret = secrets
             .sqs_secret
             .clone()
-            .ok_or(Error::Config)
+            .ok_or(Error::Config("SQS_SECRET not set".to_string()))
             .inspect_err(|_e| {
                 error!("Secret SQS_SECRET not set.");
             })?;
@@ -84,7 +84,7 @@ impl AwsConfig {
         let region = config
             .sqs_region
             .clone()
-            .ok_or(Error::Config)
+            .ok_or(Error::Config("SQS_REGION not set".to_string()))
             .inspect_err(|_e| {
                 error!("Config option SQS_REGION not set.");
             })?;

@@ -140,7 +140,10 @@ impl Locatable for SqsQueue {
 
         let aws_config = AwsConfig::sqs(config.clone(), secrets)?;
         let client = aws_sdk_sqs::Client::new(&aws_config);
-        let queue_url = config.sqs_queue.clone().ok_or(Error::Config)?;
+        let queue_url = config
+            .sqs_queue
+            .clone()
+            .ok_or(Error::Config("sqs_queue name not set".to_string()))?;
 
         Ok(Self { client, queue_url })
     }
