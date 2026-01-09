@@ -1,4 +1,5 @@
 use super::repository::UserRepository;
+use super::schemes::UserUpdate;
 use crate::common::database::repositories::UploadRepository;
 use crate::infra::database::{Database, Value};
 use crate::infra::storage::FileStorage;
@@ -87,6 +88,37 @@ impl UserService {
         }
 
         res
+    }
+
+    pub async fn update_user(
+        &self,
+        current_user_id: u64,
+        target_user_id: u64,
+        update: UserUpdate,
+    ) -> Result<()> {
+        let current_user = self
+            .users
+            .get(current_user_id)
+            .await?
+            .ok_or(Error::UserNotFound)?;
+
+        if current_user.email != "justin.forest@gmail.com" {
+            return Err(Error::AccessDenied);
+        }
+
+        let mut target_user = self
+            .users
+            .get(target_user_id)
+            .await?
+            .ok_or(Error::UserNotFound)?;
+        target_user.name = update.name;
+        target_user.picture = update.picture;
+
+        self.users.update(&target_user).await?;
+
+        info!("User {current_user_id} edited profile user {target_user_id}");
+
+        Ok(())
     }
 
     // --- Logic from UpdateUserpicHandler ---
