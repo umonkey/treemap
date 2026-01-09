@@ -23,7 +23,7 @@ pub struct SingleTreeResponse {
     pub like_count: i64,
     pub comment_count: u64,
     pub files: Vec<PublicFileInfo>,
-    pub users: Vec<UserResponse>,
+    pub users: Vec<UserRead>,
     pub replaces: Option<String>,
     pub replaced_by: Option<String>,
 }
@@ -36,7 +36,7 @@ impl SingleTreeResponse {
     ) -> SingleTreeResponse {
         let thumbnail_id = tree.thumbnail_id.map(|value| value.to_string());
 
-        let users = users.iter().map(UserResponse::from).collect();
+        let users = users.iter().map(UserRead::from).collect();
 
         SingleTreeResponse {
             id: tree.id.to_string(),

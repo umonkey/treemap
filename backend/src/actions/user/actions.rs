@@ -24,7 +24,7 @@ pub async fn get_users(state: Data<AppState>) -> Result<Json<UserList>> {
 }
 
 #[get("/{id}")]
-pub async fn get_user(state: Data<AppState>, path: Path<PathInfo>) -> Result<Json<UserResponse>> {
+pub async fn get_user(state: Data<AppState>, path: Path<PathInfo>) -> Result<Json<UserRead>> {
     let user = state.user_service.get_user(path.id).await?;
     Ok(Json(user))
 }
