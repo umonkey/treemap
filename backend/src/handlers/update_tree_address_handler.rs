@@ -5,6 +5,7 @@
 
 use crate::common::database::repositories::*;
 use crate::config::Config;
+use crate::infra::nominatim::NominatimClient;
 use crate::services::*;
 use crate::types::*;
 use log::info;
@@ -12,7 +13,7 @@ use std::sync::Arc;
 
 pub struct UpdateTreeAddressHandler {
     trees: Arc<TreeRepository>,
-    nominatim: Arc<NominatimService>,
+    nominatim: Arc<NominatimClient>,
     user_id: u64,
 }
 
@@ -41,7 +42,7 @@ impl UpdateTreeAddressHandler {
 impl Locatable for UpdateTreeAddressHandler {
     fn create(locator: &Locator) -> Result<Self> {
         let trees = locator.get::<TreeRepository>()?;
-        let nominatim = locator.get::<NominatimService>()?;
+        let nominatim = locator.get::<NominatimClient>()?;
         let config = locator.get::<Config>()?;
 
         Ok(Self {
