@@ -40,12 +40,8 @@
 		{@render children()}
 	</a>
 {:else}
-	<button
-		type={type}
-		disabled={!!disabled}
-		class={className}
-		onclick={onClick}
-		class:square={!!square}>{@render children()}</button
+	<button {type} disabled={!!disabled} class={className} onclick={onClick} class:square={!!square}
+		>{@render children()}</button
 	>
 {/if}
 

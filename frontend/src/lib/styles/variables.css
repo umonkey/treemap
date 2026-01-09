@@ -31,6 +31,7 @@
 	/* Form Inputs */
 	--input-bg: light-dark(#fff, #1e2936);
 	--input-border: light-dark(#ccc, #444);
+	--input-focus: light-dark(#bbb, #555);
 	--disabled-input-bg: light-dark(#f8f9fa, #000);
 	--disabled-input-fg: light-dark(#6c757d, #ccc);
 }
