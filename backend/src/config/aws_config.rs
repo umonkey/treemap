@@ -13,7 +13,7 @@ impl AwsConfig {
         let key = secrets
             .files_key
             .clone()
-            .ok_or(Error::Config)
+            .ok_or(Error::Config("FILES_KEY not set".to_string()))
             .inspect_err(|_e| {
                 error!("Secret FILES_KEY not set.");
             })?;
@@ -21,7 +21,7 @@ impl AwsConfig {
         let secret = secrets
             .files_secret
             .clone()
-            .ok_or(Error::Config)
+            .ok_or(Error::Config("FILES_SECRET not set".to_string()))
             .inspect_err(|_e| {
                 error!("Secret FILES_SECRET not set.");
             })?;
@@ -29,7 +29,7 @@ impl AwsConfig {
         let region = config
             .files_region
             .clone()
-            .ok_or(Error::Config)
+            .ok_or(Error::Config("FILES_REGION not set".to_string()))
             .inspect_err(|_e| {
                 error!("Config option FILES_REGION not set.");
             })?;
@@ -37,7 +37,7 @@ impl AwsConfig {
         let endpoint = config
             .files_endpoint
             .clone()
-            .ok_or(Error::Config)
+            .ok_or(Error::Config("files_endpoint not set".to_string()))
             .inspect_err(|_e| {
                 error!("Config option FILES_ENDPOIT not set.");
             })?;

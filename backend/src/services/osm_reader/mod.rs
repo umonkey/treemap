@@ -16,6 +16,7 @@
 
 use crate::common::database::repositories::*;
 use crate::config::Config;
+use crate::infra::overpass::OverpassClient;
 use crate::infra::queue::Queue;
 use crate::services::*;
 use crate::types::*;

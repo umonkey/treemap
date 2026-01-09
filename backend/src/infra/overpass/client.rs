@@ -1,6 +1,6 @@
 use crate::config::Config;
-use crate::services::*;
-use crate::types::*;
+use crate::services::{Locatable, Locator};
+use crate::types::{Error, OsmTreeRecord, Result};
 use log::{debug, error};
 use serde_json::Value;
 use url::Url;

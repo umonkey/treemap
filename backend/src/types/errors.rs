@@ -14,7 +14,7 @@ pub enum Error {
     BadImage,
     #[allow(unused)]
     BadRequest,
-    Config,
+    Config(String),
     DatabaseConnect,
     DatabaseQuery,
     DatabaseStructure,
@@ -55,7 +55,9 @@ impl Error {
                 r#"{"error":{"code":"BadImage","description":"Bad image file, cannot work with it."}}"#
             }
             Error::BadRequest => r#"{"error":{"code":"BadRequest","description":"Bad request."}}"#,
-            Error::Config => r#"{"error":{"code":"Config","description":"Configuration error."}}"#,
+            Error::Config(_) => {
+                r#"{"error":{"code":"Config","description":"Configuration error."}}"#
+            }
             Error::DatabaseConnect => {
                 r#"{"error":{"code":"DatabaseConnect","description":"Error connecting to the database."}}"#
             }
@@ -144,7 +146,7 @@ impl ResponseError for Error {
             Error::BadCallback => StatusCode::BAD_REQUEST,
             Error::BadImage => StatusCode::BAD_REQUEST,
             Error::BadRequest => StatusCode::BAD_REQUEST,
-            Error::Config => StatusCode::INTERNAL_SERVER_ERROR,
+            Error::Config(_) => StatusCode::INTERNAL_SERVER_ERROR,
             Error::DatabaseConnect => StatusCode::INTERNAL_SERVER_ERROR,
             Error::DatabaseQuery => StatusCode::INTERNAL_SERVER_ERROR,
             Error::DatabaseStructure => StatusCode::INTERNAL_SERVER_ERROR,
@@ -177,7 +179,7 @@ impl fmt::Display for Error {
             Error::BadCallback => write!(f, "BadCallback"),
             Error::BadImage => write!(f, "BadImage"),
             Error::BadRequest => write!(f, "BadRequest"),
-            Error::Config => write!(f, "Config"),
+            Error::Config(s) => write!(f, "Config error: {s}"),
             Error::DatabaseConnect => write!(f, "DatabaseConnect"),
             Error::DatabaseQuery => write!(f, "DatabaseQuery"),
             Error::DatabaseStructure => write!(f, "DatabaseStructure"),

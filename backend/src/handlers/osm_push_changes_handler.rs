@@ -13,6 +13,7 @@
 
 use crate::common::database::repositories::*;
 use crate::config::Config;
+use crate::infra::osm::OsmClient;
 use crate::services::*;
 use crate::types::*;
 use log::{debug, info, warn};

@@ -23,8 +23,7 @@ services:
       - ./backend/config.toml:/app/config.toml
     environment:
       - RUST_LOG=info,treemap=debug
-      - TREEMAP_SQLITE_PATH=/app/var/database.sqlite
-      - OSM_CLIENT_SECRET=foobar
+      - TREEMAP_CONFIG=/app/config.toml.dev
 
   frontend:
     build:

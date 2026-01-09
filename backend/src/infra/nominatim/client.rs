@@ -1,5 +1,5 @@
-use crate::services::*;
-use crate::types::*;
+use crate::services::{Locatable, Locator};
+use crate::types::{Error, Result};
 use log::{debug, error, info};
 use reqwest::header::{HeaderMap, HeaderValue};
 use serde::Deserialize;
@@ -18,11 +18,11 @@ pub struct ResponsePayload {
     address: AddressInfo,
 }
 
-pub struct NominatimService {
+pub struct NominatimClient {
     http: reqwest::Client,
 }
 
-impl NominatimService {
+impl NominatimClient {
     pub async fn get_street_address(&self, lat: f64, lon: f64) -> Result<Option<String>> {
         let url = format!(
             "https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lon}&zoom=18&addressdetails=1"
@@ -68,7 +68,7 @@ impl NominatimService {
     }
 }
 
-impl Locatable for NominatimService {
+impl Locatable for NominatimClient {
     fn create(_locator: &Locator) -> Result<Self> {
         let http = reqwest::Client::new();
         Ok(Self { http })

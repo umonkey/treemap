@@ -3,5 +3,8 @@
 
 pub mod database;
 pub mod google_auth;
+pub mod nominatim;
+pub mod osm;
+pub mod overpass;
 pub mod queue;
 pub mod storage;
