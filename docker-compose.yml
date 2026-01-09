@@ -20,7 +20,6 @@ services:
       - "8000:8000"
     volumes:
       - var:/app/var
-      - ./backend/config.toml:/app/config.toml
     environment:
       - RUST_LOG=info,treemap=debug
       - TREEMAP_CONFIG=/app/config.toml.dev
