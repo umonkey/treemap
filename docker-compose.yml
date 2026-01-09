@@ -22,7 +22,7 @@ services:
       - var:/app/var
     environment:
       - RUST_LOG=info,treemap=debug
-      - TREEMAP_SQLITE_PATH=/app/var/database.sqlite
+      - TREEMAP_CONFIG=/app/config.toml.dev
 
   frontend:
     build:
