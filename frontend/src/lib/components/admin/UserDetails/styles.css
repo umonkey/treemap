@@ -1,0 +1,29 @@
+.user-details dl {
+	display: grid;
+	grid-template-columns: max-content auto;
+	gap: 10px 20px;
+}
+
+.user-pic-large {
+	max-width: 200px;
+	border-radius: 8px;
+	margin-bottom: 20px;
+}
+
+.actions {
+	margin-top: 20px;
+}
+
+.button {
+	display: inline-block;
+	padding: 8px 16px;
+	background-color: #007bff;
+	color: white;
+	text-decoration: none;
+	border-radius: 4px;
+	margin-right: 10px;
+}
+
+.button.secondary {
+	background-color: #6c757d;
+}

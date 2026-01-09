@@ -19,6 +19,21 @@ export interface ITreeFile {
 export interface IUser {
 	id: string;
 	name: string;
+	email: string;
+	picture: string;
+	trees_count: number;
+	comments_count: number;
+	updates_count: number;
+	files_count: number;
+}
+
+export interface IUserList {
+	users: IUser[];
+}
+
+export interface ILoginResponse {
+	token: string;
+	name: string;
 	picture: string;
 }
 

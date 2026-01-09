@@ -41,7 +41,7 @@
 	</a>
 {:else}
 	<button
-		type="button"
+		type={type}
 		disabled={!!disabled}
 		class={className}
 		onclick={onClick}
