@@ -3,13 +3,14 @@
 //! It first handles the API routes, then the static files,
 //! then the default action which is to serve the index file.
 
+use crate::actions::user::{get_top_users, user_router};
 use crate::actions::*;
 use crate::config::Config;
 use crate::domain::health::*;
 use crate::services::*;
 use actix_cors::Cors;
 use actix_files::Files;
-use actix_web::{middleware::DefaultHeaders, web::PayloadConfig, App, HttpServer};
+use actix_web::{middleware::DefaultHeaders, web, web::PayloadConfig, App, HttpServer};
 use log::{debug, info};
 use std::sync::Arc;
 use std::time::Duration;
@@ -59,7 +60,6 @@ pub async fn serve_command() {
             .service(get_file_status_action)
             .service(get_health_action)
             .service(get_heatmap_action)
-            .service(get_user_heatmap_action)
             .service(get_me_action)
             .service(get_me_likes_action)
             .service(get_new_trees_action)
@@ -72,7 +72,7 @@ pub async fn serve_command() {
             .service(get_top_diameter_action)
             .service(get_top_height_action)
             .service(get_top_streets_action)
-            .service(get_top_users_action)
+            .service(get_top_users)
             .service(get_tree_action)
             .service(get_tree_defaults_action)
             .service(get_tree_history_action)
@@ -96,8 +96,8 @@ pub async fn serve_command() {
             .service(update_tree_location_action)
             .service(update_tree_state_action)
             .service(upload_action)
-            .service(get_user_action)
             .service(tree_page_action)
+            .service(web::scope("/v1/users").configure(user_router))
             .service(
                 Files::new("/", "./static")
                     .prefer_utf8(true)

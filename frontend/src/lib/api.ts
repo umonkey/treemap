@@ -27,7 +27,9 @@ import type {
 	ITreeUpdatePayload,
 	IUploadResponse,
 	DuplicateList,
-	StreetReport
+	StreetReport,
+	IUser,
+	IUserList
 } from '$lib/types';
 import { Response } from '$lib/types_response';
 import { get } from 'svelte/store';
@@ -161,6 +163,34 @@ export class ApiClient {
 
 	public async getMeLikes(): Promise<IResponse<ILikeList>> {
 		return await this.request('GET', 'v1/me/likes', {
+			headers: {
+				'Content-Type': 'application/json',
+				...this.getAuthHeaders()
+			}
+		});
+	}
+
+	public async getUsers(): Promise<IResponse<IUserList>> {
+		return await this.request('GET', 'v1/users', {
+			headers: {
+				'Content-Type': 'application/json',
+				...this.getAuthHeaders()
+			}
+		});
+	}
+
+	public async getUser(id: string): Promise<IResponse<IUser>> {
+		return await this.request('GET', `v1/users/${id}`, {
+			headers: {
+				'Content-Type': 'application/json',
+				...this.getAuthHeaders()
+			}
+		});
+	}
+
+	public async updateUser(id: string, props: Partial<IUser>): Promise<IResponse<IUser>> {
+		return await this.request('PUT', `v1/users/${id}`, {
+			body: JSON.stringify(props),
 			headers: {
 				'Content-Type': 'application/json',
 				...this.getAuthHeaders()

@@ -1,4 +1,9 @@
 :root {
+	/**
+	 * This enables the light-dark(color, color) function.
+	 */
+	color-scheme: light dark;
+
 	/* Z-indexes */
 	--z-map: 2;
 	--z-crosshair: 5;
@@ -14,7 +19,6 @@
 	--breakpoint-mobile-large: 600px;
 	--breakpoint-tablet: 768px;
 	--breakpoint-desktop: 1024px;
-	--haha: 200px;
 
 	/* Block sizes */
 	--header-height: 41px;
@@ -23,4 +27,11 @@
 
 	/* Other sizes */
 	--gap: 10px;
+
+	/* Form Inputs */
+	--input-bg: light-dark(#fff, #1e2936);
+	--input-border: light-dark(#ccc, #444);
+	--input-focus: light-dark(#bbb, #555);
+	--disabled-input-bg: light-dark(#f8f9fa, #000);
+	--disabled-input-fg: light-dark(#6c757d, #ccc);
 }

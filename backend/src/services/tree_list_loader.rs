@@ -1,4 +1,5 @@
 use crate::common::database::repositories::*;
+use crate::domain::user::User;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::unique_ids;
@@ -16,7 +17,7 @@ impl TreeListLoader {
         Ok(TreeList::from_trees(trees).with_users(&users))
     }
 
-    async fn load_users(&self, user_ids: &[u64]) -> Result<Vec<UserRecord>> {
+    async fn load_users(&self, user_ids: &[u64]) -> Result<Vec<User>> {
         let ids = unique_ids(user_ids);
         let users = self.users.get_multiple(&ids).await?;
         Ok(users)

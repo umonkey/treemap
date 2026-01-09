@@ -23,6 +23,7 @@ services:
     environment:
       - RUST_LOG=info,treemap=debug
       - TREEMAP_CONFIG=/app/config.toml.dev
+      - JWT_SECRET=foobar
 
   frontend:
     build:

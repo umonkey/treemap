@@ -1,4 +1,5 @@
 use crate::common::database::repositories::*;
+use crate::domain::user::User;
 use crate::infra::queue::Queue;
 use crate::services::*;
 use crate::types::*;
@@ -84,7 +85,7 @@ impl UpdateTreeHandler {
         Ok(files.into_iter().filter(|file| file.is_visible()).collect())
     }
 
-    async fn find_users(&self, tree: &TreeRecord, files: &[FileRecord]) -> Result<Vec<UserRecord>> {
+    async fn find_users(&self, tree: &TreeRecord, files: &[FileRecord]) -> Result<Vec<User>> {
         let mut user_ids = Vec::new();
 
         user_ids.push(tree.added_by);

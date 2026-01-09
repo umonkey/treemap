@@ -20,6 +20,7 @@ The API follows the Action-Domain-Responder model.
 - src/cli: command line actions. These extract input data from the CLI arguments, pass it to the domain implementation, then present the results.
 - src/domain: this is where the business logic lives, organized by domain.
 - src/infra: infrastructure adapters. The code that talks to external services, like db, queue, file storage. Should not be interdependent, unless absolutely necessary.
+- src/services: additional application logic which orchestrates domains. Does not have any domain specific knowledge.
 - src/utils: common simple things with no dependencies.
 
 
@@ -28,3 +29,4 @@ The API follows the Action-Domain-Responder model.
 - No automatic commits. Never execute git commit, git push or similar version control commands automatically.
 - When asked for a solution, suggest the best one for this project, but mention alternatives.
 - Before implementing any changes, provide the implementation plan and ask for the user's confirmation.
+- After creating the code, run "cargo fmt" to fix any formatting issues, then "make lint" to make sure all code is correct. Fix any reported issues.

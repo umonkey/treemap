@@ -1,11 +1,13 @@
 use serde::Serialize;
 
-use crate::types::{TreeListItem, TreeRecord, UserRecord, UserResponse};
+use crate::actions::user::UserRead;
+use crate::domain::user::User;
+use crate::types::{TreeListItem, TreeRecord};
 
 #[derive(Debug, Default, Serialize)]
 pub struct TreeList {
     pub trees: Vec<TreeListItem>,
-    pub users: Vec<UserResponse>,
+    pub users: Vec<UserRead>,
 }
 
 impl TreeList {
@@ -22,8 +24,8 @@ impl TreeList {
         }
     }
 
-    pub fn with_users(&self, users: &[UserRecord]) -> Self {
-        let records = users.iter().map(UserResponse::from).collect();
+    pub fn with_users(&self, users: &[User]) -> Self {
+        let records = users.iter().map(UserRead::from).collect();
 
         Self {
             users: records,

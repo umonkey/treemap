@@ -1,3 +1,4 @@
+use super::models::User;
 use crate::common::database::queries::*;
 use crate::infra::database::{Database, Value};
 use crate::services::*;
@@ -13,23 +14,22 @@ pub struct UserRepository {
 }
 
 impl UserRepository {
-    #[allow(unused)]
-    pub async fn all(&self) -> Result<Vec<UserRecord>> {
+    pub async fn all(&self) -> Result<Vec<User>> {
         self.query_multiple(SelectQuery::new(TABLE)).await
     }
 
-    pub async fn get(&self, id: u64) -> Result<Option<UserRecord>> {
+    pub async fn get(&self, id: u64) -> Result<Option<User>> {
         let query = SelectQuery::new(TABLE).with_condition("id", Value::from(id as i64));
         self.query_single(query).await
     }
 
-    pub async fn get_by_email(&self, email: &str) -> Result<Option<UserRecord>> {
+    pub async fn get_by_email(&self, email: &str) -> Result<Option<User>> {
         let query = SelectQuery::new(TABLE).with_condition("email", Value::from(email.to_string()));
         self.query_single(query).await
     }
 
-    pub async fn get_multiple(&self, ids: &[u64]) -> Result<Vec<UserRecord>> {
-        let mut users: Vec<UserRecord> = Vec::new();
+    pub async fn get_multiple(&self, ids: &[u64]) -> Result<Vec<User>> {
+        let mut users: Vec<User> = Vec::new();
 
         for id in unique_ids(ids) {
             if let Some(user) = self.get(id).await? {
@@ -40,7 +40,7 @@ impl UserRepository {
         Ok(users)
     }
 
-    pub async fn add(&self, user: &UserRecord) -> Result<()> {
+    pub async fn add(&self, user: &User) -> Result<()> {
         let query = InsertQuery::new(TABLE).with_values(user.to_attributes());
 
         self.db.add_record(query).await.map_err(|e| {
@@ -52,7 +52,7 @@ impl UserRepository {
     }
 
     #[allow(unused)]
-    pub async fn update(&self, user: &UserRecord) -> Result<()> {
+    pub async fn update(&self, user: &User) -> Result<()> {
         let query = UpdateQuery::new(TABLE)
             .with_condition("id", Value::from(user.id as i64))
             .with_values(user.to_attributes());
@@ -121,9 +121,9 @@ impl UserRepository {
         Ok(())
     }
 
-    async fn query_single(&self, query: SelectQuery) -> Result<Option<UserRecord>> {
+    async fn query_single(&self, query: SelectQuery) -> Result<Option<User>> {
         match self.db.get_record(query).await {
-            Ok(Some(props)) => Ok(Some(UserRecord::from_attributes(&props)?)),
+            Ok(Some(props)) => Ok(Some(User::from_attributes(&props)?)),
             Ok(None) => Ok(None),
             Err(err) => {
                 error!("Error reading a user: {err}");
@@ -132,12 +132,12 @@ impl UserRepository {
         }
     }
 
-    async fn query_multiple(&self, query: SelectQuery) -> Result<Vec<UserRecord>> {
+    async fn query_multiple(&self, query: SelectQuery) -> Result<Vec<User>> {
         let records = self.db.get_records(query).await?;
 
         records
             .iter()
-            .map(|props| UserRecord::from_attributes(props).map_err(|_| Error::DatabaseStructure))
+            .map(|props| User::from_attributes(props).map_err(|_| Error::DatabaseStructure))
             .collect()
     }
 }

@@ -1,0 +1,18 @@
+.user-list table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.user-list th,
+.user-list td {
+	padding: 8px;
+	border-bottom: 1px solid #ddd;
+	text-align: left;
+}
+
+.user-pic {
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	object-fit: cover;
+}

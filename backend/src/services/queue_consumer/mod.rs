@@ -3,6 +3,7 @@
 //!
 //! Runs in an infinite loop.
 
+use crate::domain::user::*;
 use crate::handlers::*;
 use crate::infra::queue::{Queue, QueueMessage};
 use crate::services::*;
@@ -19,7 +20,7 @@ pub struct QueueConsumer {
     resize_image_handler: Arc<ResizeImageHandler>,
     update_tree_address_handler: Arc<UpdateTreeAddressHandler>,
     add_photo_handler: Arc<AddPhotoHandler>,
-    update_userpic_handler: Arc<UpdateUserpicHandler>,
+    user_service: Arc<UserService>,
 }
 
 impl QueueConsumer {
@@ -82,8 +83,8 @@ impl QueueConsumer {
             }
 
             Ok(Some(QueueCommand::UpdateUserpic(message))) => {
-                self.update_userpic_handler
-                    .handle(message.user_id, message.file_id)
+                self.user_service
+                    .update_userpic(message.user_id, message.file_id)
                     .await?;
             }
 
@@ -107,7 +108,7 @@ impl Locatable for QueueConsumer {
             resize_image_handler: locator.get::<ResizeImageHandler>()?,
             update_tree_address_handler: locator.get::<UpdateTreeAddressHandler>()?,
             add_photo_handler: locator.get::<AddPhotoHandler>()?,
-            update_userpic_handler: locator.get::<UpdateUserpicHandler>()?,
+            user_service: locator.get::<UserService>()?,
         })
     }
 }
