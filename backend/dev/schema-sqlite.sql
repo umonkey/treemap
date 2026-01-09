@@ -102,6 +102,7 @@ CREATE TABLE IF NOT EXISTS users (
     `email` TEXT NOT NULL,
     `name` TEXT NOT NULL,
     `picture` TEXT NOT NULL,
+    `role` TEXT NOT NULL DEFAULT 'user',
     `trees_count` INT NOT NULL DEFAULT '0',
     `comments_count` INT NOT NULL DEFAULT '0',
     `updates_count` INT NOT NULL DEFAULT '0',
