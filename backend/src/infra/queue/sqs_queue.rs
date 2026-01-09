@@ -1,8 +1,9 @@
 //! SQS-based queue implementation.
 
+use super::aws_config::AwsConfig;
 use super::base::BaseQueueInterface;
 use super::types::QueueMessage;
-use crate::config::{AwsConfig, Config, Secrets};
+use crate::config::{Config, Secrets};
 use crate::services::{Locatable, Locator};
 use crate::types::{Error, Result};
 use crate::utils::get_timestamp;
@@ -138,12 +139,32 @@ impl Locatable for SqsQueue {
         let config = locator.get::<Config>()?;
         let secrets = locator.get::<Secrets>()?;
 
-        let aws_config = AwsConfig::sqs(config.clone(), secrets)?;
+        let sqs_key = secrets
+            .sqs_key
+            .clone()
+            .ok_or(Error::Config("Secret SQS_KEY not set".to_string()))?;
+
+        let sqs_secret = secrets
+            .sqs_secret
+            .clone()
+            .ok_or(Error::Config("Secret SQS_SECRET not set".to_string()))?;
+
+        let sqs_region = config.sqs_region.clone().ok_or(Error::Config(
+            "Config option SQS_REGION not set".to_string(),
+        ))?;
+
+        let sqs_endpoint = config.sqs_endpoint.clone().ok_or(Error::Config(
+            "Config option SQS_ENDPOINT not set".to_string(),
+        ))?;
+
+        let aws_config = AwsConfig::sqs(&sqs_key, &sqs_secret, &sqs_region, &sqs_endpoint)?;
+
         let client = aws_sdk_sqs::Client::new(&aws_config);
+
         let queue_url = config
             .sqs_queue
             .clone()
-            .ok_or(Error::Config("sqs_queue name not set".to_string()))?;
+            .ok_or(Error::Config("sqs_queue URL not set".to_string()))?;
 
         Ok(Self { client, queue_url })
     }

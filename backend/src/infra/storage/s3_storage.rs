@@ -1,5 +1,6 @@
+use super::aws_config::AwsConfig;
 use super::base::FileStorageInterface;
-use crate::config::{AwsConfig, Config, Secrets};
+use crate::config::{Config, Secrets};
 use crate::services::{Locatable, Locator};
 use crate::types::*;
 use async_trait::async_trait;
@@ -16,18 +17,33 @@ pub struct S3FileStorage {
 
 impl S3FileStorage {
     pub async fn new(config: Arc<Config>, secrets: Arc<Secrets>) -> Result<Self> {
-        let s3_bucket = config
-            .files_bucket
-            .clone()
-            .ok_or(Error::Config("FILES_BUCKET not set".to_string()))
-            .inspect_err(|_| {
-                error!("Config option FILES_BUCKET not set.");
-            })?;
+        let s3_bucket = config.files_bucket.clone().ok_or(Error::Config(
+            "FILES_BUCKET config option not set".to_string(),
+        ))?;
 
-        let s3_config = AwsConfig::files(config, secrets)?;
+        let s3_region = config.files_region.clone().ok_or(Error::Config(
+            "FILES_REGION config option not set".to_string(),
+        ))?;
+
+        let s3_endpoint = config.files_endpoint.clone().ok_or(Error::Config(
+            "FILES_ENDPOINT config option not set".to_string(),
+        ))?;
+
+        let s3_key = secrets
+            .files_key
+            .clone()
+            .ok_or(Error::Config("FILES_KEY secret not set".to_string()))?;
+
+        let s3_secret = secrets
+            .files_secret
+            .clone()
+            .ok_or(Error::Config("FILES_SECRET secret not set".to_string()))?;
+
+        let s3_config = AwsConfig::files(&s3_key, &s3_secret, &s3_region, &s3_endpoint)?;
+
         let client = Client::new(&s3_config);
 
-        info!("S3 client initialized.");
+        info!("S3 file storage client initialized.");
 
         Ok(Self {
             client,

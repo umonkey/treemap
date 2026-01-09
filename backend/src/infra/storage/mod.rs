@@ -1,5 +1,6 @@
 //! This module implements pluggable file storage drivers.
 
+mod aws_config;
 mod base;
 mod interface;
 mod local_storage;
