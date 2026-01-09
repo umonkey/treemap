@@ -1,4 +1,4 @@
-use super::schemas::UserList;
+use super::schemas::{UserList, UserRead};
 use crate::domain::user::UserUpdate;
 use crate::services::AppState;
 use crate::types::*;
@@ -26,7 +26,7 @@ pub async fn get_users(state: Data<AppState>) -> Result<Json<UserList>> {
 #[get("/{id}")]
 pub async fn get_user(state: Data<AppState>, path: Path<PathInfo>) -> Result<Json<UserRead>> {
     let user = state.user_service.get_user(path.id).await?;
-    Ok(Json(user))
+    Ok(Json(user.into()))
 }
 
 #[get("/{id}/heatmap")]

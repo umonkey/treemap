@@ -2,10 +2,10 @@
 //! Changes can be made by different users, so the list of users
 //! is added to pre-populate the cache.
 
+use crate::actions::user::UserRead;
 use crate::domain::user::User;
 use crate::types::PropRecord;
 use crate::types::PropResponse;
-use crate::types::UserRead;
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]

@@ -1,7 +1,8 @@
 use serde::Serialize;
 
+use crate::actions::user::UserRead;
 use crate::domain::user::User;
-use crate::types::{TreeListItem, TreeRecord, UserRead};
+use crate::types::{TreeListItem, TreeRecord};
 
 #[derive(Debug, Default, Serialize)]
 pub struct TreeList {

@@ -22,14 +22,8 @@ pub struct UserService {
 
 impl UserService {
     // --- Logic from GetUserHandler ---
-    pub async fn get_user(&self, user_id: u64) -> Result<UserRead> {
-        let user = self.users.get(user_id).await?.ok_or(Error::UserNotFound)?;
-
-        Ok(UserRead {
-            id: user.id.to_string(),
-            name: user.name,
-            picture: user.picture,
-        })
+    pub async fn get_user(&self, user_id: u64) -> Result<User> {
+        self.users.get(user_id).await?.ok_or(Error::UserNotFound)
     }
 
     pub async fn list(&self) -> Result<Vec<User>> {

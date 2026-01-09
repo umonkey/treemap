@@ -5,3 +5,4 @@ mod schemas;
 
 pub use actions::get_top_users;
 pub use actions::user_router;
+pub use schemas::UserRead;
