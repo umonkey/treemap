@@ -8,8 +8,20 @@ pub struct PathInfo {
     pub id: u64,
 }
 
+#[get("/v1/stats/top-users")]
+pub async fn get_top_users(state: Data<AppState>) -> Result<Json<UserList>> {
+    let res = state.user_service.get_top_users().await?;
+    Ok(Json(res))
+}
+
+#[get("/v1/users/{id}")]
+pub async fn get_user(state: Data<AppState>, path: Path<PathInfo>) -> Result<Json<UserResponse>> {
+    let user = state.user_service.get_user(path.id).await?;
+    Ok(Json(user))
+}
+
 #[get("/v1/users/{id}/heatmap")]
-pub async fn get_user_heatmap_action(
+pub async fn get_user_heatmap(
     state: Data<AppState>,
     path: Path<PathInfo>,
 ) -> Result<Json<Vec<HeatmapResponse>>> {

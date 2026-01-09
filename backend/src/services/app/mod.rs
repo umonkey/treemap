@@ -1,4 +1,5 @@
 use crate::domain::health::*;
+use crate::domain::user::*;
 use crate::handlers::*;
 use crate::infra::tokens::TokenService;
 use crate::services::FileService;
@@ -10,6 +11,7 @@ use std::sync::Arc;
 pub struct AppState {
     files: Arc<FileService>,
     tokens: Arc<TokenService>,
+    pub user_service: Arc<UserService>,
     pub add_comment_handler: Arc<AddCommentHandler>,
     pub add_file_handler: Arc<AddFileHandler>,
     pub add_photos_handler: Arc<AddPhotosHandler>,
@@ -32,7 +34,6 @@ pub struct AppState {
     pub get_top_diameter_handler: Arc<GetTopDiameterHandler>,
     pub get_top_height_handler: Arc<GetTopHeightHandler>,
     pub get_top_streets_handler: Arc<GetTopStreetsHandler>,
-    pub get_top_users_handler: Arc<GetTopUsersHandler>,
     pub get_tree_comments_handler: Arc<GetTreeCommentsHandler>,
     pub get_tree_defaults_handler: Arc<GetTreeDefaultsHandler>,
     pub get_tree_handler: Arc<GetTreeHandler>,
@@ -40,7 +41,6 @@ pub struct AppState {
     pub get_tree_stats_handler: Arc<GetTreeStatsHandler>,
     pub get_trees_handler: Arc<GetTreesHandler>,
     pub get_updated_trees_handler: Arc<GetUpdatedTreesHandler>,
-    pub get_user_handler: Arc<GetUserHandler>,
     pub like_tree_handler: Arc<LikeTreeHandler>,
     pub login_google_handler: Arc<LoginGoogleHandler>,
     pub login_google_v3_handler: Arc<LoginGoogleV3Handler>,
@@ -68,6 +68,7 @@ impl AppState {
         Ok(Self {
             files: locator.get::<FileService>()?,
             tokens: locator.get::<TokenService>()?,
+            user_service: locator.get::<UserService>()?,
             add_comment_handler: locator.get::<AddCommentHandler>()?,
             add_file_handler: locator.get::<AddFileHandler>()?,
             add_photos_handler: locator.get::<AddPhotosHandler>()?,
@@ -90,7 +91,6 @@ impl AppState {
             get_top_diameter_handler: locator.get::<GetTopDiameterHandler>()?,
             get_top_height_handler: locator.get::<GetTopHeightHandler>()?,
             get_top_streets_handler: locator.get::<GetTopStreetsHandler>()?,
-            get_top_users_handler: locator.get::<GetTopUsersHandler>()?,
             get_tree_comments_handler: locator.get::<GetTreeCommentsHandler>()?,
             get_tree_defaults_handler: locator.get::<GetTreeDefaultsHandler>()?,
             get_tree_handler: locator.get::<GetTreeHandler>()?,
@@ -98,7 +98,6 @@ impl AppState {
             get_tree_stats_handler: locator.get::<GetTreeStatsHandler>()?,
             get_trees_handler: locator.get::<GetTreesHandler>()?,
             get_updated_trees_handler: locator.get::<GetUpdatedTreesHandler>()?,
-            get_user_handler: locator.get::<GetUserHandler>()?,
             like_tree_handler: locator.get::<LikeTreeHandler>()?,
             login_google_handler: locator.get::<LoginGoogleHandler>()?,
             login_google_v3_handler: locator.get::<LoginGoogleV3Handler>()?,

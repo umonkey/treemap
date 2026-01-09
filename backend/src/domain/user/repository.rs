@@ -1,3 +1,4 @@
+use super::models::UserRecord;
 use crate::common::database::queries::*;
 use crate::infra::database::{Database, Value};
 use crate::services::*;
