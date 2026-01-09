@@ -1,6 +1,5 @@
 mod app;
 mod comment_injector;
-mod files;
 mod locator;
 mod osm_reader;
 mod queue_consumer;
@@ -10,7 +9,6 @@ mod tree_injector;
 mod tree_list_loader;
 pub use app::*;
 pub use comment_injector::*;
-pub use files::*;
 pub use locator::*;
 pub use osm_reader::*;
 pub use queue_consumer::*;

@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use crate::types::FileRecord;
+use crate::domain::file::File;
 
 #[derive(Debug, Serialize)]
 pub struct FileUploadResponse {
@@ -12,7 +12,7 @@ impl FileUploadResponse {
         Self { id: id.to_string() }
     }
 
-    pub fn from_file(file: &FileRecord) -> Self {
+    pub fn from_file(file: &File) -> Self {
         Self {
             id: file.id.to_string(),
         }

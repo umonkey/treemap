@@ -1,4 +1,5 @@
 use crate::common::database::repositories::*;
+use crate::domain::file::FileRepository;
 use crate::services::*;
 use crate::types::*;
 use log::info;

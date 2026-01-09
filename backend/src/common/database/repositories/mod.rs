@@ -1,5 +1,4 @@
 mod comment_repository;
-mod file_repository;
 mod like_repository;
 mod osm_tree_repository;
 mod prop_repository;
@@ -8,7 +7,6 @@ mod tree_repository;
 mod upload_repository;
 pub use crate::domain::user::UserRepository;
 pub use comment_repository::*;
-pub use file_repository::*;
 pub use like_repository::*;
 pub use osm_tree_repository::*;
 pub use prop_repository::*;

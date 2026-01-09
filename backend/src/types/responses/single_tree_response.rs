@@ -1,4 +1,6 @@
+use crate::actions::file::FileRead;
 use crate::actions::user::UserRead;
+use crate::domain::file::File;
 use crate::domain::user::User;
 use crate::types::*;
 use serde::Serialize;
@@ -23,18 +25,14 @@ pub struct SingleTreeResponse {
     pub year: Option<i64>,
     pub like_count: i64,
     pub comment_count: u64,
-    pub files: Vec<PublicFileInfo>,
+    pub files: Vec<FileRead>,
     pub users: Vec<UserRead>,
     pub replaces: Option<String>,
     pub replaced_by: Option<String>,
 }
 
 impl SingleTreeResponse {
-    pub fn from_tree(
-        tree: &TreeRecord,
-        files: &[FileRecord],
-        users: &[User],
-    ) -> SingleTreeResponse {
+    pub fn from_tree(tree: &TreeRecord, files: &[File], users: &[User]) -> SingleTreeResponse {
         let thumbnail_id = tree.thumbnail_id.map(|value| value.to_string());
 
         let users = users.iter().map(UserRead::from).collect();
@@ -60,7 +58,7 @@ impl SingleTreeResponse {
             comment_count: tree.comment_count,
             replaces: Self::itos(tree.replaces),
             replaced_by: Self::itos(tree.replaced_by),
-            files: files.iter().map(PublicFileInfo::from_file).collect(),
+            files: files.iter().map(|f| f.into()).collect(),
             users,
         }
     }

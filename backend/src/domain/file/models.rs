@@ -1,11 +1,11 @@
 //! This is how a single file is stored in the database.
 
 use crate::infra::database::{Attributes, Value};
-use crate::types::*;
+use crate::types::Result;
 use serde::Serialize;
 
 #[derive(Clone, Debug, Default, Serialize)]
-pub struct FileRecord {
+pub struct File {
     pub id: u64,
     pub tree_id: u64,
     pub added_at: u64,
@@ -16,7 +16,7 @@ pub struct FileRecord {
     pub large_id: u64,
 }
 
-impl FileRecord {
+impl File {
     pub fn from_attributes(attributes: &Attributes) -> Result<Self> {
         Ok(Self {
             id: attributes.require_u64("id")?,

@@ -3,6 +3,7 @@
 //! This message is sent whenever a user adds a file to a tree as a photo.
 
 use crate::common::database::repositories::*;
+use crate::domain::file::{File, FileRepository};
 use crate::infra::storage::FileStorage;
 use crate::services::*;
 use crate::types::*;
@@ -42,7 +43,7 @@ impl AddPhotoHandler {
         let large = self.thumbnailer.resize(&body, LARGE_SIZE)?;
         let large_id = self.write_file(&large).await?;
 
-        let rec = FileRecord {
+        let rec = File {
             id: source.id,
             tree_id,
             small_id,

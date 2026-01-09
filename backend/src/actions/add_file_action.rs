@@ -20,9 +20,9 @@ pub async fn add_file_action(
 ) -> Result<Json<FileUploadResponse>> {
     let user_id = state.get_user_id(&req)?;
 
-    let rec = state
-        .add_file_handler
-        .handle(AddFileRequest {
+    let file = state
+        .files
+        .add_file(AddFileRequest {
             user_id,
             tree_id: path.id,
             remote_addr: get_remote_addr(&req).ok_or(Error::RemoteAddrNotSet)?,
@@ -31,5 +31,5 @@ pub async fn add_file_action(
         })
         .await?;
 
-    Ok(Json(rec))
+    Ok(Json(FileUploadResponse::from_file(&file)))
 }

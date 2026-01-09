@@ -3,6 +3,7 @@
 //! It first handles the API routes, then the static files,
 //! then the default action which is to serve the index file.
 
+use crate::actions::file::file_router;
 use crate::actions::user::{get_top_users, user_router};
 use crate::actions::*;
 use crate::config::Config;
@@ -51,13 +52,9 @@ pub async fn serve_command() {
             .service(add_photos_action)
             .service(add_training_action)
             .service(add_trees_action)
-            .service(delete_file_action)
             .service(get_duplicates_action)
             .service(get_new_comments_action)
             .service(get_tree_comments_action)
-            .service(get_file_jpg)
-            .service(get_file)
-            .service(get_file_status_action)
             .service(get_health_action)
             .service(get_heatmap_action)
             .service(get_me_action)
@@ -97,6 +94,7 @@ pub async fn serve_command() {
             .service(update_tree_state_action)
             .service(upload_action)
             .service(tree_page_action)
+            .service(web::scope("/v1/files").configure(file_router))
             .service(web::scope("/v1/users").configure(user_router))
             .service(
                 Files::new("/", "./static")

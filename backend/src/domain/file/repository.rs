@@ -1,5 +1,6 @@
 //! Access to the `files` table, where tree photos are stored.
 
+use super::models::File;
 use crate::common::database::queries::*;
 use crate::infra::database::{Database, Value};
 use crate::services::*;
@@ -13,17 +14,17 @@ pub struct FileRepository {
 }
 
 impl FileRepository {
-    pub async fn get(&self, id: u64) -> Result<Option<FileRecord>> {
+    pub async fn get(&self, id: u64) -> Result<Option<File>> {
         let query = SelectQuery::new(TABLE).with_condition("id", Value::from(id as i64));
 
         match self.db.get_record(query).await {
-            Ok(Some(props)) => Ok(Some(FileRecord::from_attributes(&props)?)),
+            Ok(Some(props)) => Ok(Some(File::from_attributes(&props)?)),
             Ok(None) => Ok(None),
             Err(err) => Err(err),
         }
     }
 
-    pub async fn add(&self, file: &FileRecord) -> Result<()> {
+    pub async fn add(&self, file: &File) -> Result<()> {
         let query = InsertQuery::new(TABLE).with_values(file.to_attributes());
 
         self.db.add_record(query).await?;
@@ -31,7 +32,7 @@ impl FileRepository {
         Ok(())
     }
 
-    pub async fn update(&self, file: &FileRecord) -> Result<()> {
+    pub async fn update(&self, file: &File) -> Result<()> {
         let query = UpdateQuery::new(TABLE)
             .with_condition("id", Value::from(file.id as i64))
             .with_value("added_at", Value::from(file.added_at as i64))
@@ -53,23 +54,23 @@ impl FileRepository {
     }
 
     #[allow(unused)]
-    pub async fn delete(&self, file: &FileRecord) -> Result<()> {
+    pub async fn delete(&self, file: &File) -> Result<()> {
         let query = DeleteQuery::new(TABLE).with_condition("id", Value::from(file.id as i64));
 
         self.db.delete(query).await
     }
 
-    pub async fn find_by_tree(&self, tree_id: u64) -> Result<Vec<FileRecord>> {
+    pub async fn find_by_tree(&self, tree_id: u64) -> Result<Vec<File>> {
         let query = SelectQuery::new(TABLE).with_condition("tree_id", Value::from(tree_id as i64));
         self.query_multiple(query).await
     }
 
-    async fn query_multiple(&self, query: SelectQuery) -> Result<Vec<FileRecord>> {
+    async fn query_multiple(&self, query: SelectQuery) -> Result<Vec<File>> {
         let records = self.db.get_records(query).await?;
 
         records
             .iter()
-            .map(|props| FileRecord::from_attributes(props).map_err(|_| Error::DatabaseStructure))
+            .map(|props| File::from_attributes(props).map_err(|_| Error::DatabaseStructure))
             .collect()
     }
 }

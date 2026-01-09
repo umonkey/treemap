@@ -1,4 +1,5 @@
 use crate::common::database::repositories::*;
+use crate::domain::file::{File, FileRepository};
 use crate::domain::user::User;
 use crate::infra::queue::Queue;
 use crate::services::*;
@@ -80,12 +81,12 @@ impl UpdateTreeHandler {
         Ok(SingleTreeResponse::from_tree(&new, &files, &users))
     }
 
-    async fn find_files(&self, tree_id: u64) -> Result<Vec<FileRecord>> {
+    async fn find_files(&self, tree_id: u64) -> Result<Vec<File>> {
         let files = self.files.find_by_tree(tree_id).await?;
         Ok(files.into_iter().filter(|file| file.is_visible()).collect())
     }
 
-    async fn find_users(&self, tree: &TreeRecord, files: &[FileRecord]) -> Result<Vec<User>> {
+    async fn find_users(&self, tree: &TreeRecord, files: &[File]) -> Result<Vec<User>> {
         let mut user_ids = Vec::new();
 
         user_ids.push(tree.added_by);

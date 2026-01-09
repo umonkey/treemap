@@ -1,4 +1,5 @@
 use crate::common::database::repositories::*;
+use crate::domain::file::{File, FileRepository};
 use crate::infra::storage::FileStorage;
 use crate::services::*;
 use crate::types::*;
@@ -32,7 +33,7 @@ impl ResizeImageHandler {
 
                 debug!("Updating file {file_id} with new image ids.");
 
-                let updated = FileRecord {
+                let updated = File {
                     small_id,
                     large_id,
                     ..file

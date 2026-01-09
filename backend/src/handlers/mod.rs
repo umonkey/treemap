@@ -4,14 +4,11 @@
 //! This is mor or less the ADR pattern.
 
 mod add_comment_handler;
-mod add_file_handler;
 mod add_photo_handler;
 mod add_photos_handler;
 mod add_training_handler;
 mod add_trees_handler;
-mod delete_file_handler;
 mod get_duplicates_handler;
-mod get_file_status_handler;
 mod get_heatmap_handler;
 mod get_me_handler;
 mod get_me_likes_handler;
@@ -59,14 +56,11 @@ mod update_tree_thumbnail_handler;
 mod upload_handler;
 mod upload_local_files;
 pub use add_comment_handler::*;
-pub use add_file_handler::*;
 pub use add_photo_handler::*;
 pub use add_photos_handler::*;
 pub use add_training_handler::*;
 pub use add_trees_handler::*;
-pub use delete_file_handler::*;
 pub use get_duplicates_handler::*;
-pub use get_file_status_handler::*;
 pub use get_heatmap_handler::*;
 pub use get_me_handler::*;
 pub use get_me_likes_handler::*;

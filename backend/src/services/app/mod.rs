@@ -1,25 +1,22 @@
+use crate::domain::file::FileService;
 use crate::domain::health::*;
 use crate::domain::user::*;
 use crate::handlers::*;
 use crate::infra::tokens::TokenService;
-use crate::services::FileService;
 use crate::services::Locator;
 use crate::types::*;
 use actix_web::HttpRequest;
 use std::sync::Arc;
 
 pub struct AppState {
-    files: Arc<FileService>,
+    pub files: Arc<FileService>,
     tokens: Arc<TokenService>,
     pub user_service: Arc<UserService>,
     pub add_comment_handler: Arc<AddCommentHandler>,
-    pub add_file_handler: Arc<AddFileHandler>,
     pub add_photos_handler: Arc<AddPhotosHandler>,
     pub add_training_handler: Arc<AddTrainingHandler>,
     pub add_trees_handler: Arc<AddTreesHandler>,
-    pub delete_file_handler: Arc<DeleteFileHandler>,
     pub get_duplicates_handler: Arc<GetDuplicatesHandler>,
-    pub get_file_status_handler: Arc<GetFileStatusHandler>,
     pub get_health_handler: Arc<GetHealthHandler>,
     pub get_heatmap_handler: Arc<GetHeatmapHandler>,
     pub get_me_handler: Arc<GetMeHandler>,
@@ -70,13 +67,10 @@ impl AppState {
             tokens: locator.get::<TokenService>()?,
             user_service: locator.get::<UserService>()?,
             add_comment_handler: locator.get::<AddCommentHandler>()?,
-            add_file_handler: locator.get::<AddFileHandler>()?,
             add_photos_handler: locator.get::<AddPhotosHandler>()?,
             add_training_handler: locator.get::<AddTrainingHandler>()?,
             add_trees_handler: locator.get::<AddTreesHandler>()?,
-            delete_file_handler: locator.get::<DeleteFileHandler>()?,
             get_duplicates_handler: locator.get::<GetDuplicatesHandler>()?,
-            get_file_status_handler: locator.get::<GetFileStatusHandler>()?,
             get_health_handler: locator.get::<GetHealthHandler>()?,
             get_heatmap_handler: locator.get::<GetHeatmapHandler>()?,
             get_me_handler: locator.get::<GetMeHandler>()?,
@@ -150,9 +144,5 @@ impl AppState {
         // TODO: check if user exists.
 
         Ok(user_id)
-    }
-
-    pub async fn get_file(&self, id: u64) -> Result<Vec<u8>> {
-        self.files.get_file(id).await
     }
 }
