@@ -1,4 +1,4 @@
-use crate::types::database::UserRecord;
+use crate::domain::user::User;
 use serde::Serialize;
 
 #[derive(Clone, Debug, Serialize)]
@@ -8,8 +8,8 @@ pub struct UserResponse {
     pub picture: String,
 }
 
-impl From<UserRecord> for UserResponse {
-    fn from(record: UserRecord) -> Self {
+impl From<User> for UserResponse {
+    fn from(record: User) -> Self {
         UserResponse {
             id: record.id.to_string(),
             name: record.name.clone(),
@@ -18,8 +18,8 @@ impl From<UserRecord> for UserResponse {
     }
 }
 
-impl From<&UserRecord> for UserResponse {
-    fn from(record: &UserRecord) -> Self {
+impl From<&User> for UserResponse {
+    fn from(record: &User) -> Self {
         UserResponse {
             id: record.id.to_string(),
             name: record.name.clone(),

@@ -16,7 +16,7 @@ impl TreeListLoader {
         Ok(TreeList::from_trees(trees).with_users(&users))
     }
 
-    async fn load_users(&self, user_ids: &[u64]) -> Result<Vec<UserRecord>> {
+    async fn load_users(&self, user_ids: &[u64]) -> Result<Vec<User>> {
         let ids = unique_ids(user_ids);
         let users = self.users.get_multiple(&ids).await?;
         Ok(users)

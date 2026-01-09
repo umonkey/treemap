@@ -1,3 +1,4 @@
+use super::schemas::UserList;
 use crate::domain::user::UserUpdate;
 use crate::services::AppState;
 use crate::types::*;
@@ -13,13 +14,13 @@ pub struct PathInfo {
 #[get("/v1/stats/top-users")]
 pub async fn get_top_users(state: Data<AppState>) -> Result<Json<UserList>> {
     let res = state.user_service.get_top_users().await?;
-    Ok(Json(res))
+    Ok(Json(res.into()))
 }
 
 #[get("")]
 pub async fn get_users(state: Data<AppState>) -> Result<Json<UserList>> {
     let res = state.user_service.list().await?;
-    Ok(Json(res))
+    Ok(Json(res.into()))
 }
 
 #[get("/{id}")]

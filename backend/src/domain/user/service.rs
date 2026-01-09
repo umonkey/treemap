@@ -31,22 +31,17 @@ impl UserService {
         })
     }
 
-    pub async fn list(&self) -> Result<UserList> {
-        let users = self.users.all().await?;
-        Ok(UserList::new().with_users(&users))
+    pub async fn list(&self) -> Result<Vec<User>> {
+        self.users.all().await
     }
 
     // --- Logic from GetTopUsersHandler ---
-    pub async fn get_top_users(&self) -> Result<UserList> {
+    pub async fn get_top_users(&self) -> Result<Vec<User>> {
         let monthly_ids = self.get_monthly_active().await?;
         let other_ids = self.get_other().await?;
         let ids = self.merge_ids(monthly_ids, other_ids);
 
-        let users = self.users.get_multiple(&ids).await?;
-
-        let res = UserList::new().with_users(&users);
-
-        Ok(res)
+        self.users.get_multiple(&ids).await
     }
 
     async fn get_monthly_active(&self) -> Result<Vec<u64>> {

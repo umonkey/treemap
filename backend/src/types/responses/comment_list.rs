@@ -2,7 +2,7 @@ use crate::types::CommentRecord;
 use crate::types::TreeListItem;
 use crate::types::TreeRecord;
 use crate::types::UserResponse;
-use crate::types::{PublicCommentInfo, UserRecord};
+use crate::types::{PublicCommentInfo, User};
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]
@@ -15,7 +15,7 @@ pub struct CommentList {
 impl CommentList {
     pub fn from_records(
         comments: &[CommentRecord],
-        users: &[UserRecord],
+        users: &[User],
         trees: &[TreeRecord],
     ) -> CommentList {
         let comments = comments

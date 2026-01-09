@@ -4,7 +4,7 @@
 
 use crate::types::PropRecord;
 use crate::types::PropResponse;
-use crate::types::UserRecord;
+use crate::types::User;
 use crate::types::UserResponse;
 use serde::Serialize;
 
@@ -15,7 +15,7 @@ pub struct PropList {
 }
 
 impl PropList {
-    pub fn from_records(props: &[PropRecord], users: &[UserRecord]) -> PropList {
+    pub fn from_records(props: &[PropRecord], users: &[User]) -> PropList {
         let props: Vec<PropResponse> = props.iter().map(PropResponse::from).collect();
         let users: Vec<UserResponse> = users.iter().map(UserResponse::from).collect();
 

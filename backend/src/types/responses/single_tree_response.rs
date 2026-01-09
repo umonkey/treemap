@@ -31,7 +31,7 @@ impl SingleTreeResponse {
     pub fn from_tree(
         tree: &TreeRecord,
         files: &[FileRecord],
-        users: &[UserRecord],
+        users: &[User],
     ) -> SingleTreeResponse {
         let thumbnail_id = tree.thumbnail_id.map(|value| value.to_string());
 

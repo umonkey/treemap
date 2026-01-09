@@ -32,7 +32,7 @@ impl LoginGoogleV3Handler {
         Ok(redirect)
     }
 
-    async fn get_user(&self, userinfo: &AuthResponse) -> Result<UserRecord> {
+    async fn get_user(&self, userinfo: &AuthResponse) -> Result<User> {
         if let Some(user) = self.users.get_by_email(&userinfo.email).await? {
             debug!("Found a user with email {}.", userinfo.email);
             return Ok(user);
@@ -40,7 +40,7 @@ impl LoginGoogleV3Handler {
 
         debug!("Creating a new user with email {}.", userinfo.email);
 
-        let user = UserRecord {
+        let user = User {
             id: get_unique_id()?,
             email: userinfo.email.clone(),
             name: userinfo.name.clone(),

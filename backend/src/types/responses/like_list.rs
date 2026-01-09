@@ -9,11 +9,7 @@ pub struct LikeList {
 }
 
 impl LikeList {
-    pub fn from_records(
-        likes: &[LikeRecord],
-        users: &[UserRecord],
-        trees: &[TreeRecord],
-    ) -> LikeList {
+    pub fn from_records(likes: &[LikeRecord], users: &[User], trees: &[TreeRecord]) -> LikeList {
         let likes = likes.iter().map(LikeListItem::from_record).collect();
 
         let users = users.iter().map(UserResponse::from).collect();

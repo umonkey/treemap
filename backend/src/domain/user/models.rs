@@ -1,9 +1,11 @@
+//! This module contains database models related to users.
+
 use crate::infra::database::{Attributes, Value};
 use crate::types::Result;
 use serde::Serialize;
 
 #[derive(Debug, Default, Serialize)]
-pub struct UserRecord {
+pub struct User {
     pub id: u64,
     pub email: String,
     pub name: String,
@@ -15,7 +17,7 @@ pub struct UserRecord {
     pub files_count: i64,
 }
 
-impl UserRecord {
+impl User {
     pub fn from_attributes(attributes: &Attributes) -> Result<Self> {
         Ok(Self {
             id: attributes.require_u64("id")?,
