@@ -30,6 +30,11 @@ impl UserService {
         })
     }
 
+    pub async fn list(&self) -> Result<UserList> {
+        let users = self.users.all().await?;
+        Ok(UserList::new().with_users(&users))
+    }
+
     // --- Logic from GetTopUsersHandler ---
     pub async fn get_top_users(&self) -> Result<UserList> {
         let monthly_ids = self.get_monthly_active().await?;

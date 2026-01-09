@@ -14,7 +14,6 @@ pub struct UserRepository {
 }
 
 impl UserRepository {
-    #[allow(unused)]
     pub async fn all(&self) -> Result<Vec<UserRecord>> {
         self.query_multiple(SelectQuery::new(TABLE)).await
     }

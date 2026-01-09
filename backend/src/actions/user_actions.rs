@@ -15,6 +15,12 @@ pub async fn get_top_users(state: Data<AppState>) -> Result<Json<UserList>> {
     Ok(Json(res))
 }
 
+#[get("")]
+pub async fn get_users(state: Data<AppState>) -> Result<Json<UserList>> {
+    let res = state.user_service.list().await?;
+    Ok(Json(res))
+}
+
 #[get("/{id}")]
 pub async fn get_user(state: Data<AppState>, path: Path<PathInfo>) -> Result<Json<UserResponse>> {
     let user = state.user_service.get_user(path.id).await?;
@@ -32,5 +38,7 @@ pub async fn get_user_heatmap(
 
 // Configure the router.
 pub fn users_router(cfg: &mut ServiceConfig) {
-    cfg.service(get_user_heatmap).service(get_user);
+    cfg.service(get_users)
+        .service(get_user_heatmap)
+        .service(get_user);
 }

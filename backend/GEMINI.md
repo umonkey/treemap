@@ -20,6 +20,7 @@ The API follows the Action-Domain-Responder model.
 - src/cli: command line actions. These extract input data from the CLI arguments, pass it to the domain implementation, then present the results.
 - src/domain: this is where the business logic lives, organized by domain.
 - src/infra: infrastructure adapters. The code that talks to external services, like db, queue, file storage. Should not be interdependent, unless absolutely necessary.
+- src/services: additional application logic which orchestrates domains. Does not have any domain specific knowledge.
 - src/utils: common simple things with no dependencies.
 
 
