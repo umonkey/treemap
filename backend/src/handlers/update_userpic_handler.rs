@@ -3,6 +3,7 @@
 //! This is only executed using a dedicated CLI command.
 
 use crate::common::database::repositories::*;
+use crate::infra::storage::FileStorage;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::*;
@@ -14,7 +15,7 @@ const USERPIC_SIZE: u32 = 1000;
 pub struct UpdateUserpicHandler {
     users: Arc<UserRepository>,
     uploads: Arc<UploadRepository>,
-    storage: Arc<dyn FileStorageInterface>,
+    storage: Arc<FileStorage>,
     thumbnailer: Arc<ThumbnailerService>,
 }
 
@@ -72,7 +73,7 @@ impl Locatable for UpdateUserpicHandler {
         Ok(Self {
             users: locator.get::<UserRepository>()?,
             uploads: locator.get::<UploadRepository>()?,
-            storage: locator.get::<FileStorageSelector>()?.driver(),
+            storage: locator.get::<FileStorage>()?,
             thumbnailer: locator.get::<ThumbnailerService>()?,
         })
     }

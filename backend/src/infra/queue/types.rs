@@ -4,7 +4,7 @@ use serde::Serialize;
 
 #[derive(Debug, Serialize)]
 pub struct QueueMessage {
-    pub id: u64,
+    pub id: String,
     pub added_at: u64,
     pub available_at: u64,
     pub payload: String,
@@ -14,7 +14,7 @@ pub struct QueueMessage {
 impl QueueMessage {
     pub fn from_attributes(attributes: &Attributes) -> Result<Self> {
         Ok(Self {
-            id: attributes.require_u64("id")?,
+            id: attributes.require_u64("id")?.to_string(),
             added_at: attributes.require_u64("added_at")?,
             available_at: attributes.require_u64("available_at")?,
             payload: attributes.require_string("payload")?,
@@ -24,7 +24,10 @@ impl QueueMessage {
 
     pub fn to_attributes(&self) -> Attributes {
         Attributes::from(&[
-            ("id".to_string(), Value::from(self.id as i64)),
+            (
+                "id".to_string(),
+                Value::from(self.id.parse::<i64>().unwrap_or_default()),
+            ),
             ("added_at".to_string(), Value::from(self.added_at as i64)),
             (
                 "available_at".to_string(),

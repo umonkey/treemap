@@ -1,4 +1,4 @@
-use super::file_storage_interface::FileStorageInterface;
+use super::base::FileStorageInterface;
 use crate::config::Config;
 use crate::services::{Locatable, Locator};
 use crate::types::*;

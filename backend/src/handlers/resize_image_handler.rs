@@ -1,4 +1,5 @@
 use crate::common::database::repositories::*;
+use crate::infra::storage::FileStorage;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::get_unique_id;
@@ -11,7 +12,7 @@ const LARGE_SIZE: u32 = 2000;
 pub struct ResizeImageHandler {
     trees: Arc<TreeRepository>,
     files: Arc<FileRepository>,
-    storage: Arc<dyn FileStorageInterface>,
+    storage: Arc<FileStorage>,
     thumbnailer: Arc<ThumbnailerService>,
 }
 
@@ -81,7 +82,7 @@ impl Locatable for ResizeImageHandler {
             trees: locator.get::<TreeRepository>()?,
             files: locator.get::<FileRepository>()?,
             thumbnailer: locator.get::<ThumbnailerService>()?,
-            storage: locator.get::<FileStorageSelector>()?.driver(),
+            storage: locator.get::<FileStorage>()?,
         })
     }
 }

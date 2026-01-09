@@ -1,7 +1,8 @@
 use crate::domain::health::*;
 use crate::handlers::*;
+use crate::infra::tokens::TokenService;
+use crate::services::FileService;
 use crate::services::Locator;
-use crate::services::{FileService, TokenService};
 use crate::types::*;
 use actix_web::HttpRequest;
 use std::sync::Arc;

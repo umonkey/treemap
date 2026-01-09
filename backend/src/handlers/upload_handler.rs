@@ -6,6 +6,7 @@
 //! Returns new file id.
 
 use crate::common::database::repositories::*;
+use crate::infra::storage::FileStorage;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::{get_timestamp, get_unique_id};
@@ -14,7 +15,7 @@ use std::sync::Arc;
 
 pub struct UploadHandler {
     uploads: Arc<UploadRepository>,
-    storage: Arc<dyn FileStorageInterface>,
+    storage: Arc<FileStorage>,
 }
 
 impl UploadHandler {
@@ -49,7 +50,7 @@ impl Locatable for UploadHandler {
     fn create(locator: &Locator) -> Result<Self> {
         Ok(Self {
             uploads: locator.get::<UploadRepository>()?,
-            storage: locator.get::<FileStorageSelector>()?.driver(),
+            storage: locator.get::<FileStorage>()?,
         })
     }
 }

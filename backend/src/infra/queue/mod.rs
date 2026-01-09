@@ -4,6 +4,7 @@
 mod base;
 mod database_queue;
 mod interface;
+pub mod sqs_queue;
 mod types;
 
 pub use interface::Queue;
