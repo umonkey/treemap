@@ -49,7 +49,8 @@ pub async fn update_user_action(
         .user_service
         .update_user(current_user_id, path.id, body.into_inner())
         .await?;
-    Ok(HttpResponse::Ok().finish())
+
+    Ok(HttpResponse::Accepted().finish())
 }
 
 // Configure the router.
