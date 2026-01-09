@@ -1,5 +1,6 @@
 use crate::services::AppState;
 use crate::types::*;
+use actix_web::web::ServiceConfig;
 use actix_web::{get, web::Data, web::Json, web::Path};
 use serde::Deserialize;
 
@@ -14,17 +15,22 @@ pub async fn get_top_users(state: Data<AppState>) -> Result<Json<UserList>> {
     Ok(Json(res))
 }
 
-#[get("/v1/users/{id}")]
+#[get("/{id}")]
 pub async fn get_user(state: Data<AppState>, path: Path<PathInfo>) -> Result<Json<UserResponse>> {
     let user = state.user_service.get_user(path.id).await?;
     Ok(Json(user))
 }
 
-#[get("/v1/users/{id}/heatmap")]
+#[get("/{id}/heatmap")]
 pub async fn get_user_heatmap(
     state: Data<AppState>,
     path: Path<PathInfo>,
 ) -> Result<Json<Vec<HeatmapResponse>>> {
     let stats = state.get_heatmap_handler.handle_user(path.id).await?;
     Ok(Json(stats))
+}
+
+// Configure the router.
+pub fn users_router(cfg: &mut ServiceConfig) {
+    cfg.service(get_user_heatmap).service(get_user);
 }
