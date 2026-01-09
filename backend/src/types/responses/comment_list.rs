@@ -1,8 +1,9 @@
+use crate::domain::user::User;
 use crate::types::CommentRecord;
+use crate::types::PublicCommentInfo;
 use crate::types::TreeListItem;
 use crate::types::TreeRecord;
 use crate::types::UserResponse;
-use crate::types::{PublicCommentInfo, User};
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]

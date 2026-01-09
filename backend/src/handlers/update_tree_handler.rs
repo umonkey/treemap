@@ -1,4 +1,5 @@
 use crate::common::database::repositories::*;
+use crate::domain::user::User;
 use crate::infra::queue::Queue;
 use crate::services::*;
 use crate::types::*;

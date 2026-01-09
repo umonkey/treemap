@@ -1,4 +1,5 @@
-use crate::types::{User, UserResponse};
+use crate::domain::user::User;
+use crate::types::UserResponse;
 use serde::Serialize;
 
 #[derive(Debug, Default, Serialize)]

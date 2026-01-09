@@ -1,3 +1,4 @@
+use super::models::User;
 use super::repository::UserRepository;
 use super::schemes::UserUpdate;
 use crate::common::database::repositories::UploadRepository;

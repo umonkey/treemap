@@ -14,6 +14,5 @@ pub use self::prop_record::*;
 pub use self::species_record::*;
 pub use self::training_record::*;
 pub use self::tree_record::*;
-pub use crate::domain::user::User;
 pub use like_record::*;
 pub use upload_record::*;

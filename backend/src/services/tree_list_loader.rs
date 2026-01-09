@@ -1,4 +1,5 @@
 use crate::common::database::repositories::*;
+use crate::domain::user::User;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::unique_ids;

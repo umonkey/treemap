@@ -1,3 +1,4 @@
+use crate::domain::user::User;
 use crate::types::*;
 use serde::Serialize;
 
