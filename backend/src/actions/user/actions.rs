@@ -54,7 +54,7 @@ pub async fn update_user_action(
 }
 
 // Configure the router.
-pub fn users_router(cfg: &mut ServiceConfig) {
+pub fn user_router(cfg: &mut ServiceConfig) {
     cfg.service(get_users)
         .service(get_user_heatmap)
         .service(get_user)

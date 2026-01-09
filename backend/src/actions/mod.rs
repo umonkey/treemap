@@ -48,7 +48,7 @@ mod update_tree_location_action;
 mod update_tree_state_action;
 mod update_tree_thumbnail_action;
 mod upload_action;
-pub mod user_actions;
+pub mod user;
 pub use add_comment_action::*;
 pub use add_file_action::*;
 pub use add_photos_action::*;
