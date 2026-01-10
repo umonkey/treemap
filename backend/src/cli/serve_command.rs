@@ -10,6 +10,7 @@ use crate::actions::heatmap::heatmap_router;
 use crate::actions::login::login_router;
 use crate::actions::me::me_router;
 use crate::actions::meta::meta_router;
+use crate::actions::settings::settings_router;
 use crate::actions::species::species_router;
 use crate::actions::stats::stats_router;
 use crate::actions::street::street_router;
@@ -58,10 +59,10 @@ pub async fn serve_command() {
             .app_data(PayloadConfig::new(config.payload_size))
             // Prioritize because of collisions with wildcards later.
             .service(get_health_action)
-            .service(update_settings_action)
             .service(upload_action)
             .service(web::scope("/trees").configure(meta_router))
             .service(web::scope("/v1/comments").configure(comment_router))
+            .service(web::scope("/v1/settings").configure(settings_router))
             .service(web::scope("/v1/duplicates").configure(duplicate_router))
             .service(web::scope("/v1/files").configure(file_router))
             .service(web::scope("/v1/heatmap").configure(heatmap_router))

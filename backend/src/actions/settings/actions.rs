@@ -1,6 +1,7 @@
 use crate::services::AppState;
 use crate::types::*;
-use actix_web::{put, web::Data, web::Json, HttpRequest, HttpResponse};
+use actix_web::web::{Data, Json, ServiceConfig};
+use actix_web::{put, HttpRequest, HttpResponse};
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -9,7 +10,7 @@ struct RequestPayload {
     pub picture: Option<String>,
 }
 
-#[put("/v1/settings")]
+#[put("")]
 pub async fn update_settings_action(
     state: Data<AppState>,
     payload: Json<RequestPayload>,
@@ -27,4 +28,9 @@ pub async fn update_settings_action(
         .await?;
 
     Ok(HttpResponse::Accepted().finish())
+}
+
+// Configure the router.
+pub fn settings_router(cfg: &mut ServiceConfig) {
+    cfg.service(update_settings_action);
 }
