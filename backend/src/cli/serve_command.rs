@@ -4,6 +4,7 @@
 //! then the default action which is to serve the index file.
 
 use crate::actions::file::file_router;
+use crate::actions::me::me_router;
 use crate::actions::species::species_router;
 use crate::actions::stats::stats_router;
 use crate::actions::training::training_router;
@@ -54,8 +55,6 @@ pub async fn serve_command() {
             .service(get_new_comments_action)
             .service(get_health_action)
             .service(get_heatmap_action)
-            .service(get_me_action)
-            .service(get_me_likes_action)
             .service(get_street_report_action)
             .service(login_google_action)
             .service(login_google_v3_action)
@@ -65,6 +64,7 @@ pub async fn serve_command() {
             .service(upload_action)
             .service(tree_page_action)
             .service(web::scope("/v1/files").configure(file_router))
+            .service(web::scope("/v1/me").configure(me_router))
             .service(web::scope("/v1/species").configure(species_router))
             .service(web::scope("/v1/stats").configure(stats_router))
             .service(web::scope("/v1/training").configure(training_router))
