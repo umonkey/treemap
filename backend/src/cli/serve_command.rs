@@ -6,6 +6,7 @@
 use crate::actions::duplicate::duplicate_router;
 use crate::actions::file::file_router;
 use crate::actions::heatmap::heatmap_router;
+use crate::actions::login::login_router;
 use crate::actions::me::me_router;
 use crate::actions::meta::meta_router;
 use crate::actions::species::species_router;
@@ -57,9 +58,6 @@ pub async fn serve_command() {
             // Prioritize because of collisions with wildcards later.
             .service(get_new_comments_action)
             .service(get_health_action)
-            .service(login_google_action)
-            .service(login_google_v3_action)
-            .service(login_osm_action)
             .service(update_settings_action)
             .service(upload_action)
             .service(web::scope("/trees").configure(meta_router))
@@ -73,6 +71,7 @@ pub async fn serve_command() {
             .service(web::scope("/v1/trees").configure(tree_router))
             .service(web::scope("/v1/users").configure(user_router))
             .service(web::scope("/v1/streets").configure(street_router))
+            .service(web::scope("/v3/login").configure(login_router))
             .service(
                 Files::new("/", "./static")
                     .prefer_utf8(true)
