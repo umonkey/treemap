@@ -1,6 +1,6 @@
 mod default_action;
+pub mod duplicate;
 pub mod file;
-mod get_duplicates_action;
 mod get_new_comments_action;
 mod get_street_report_action;
 pub mod heatmap;
@@ -18,7 +18,6 @@ mod update_settings_action;
 mod upload_action;
 pub mod user;
 pub use default_action::*;
-pub use get_duplicates_action::*;
 pub use get_new_comments_action::*;
 pub use get_street_report_action::*;
 pub use login_google_action::*;

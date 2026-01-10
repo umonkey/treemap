@@ -3,6 +3,7 @@
 //! It first handles the API routes, then the static files,
 //! then the default action which is to serve the index file.
 
+use crate::actions::duplicate::duplicate_router;
 use crate::actions::file::file_router;
 use crate::actions::heatmap::heatmap_router;
 use crate::actions::me::me_router;
@@ -53,7 +54,6 @@ pub async fn serve_command() {
             })
             .app_data(PayloadConfig::new(config.payload_size))
             // Prioritize because of collisions with wildcards later.
-            .service(get_duplicates_action)
             .service(get_new_comments_action)
             .service(get_health_action)
             .service(get_street_report_action)
@@ -64,6 +64,7 @@ pub async fn serve_command() {
             .service(update_settings_action)
             .service(upload_action)
             .service(web::scope("/trees").configure(meta_router))
+            .service(web::scope("/v1/duplicates").configure(duplicate_router))
             .service(web::scope("/v1/files").configure(file_router))
             .service(web::scope("/v1/heatmap").configure(heatmap_router))
             .service(web::scope("/v1/me").configure(me_router))
