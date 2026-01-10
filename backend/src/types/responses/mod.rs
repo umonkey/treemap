@@ -1,6 +1,5 @@
 mod comment_list;
 mod duplicates_response;
-mod file_upload_response;
 mod heatmap_response;
 mod like_list;
 mod like_list_item;
@@ -21,7 +20,6 @@ mod tree_list_item;
 mod tree_stats_response;
 pub use comment_list::*;
 pub use duplicates_response::*;
-pub use file_upload_response::*;
 pub use heatmap_response::*;
 pub use like_list::*;
 pub use like_list_item::*;

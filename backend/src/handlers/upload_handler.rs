@@ -5,6 +5,7 @@
 //! saves the file in the configured file storage (local or remote).
 //! Returns new file id.
 
+use crate::actions::tree::FileUploadResponse;
 use crate::common::database::repositories::*;
 use crate::infra::storage::FileStorage;
 use crate::services::*;

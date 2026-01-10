@@ -1,0 +1,121 @@
+use crate::domain::file::File;
+use crate::types::LatLon;
+use serde::{Deserialize, Serialize};
+
+#[derive(Default)]
+pub struct AddFileRequest {
+    pub user_id: u64,
+    pub tree_id: u64,
+    pub file: Vec<u8>,
+    pub remote_addr: String,
+    pub user_agent: String,
+}
+
+#[derive(Default)]
+pub struct AddPhotosRequest {
+    pub tree_id: u64,
+    pub files: Vec<String>,
+    pub user_id: u64,
+}
+
+#[derive(Debug, Serialize)]
+pub struct FileUploadResponse {
+    pub id: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct AddTreePayload {
+    pub points: Vec<LatLon>,
+    pub species: String,
+    pub notes: Option<String>,
+    pub height: Option<f64>,
+    pub circumference: Option<f64>,
+    pub diameter: Option<f64>,
+    #[serde(default = "default_state")]
+    pub state: String,
+    pub year: Option<i64>,
+    pub address: Option<String>,
+    #[serde(default)]
+    pub files: Vec<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct MoveRequestPayload {
+    pub lat: f64,
+    pub lon: f64,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ReplaceTreeRequestPayload {
+    pub species: String,
+    pub notes: Option<String>,
+    pub height: Option<f64>,
+    pub circumference: Option<f64>,
+    pub diameter: Option<f64>,
+    pub state: String,
+    pub year: Option<i64>,
+    #[serde(default)]
+    pub files: Vec<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct UpdateTreeRequestPayload {
+    pub lat: Option<f64>,
+    pub lon: Option<f64>,
+    pub species: Option<String>,
+    pub notes: Option<String>,
+    pub height: Option<f64>,
+    pub circumference: Option<f64>,
+    pub diameter: Option<f64>,
+    pub state: Option<String>,
+    pub year: Option<i64>,
+    pub address: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct UpdateCircumferencePayload {
+    pub value: f64,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct UpdateDiameterPayload {
+    pub value: f64,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct UpdateHeightPayload {
+    pub value: f64,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct UpdateLocationPayload {
+    pub lat: f64,
+    pub lon: f64,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct UpdateStatePayload {
+    pub value: String,
+    pub comment: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ThumbnailPayload {
+    pub file: String,
+}
+
+impl FileUploadResponse {
+    pub fn from_id(id: u64) -> Self {
+        Self { id: id.to_string() }
+    }
+
+    pub fn from_file(file: &File) -> Self {
+        Self {
+            id: file.id.to_string(),
+        }
+    }
+}
+
+fn default_state() -> String {
+    "unknown".to_string()
+}

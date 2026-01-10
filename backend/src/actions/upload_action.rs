@@ -1,5 +1,6 @@
 //! Receive a binary file from the user, attach to a tree.
 
+use crate::actions::tree::FileUploadResponse;
 use crate::services::AppState;
 use crate::types::*;
 use crate::utils::*;

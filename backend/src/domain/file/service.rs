@@ -1,10 +1,11 @@
 use super::models::File;
 use super::repository::FileRepository;
+use crate::actions::tree::AddFileRequest;
 use crate::common::database::repositories::UserRepository;
 use crate::infra::queue::Queue;
 use crate::infra::storage::FileStorage;
 use crate::services::{Locatable, Locator, ThumbnailerService};
-use crate::types::{AddFileRequest, Error, ResizeImageMessage, Result};
+use crate::types::{Error, ResizeImageMessage, Result};
 use crate::utils::{get_timestamp, get_unique_id};
 use log::{debug, info};
 use std::sync::Arc;

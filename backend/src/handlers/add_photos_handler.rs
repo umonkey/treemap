@@ -6,6 +6,7 @@
 //! The files aren't processed immediately; instead, we send them
 //! to a queue.
 
+use crate::actions::tree::AddPhotosRequest;
 use crate::infra::queue::Queue;
 use crate::services::*;
 use crate::types::*;

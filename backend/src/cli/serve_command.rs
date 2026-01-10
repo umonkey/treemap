@@ -7,6 +7,7 @@ use crate::actions::file::file_router;
 use crate::actions::species::species_router;
 use crate::actions::stats::stats_router;
 use crate::actions::training::training_router;
+use crate::actions::tree::tree_router;
 use crate::actions::user::user_router;
 use crate::actions::*;
 use crate::domain::health::*;
@@ -49,47 +50,25 @@ pub async fn serve_command() {
             })
             .app_data(PayloadConfig::new(config.payload_size))
             // Prioritize because of collisions with wildcards later.
-            .service(get_tree_stats_action)
-            .service(add_comment_action)
-            .service(add_file_action)
-            .service(add_photos_action)
-            .service(add_trees_action)
             .service(get_duplicates_action)
             .service(get_new_comments_action)
-            .service(get_tree_comments_action)
             .service(get_health_action)
             .service(get_heatmap_action)
             .service(get_me_action)
             .service(get_me_likes_action)
-            .service(get_new_trees_action)
-            .service(get_updated_trees_action)
             .service(get_street_report_action)
-            .service(get_tree_action)
-            .service(get_tree_defaults_action)
-            .service(get_tree_history_action)
-            .service(get_trees_action)
-            .service(like_tree_action)
-            .service(unlike_tree_action)
             .service(login_google_action)
             .service(login_google_v3_action)
             .service(login_osm_action)
-            .service(move_tree_action)
-            .service(replace_tree_action)
             .service(search_streets_action)
             .service(update_settings_action)
-            .service(update_tree_action)
-            .service(update_tree_thumbnail_action)
-            .service(update_tree_height_action)
-            .service(update_tree_circumference_action)
-            .service(update_tree_diameter_action)
-            .service(update_tree_location_action)
-            .service(update_tree_state_action)
             .service(upload_action)
             .service(tree_page_action)
             .service(web::scope("/v1/files").configure(file_router))
             .service(web::scope("/v1/species").configure(species_router))
             .service(web::scope("/v1/stats").configure(stats_router))
             .service(web::scope("/v1/training").configure(training_router))
+            .service(web::scope("/v1/trees").configure(tree_router))
             .service(web::scope("/v1/users").configure(user_router))
             .service(
                 Files::new("/", "./static")

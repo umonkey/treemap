@@ -1,6 +1,4 @@
 mod add_comment_request;
-mod add_file_request;
-mod add_photos_request;
 mod add_tree_request;
 mod added_trees_request;
 mod file_upload_request;
@@ -14,8 +12,6 @@ mod update_settings_request;
 mod update_tree_request;
 mod update_tree_thumbnail_request;
 pub use add_comment_request::*;
-pub use add_file_request::*;
-pub use add_photos_request::*;
 pub use add_tree_request::*;
 pub use added_trees_request::*;
 pub use file_upload_request::*;
