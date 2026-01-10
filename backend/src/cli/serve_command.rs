@@ -4,6 +4,7 @@
 //! then the default action which is to serve the index file.
 
 use crate::actions::file::file_router;
+use crate::actions::species::species_router;
 use crate::actions::stats::stats_router;
 use crate::actions::training::training_router;
 use crate::actions::user::user_router;
@@ -74,9 +75,7 @@ pub async fn serve_command() {
             .service(login_osm_action)
             .service(move_tree_action)
             .service(replace_tree_action)
-            .service(search_species_action)
             .service(search_streets_action)
-            .service(suggest_species_action)
             .service(update_settings_action)
             .service(update_tree_action)
             .service(update_tree_thumbnail_action)
@@ -88,9 +87,10 @@ pub async fn serve_command() {
             .service(upload_action)
             .service(tree_page_action)
             .service(web::scope("/v1/files").configure(file_router))
+            .service(web::scope("/v1/species").configure(species_router))
+            .service(web::scope("/v1/stats").configure(stats_router))
             .service(web::scope("/v1/training").configure(training_router))
             .service(web::scope("/v1/users").configure(user_router))
-            .service(web::scope("/v1/stats").configure(stats_router))
             .service(
                 Files::new("/", "./static")
                     .prefer_utf8(true)

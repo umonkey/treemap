@@ -8,10 +8,8 @@ pub struct SearchSpeciesHandler {
 }
 
 impl SearchSpeciesHandler {
-    pub async fn handle(&self, query: &str) -> Result<Vec<PublicSpeciesInfo>> {
-        let records = self.db.find_species(query).await?;
-        let species = records.iter().map(PublicSpeciesInfo::from_record).collect();
-        Ok(species)
+    pub async fn handle(&self, query: &str) -> Result<Vec<SpeciesRecord>> {
+        self.db.find_species(query).await
     }
 }
 
