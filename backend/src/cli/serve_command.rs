@@ -5,6 +5,7 @@
 
 use crate::actions::file::file_router;
 use crate::actions::me::me_router;
+use crate::actions::meta::meta_router;
 use crate::actions::species::species_router;
 use crate::actions::stats::stats_router;
 use crate::actions::training::training_router;
@@ -62,7 +63,6 @@ pub async fn serve_command() {
             .service(search_streets_action)
             .service(update_settings_action)
             .service(upload_action)
-            .service(tree_page_action)
             .service(web::scope("/v1/files").configure(file_router))
             .service(web::scope("/v1/me").configure(me_router))
             .service(web::scope("/v1/species").configure(species_router))
@@ -70,6 +70,7 @@ pub async fn serve_command() {
             .service(web::scope("/v1/training").configure(training_router))
             .service(web::scope("/v1/trees").configure(tree_router))
             .service(web::scope("/v1/users").configure(user_router))
+            .service(web::scope("/trees").configure(meta_router))
             .service(
                 Files::new("/", "./static")
                     .prefer_utf8(true)

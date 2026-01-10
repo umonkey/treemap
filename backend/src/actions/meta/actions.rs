@@ -4,8 +4,8 @@
 use crate::services::AppState;
 use crate::types::*;
 use actix_web::http::header::{CacheControl, CacheDirective, Expires};
-use actix_web::HttpResponse;
-use actix_web::{get, web::Data, web::Path};
+use actix_web::web::{Data, Path, ServiceConfig};
+use actix_web::{get, HttpResponse};
 use serde::Deserialize;
 use std::time::{Duration, SystemTime};
 
@@ -14,7 +14,7 @@ pub struct PathInfo {
     pub id: u64,
 }
 
-#[get("/tree/{id}")]
+#[get("/{id:\\d+}")]
 pub async fn tree_page_action(state: Data<AppState>, path: Path<PathInfo>) -> Result<HttpResponse> {
     let html = state.tree_page_handler.handle(path.id).await?;
 
@@ -30,4 +30,9 @@ pub async fn tree_page_action(state: Data<AppState>, path: Path<PathInfo>) -> Re
         .body(html);
 
     Ok(res)
+}
+
+// Configure the router.
+pub fn meta_router(cfg: &mut ServiceConfig) {
+    cfg.service(tree_page_action);
 }
