@@ -3,8 +3,8 @@
 use super::aws_config::AwsConfig;
 use super::base::BaseQueueInterface;
 use super::types::QueueMessage;
-use crate::config::Secrets;
 use crate::infra::config::Config;
+use crate::infra::secrets::Secrets;
 use crate::services::{Locatable, Locator};
 use crate::types::{Error, Result};
 use crate::utils::get_timestamp;

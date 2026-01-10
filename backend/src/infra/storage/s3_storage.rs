@@ -1,7 +1,7 @@
 use super::aws_config::AwsConfig;
 use super::base::FileStorageInterface;
-use crate::config::Secrets;
 use crate::infra::config::Config;
+use crate::infra::secrets::Secrets;
 use crate::services::{Locatable, Locator};
 use crate::types::*;
 use async_trait::async_trait;

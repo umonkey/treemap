@@ -1,5 +1,5 @@
 use super::types::TokenClaims;
-use crate::config::Secrets;
+use crate::infra::secrets::Secrets;
 use crate::services::{Locatable, Locator};
 use crate::types::{Error, Result};
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};

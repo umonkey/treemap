@@ -10,8 +10,8 @@ use super::value::Value;
 use crate::common::database::queries::{
     CountQuery, DeleteQuery, IncrementQuery, InsertQuery, ReplaceQuery, SelectQuery, UpdateQuery,
 };
-use crate::config::Secrets;
 use crate::infra::config::Config;
+use crate::infra::secrets::Secrets;
 use crate::services::*;
 use crate::types::{Error, Result, SpeciesRecord, TreeRecord};
 use log::{debug, error};
