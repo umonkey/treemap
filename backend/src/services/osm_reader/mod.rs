@@ -15,7 +15,7 @@
 //! 4. If a local tree is found, update it.
 
 use crate::common::database::repositories::*;
-use crate::config::Config;
+use crate::infra::config::Config;
 use crate::infra::overpass::OverpassClient;
 use crate::infra::queue::Queue;
 use crate::services::*;

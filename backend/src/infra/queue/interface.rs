@@ -7,7 +7,7 @@ use super::base::BaseQueueInterface;
 use super::database_queue::DatabaseQueue;
 use super::sqs_queue::SqsQueue;
 use super::types::QueueMessage;
-use crate::config::Config;
+use crate::infra::config::Config;
 use crate::services::{Locatable, Locator};
 use crate::types::Result;
 use std::sync::Arc;

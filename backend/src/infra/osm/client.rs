@@ -1,4 +1,5 @@
-use crate::config::{Config, Secrets};
+use crate::config::Secrets;
+use crate::infra::config::Config;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::*;

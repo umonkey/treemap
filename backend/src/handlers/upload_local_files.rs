@@ -1,4 +1,4 @@
-use crate::config::Config;
+use crate::infra::config::Config;
 use crate::infra::storage::{FileStorageInterface, LocalFileStorage, S3FileStorage};
 use crate::services::*;
 use crate::types::*;

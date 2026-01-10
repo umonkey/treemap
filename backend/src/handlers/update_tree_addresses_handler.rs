@@ -3,7 +3,7 @@
 //! This is only executed using a dedicated CLI command.
 
 use crate::common::database::repositories::*;
-use crate::config::Config;
+use crate::infra::config::Config;
 use crate::infra::nominatim::NominatimClient;
 use crate::services::*;
 use crate::types::*;

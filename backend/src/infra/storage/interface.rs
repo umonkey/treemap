@@ -1,7 +1,7 @@
 use super::base::FileStorageInterface;
 use super::local_storage::LocalFileStorage;
 use super::s3_storage::S3FileStorage;
-use crate::config::Config;
+use crate::infra::config::Config;
 use crate::services::{Locatable, Locator};
 use crate::types::*;
 use std::sync::Arc;

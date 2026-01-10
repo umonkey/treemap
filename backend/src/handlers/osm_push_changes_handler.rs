@@ -12,7 +12,7 @@
 //! (5) If it does, push the changes to OSM.
 
 use crate::common::database::repositories::*;
-use crate::config::Config;
+use crate::infra::config::Config;
 use crate::infra::osm::OsmClient;
 use crate::services::*;
 use crate::types::*;

@@ -2,7 +2,7 @@
 //!
 //! When adding or removing secrets, please update `docs/Configuration.md`
 
-use crate::config::Config;
+use crate::infra::config::Config;
 use crate::services::{Locatable, Locator};
 use crate::types::Result;
 use log::{debug, warn};

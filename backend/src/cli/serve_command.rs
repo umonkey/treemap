@@ -6,8 +6,8 @@
 use crate::actions::file::file_router;
 use crate::actions::user::{get_top_users, user_router};
 use crate::actions::*;
-use crate::config::Config;
 use crate::domain::health::*;
+use crate::infra::config::Config;
 use crate::services::*;
 use actix_cors::Cors;
 use actix_files::Files;

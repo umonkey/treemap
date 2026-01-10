@@ -1,5 +1,5 @@
 use super::base::FileStorageInterface;
-use crate::config::Config;
+use crate::infra::config::Config;
 use crate::services::{Locatable, Locator};
 use crate::types::*;
 use async_trait::async_trait;

@@ -1,4 +1,4 @@
-use crate::config::Config;
+use crate::infra::config::Config;
 use crate::services::{Locatable, Locator};
 use crate::types::{Error, OsmTreeRecord, Result};
 use log::{debug, error};
