@@ -4,6 +4,7 @@
 //! then the default action which is to serve the index file.
 
 use crate::actions::comment::comment_router;
+use crate::actions::default::default_action;
 use crate::actions::duplicate::duplicate_router;
 use crate::actions::file::file_router;
 use crate::actions::heatmap::heatmap_router;
@@ -18,7 +19,6 @@ use crate::actions::training::training_router;
 use crate::actions::tree::tree_router;
 use crate::actions::upload::upload_router;
 use crate::actions::user::user_router;
-use crate::actions::*;
 use crate::domain::health::*;
 use crate::infra::config::Config;
 use crate::services::*;
