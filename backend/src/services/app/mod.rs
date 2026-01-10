@@ -1,5 +1,6 @@
 use crate::domain::file::FileService;
 use crate::domain::health::*;
+use crate::domain::training::TrainingService;
 use crate::domain::user::*;
 use crate::handlers::*;
 use crate::infra::tokens::TokenService;
@@ -14,7 +15,7 @@ pub struct AppState {
     pub user_service: Arc<UserService>,
     pub add_comment_handler: Arc<AddCommentHandler>,
     pub add_photos_handler: Arc<AddPhotosHandler>,
-    pub add_training_handler: Arc<AddTrainingHandler>,
+    pub training: Arc<TrainingService>,
     pub add_trees_handler: Arc<AddTreesHandler>,
     pub get_duplicates_handler: Arc<GetDuplicatesHandler>,
     pub get_health_handler: Arc<GetHealthHandler>,
@@ -68,7 +69,7 @@ impl AppState {
             user_service: locator.get::<UserService>()?,
             add_comment_handler: locator.get::<AddCommentHandler>()?,
             add_photos_handler: locator.get::<AddPhotosHandler>()?,
-            add_training_handler: locator.get::<AddTrainingHandler>()?,
+            training: locator.get::<TrainingService>()?,
             add_trees_handler: locator.get::<AddTreesHandler>()?,
             get_duplicates_handler: locator.get::<GetDuplicatesHandler>()?,
             get_health_handler: locator.get::<GetHealthHandler>()?,

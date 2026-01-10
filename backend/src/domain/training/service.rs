@@ -1,23 +1,24 @@
-use crate::common::database::repositories::TrainingRepository;
+use super::models::TrainingRecord;
+use super::repository::TrainingRepository;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::{get_timestamp, get_unique_id};
 use std::sync::Arc;
 
-pub struct AddTrainingHandler {
+pub struct TrainingService {
     repo: Arc<TrainingRepository>,
 }
 
-impl AddTrainingHandler {
-    pub async fn handle(&self, req: AddTrainingRequest) -> Result<()> {
+impl TrainingService {
+    pub async fn add(&self, user_id: u64, result: f64) -> Result<()> {
         let id = get_unique_id()?;
         let now = get_timestamp();
 
         let rec = TrainingRecord {
             id,
-            user_id: req.user_id,
+            user_id,
             added_at: now,
-            result: req.result,
+            result,
         };
 
         self.repo.add(&rec).await?;
@@ -26,7 +27,7 @@ impl AddTrainingHandler {
     }
 }
 
-impl Locatable for AddTrainingHandler {
+impl Locatable for TrainingService {
     fn create(locator: &Locator) -> Result<Self> {
         let repo = locator.get::<TrainingRepository>()?;
         Ok(Self { repo })

@@ -3,4 +3,5 @@
 
 pub mod file;
 pub mod health;
+pub mod training;
 pub mod user;

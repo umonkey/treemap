@@ -6,7 +6,6 @@
 mod add_comment_handler;
 mod add_photo_handler;
 mod add_photos_handler;
-mod add_training_handler;
 mod add_trees_handler;
 mod get_duplicates_handler;
 mod get_heatmap_handler;
@@ -58,7 +57,6 @@ mod upload_local_files;
 pub use add_comment_handler::*;
 pub use add_photo_handler::*;
 pub use add_photos_handler::*;
-pub use add_training_handler::*;
 pub use add_trees_handler::*;
 pub use get_duplicates_handler::*;
 pub use get_heatmap_handler::*;

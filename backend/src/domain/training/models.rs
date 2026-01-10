@@ -1,6 +1,5 @@
-/**
- * This is how a single file is stored in the database.
- */
+//! This is how a single file is stored in the database.
+
 use serde::Serialize;
 
 #[derive(Clone, Debug, Serialize)]

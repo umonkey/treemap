@@ -1,3 +1,4 @@
+use super::models::TrainingRecord;
 use crate::common::database::queries::InsertQuery;
 use crate::infra::database::{Database, Value};
 use crate::services::*;
