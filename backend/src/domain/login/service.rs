@@ -1,6 +1,7 @@
 use crate::common::database::repositories::*;
 use crate::domain::user::User;
 use crate::infra::google_auth::{AuthResponse, GoogleAuthClient};
+use crate::infra::osm::OsmClient;
 use crate::infra::tokens::{TokenClaims, TokenService};
 use crate::services::*;
 use crate::types::*;
@@ -11,14 +12,15 @@ use url::Url;
 
 const TOKEN_TTL: u64 = 30 * 86400; // 30 days
 
-pub struct LoginGoogleV3Handler {
+pub struct LoginService {
     tokens: Arc<TokenService>,
     users: Arc<UserRepository>,
     auth: GoogleAuthClient,
+    osm: Arc<OsmClient>,
 }
 
-impl LoginGoogleV3Handler {
-    pub async fn handle(&self, req: GoogleAuthCallbackPayload) -> Result<String> {
+impl LoginService {
+    pub async fn login_google(&self, req: GoogleAuthCallbackPayload) -> Result<String> {
         debug!("Authenticating a Google user (v3).");
 
         let userinfo = self.auth.verify_token(&req.access_token).await?;
@@ -31,6 +33,16 @@ impl LoginGoogleV3Handler {
 
         let redirect = self.get_redirect_url(&req.state, &token)?;
         Ok(redirect)
+    }
+
+    pub async fn login_osm(&self, code: String) -> Result<()> {
+        debug!("Authenticating an OSM user.");
+
+        let token = self.osm.get_token(&code).await?;
+
+        info!("OSM token: {token}");
+
+        Ok(())
     }
 
     async fn get_user(&self, userinfo: &AuthResponse) -> Result<User> {
@@ -73,12 +85,13 @@ impl LoginGoogleV3Handler {
     }
 }
 
-impl Locatable for LoginGoogleV3Handler {
+impl Locatable for LoginService {
     fn create(locator: &Locator) -> Result<Self> {
         Ok(Self {
             tokens: locator.get::<TokenService>()?,
             users: locator.get::<UserRepository>()?,
             auth: GoogleAuthClient::new(),
+            osm: locator.get::<OsmClient>()?,
         })
     }
 }

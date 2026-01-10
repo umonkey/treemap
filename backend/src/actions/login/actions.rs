@@ -14,7 +14,7 @@ pub async fn osm_action(
     state: Data<AppState>,
     payload: Form<OsmLoginPayload>,
 ) -> Result<HttpResponse> {
-    state.login_osm_handler.handle(payload.code.clone()).await?;
+    state.login.login_osm(payload.code.clone()).await?;
 
     Ok(HttpResponse::Ok().finish())
 }
@@ -25,8 +25,8 @@ pub async fn google_action(
     payload: Form<GoogleAuthCallbackPayload>,
 ) -> Result<Redirect> {
     let redirect = state
-        .login_google_v3_handler
-        .handle(GoogleAuthCallbackPayload {
+        .login
+        .login_google(GoogleAuthCallbackPayload {
             access_token: payload.access_token.clone(),
             state: payload.state.clone(),
         })

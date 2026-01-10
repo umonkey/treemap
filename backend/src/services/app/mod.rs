@@ -1,8 +1,9 @@
 use crate::domain::file::FileService;
 use crate::domain::health::*;
 use crate::domain::heatmap::HeatmapService;
+use crate::domain::login::LoginService;
 use crate::domain::training::TrainingService;
-use crate::domain::user::*;
+use crate::domain::user::UserService;
 use crate::handlers::*;
 use crate::infra::tokens::TokenService;
 use crate::services::Locator;
@@ -41,8 +42,7 @@ pub struct AppState {
     pub get_trees_handler: Arc<GetTreesHandler>,
     pub get_updated_trees_handler: Arc<GetUpdatedTreesHandler>,
     pub like_tree_handler: Arc<LikeTreeHandler>,
-    pub login_google_v3_handler: Arc<LoginGoogleV3Handler>,
-    pub login_osm_handler: Arc<LoginOsmHandler>,
+    pub login: Arc<LoginService>,
     pub move_tree_handler: Arc<MoveTreeHandler>,
     pub replace_tree_handler: Arc<ReplaceTreeHandler>,
     pub search_species_handler: Arc<SearchSpeciesHandler>,
@@ -94,8 +94,7 @@ impl AppState {
             get_trees_handler: locator.get::<GetTreesHandler>()?,
             get_updated_trees_handler: locator.get::<GetUpdatedTreesHandler>()?,
             like_tree_handler: locator.get::<LikeTreeHandler>()?,
-            login_google_v3_handler: locator.get::<LoginGoogleV3Handler>()?,
-            login_osm_handler: locator.get::<LoginOsmHandler>()?,
+            login: locator.get::<LoginService>()?,
             move_tree_handler: locator.get::<MoveTreeHandler>()?,
             replace_tree_handler: locator.get::<ReplaceTreeHandler>()?,
             search_species_handler: locator.get::<SearchSpeciesHandler>()?,
