@@ -1,4 +1,5 @@
 use super::schemas::{UserList, UserRead};
+use crate::domain::heatmap::HeatmapItem;
 use crate::domain::user::UserUpdate;
 use crate::services::AppState;
 use crate::types::*;
@@ -27,8 +28,8 @@ pub async fn get_user(state: Data<AppState>, path: Path<PathInfo>) -> Result<Jso
 pub async fn get_user_heatmap(
     state: Data<AppState>,
     path: Path<PathInfo>,
-) -> Result<Json<Vec<HeatmapResponse>>> {
-    let stats = state.get_heatmap_handler.handle_user(path.id).await?;
+) -> Result<Json<Vec<HeatmapItem>>> {
+    let stats = state.heatmap.get_user(path.id).await?;
     Ok(Json(stats))
 }
 

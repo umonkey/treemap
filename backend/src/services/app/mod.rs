@@ -1,5 +1,6 @@
 use crate::domain::file::FileService;
 use crate::domain::health::*;
+use crate::domain::heatmap::HeatmapService;
 use crate::domain::training::TrainingService;
 use crate::domain::user::*;
 use crate::handlers::*;
@@ -19,7 +20,7 @@ pub struct AppState {
     pub add_trees_handler: Arc<AddTreesHandler>,
     pub get_duplicates_handler: Arc<GetDuplicatesHandler>,
     pub get_health_handler: Arc<GetHealthHandler>,
-    pub get_heatmap_handler: Arc<GetHeatmapHandler>,
+    pub heatmap: Arc<HeatmapService>,
     pub get_me_handler: Arc<GetMeHandler>,
     pub get_me_likes_handler: Arc<GetMeLikesHandler>,
     pub get_new_comments_handler: Arc<GetNewCommentsHandler>,
@@ -72,7 +73,7 @@ impl AppState {
             add_trees_handler: locator.get::<AddTreesHandler>()?,
             get_duplicates_handler: locator.get::<GetDuplicatesHandler>()?,
             get_health_handler: locator.get::<GetHealthHandler>()?,
-            get_heatmap_handler: locator.get::<GetHeatmapHandler>()?,
+            heatmap: locator.get::<HeatmapService>()?,
             get_me_handler: locator.get::<GetMeHandler>()?,
             get_me_likes_handler: locator.get::<GetMeLikesHandler>()?,
             get_new_comments_handler: locator.get::<GetNewCommentsHandler>()?,

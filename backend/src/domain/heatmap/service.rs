@@ -1,5 +1,6 @@
 //! Return the heatmap data for the updates.
 
+use super::schemas::*;
 use crate::infra::database::Database;
 use crate::services::*;
 use crate::types::*;
@@ -8,27 +9,27 @@ use chrono::DateTime;
 use std::collections::HashMap;
 use std::sync::Arc;
 
-pub struct GetHeatmapHandler {
+pub struct HeatmapService {
     db: Arc<Database>,
 }
 
-impl GetHeatmapHandler {
-    pub async fn handle(&self) -> Result<Vec<HeatmapResponse>> {
+impl HeatmapService {
+    pub async fn get_total(&self) -> Result<Vec<HeatmapItem>> {
         let (after, before) = Self::get_dates();
         let res = self.db.get_heatmap(after, before).await?;
         Ok(Self::format_data(after, before, res))
     }
 
-    pub async fn handle_user(&self, user_id: u64) -> Result<Vec<HeatmapResponse>> {
+    pub async fn get_user(&self, user_id: u64) -> Result<Vec<HeatmapItem>> {
         let (after, before) = Self::get_dates();
         let res = self.db.get_user_heatmap(after, before, user_id).await?;
         Ok(Self::format_data(after, before, res))
     }
 
-    fn format_data(after: u64, before: u64, data: Vec<(String, u64)>) -> Vec<HeatmapResponse> {
+    fn format_data(after: u64, before: u64, data: Vec<(String, u64)>) -> Vec<HeatmapItem> {
         let items = data
             .into_iter()
-            .map(|(date, value)| HeatmapResponse { date, value })
+            .map(|(date, value)| HeatmapItem { date, value })
             .collect();
 
         Self::normalize_heatmap(after, before, items)
@@ -48,11 +49,7 @@ impl GetHeatmapHandler {
 
     /// Make sure the heat map contains all dates, even when there's no activity.
     /// This makes sure that days after last activity are being displayed.
-    fn normalize_heatmap(
-        after: u64,
-        before: u64,
-        items: Vec<HeatmapResponse>,
-    ) -> Vec<HeatmapResponse> {
+    fn normalize_heatmap(after: u64, before: u64, items: Vec<HeatmapItem>) -> Vec<HeatmapItem> {
         let mut map = Self::init_heatmap(after, before);
 
         for item in items {
@@ -65,8 +62,8 @@ impl GetHeatmapHandler {
     }
 
     /// Initialize an empty heatmap with all possible dates from the specified time range.
-    fn init_heatmap(after: u64, before: u64) -> HashMap<String, HeatmapResponse> {
-        let mut map: HashMap<String, HeatmapResponse> = HashMap::new();
+    fn init_heatmap(after: u64, before: u64) -> HashMap<String, HeatmapItem> {
+        let mut map: HashMap<String, HeatmapItem> = HashMap::new();
 
         let mut timestamp = after;
 
@@ -76,7 +73,7 @@ impl GetHeatmapHandler {
 
                 map.insert(
                     date_str.clone(),
-                    HeatmapResponse {
+                    HeatmapItem {
                         date: date_str,
                         value: 0,
                     },
@@ -90,7 +87,7 @@ impl GetHeatmapHandler {
     }
 }
 
-impl Locatable for GetHeatmapHandler {
+impl Locatable for HeatmapService {
     fn create(locator: &Locator) -> Result<Self> {
         let db = locator.get::<Database>()?;
         Ok(Self { db })

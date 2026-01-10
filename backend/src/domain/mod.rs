@@ -3,5 +3,6 @@
 
 pub mod file;
 pub mod health;
+pub mod heatmap;
 pub mod training;
 pub mod user;

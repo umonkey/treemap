@@ -1,11 +1,12 @@
+use crate::domain::heatmap::HeatmapItem;
 use crate::services::AppState;
 use crate::types::*;
 use actix_web::get;
 use actix_web::web::{Data, Json, ServiceConfig};
 
 #[get("")]
-pub async fn get_heatmap_action(state: Data<AppState>) -> Result<Json<Vec<HeatmapResponse>>> {
-    let stats = state.get_heatmap_handler.handle().await?;
+pub async fn get_heatmap_action(state: Data<AppState>) -> Result<Json<Vec<HeatmapItem>>> {
+    let stats = state.heatmap.get_total().await?;
     Ok(Json(stats))
 }
 
