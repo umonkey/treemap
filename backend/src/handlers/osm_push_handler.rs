@@ -1,4 +1,6 @@
 use crate::common::database::repositories::*;
+use crate::domain::tree::Tree;
+use crate::domain::tree::TreeRepository;
 use crate::infra::config::Config;
 use crate::infra::osm::OsmClient;
 use crate::services::*;
@@ -65,7 +67,7 @@ impl OsmPushHandler {
         Ok(())
     }
 
-    fn shall_add(&self, tree: &TreeRecord) -> bool {
+    fn shall_add(&self, tree: &Tree) -> bool {
         if tree.osm_id.is_some() {
             return false;
         }
@@ -77,7 +79,7 @@ impl OsmPushHandler {
         true
     }
 
-    async fn get_new_trees(&self) -> Result<Vec<TreeRecord>> {
+    async fn get_new_trees(&self) -> Result<Vec<Tree>> {
         let mut res = Vec::new();
         let max_ts = get_timestamp() - MIN_AGE;
 

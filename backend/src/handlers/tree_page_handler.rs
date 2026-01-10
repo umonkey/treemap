@@ -1,6 +1,7 @@
-use crate::common::database::repositories::*;
-use crate::services::*;
-use crate::types::*;
+use crate::domain::tree::Tree;
+use crate::domain::tree::TreeRepository;
+use crate::services::{Locatable, Locator};
+use crate::types::{Error, Result};
 use html_escape::encode_double_quoted_attribute_to_string;
 use log::{debug, error};
 use std::sync::Arc;
@@ -27,7 +28,7 @@ impl TreePageHandler {
         }
     }
 
-    async fn get_existing_meta(&self, tree: TreeRecord) -> Result<String> {
+    async fn get_existing_meta(&self, tree: Tree) -> Result<String> {
         let mut html = String::new();
 
         let title = Self::format_title(&tree);
@@ -101,7 +102,7 @@ impl TreePageHandler {
         Ok(html.to_string())
     }
 
-    fn format_title(tree: &TreeRecord) -> String {
+    fn format_title(tree: &Tree) -> String {
         if let Some(addr) = &tree.address {
             return format!("{} on {}", Self::escape(&tree.species), Self::escape(addr));
         }
@@ -114,7 +115,7 @@ impl TreePageHandler {
         )
     }
 
-    fn format_description(tree: &TreeRecord) -> String {
+    fn format_description(tree: &Tree) -> String {
         match tree.state.as_str() {
             "gone" => format!(
                 "There once was a {} tree at {}, {}.",

@@ -1,3 +1,4 @@
+use crate::domain::tree::Tree;
 use crate::infra::database::{Attributes, Value};
 use crate::types::*;
 use crate::utils::*;
@@ -138,8 +139,8 @@ impl OsmTreeRecord {
     }
 }
 
-impl From<&TreeRecord> for OsmTreeRecord {
-    fn from(tree: &TreeRecord) -> Self {
+impl From<&Tree> for OsmTreeRecord {
+    fn from(tree: &Tree) -> Self {
         Self {
             id: tree.osm_id.unwrap_or(0),
             lat: osm_round_coord(tree.lat),

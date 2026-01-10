@@ -7,6 +7,8 @@
 //! change" endpoint which can also add comments implicitly.
 
 use crate::common::database::repositories::*;
+use crate::domain::comment::Comment;
+use crate::domain::tree::TreeRepository;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::{get_timestamp, get_unique_id};
@@ -24,7 +26,7 @@ impl CommentInjector {
         let id = get_unique_id()?;
         let now = get_timestamp();
 
-        let comment = CommentRecord {
+        let comment = Comment {
             id,
             tree_id,
             added_at: now,

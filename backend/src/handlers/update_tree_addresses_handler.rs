@@ -2,11 +2,12 @@
 //!
 //! This is only executed using a dedicated CLI command.
 
-use crate::common::database::repositories::*;
+use crate::domain::tree::Tree;
+use crate::domain::tree::TreeRepository;
 use crate::infra::config::Config;
 use crate::infra::nominatim::NominatimClient;
-use crate::services::*;
-use crate::types::*;
+use crate::services::{Locatable, Locator};
+use crate::types::Result;
 use log::{info, warn};
 use std::sync::Arc;
 
@@ -37,7 +38,7 @@ impl UpdateTreeAddressesHandler {
         std::thread::sleep(dur);
     }
 
-    async fn update_tree_address(&self, tree: &TreeRecord) -> Result<()> {
+    async fn update_tree_address(&self, tree: &Tree) -> Result<()> {
         let address = match self
             .nominatim
             .get_street_address(tree.lat, tree.lon)
@@ -55,7 +56,7 @@ impl UpdateTreeAddressesHandler {
 
         self.trees
             .update(
-                &TreeRecord {
+                &Tree {
                     address: Some(address),
                     ..tree.clone()
                 },

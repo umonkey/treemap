@@ -14,13 +14,13 @@ pub struct PathInfo {
 
 #[get("")]
 pub async fn get_users(state: Data<AppState>) -> Result<Json<UserList>> {
-    let res = state.user_service.list().await?;
+    let res = state.users.list().await?;
     Ok(Json(res.into()))
 }
 
 #[get("/{id}")]
 pub async fn get_user(state: Data<AppState>, path: Path<PathInfo>) -> Result<Json<UserRead>> {
-    let user = state.user_service.get_user(path.id).await?;
+    let user = state.users.get_user(path.id).await?;
     Ok(Json(user.into()))
 }
 
@@ -42,7 +42,7 @@ pub async fn update_user_action(
 ) -> Result<HttpResponse> {
     let current_user_id = state.get_user_id(&req)?;
     state
-        .user_service
+        .users
         .update_user(current_user_id, path.id, body.into_inner())
         .await?;
 

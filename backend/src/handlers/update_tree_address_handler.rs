@@ -3,11 +3,12 @@
 //! This is executed after a tree is added or updated,
 //! and its address is not known, or the coordinates have changed.
 
-use crate::common::database::repositories::*;
+use crate::domain::tree::Tree;
+use crate::domain::tree::TreeRepository;
 use crate::infra::config::Config;
 use crate::infra::nominatim::NominatimClient;
-use crate::services::*;
-use crate::types::*;
+use crate::services::{Locatable, Locator};
+use crate::types::Result;
 use log::info;
 use std::sync::Arc;
 
@@ -25,7 +26,7 @@ impl UpdateTreeAddressHandler {
 
                 self.trees
                     .update(
-                        &TreeRecord {
+                        &Tree {
                             address: Some(address),
                             ..tree.clone()
                         },

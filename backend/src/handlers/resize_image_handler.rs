@@ -1,8 +1,8 @@
-use crate::common::database::repositories::*;
 use crate::domain::file::{File, FileRepository};
+use crate::domain::tree::TreeRepository;
 use crate::infra::storage::FileStorage;
-use crate::services::*;
-use crate::types::*;
+use crate::services::{Locatable, Locator, ThumbnailerService};
+use crate::types::{Error, Result};
 use crate::utils::get_unique_id;
 use log::{debug, error, info};
 use std::sync::Arc;

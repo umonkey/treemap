@@ -11,13 +11,6 @@ pub struct AddFileRequest {
     pub user_agent: String,
 }
 
-#[derive(Default)]
-pub struct AddPhotosRequest {
-    pub tree_id: u64,
-    pub files: Vec<String>,
-    pub user_id: u64,
-}
-
 #[derive(Debug, Serialize)]
 pub struct FileUploadResponse {
     pub id: String,

@@ -15,6 +15,8 @@
 //! 4. If a local tree is found, update it.
 
 use crate::common::database::repositories::*;
+use crate::domain::tree::Tree;
+use crate::domain::tree::TreeRepository;
 use crate::infra::config::Config;
 use crate::infra::overpass::OverpassClient;
 use crate::infra::queue::Queue;
@@ -120,10 +122,10 @@ impl OsmReaderService {
         Ok(true)
     }
 
-    async fn add_local_tree(&self, node: &OsmTreeRecord) -> Result<TreeRecord> {
+    async fn add_local_tree(&self, node: &OsmTreeRecord) -> Result<Tree> {
         let now = get_timestamp();
 
-        let tree = TreeRecord {
+        let tree = Tree {
             id: get_unique_id()?,
             osm_id: Some(node.id),
             lat: node.lat,
@@ -147,7 +149,7 @@ impl OsmReaderService {
         Ok(tree)
     }
 
-    async fn find_closest_available_tree(&self, lat: f64, lon: f64) -> Result<Option<TreeRecord>> {
+    async fn find_closest_available_tree(&self, lat: f64, lon: f64) -> Result<Option<Tree>> {
         for tree in self.trees.get_close(lat, lon, 5.0).await? {
             if tree.state != "gone" && tree.osm_id.is_none() {
                 return Ok(Some(tree));

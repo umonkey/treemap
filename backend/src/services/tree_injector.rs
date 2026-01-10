@@ -3,9 +3,10 @@
 //! Before adding a new tree record, it ensures that there isn't a visible tree
 //! with the same coordinates.
 
-use crate::common::database::repositories::*;
-use crate::services::*;
-use crate::types::{Error, Result, TreeRecord};
+use crate::domain::tree::Tree;
+use crate::domain::tree::TreeRepository;
+use crate::services::{Locatable, Locator};
+use crate::types::{Error, Result};
 use log::debug;
 use std::sync::Arc;
 
@@ -17,7 +18,7 @@ pub struct TreeInjector {
 
 impl TreeInjector {
     /// Add a tree, if there isn't a visible tree within 10 cm.
-    pub async fn add(&self, tree: &TreeRecord) -> Result<()> {
+    pub async fn add(&self, tree: &Tree) -> Result<()> {
         if self.exists_with_coordinates(tree.lat, tree.lon).await? {
             return Err(Error::DuplicateTree);
         }

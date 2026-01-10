@@ -4,6 +4,8 @@
 
 use super::base::DatabaseInterface;
 use crate::common::database::queries::*;
+use crate::domain::species::Species;
+use crate::domain::tree::Tree;
 use crate::infra::database::{Attributes, Value};
 use crate::types::*;
 use crate::utils::get_timestamp;
@@ -261,7 +263,7 @@ impl DatabaseInterface for SqliteDatabase {
         Ok(0)
     }
 
-    async fn find_species(&self, query: &str) -> Result<Vec<SpeciesRecord>> {
+    async fn find_species(&self, query: &str) -> Result<Vec<Species>> {
         let pattern = format!("%{}%", query.trim().to_lowercase());
 
         let rows = self.fetch(
@@ -269,10 +271,10 @@ impl DatabaseInterface for SqliteDatabase {
             &[Value::from(pattern)],
         ).await?;
 
-        let mut species: Vec<SpeciesRecord> = Vec::new();
+        let mut species: Vec<Species> = Vec::new();
 
         for row in rows {
-            species.push(SpeciesRecord {
+            species.push(Species {
                 name: row.require_string("name")?,
                 local: row.require_string("local")?,
                 keywords: row.require_string("keywords")?,
@@ -337,7 +339,7 @@ impl DatabaseInterface for SqliteDatabase {
         Ok(res)
     }
 
-    async fn get_species_mismatch(&self, count: u64, skip: u64) -> Result<Vec<TreeRecord>> {
+    async fn get_species_mismatch(&self, count: u64, skip: u64) -> Result<Vec<Tree>> {
         let rows = self.fetch(
             "SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id, year, address FROM trees WHERE state <> 'gone' AND species <> 'Unknown species' AND species <> 'Unknown' AND species NOT IN (SELECT name FROM species) LIMIT ? OFFSET ?",
             &[Value::from(count), Value::from(skip)],
@@ -346,7 +348,7 @@ impl DatabaseInterface for SqliteDatabase {
         let mut records = Vec::new();
 
         for row in rows {
-            if let Ok(packed) = TreeRecord::from_attributes(&row) {
+            if let Ok(packed) = Tree::from_attributes(&row) {
                 records.push(packed);
             }
         }

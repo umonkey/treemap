@@ -1,6 +1,6 @@
-use crate::common::database::repositories::*;
-use crate::services::*;
-use crate::types::*;
+use crate::domain::tree::TreeRepository;
+use crate::services::{Locatable, Locator};
+use crate::types::Result;
 use log::info;
 use std::sync::Arc;
 

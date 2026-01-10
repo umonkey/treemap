@@ -4,6 +4,7 @@
 
 use crate::common::database::repositories::*;
 use crate::domain::file::{File, FileRepository};
+use crate::domain::tree::TreeRepository;
 use crate::infra::storage::FileStorage;
 use crate::services::*;
 use crate::types::*;

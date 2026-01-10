@@ -10,10 +10,12 @@ use super::value::Value;
 use crate::common::database::queries::{
     CountQuery, DeleteQuery, IncrementQuery, InsertQuery, ReplaceQuery, SelectQuery, UpdateQuery,
 };
+use crate::domain::species::Species;
+use crate::domain::tree::Tree;
 use crate::infra::config::Config;
 use crate::infra::secrets::Secrets;
 use crate::services::*;
-use crate::types::{Error, Result, SpeciesRecord, TreeRecord};
+use crate::types::{Error, Result};
 use log::{debug, error};
 use std::sync::Arc;
 
@@ -58,7 +60,7 @@ impl Database {
         self.db.sql(query, params).await
     }
 
-    pub async fn find_species(&self, query: &str) -> Result<Vec<SpeciesRecord>> {
+    pub async fn find_species(&self, query: &str) -> Result<Vec<Species>> {
         self.db.find_species(query).await
     }
 
@@ -82,7 +84,7 @@ impl Database {
         self.db.get_state_stats().await
     }
 
-    pub async fn get_species_mismatch(&self, count: u64, skip: u64) -> Result<Vec<TreeRecord>> {
+    pub async fn get_species_mismatch(&self, count: u64, skip: u64) -> Result<Vec<Tree>> {
         self.db.get_species_mismatch(count, skip).await
     }
 

@@ -1,27 +1,23 @@
 use super::schemas::AddFileRequest;
-use super::schemas::AddPhotosRequest;
 use super::schemas::AddTreePayload;
 use super::schemas::FileUploadResponse;
 use super::schemas::*;
+use crate::domain::tree::TreeStats;
+use crate::services::comment_loader::CommentList;
+use crate::services::tree_loader::SingleTreeResponse;
+use crate::services::tree_loader::TreeList;
 use crate::services::AppState;
 use crate::types::AddTreeRequest;
 use crate::types::AddedTreesRequest;
-use crate::types::CommentList;
 use crate::types::GetTreesRequest;
-use crate::types::MoveTreeRequest;
 use crate::types::NewTreeDefaultsResponse;
 use crate::types::PropList;
 use crate::types::ReplaceTreeRequest;
-use crate::types::SingleTreeResponse;
-use crate::types::TreeList;
-use crate::types::TreeStatsResponse;
 use crate::types::UpdateTreeRequest;
-use crate::types::UpdateTreeThumbnailRequest;
-use crate::types::{AddCommentRequest, Error, Result};
+use crate::types::{Error, Result};
 use crate::utils::{get_remote_addr, get_user_agent};
 use actix_web::web::{Bytes, Data, Json, Path, Query, ServiceConfig};
 use actix_web::{delete, get, post, put, HttpRequest, HttpResponse};
-use log::debug;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -49,12 +45,8 @@ pub async fn add_comment_action(
     let user_id = state.get_user_id(&req)?;
 
     state
-        .add_comment_handler
-        .handle(AddCommentRequest {
-            tree_id: path.id,
-            message: payload.message.to_string(),
-            user_id,
-        })
+        .comments
+        .add_comment(path.id, user_id, &payload.message)
         .await?;
 
     Ok(HttpResponse::Accepted().finish())
@@ -92,13 +84,10 @@ pub async fn add_photos_action(
 ) -> Result<HttpResponse> {
     let user_id = state.get_user_id(&req)?;
 
-    let req = AddPhotosRequest {
-        tree_id: path.id,
-        files: payload.files.clone(),
-        user_id,
-    };
-
-    state.add_photos_handler.handle(req).await?;
+    state
+        .trees
+        .add_tree_photos(path.id, user_id, payload.files.clone())
+        .await?;
 
     Ok(HttpResponse::Accepted().finish())
 }
@@ -112,8 +101,8 @@ pub async fn add_trees_action(
     let user_id = state.get_user_id(&req)?;
 
     let trees = state
-        .add_trees_handler
-        .handle(AddTreeRequest {
+        .trees
+        .add_trees(AddTreeRequest {
             points: payload.points.clone(),
             species: payload.species.clone(),
             notes: payload.notes.clone(),
@@ -138,7 +127,8 @@ pub async fn get_new_trees_action(
 ) -> Result<Json<TreeList>> {
     let count = query.get_count();
     let skip = query.get_skip();
-    let trees = state.get_new_trees_handler.handle(count, skip).await?;
+    let trees = state.trees.get_new_trees(count, skip).await?;
+    let trees = state.tree_loader.load_list(&trees).await?;
     Ok(Json(trees))
 }
 
@@ -147,7 +137,7 @@ pub async fn get_tree_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
 ) -> Result<Json<SingleTreeResponse>> {
-    let tree = state.get_tree_handler.handle(path.id).await?;
+    let tree = state.trees.get_tree(path.id).await?;
     Ok(Json(tree))
 }
 
@@ -156,8 +146,9 @@ pub async fn get_tree_comments_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
 ) -> Result<Json<CommentList>> {
-    let comments = state.get_tree_comments_handler.handle(path.id).await?;
-    Ok(Json(comments))
+    let comments = state.comments.get_tree_comments(path.id).await?;
+    let res = state.comment_loader.load(&comments).await?;
+    Ok(Json(res))
 }
 
 #[get("/defaults")]
@@ -166,7 +157,7 @@ pub async fn get_tree_defaults_action(
     req: HttpRequest,
 ) -> Result<Json<NewTreeDefaultsResponse>> {
     let user_id = state.get_user_id(&req)?;
-    let response = state.get_tree_defaults_handler.handle(user_id).await?;
+    let response = state.trees.get_defaults(user_id).await?;
     Ok(Json(response))
 }
 
@@ -175,13 +166,13 @@ pub async fn get_tree_history_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
 ) -> Result<Json<PropList>> {
-    let comments = state.get_tree_history_handler.handle(path.id).await?;
+    let comments = state.trees.get_history(path.id).await?;
     Ok(Json(comments))
 }
 
 #[get("/stats")]
-pub async fn get_tree_stats_action(state: Data<AppState>) -> Result<Json<TreeStatsResponse>> {
-    let stats = state.get_tree_stats_handler.handle().await?;
+pub async fn get_tree_stats_action(state: Data<AppState>) -> Result<Json<TreeStats>> {
+    let stats = state.trees.get_stats().await?;
     Ok(Json(stats))
 }
 
@@ -192,11 +183,11 @@ pub async fn get_trees_action(
     req: HttpRequest,
 ) -> Result<Json<TreeList>> {
     let user_id = state.get_user_id(&req).unwrap_or(0);
-    let trees = state.get_trees_handler.handle(&query, user_id).await?;
+    let trees = state.trees.get_trees(&query, user_id).await?;
 
-    debug!("Returning {} trees.", trees.len());
+    let res = state.tree_loader.load_list(&trees).await?;
 
-    Ok(Json(trees))
+    Ok(Json(res))
 }
 
 #[get("/updated")]
@@ -206,8 +197,9 @@ pub async fn get_updated_trees_action(
 ) -> Result<Json<TreeList>> {
     let count = query.get_count();
     let skip = query.get_skip();
-    let trees = state.get_updated_trees_handler.handle(count, skip).await?;
-    Ok(Json(trees))
+    let trees = state.trees.get_recently_updated(count, skip).await?;
+    let res = state.tree_loader.load_list(&trees).await?;
+    Ok(Json(res))
 }
 
 #[post("/{id}/likes")]
@@ -217,7 +209,7 @@ pub async fn like_tree_action(
     req: HttpRequest,
 ) -> Result<HttpResponse> {
     let user_id = state.get_user_id(&req)?;
-    state.like_tree_handler.handle(path.id, user_id).await?;
+    state.likes.like_tree(path.id, user_id).await?;
 
     Ok(HttpResponse::Accepted()
         .content_type("application/json")
@@ -234,13 +226,8 @@ pub async fn move_tree_action(
     let user_id = state.get_user_id(&req)?;
 
     state
-        .move_tree_handler
-        .handle(MoveTreeRequest {
-            id: path.id,
-            lat: payload.lat,
-            lon: payload.lon,
-            user_id,
-        })
+        .trees
+        .move_tree(path.id, user_id, payload.lat, payload.lon)
         .await?;
 
     Ok(HttpResponse::Accepted()
@@ -256,8 +243,8 @@ pub async fn replace_tree_action(
     req: HttpRequest,
 ) -> Result<Json<TreeList>> {
     let trees = state
-        .replace_tree_handler
-        .handle(ReplaceTreeRequest {
+        .trees
+        .replace_tree(ReplaceTreeRequest {
             id: path.id,
             user_id: state.get_user_id(&req)?,
             species: payload.species.clone(),
@@ -281,7 +268,7 @@ pub async fn unlike_tree_action(
     req: HttpRequest,
 ) -> Result<HttpResponse> {
     let user_id = state.get_user_id(&req)?;
-    state.unlike_tree_handler.handle(path.id, user_id).await?;
+    state.likes.unlike_tree(path.id, user_id).await?;
 
     Ok(HttpResponse::Accepted()
         .content_type("application/json")
@@ -298,8 +285,8 @@ pub async fn update_tree_action(
     let user_id = state.get_user_id(&req)?;
 
     let tree = state
-        .update_tree_handler
-        .handle(UpdateTreeRequest {
+        .trees
+        .update_tree(UpdateTreeRequest {
             id: path.id,
             lat: payload.lat,
             lon: payload.lon,
@@ -315,7 +302,9 @@ pub async fn update_tree_action(
         })
         .await?;
 
-    Ok(Json(tree))
+    let res = state.tree_loader.load_single(&tree).await?;
+
+    Ok(Json(res))
 }
 
 #[put("/{id}/circumference")]
@@ -326,11 +315,15 @@ pub async fn update_tree_circumference_action(
     req: HttpRequest,
 ) -> Result<Json<SingleTreeResponse>> {
     let user_id = state.get_user_id(&req)?;
+
     let tree = state
-        .update_tree_circumference_handler
-        .handle(path.id, payload.value, user_id)
+        .trees
+        .update_circumference(path.id, payload.value, user_id)
         .await?;
-    Ok(Json(tree))
+
+    let res = state.tree_loader.load_single(&tree).await?;
+
+    Ok(Json(res))
 }
 
 #[put("/{id}/diameter")]
@@ -341,11 +334,15 @@ pub async fn update_tree_diameter_action(
     req: HttpRequest,
 ) -> Result<Json<SingleTreeResponse>> {
     let user_id = state.get_user_id(&req)?;
+
     let tree = state
-        .update_tree_diameter_handler
-        .handle(path.id, payload.value, user_id)
+        .trees
+        .update_diameter(path.id, payload.value, user_id)
         .await?;
-    Ok(Json(tree))
+
+    let res = state.tree_loader.load_single(&tree).await?;
+
+    Ok(Json(res))
 }
 
 #[put("/{id}/height")]
@@ -356,11 +353,15 @@ pub async fn update_tree_height_action(
     req: HttpRequest,
 ) -> Result<Json<SingleTreeResponse>> {
     let user_id = state.get_user_id(&req)?;
+
     let tree = state
-        .update_tree_height_handler
-        .handle(path.id, payload.value, user_id)
+        .trees
+        .update_height(path.id, payload.value, user_id)
         .await?;
-    Ok(Json(tree))
+
+    let res = state.tree_loader.load_single(&tree).await?;
+
+    Ok(Json(res))
 }
 
 #[put("/{id}/location")]
@@ -371,11 +372,15 @@ pub async fn update_tree_location_action(
     req: HttpRequest,
 ) -> Result<Json<SingleTreeResponse>> {
     let user_id = state.get_user_id(&req)?;
+
     let tree = state
-        .update_tree_location_handler
-        .handle(path.id, payload.lat, payload.lon, user_id)
+        .trees
+        .update_location(path.id, payload.lat, payload.lon, user_id)
         .await?;
-    Ok(Json(tree))
+
+    let res = state.tree_loader.load_single(&tree).await?;
+
+    Ok(Json(res))
 }
 
 #[put("/{id}/state")]
@@ -388,8 +393,8 @@ pub async fn update_tree_state_action(
     let user_id = state.get_user_id(&req)?;
 
     let tree = state
-        .update_tree_state_handler
-        .handle(
+        .trees
+        .update_state(
             path.id,
             payload.value.clone(),
             user_id,
@@ -397,7 +402,9 @@ pub async fn update_tree_state_action(
         )
         .await?;
 
-    Ok(Json(tree))
+    let res = state.tree_loader.load_single(&tree).await?;
+
+    Ok(Json(res))
 }
 
 #[put("/{id}/thumbnail")]
@@ -408,14 +415,12 @@ pub async fn update_tree_thumbnail_action(
     req: HttpRequest,
 ) -> Result<HttpResponse> {
     let user_id = state.get_user_id(&req)?;
+    let file_id = payload.file.parse().map_err(|_| Error::BadImage)?;
 
-    let req = UpdateTreeThumbnailRequest {
-        tree_id: path.id,
-        file_id: payload.file.parse().map_err(|_| Error::BadImage)?,
-        user_id,
-    };
-
-    state.update_tree_thumbnail_handler.handle(req).await?;
+    state
+        .trees
+        .update_thumbnail(path.id, file_id, user_id)
+        .await?;
 
     Ok(HttpResponse::Accepted()
         .content_type("application/json")

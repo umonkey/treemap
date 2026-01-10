@@ -1,3 +1,4 @@
+use crate::domain::tree::Tree;
 use crate::infra::config::Config;
 use crate::infra::secrets::Secrets;
 use crate::services::*;
@@ -59,7 +60,7 @@ impl OsmClient {
         Ok(())
     }
 
-    pub async fn create_tree(&self, changeset_id: u64, tree: &TreeRecord) -> Result<u64> {
+    pub async fn create_tree(&self, changeset_id: u64, tree: &Tree) -> Result<u64> {
         let url = "https://api.openstreetmap.org/api/0.6/node/create";
 
         let xml = format!(
@@ -292,7 +293,7 @@ impl OsmClient {
         Ok(json)
     }
 
-    fn format_new_tree_node(&self, tree: &TreeRecord, changeset_id: u64) -> Result<String> {
+    fn format_new_tree_node(&self, tree: &Tree, changeset_id: u64) -> Result<String> {
         let mut xml = format!(
             "<node changeset=\"{}\" lat=\"{}\" lon=\"{}\">",
             changeset_id, tree.lat, tree.lon

@@ -5,7 +5,7 @@ use actix_web::web::{Data, Json, ServiceConfig};
 
 #[get("/v1/duplicates")]
 pub async fn get_duplicates_action(state: Data<AppState>) -> Result<Json<DuplicatesResponse>> {
-    let duplicates = state.get_duplicates_handler.handle().await?;
+    let duplicates = state.trees.get_duplicates().await?;
     Ok(Json(duplicates))
 }
 

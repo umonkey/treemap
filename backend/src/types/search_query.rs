@@ -3,7 +3,7 @@
 //! We parse it to extract the words to search for, and flags to disable certain
 //! search features.
 
-use crate::types::TreeRecord;
+use crate::domain::tree::Tree;
 use crate::utils::{get_timestamp, split_words};
 
 #[derive(Debug, Default)]
@@ -98,7 +98,7 @@ impl SearchQuery {
         res
     }
 
-    pub fn r#match(&self, tree: &TreeRecord, user_id: u64) -> bool {
+    pub fn r#match(&self, tree: &Tree, user_id: u64) -> bool {
         if !self.match_text(tree) {
             return false;
         }
@@ -220,7 +220,7 @@ impl SearchQuery {
         true
     }
 
-    fn match_text(&self, tree: &TreeRecord) -> bool {
+    fn match_text(&self, tree: &Tree) -> bool {
         if self.words.is_empty() {
             return true;
         }
@@ -236,7 +236,7 @@ impl SearchQuery {
         true
     }
 
-    fn is_tree_incomplete(tree: &TreeRecord) -> bool {
+    fn is_tree_incomplete(tree: &Tree) -> bool {
         tree.state == "unknown"
             || tree.height.is_none()
             || tree.circumference.is_none()
@@ -244,7 +244,7 @@ impl SearchQuery {
             || tree.thumbnail_id.is_none()
     }
 
-    fn get_tree_text(tree: &TreeRecord) -> String {
+    fn get_tree_text(tree: &Tree) -> String {
         let mut words: Vec<String> = Vec::new();
         words.push(tree.species.to_lowercase());
 
@@ -264,8 +264,8 @@ impl SearchQuery {
 mod tests {
     use super::*;
 
-    fn default_tree() -> TreeRecord {
-        TreeRecord {
+    fn default_tree() -> Tree {
+        Tree {
             id: 0,
             osm_id: None,
             lat: 0.0,
@@ -328,7 +328,7 @@ mod tests {
     fn test_match_text() {
         let query = SearchQuery::from_string("thuja");
 
-        let tree = TreeRecord {
+        let tree = Tree {
             species: "Thuja plicata".to_string(),
             ..default_tree()
         };
@@ -340,7 +340,7 @@ mod tests {
     fn test_match_noimage() {
         let query = SearchQuery::from_string("thuja noimage");
 
-        let tree1 = TreeRecord {
+        let tree1 = Tree {
             species: "Thuja plicata".to_string(),
             thumbnail_id: None,
             ..default_tree()
@@ -348,7 +348,7 @@ mod tests {
 
         assert!(query.r#match(&tree1, 0));
 
-        let tree2 = TreeRecord {
+        let tree2 = Tree {
             species: "Thuja plicata".to_string(),
             thumbnail_id: Some(1),
             ..default_tree()
@@ -365,7 +365,7 @@ mod tests {
         let query = SearchQuery::from_string("nometrics");
 
         assert!(query.r#match(
-            &TreeRecord {
+            &Tree {
                 height: None,
                 circumference: Some(2.0),
                 diameter: Some(3.0),
@@ -375,7 +375,7 @@ mod tests {
         ));
 
         assert!(query.r#match(
-            &TreeRecord {
+            &Tree {
                 height: Some(1.0),
                 circumference: None,
                 diameter: Some(3.0),
@@ -385,7 +385,7 @@ mod tests {
         ));
 
         assert!(query.r#match(
-            &TreeRecord {
+            &Tree {
                 height: Some(1.0),
                 circumference: Some(2.0),
                 diameter: None,
@@ -396,7 +396,7 @@ mod tests {
 
         assert!(
             !query.r#match(
-                &TreeRecord {
+                &Tree {
                     height: Some(1.0),
                     circumference: Some(2.0),
                     diameter: Some(3.0),
@@ -413,7 +413,7 @@ mod tests {
         let query = SearchQuery::from_string("healthy");
 
         assert!(query.r#match(
-            &TreeRecord {
+            &Tree {
                 state: "healthy".to_string(),
                 ..default_tree()
             },
@@ -421,7 +421,7 @@ mod tests {
         ));
 
         assert!(!query.r#match(
-            &TreeRecord {
+            &Tree {
                 state: "sick".to_string(),
                 ..default_tree()
             },
@@ -434,7 +434,7 @@ mod tests {
         let query = SearchQuery::from_string("deformed");
 
         assert!(query.r#match(
-            &TreeRecord {
+            &Tree {
                 state: "deformed".to_string(),
                 ..default_tree()
             },
@@ -442,7 +442,7 @@ mod tests {
         ));
 
         assert!(!query.r#match(
-            &TreeRecord {
+            &Tree {
                 state: "healthy".to_string(),
                 ..default_tree()
             },
@@ -455,7 +455,7 @@ mod tests {
         let query = SearchQuery::from_string("Sick");
 
         assert!(query.r#match(
-            &TreeRecord {
+            &Tree {
                 state: "sick".to_string(),
                 ..default_tree()
             },
@@ -463,7 +463,7 @@ mod tests {
         ));
 
         assert!(!query.r#match(
-            &TreeRecord {
+            &Tree {
                 state: "healthy".to_string(),
                 ..default_tree()
             },
@@ -476,7 +476,7 @@ mod tests {
         let query = SearchQuery::from_string("dead");
 
         assert!(query.r#match(
-            &TreeRecord {
+            &Tree {
                 state: "dead".to_string(),
                 ..default_tree()
             },
@@ -484,7 +484,7 @@ mod tests {
         ));
 
         assert!(!query.r#match(
-            &TreeRecord {
+            &Tree {
                 state: "healthy".to_string(),
                 ..default_tree()
             },
@@ -497,7 +497,7 @@ mod tests {
         let query = SearchQuery::from_string("stump");
 
         assert!(query.r#match(
-            &TreeRecord {
+            &Tree {
                 state: "stump".to_string(),
                 ..default_tree()
             },
@@ -505,7 +505,7 @@ mod tests {
         ));
 
         assert!(!query.r#match(
-            &TreeRecord {
+            &Tree {
                 state: "healthy".to_string(),
                 ..default_tree()
             },
@@ -518,7 +518,7 @@ mod tests {
         let query = SearchQuery::from_string("gone");
 
         assert!(query.r#match(
-            &TreeRecord {
+            &Tree {
                 state: "gone".to_string(),
                 ..default_tree()
             },
@@ -526,7 +526,7 @@ mod tests {
         ));
 
         assert!(!query.r#match(
-            &TreeRecord {
+            &Tree {
                 state: "healthy".to_string(),
                 ..default_tree()
             },
@@ -539,7 +539,7 @@ mod tests {
         let query = SearchQuery::from_string("");
 
         assert!(!query.r#match(
-            &TreeRecord {
+            &Tree {
                 state: "gone".to_string(),
                 ..default_tree()
             },
@@ -547,7 +547,7 @@ mod tests {
         ));
 
         assert!(query.r#match(
-            &TreeRecord {
+            &Tree {
                 state: "healthy".to_string(),
                 ..default_tree()
             },
@@ -560,7 +560,7 @@ mod tests {
         let query = SearchQuery::from_string("state:unknown");
 
         assert!(query.r#match(
-            &TreeRecord {
+            &Tree {
                 state: "unknown".to_string(),
                 ..default_tree()
             },
@@ -568,7 +568,7 @@ mod tests {
         ));
 
         assert!(!query.r#match(
-            &TreeRecord {
+            &Tree {
                 state: "healthy".to_string(),
                 ..default_tree()
             },
@@ -581,7 +581,7 @@ mod tests {
         let query = SearchQuery::from_string("all");
 
         assert!(query.r#match(
-            &TreeRecord {
+            &Tree {
                 state: "gone".to_string(),
                 ..default_tree()
             },
@@ -589,7 +589,7 @@ mod tests {
         ));
 
         assert!(query.r#match(
-            &TreeRecord {
+            &Tree {
                 state: "healthy".to_string(),
                 ..default_tree()
             },
@@ -602,7 +602,7 @@ mod tests {
         let query = SearchQuery::from_string("osm");
 
         assert!(query.r#match(
-            &TreeRecord {
+            &Tree {
                 species: "Thuja plicata".to_string(),
                 notes: Some("Imported from OSM".to_string()),
                 ..default_tree()
@@ -611,7 +611,7 @@ mod tests {
         ));
 
         assert!(!query.r#match(
-            &TreeRecord {
+            &Tree {
                 species: "Thuja plicata".to_string(),
                 notes: Some("Big tree".to_string()),
                 ..default_tree()
@@ -625,7 +625,7 @@ mod tests {
         let query = SearchQuery::from_string("no:circumference");
 
         assert!(query.r#match(
-            &TreeRecord {
+            &Tree {
                 species: "Thuja plicata".to_string(),
                 circumference: None,
                 ..default_tree()
@@ -634,7 +634,7 @@ mod tests {
         ));
 
         assert!(!query.r#match(
-            &TreeRecord {
+            &Tree {
                 species: "Thuja plicata".to_string(),
                 circumference: Some(2.0),
                 ..default_tree()
@@ -648,7 +648,7 @@ mod tests {
         let query = SearchQuery::from_string("has:addr");
 
         assert!(query.r#match(
-            &TreeRecord {
+            &Tree {
                 species: "Thuja plicata".to_string(),
                 address: Some("test".to_string()),
                 ..default_tree()
@@ -657,7 +657,7 @@ mod tests {
         ));
 
         assert!(!query.r#match(
-            &TreeRecord {
+            &Tree {
                 species: "Thuja plicata".to_string(),
                 address: None,
                 ..default_tree()
@@ -671,7 +671,7 @@ mod tests {
         let query = SearchQuery::from_string("no:addr");
 
         assert!(!query.r#match(
-            &TreeRecord {
+            &Tree {
                 species: "Thuja plicata".to_string(),
                 address: Some("test".to_string()),
                 ..default_tree()
@@ -680,7 +680,7 @@ mod tests {
         ));
 
         assert!(query.r#match(
-            &TreeRecord {
+            &Tree {
                 species: "Thuja plicata".to_string(),
                 address: None,
                 ..default_tree()
@@ -696,7 +696,7 @@ mod tests {
         assert_eq!(Some("some street"), query.address.as_deref());
 
         assert!(query.r#match(
-            &TreeRecord {
+            &Tree {
                 species: "Thuja plicata".to_string(),
                 address: Some("Some Street".to_string()),
                 ..default_tree()
@@ -705,7 +705,7 @@ mod tests {
         ));
 
         assert!(!query.r#match(
-            &TreeRecord {
+            &Tree {
                 species: "Thuja plicata".to_string(),
                 address: Some("other street".to_string()),
                 ..default_tree()
@@ -714,7 +714,7 @@ mod tests {
         ));
 
         assert!(!query.r#match(
-            &TreeRecord {
+            &Tree {
                 species: "Thuja plicata".to_string(),
                 address: None,
                 ..default_tree()
@@ -730,7 +730,7 @@ mod tests {
         assert_eq!(Some("thuja plicata"), query.species.as_deref());
 
         assert!(query.r#match(
-            &TreeRecord {
+            &Tree {
                 species: "Thuja plicata".to_string(),
                 ..default_tree()
             },
@@ -738,7 +738,7 @@ mod tests {
         ));
 
         assert!(!query.r#match(
-            &TreeRecord {
+            &Tree {
                 species: "Thuja orientalis".to_string(),
                 ..default_tree()
             },
@@ -751,7 +751,7 @@ mod tests {
         let query = SearchQuery::from_string("added:me");
 
         assert!(query.r#match(
-            &TreeRecord {
+            &Tree {
                 added_by: 1,
                 ..default_tree()
             },
@@ -759,7 +759,7 @@ mod tests {
         ));
 
         assert!(!query.r#match(
-            &TreeRecord {
+            &Tree {
                 added_by: 1,
                 ..default_tree()
             },
@@ -772,7 +772,7 @@ mod tests {
         let query = SearchQuery::from_string("added:3600");
 
         assert!(query.r#match(
-            &TreeRecord {
+            &Tree {
                 added_at: get_timestamp(),
                 ..default_tree()
             },
@@ -780,7 +780,7 @@ mod tests {
         ));
 
         assert!(!query.r#match(
-            &TreeRecord {
+            &Tree {
                 added_at: get_timestamp() - 3601,
                 ..default_tree()
             },
@@ -793,7 +793,7 @@ mod tests {
         let query = SearchQuery::from_string("updated:3600");
 
         assert!(query.r#match(
-            &TreeRecord {
+            &Tree {
                 updated_at: get_timestamp(),
                 ..default_tree()
             },
@@ -801,7 +801,7 @@ mod tests {
         ));
 
         assert!(!query.r#match(
-            &TreeRecord {
+            &Tree {
                 updated_at: get_timestamp() - 3601,
                 ..default_tree()
             },

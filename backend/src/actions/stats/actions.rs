@@ -1,4 +1,7 @@
 use crate::actions::user::UserList;
+use crate::domain::species::SpeciesStats;
+use crate::domain::stats::StateStatsResponse;
+use crate::services::tree_loader::TreeList;
 use crate::services::AppState;
 use crate::types::*;
 use actix_web::web::ServiceConfig;
@@ -13,36 +16,36 @@ pub struct QueryParams {
 
 #[get("/height")]
 pub async fn get_top_height_action(state: Data<AppState>) -> Result<Json<TreeList>> {
-    let res = state.get_top_height_handler.handle().await?;
-    Ok(Json(res))
+    let trees = state.trees.get_top_by_height().await?;
+    let list = state.tree_loader.load_list(&trees).await?;
+    Ok(Json(list))
 }
 
 #[get("/state")]
 pub async fn get_state_stats_action(
     state: Data<AppState>,
 ) -> Result<Json<Vec<StateStatsResponse>>> {
-    let stats = state.get_state_stats_handler.handle().await?;
+    let stats = state.stats.count_trees_by_state().await?;
     Ok(Json(stats))
 }
 
 #[get("/species")]
-pub async fn get_species_stats_action(
-    state: Data<AppState>,
-) -> Result<Json<Vec<SpeciesStatsResponse>>> {
-    let res = state.get_species_stats_handler.handle().await?;
+pub async fn get_species_stats_action(state: Data<AppState>) -> Result<Json<Vec<SpeciesStats>>> {
+    let res = state.species.get_stats().await?;
     Ok(Json(res))
 }
 
 #[get("/top-users")]
 pub async fn get_top_users(state: Data<AppState>) -> Result<Json<UserList>> {
-    let res = state.user_service.get_top_users().await?;
+    let res = state.users.get_top_users().await?;
     Ok(Json(res.into()))
 }
 
 #[get("/diameter")]
 pub async fn get_top_diameter_action(state: Data<AppState>) -> Result<Json<TreeList>> {
-    let res = state.get_top_diameter_handler.handle().await?;
-    Ok(Json(res))
+    let trees = state.trees.get_top_by_diameter().await?;
+    let list = state.tree_loader.load_list(&trees).await?;
+    Ok(Json(list))
 }
 
 #[get("/species/mismatch")]
@@ -53,11 +56,11 @@ pub async fn get_species_mismatch_action(
     let count = query.count.unwrap_or(100);
     let skip = query.skip.unwrap_or(0);
 
-    let res = state
-        .get_species_mismatch_handler
-        .handle(count, skip)
-        .await?;
-    Ok(Json(res))
+    let trees = state.trees.get_mismatching_species(count, skip).await?;
+
+    let list = state.tree_loader.load_list(&trees).await?;
+
+    Ok(Json(list))
 }
 
 #[get("/streets")]
@@ -70,8 +73,9 @@ pub async fn get_top_streets_action(
 
 #[get("/circumference")]
 pub async fn get_top_circumference_action(state: Data<AppState>) -> Result<Json<TreeList>> {
-    let res = state.get_top_circumference_handler.handle().await?;
-    Ok(Json(res))
+    let trees = state.trees.get_top_by_circumference().await?;
+    let list = state.tree_loader.load_list(&trees).await?;
+    Ok(Json(list))
 }
 
 // Configure the router.

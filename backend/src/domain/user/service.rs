@@ -21,7 +21,6 @@ pub struct UserService {
 }
 
 impl UserService {
-    // --- Logic from GetUserHandler ---
     pub async fn get_user(&self, user_id: u64) -> Result<User> {
         self.users.get(user_id).await?.ok_or(Error::UserNotFound)
     }
@@ -30,7 +29,6 @@ impl UserService {
         self.users.all().await
     }
 
-    // --- Logic from GetTopUsersHandler ---
     pub async fn get_top_users(&self) -> Result<Vec<User>> {
         let monthly_ids = self.get_monthly_active().await?;
         let other_ids = self.get_other().await?;

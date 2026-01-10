@@ -4,7 +4,6 @@ mod common;
 mod domain;
 mod handlers;
 mod infra;
-mod reports;
 mod services;
 mod types;
 mod utils;

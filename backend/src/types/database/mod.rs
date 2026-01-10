@@ -1,14 +1,6 @@
-mod comment_record;
-mod like_record;
 mod osm_tree_record;
 mod prop_record;
-mod species_record;
-mod tree_record;
 mod upload_record;
-pub use self::comment_record::*;
 pub use self::osm_tree_record::*;
 pub use self::prop_record::*;
-pub use self::species_record::*;
-pub use self::tree_record::*;
-pub use like_record::*;
 pub use upload_record::*;

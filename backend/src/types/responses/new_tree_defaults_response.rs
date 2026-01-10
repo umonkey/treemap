@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use crate::types::TreeRecord;
+use crate::domain::tree::Tree;
 
 #[derive(Debug, Serialize)]
 pub struct NewTreeDefaultsResponse {
@@ -13,7 +13,7 @@ pub struct NewTreeDefaultsResponse {
 }
 
 impl NewTreeDefaultsResponse {
-    pub fn from_tree(tree: &TreeRecord) -> Self {
+    pub fn from_tree(tree: &Tree) -> Self {
         Self {
             species: Some(tree.species.clone()),
             notes: None,

@@ -19,7 +19,7 @@ pub async fn suggest_species_action(
     req: HttpRequest,
 ) -> Result<Json<Vec<String>>> {
     let user_id = state.get_user_id(&req)?;
-    let species = state.suggest_species_handler.handle(user_id).await?;
+    let species = state.species.suggest(user_id).await?;
 
     Ok(Json(species))
 }
@@ -29,7 +29,7 @@ pub async fn search_species_action(
     state: Data<AppState>,
     query: Query<QueryParams>,
 ) -> Result<Json<Vec<SpeciesRead>>> {
-    let species = state.search_species_handler.handle(&query.query).await?;
+    let species = state.species.search(&query.query).await?;
     let output = species.iter().map(|f| f.into()).collect();
     Ok(Json(output))
 }
