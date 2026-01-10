@@ -4,8 +4,9 @@
 //! then the default action which is to serve the index file.
 
 use crate::actions::file::file_router;
+use crate::actions::stats::stats_router;
 use crate::actions::training::training_router;
-use crate::actions::user::{get_top_users, user_router};
+use crate::actions::user::user_router;
 use crate::actions::*;
 use crate::domain::health::*;
 use crate::infra::config::Config;
@@ -61,15 +62,7 @@ pub async fn serve_command() {
             .service(get_me_likes_action)
             .service(get_new_trees_action)
             .service(get_updated_trees_action)
-            .service(get_species_stats_action)
-            .service(get_species_mismatch_action)
-            .service(get_state_stats_action)
             .service(get_street_report_action)
-            .service(get_top_circumference_action)
-            .service(get_top_diameter_action)
-            .service(get_top_height_action)
-            .service(get_top_streets_action)
-            .service(get_top_users)
             .service(get_tree_action)
             .service(get_tree_defaults_action)
             .service(get_tree_history_action)
@@ -97,6 +90,7 @@ pub async fn serve_command() {
             .service(web::scope("/v1/files").configure(file_router))
             .service(web::scope("/v1/training").configure(training_router))
             .service(web::scope("/v1/users").configure(user_router))
+            .service(web::scope("/v1/stats").configure(stats_router))
             .service(
                 Files::new("/", "./static")
                     .prefer_utf8(true)

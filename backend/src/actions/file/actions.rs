@@ -46,7 +46,7 @@ pub async fn get_file(state: Data<AppState>, path: Path<PathInfo>) -> Result<Htt
     get_file_real(state, path.id).await
 }
 
-#[get("/{id}/status")]
+#[get("/{id:\\d+}/status")]
 pub async fn get_file_status_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
