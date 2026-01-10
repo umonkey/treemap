@@ -32,7 +32,7 @@ RUN rm -rf src
 COPY src src
 COPY dev dev
 RUN touch src/main.rs
-RUN find -type f && cargo build --release && find target -type f
+RUN cargo build --release
 
 # STEP 2: Build the Final Image
 FROM docker.io/library/alpine:3.22
