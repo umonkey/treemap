@@ -1,7 +1,19 @@
 # Build the target deployment image for "Trees of Yerevan".
 #
-# Note that the image is compiled from pre-build binaries and static files.
-# There are separate build steps to produce those, se commends below.
+# Note that the build process is built in two steps to speed up compilation:
+#
+# (1) An empty source file src/main.rs is created and compiled.  This makes Rust
+# download and compile all third party crates listed in Cargo.lock, and save
+# that in the Docker layers, which are reused later.
+#
+# (2) The actual src/main.rs is being compiled, with all the dependencies ready.
+# This means that as long as you only change local source files, they are compiled
+# quickly using pre-compiled dependencies.
+#
+# If you change the dependencies, however, like add or update a crate, the first
+# step runs and the dependencies are re-compiled.
+#
+# This approach saves time drastically, which saves CI/CD resources.
 
 FROM docker.io/library/rust:1.88-alpine3.22 as builder
 RUN apk add --no-cache musl-dev openssl-dev
