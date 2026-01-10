@@ -1,6 +1,6 @@
 use super::models::User;
 use super::repository::UserRepository;
-use super::schemes::UserUpdate;
+use super::schemas::UserUpdate;
 use crate::common::database::repositories::UploadRepository;
 use crate::infra::database::{Database, Value};
 use crate::infra::storage::FileStorage;
