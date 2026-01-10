@@ -1,7 +1,7 @@
+pub mod comment;
 mod default_action;
 pub mod duplicate;
 pub mod file;
-mod get_new_comments_action;
 pub mod heatmap;
 pub mod login;
 pub mod me;
@@ -15,6 +15,5 @@ mod update_settings_action;
 mod upload_action;
 pub mod user;
 pub use default_action::*;
-pub use get_new_comments_action::*;
 pub use update_settings_action::*;
 pub use upload_action::*;

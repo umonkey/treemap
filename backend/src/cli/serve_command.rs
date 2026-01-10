@@ -3,6 +3,7 @@
 //! It first handles the API routes, then the static files,
 //! then the default action which is to serve the index file.
 
+use crate::actions::comment::comment_router;
 use crate::actions::duplicate::duplicate_router;
 use crate::actions::file::file_router;
 use crate::actions::heatmap::heatmap_router;
@@ -56,21 +57,21 @@ pub async fn serve_command() {
             })
             .app_data(PayloadConfig::new(config.payload_size))
             // Prioritize because of collisions with wildcards later.
-            .service(get_new_comments_action)
             .service(get_health_action)
             .service(update_settings_action)
             .service(upload_action)
             .service(web::scope("/trees").configure(meta_router))
+            .service(web::scope("/v1/comments").configure(comment_router))
             .service(web::scope("/v1/duplicates").configure(duplicate_router))
             .service(web::scope("/v1/files").configure(file_router))
             .service(web::scope("/v1/heatmap").configure(heatmap_router))
             .service(web::scope("/v1/me").configure(me_router))
             .service(web::scope("/v1/species").configure(species_router))
             .service(web::scope("/v1/stats").configure(stats_router))
+            .service(web::scope("/v1/streets").configure(street_router))
             .service(web::scope("/v1/training").configure(training_router))
             .service(web::scope("/v1/trees").configure(tree_router))
             .service(web::scope("/v1/users").configure(user_router))
-            .service(web::scope("/v1/streets").configure(street_router))
             .service(web::scope("/v3/login").configure(login_router))
             .service(
                 Files::new("/", "./static")
