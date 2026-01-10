@@ -16,6 +16,7 @@ use crate::actions::stats::stats_router;
 use crate::actions::street::street_router;
 use crate::actions::training::training_router;
 use crate::actions::tree::tree_router;
+use crate::actions::upload::upload_router;
 use crate::actions::user::user_router;
 use crate::actions::*;
 use crate::domain::health::*;
@@ -59,9 +60,9 @@ pub async fn serve_command() {
             .app_data(PayloadConfig::new(config.payload_size))
             // Prioritize because of collisions with wildcards later.
             .service(get_health_action)
-            .service(upload_action)
             .service(web::scope("/trees").configure(meta_router))
             .service(web::scope("/v1/comments").configure(comment_router))
+            .service(web::scope("/v1/upload").configure(upload_router))
             .service(web::scope("/v1/settings").configure(settings_router))
             .service(web::scope("/v1/duplicates").configure(duplicate_router))
             .service(web::scope("/v1/files").configure(file_router))

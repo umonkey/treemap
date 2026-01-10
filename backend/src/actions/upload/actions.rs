@@ -4,9 +4,10 @@ use crate::actions::tree::FileUploadResponse;
 use crate::services::AppState;
 use crate::types::*;
 use crate::utils::*;
-use actix_web::{post, web::Bytes, web::Data, web::Json, HttpRequest};
+use actix_web::web::{Bytes, Data, Json, ServiceConfig};
+use actix_web::{post, HttpRequest};
 
-#[post("/v1/upload")]
+#[post("")]
 pub async fn upload_action(
     state: Data<AppState>,
     req: HttpRequest,
@@ -25,4 +26,9 @@ pub async fn upload_action(
         .await?;
 
     Ok(Json(rec))
+}
+
+// Configure the router.
+pub fn upload_router(cfg: &mut ServiceConfig) {
+    cfg.service(upload_action);
 }
