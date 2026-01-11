@@ -31,7 +31,7 @@ pub struct UpdatePhotos {
     pub files: Vec<String>,
 }
 
-#[post("/{id}/comments")]
+#[post("/{id:\\d+}/comments")]
 pub async fn add_comment_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
@@ -48,7 +48,7 @@ pub async fn add_comment_action(
     Ok(HttpResponse::Accepted().finish())
 }
 
-#[post("/{id}/files")]
+#[post("/{id:\\d+}/files")]
 pub async fn add_file_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
@@ -71,7 +71,7 @@ pub async fn add_file_action(
     Ok(Json(FileUploadResponse::from_file(&file)))
 }
 
-#[post("/{id}/photos")]
+#[post("/{id:\\d+}/photos")]
 pub async fn add_photos_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
@@ -128,7 +128,7 @@ pub async fn get_new_trees_action(
     Ok(Json(trees))
 }
 
-#[get("/{id}")]
+#[get("/{id:\\d+}")]
 pub async fn get_tree_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
@@ -138,7 +138,7 @@ pub async fn get_tree_action(
     Ok(Json(res))
 }
 
-#[get("{id}/comments")]
+#[get("{id:\\d+}/comments")]
 pub async fn get_tree_comments_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
@@ -158,7 +158,7 @@ pub async fn get_tree_defaults_action(
     Ok(Json(response))
 }
 
-#[get("/{id}/history")]
+#[get("/{id:\\d+}/history")]
 pub async fn get_tree_history_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
@@ -198,7 +198,7 @@ pub async fn get_updated_trees_action(
     Ok(Json(res))
 }
 
-#[post("/{id}/likes")]
+#[post("/{id:\\d+}/likes")]
 pub async fn like_tree_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
@@ -212,7 +212,7 @@ pub async fn like_tree_action(
         .finish())
 }
 
-#[put("/{id}/position")]
+#[put("/{id:\\d+}/position")]
 pub async fn move_tree_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
@@ -231,7 +231,7 @@ pub async fn move_tree_action(
         .finish())
 }
 
-#[put("/{id}/replace")]
+#[put("/{id:\\d+}/replace")]
 pub async fn replace_tree_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
@@ -257,7 +257,7 @@ pub async fn replace_tree_action(
     Ok(Json(TreeList::from_trees(&trees)))
 }
 
-#[delete("/{id}/likes")]
+#[delete("/{id:\\d+}/likes")]
 pub async fn unlike_tree_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
@@ -271,7 +271,7 @@ pub async fn unlike_tree_action(
         .finish())
 }
 
-#[put("/{id}")]
+#[put("/{id:\\d+}")]
 pub async fn update_tree_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
@@ -303,7 +303,7 @@ pub async fn update_tree_action(
     Ok(Json(res))
 }
 
-#[put("/{id}/circumference")]
+#[put("/{id:\\d+}/circumference")]
 pub async fn update_tree_circumference_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
@@ -322,7 +322,7 @@ pub async fn update_tree_circumference_action(
     Ok(Json(res))
 }
 
-#[put("/{id}/diameter")]
+#[put("/{id:\\d+}/diameter")]
 pub async fn update_tree_diameter_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
@@ -341,7 +341,7 @@ pub async fn update_tree_diameter_action(
     Ok(Json(res))
 }
 
-#[put("/{id}/height")]
+#[put("/{id:\\d+}/height")]
 pub async fn update_tree_height_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
@@ -360,7 +360,7 @@ pub async fn update_tree_height_action(
     Ok(Json(res))
 }
 
-#[put("/{id}/location")]
+#[put("/{id:\\d+}/location")]
 pub async fn update_tree_location_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
@@ -379,7 +379,7 @@ pub async fn update_tree_location_action(
     Ok(Json(res))
 }
 
-#[put("/{id}/state")]
+#[put("/{id:\\d+}/state")]
 pub async fn update_tree_state_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
@@ -403,7 +403,7 @@ pub async fn update_tree_state_action(
     Ok(Json(res))
 }
 
-#[put("/{id}/thumbnail")]
+#[put("/{id:\\d+}/thumbnail")]
 pub async fn update_tree_thumbnail_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
