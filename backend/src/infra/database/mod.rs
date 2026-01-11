@@ -4,9 +4,11 @@
 mod attributes;
 mod base;
 mod interface;
+mod queries;
 mod sqlite_database;
 mod value;
 
 pub use attributes::Attributes;
 pub use interface::Database;
+pub use queries::*;
 pub use value::Value;

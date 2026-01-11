@@ -1,5 +1,4 @@
-use crate::common::database::queries::*;
-use crate::infra::database::{Database, Value};
+use crate::infra::database::{Database, InsertQuery, SelectQuery, UpdateQuery, Value};
 use crate::services::*;
 use crate::types::*;
 use log::error;

@@ -1,4 +1,4 @@
-use crate::common::database::queries::*;
+use super::queries::*;
 use crate::domain::species::Species;
 use crate::domain::tree::Tree;
 use crate::infra::database::{Attributes, Value};

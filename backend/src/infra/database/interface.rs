@@ -5,11 +5,9 @@
 
 use super::attributes::Attributes;
 use super::base::DatabaseInterface;
+use super::queries::*;
 use super::sqlite_database::SqliteDatabase;
 use super::value::Value;
-use crate::common::database::queries::{
-    CountQuery, DeleteQuery, IncrementQuery, InsertQuery, ReplaceQuery, SelectQuery, UpdateQuery,
-};
 use crate::domain::species::Species;
 use crate::domain::tree::Tree;
 use crate::infra::config::Config;

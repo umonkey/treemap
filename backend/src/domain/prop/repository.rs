@@ -1,6 +1,5 @@
 use super::models::PropRecord;
-use crate::common::database::queries::*;
-use crate::infra::database::{Database, Value};
+use crate::infra::database::{Database, InsertQuery, SelectQuery, Value};
 use crate::services::{Locatable, Locator};
 use crate::types::*;
 use crate::utils::{get_timestamp, get_unique_id};

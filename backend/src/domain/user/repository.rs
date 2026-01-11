@@ -1,6 +1,7 @@
 use super::models::User;
-use crate::common::database::queries::*;
-use crate::infra::database::{Database, Value};
+use crate::infra::database::{
+    Database, IncrementQuery, InsertQuery, SelectQuery, UpdateQuery, Value,
+};
 use crate::services::*;
 use crate::types::*;
 use crate::utils::unique_ids;

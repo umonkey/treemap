@@ -1,8 +1,7 @@
 //! Access to the `files` table, where tree photos are stored.
 
 use super::models::File;
-use crate::common::database::queries::*;
-use crate::infra::database::{Database, Value};
+use crate::infra::database::{Database, DeleteQuery, InsertQuery, SelectQuery, UpdateQuery, Value};
 use crate::services::*;
 use crate::types::*;
 use std::sync::Arc;

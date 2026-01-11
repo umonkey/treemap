@@ -1,6 +1,5 @@
 use super::models::Like;
-use crate::common::database::queries::*;
-use crate::infra::database::{Database, Value};
+use crate::infra::database::{Database, ReplaceQuery, SelectQuery, Value};
 use crate::services::*;
 use crate::types::{Error, Result};
 use log::error;

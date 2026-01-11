@@ -3,8 +3,8 @@
 
 use super::base::BaseQueueInterface;
 use super::types::QueueMessage;
-use crate::common::database::queries::{DeleteQuery, InsertQuery, UpdateQuery};
 use crate::infra::database::{Database, Value};
+use crate::infra::database::{DeleteQuery, InsertQuery, UpdateQuery};
 use crate::services::{Locatable, Locator};
 use crate::types::Result;
 use crate::utils::{get_timestamp, get_unique_id};

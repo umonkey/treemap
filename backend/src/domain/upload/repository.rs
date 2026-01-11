@@ -2,9 +2,8 @@
 //! The uploads are then used to create tree photos, by providing ids during
 //! tree creation or manipulation.
 
-use crate::common::database::queries::*;
-use crate::infra::database::{Database, Value};
-use crate::services::*;
+use crate::infra::database::{Database, DeleteQuery, InsertQuery, SelectQuery, Value};
+use crate::services::{Locatable, Locator};
 use crate::types::*;
 use std::sync::Arc;
 

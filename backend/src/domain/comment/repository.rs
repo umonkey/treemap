@@ -1,8 +1,7 @@
 //! Access to the comments table.
 
-use crate::common::database::queries::*;
 use crate::domain::comment::Comment;
-use crate::infra::database::{Database, Value};
+use crate::infra::database::{CountQuery, Database, InsertQuery, SelectQuery, Value};
 use crate::services::*;
 use crate::types::*;
 use std::sync::Arc;

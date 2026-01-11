@@ -1,6 +1,5 @@
 use super::models::TrainingRecord;
-use crate::common::database::queries::InsertQuery;
-use crate::infra::database::{Database, Value};
+use crate::infra::database::{Database, InsertQuery, Value};
 use crate::services::*;
 use crate::types::*;
 use std::sync::Arc;
