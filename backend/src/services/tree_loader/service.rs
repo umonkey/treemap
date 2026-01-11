@@ -5,6 +5,7 @@ use crate::domain::user::{User, UserRepository};
 use crate::services::*;
 use crate::types::Result;
 use crate::utils::unique_ids;
+use log::debug;
 use std::sync::Arc;
 
 pub struct TreeLoader {
@@ -14,10 +15,18 @@ pub struct TreeLoader {
 
 impl TreeLoader {
     pub async fn load_list(&self, trees: &[Tree]) -> Result<TreeList> {
+        debug!("Enriching a list of {} trees.", trees.len());
+
         let user_ids: Vec<u64> = trees.iter().map(|t| t.added_by).collect();
         let users = self.load_users(&user_ids).await?;
 
-        Ok(TreeList::from_trees(trees).with_users(&users))
+        debug!("Found {} users.", users.len());
+
+        let res = TreeList::from_trees(trees).with_users(&users);
+
+        debug!("Finished building the list.");
+
+        Ok(res)
     }
 
     pub async fn load_single(&self, tree: &Tree) -> Result<SingleTreeResponse> {

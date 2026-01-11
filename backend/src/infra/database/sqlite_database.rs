@@ -13,7 +13,7 @@ use crate::utils::get_unique_id;
 use async_trait::async_trait;
 use libsql::params_from_iter;
 use libsql::{Builder, Database};
-use log::{error, info};
+use log::{debug, error, info};
 use std::sync::Arc;
 
 const SUGGEST_WINDOW: u64 = 3600 * 24; // 24 hours
@@ -175,7 +175,12 @@ impl DatabaseInterface for SqliteDatabase {
 
     async fn get_records(&self, query: SelectQuery) -> Result<Vec<Attributes>> {
         let (sql, params) = query.build();
-        self.sql(sql.as_str(), params.as_slice()).await
+
+        self.sql(sql.as_str(), params.as_slice())
+            .await
+            .inspect_err(|e| {
+                debug!("SQL query failed: {e}; SQL={sql}");
+            })
     }
 
     async fn add_record(&self, query: InsertQuery) -> Result<()> {

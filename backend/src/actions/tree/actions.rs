@@ -183,9 +183,7 @@ pub async fn get_trees_action(
     let user_id = state.get_user_id(&req).unwrap_or(0);
     let trees = state.trees.get_trees(&query, user_id).await?;
 
-    let res = state.tree_loader.load_list(&trees).await?;
-
-    Ok(Json(res))
+    Ok(Json(state.tree_loader.load_list(&trees).await?))
 }
 
 #[get("/updated")]

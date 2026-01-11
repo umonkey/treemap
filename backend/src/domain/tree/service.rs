@@ -116,7 +116,11 @@ impl TreeService {
     }
 
     pub async fn get_trees(&self, request: &GetTreesRequest, user_id: u64) -> Result<Vec<Tree>> {
+        debug!("Going to find trees.");
+
         let mut trees = self.trees.get_by_bounds(request.into()).await?;
+
+        debug!("Found {} trees.", trees.len());
 
         if let Some(search) = &request.search {
             let query = SearchQuery::from_string(search);
@@ -124,6 +128,8 @@ impl TreeService {
         } else {
             trees.retain(Self::is_visible);
         }
+
+        debug!("Filtered {} trees.", trees.len());
 
         Ok(trees)
     }
@@ -694,6 +700,36 @@ impl Locatable for TreeService {
 mod tests {
     use super::*;
     use std::collections::HashMap;
+
+    fn setup() -> Arc<TreeService> {
+        if env_logger::try_init().is_err() {
+            debug!("env_logger already initialized.");
+        };
+
+        let locator = Locator::new();
+
+        locator
+            .get::<TreeService>()
+            .expect("Error creating TreeService")
+    }
+
+    #[tokio::test]
+    async fn test_get_trees() {
+        let trees = setup();
+
+        let request = GetTreesRequest {
+            n: 0.0,
+            e: 0.0,
+            s: 0.0,
+            w: 0.0,
+            search: None,
+        };
+
+        trees
+            .get_trees(&request, 0)
+            .await
+            .expect("Error getting trees.");
+    }
 
     #[test]
     fn test_coordinate_rounding() {
