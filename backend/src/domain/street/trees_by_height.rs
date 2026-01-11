@@ -60,7 +60,7 @@ mod tests {
     use super::*;
 
     fn setup() -> TreesByHeightReporter {
-        TreesByHeightReporter::new();
+        TreesByHeightReporter::new()
     }
 
     #[test]

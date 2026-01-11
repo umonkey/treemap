@@ -54,7 +54,7 @@ mod tests {
     use super::*;
 
     fn setup() -> TreesByStateReporter {
-        TreesByStateReporter::new();
+        TreesByStateReporter::new()
     }
 
     #[test]

@@ -3,6 +3,7 @@ mod comment_injector;
 pub mod comment_loader;
 pub mod like_loader;
 mod locator;
+pub mod meta;
 mod osm_reader;
 mod queue_consumer;
 mod queue_encoder;

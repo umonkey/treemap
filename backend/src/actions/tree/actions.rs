@@ -138,7 +138,8 @@ pub async fn get_tree_action(
     path: Path<PathInfo>,
 ) -> Result<Json<SingleTreeResponse>> {
     let tree = state.trees.get_tree(path.id).await?;
-    Ok(Json(tree))
+    let res = state.tree_loader.load_single(&tree).await?;
+    Ok(Json(res))
 }
 
 #[get("{id}/comments")]

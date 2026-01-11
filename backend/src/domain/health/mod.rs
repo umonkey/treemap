@@ -6,8 +6,6 @@
 //! background tasks like OSM sync.  Overpass being down should not
 //! prevent the API and our web UI from working.
 
-mod actions;
-mod domain;
+mod service;
 
-pub use actions::*;
-pub use domain::*;
+pub use service::HealthService;

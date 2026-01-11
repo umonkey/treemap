@@ -124,7 +124,7 @@ mod tests {
     use super::*;
 
     fn setup() -> TreesBySpeciesReporter {
-        TreesBySpeciesReporter::new();
+        TreesBySpeciesReporter::new()
     }
 
     #[test]

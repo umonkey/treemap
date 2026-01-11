@@ -67,7 +67,7 @@ pub async fn get_species_mismatch_action(
 pub async fn get_top_streets_action(
     state: Data<AppState>,
 ) -> Result<Json<Vec<StreetStatsResponse>>> {
-    let res = state.get_top_streets_handler.handle().await?;
+    let res = state.stats.get_top_streets().await?;
     Ok(Json(res))
 }
 

@@ -22,6 +22,20 @@ impl StatsService {
 
         Ok(res)
     }
+
+    pub async fn get_top_streets(&self) -> Result<Vec<StreetStatsResponse>> {
+        let res = self.db.get_top_streets(1000).await?;
+
+        let res = res
+            .iter()
+            .map(|(species, count)| StreetStatsResponse {
+                address: species.clone(),
+                count: *count,
+            })
+            .collect();
+
+        Ok(res)
+    }
 }
 
 impl Locatable for StatsService {

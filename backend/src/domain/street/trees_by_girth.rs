@@ -61,7 +61,7 @@ mod tests {
     use super::*;
 
     fn setup() -> TreesByGirthReporter {
-        TreesByGirthReporter::new();
+        TreesByGirthReporter::new()
     }
 
     #[test]

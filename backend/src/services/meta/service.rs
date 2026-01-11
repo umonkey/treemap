@@ -1,38 +1,18 @@
 use crate::domain::tree::Tree;
-use crate::domain::tree::TreeRepository;
 use crate::services::{Locatable, Locator};
 use crate::types::{Error, Result};
 use html_escape::encode_double_quoted_attribute_to_string;
-use log::{debug, error};
-use std::sync::Arc;
+use log::error;
 use tokio::fs;
 
-pub struct TreePageHandler {
-    trees: Arc<TreeRepository>,
-}
+pub struct MetaService {}
 
-impl TreePageHandler {
-    pub async fn handle(&self, tree_id: u64) -> Result<String> {
-        debug!("Injecting meta for tree {tree_id}.");
-
-        let mut html = self.get_tree_meta(tree_id).await?;
-        html = self.inject_meta(&html).await?;
-
-        Ok(html)
-    }
-
-    async fn get_tree_meta(&self, tree_id: u64) -> Result<String> {
-        match self.trees.get(tree_id).await? {
-            Some(tree) => self.get_existing_meta(tree).await,
-            None => self.get_notfound_meta().await,
-        }
-    }
-
-    async fn get_existing_meta(&self, tree: Tree) -> Result<String> {
+impl MetaService {
+    pub async fn get_tree(&self, tree: &Tree) -> Result<String> {
         let mut html = String::new();
 
-        let title = Self::format_title(&tree);
-        let description = Self::format_description(&tree);
+        let title = Self::format_title(tree);
+        let description = Self::format_description(tree);
         let url = format!("https://yerevan.treemaps.app/tree/{}", tree.id);
 
         html.push_str(format!("<title>{}</title>", Self::escape(&title)).as_str());
@@ -94,10 +74,11 @@ impl TreePageHandler {
             html.push_str(format!("<meta name=\"twitter:image\" content=\"https://yerevan.treemaps.app/v1/files/{image}.jpg\">").as_str());
         }
 
-        Ok(html)
+        self.inject_meta(&html).await
     }
 
-    async fn get_notfound_meta(&self) -> Result<String> {
+    #[allow(unused)]
+    pub async fn get_notfound_meta(&self) -> Result<String> {
         let html = "<title>Tree not found</title>";
         Ok(html.to_string())
     }
@@ -148,10 +129,8 @@ impl TreePageHandler {
     }
 }
 
-impl Locatable for TreePageHandler {
-    fn create(locator: &Locator) -> Result<Self> {
-        Ok(Self {
-            trees: locator.get::<TreeRepository>()?,
-        })
+impl Locatable for MetaService {
+    fn create(_locator: &Locator) -> Result<Self> {
+        Ok(Self {})
     }
 }

@@ -1,11 +1,10 @@
 use super::schemas::*;
 use crate::common::database::repositories::*;
-use crate::domain::file::{File, FileRepository};
+use crate::domain::file::FileRepository;
 use crate::domain::tree::Tree;
 use crate::domain::tree::TreeRepository;
 use crate::infra::database::Database;
 use crate::infra::queue::Queue;
-use crate::services::tree_loader::SingleTreeResponse;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::osm_round_coord;
@@ -105,18 +104,8 @@ impl TreeService {
         }
     }
 
-    pub async fn get_tree(&self, id: u64) -> Result<SingleTreeResponse> {
-        let tree = match self.trees.get(id).await? {
-            Some(value) => value,
-            None => return Err(Error::TreeNotFound),
-        };
-
-        let files = self.find_files(id).await?;
-
-        let user_ids = self.collect_user_ids(&tree, &files).await?;
-        let users = self.users.get_multiple(&user_ids).await?;
-
-        Ok(SingleTreeResponse::from_tree(&tree, &files, &users))
+    pub async fn get_tree(&self, id: u64) -> Result<Tree> {
+        self.trees.get(id).await?.ok_or(Error::TreeNotFound)
     }
 
     pub async fn get_trees(&self, request: &GetTreesRequest, user_id: u64) -> Result<Vec<Tree>> {
@@ -545,23 +534,6 @@ impl TreeService {
         }
 
         Ok(())
-    }
-
-    async fn collect_user_ids(&self, tree: &Tree, files: &[File]) -> Result<Vec<u64>> {
-        let mut user_ids = Vec::new();
-
-        user_ids.push(tree.added_by);
-
-        for file in files {
-            user_ids.push(file.added_by);
-        }
-
-        Ok(user_ids)
-    }
-
-    async fn find_files(&self, tree_id: u64) -> Result<Vec<File>> {
-        let files = self.files.find_by_tree(tree_id).await?;
-        Ok(files.into_iter().filter(|file| file.is_visible()).collect())
     }
 
     // Add a single tree.

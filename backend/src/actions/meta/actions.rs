@@ -16,7 +16,9 @@ pub struct PathInfo {
 
 #[get("/{id:\\d+}")]
 pub async fn tree_page_action(state: Data<AppState>, path: Path<PathInfo>) -> Result<HttpResponse> {
-    let html = state.tree_page_handler.handle(path.id).await?;
+    let tree = state.trees.get_tree(path.id).await?;
+
+    let html = state.meta.get_tree(&tree).await?;
 
     let cache_control = CacheControl(vec![CacheDirective::Public, CacheDirective::MaxAge(60)]);
 

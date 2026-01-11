@@ -7,6 +7,7 @@ use crate::actions::comment::comment_router;
 use crate::actions::default::default_action;
 use crate::actions::duplicate::duplicate_router;
 use crate::actions::file::file_router;
+use crate::actions::health::health_router;
 use crate::actions::heatmap::heatmap_router;
 use crate::actions::login::login_router;
 use crate::actions::me::me_router;
@@ -19,7 +20,6 @@ use crate::actions::training::training_router;
 use crate::actions::tree::tree_router;
 use crate::actions::upload::upload_router;
 use crate::actions::user::user_router;
-use crate::domain::health::*;
 use crate::infra::config::Config;
 use crate::services::*;
 use actix_cors::Cors;
@@ -59,7 +59,7 @@ pub async fn serve_command() {
             })
             .app_data(PayloadConfig::new(config.payload_size))
             // Prioritize because of collisions with wildcards later.
-            .service(get_health_action)
+            .service(web::scope("/health").configure(health_router))
             .service(web::scope("/trees").configure(meta_router))
             .service(web::scope("/v1/comments").configure(comment_router))
             .service(web::scope("/v1/upload").configure(upload_router))
