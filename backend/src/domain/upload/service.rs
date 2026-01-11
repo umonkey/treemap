@@ -5,6 +5,7 @@
 //! saves the file in the configured file storage (local or remote).
 //! Returns new file id.
 
+use super::models::Upload;
 use super::repository::UploadRepository;
 use crate::actions::tree::FileUploadResponse;
 use crate::infra::storage::FileStorage;
@@ -26,7 +27,7 @@ impl UploadService {
         self.storage.write_file(file_id, &req.file).await?;
 
         self.uploads
-            .add(&UploadRecord {
+            .add(&Upload {
                 id: file_id,
                 added_by: req.user_id,
                 added_at: get_timestamp(),

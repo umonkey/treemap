@@ -7,14 +7,14 @@ use crate::types::*;
 use serde::Serialize;
 
 #[derive(Clone, Debug, Default, Serialize)]
-pub struct UploadRecord {
+pub struct Upload {
     pub id: u64,
     pub added_at: u64,
     pub added_by: u64,
     pub size: u64,
 }
 
-impl UploadRecord {
+impl Upload {
     #[allow(unused)]
     pub fn from_attributes(attributes: &Attributes) -> Result<Self> {
         Ok(Self {

@@ -1,5 +1,4 @@
 mod bounds;
-mod database;
 mod errors;
 mod osm;
 mod queue_command;
@@ -7,7 +6,6 @@ mod requests;
 mod responses;
 pub type Result<T> = std::result::Result<T, self::Error>;
 pub use self::bounds::*;
-pub use self::database::*;
 pub use self::errors::*;
 pub use self::queue_command::*;
 pub use self::requests::*;
