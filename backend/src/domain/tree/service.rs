@@ -1,5 +1,6 @@
 use super::schemas::*;
 use crate::common::database::repositories::*;
+use crate::domain::comment::CommentService;
 use crate::domain::file::FileRepository;
 use crate::domain::tree::Tree;
 use crate::domain::tree::TreeRepository;
@@ -13,11 +14,12 @@ use log::{debug, error, info};
 use std::collections::HashMap;
 use std::sync::Arc;
 
+const DISTANCE: f64 = 0.1; // 10 cm
+
 pub struct TreeService {
     db: Arc<Database>,
-    comments: Arc<CommentInjector>,
+    comments: Arc<CommentService>,
     trees: Arc<TreeRepository>,
-    injector: Arc<TreeInjector>,
     users: Arc<UserRepository>,
     queue: Arc<Queue>,
     files: Arc<FileRepository>,
@@ -379,7 +381,7 @@ impl TreeService {
         if let Some(comment_text) = comment {
             if !comment_text.trim().is_empty() {
                 self.comments
-                    .inject(tree_id, user_id, &comment_text)
+                    .add_comment(tree_id, user_id, &comment_text)
                     .await?;
             }
         }
@@ -562,12 +564,31 @@ impl TreeService {
             lat, lon, tree.species
         );
 
-        self.injector.add(&tree).await?;
+        if self.exists_with_coordinates(tree.lat, tree.lon).await? {
+            return Err(Error::DuplicateTree);
+        }
+
+        self.trees.add(&tree).await?;
+
         self.schedule_address_update(tree.id).await?;
         self.schedule_files(tree.id, req.files.clone()).await?;
         self.users.increment_tree_count(req.user_id).await?;
 
         Ok(tree)
+    }
+
+    async fn exists_with_coordinates(&self, lat: f64, lon: f64) -> Result<bool> {
+        for tree in self.trees.get_close(lat, lon, DISTANCE).await? {
+            if tree.state != "gone" {
+                debug!(
+                    "Tree {} already exists at coordinates ({}, {})",
+                    tree.id, lat, lon
+                );
+                return Ok(true);
+            }
+        }
+
+        Ok(false)
     }
 
     async fn schedule_address_update(&self, tree_id: u64) -> Result<()> {
@@ -597,12 +618,11 @@ impl Locatable for TreeService {
         Ok(Self {
             db: locator.get::<Database>()?,
             trees: locator.get::<TreeRepository>()?,
-            injector: locator.get::<TreeInjector>()?,
             users: locator.get::<UserRepository>()?,
             queue: locator.get::<Queue>()?,
             files: locator.get::<FileRepository>()?,
             props: locator.get::<PropRepository>()?,
-            comments: locator.get::<CommentInjector>()?,
+            comments: locator.get::<CommentService>()?,
         })
     }
 }

@@ -5,8 +5,8 @@
 //! saves the file in the configured file storage (local or remote).
 //! Returns new file id.
 
+use super::repository::UploadRepository;
 use crate::actions::tree::FileUploadResponse;
-use crate::common::database::repositories::*;
 use crate::infra::storage::FileStorage;
 use crate::services::*;
 use crate::types::*;
@@ -14,13 +14,13 @@ use crate::utils::{get_timestamp, get_unique_id};
 use log::info;
 use std::sync::Arc;
 
-pub struct UploadHandler {
+pub struct UploadService {
     uploads: Arc<UploadRepository>,
     storage: Arc<FileStorage>,
 }
 
-impl UploadHandler {
-    pub async fn handle(&self, req: FileUploadRequest) -> Result<FileUploadResponse> {
+impl UploadService {
+    pub async fn upload_file(&self, req: FileUploadRequest) -> Result<FileUploadResponse> {
         let file_id = get_unique_id()?;
 
         self.storage.write_file(file_id, &req.file).await?;
@@ -47,7 +47,7 @@ impl UploadHandler {
     }
 }
 
-impl Locatable for UploadHandler {
+impl Locatable for UploadService {
     fn create(locator: &Locator) -> Result<Self> {
         Ok(Self {
             uploads: locator.get::<UploadRepository>()?,

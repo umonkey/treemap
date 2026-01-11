@@ -12,4 +12,5 @@ pub mod stats;
 pub mod street;
 pub mod training;
 pub mod tree;
+pub mod upload;
 pub mod user;

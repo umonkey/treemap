@@ -16,8 +16,8 @@ pub async fn upload_action(
     let user_id = state.get_user_id(&req)?;
 
     let rec = state
-        .upload_handler
-        .handle(FileUploadRequest {
+        .uploads
+        .upload_file(FileUploadRequest {
             user_id,
             file: body.to_vec(),
             remote_addr: get_remote_addr(&req).ok_or(Error::RemoteAddrNotSet)?,

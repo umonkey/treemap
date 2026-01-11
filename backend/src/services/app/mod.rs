@@ -9,6 +9,7 @@ use crate::domain::stats::StatsService;
 use crate::domain::street::StreetService;
 use crate::domain::training::TrainingService;
 use crate::domain::tree::TreeService;
+use crate::domain::upload::UploadService;
 use crate::domain::user::UserService;
 use crate::handlers::*;
 use crate::infra::tokens::TokenService;
@@ -34,7 +35,7 @@ pub struct AppState {
     pub login: Arc<LoginService>,
     pub species: Arc<SpeciesService>,
     pub update_settings_handler: Arc<UpdateSettingsHandler>,
-    pub upload_handler: Arc<UploadHandler>,
+    pub uploads: Arc<UploadService>,
     pub stats: Arc<StatsService>,
     pub streets: Arc<StreetService>,
     pub tree_loader: Arc<TreeLoader>,
@@ -57,7 +58,7 @@ impl AppState {
             login: locator.get::<LoginService>()?,
             species: locator.get::<SpeciesService>()?,
             update_settings_handler: locator.get::<UpdateSettingsHandler>()?,
-            upload_handler: locator.get::<UploadHandler>()?,
+            uploads: locator.get::<UploadService>()?,
             stats: locator.get::<StatsService>()?,
             streets: locator.get::<StreetService>()?,
             likes: locator.get::<LikeService>()?,

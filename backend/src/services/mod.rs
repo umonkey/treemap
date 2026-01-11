@@ -1,5 +1,4 @@
 mod app;
-mod comment_injector;
 pub mod comment_loader;
 pub mod like_loader;
 mod locator;
@@ -8,12 +7,9 @@ mod osm_reader;
 mod queue_consumer;
 mod queue_encoder;
 mod thumbnailer;
-mod tree_injector;
 pub mod tree_loader;
 pub use app::*;
-pub use comment_injector::*;
 pub use locator::*;
 pub use osm_reader::*;
 pub use queue_consumer::*;
 pub use thumbnailer::*;
-pub use tree_injector::*;

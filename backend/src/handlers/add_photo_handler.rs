@@ -2,12 +2,13 @@
 //!
 //! This message is sent whenever a user adds a file to a tree as a photo.
 
-use crate::common::database::repositories::*;
 use crate::domain::file::{File, FileRepository};
 use crate::domain::tree::TreeRepository;
+use crate::domain::upload::UploadRepository;
 use crate::infra::storage::FileStorage;
-use crate::services::*;
-use crate::types::*;
+use crate::services::ThumbnailerService;
+use crate::services::{Locatable, Locator};
+use crate::types::{Error, Result};
 use crate::utils::*;
 use log::{debug, error, info};
 use std::sync::Arc;
