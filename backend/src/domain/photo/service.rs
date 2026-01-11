@@ -16,7 +16,7 @@ use std::sync::Arc;
 const SMALL_SIZE: u32 = 1000;
 const LARGE_SIZE: u32 = 2000;
 
-pub struct AddPhotoHandler {
+pub struct PhotoService {
     files: Arc<FileRepository>,
     uploads: Arc<UploadRepository>,
     storage: Arc<FileStorage>,
@@ -24,8 +24,12 @@ pub struct AddPhotoHandler {
     trees: Arc<TreeRepository>,
 }
 
-impl AddPhotoHandler {
-    pub async fn handle(&self, tree_id: u64, file_id: u64) -> Result<()> {
+impl PhotoService {
+    // Adds a photo to a tree.
+    //
+    // Reads the source file, resizes it to small and large veresions,
+    // saves them in the file storage, and adds a tree photo record.
+    pub async fn add_tree_photo(&self, tree_id: u64, file_id: u64) -> Result<()> {
         let source = self
             .uploads
             .get(file_id)
@@ -74,19 +78,47 @@ impl AddPhotoHandler {
         Ok(())
     }
 
-    async fn update_thumbnail(&self, tree_id: u64, file_id: u64, user_id: u64) -> Result<()> {
-        if let Some(tree) = self.trees.get(tree_id).await? {
-            if tree.thumbnail_id.is_some() {
-                debug!("Tree {tree_id} has a thumbnail, not updating.");
-                return Ok(());
+    pub async fn resize_image(&self, file_id: u64) -> Result<()> {
+        debug!("Going to resize images for file {file_id}.");
+
+        match self.files.get(file_id).await {
+            Ok(Some(file)) => {
+                let body = self.storage.read_file(file.id).await?;
+
+                let small = self.thumbnailer.resize(&body, SMALL_SIZE)?;
+                let small_id = self.write_file(&small).await?;
+
+                let large = self.thumbnailer.resize(&body, LARGE_SIZE)?;
+                let large_id = self.write_file(&large).await?;
+
+                debug!("Updating file {file_id} with new image ids.");
+
+                let updated = File {
+                    small_id,
+                    large_id,
+                    ..file
+                };
+
+                self.files.update(&updated).await?;
+
+                self.trees
+                    .update_thumbnail(file.tree_id, small_id, file.added_by)
+                    .await?;
+
+                info!("Resized images for file {}, tree {}", file_id, file.tree_id);
+                Ok(())
             }
 
-            self.trees
-                .update_thumbnail(tree_id, file_id, user_id)
-                .await?;
-        }
+            Ok(None) => {
+                error!("File {file_id} not found, cannot resize images.");
+                Ok(())
+            }
 
-        Ok(())
+            Err(e) => {
+                error!("Error resizing images for file {file_id}: {e:?}");
+                Ok(())
+            }
+        }
     }
 
     /**
@@ -103,9 +135,24 @@ impl AddPhotoHandler {
             Err(_) => Err(Error::FileUpload),
         }
     }
+
+    async fn update_thumbnail(&self, tree_id: u64, file_id: u64, user_id: u64) -> Result<()> {
+        if let Some(tree) = self.trees.get(tree_id).await? {
+            if tree.thumbnail_id.is_some() {
+                debug!("Tree {tree_id} has a thumbnail, not updating.");
+                return Ok(());
+            }
+
+            self.trees
+                .update_thumbnail(tree_id, file_id, user_id)
+                .await?;
+        }
+
+        Ok(())
+    }
 }
 
-impl Locatable for AddPhotoHandler {
+impl Locatable for PhotoService {
     fn create(locator: &Locator) -> Result<Self> {
         Ok(Self {
             files: locator.get::<FileRepository>()?,

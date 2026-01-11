@@ -1,13 +1,15 @@
-use crate::handlers::*;
-use crate::services::*;
+use crate::domain::tree::TreeService;
+use crate::services::Locator;
 
 pub async fn update_tree_addresses_command() {
     let locator = Locator::new();
-    let handler = locator
-        .get::<UpdateTreeAddressesHandler>()
+
+    let trees = locator
+        .get::<TreeService>()
         .expect("Error creating handler.");
-    handler
-        .handle()
+
+    trees
+        .update_all_tree_addresses()
         .await
         .expect("Error updating tree addresses.");
 }

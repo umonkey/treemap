@@ -13,3 +13,4 @@ pub use app::*;
 pub use locator::*;
 pub use osm_reader::*;
 pub use thumbnailer::*;
+pub mod migrate;

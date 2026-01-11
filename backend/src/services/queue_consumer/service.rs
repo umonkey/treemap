@@ -1,6 +1,7 @@
 use super::schemas::*;
+use crate::domain::photo::PhotoService;
+use crate::domain::tree::TreeService;
 use crate::domain::user::*;
-use crate::handlers::*;
 use crate::infra::queue::{Queue, QueueMessage};
 use crate::services::*;
 use crate::types::*;
@@ -13,10 +14,9 @@ const DELAY: u64 = 1;
 
 pub struct QueueConsumer {
     queue: Arc<Queue>,
-    resize_image_handler: Arc<ResizeImageHandler>,
-    update_tree_address_handler: Arc<UpdateTreeAddressHandler>,
-    add_photo_handler: Arc<AddPhotoHandler>,
-    user_service: Arc<UserService>,
+    trees: Arc<TreeService>,
+    photos: Arc<PhotoService>,
+    users: Arc<UserService>,
 }
 
 impl QueueConsumer {
@@ -65,21 +65,21 @@ impl QueueConsumer {
     async fn process_message(&self, msg: &str) -> Result<()> {
         match QueueCommand::decode(msg) {
             Ok(Some(QueueCommand::ResizeImage(message))) => {
-                self.resize_image_handler.handle(message.id).await?;
+                self.photos.resize_image(message.id).await?;
             }
 
             Ok(Some(QueueCommand::UpdateTreeAddress(message))) => {
-                self.update_tree_address_handler.handle(message.id).await?;
+                self.trees.update_tree_address(message.id).await?;
             }
 
             Ok(Some(QueueCommand::AddPhoto(message))) => {
-                self.add_photo_handler
-                    .handle(message.tree_id, message.file_id)
+                self.photos
+                    .add_tree_photo(message.tree_id, message.file_id)
                     .await?;
             }
 
             Ok(Some(QueueCommand::UpdateUserpic(message))) => {
-                self.user_service
+                self.users
                     .update_userpic(message.user_id, message.file_id)
                     .await?;
             }
@@ -101,10 +101,9 @@ impl Locatable for QueueConsumer {
     fn create(locator: &Locator) -> Result<Self> {
         Ok(Self {
             queue: locator.get::<Queue>()?,
-            resize_image_handler: locator.get::<ResizeImageHandler>()?,
-            update_tree_address_handler: locator.get::<UpdateTreeAddressHandler>()?,
-            add_photo_handler: locator.get::<AddPhotoHandler>()?,
-            user_service: locator.get::<UserService>()?,
+            trees: locator.get::<TreeService>()?,
+            photos: locator.get::<PhotoService>()?,
+            users: locator.get::<UserService>()?,
         })
     }
 }

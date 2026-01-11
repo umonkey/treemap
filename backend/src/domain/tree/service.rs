@@ -4,14 +4,16 @@ use crate::domain::file::FileRepository;
 use crate::domain::prop::{PropRecord, PropRepository};
 use crate::domain::tree::{Tree, TreeRepository};
 use crate::domain::user::UserRepository;
+use crate::infra::config::Config;
 use crate::infra::database::Database;
+use crate::infra::nominatim::NominatimClient;
 use crate::infra::queue::Queue;
 use crate::services::queue_consumer::{AddPhotoMessage, UpdateTreeAddressMessage};
 use crate::services::*;
 use crate::types::*;
 use crate::utils::osm_round_coord;
 use crate::utils::{fix_circumference, get_timestamp, get_unique_id};
-use log::{debug, error, info};
+use log::{debug, error, info, warn};
 use std::collections::HashMap;
 use std::sync::Arc;
 
@@ -25,6 +27,8 @@ pub struct TreeService {
     queue: Arc<Queue>,
     files: Arc<FileRepository>,
     props: Arc<PropRepository>,
+    nominatim: Arc<NominatimClient>,
+    bot_user_id: u64,
 }
 
 impl TreeService {
@@ -508,6 +512,69 @@ impl TreeService {
         self.db.get_species_mismatch(count, skip).await
     }
 
+    // Update the street address of a tree based on its coordinates.
+    //
+    // This is triggered whenever we change a tree coordinates using the UI.
+    pub async fn update_tree_address(&self, tree_id: u64) -> Result<()> {
+        if let Ok(Some(tree)) = self.trees.get(tree_id).await {
+            self.update_single_tree_address(&tree).await?;
+        }
+
+        Ok(())
+    }
+
+    // Update addresses of all known trees.
+    //
+    // This is used via CLI as a maintenance task.
+    pub async fn update_all_tree_addresses(&self) -> Result<()> {
+        let trees = self.trees.get_with_no_address().await?;
+
+        for tree in trees {
+            self.update_single_tree_address(&tree).await?;
+            self.sleep();
+        }
+
+        Ok(())
+    }
+
+    // Nominotim's usage policy requires request rate of at most 1 rps.
+    // Let's wait twice as much.
+    // This is a one time manually ran operation so we aren't in a hurry.
+    // @docs https://operations.osmfoundation.org/policies/nominatim/
+    fn sleep(&self) {
+        let dur = std::time::Duration::from_secs(2);
+        std::thread::sleep(dur);
+    }
+
+    async fn update_single_tree_address(&self, tree: &Tree) -> Result<()> {
+        let address = match self
+            .nominatim
+            .get_street_address(tree.lat, tree.lon)
+            .await?
+        {
+            Some(value) => value,
+
+            None => {
+                warn!("No address for tree {}.", tree.id);
+                return Ok(());
+            }
+        };
+
+        info!("Updating tree {} address to: {}", tree.id, address);
+
+        self.trees
+            .update(
+                &Tree {
+                    address: Some(address),
+                    ..tree.clone()
+                },
+                self.bot_user_id,
+            )
+            .await?;
+
+        Ok(())
+    }
+
     // Send files for attaching to the new tree.
     async fn schedule_files(&self, tree_id: u64, files: Vec<String>) -> Result<()> {
         for file in files {
@@ -607,6 +674,8 @@ impl TreeService {
 
 impl Locatable for TreeService {
     fn create(locator: &Locator) -> Result<Self> {
+        let config = locator.get::<Config>()?;
+
         Ok(Self {
             db: locator.get::<Database>()?,
             trees: locator.get::<TreeRepository>()?,
@@ -615,6 +684,8 @@ impl Locatable for TreeService {
             files: locator.get::<FileRepository>()?,
             props: locator.get::<PropRepository>()?,
             comments: locator.get::<CommentService>()?,
+            nominatim: locator.get::<NominatimClient>()?,
+            bot_user_id: config.bot_user_id,
         })
     }
 }

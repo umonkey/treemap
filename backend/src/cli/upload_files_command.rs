@@ -1,10 +1,12 @@
-use crate::handlers::*;
-use crate::services::*;
+use crate::services::migrate::MigrateService;
+use crate::services::Locator;
 
 pub async fn upload_files_command() {
     let locator = Locator::new();
-    let handler = locator
-        .get::<UploadLocalFiles>()
+
+    let migrate = locator
+        .get::<MigrateService>()
         .expect("Error creating handler.");
-    handler.handle().await.expect("Error copying files.");
+
+    migrate.migrate_files().await.expect("Error copying files.");
 }

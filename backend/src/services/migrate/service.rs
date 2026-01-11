@@ -5,13 +5,13 @@ use crate::types::*;
 use log::{error, info, warn};
 use std::sync::Arc;
 
-pub struct UploadLocalFiles {
+pub struct MigrateService {
     local: Arc<dyn FileStorageInterface>,
     remote: Arc<dyn FileStorageInterface>,
     file_folder: String,
 }
 
-impl UploadLocalFiles {
+impl MigrateService {
     pub fn new(
         local: Arc<dyn FileStorageInterface>,
         remote: Arc<dyn FileStorageInterface>,
@@ -24,7 +24,7 @@ impl UploadLocalFiles {
         }
     }
 
-    pub async fn handle(&self) -> Result<()> {
+    pub async fn migrate_files(&self) -> Result<()> {
         let files = self.find_file_ids().expect("Error finding files.");
 
         let count = files.len();
@@ -79,7 +79,7 @@ impl UploadLocalFiles {
     }
 }
 
-impl Locatable for UploadLocalFiles {
+impl Locatable for MigrateService {
     fn create(locator: &Locator) -> Result<Self> {
         Ok(Self::new(
             locator.get::<LocalFileStorage>()?,
