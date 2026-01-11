@@ -4,6 +4,10 @@
 # Values: sqlite, turso.
 database = "turso"
 
+# Define the file storage backend.
+# The actual backend is configured below.
+file_storage = "s3"
+
 # SQLite database path.
 #sqlite_path = "var/database.sqlite"
 

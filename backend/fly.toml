@@ -19,8 +19,11 @@ dockerfile = "Dockerfile"
     path = "/health"
     timeout = "1s"
 
+# Set the environment variables.
+# Please note that most app configuration is done via the config file
+# See docker/rootfs/app/config.toml
 [env]
-  RUST_LOG = "info"
+  RUST_LOG = "warn,treemap=debug"
 
 #[[mounts]]
 #destination = "/app/var"
