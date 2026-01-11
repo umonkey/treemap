@@ -12,6 +12,9 @@ jobs:
   build:
     name: "Linter"
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
 
     steps:
     - uses: actions/checkout@v4
@@ -26,18 +29,17 @@ jobs:
         key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
 
     - name: Install new dependencies
-      run: |
-        cd frontend
-        npm ci
+      run: npm ci
 
     - name: Run tests
-      run: |
-        cd frontend
-        make lint
+      run: make lint
 
   unit:
     name: "Unit tests"
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
 
     steps:
     - uses: actions/checkout@v4
@@ -50,18 +52,17 @@ jobs:
         key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
 
     - name: Install new dependencies
-      run: |
-        cd frontend
-        npm ci
+      run: npm ci
 
     - name: Run unit tests
-      run: |
-        cd frontend
-        make test
+      run: make test
 
   chromatic:
     name: "Chromatic"
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
 
     steps:
     - uses: actions/checkout@v4
@@ -76,9 +77,7 @@ jobs:
         key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock.json') }}
 
     - name: Install new dependencies
-      run: |
-        cd frontend
-        npm ci
+      run: npm ci
 
     - name: Run tests
       uses: chromaui/action@latest
