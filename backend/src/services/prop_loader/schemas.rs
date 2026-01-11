@@ -1,7 +1,17 @@
-//! Contains publicly visible part of a tree prop change.
+//! This structure wraps a list of property changes for a tree.
+//! Changes can be made by different users, so the list of users
+//! is added to pre-populate the cache.
 
-use crate::types::database::PropRecord;
+use crate::actions::user::UserRead;
+use crate::domain::prop::PropRecord;
+use crate::domain::user::User;
 use serde::Serialize;
+
+#[derive(Debug, Serialize)]
+pub struct PropList {
+    pub props: Vec<PropResponse>,
+    pub users: Vec<UserRead>,
+}
 
 #[derive(Clone, Debug, Serialize)]
 pub struct PropResponse {
@@ -10,6 +20,15 @@ pub struct PropResponse {
     pub added_by: String,
     pub name: String,
     pub value: String,
+}
+
+impl PropList {
+    pub fn from_records(props: &[PropRecord], users: &[User]) -> PropList {
+        let props: Vec<PropResponse> = props.iter().map(PropResponse::from).collect();
+        let users: Vec<UserRead> = users.iter().map(UserRead::from).collect();
+
+        PropList { props, users }
+    }
 }
 
 impl From<PropRecord> for PropResponse {

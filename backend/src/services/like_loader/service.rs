@@ -1,8 +1,7 @@
 use super::schemas::*;
-use crate::common::database::repositories::*;
 use crate::domain::like::Like;
 use crate::domain::tree::TreeRepository;
-use crate::domain::user::User;
+use crate::domain::user::{User, UserRepository};
 use crate::services::*;
 use crate::types::*;
 use crate::utils::unique_ids;

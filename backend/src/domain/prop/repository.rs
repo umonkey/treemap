@@ -1,6 +1,7 @@
+use super::models::PropRecord;
 use crate::common::database::queries::*;
 use crate::infra::database::{Database, Value};
-use crate::services::*;
+use crate::services::{Locatable, Locator};
 use crate::types::*;
 use crate::utils::{get_timestamp, get_unique_id};
 use std::sync::Arc;

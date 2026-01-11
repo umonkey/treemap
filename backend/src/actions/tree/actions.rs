@@ -4,6 +4,7 @@ use super::schemas::FileUploadResponse;
 use super::schemas::*;
 use crate::domain::tree::TreeStats;
 use crate::services::comment_loader::CommentList;
+use crate::services::prop_loader::PropList;
 use crate::services::tree_loader::SingleTreeResponse;
 use crate::services::tree_loader::TreeList;
 use crate::services::AppState;
@@ -11,7 +12,6 @@ use crate::types::AddTreeRequest;
 use crate::types::AddedTreesRequest;
 use crate::types::GetTreesRequest;
 use crate::types::NewTreeDefaultsResponse;
-use crate::types::PropList;
 use crate::types::ReplaceTreeRequest;
 use crate::types::UpdateTreeRequest;
 use crate::types::{Error, Result};
@@ -167,8 +167,9 @@ pub async fn get_tree_history_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
 ) -> Result<Json<PropList>> {
-    let comments = state.trees.get_history(path.id).await?;
-    Ok(Json(comments))
+    let props = state.props.get_history(path.id).await?;
+    let res = state.prop_loader.load_list(&props).await?;
+    Ok(Json(res))
 }
 
 #[get("/stats")]

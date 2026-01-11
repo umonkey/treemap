@@ -1,6 +1,6 @@
 use super::models::Tree;
 use crate::common::database::queries::*;
-use crate::common::database::repositories::*;
+use crate::domain::prop::{PropRecord, PropRepository};
 use crate::infra::database::{Database, Value};
 use crate::services::*;
 use crate::types::*;

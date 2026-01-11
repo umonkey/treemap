@@ -1,9 +1,9 @@
 use super::schemas::*;
-use crate::common::database::repositories::*;
 use crate::domain::comment::CommentService;
 use crate::domain::file::FileRepository;
-use crate::domain::tree::Tree;
-use crate::domain::tree::TreeRepository;
+use crate::domain::prop::{PropRecord, PropRepository};
+use crate::domain::tree::{Tree, TreeRepository};
+use crate::domain::user::UserRepository;
 use crate::infra::database::Database;
 use crate::infra::queue::Queue;
 use crate::services::*;
@@ -121,15 +121,6 @@ impl TreeService {
         }
 
         Ok(trees)
-    }
-
-    pub async fn get_history(&self, tree_id: u64) -> Result<PropList> {
-        let props = self.props.find_by_tree(tree_id).await?;
-
-        let user_ids: Vec<u64> = props.iter().map(|r| r.added_by).collect();
-        let users = self.users.get_multiple(&user_ids).await?;
-
-        Ok(PropList::from_records(&props, &users))
     }
 
     pub async fn get_stats(&self) -> Result<TreeStats> {

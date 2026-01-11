@@ -1,7 +1,7 @@
 use super::models::File;
 use super::repository::FileRepository;
 use crate::actions::tree::AddFileRequest;
-use crate::common::database::repositories::UserRepository;
+use crate::domain::user::UserRepository;
 use crate::infra::queue::Queue;
 use crate::infra::storage::FileStorage;
 use crate::services::{Locatable, Locator, ThumbnailerService};

@@ -7,6 +7,7 @@ pub mod health;
 pub mod heatmap;
 pub mod like;
 pub mod login;
+pub mod prop;
 pub mod species;
 pub mod stats;
 pub mod street;

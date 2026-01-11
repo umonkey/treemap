@@ -1,9 +1,9 @@
 //! This service class enriches comments with tree and user info.
 
 use super::schemas::CommentList;
-use crate::common::database::repositories::*;
 use crate::domain::comment::Comment;
 use crate::domain::tree::TreeRepository;
+use crate::domain::user::UserRepository;
 use crate::services::*;
 use crate::types::*;
 use std::sync::Arc;

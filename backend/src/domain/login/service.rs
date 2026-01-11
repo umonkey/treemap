@@ -1,5 +1,4 @@
-use crate::common::database::repositories::*;
-use crate::domain::user::User;
+use crate::domain::user::{User, UserRepository};
 use crate::infra::google_auth::{AuthResponse, GoogleAuthClient};
 use crate::infra::osm::OsmClient;
 use crate::infra::tokens::{TokenClaims, TokenService};

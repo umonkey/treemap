@@ -4,6 +4,7 @@ use crate::domain::health::*;
 use crate::domain::heatmap::HeatmapService;
 use crate::domain::like::LikeService;
 use crate::domain::login::LoginService;
+use crate::domain::prop::PropService;
 use crate::domain::species::SpeciesService;
 use crate::domain::stats::StatsService;
 use crate::domain::street::StreetService;
@@ -16,6 +17,7 @@ use crate::infra::tokens::TokenService;
 use crate::services::comment_loader::CommentLoader;
 use crate::services::like_loader::LikeLoader;
 use crate::services::meta::MetaService;
+use crate::services::prop_loader::PropLoader;
 use crate::services::tree_loader::TreeLoader;
 use crate::services::Locator;
 use crate::types::*;
@@ -42,6 +44,8 @@ pub struct AppState {
     pub comment_loader: Arc<CommentLoader>,
     pub like_loader: Arc<LikeLoader>,
     pub meta: Arc<MetaService>,
+    pub props: Arc<PropService>,
+    pub prop_loader: Arc<PropLoader>,
 }
 
 impl AppState {
@@ -66,6 +70,8 @@ impl AppState {
             comment_loader: locator.get::<CommentLoader>()?,
             like_loader: locator.get::<LikeLoader>()?,
             meta: locator.get::<MetaService>()?,
+            props: locator.get::<PropService>()?,
+            prop_loader: locator.get::<PropLoader>()?,
         })
     }
 

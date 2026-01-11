@@ -4,6 +4,7 @@ pub mod like_loader;
 mod locator;
 pub mod meta;
 mod osm_reader;
+pub mod prop_loader;
 mod queue_consumer;
 mod queue_encoder;
 mod thumbnailer;
