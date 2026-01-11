@@ -58,21 +58,17 @@ impl TreeRepository {
         self.query_single(query).await
     }
 
-    // FIXME: use a proper query
     pub async fn get_by_bounds(&self, bounds: Bounds) -> Result<Vec<Tree>> {
-        let trees = self
-            .all()
-            .await?
-            .into_iter()
-            .filter(|tree| {
-                tree.lat <= bounds.n
-                    && tree.lat >= bounds.s
-                    && tree.lon <= bounds.e
-                    && tree.lon >= bounds.w
-            })
-            .collect();
+        let query = "SELECT * FROM `trees` WHERE `lat` <= ? AND lat >= ? AND lon <= ? AND lon >= ?";
 
-        Ok(trees)
+        let params = &[
+            Value::from(bounds.n),
+            Value::from(bounds.s),
+            Value::from(bounds.e),
+            Value::from(bounds.w),
+        ];
+
+        self.fetch(query, params).await
     }
 
     pub async fn get_recently_created(&self, count: u64, skip: u64) -> Result<Vec<Tree>> {
@@ -418,6 +414,14 @@ impl TreeRepository {
             })
             .await
     }
+
+    async fn fetch(&self, sql: &str, params: &[Value]) -> Result<Vec<Tree>> {
+        let rows = self.db.sql(sql, params).await?;
+
+        rows.iter()
+            .map(|props| Tree::from_attributes(props).map_err(|_| Error::DatabaseStructure))
+            .collect()
+    }
 }
 
 impl Locatable for TreeRepository {
@@ -425,5 +429,58 @@ impl Locatable for TreeRepository {
         let db = locator.get::<Database>()?;
         let props = locator.get::<PropRepository>()?;
         Ok(Self { db, props })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn setup() -> Arc<TreeRepository> {
+        let locator = Locator::new();
+
+        locator
+            .get::<TreeRepository>()
+            .expect("Error creating tree repository.")
+    }
+
+    #[tokio::test]
+    async fn test_get_by_bounds() {
+        let repo = setup();
+
+        repo.add(&Tree {
+            id: 1,
+            lat: 20.0,
+            lon: 20.0,
+            ..Default::default()
+        })
+        .await
+        .expect("Error adding a tree.");
+
+        // (1) The tree is within bounds and should be returned.
+        let res = repo
+            .get_by_bounds(Bounds {
+                n: 40.0,
+                e: 40.0,
+                s: 0.0,
+                w: 0.0,
+            })
+            .await
+            .expect("Error getting trees.");
+
+        assert_eq!(1, res.len());
+
+        // (2) The tree is outside bounds and the result should be empty.
+        let res = repo
+            .get_by_bounds(Bounds {
+                n: 40.0,
+                e: 40.0,
+                s: 30.0,
+                w: 30.0,
+            })
+            .await
+            .expect("Error getting trees.");
+
+        assert_eq!(0, res.len());
     }
 }
