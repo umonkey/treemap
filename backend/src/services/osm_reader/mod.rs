@@ -20,6 +20,7 @@ use crate::domain::tree::TreeRepository;
 use crate::infra::config::Config;
 use crate::infra::overpass::OverpassClient;
 use crate::infra::queue::Queue;
+use crate::services::queue_consumer::UpdateTreeAddressMessage;
 use crate::services::{Locatable, Locator};
 use crate::types::*;
 use crate::utils::{get_timestamp, get_unique_id};

@@ -1,3 +1,4 @@
+use super::schemas::*;
 use crate::domain::user::{User, UserRepository};
 use crate::infra::google_auth::{AuthResponse, GoogleAuthClient};
 use crate::infra::osm::OsmClient;

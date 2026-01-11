@@ -1,4 +1,5 @@
-use crate::services::*;
+use crate::services::queue_consumer::QueueConsumer;
+use crate::services::Locator;
 
 pub async fn queue_consumer_command() {
     let locator = Locator::new();

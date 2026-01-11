@@ -1,5 +1,6 @@
+use crate::domain::login::GoogleAuthCallbackPayload;
 use crate::services::AppState;
-use crate::types::{GoogleAuthCallbackPayload, Result};
+use crate::types::Result;
 use actix_web::web::{Data, Form, Redirect, ServiceConfig};
 use actix_web::{post, HttpResponse};
 use serde::Deserialize;

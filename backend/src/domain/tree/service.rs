@@ -6,6 +6,7 @@ use crate::domain::tree::{Tree, TreeRepository};
 use crate::domain::user::UserRepository;
 use crate::infra::database::Database;
 use crate::infra::queue::Queue;
+use crate::services::queue_consumer::{AddPhotoMessage, UpdateTreeAddressMessage};
 use crate::services::*;
 use crate::types::*;
 use crate::utils::osm_round_coord;
@@ -93,7 +94,7 @@ impl TreeService {
 
     pub async fn get_defaults(&self, user_id: u64) -> Result<NewTreeDefaultsResponse> {
         match self.trees.get_last_by_user(user_id).await? {
-            Some(tree) => Ok(NewTreeDefaultsResponse::from_tree(&tree)),
+            Some(tree) => Ok(tree.into()),
 
             None => Ok(NewTreeDefaultsResponse {
                 species: None,
@@ -111,7 +112,7 @@ impl TreeService {
     }
 
     pub async fn get_trees(&self, request: &GetTreesRequest, user_id: u64) -> Result<Vec<Tree>> {
-        let mut trees = self.trees.get_by_bounds(request.bounds()).await?;
+        let mut trees = self.trees.get_by_bounds(request.into()).await?;
 
         if let Some(search) = &request.search {
             let query = SearchQuery::from_string(search);

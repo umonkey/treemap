@@ -21,27 +21,33 @@ pub struct UploadService {
 }
 
 impl UploadService {
-    pub async fn upload_file(&self, req: FileUploadRequest) -> Result<FileUploadResponse> {
+    pub async fn upload_file(
+        &self,
+        user_id: u64,
+        file: Vec<u8>,
+        remote_addr: String,
+        user_agent: String,
+    ) -> Result<FileUploadResponse> {
         let file_id = get_unique_id()?;
 
-        self.storage.write_file(file_id, &req.file).await?;
+        self.storage.write_file(file_id, &file).await?;
 
         self.uploads
             .add(&Upload {
                 id: file_id,
-                added_by: req.user_id,
+                added_by: user_id,
                 added_at: get_timestamp(),
-                size: req.file.len() as u64,
+                size: file.len() as u64,
             })
             .await?;
 
         info!(
             "Received {} bytes from user {}, id={}; addr={} agent={}",
-            req.file.len(),
-            req.user_id,
+            file.len(),
+            user_id,
             file_id,
-            req.remote_addr,
-            req.user_agent,
+            remote_addr,
+            user_agent,
         );
 
         Ok(FileUploadResponse::from_id(file_id))

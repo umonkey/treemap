@@ -5,6 +5,7 @@ use crate::domain::heatmap::HeatmapService;
 use crate::domain::like::LikeService;
 use crate::domain::login::LoginService;
 use crate::domain::prop::PropService;
+use crate::domain::settings::SettingsService;
 use crate::domain::species::SpeciesService;
 use crate::domain::stats::StatsService;
 use crate::domain::street::StreetService;
@@ -12,7 +13,6 @@ use crate::domain::training::TrainingService;
 use crate::domain::tree::TreeService;
 use crate::domain::upload::UploadService;
 use crate::domain::user::UserService;
-use crate::handlers::*;
 use crate::infra::tokens::TokenService;
 use crate::services::comment_loader::CommentLoader;
 use crate::services::like_loader::LikeLoader;
@@ -36,7 +36,7 @@ pub struct AppState {
     pub comments: Arc<CommentService>,
     pub login: Arc<LoginService>,
     pub species: Arc<SpeciesService>,
-    pub update_settings_handler: Arc<UpdateSettingsHandler>,
+    pub settings: Arc<SettingsService>,
     pub uploads: Arc<UploadService>,
     pub stats: Arc<StatsService>,
     pub streets: Arc<StreetService>,
@@ -61,7 +61,7 @@ impl AppState {
             comments: locator.get::<CommentService>()?,
             login: locator.get::<LoginService>()?,
             species: locator.get::<SpeciesService>()?,
-            update_settings_handler: locator.get::<UpdateSettingsHandler>()?,
+            settings: locator.get::<SettingsService>()?,
             uploads: locator.get::<UploadService>()?,
             stats: locator.get::<StatsService>()?,
             streets: locator.get::<StreetService>()?,

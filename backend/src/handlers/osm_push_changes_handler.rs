@@ -14,7 +14,7 @@
 use crate::domain::osm::{OsmTreeRecord, OsmTreeRepository};
 use crate::domain::tree::TreeRepository;
 use crate::infra::config::Config;
-use crate::infra::osm::OsmClient;
+use crate::infra::osm::{OsmClient, OsmElement};
 use crate::services::*;
 use crate::types::*;
 use log::{debug, info, warn};

@@ -1,3 +1,4 @@
+use super::schemas::{OsmChangeset, OsmElement};
 use crate::domain::tree::Tree;
 use crate::infra::config::Config;
 use crate::infra::secrets::Secrets;

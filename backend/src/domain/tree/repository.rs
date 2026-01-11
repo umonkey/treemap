@@ -1,4 +1,5 @@
 use super::models::Tree;
+use super::schemas::*;
 use crate::domain::prop::{PropRecord, PropRepository};
 use crate::infra::database::{CountQuery, IncrementQuery, InsertQuery, SelectQuery, UpdateQuery};
 use crate::infra::database::{Database, Value};

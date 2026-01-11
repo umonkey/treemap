@@ -15,14 +15,12 @@ pub async fn upload_action(
 ) -> Result<Json<FileUploadResponse>> {
     let user_id = state.get_user_id(&req)?;
 
+    let remote_addr = get_remote_addr(&req).ok_or(Error::RemoteAddrNotSet)?;
+    let user_agent = get_user_agent(&req).ok_or(Error::UserAgentNotSet)?;
+
     let rec = state
         .uploads
-        .upload_file(FileUploadRequest {
-            user_id,
-            file: body.to_vec(),
-            remote_addr: get_remote_addr(&req).ok_or(Error::RemoteAddrNotSet)?,
-            user_agent: get_user_agent(&req).ok_or(Error::UserAgentNotSet)?,
-        })
+        .upload_file(user_id, body.to_vec(), remote_addr, user_agent)
         .await?;
 
     Ok(Json(rec))

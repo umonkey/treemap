@@ -1,5 +1,6 @@
 use crate::domain::tree::Tree;
 use crate::infra::database::{Attributes, Value};
+use crate::infra::osm::OsmElement;
 use crate::types::*;
 use crate::utils::*;
 use log::debug;

@@ -1,5 +1,6 @@
+use crate::domain::settings::UpdateSettingsRequest;
 use crate::services::AppState;
-use crate::types::*;
+use crate::types::Result;
 use actix_web::web::{Data, Json, ServiceConfig};
 use actix_web::{put, HttpRequest, HttpResponse};
 use serde::Deserialize;
@@ -19,8 +20,8 @@ pub async fn update_settings_action(
     let user_id = state.get_user_id(&req)?;
 
     state
-        .update_settings_handler
-        .handle(UpdateSettingsRequest {
+        .settings
+        .update(UpdateSettingsRequest {
             user_id,
             name: payload.name.clone(),
             picture: payload.picture.clone(),

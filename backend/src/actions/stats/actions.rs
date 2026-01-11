@@ -1,6 +1,6 @@
 use crate::actions::user::UserList;
 use crate::domain::species::SpeciesStats;
-use crate::domain::stats::StateStatsResponse;
+use crate::domain::stats::{StateStatsResponse, StreetStatsResponse};
 use crate::services::tree_loader::TreeList;
 use crate::services::AppState;
 use crate::types::*;

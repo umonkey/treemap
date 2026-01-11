@@ -1,3 +1,4 @@
+use crate::services::queue_consumer::*;
 use crate::types::*;
 use log::error;
 

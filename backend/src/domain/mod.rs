@@ -9,6 +9,7 @@ pub mod like;
 pub mod login;
 pub mod osm;
 pub mod prop;
+pub mod settings;
 pub mod species;
 pub mod stats;
 pub mod street;

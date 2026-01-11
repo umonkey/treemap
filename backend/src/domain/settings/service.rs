@@ -1,17 +1,19 @@
+use super::schemas::*;
 use crate::domain::user::UserRepository;
 use crate::infra::queue::Queue;
-use crate::services::*;
-use crate::types::*;
+use crate::services::queue_consumer::UpdateUserpicMessage;
+use crate::services::{Locatable, Locator};
+use crate::types::{Error, Result};
 use log::info;
 use std::sync::Arc;
 
-pub struct UpdateSettingsHandler {
+pub struct SettingsService {
     users: Arc<UserRepository>,
     queue: Arc<Queue>,
 }
 
-impl UpdateSettingsHandler {
-    pub async fn handle(&self, req: UpdateSettingsRequest) -> Result<()> {
+impl SettingsService {
+    pub async fn update(&self, req: UpdateSettingsRequest) -> Result<()> {
         let user = self
             .users
             .get(req.user_id)
@@ -36,7 +38,7 @@ impl UpdateSettingsHandler {
     }
 }
 
-impl Locatable for UpdateSettingsHandler {
+impl Locatable for SettingsService {
     fn create(locator: &Locator) -> Result<Self> {
         Ok(Self {
             users: locator.get::<UserRepository>()?,

@@ -1,6 +1,6 @@
 use super::models::Tree;
 use crate::utils::{get_timestamp, split_words};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize)]
 pub struct TreeStats {
@@ -34,6 +34,108 @@ pub struct SearchQuery {
 
     pub added_after: Option<u64>,
     pub updated_after: Option<u64>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct DuplicatesResponse {
+    pub duplicates: Vec<DuplicateLocation>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct DuplicateLocation {
+    pub lat: f64,
+    pub lon: f64,
+    pub tree_ids: Vec<String>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct NewTreeDefaultsResponse {
+    pub species: Option<String>,
+    pub notes: Option<String>,
+    pub height: Option<f64>,
+    pub circumference: Option<f64>,
+    pub diameter: Option<f64>,
+    pub state: Option<String>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct AddTreeRequest {
+    pub points: Vec<LatLon>,
+    pub species: String,
+    pub notes: Option<String>,
+    pub height: Option<f64>,
+    pub circumference: Option<f64>,
+    pub diameter: Option<f64>,
+    pub state: String,
+    pub user_id: u64,
+    pub year: Option<i64>,
+    pub address: Option<String>,
+    #[serde(default)]
+    pub files: Vec<String>,
+}
+
+#[derive(Debug)]
+pub struct Bounds {
+    pub n: f64,
+    pub e: f64,
+    pub s: f64,
+    pub w: f64,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct LatLon {
+    pub lat: f64,
+    pub lon: f64,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct ReplaceTreeRequest {
+    pub id: u64,
+    pub user_id: u64,
+    pub circumference: Option<f64>,
+    pub diameter: Option<f64>,
+    pub height: Option<f64>,
+    pub notes: Option<String>,
+    pub species: String,
+    pub state: String,
+    pub year: Option<i64>,
+    pub files: Vec<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct GetTreesRequest {
+    pub n: f64,
+    pub e: f64,
+    pub s: f64,
+    pub w: f64,
+    pub search: Option<String>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct UpdateTreeRequest {
+    pub id: u64,
+    pub lat: Option<f64>,
+    pub lon: Option<f64>,
+    pub species: Option<String>,
+    pub notes: Option<String>,
+    pub height: Option<f64>,
+    pub circumference: Option<f64>,
+    pub diameter: Option<f64>,
+    pub state: Option<String>,
+    pub user_id: u64,
+    pub year: Option<i64>,
+    pub address: Option<String>,
+}
+
+impl From<&GetTreesRequest> for Bounds {
+    fn from(value: &GetTreesRequest) -> Self {
+        Self {
+            n: value.n,
+            e: value.e,
+            s: value.s,
+            w: value.w,
+        }
+    }
 }
 
 impl SearchQuery {
@@ -808,5 +910,30 @@ mod tests {
             },
             0
         ));
+    }
+}
+
+impl DuplicateLocation {
+    pub fn new(lat: f64, lon: f64, tree_ids: Vec<String>) -> Self {
+        Self { lat, lon, tree_ids }
+    }
+}
+
+impl DuplicatesResponse {
+    pub fn new(duplicates: Vec<DuplicateLocation>) -> Self {
+        Self { duplicates }
+    }
+}
+
+impl From<Tree> for NewTreeDefaultsResponse {
+    fn from(tree: Tree) -> Self {
+        Self {
+            species: Some(tree.species.clone()),
+            notes: None,
+            height: None,
+            circumference: None,
+            diameter: None,
+            state: None,
+        }
     }
 }

@@ -1,4 +1,6 @@
 use crate::utils::osm_tag;
+use serde::Deserialize;
+use std::collections::HashMap;
 use std::fmt;
 
 pub struct OsmChangeset {
@@ -7,6 +9,21 @@ pub struct OsmChangeset {
     pub bot: bool,
     pub source: String,
     pub comment: String,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+#[allow(unused)]
+pub struct OsmElement {
+    pub r#type: String,
+    pub id: u64,
+    pub lat: f64,
+    pub lon: f64,
+    pub timestamp: String,
+    pub version: u64,
+    pub changeset: u64,
+    pub user: String,
+    pub uid: u64,
+    pub tags: HashMap<String, String>,
 }
 
 impl OsmChangeset {
