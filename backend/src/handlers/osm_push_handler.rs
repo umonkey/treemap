@@ -1,10 +1,10 @@
-use crate::common::database::repositories::*;
+use crate::domain::osm::{OsmTreeRecord, OsmTreeRepository};
 use crate::domain::tree::Tree;
 use crate::domain::tree::TreeRepository;
 use crate::infra::config::Config;
 use crate::infra::osm::OsmClient;
-use crate::services::*;
-use crate::types::*;
+use crate::services::{Locatable, Locator};
+use crate::types::Result;
 use crate::utils::get_timestamp;
 use log::info;
 use std::sync::Arc;

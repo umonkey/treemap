@@ -1,6 +1,7 @@
+use super::models::OsmTreeRecord;
 use crate::infra::database::{Database, InsertQuery, SelectQuery, UpdateQuery, Value};
-use crate::services::*;
-use crate::types::*;
+use crate::services::{Locatable, Locator};
+use crate::types::{Error, Result};
 use log::error;
 use std::sync::Arc;
 

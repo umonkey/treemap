@@ -14,13 +14,13 @@
 //! 3. If not found, find a tree within 10 meters and link them.
 //! 4. If a local tree is found, update it.
 
-use crate::common::database::repositories::*;
+use crate::domain::osm::{OsmTreeRecord, OsmTreeRepository};
 use crate::domain::tree::Tree;
 use crate::domain::tree::TreeRepository;
 use crate::infra::config::Config;
 use crate::infra::overpass::OverpassClient;
 use crate::infra::queue::Queue;
-use crate::services::*;
+use crate::services::{Locatable, Locator};
 use crate::types::*;
 use crate::utils::{get_timestamp, get_unique_id};
 use log::{error, info};

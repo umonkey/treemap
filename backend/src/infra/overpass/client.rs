@@ -1,6 +1,7 @@
+use crate::domain::osm::OsmTreeRecord;
 use crate::infra::config::Config;
 use crate::services::{Locatable, Locator};
-use crate::types::{Error, OsmTreeRecord, Result};
+use crate::types::{Error, Result};
 use log::{debug, error};
 use serde_json::Value;
 use url::Url;

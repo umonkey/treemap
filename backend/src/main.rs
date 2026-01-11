@@ -1,6 +1,5 @@
 mod actions;
 mod cli;
-mod common;
 mod domain;
 mod handlers;
 mod infra;
