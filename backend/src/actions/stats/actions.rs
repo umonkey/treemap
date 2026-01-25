@@ -78,6 +78,12 @@ pub async fn get_top_circumference_action(state: Data<AppState>) -> Result<Json<
     Ok(Json(list))
 }
 
+#[get("/diversity")]
+pub async fn get_diversity_index_action(state: Data<AppState>) -> Result<Json<f64>> {
+    let index = state.species.get_diversity_index().await?;
+    Ok(Json(index))
+}
+
 // Configure the router.
 pub fn stats_router(cfg: &mut ServiceConfig) {
     cfg.service(get_species_mismatch_action)
@@ -87,5 +93,6 @@ pub fn stats_router(cfg: &mut ServiceConfig) {
         .service(get_top_diameter_action)
         .service(get_top_height_action)
         .service(get_top_streets_action)
-        .service(get_top_users);
+        .service(get_top_users)
+        .service(get_diversity_index_action);
 }

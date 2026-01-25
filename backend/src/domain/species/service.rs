@@ -1,5 +1,5 @@
 use super::models::Species;
-use super::report::format_species_report;
+use super::report::{calculate_simpson_index, format_species_report};
 use super::schemas::SpeciesStats;
 use crate::infra::database::Database;
 use crate::services::{Locatable, Locator};
@@ -23,6 +23,18 @@ impl SpeciesService {
         let items = self.db.get_species_stats().await?;
         let report = format_species_report(items);
         Ok(report)
+    }
+
+    pub async fn get_diversity_index(&self) -> Result<f64> {
+        let counts: Vec<u64> = self
+            .db
+            .get_species_stats()
+            .await?
+            .into_iter()
+            .map(|(_, count)| count)
+            .collect();
+        let index = calculate_simpson_index(&counts);
+        Ok(index)
     }
 }
 
