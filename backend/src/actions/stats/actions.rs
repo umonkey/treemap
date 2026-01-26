@@ -1,5 +1,5 @@
 use crate::actions::user::UserList;
-use crate::domain::species::SpeciesStats;
+use crate::domain::species::{DiversityReport, SpeciesStats};
 use crate::domain::stats::{StateStatsResponse, StreetStatsResponse};
 use crate::services::tree_loader::TreeList;
 use crate::services::AppState;
@@ -79,9 +79,9 @@ pub async fn get_top_circumference_action(state: Data<AppState>) -> Result<Json<
 }
 
 #[get("/diversity")]
-pub async fn get_diversity_index_action(state: Data<AppState>) -> Result<Json<f64>> {
-    let index = state.species.get_diversity_index().await?;
-    Ok(Json(index))
+pub async fn get_diversity_index_action(state: Data<AppState>) -> Result<Json<DiversityReport>> {
+    let report = state.species.get_diversity_index().await?;
+    Ok(Json(report))
 }
 
 // Configure the router.

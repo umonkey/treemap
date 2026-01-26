@@ -12,3 +12,10 @@ pub struct SpeciesStats {
     pub count: u64,
     pub subspecies: Vec<SpeciesStatsItem>,
 }
+
+#[derive(Debug, Serialize)]
+pub struct DiversityReport {
+    pub index: f64,
+    pub excess_species: Vec<(String, u64)>,
+    pub excess_genera: Vec<(String, u64)>,
+}
