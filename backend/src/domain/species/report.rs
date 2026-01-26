@@ -1,6 +1,7 @@
 //! Contains the code that converts input raw data to actual reports.
 
 use super::schemas::*;
+use log::debug;
 use std::collections::HashMap;
 
 pub fn format_species_report(items: Vec<(String, u64)>) -> Vec<SpeciesStats> {
@@ -31,6 +32,24 @@ pub fn format_species_report(items: Vec<(String, u64)>) -> Vec<SpeciesStats> {
     report.sort_by(|a, b| b.count.cmp(&a.count));
 
     report
+}
+
+pub fn calculate_simpson_index(counts: &[u64]) -> f64 {
+    let total_count: u64 = counts.iter().sum();
+
+    let mut index: f64 = 0.0;
+
+    for count in counts {
+        let value = ((*count as f64) / (total_count as f64)).powf(2.0);
+        index += value;
+    }
+
+    debug!(
+        "Calculated Simpson index for {} trees; total_count={total_count}, value={index}",
+        counts.len()
+    );
+
+    1.0 - index
 }
 
 #[cfg(test)]
@@ -77,5 +96,12 @@ mod tests {
 
         assert_eq!("Quercus rubra", report[0].subspecies[1].name);
         assert_eq!(20, report[0].subspecies[1].count);
+    }
+
+    #[test]
+    fn test_simpson_index() {
+        let data = &[35, 35, 30, 7];
+        let index = calculate_simpson_index(data);
+        assert_eq!(0.7031181762599354, index);
     }
 }
