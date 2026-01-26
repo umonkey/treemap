@@ -1,8 +1,8 @@
 //! Contains the code that converts input raw data to actual reports.
 
 use super::schemas::*;
-use std::collections::HashMap;
 use log::debug;
+use std::collections::HashMap;
 
 pub fn format_species_report(items: Vec<(String, u64)>) -> Vec<SpeciesStats> {
     let mut buckets: HashMap<String, SpeciesStats> = HashMap::new();
@@ -44,7 +44,10 @@ pub fn calculate_simpson_index(counts: &[u64]) -> f64 {
         index += value;
     }
 
-    debug!("Calculated Simpson index for {} trees; total_count={total_count}, value={index}", counts.len());
+    debug!(
+        "Calculated Simpson index for {} trees; total_count={total_count}, value={index}",
+        counts.len()
+    );
 
     1.0 - index
 }

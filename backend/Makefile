@@ -17,6 +17,9 @@ autofix:
 build:
 	cargo build --release
 
+check:
+	cargo check
+
 clean:
 	rm -f *.profraw
 	cargo clean
