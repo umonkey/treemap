@@ -1,6 +1,6 @@
 # Diversity index
 
-We use the [Gini-Simpson index][1] to calculate the tree species diversity.  It produces a value from 0 to 1, where 0 is monoculture (bad) and 1 is infinite diversity (good).  The API endpoint to retrieve the index is:
+We use the Gini-Simpson index to calculate the tree species diversity.  It produces a value from 0 to 1, where 0 is monoculture (bad) and 1 is infinite diversity (good).  The API endpoint to retrieve the index is:
 
 ## Getting the data
 
@@ -20,6 +20,7 @@ The response is a floating point value between 0 and 1.  The scale is more or le
 
 ## Sources
 
+- [Gini-Simpson Index][1] in Wikipedia
 - [Diversitree by Senseable City Lab][2]
 
 [1]: https://en.wikipedia.org/wiki/Diversity_index#Gini%E2%80%93Simpson_index
