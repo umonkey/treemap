@@ -17,4 +17,10 @@ The response is a floating point value between 0 and 1.  The scale is more or le
 - 0.70-0.90: good.  Likely 1 or 2 species are slightly overplanted (15-20%), but the canopy is safe.
 - 0.90-1.00: ideal.  Santamour Compliant. No species exceeds 10%. (Extremely rare in real cities).
 
+
+## Sources
+
+- [Diversitree by Senseable City Lab][2]
+
 [1]: https://en.wikipedia.org/wiki/Diversity_index#Gini%E2%80%93Simpson_index
+[2]: https://senseable.mit.edu/diversitree/
