@@ -34,7 +34,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS trees_osm_id ON trees (osm_id);
 CREATE INDEX IF NOT EXISTS trees_state ON trees (state);
 
 
-CREATE TABLE IF NOT EXISTS trees_files (
+CREATE TABLE IF NOT EXISTS trees_images (
     `id` INT NOT NULL,
     `tree_id` INT NOT NULL,
     `added_at` INT NOT NULL,
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS trees_files (
     PRIMARY KEY(`id`)
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS trees_files_tree_id ON trees_files (id);
+CREATE UNIQUE INDEX IF NOT EXISTS trees_files_tree_id ON trees_images (id);
 
 
 -- Tree attributes.
