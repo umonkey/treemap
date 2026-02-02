@@ -40,6 +40,7 @@ impl TreeImageService {
             tree_id: req.tree_id,
             added_at: get_timestamp(),
             added_by: req.user_id,
+            source_id: id,
             ..Default::default()
         };
 
