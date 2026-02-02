@@ -1,8 +1,8 @@
 use super::schemas::*;
 use crate::domain::comment::CommentService;
-use crate::domain::file::FileRepository;
 use crate::domain::prop::{PropRecord, PropRepository};
 use crate::domain::tree::{Tree, TreeRepository};
+use crate::domain::tree_image::TreeImageRepository;
 use crate::domain::user::UserRepository;
 use crate::infra::config::Config;
 use crate::infra::database::Database;
@@ -25,7 +25,7 @@ pub struct TreeService {
     trees: Arc<TreeRepository>,
     users: Arc<UserRepository>,
     queue: Arc<Queue>,
-    files: Arc<FileRepository>,
+    files: Arc<TreeImageRepository>,
     props: Arc<PropRepository>,
     nominatim: Arc<NominatimClient>,
     bot_user_id: u64,
@@ -687,7 +687,7 @@ impl Locatable for TreeService {
             trees: locator.get::<TreeRepository>()?,
             users: locator.get::<UserRepository>()?,
             queue: locator.get::<Queue>()?,
-            files: locator.get::<FileRepository>()?,
+            files: locator.get::<TreeImageRepository>()?,
             props: locator.get::<PropRepository>()?,
             comments: locator.get::<CommentService>()?,
             nominatim: locator.get::<NominatimClient>()?,

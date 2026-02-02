@@ -1,5 +1,4 @@
 use crate::domain::comment::CommentService;
-use crate::domain::file::FileService;
 use crate::domain::health::*;
 use crate::domain::heatmap::HeatmapService;
 use crate::domain::like::LikeService;
@@ -11,6 +10,7 @@ use crate::domain::stats::StatsService;
 use crate::domain::street::StreetService;
 use crate::domain::training::TrainingService;
 use crate::domain::tree::TreeService;
+use crate::domain::tree_image::TreeImageService;
 use crate::domain::upload::UploadService;
 use crate::domain::user::UserService;
 use crate::infra::tokens::TokenService;
@@ -25,7 +25,7 @@ use actix_web::HttpRequest;
 use std::sync::Arc;
 
 pub struct AppState {
-    pub files: Arc<FileService>,
+    pub tree_images: Arc<TreeImageService>,
     tokens: Arc<TokenService>,
     pub users: Arc<UserService>,
     pub training: Arc<TrainingService>,
@@ -51,7 +51,7 @@ pub struct AppState {
 impl AppState {
     pub async fn new(locator: Arc<Locator>) -> Result<Self> {
         Ok(Self {
-            files: locator.get::<FileService>()?,
+            tree_images: locator.get::<TreeImageService>()?,
             tokens: locator.get::<TokenService>()?,
             users: locator.get::<UserService>()?,
             training: locator.get::<TrainingService>()?,

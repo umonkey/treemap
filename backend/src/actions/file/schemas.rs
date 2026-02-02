@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use crate::domain::file::File;
+use crate::domain::tree_image::TreeImage;
 
 #[derive(Debug, Serialize)]
 pub struct FileStatusResponse {
@@ -16,16 +16,16 @@ pub struct FileRead {
     pub added_by: String,
 }
 
-impl From<File> for FileStatusResponse {
-    fn from(file: File) -> Self {
+impl From<TreeImage> for FileStatusResponse {
+    fn from(file: TreeImage) -> Self {
         Self {
             ready: file.small_id > 0 && file.large_id > 0,
         }
     }
 }
 
-impl From<File> for FileRead {
-    fn from(file: File) -> Self {
+impl From<TreeImage> for FileRead {
+    fn from(file: TreeImage) -> Self {
         Self {
             id: file.id.to_string(),
             small_id: file.small_id.to_string(),
@@ -36,8 +36,8 @@ impl From<File> for FileRead {
     }
 }
 
-impl From<&File> for FileRead {
-    fn from(file: &File) -> Self {
+impl From<&TreeImage> for FileRead {
+    fn from(file: &TreeImage) -> Self {
         Self::from(file.clone())
     }
 }

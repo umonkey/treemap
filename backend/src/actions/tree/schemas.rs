@@ -1,5 +1,5 @@
-use crate::domain::file::File;
 use crate::domain::tree::LatLon;
+use crate::domain::tree_image::TreeImage;
 use serde::{Deserialize, Serialize};
 use std::cmp::min;
 
@@ -126,7 +126,7 @@ impl FileUploadResponse {
         Self { id: id.to_string() }
     }
 
-    pub fn from_file(file: &File) -> Self {
+    pub fn from_file(file: &TreeImage) -> Self {
         Self {
             id: file.id.to_string(),
         }

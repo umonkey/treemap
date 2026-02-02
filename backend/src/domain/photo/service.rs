@@ -2,8 +2,8 @@
 //!
 //! This message is sent whenever a user adds a file to a tree as a photo.
 
-use crate::domain::file::{File, FileRepository};
 use crate::domain::tree::TreeRepository;
+use crate::domain::tree_image::{TreeImage, TreeImageRepository};
 use crate::domain::upload::UploadRepository;
 use crate::infra::storage::FileStorage;
 use crate::services::ThumbnailerService;
@@ -17,7 +17,7 @@ const SMALL_SIZE: u32 = 1000;
 const LARGE_SIZE: u32 = 2000;
 
 pub struct PhotoService {
-    files: Arc<FileRepository>,
+    tree_images: Arc<TreeImageRepository>,
     uploads: Arc<UploadRepository>,
     storage: Arc<FileStorage>,
     thumbnailer: Arc<ThumbnailerService>,
@@ -49,7 +49,7 @@ impl PhotoService {
         let large = self.thumbnailer.resize(&body, LARGE_SIZE)?;
         let large_id = self.write_file(&large).await?;
 
-        let rec = File {
+        let rec = TreeImage {
             id: source.id,
             tree_id,
             small_id,
@@ -61,7 +61,7 @@ impl PhotoService {
             ..Default::default()
         };
 
-        self.files.add(&rec).await.inspect_err(|e| {
+        self.tree_images.add(&rec).await.inspect_err(|e| {
             error!("Could not add file {file_id}: {e:?}");
         })?;
 
@@ -71,7 +71,7 @@ impl PhotoService {
             .await?;
 
         info!(
-            "File {} successfully processed, added to tree {}.",
+            "TreeImage {} successfully processed, added to tree {}.",
             source.id, tree_id
         );
 
@@ -81,7 +81,7 @@ impl PhotoService {
     pub async fn resize_image(&self, file_id: u64) -> Result<()> {
         debug!("Going to resize images for file {file_id}.");
 
-        match self.files.get(file_id).await {
+        match self.tree_images.get(file_id).await {
             Ok(Some(file)) => {
                 let body = self.storage.read_file(file.id).await?;
 
@@ -93,13 +93,13 @@ impl PhotoService {
 
                 debug!("Updating file {file_id} with new image ids.");
 
-                let updated = File {
+                let updated = TreeImage {
                     small_id,
                     large_id,
                     ..file
                 };
 
-                self.files.update(&updated).await?;
+                self.tree_images.update(&updated).await?;
 
                 self.trees
                     .update_thumbnail(file.tree_id, small_id, file.added_by)
@@ -110,7 +110,7 @@ impl PhotoService {
             }
 
             Ok(None) => {
-                error!("File {file_id} not found, cannot resize images.");
+                error!("TreeImage {file_id} not found, cannot resize images.");
                 Ok(())
             }
 
@@ -155,7 +155,7 @@ impl PhotoService {
 impl Locatable for PhotoService {
     fn create(locator: &Locator) -> Result<Self> {
         Ok(Self {
-            files: locator.get::<FileRepository>()?,
+            tree_images: locator.get::<TreeImageRepository>()?,
             uploads: locator.get::<UploadRepository>()?,
             storage: locator.get::<FileStorage>()?,
             thumbnailer: locator.get::<ThumbnailerService>()?,
