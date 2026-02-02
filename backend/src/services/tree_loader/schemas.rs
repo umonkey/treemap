@@ -2,8 +2,8 @@ use serde::Serialize;
 
 use crate::actions::file::FileRead;
 use crate::actions::user::UserRead;
-use crate::domain::file::File;
 use crate::domain::tree::Tree;
+use crate::domain::tree_image::TreeImage;
 use crate::domain::user::User;
 
 #[derive(Clone, Debug, Default, Serialize)]
@@ -108,7 +108,7 @@ impl TreeRead {
 }
 
 impl SingleTreeResponse {
-    pub fn from_tree(tree: &Tree, files: &[File], users: &[User]) -> SingleTreeResponse {
+    pub fn from_tree(tree: &Tree, files: &[TreeImage], users: &[User]) -> SingleTreeResponse {
         let thumbnail_id = tree.thumbnail_id.map(|value| value.to_string());
 
         let users = users.iter().map(UserRead::from).collect();

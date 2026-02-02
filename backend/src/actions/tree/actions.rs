@@ -58,7 +58,7 @@ pub async fn add_file_action(
     let user_id = state.get_user_id(&req)?;
 
     let file = state
-        .files
+        .tree_images
         .add_file(AddFileRequest {
             user_id,
             tree_id: path.id,

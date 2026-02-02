@@ -1,5 +1,5 @@
-use super::models::File;
-use super::repository::FileRepository;
+use super::models::TreeImage;
+use super::repository::TreeImageRepository;
 use crate::actions::tree::AddFileRequest;
 use crate::domain::user::UserRepository;
 use crate::infra::queue::Queue;
@@ -11,16 +11,16 @@ use crate::utils::{get_timestamp, get_unique_id};
 use log::{debug, info};
 use std::sync::Arc;
 
-pub struct FileService {
+pub struct TreeImageService {
     queue: Arc<Queue>,
     storage: Arc<FileStorage>,
-    files: Arc<FileRepository>,
+    files: Arc<TreeImageRepository>,
     users: Arc<UserRepository>,
     thumbnailer: Arc<ThumbnailerService>,
 }
 
-impl FileService {
-    pub async fn add_file(&self, req: AddFileRequest) -> Result<File> {
+impl TreeImageService {
+    pub async fn add_file(&self, req: AddFileRequest) -> Result<TreeImage> {
         info!(
             "Received {} bytes from user {}, storing; addr={} agent={}",
             req.file.len(),
@@ -35,7 +35,7 @@ impl FileService {
 
         debug!("Going to add file {id} to the database.");
 
-        let file_record = File {
+        let file_record = TreeImage {
             id,
             tree_id: req.tree_id,
             added_at: get_timestamp(),
@@ -64,7 +64,7 @@ impl FileService {
         }
 
         self.files
-            .update(&File {
+            .update(&TreeImage {
                 deleted_at: Some(get_timestamp()),
                 deleted_by: Some(user_id),
                 ..file
@@ -73,12 +73,12 @@ impl FileService {
 
         self.users.increment_files_count(file.added_by, -1).await?;
 
-        info!("File {file_id} deleted by {user_id}.");
+        info!("TreeImage {file_id} deleted by {user_id}.");
 
         Ok(())
     }
 
-    pub async fn get_file_status(&self, id: u64) -> Result<File> {
+    pub async fn get_file_status(&self, id: u64) -> Result<TreeImage> {
         self.files.get(id).await?.ok_or(Error::FileNotFound)
     }
 
@@ -105,12 +105,12 @@ impl FileService {
     }
 }
 
-impl Locatable for FileService {
+impl Locatable for TreeImageService {
     fn create(locator: &Locator) -> Result<Self> {
         Ok(Self {
             storage: locator.get::<FileStorage>()?,
             queue: locator.get::<Queue>()?,
-            files: locator.get::<FileRepository>()?,
+            files: locator.get::<TreeImageRepository>()?,
             users: locator.get::<UserRepository>()?,
             thumbnailer: locator.get::<ThumbnailerService>()?,
         })

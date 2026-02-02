@@ -5,7 +5,7 @@ use crate::types::Result;
 use serde::Serialize;
 
 #[derive(Clone, Debug, Default, Serialize)]
-pub struct File {
+pub struct TreeImage {
     pub id: u64,
     pub tree_id: u64,
     pub added_at: u64,
@@ -14,9 +14,10 @@ pub struct File {
     pub deleted_by: Option<u64>,
     pub small_id: u64,
     pub large_id: u64,
+    pub source_id: u64,
 }
 
-impl File {
+impl TreeImage {
     pub fn from_attributes(attributes: &Attributes) -> Result<Self> {
         Ok(Self {
             id: attributes.require_u64("id")?,
@@ -27,6 +28,7 @@ impl File {
             deleted_by: attributes.get_u64("deleted_by")?,
             small_id: attributes.require_u64("small_id")?,
             large_id: attributes.require_u64("large_id")?,
+            source_id: attributes.require_u64("source_id")?,
         })
     }
 
@@ -40,6 +42,7 @@ impl File {
             ("deleted_by".to_string(), Self::oi64(&self.deleted_by)),
             ("small_id".to_string(), Value::from(self.small_id as i64)),
             ("large_id".to_string(), Value::from(self.large_id as i64)),
+            ("source_id".to_string(), Value::from(self.source_id as i64)),
         ])
     }
 

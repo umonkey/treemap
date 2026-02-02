@@ -34,6 +34,22 @@ CREATE UNIQUE INDEX IF NOT EXISTS trees_osm_id ON trees (osm_id);
 CREATE INDEX IF NOT EXISTS trees_state ON trees (state);
 
 
+CREATE TABLE IF NOT EXISTS trees_files (
+    `id` INT NOT NULL,
+    `tree_id` INT NOT NULL,
+    `added_at` INT NOT NULL,
+    `added_by` INT NOT NULL,
+    `deleted_at` INT NULL,
+    `deleted_by` INT NULL,
+    `small_id` INT NOT NULL,
+    `large_id` INT NOT NULL,
+    `source_id` INT NOT NULL,
+    PRIMARY KEY(`id`)
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS trees_files_tree_id ON trees_files (id);
+
+
 -- Tree attributes.
 -- This contains random properties, like year of planting, height, etc.
 --
@@ -55,7 +71,6 @@ CREATE TABLE IF NOT EXISTS trees_props (
 CREATE INDEX IF NOT EXISTS trees_props_tree_id ON trees_props (tree_id);
 
 
--- Tree images.
 CREATE TABLE IF NOT EXISTS files (
     `id` INT NOT NULL,
     `tree_id` INT NOT NULL,

@@ -1,6 +1,6 @@
 use super::schemas::*;
-use crate::domain::file::{File, FileRepository};
 use crate::domain::tree::Tree;
+use crate::domain::tree_image::{TreeImage, TreeImageRepository};
 use crate::domain::user::{User, UserRepository};
 use crate::services::*;
 use crate::types::Result;
@@ -10,7 +10,7 @@ use std::sync::Arc;
 
 pub struct TreeLoader {
     users: Arc<UserRepository>,
-    files: Arc<FileRepository>,
+    files: Arc<TreeImageRepository>,
 }
 
 impl TreeLoader {
@@ -44,7 +44,7 @@ impl TreeLoader {
         Ok(users)
     }
 
-    async fn collect_user_ids(&self, tree: &Tree, files: &[File]) -> Result<Vec<u64>> {
+    async fn collect_user_ids(&self, tree: &Tree, files: &[TreeImage]) -> Result<Vec<u64>> {
         let mut user_ids = Vec::new();
 
         user_ids.push(tree.added_by);
@@ -56,7 +56,7 @@ impl TreeLoader {
         Ok(user_ids)
     }
 
-    async fn find_files(&self, tree_id: u64) -> Result<Vec<File>> {
+    async fn find_files(&self, tree_id: u64) -> Result<Vec<TreeImage>> {
         let files = self.files.find_by_tree(tree_id).await?;
         Ok(files.into_iter().filter(|file| file.is_visible()).collect())
     }
@@ -66,7 +66,7 @@ impl Locatable for TreeLoader {
     fn create(locator: &Locator) -> Result<Self> {
         Ok(Self {
             users: locator.get::<UserRepository>()?,
-            files: locator.get::<FileRepository>()?,
+            files: locator.get::<TreeImageRepository>()?,
         })
     }
 }
