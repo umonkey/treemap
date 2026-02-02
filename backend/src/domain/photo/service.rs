@@ -4,7 +4,7 @@
 
 use crate::domain::tree::TreeRepository;
 use crate::domain::tree_image::{TreeImage, TreeImageRepository};
-use crate::domain::upload::UploadRepository;
+use crate::domain::upload::{Upload, UploadRepository};
 use crate::infra::storage::FileStorage;
 use crate::services::ThumbnailerService;
 use crate::services::{Locatable, Locator};
@@ -43,17 +43,20 @@ impl PhotoService {
             error!("Could not read source file {}: {:?}", source.id, e);
         })?;
 
+        let image_id = get_unique_id()?;
+
         let small = self.thumbnailer.resize(&body, SMALL_SIZE)?;
-        let small_id = self.write_file(&small).await?;
+        let small_id = self.write_file(&small, source.added_by).await?;
 
         let large = self.thumbnailer.resize(&body, LARGE_SIZE)?;
-        let large_id = self.write_file(&large).await?;
+        let large_id = self.write_file(&large, source.added_by).await?;
 
         let rec = TreeImage {
-            id: source.id,
+            id: image_id,
             tree_id,
             small_id,
             large_id,
+            source_id: source.id,
 
             added_at: source.added_at,
             added_by: source.added_by,
@@ -64,8 +67,6 @@ impl PhotoService {
         self.tree_images.add(&rec).await.inspect_err(|e| {
             error!("Could not add file {file_id}: {e:?}");
         })?;
-
-        self.uploads.delete(&source).await?;
 
         self.update_thumbnail(tree_id, small_id, source.added_by)
             .await?;
@@ -86,16 +87,17 @@ impl PhotoService {
                 let body = self.storage.read_file(file.id).await?;
 
                 let small = self.thumbnailer.resize(&body, SMALL_SIZE)?;
-                let small_id = self.write_file(&small).await?;
+                let small_id = self.write_file(&small, file.added_by).await?;
 
                 let large = self.thumbnailer.resize(&body, LARGE_SIZE)?;
-                let large_id = self.write_file(&large).await?;
+                let large_id = self.write_file(&large, file.added_by).await?;
 
                 debug!("Updating file {file_id} with new image ids.");
 
                 let updated = TreeImage {
                     small_id,
                     large_id,
+                    source_id: file.id,
                     ..file
                 };
 
@@ -127,13 +129,26 @@ impl PhotoService {
      * Note that the id is only allocated, file info is not yet
      * stored in the database.
      */
-    async fn write_file(&self, data: &[u8]) -> Result<u64> {
+    async fn write_file(&self, data: &[u8], added_by: u64) -> Result<u64> {
         let id = get_unique_id()?;
 
-        match self.storage.write_file(id, data).await {
-            Ok(_) => Ok(id),
-            Err(_) => Err(Error::FileUpload),
-        }
+        self.storage.write_file(id, data).await.map_err(|e| {
+            debug!("Error writing file: {e}");
+            Error::FileUpload
+        })?;
+
+        self.uploads
+            .add(&Upload {
+                id,
+                added_at: get_timestamp(),
+                added_by,
+                size: data.len() as u64,
+            })
+            .await?;
+
+        info!("Derived file recorded as {id}.");
+
+        Ok(id)
     }
 
     async fn update_thumbnail(&self, tree_id: u64, file_id: u64, user_id: u64) -> Result<()> {

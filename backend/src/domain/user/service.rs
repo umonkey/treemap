@@ -130,10 +130,6 @@ impl UserService {
         let userpic = format!("https://yerevan.treemaps.app/v1/files/{small_id}.jpg");
         self.users.update_userpic(user_id, &userpic).await?;
 
-        // TODO: save the record somewhere.  Currently we just delete it
-        // and we have an orphan file not listed in the database.
-        self.uploads.delete(&source).await?;
-
         info!(
             "File {} successfully processed, added to user {}.",
             source.id, user_id

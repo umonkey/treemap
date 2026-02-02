@@ -2,7 +2,16 @@
 
 This file describes how file uploads are working, step by step.
 
-## Workflow
+
+## File storage
+
+Files are stored in a single S3 bucket, where key is the numeric file id (snowflake).
+
+All uploaded files, as well as derived files (like resized thumbnails) are recorded in table `uploads`.
+Tree images are also recorded in table `trees_images` -- one record contains the source image id, small and large resized images.
+
+
+## Upload Workflow
 
 (1) The user uploads file bodies by sending them using `POST /v1/upload` endpoint.
 The file is saved in local file system and recorded in the [uploads table][1].
@@ -15,5 +24,6 @@ The ids are not saved anywhere directly, but sent to the queue for processing.
 (3) The queue consumer reads source files by id, creates all required file versions (e.g., small and large), and saves them in the additional file storage.
 The original file record is then deleted from the `uploads` table, but a record with the same id is created in the `files` table.
 This is how the source file is moved from uploads to photos.
+
 
 [1]: https://github.com/umonkey/treemap/wiki/Database-structure#uploads
