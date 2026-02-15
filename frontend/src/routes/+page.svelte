@@ -60,7 +60,7 @@
 
 	<AppInstallButton />
 
-	<GlobalHeatMap />
-
 	<ModeSwitcher />
+
+	<GlobalHeatMap />
 </NarrowPage>
