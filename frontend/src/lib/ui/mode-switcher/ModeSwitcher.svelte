@@ -25,16 +25,16 @@
 
 	<div class="grid">
 		<div>
+			<a href={routes.map()} onclick={handleExplorer}>
+				<img src={EXPLORER} alt="Explorer Mode" />
+			</a>
+			<p>Explore Map</p>
+		</div>
+		<div>
 			<a href={routes.modeMapper()}>
 				<img src={UPDATE_ICON} alt="Tape measure" />
 			</a>
 			<p>Update Map</p>
-		</div>
-		<div>
-			<a href={routes.searchQuery('gone')}>
-				<img src={PLANT_ICON} alt="Plant Trees" />
-			</a>
-			<p>Plant Trees</p>
 		</div>
 		<div>
 			<a href={routes.searchQuery('noimage')}>
@@ -46,13 +46,13 @@
 			<a href={routes.searchQuery('nometric')}>
 				<img src={TAPE_ICON} alt="Tape measure" />
 			</a>
-			<p>Measure Trees</p>
+			<p>Measure</p>
 		</div>
 		<div>
-			<a href={routes.map()} onclick={handleExplorer}>
-				<img src={EXPLORER} alt="Explorer Mode" />
+			<a href={routes.searchQuery('gone')}>
+				<img src={PLANT_ICON} alt="Plant Trees" />
 			</a>
-			<p>Explore Map</p>
+			<p>Plant Trees</p>
 		</div>
 		<div>
 			<a href={routes.stats()}>
