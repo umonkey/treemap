@@ -43,7 +43,7 @@
 			<p>Take Photos</p>
 		</div>
 		<div>
-			<a href={routes.searchQuery('noimage')}>
+			<a href={routes.searchQuery('nometric')}>
 				<img src={TAPE_ICON} alt="Tape measure" />
 			</a>
 			<p>Measure Trees</p>
