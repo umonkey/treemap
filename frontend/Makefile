@@ -12,6 +12,12 @@ deploy:
 	npm run build
 	npx wrangler pages deploy ./build --project-name=trees-of-yerevan --branch=master
 
+format:
+	npm run format
+
+check:
+	npm run check
+
 install:
 	npm ci
 

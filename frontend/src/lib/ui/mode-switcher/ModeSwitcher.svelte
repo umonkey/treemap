@@ -3,10 +3,15 @@
 	import { modeStore } from '$lib/stores/modeStore';
 	import { goto, routes } from '$lib/routes';
 	import { locale } from '$lib/locale';
-	import MAPPER from '$lib/assets/mapper-mode-500px.jpeg';
-	import EXPLORER from '$lib/assets/explorer-mode-500px.jpeg';
-	import REPORTS from '$lib/assets/reports-mode-500px.jpeg';
-	import LEARNING from '$lib/assets/learning-mode-500px.jpeg';
+
+	// Icons come from https://www.freepik.com/
+	import EXPLORER from '$lib/icons/explore.png';
+	import UPDATE_ICON from '$lib/icons/update-map.png';
+	import CHARTS_ICON from '$lib/icons/data-charts.png';
+	import LEARN_ICON from '$lib/icons/learn.png';
+	import PLANT_ICON from '$lib/icons/plant.png';
+	import CAMERA_ICON from '$lib/icons/camera.png';
+	import TAPE_ICON from '$lib/icons/tape-measure.png';
 
 	const handleExplorer = (e: Event) => {
 		e.preventDefault();
@@ -19,22 +24,48 @@
 	<h2>{locale.chooseFocus()}</h2>
 
 	<div class="grid">
-		<a href={routes.modeMapper()}>
-			<img src={MAPPER} alt="Mapper Mode" />
-			<p>Mapper</p>
-		</a>
-		<a href={routes.map()} onclick={handleExplorer}>
-			<img src={EXPLORER} alt="Explorer Mode" />
-			<p>Explorer</p>
-		</a>
-		<a href={routes.stats()}>
-			<img src={REPORTS} alt="Reports Mode" />
-			<p>Researcher</p>
-		</a>
-		<a href={routes.learn()}>
-			<img src={LEARNING} alt="Learning Mode" />
-			<p>Beginner</p>
-		</a>
+		<div>
+			<a href={routes.modeMapper()}>
+				<img src={UPDATE_ICON} alt="Tape measure" />
+			</a>
+			<p>Update Map</p>
+		</div>
+		<div>
+			<a href={routes.searchQuery('gone')}>
+				<img src={PLANT_ICON} alt="Plant Trees" />
+			</a>
+			<p>Plant Trees</p>
+		</div>
+		<div>
+			<a href={routes.searchQuery('noimage')}>
+				<img src={CAMERA_ICON} alt="Photo camera" />
+			</a>
+			<p>Take Photos</p>
+		</div>
+		<div>
+			<a href={routes.searchQuery('noimage')}>
+				<img src={TAPE_ICON} alt="Tape measure" />
+			</a>
+			<p>Measure Trees</p>
+		</div>
+		<div>
+			<a href={routes.map()} onclick={handleExplorer}>
+				<img src={EXPLORER} alt="Explorer Mode" />
+			</a>
+			<p>Explore Map</p>
+		</div>
+		<div>
+			<a href={routes.stats()}>
+				<img src={CHARTS_ICON} alt="Reports Mode" />
+			</a>
+			<p>Analyze</p>
+		</div>
+		<div>
+			<a href={routes.learn()}>
+				<img src={LEARN_ICON} alt="Learning Mode" />
+			</a>
+			<p>Learn Trees</p>
+		</div>
 	</div>
 </div>
 
@@ -52,38 +83,46 @@
 
 	.grid {
 		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		grid-gap: var(--gap);
+		grid-template-columns: repeat(4, 1fr);
+		grid-gap: 40px;
 
 		& > a {
 			width: 100%;
 			line-height: 0;
 			display: block;
-			border-radius: 10px;
-			overflow: hidden;
 			position: relative;
 			color: #fff;
+			text-decoration: none;
 		}
 
 		img {
+			background-color: light-dark(#ccc, #eee);
+			border-radius: 30px;
+			overflow: hidden;
 			max-width: 100%;
 			aspect-ratio: 1/1;
 		}
 
 		p {
-			position: absolute;
-			bottom: 0;
-			left: 0;
-			background-color: rgba(0, 0, 0, 0.6);
 			width: 100%;
 			margin: 0;
 			padding: 0;
-			line-height: 40px;
+			font-size: 14px;
+			line-height: 20px;
 			text-align: center;
 
 			color: white;
-			font-weight: 800;
-			text-transform: uppercase;
+			font-weight: 300;
+		}
+	}
+
+	@media screen and (max-width: 640px) {
+		.grid {
+			gap: 10px;
+		}
+
+		p {
+			letter-spacing: -1px;
 		}
 	}
 </style>
