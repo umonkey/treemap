@@ -29,4 +29,4 @@ The API follows the Action-Domain-Responder model.
 - No automatic commits. Never execute git commit, git push or similar version control commands automatically.
 - When asked for a solution, suggest the best one for this project, but mention alternatives.
 - Before implementing any changes, provide the implementation plan and ask for the user's confirmation.
-- After creating the code, run "cargo fmt" to fix any formatting issues, then "make lint" to make sure all code is correct. Fix any reported issues.
+- After changing any code, run "make format check" and fix any reported formatting and linter issues.
