@@ -98,9 +98,9 @@ export const load = ({
 		apiClient
 			.uploadSingleFile(file)
 			.then((res) => {
-				if (res.status === 200 && res.data?.id) {
+				if (res.status === 200 && res.data) {
 					// We got the id of the uploaded file.
-					const uploadId = res.data.id;
+					const uploadId = res.data;
 					uploads.update((currentUploads) => [...currentUploads, uploadId]);
 
 					console.info(`[FileUploader] File uploaded successfully: ${file.name}, id=${uploadId}`);
