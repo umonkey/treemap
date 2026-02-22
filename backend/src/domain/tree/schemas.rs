@@ -590,6 +590,7 @@ mod tests {
         ));
     }
 
+    // The default query must show trees marked as gone.
     #[test]
     fn test_gone_by_default() {
         let query = SearchQuery::from_string("");

@@ -666,7 +666,7 @@ impl TreeService {
     }
 
     fn is_visible(tree: &Tree) -> bool {
-        if tree.state == "gone" {
+        if tree.state == "replaced" {
             return false;
         }
 
