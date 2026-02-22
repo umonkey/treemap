@@ -72,4 +72,8 @@ impl FileStorageInterface for LocalFileStorage {
             }
         }
     }
+
+    async fn create_upload_url(&self, _id: u64) -> Result<String> {
+        Err(Error::FileUpload)
+    }
 }

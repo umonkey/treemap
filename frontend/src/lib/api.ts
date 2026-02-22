@@ -25,7 +25,7 @@ import type {
 	ITreeFile,
 	ITreeList,
 	ITreeUpdatePayload,
-	IUploadResponse,
+	IUploadTicket,
 	DuplicateList,
 	StreetReport,
 	IUser,
@@ -420,19 +420,72 @@ export class ApiClient {
 	 * This is how you upload all files.
 	 * The response is the file id, which is then used for adding photos to trees.
 	 */
-	public async uploadSingleFile(file: File): Promise<IResponse<IUploadResponse>> {
-		const headers: HeadersInit = {
-			'Content-Type': 'application/json',
-			...this.getAuthHeaders()
-		};
-
-		const buffer = await file.arrayBuffer();
-		const body = new Blob([buffer], { type: file.type });
-
-		return await this.request('POST', `v1/upload`, {
-			body,
-			headers
+	public async uploadSingleFile(file: File): Promise<IResponse<string>> {
+		const ticketRes = await this.request<IUploadTicket>('POST', 'v1/upload', {
+			body: JSON.stringify({ size: file.size }),
+			headers: {
+				'Content-Type': 'application/json',
+				...this.getAuthHeaders()
+			}
 		});
+
+		if (ticketRes.status !== 200 || !ticketRes.data) {
+			return {
+				status: ticketRes.status,
+				data: undefined,
+				error: ticketRes.error
+			};
+		}
+
+		const { id, url } = ticketRes.data;
+
+		try {
+			const uploadRes = await fetch(url, {
+				method: 'PUT',
+				body: file
+			});
+
+			if (!uploadRes.ok) {
+				return {
+					status: uploadRes.status,
+					data: undefined,
+					error: {
+						code: 'upload_error',
+						description: `Failed to upload file to S3: ${uploadRes.statusText}`
+					}
+				};
+			}
+		} catch (e) {
+			return {
+				status: 500,
+				data: undefined,
+				error: {
+					code: 'upload_error',
+					description: (e as Error).message
+				}
+			};
+		}
+
+		const finishRes = await this.request<void>('POST', `v1/upload/${id}/finish`, {
+			headers: {
+				'Content-Type': 'application/json',
+				...this.getAuthHeaders()
+			}
+		});
+
+		if (finishRes.status >= 400) {
+			return {
+				status: finishRes.status,
+				data: undefined,
+				error: finishRes.error
+			};
+		}
+
+		return {
+			status: 200,
+			data: id,
+			error: undefined
+		};
 	}
 
 	public async searchSpecies(query: string): Promise<IResponse<ISpecies[]>> {

@@ -231,11 +231,11 @@ export interface IHeatMap {
 }
 
 /**
- * File upload response.
- * The id is used for creating new photos.
+ * Ticket for file upload.
  */
-export interface IUploadResponse {
+export interface IUploadTicket {
 	id: string;
+	url: string;
 }
 
 export type DuplicateList = {
