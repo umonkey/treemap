@@ -19,13 +19,7 @@ pub struct SearchQuery {
     pub noheight: bool,
     pub nodiameter: bool,
     pub hasimages: bool,
-    pub sick: bool,
-    pub dead: bool,
-    pub deformed: bool,
-    pub healthy: bool,
-    pub stump: bool,
-    pub gone: bool,
-    pub unknown: bool,
+    pub statuses: Vec<String>,
     pub all: bool,
     pub address: Option<String>,
     pub species: Option<String>,
@@ -156,19 +150,21 @@ impl SearchQuery {
             } else if word.contains("hasimage") || word.contains("hasphoto") {
                 res.hasimages = true;
             } else if word.contains("healthy") {
-                res.healthy = true;
+                res.statuses.push("healthy".to_string());
             } else if word.contains("deformed") {
-                res.deformed = true;
+                res.statuses.push("deformed".to_string());
             } else if word.contains("sick") {
-                res.sick = true;
+                res.statuses.push("sick".to_string());
             } else if word.contains("dead") {
-                res.dead = true;
+                res.statuses.push("dead".to_string());
             } else if word.contains("stump") {
-                res.stump = true;
+                res.statuses.push("stump".to_string());
             } else if word.contains("gone") {
-                res.gone = true;
+                res.statuses.push("gone".to_string());
+            } else if word.contains("replaced") {
+                res.statuses.push("replaced".to_string());
             } else if word.contains("state:unknown") {
-                res.unknown = true;
+                res.statuses.push("unknown".to_string());
             } else if word.contains("incomplete") {
                 res.incomplete = true;
             } else if word == "has:addr" {
@@ -198,10 +194,26 @@ impl SearchQuery {
             }
         }
 
+        if res.statuses.is_empty() {
+            res.statuses = vec![
+                "sick".to_string(),
+                "dead".to_string(),
+                "deformed".to_string(),
+                "healthy".to_string(),
+                "stump".to_string(),
+                "gone".to_string(),
+                "unknown".to_string(),
+            ];
+        }
+
         res
     }
 
     pub fn r#match(&self, tree: &Tree, user_id: u64) -> bool {
+        if self.all {
+            return true;
+        }
+
         if !self.match_text(tree) {
             return false;
         }
@@ -274,46 +286,8 @@ impl SearchQuery {
             }
         }
 
-        if !self.all {
-            if !self.sick
-                && !self.dead
-                && !self.deformed
-                && !self.healthy
-                && !self.stump
-                && !self.gone
-                && !self.unknown
-                && tree.state == "gone"
-            {
-                return false;
-            }
-
-            if self.healthy && tree.state != "healthy" {
-                return false;
-            }
-
-            if self.deformed && tree.state != "deformed" {
-                return false;
-            }
-
-            if self.sick && tree.state != "sick" {
-                return false;
-            }
-
-            if self.dead && tree.state != "dead" {
-                return false;
-            }
-
-            if self.stump && tree.state != "stump" {
-                return false;
-            }
-
-            if self.gone && tree.state != "gone" {
-                return false;
-            }
-
-            if self.unknown && tree.state != "unknown" {
-                return false;
-            }
+        if !self.statuses.contains(&tree.state) {
+            return false;
         }
 
         if self.incomplete && !Self::is_tree_incomplete(tree) {
@@ -616,13 +590,35 @@ mod tests {
         ));
     }
 
+    // The default query must show trees marked as gone.
     #[test]
-    fn test_gone() {
-        let query = SearchQuery::from_string("gone");
+    fn test_gone_by_default() {
+        let query = SearchQuery::from_string("");
 
         assert!(query.r#match(
             &Tree {
                 state: "gone".to_string(),
+                ..default_tree()
+            },
+            0
+        ));
+
+        assert!(query.r#match(
+            &Tree {
+                state: "healthy".to_string(),
+                ..default_tree()
+            },
+            0
+        ));
+    }
+
+    #[test]
+    fn test_replaced() {
+        let query = SearchQuery::from_string("replaced");
+
+        assert!(query.r#match(
+            &Tree {
+                state: "replaced".to_string(),
                 ..default_tree()
             },
             0
@@ -638,20 +634,12 @@ mod tests {
     }
 
     #[test]
-    fn test_non_gone() {
+    fn test_replaced_default() {
         let query = SearchQuery::from_string("");
 
         assert!(!query.r#match(
             &Tree {
-                state: "gone".to_string(),
-                ..default_tree()
-            },
-            0
-        ));
-
-        assert!(query.r#match(
-            &Tree {
-                state: "healthy".to_string(),
+                state: "replaced".to_string(),
                 ..default_tree()
             },
             0

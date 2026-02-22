@@ -207,8 +207,12 @@ class EnglishLocale {
 		return 'gone';
 	}
 
-	public stateStomp(): string {
+	public stateStump(): string {
 		return 'stump';
+	}
+
+	public stateReplaced(): string {
+		return 'replaced';
 	}
 
 	public yearLabel(): string {
@@ -817,8 +821,12 @@ class RussianLocale extends EnglishLocale {
 		return 'удалено';
 	}
 
-	public stateStomp(): string {
+	public stateStump(): string {
 		return 'пень';
+	}
+
+	public stateReplaced(): string {
+		return 'заменено';
 	}
 
 	public yearLabel(): string {
@@ -1423,8 +1431,12 @@ class ArmenianLocale extends EnglishLocale {
 		return 'բացակայում է';
 	}
 
-	public stateStomp(): string {
+	public stateStump(): string {
 		return 'կոճղ';
+	}
+
+	public stateReplaced(): string {
+		return 'Փոխարինված';
 	}
 
 	public yearLabel(): string {
