@@ -10,6 +10,7 @@ use aws_sdk_s3::types::ObjectCannedAcl;
 use aws_sdk_s3::Client;
 use log::{debug, error, info};
 use std::sync::Arc;
+use std::time::Instant;
 
 pub struct S3FileStorage {
     client: Client,
@@ -66,6 +67,7 @@ impl Locatable for S3FileStorage {
 impl FileStorageInterface for S3FileStorage {
     async fn read_file(&self, id: u64) -> Result<Vec<u8>> {
         debug!("Reading file {id} from S3.");
+        let start = Instant::now();
 
         let res = self
             .client
@@ -81,7 +83,12 @@ impl FileStorageInterface for S3FileStorage {
                 match body {
                     Ok(body) => {
                         let body = body.into_bytes();
-                        info!("File {} read, {} bytes.", id, body.len());
+                        info!(
+                            "File {} read, {} bytes in {}ms.",
+                            id,
+                            body.len(),
+                            start.elapsed().as_millis()
+                        );
                         return Ok(body.to_vec());
                     }
 
@@ -101,6 +108,7 @@ impl FileStorageInterface for S3FileStorage {
 
     async fn write_file(&self, id: u64, bytes: &[u8]) -> Result<()> {
         let body = ByteStream::from(bytes.to_vec());
+        let start = Instant::now();
 
         let res = self
             .client
@@ -118,7 +126,12 @@ impl FileStorageInterface for S3FileStorage {
             return Err(Error::FileUpload);
         }
 
-        info!("File {} written to S3, length={}", id, bytes.len());
+        info!(
+            "File {} written to S3, length={} in {}ms",
+            id,
+            bytes.len(),
+            start.elapsed().as_millis()
+        );
 
         Ok(())
     }
