@@ -113,7 +113,7 @@ export const formatState = (value: string | null): string => {
 	}
 
 	if (value === 'stump') {
-		return locale.stateStomp();
+		return locale.stateStump();
 	}
 
 	if (value === 'deformed') {

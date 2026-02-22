@@ -207,7 +207,7 @@ class EnglishLocale {
 		return 'gone';
 	}
 
-	public stateStomp(): string {
+	public stateStump(): string {
 		return 'stump';
 	}
 
@@ -821,7 +821,7 @@ class RussianLocale extends EnglishLocale {
 		return 'удалено';
 	}
 
-	public stateStomp(): string {
+	public stateStump(): string {
 		return 'пень';
 	}
 
@@ -1431,7 +1431,7 @@ class ArmenianLocale extends EnglishLocale {
 		return 'բացակայում է';
 	}
 
-	public stateStomp(): string {
+	public stateStump(): string {
 		return 'կոճղ';
 	}
 
