@@ -28,13 +28,9 @@ pub async fn upload_action(
 }
 
 #[post("/{id}/finish")]
-pub async fn finish_upload_action(
-    state: Data<AppState>,
-    path: Path<u64>,
-    payload: Json<FinishUploadRequest>,
-) -> Result<Json<()>> {
+pub async fn finish_upload_action(state: Data<AppState>, path: Path<u64>) -> Result<Json<()>> {
     let id = path.into_inner();
-    state.uploads.finish_upload(id, payload.size).await?;
+    state.uploads.finish_upload(id).await?;
     Ok(Json(()))
 }
 

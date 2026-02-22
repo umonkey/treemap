@@ -51,8 +51,8 @@ impl UploadService {
         })
     }
 
-    pub async fn finish_upload(&self, id: u64, size: u64) -> Result<()> {
-        info!("Upload {} finished, size={}", id, size);
+    pub async fn finish_upload(&self, id: u64) -> Result<()> {
+        info!("Upload {} finished", id);
         Ok(())
     }
 }
