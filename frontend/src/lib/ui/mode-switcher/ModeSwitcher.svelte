@@ -26,19 +26,19 @@
 	<div class="grid">
 		<div>
 			<a href={routes.map()} onclick={handleExplorer}>
-				<img src={EXPLORER} alt="Explorer Mode" />
+				<img src={EXPLORER} alt="Explorer" />
 			</a>
 			<p>Explore Map</p>
 		</div>
 		<div>
 			<a href={routes.modeMapper()}>
-				<img src={UPDATE_ICON} alt="Tape measure" />
+				<img src={UPDATE_ICON} alt="Map update" />
 			</a>
 			<p>Update Map</p>
 		</div>
 		<div>
 			<a href={routes.searchQuery('noimage')}>
-				<img src={CAMERA_ICON} alt="Photo camera" />
+				<img src={CAMERA_ICON} alt="Camera" />
 			</a>
 			<p>Take Photos</p>
 		</div>
@@ -56,13 +56,13 @@
 		</div>
 		<div>
 			<a href={routes.stats()}>
-				<img src={CHARTS_ICON} alt="Reports Mode" />
+				<img src={CHARTS_ICON} alt="Reports" />
 			</a>
 			<p>Analyze</p>
 		</div>
 		<div>
 			<a href={routes.learn()}>
-				<img src={LEARN_ICON} alt="Learning Mode" />
+				<img src={LEARN_ICON} alt="Learning" />
 			</a>
 			<p>Learn Trees</p>
 		</div>
@@ -86,7 +86,7 @@
 		grid-template-columns: repeat(4, 1fr);
 		grid-gap: 40px;
 
-		& > a {
+		& > div > a {
 			width: 100%;
 			line-height: 0;
 			display: block;
