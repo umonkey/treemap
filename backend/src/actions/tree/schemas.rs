@@ -21,6 +21,7 @@ pub struct AddFileRequest {
 #[derive(Debug, Serialize)]
 pub struct FileUploadResponse {
     pub id: String,
+    pub url: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -122,13 +123,10 @@ impl AddedTreesRequest {
 }
 
 impl FileUploadResponse {
-    pub fn from_id(id: u64) -> Self {
-        Self { id: id.to_string() }
-    }
-
     pub fn from_file(file: &TreeImage) -> Self {
         Self {
             id: file.id.to_string(),
+            url: None,
         }
     }
 }

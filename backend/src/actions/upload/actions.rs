@@ -1,17 +1,18 @@
-//! Receive a binary file from the user, attach to a tree.
+//! Handle file upload tickets and finalization.
 
+use super::schemas::*;
 use crate::actions::tree::FileUploadResponse;
 use crate::services::AppState;
 use crate::types::*;
 use crate::utils::*;
-use actix_web::web::{Bytes, Data, Json, ServiceConfig};
+use actix_web::web::{Data, Json, Path, ServiceConfig};
 use actix_web::{post, HttpRequest};
 
 #[post("")]
 pub async fn upload_action(
     state: Data<AppState>,
     req: HttpRequest,
-    body: Bytes,
+    payload: Json<UploadTicketRequest>,
 ) -> Result<Json<FileUploadResponse>> {
     let user_id = state.get_user_id(&req)?;
 
@@ -20,13 +21,25 @@ pub async fn upload_action(
 
     let rec = state
         .uploads
-        .upload_file(user_id, body.to_vec(), remote_addr, user_agent)
+        .create_upload_ticket(user_id, payload.size, remote_addr, user_agent)
         .await?;
 
     Ok(Json(rec))
 }
 
+#[post("/{id}/finish")]
+pub async fn finish_upload_action(
+    state: Data<AppState>,
+    path: Path<u64>,
+    payload: Json<FinishUploadRequest>,
+) -> Result<Json<()>> {
+    let id = path.into_inner();
+    state.uploads.finish_upload(id, payload.size).await?;
+    Ok(Json(()))
+}
+
 // Configure the router.
 pub fn upload_router(cfg: &mut ServiceConfig) {
     cfg.service(upload_action);
+    cfg.service(finish_upload_action);
 }

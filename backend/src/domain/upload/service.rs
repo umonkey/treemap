@@ -21,36 +21,39 @@ pub struct UploadService {
 }
 
 impl UploadService {
-    pub async fn upload_file(
+    pub async fn create_upload_ticket(
         &self,
         user_id: u64,
-        file: Vec<u8>,
+        size: u64,
         remote_addr: String,
         user_agent: String,
     ) -> Result<FileUploadResponse> {
         let file_id = get_unique_id()?;
-
-        self.storage.write_file(file_id, &file).await?;
+        let url = self.storage.create_upload_url(file_id).await?;
 
         self.uploads
             .add(&Upload {
                 id: file_id,
                 added_by: user_id,
                 added_at: get_timestamp(),
-                size: file.len() as u64,
+                size,
             })
             .await?;
 
         info!(
-            "Received {} bytes from user {}, id={}; addr={} agent={}",
-            file.len(),
-            user_id,
-            file_id,
-            remote_addr,
-            user_agent,
+            "Created upload ticket for user {}, id={}, size={}; addr={} agent={}",
+            user_id, file_id, size, remote_addr, user_agent
         );
 
-        Ok(FileUploadResponse::from_id(file_id))
+        Ok(FileUploadResponse {
+            id: file_id.to_string(),
+            url: Some(url),
+        })
+    }
+
+    pub async fn finish_upload(&self, id: u64, size: u64) -> Result<()> {
+        info!("Upload {} finished, size={}", id, size);
+        Ok(())
     }
 }
 

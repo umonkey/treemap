@@ -26,6 +26,10 @@ impl FileStorage {
     pub async fn read_file(&self, id: u64) -> Result<Vec<u8>> {
         self.client.read_file(id).await
     }
+
+    pub async fn create_upload_url(&self, id: u64) -> Result<String> {
+        self.client.create_upload_url(id).await
+    }
 }
 
 impl Locatable for FileStorage {

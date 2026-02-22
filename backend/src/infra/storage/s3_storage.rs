@@ -5,12 +5,13 @@ use crate::infra::secrets::Secrets;
 use crate::services::{Locatable, Locator};
 use crate::types::*;
 use async_trait::async_trait;
+use aws_sdk_s3::presigning::PresigningConfig;
 use aws_sdk_s3::primitives::ByteStream;
 use aws_sdk_s3::types::ObjectCannedAcl;
 use aws_sdk_s3::Client;
 use log::{debug, error, info};
 use std::sync::Arc;
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 pub struct S3FileStorage {
     client: Client,
@@ -134,5 +135,28 @@ impl FileStorageInterface for S3FileStorage {
         );
 
         Ok(())
+    }
+
+    async fn create_upload_url(&self, id: u64) -> Result<String> {
+        let expires_in = Duration::from_secs(3600);
+        let config = PresigningConfig::builder()
+            .expires_in(expires_in)
+            .build()
+            .map_err(|e| Error::Config(e.to_string()))?;
+
+        let presigned_request = self
+            .client
+            .put_object()
+            .bucket(&self.bucket)
+            .key(id.to_string())
+            .content_type("image/jpeg")
+            .presigned(config)
+            .await
+            .map_err(|e| {
+                error!("Error creating presigned URL: {e:?}");
+                Error::FileUpload
+            })?;
+
+        Ok(presigned_request.uri().to_string())
     }
 }
