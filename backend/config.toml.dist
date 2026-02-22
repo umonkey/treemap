@@ -23,8 +23,14 @@ database = "sqlite"
 # If this is not set, OSM interaction will not work.
 #bot_user_id = 12345678
 
-# Where to store temporary files, before they are uploaded to the external S3 storage.
+# Path to the local folder where files are stored.
+# This is used when file_storage is set to "local".
 #file_folder = "var/files"
+
+# File storage type.
+# Values: s3, local.
+# Default: s3
+#file_storage = "s3"
 
 # The number of worker threads.  Normally set to the number of threads your CPU has.
 #worker_threads = 1

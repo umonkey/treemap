@@ -187,7 +187,7 @@ fn default_queue() -> String {
 }
 
 fn default_file_storage() -> String {
-    "local".to_string()
+    "s3".to_string()
 }
 
 fn default_sqlite_path() -> String {
