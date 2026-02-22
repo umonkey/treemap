@@ -149,7 +149,6 @@ impl FileStorageInterface for S3FileStorage {
             .put_object()
             .bucket(&self.bucket)
             .key(id.to_string())
-            .content_type("image/jpeg")
             .presigned(config)
             .await
             .map_err(|e| {
