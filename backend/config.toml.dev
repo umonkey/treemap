@@ -10,6 +10,11 @@ database = "sqlite"
 # SQLite database path.
 sqlite_path = "var/database.sqlite"
 
+file_storage = "s3"
+files_bucket = "treemap"
+files_endpoint = "https://fra1.digitaloceanspaces.com"
+files_region = "fra1"
+
 # Turso database configuration.
 # Turso is essentially a cloud SQLite.
 # The token will be read from the environment variable TURSO_TOKEN.

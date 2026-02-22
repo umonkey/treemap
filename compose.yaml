@@ -21,9 +21,11 @@ services:
     volumes:
       - var:/app/var
     environment:
+      - FILES_KEY=${AWS_ACCESS_KEY_ID}
+      - FILES_SECRET=${AWS_SECRET_ACCESS_KEY}
+      - JWT_SECRET=foobar
       - RUST_LOG=info,treemap=debug
       - TREEMAP_CONFIG=/app/config.toml.dev
-      - JWT_SECRET=foobar
       - TURSO_TOKEN
 
   frontend:
