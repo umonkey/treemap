@@ -194,7 +194,7 @@ impl TreeService {
 
         let trees: Vec<Tree> = vec![
             Tree {
-                state: "gone".to_string(),
+                state: "replaced".to_string(),
                 replaced_by: Some(new.id),
                 ..old
             },
