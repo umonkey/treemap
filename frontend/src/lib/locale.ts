@@ -211,6 +211,10 @@ class EnglishLocale {
 		return 'stump';
 	}
 
+	public stateReplaced(): string {
+		return 'replaced';
+	}
+
 	public yearLabel(): string {
 		return 'Year planted';
 	}
@@ -821,6 +825,10 @@ class RussianLocale extends EnglishLocale {
 		return 'пень';
 	}
 
+	public stateReplaced(): string {
+		return 'заменено';
+	}
+
 	public yearLabel(): string {
 		return 'Год посадки';
 	}
@@ -1425,6 +1433,10 @@ class ArmenianLocale extends EnglishLocale {
 
 	public stateStomp(): string {
 		return 'կոճղ';
+	}
+
+	public stateReplaced(): string {
+		return 'Փոխարինված';
 	}
 
 	public yearLabel(): string {

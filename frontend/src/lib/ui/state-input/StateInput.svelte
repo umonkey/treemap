@@ -32,6 +32,7 @@
 				<option value="dead">{locale.stateDead()}</option>
 				<option value="gone">{locale.stateGone()}</option>
 				<option value="stump">{locale.stateStomp()}</option>
+				<option value="replaced">{locale.stateReplaced()}</option>
 			</select>
 			<HelpButton help="https://github.com/KanachYerevan/kb/wiki/Understanding-tree-state" />
 		</div>
