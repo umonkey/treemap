@@ -440,10 +440,13 @@ export class ApiClient {
 		const { id, url } = ticketRes.data;
 
 		try {
+			const start = performance.now();
 			const uploadRes = await fetch(url, {
 				method: 'PUT',
 				body: file
 			});
+			const duration = Math.round(performance.now() - start);
+			console.log(`[api] File upload took ${duration} ms, status=${uploadRes.status}`);
 
 			if (!uploadRes.ok) {
 				return {
@@ -579,7 +582,7 @@ export class ApiClient {
 		path: string,
 		options?: RequestInit
 	): Promise<IResponse<T>> {
-		console.debug(`[api] Requesting ${method} ${this.root}${path}`);
+		const start = performance.now();
 
 		try {
 			const request = new Request(this.root + path, {
@@ -588,6 +591,8 @@ export class ApiClient {
 			});
 
 			const response = await fetch(request);
+			const duration = Math.round(performance.now() - start);
+			console.log(`[api] Sent ${method} to /${path} in ${duration} ms, status=${response.status}`);
 
 			if (response.status === 202) {
 				return {
@@ -615,6 +620,10 @@ export class ApiClient {
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (e: any) {
+			const duration = Math.round(performance.now() - start);
+			console.error(
+				`[api] Sent ${method} to /${path} in ${duration} ms, error: ${(e as Error).message}`
+			);
 			return {
 				status: 500,
 				data: undefined,

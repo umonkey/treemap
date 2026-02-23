@@ -13,7 +13,7 @@ export default defineConfig(({ mode }) => {
 	if (env.VITE_SENTRY_AUTH_TOKEN) {
 		plugins.push(
 			sentrySvelteKit({
-				adapter: 'static',
+				adapter: 'other',
 				telemetry: false,
 				sourceMapsUploadOptions: {
 					org: 'trees-of-yerevan',

@@ -9,8 +9,12 @@ Sentry.init({
 
 	// Enable API performance tracing.
 	tracesSampleRate: 1.0,
-	integrations: [Sentry.browserTracingIntegration()],
-	tracePropagationTargets: ['localhost', /^https:\/\/api\.treemaps\.app/]
+	integrations: [
+		Sentry.browserTracingIntegration(),
+		Sentry.captureConsoleIntegration({ levels: ['log', 'warn', 'error'] })
+	],
+	tracePropagationTargets: ['localhost', /^https:\/\/api\.treemaps\.app/],
+	enableLogs: true
 });
 
 // If you have a custom error handler, pass it to `handleErrorWithSentry`
