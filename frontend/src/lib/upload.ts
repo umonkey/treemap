@@ -12,6 +12,7 @@
 
 import { db } from './db';
 import { apiClient } from './api';
+import { uploadBus } from '$lib/buses/upload';
 
 // Delay between file upload attempts.
 const DELAY = 1000;
@@ -75,6 +76,8 @@ export async function processUploadQueue() {
 					status: 'completed',
 					file_id
 				});
+
+				uploadBus.emit('success', pending.tree_id);
 			} catch (e) {
 				console.error(`[upload] Failed to upload ${pending.id}:`, e);
 				await db.uploads.update(pending.id, {
