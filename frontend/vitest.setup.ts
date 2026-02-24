@@ -1,5 +1,21 @@
 import { afterEach, beforeEach, vi } from 'vitest';
 
+// Mock requestSubmit which is not implemented in JSDOM.
+// This must be done before any tests run.
+if (typeof HTMLFormElement !== 'undefined' && !HTMLFormElement.prototype.requestSubmit) {
+	Object.defineProperty(HTMLFormElement.prototype, 'requestSubmit', {
+		value: function (submitter: HTMLElement | null | undefined) {
+			if (submitter) {
+				submitter.click();
+			} else {
+				this.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+			}
+		},
+		writable: true,
+		configurable: true
+	});
+}
+
 beforeEach(() => {
 	const mockFetch = vi.fn();
 
@@ -57,4 +73,5 @@ global.Worker = vi.fn().mockImplementation((url: string) => {
 	};
 });
 
+import 'fake-indexeddb/auto';
 import 'vitest-canvas-mock';
