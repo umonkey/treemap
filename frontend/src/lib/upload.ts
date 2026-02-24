@@ -13,6 +13,7 @@
 import { db } from './db';
 import { apiClient } from './api';
 import { uploadBus } from '$lib/buses/upload';
+import { incrementUploadCount, decrementUploadCount, resetUploadCount } from '$lib/stores/upload';
 
 // Delay between file upload attempts.
 const DELAY = 1000;
@@ -31,6 +32,8 @@ export async function addPhotoToUploadQueue(tree_id: string | number, file: File
 		retry_count: 0,
 		file_id: null
 	});
+
+	incrementUploadCount();
 
 	// Trigger processing.
 	processUploadQueue();
@@ -67,15 +70,19 @@ export async function processUploadQueue() {
 			});
 
 			if (!pending || !pending.id) {
+				resetUploadCount();
 				break;
 			}
 
 			try {
 				const file_id = await uploadSingleFile(pending.tree_id, pending.image);
+
 				await db.uploads.update(pending.id, {
 					status: 'completed',
 					file_id
 				});
+
+				decrementUploadCount();
 
 				uploadBus.emit('success', pending.tree_id);
 			} catch (e) {
