@@ -1,3 +1,15 @@
+/**
+ * This file contains the background image uploader.
+ *
+ * The goal is to unblock the UI asap so that the user doesn't have to wait
+ * for the files to finish uploading to continue operating.
+ *
+ * To start an upload, just call addPhotoToUploadQueue() with the tree and file info.
+ *
+ * Additionally, when the app starts, call processUploadQueue() to restart any
+ * previously failed attempts.
+ */
+
 import { db } from './db';
 import { apiClient } from './api';
 
