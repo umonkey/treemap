@@ -1,16 +1,13 @@
-﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"
-	><radialGradient id="a12" cx=".66" fx=".66" cy=".3125" fy=".3125" gradientTransform="scale(1.5)"
-		><stop offset="0" stop-color="#FFFFFF"></stop><stop
-			offset=".3"
-			stop-color="#FFFFFF"
-			stop-opacity=".9"
-		></stop><stop offset=".6" stop-color="#FFFFFF" stop-opacity=".6"></stop><stop
-			offset=".8"
-			stop-color="#FFFFFF"
-			stop-opacity=".3"
-		></stop><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"></stop></radialGradient
-	><circle
-		transform-origin="center"
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+	<radialGradient id="a12" cx=".66" fx=".66" cy=".3125" fy=".3125" gradientTransform="scale(1.5)">
+		<stop offset="0" stop-color="#FFFFFF"></stop>
+		<stop offset=".3" stop-color="#FFFFFF" stop-opacity=".9"></stop>
+		<stop offset=".6" stop-color="#FFFFFF" stop-opacity=".6"></stop>
+		<stop offset=".8" stop-color="#FFFFFF" stop-opacity=".3"></stop>
+		<stop offset="1" stop-color="#FFFFFF" stop-opacity="0"></stop>
+	</radialGradient>
+	<circle
+		class="spinner"
 		fill="none"
 		stroke="url(#a12)"
 		stroke-width="15"
@@ -20,18 +17,8 @@
 		cx="100"
 		cy="100"
 		r="70"
-		><animateTransform
-			type="rotate"
-			attributeName="transform"
-			calcMode="spline"
-			dur="2"
-			values="360;0"
-			keyTimes="0;1"
-			keySplines="0 0 1 1"
-			repeatCount="indefinite"
-		></animateTransform></circle
-	><circle
-		transform-origin="center"
+	/>
+	<circle
 		fill="none"
 		opacity=".2"
 		stroke="#FFFFFF"
@@ -40,5 +27,21 @@
 		cx="100"
 		cy="100"
 		r="70"
-	></circle></svg
->
+	/>
+</svg>
+
+<style>
+	.spinner {
+		transform-origin: center;
+		animation: spin 2s linear infinite;
+	}
+
+	@keyframes spin {
+		from {
+			transform: rotate(360deg);
+		}
+		to {
+			transform: rotate(0deg);
+		}
+	}
+</style>
