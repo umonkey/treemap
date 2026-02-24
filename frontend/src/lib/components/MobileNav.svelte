@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { BellIcon, HomeIcon, MapIcon, SearchIcon, UserIcon } from '$lib/icons';
+	import { BellIcon, HomeIcon, MapIcon, SearchIcon, UserIcon, SpinnerIcon } from '$lib/icons';
 	import { routes } from '$lib/routes';
 	import { authStore, isAuthenticated } from '$lib/stores/authStore';
+	import { uploadStore } from '$lib/stores/upload';
 	import { mapLastTree } from '$lib/stores/mapStore';
 </script>
 
@@ -16,7 +17,9 @@
 	<a href={routes.newTrees()}><div><BellIcon /></div></a>
 	<a href="/profile"
 		><div>
-			{#if $isAuthenticated && $authStore?.picture}
+			{#if $uploadStore.pending > 0}
+				<SpinnerIcon />
+			{:else if $isAuthenticated && $authStore?.picture}
 				<img src={$authStore.picture} alt="userpic" />
 			{:else}
 				<UserIcon />

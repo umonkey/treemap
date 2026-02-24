@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
-	import { BellIcon, HomeIcon, MapIcon, SearchIcon, UserIcon } from '$lib/icons';
+	import { BellIcon, HomeIcon, MapIcon, SearchIcon, UserIcon, SpinnerIcon } from '$lib/icons';
 	import { mapLastTree } from '$lib/stores/mapStore';
 	import { searchStore } from '$lib/stores';
+	import { uploadStore } from '$lib/stores/upload';
 	import Logo from '$lib/assets/trees-of-yerevan.svelte';
 </script>
 
@@ -52,7 +53,13 @@
 			</li>
 			<li>
 				<a href={routes.profile()}>
-					<span class="icon"><UserIcon /></span>
+					<span class="icon">
+						{#if $uploadStore.pending > 0}
+							<SpinnerIcon />
+						{:else}
+							<UserIcon />
+						{/if}
+					</span>
 					<span>{locale.sideProfile()}</span>
 				</a>
 			</li>
