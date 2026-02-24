@@ -104,7 +104,7 @@ export async function uploadSingleFile(tree_id: string, blob: Blob): Promise<str
 
 	// 2. Attach to tree.
 	const attachRes = await apiClient.addPhotos(tree_id, [file_id]);
-	if (attachRes.status !== 200) {
+	if (attachRes.status >= 400) {
 		throw new Error(attachRes.error?.description || 'Failed to attach photo to tree');
 	}
 

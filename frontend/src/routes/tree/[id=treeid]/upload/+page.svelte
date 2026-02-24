@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
 	import { Button, Buttons, NarrowPage, Form, FileUploader, AuthWrapper } from '$lib/ui';
+	import PhotoUploader from '$lib/components/PhotoUploader.svelte';
 	import { UploadForm } from '$lib/forms';
 	import { load } from './hooks';
 
@@ -16,7 +17,7 @@
 		<Form>
 			<p>{locale.photoIntro()}</p>
 
-			<FileUploader onBusy={handleBusy} onChange={handleChange} />
+			<PhotoUploader {treeId} onChange={handleChange} />
 
 			{#if $hasFiles}
 				<Buttons>
