@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store';
+import { getPendingCount } from '$lib/db';
 
 type UploadStore = {
 	pending: number;
@@ -6,6 +7,11 @@ type UploadStore = {
 
 export const uploadStore = writable<UploadStore>({
 	pending: 0
+});
+
+// Initialize the store from the database.
+getPendingCount().then((count) => {
+	uploadStore.set({ pending: count });
 });
 
 export const resetUploadCount = () => {

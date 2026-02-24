@@ -18,4 +18,12 @@ db.version(1).stores({
 	uploads: '++id, tree_id, status, created_at'
 });
 
+export async function getPendingCount(): Promise<number> {
+	return await db.uploads
+		.where('status')
+		.anyOf('pending', 'failed')
+		.filter((u) => u.retry_count < 5)
+		.count();
+}
+
 export { db };

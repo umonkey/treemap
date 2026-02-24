@@ -11,7 +11,6 @@
 		Buttons,
 		CanopyInput,
 		CircumferenceInput,
-		FileUploader,
 		HeightInput,
 		NotesInput,
 		SpeciesInput,

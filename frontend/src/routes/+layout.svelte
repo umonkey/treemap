@@ -17,6 +17,7 @@
 
 	onMount(() => {
 		validateStoredToken();
+		processUploadQueue();
 	});
 </script>
 
