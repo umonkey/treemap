@@ -15,6 +15,7 @@ use libsql::params_from_iter;
 use libsql::{Builder, Database};
 use log::{debug, error, info};
 use std::sync::Arc;
+use std::time::Instant;
 
 const SUGGEST_WINDOW: u64 = 3600 * 24; // 24 hours
 
@@ -99,6 +100,7 @@ impl SqliteDatabase {
     }
 
     async fn fetch(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>> {
+        let start = Instant::now();
         let conn = self.pool.connect()?;
 
         let mut stmt = conn.prepare(query).await.inspect_err(|e| {
@@ -118,8 +120,14 @@ impl SqliteDatabase {
             res.push(row.into());
         }
 
+        let duration = start.elapsed();
+
         // This is a temporary solution for debugging excessive Turso reads.
-        info!("Read {} rows for query: {query}", res.len());
+        info!(
+            "Read {} rows in {}ms for query: {query}",
+            res.len(),
+            duration.as_millis()
+        );
 
         Ok(res)
     }
