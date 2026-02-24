@@ -34,12 +34,6 @@ export const hooks = () => {
 	const loading = writable<boolean>(true);
 	const saving = writable<boolean>(false);
 
-	// Set when the file picker component is uploading files, cannot submit.
-	const uploading = writable<boolean>(false);
-
-	// Set when a file was uploaded, contains file ids.
-	const uploads = writable<string[]>([]);
-
 	const reload = (lat: number, lng: number) => {
 		location.set({ lat, lng });
 
@@ -150,7 +144,7 @@ export const hooks = () => {
 			state: t.state,
 			notes: t.notes,
 			year: t.year,
-			files: get(uploads)
+			files: []
 		} as IAddTreesRequest;
 
 		apiClient.addTree(req).then((res) => {
@@ -173,15 +167,6 @@ export const hooks = () => {
 		goto(routes.map());
 	};
 
-	const handleUploading = (value: boolean) => {
-		uploading.set(value);
-	};
-
-	// Receives ids of all currently uploaded files.
-	const handleUploaded = (value: string[]) => {
-		uploads.set(value);
-	};
-
 	return {
 		loading,
 		location,
@@ -197,9 +182,6 @@ export const hooks = () => {
 		handleYearChange,
 		handleConfirm,
 		handleCancel,
-		handleUploading,
-		handleUploaded,
-		saving,
-		uploading
+		saving
 	};
 };
