@@ -3,13 +3,14 @@
 	import { load } from './PhotoUploader.ts';
 	import { FileUploaderDisplay } from '$lib/ui';
 
-	const { label, treeId, onBusy, onChange, small } = $props<{
-		treeId: string;
+	const { label, treeId, onChange, small } = $props<{
 		label?: string;
+		treeId: string;
+		onChange: (files: number) => void;
 		small?: boolean;
 	}>();
 
-	const { thumbnails, handleChange } = load({ treeId });
+	const { thumbnails, handleChange } = load({ treeId, onChange });
 </script>
 
 {#if label}

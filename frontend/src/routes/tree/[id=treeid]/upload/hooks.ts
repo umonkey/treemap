@@ -21,10 +21,10 @@ export const load = (treeId: string) => {
 		canSubmit.set(!value && get(uploads).length > 0);
 	};
 
-	const handleChange = (value: string[]) => {
-		uploads.set(value);
-		canSubmit.set(value.length > 0 && !get(busy));
-		hasFiles.set(value.length > 0);
+	const handleChange = (files: number) => {
+		hasFiles.set(files > 0);
+		busy.set(false);
+		canSubmit.set(true);
 	};
 
 	const handleSubmit = () => {

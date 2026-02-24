@@ -5,7 +5,7 @@
  * The files are transparently uploaded to the server.
  */
 
-import { writable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 import { addPhotoToUploadQueue } from '$lib/upload';
 
 type Thumbnail = {
@@ -14,9 +14,10 @@ type Thumbnail = {
 
 type Props = {
 	treeId: string;
+	onChange: (files: number) => void;
 };
 
-export const load = ({ treeId }: Props) => {
+export const load = ({ treeId, onChange }: Props) => {
 	// This is files received from the file picker.
 	// We use them to create thumbnails, and to upload data to the backend.
 	// We aren't reporting this to the parent component.
@@ -44,6 +45,8 @@ export const load = ({ treeId }: Props) => {
 				addPhotoToUploadQueue(treeId, file);
 			}
 		}
+
+		onChange(get(thumbnails).length);
 	};
 
 	return { thumbnails, handleChange };
