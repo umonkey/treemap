@@ -420,7 +420,7 @@ export class ApiClient {
 	 * This is how you upload all files.
 	 * The response is the file id, which is then used for adding photos to trees.
 	 */
-	public async uploadSingleFile(file: File): Promise<IResponse<string>> {
+	public async uploadSingleFile(file: Blob): Promise<IResponse<string>> {
 		const ticketRes = await this.request<IUploadTicket>('POST', 'v1/upload', {
 			body: JSON.stringify({ size: file.size }),
 			headers: {
