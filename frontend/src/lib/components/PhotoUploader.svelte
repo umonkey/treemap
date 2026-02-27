@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { CameraIcon, GalleryIcon } from '$lib/icons';
 	import { load } from './PhotoUploader.ts';
+	import { onMount } from 'svelte';
 	import { FileUploaderDisplay } from '$lib/ui';
 
 	const { label, treeId, onChange, small } = $props<{
@@ -10,7 +11,7 @@
 		small?: boolean;
 	}>();
 
-	const { thumbnails, handleChange } = load({ treeId, onChange });
+	const { thumbnails, handleChange } = load({ treeId, onChange, onMount });
 </script>
 
 {#if label}
