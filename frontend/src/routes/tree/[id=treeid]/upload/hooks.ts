@@ -1,8 +1,6 @@
 import { get, writable } from 'svelte/store';
 import { apiClient } from '$lib/api';
 import { routes, goto } from '$lib/routes';
-import { toast } from '@zerodevx/svelte-toast';
-import { locale } from '$lib/locale';
 
 export const load = (treeId: string) => {
 	// Set by the file picker when upload is in progress.
@@ -35,7 +33,6 @@ export const load = (treeId: string) => {
 			.then((res) => {
 				if (res.status === 202) {
 					uploads.set([]);
-					toast.push(locale.photosAdded());
 					goto(routes.mapPreview(treeId));
 				} else if (res.error) {
 					console.error(`Error uploading photos: ${res.error.description}`);
