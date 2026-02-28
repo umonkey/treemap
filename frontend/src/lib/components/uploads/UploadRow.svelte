@@ -1,8 +1,5 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
-	import { locale } from '$lib/locale';
-	import { routes } from '$lib/routes';
-	import { formatDate } from '$lib/utils/strings';
 	import type { IUpload } from '$lib/db';
 
 	const { upload } = $props<{

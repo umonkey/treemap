@@ -5,7 +5,7 @@
  * The files are transparently uploaded to the server.
  */
 
-import { get, writable } from 'svelte/store';
+import { writable } from 'svelte/store';
 import type { MountFn } from '$lib/types';
 import { addPhotoToUploadQueue } from '$lib/upload';
 import { db } from '$lib/db';
