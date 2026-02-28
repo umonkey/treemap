@@ -21,5 +21,4 @@
 	{autofocus}
 	placeholder="2"
 	min="2"
-	step="1"
 />

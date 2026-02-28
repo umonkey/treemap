@@ -15,6 +15,5 @@
 	{autofocus}
 	{onChange}
 	placeholder="0.0"
-	step="0.5"
 	help="https://github.com/KanachYerevan/kb/wiki/Measuring-tree-crown"
 />
