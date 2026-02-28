@@ -15,7 +15,7 @@ export const hooks = () => {
 		loading.set(true);
 
 		apiClient
-			.getTree(id, false)
+			.getTree(id, true)
 			.then((res) => {
 				if (res.status === 200 && res.data) {
 					tree.set(res.data);
