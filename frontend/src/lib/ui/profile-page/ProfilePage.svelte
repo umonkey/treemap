@@ -27,7 +27,7 @@
 
 <NarrowPage>
 	{#if $loading}
-...
+		...
 	{:else if $statusCode === 401}
 		<div class="container signedOut">
 			<p>{locale.profileSignInPrompt()}</p>
