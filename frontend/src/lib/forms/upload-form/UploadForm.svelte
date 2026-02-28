@@ -20,7 +20,7 @@
 	<div class="pics">
 		{#each $tree.files as file}
 			<div class="pic">
-				<a href={routes.file(file.id)} class="thumbnail" target="_blank">
+				<a href={routes.file(file.source_id)} class="thumbnail" target="_blank">
 					<img src={routes.file(file.small_id)} alt="thumbnail" />
 				</a>
 				<div class="props">

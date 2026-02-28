@@ -25,7 +25,7 @@ const formatSlides = (files: ITreeFile[]): IGalleryItem[] => {
 	const items = files.map((file: ITreeFile): IGalleryItem => {
 		return {
 			small: routes.file(file.small_id),
-			large: routes.file(file.large_id),
+			large: routes.file(file.source_id),
 			label: added_at(file)
 		};
 	});

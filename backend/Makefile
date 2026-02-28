@@ -17,7 +17,7 @@ autofix:
 build:
 	cargo build --release
 
-check:
+check: lint
 	cargo check
 
 clean:

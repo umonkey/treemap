@@ -12,6 +12,7 @@ export interface ITreeFile {
 	id: string;
 	small_id: string;
 	large_id: string;
+	source_id: string;
 	added_at?: number;
 	added_by?: string;
 }

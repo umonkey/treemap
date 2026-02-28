@@ -12,6 +12,7 @@ pub struct FileRead {
     pub id: String,
     pub small_id: String,
     pub large_id: String,
+    pub source_id: String,
     pub added_at: u64,
     pub added_by: String,
 }
@@ -30,6 +31,7 @@ impl From<TreeImage> for FileRead {
             id: file.id.to_string(),
             small_id: file.small_id.to_string(),
             large_id: file.large_id.to_string(),
+            source_id: file.source_id.to_string(),
             added_at: file.added_at,
             added_by: file.added_by.to_string(),
         }

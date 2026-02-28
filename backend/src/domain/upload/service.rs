@@ -41,8 +41,7 @@ impl UploadService {
             .await?;
 
         info!(
-            "Created upload ticket for user {}, id={}, size={}; addr={} agent={}",
-            user_id, file_id, size, remote_addr, user_agent
+            "Created upload ticket for user {user_id}, id={file_id}, size={size}; addr={remote_addr} agent={user_agent}"
         );
 
         Ok(FileUploadResponse {
@@ -52,7 +51,7 @@ impl UploadService {
     }
 
     pub async fn finish_upload(&self, id: u64) -> Result<()> {
-        info!("Upload {} finished", id);
+        info!("Upload {id} finished");
         Ok(())
     }
 }
