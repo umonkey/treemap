@@ -9,7 +9,7 @@ dockerfile = "Dockerfile"
   auto_stop_machines = false
   force_https = true
   internal_port = 8_000
-  min_machines_running = 1
+  min_machines_running = 2
   processes = [ "app" ]
 
   [[http_service.checks]]
@@ -30,4 +30,6 @@ dockerfile = "Dockerfile"
 #source = "treemaps_var"
 
 [[vm]]
-size = "shared-cpu-1x"
+    memory = "512mb"
+    cpu_kind = "shared"
+    cpus = 1
