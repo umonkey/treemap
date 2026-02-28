@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Header, NarrowPage, TabList } from '$lib/ui';
 	import UploadsList from '$lib/components/uploads/UploadsList.svelte';
+	import AutoUploadCheckbox from '$lib/components/AutoUploadCheckbox.svelte';
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
 
@@ -19,5 +20,6 @@
 <TabList items={tabs} />
 
 <NarrowPage>
+	<AutoUploadCheckbox />
 	<UploadsList />
 </NarrowPage>

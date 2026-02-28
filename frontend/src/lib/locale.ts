@@ -647,6 +647,10 @@ class EnglishLocale {
 		return 'There are no pending file uploads.';
 	}
 
+	public uploadsAuto(): string {
+		return 'Auto-upload files';
+	}
+
 	public shortMonday(): string {
 		return 'Mon';
 	}
@@ -1293,6 +1297,10 @@ class RussianLocale extends EnglishLocale {
 		return 'Нет ожидающих загрузок файлов.';
 	}
 
+	public uploadsAuto(): string {
+		return 'Загружать файлы автоматически';
+	}
+
 	public shortMonday(): string {
 		return 'Пн';
 	}
@@ -1825,6 +1833,10 @@ class ArmenianLocale extends EnglishLocale {
 
 	public uploadsEmpty(): string {
 		return 'Վերբեռնվող ֆայլեր չկան:';
+	}
+
+	public uploadsAuto(): string {
+		return 'Ֆայլերը վերբեռնել ավտոմատ';
 	}
 }
 
