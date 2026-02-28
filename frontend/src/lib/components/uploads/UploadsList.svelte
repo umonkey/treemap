@@ -4,6 +4,8 @@
 	import { loadUploads } from './UploadsList';
 	import { formatDate } from '$lib/utils/strings';
 	import type { IUpload } from '$lib/db';
+	import { Buttons, Button } from '$lib/ui';
+	import { processUploadQueue, restartUploadQueue } from '$lib/upload';
 
 	let uploads = $state<IUpload[]>([]);
 
@@ -18,30 +20,43 @@
 	};
 </script>
 
-<table class="uploads-table">
-	<thead>
-		<tr>
-			<th>{locale.uploadsDate()}</th>
-			<th>{locale.treeShortTitle()}</th>
-			<th>{locale.uploadsStatus()}</th>
-			<th>{locale.uploadsSize()}</th>
-		</tr>
-	</thead>
-	<tbody>
-		{#each uploads as upload}
+{#if uploads.length > 0}
+	<table class="uploads-table">
+		<thead>
 			<tr>
-				<td>{formatDate(upload.created_at / 1000)}</td>
-				<td>
-					<a href={routes.treeDetails(upload.tree_id)}>
-						{upload.tree_id}
-					</a>
-				</td>
-				<td class="status-{upload.status}">{upload.status}</td>
-				<td>{formatSize(upload.image.size)}</td>
+				<th>{locale.uploadsDate()}</th>
+				<th>{locale.treeShortTitle()}</th>
+				<th>{locale.uploadsStatus()}</th>
+				<th>{locale.uploadsSize()}</th>
 			</tr>
-		{/each}
-	</tbody>
-</table>
+		</thead>
+		<tbody>
+			{#each uploads as upload}
+				<tr>
+					<td>{formatDate(upload.created_at / 1000)}</td>
+					<td>
+						<a href={routes.treeDetails(upload.tree_id)}>
+							{upload.tree_id}
+						</a>
+					</td>
+					<td class="status-{upload.status}">{upload.status}</td>
+					<td>{formatSize(upload.image.size)}</td>
+				</tr>
+			{/each}
+		</tbody>
+	</table>
+
+	<Buttons>
+		<Button type="button" onClick={processUploadQueue}>
+			{locale.uploadsStart()}
+		</Button>
+		<Button type="secondary" onClick={restartUploadQueue}>
+			{locale.uploadsRestart()}
+		</Button>
+	</Buttons>
+{:else}
+	<p>{locale.uploadsEmpty()}</p>
+{/if}
 
 <style>
 	.uploads-table {

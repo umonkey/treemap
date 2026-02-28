@@ -631,6 +631,18 @@ class EnglishLocale {
 		return 'Size';
 	}
 
+	public uploadsStart(): string {
+		return 'Start uploads';
+	}
+
+	public uploadsRestart(): string {
+		return 'Restart failed';
+	}
+
+	public uploadsEmpty(): string {
+		return 'There are no pending file uploads.';
+	}
+
 	public shortMonday(): string {
 		return 'Mon';
 	}
@@ -1261,6 +1273,18 @@ class RussianLocale extends EnglishLocale {
 		return 'Размер';
 	}
 
+	public uploadsStart(): string {
+		return 'Начать загрузку';
+	}
+
+	public uploadsRestart(): string {
+		return 'Перезапустить неудачные';
+	}
+
+	public uploadsEmpty(): string {
+		return 'Нет ожидающих загрузок файлов.';
+	}
+
 	public shortMonday(): string {
 		return 'Пн';
 	}
@@ -1777,6 +1801,18 @@ class ArmenianLocale extends EnglishLocale {
 
 	public uploadsSize(): string {
 		return 'Չափ';
+	}
+
+	public uploadsStart(): string {
+		return 'Սկսել վերբեռնումը';
+	}
+
+	public uploadsRestart(): string {
+		return 'Վերսկսել ձախողվածները';
+	}
+
+	public uploadsEmpty(): string {
+		return 'Վերբեռնվող ֆայլեր չկան:';
 	}
 }
 

@@ -52,6 +52,14 @@ export const autoStartUpload = async () => {
 };
 
 /**
+ * Restart the upload queue by resetting failed uploads.
+ */
+export async function restartUploadQueue() {
+	await db.uploads.where('status').equals('failed').modify({ status: 'pending', retry_count: 0 });
+	processUploadQueue();
+}
+
+/**
  * Process the upload queue.
  */
 export async function processUploadQueue() {
