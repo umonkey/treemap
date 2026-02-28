@@ -13,6 +13,8 @@
 import { db } from './db';
 import { apiClient } from './api';
 import { uploadBus } from '$lib/buses/upload';
+import { uploadStore } from '$lib/stores/upload';
+import { get } from 'svelte/store';
 import { incrementUploadCount, decrementUploadCount, resetUploadCount } from '$lib/stores/upload';
 
 // Delay between file upload attempts.
@@ -34,10 +36,18 @@ export async function addPhotoToUploadQueue(tree_id: string | number, file: File
 	});
 
 	incrementUploadCount();
-
-	// Trigger processing.
-	processUploadQueue();
+	autoStartUpload();
 }
+
+// Trigger processing if auto-upload is enabled.
+export const autoStartUpload = () => {
+	if (get(uploadStore).autoupload) {
+		console.debug('Auto-upload enabled, triggering.');
+		processUploadQueue();
+	} else {
+		console.debug('Auto-upload disabled.');
+	}
+};
 
 /**
  * Process the upload queue.
@@ -50,6 +60,8 @@ export async function processUploadQueue() {
 	if (typeof navigator !== 'undefined' && !navigator.onLine) {
 		return;
 	}
+
+	console.debug('Going to process the upload queue.');
 
 	isProcessing = true;
 
@@ -128,5 +140,5 @@ if (typeof window !== 'undefined') {
 	});
 
 	// Initial check.
-	processUploadQueue();
+	autoStartUpload();
 }

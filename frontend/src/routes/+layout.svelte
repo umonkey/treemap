@@ -4,7 +4,7 @@
 	import { SvelteToast } from '@zerodevx/svelte-toast';
 	import { onMount } from 'svelte';
 	import { Layout, LocationTracker } from '$lib/ui';
-	import { processUploadQueue } from '$lib/upload';
+	import { autoStartUpload } from '$lib/upload';
 
 	import GoogleTracker from '$lib/components/GoogleTracker.svelte';
 
@@ -17,7 +17,7 @@
 
 	onMount(() => {
 		validateStoredToken();
-		processUploadQueue();
+		autoStartUpload();
 	});
 </script>
 
