@@ -91,10 +91,7 @@ export async function processUploadQueue() {
 			try {
 				const file_id = await uploadSingleFile(pending.tree_id, pending.image);
 
-				await db.uploads.update(pending.id, {
-					status: 'completed',
-					file_id
-				});
+				await db.uploads.delete(pending.id);
 
 				decrementUploadCount();
 
