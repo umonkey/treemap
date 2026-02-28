@@ -78,6 +78,8 @@
 		border-radius: 8px;
 		overflow: hidden;
 
+		border: 1px solid rgba(128, 128, 128, 0.5);
+
 		&.uploading .img {
 			opacity: 0.2;
 		}

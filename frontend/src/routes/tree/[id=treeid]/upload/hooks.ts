@@ -26,21 +26,7 @@ export const load = (treeId: string) => {
 	};
 
 	const handleSubmit = () => {
-		busy.set(true);
-
-		apiClient
-			.addPhotos(treeId, get(uploads))
-			.then((res) => {
-				if (res.status === 202) {
-					uploads.set([]);
-					goto(routes.mapPreview(treeId));
-				} else if (res.error) {
-					console.error(`Error uploading photos: ${res.error.description}`);
-				}
-			})
-			.finally(() => {
-				busy.set(false);
-			});
+		goto(routes.mapPreview(treeId));
 	};
 
 	return { canSubmit, handleBusy, handleChange, handleSubmit, hasFiles };
