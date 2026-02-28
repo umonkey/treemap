@@ -1,9 +1,14 @@
 <script lang="ts">
-	import { Header, NarrowPage, SignInButton, ProfileHeader, TabList } from '$lib/ui';
+	import Header from '../header/Header.svelte';
+	import NarrowPage from '../narrow-page/NarrowPage.svelte';
+	import SignInButton from '../sign-in-button/SignInButton.svelte';
+	import ProfileHeader from '../profile-header/ProfileHeader.svelte';
+	import TabList from '../tab-list/TabList.svelte';
 	import { loadMe } from '$lib/hooks';
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
 	import UserHeatMap from '$lib/components/UserHeatMap/index.svelte';
+	import { uploadStore } from '$lib/stores/upload';
 
 	const { loading, error, data, statusCode, reload } = loadMe();
 
@@ -11,10 +16,14 @@
 		reload();
 	});
 
-	const tabs = [
+	const tabs = $derived([
 		{ title: locale.profileTitle(), link: routes.profile(), active: true },
-		{ title: locale.uploadsTitle(), link: routes.uploads() }
-	];
+		{
+			title: locale.uploadsTitle(),
+			link: routes.uploads(),
+			badge: $uploadStore.pending > 0 ? $uploadStore.pending : undefined
+		}
+	]);
 </script>
 
 <svelte:head>
