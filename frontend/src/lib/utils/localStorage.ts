@@ -11,7 +11,7 @@ class LocalStorage {
 				return undefined;
 			}
 
-			console.debug(`[storage] Read ${key}`);
+			console.debug(`[storage] Read ${key} = ${value}`);
 			return JSON.parse(value);
 		} catch (e) {
 			console.error(`[storage] Error reading ${key}: ${e}`);
@@ -24,8 +24,9 @@ class LocalStorage {
 				localStorage.removeItem(key);
 				console.debug(`[storage] Removed ${key}`);
 			} else {
-				localStorage.setItem(key, JSON.stringify(value));
-				console.debug(`[storage] Wrote ${key}`);
+				const data = JSON.stringify(value);
+				localStorage.setItem(key, data);
+				console.debug(`[storage] Wrote ${key} = ${data}`);
 			}
 		} catch (e) {
 			console.error(`[storage] Error writing ${key}: ${e}`);

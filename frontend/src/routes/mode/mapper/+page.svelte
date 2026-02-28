@@ -3,6 +3,7 @@
 	import { ModeEnum } from '$lib/enums';
 	import { goto, routes } from '$lib/routes';
 	import { modeStore } from '$lib/stores/modeStore';
+	import MappingOptions from '$lib/components/MappingOptions.svelte';
 
 	const handleClick = () => {
 		modeStore.set(ModeEnum.Mapper);
@@ -24,6 +25,8 @@
 		works.
 	</p>
 	<p>Please keep in mind that all changes are logged.</p>
+
+	<MappingOptions />
 
 	<Buttons>
 		<Button onClick={handleClick}>Continue</Button>

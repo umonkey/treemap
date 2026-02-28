@@ -19,6 +19,7 @@
 		><div>
 			{#if $uploadStore.pending > 0}
 				<SpinnerIcon />
+				<span class="badge">{$uploadStore.pending}</span>
 			{:else if $isAuthenticated && $authStore?.picture}
 				<img src={$authStore.picture} alt="userpic" />
 			{:else}
@@ -61,6 +62,7 @@
 			margin: 0 auto;
 			width: 24px;
 			height: 24px;
+			position: relative;
 		}
 	}
 
@@ -74,5 +76,17 @@
 		nav {
 			display: none;
 		}
+	}
+
+	.badge {
+		position: absolute;
+		top: 0;
+		left: 100%;
+		transform: translate(-50%, -50%);
+
+		font-size: 0.8rem;
+		background-color: #080;
+		padding: 0 0.5rem;
+		border-radius: 5px;
 	}
 </style>

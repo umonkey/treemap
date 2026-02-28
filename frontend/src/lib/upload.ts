@@ -13,6 +13,8 @@
 import { db } from './db';
 import { apiClient } from './api';
 import { uploadBus } from '$lib/buses/upload';
+import { uploadStore } from '$lib/stores/upload';
+import { get } from 'svelte/store';
 import { incrementUploadCount, decrementUploadCount, resetUploadCount } from '$lib/stores/upload';
 
 // Delay between file upload attempts.
@@ -34,8 +36,26 @@ export async function addPhotoToUploadQueue(tree_id: string | number, file: File
 	});
 
 	incrementUploadCount();
+	autoStartUpload();
+}
 
-	// Trigger processing.
+// Trigger processing if auto-upload is enabled.
+export const autoStartUpload = async () => {
+	await db.uploads.where('status').equals('completed').delete();
+
+	if (get(uploadStore).autoupload) {
+		console.debug('Auto-upload enabled, triggering.');
+		processUploadQueue();
+	} else {
+		console.debug('Auto-upload disabled.');
+	}
+};
+
+/**
+ * Restart the upload queue by resetting failed uploads.
+ */
+export async function restartUploadQueue() {
+	await db.uploads.where('status').equals('failed').modify({ status: 'pending', retry_count: 0 });
 	processUploadQueue();
 }
 
@@ -50,6 +70,8 @@ export async function processUploadQueue() {
 	if (typeof navigator !== 'undefined' && !navigator.onLine) {
 		return;
 	}
+
+	console.debug('Going to process the upload queue.');
 
 	isProcessing = true;
 
@@ -75,12 +97,9 @@ export async function processUploadQueue() {
 			}
 
 			try {
-				const file_id = await uploadSingleFile(pending.tree_id, pending.image);
+				await uploadSingleFile(pending.tree_id, pending.image);
 
-				await db.uploads.update(pending.id, {
-					status: 'completed',
-					file_id
-				});
+				await db.uploads.delete(pending.id);
 
 				decrementUploadCount();
 
@@ -128,5 +147,5 @@ if (typeof window !== 'undefined') {
 	});
 
 	// Initial check.
-	processUploadQueue();
+	autoStartUpload();
 }

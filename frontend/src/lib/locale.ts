@@ -31,6 +31,10 @@ class EnglishLocale {
 		return 'Profile';
 	}
 
+	public profileTitle(): string {
+		return 'Profile';
+	}
+
 	public sideAdd(): string {
 		return 'Add a tree';
 	}
@@ -615,6 +619,38 @@ class EnglishLocale {
 		return 'Learn how we count contributions';
 	}
 
+	public uploadsTitle(): string {
+		return 'Uploads';
+	}
+
+	public uploadsDate(): string {
+		return 'Date';
+	}
+
+	public uploadsStatus(): string {
+		return 'Status';
+	}
+
+	public uploadsSize(): string {
+		return 'Size';
+	}
+
+	public uploadsStart(): string {
+		return 'Start uploads';
+	}
+
+	public uploadsRestart(): string {
+		return 'Restart failed';
+	}
+
+	public uploadsEmpty(): string {
+		return 'There are no pending file uploads.';
+	}
+
+	public uploadsAuto(): string {
+		return 'Auto-upload files';
+	}
+
 	public shortMonday(): string {
 		return 'Mon';
 	}
@@ -662,6 +698,10 @@ class RussianLocale extends EnglishLocale {
 	}
 
 	public sideProfile(): string {
+		return 'Профиль';
+	}
+
+	public profileTitle(): string {
 		return 'Профиль';
 	}
 
@@ -1229,6 +1269,38 @@ class RussianLocale extends EnglishLocale {
 		return 'Узнать как мы это считаем';
 	}
 
+	public uploadsTitle(): string {
+		return 'Загрузки';
+	}
+
+	public uploadsDate(): string {
+		return 'Дата';
+	}
+
+	public uploadsStatus(): string {
+		return 'Статус';
+	}
+
+	public uploadsSize(): string {
+		return 'Размер';
+	}
+
+	public uploadsStart(): string {
+		return 'Начать загрузку';
+	}
+
+	public uploadsRestart(): string {
+		return 'Перезапустить неудачные';
+	}
+
+	public uploadsEmpty(): string {
+		return 'Нет ожидающих загрузок файлов.';
+	}
+
+	public uploadsAuto(): string {
+		return 'Загружать файлы автоматически';
+	}
+
 	public shortMonday(): string {
 		return 'Пн';
 	}
@@ -1276,6 +1348,10 @@ class ArmenianLocale extends EnglishLocale {
 	}
 
 	public sideProfile(): string {
+		return 'Պրոֆիլ';
+	}
+
+	public profileTitle(): string {
 		return 'Պրոֆիլ';
 	}
 
@@ -1729,6 +1805,38 @@ class ArmenianLocale extends EnglishLocale {
 
 	public learnContributions(): string {
 		return 'Իմացեք, թե ինչպես ենք մենք հաշվում ներդրումները';
+	}
+
+	public uploadsTitle(): string {
+		return 'Վերբեռնումներ';
+	}
+
+	public uploadsDate(): string {
+		return 'Ամսաթիվ';
+	}
+
+	public uploadsStatus(): string {
+		return 'Կարգավիճակ';
+	}
+
+	public uploadsSize(): string {
+		return 'Չափ';
+	}
+
+	public uploadsStart(): string {
+		return 'Սկսել վերբեռնումը';
+	}
+
+	public uploadsRestart(): string {
+		return 'Վերսկսել ձախողվածները';
+	}
+
+	public uploadsEmpty(): string {
+		return 'Վերբեռնվող ֆայլեր չկան:';
+	}
+
+	public uploadsAuto(): string {
+		return 'Ֆայլերը վերբեռնել ավտոմատ';
 	}
 }
 

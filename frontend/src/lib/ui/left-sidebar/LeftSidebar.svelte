@@ -56,6 +56,7 @@
 					<span class="icon">
 						{#if $uploadStore.pending > 0}
 							<SpinnerIcon />
+							<span class="badge">{$uploadStore.pending}</span>
 						{:else}
 							<UserIcon />
 						{/if}
@@ -139,6 +140,7 @@
 						flex-shrink: 0;
 						flex-grow: 0;
 						height: 24px;
+						position: relative;
 					}
 				}
 
@@ -158,6 +160,18 @@
 					}
 				}
 			}
+		}
+
+		.badge {
+			position: absolute;
+			top: 0;
+			left: 100%;
+			transform: translate(-50%, -50%);
+
+			font-size: 0.8rem;
+			background-color: #080;
+			padding: 0 0.5rem;
+			border-radius: 5px;
 		}
 	}
 </style>
