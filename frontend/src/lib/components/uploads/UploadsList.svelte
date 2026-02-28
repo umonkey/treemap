@@ -2,6 +2,7 @@
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
 	import { loadUploads } from './UploadsList';
+	import { formatDate } from '$lib/utils/strings';
 	import type { IUpload } from '$lib/db';
 
 	let uploads = $state<IUpload[]>([]);
@@ -14,10 +15,6 @@
 
 	const formatSize = (bytes: number) => {
 		return (bytes / 1024 / 1024).toFixed(2) + ' MB';
-	};
-
-	const formatDate = (timestamp: number) => {
-		return new Date(timestamp).toLocaleString();
 	};
 </script>
 
@@ -33,7 +30,7 @@
 	<tbody>
 		{#each uploads as upload}
 			<tr>
-				<td>{formatDate(upload.created_at)}</td>
+				<td>{formatDate(upload.created_at / 1000)}</td>
 				<td>
 					<a href={routes.treeDetails(upload.tree_id)}>
 						{upload.tree_id}

@@ -40,7 +40,9 @@ export async function addPhotoToUploadQueue(tree_id: string | number, file: File
 }
 
 // Trigger processing if auto-upload is enabled.
-export const autoStartUpload = () => {
+export const autoStartUpload = async () => {
+	await db.uploads.where('status').equals('completed').delete();
+
 	if (get(uploadStore).autoupload) {
 		console.debug('Auto-upload enabled, triggering.');
 		processUploadQueue();
