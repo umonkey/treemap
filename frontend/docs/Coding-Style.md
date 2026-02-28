@@ -33,7 +33,7 @@ import {(Header, NarrowPage)} from '$lib/ui';
 
 Components live in the `src/lib/components` folder, each component in its own folder.
 
-The markup of the component stays in the `.svelte` file, the styles go the `.css` file, and the TypeScript code goes to the `.ts` file.
+The markup of the component stays in the `.svelte` file, the styles are embedded in the component file, and the TypeScript code goes to the `.ts` file.
 
 ## Error handling
 

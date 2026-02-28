@@ -615,6 +615,22 @@ class EnglishLocale {
 		return 'Learn how we count contributions';
 	}
 
+	public uploadsTitle(): string {
+		return 'Uploads';
+	}
+
+	public uploadsDate(): string {
+		return 'Date';
+	}
+
+	public uploadsStatus(): string {
+		return 'Status';
+	}
+
+	public uploadsSize(): string {
+		return 'Size';
+	}
+
 	public shortMonday(): string {
 		return 'Mon';
 	}
@@ -1229,6 +1245,22 @@ class RussianLocale extends EnglishLocale {
 		return 'Узнать как мы это считаем';
 	}
 
+	public uploadsTitle(): string {
+		return 'Загрузки';
+	}
+
+	public uploadsDate(): string {
+		return 'Дата';
+	}
+
+	public uploadsStatus(): string {
+		return 'Статус';
+	}
+
+	public uploadsSize(): string {
+		return 'Размер';
+	}
+
 	public shortMonday(): string {
 		return 'Пн';
 	}
@@ -1729,6 +1761,22 @@ class ArmenianLocale extends EnglishLocale {
 
 	public learnContributions(): string {
 		return 'Իմացեք, թե ինչպես ենք մենք հաշվում ներդրումները';
+	}
+
+	public uploadsTitle(): string {
+		return 'Վերբեռնումներ';
+	}
+
+	public uploadsDate(): string {
+		return 'Ամսաթիվ';
+	}
+
+	public uploadsStatus(): string {
+		return 'Կարգավիճակ';
+	}
+
+	public uploadsSize(): string {
+		return 'Չափ';
 	}
 }
 
