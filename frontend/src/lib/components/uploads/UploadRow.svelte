@@ -39,6 +39,7 @@
 		width: 100%;
 		overflow: hidden;
 		border-radius: 4px;
+		border: 1px solid rgba(128, 128, 128, 0.5);
 	}
 
 	.thumbnail {
