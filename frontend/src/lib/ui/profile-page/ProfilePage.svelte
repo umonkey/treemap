@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { Header, NarrowPage, SignInButton, ProfileHeader } from '$lib/ui';
+	import { Header, NarrowPage, SignInButton, ProfileHeader, TabList } from '$lib/ui';
 	import { loadMe } from '$lib/hooks';
 	import { locale } from '$lib/locale';
+	import { routes } from '$lib/routes';
 	import UserHeatMap from '$lib/components/UserHeatMap/index.svelte';
 
 	const { loading, error, data, statusCode, reload } = loadMe();
@@ -9,17 +10,24 @@
 	$effect(() => {
 		reload();
 	});
+
+	const tabs = [
+		{ title: locale.profileTitle(), link: routes.profile(), active: true },
+		{ title: locale.uploadsTitle(), link: routes.uploads() }
+	];
 </script>
 
 <svelte:head>
-	<title>Profile</title>
+	<title>{locale.profileTitle()}</title>
 </svelte:head>
 
-<Header title="Profile" />
+<Header title={locale.profileTitle()} />
+
+<TabList items={tabs} />
 
 <NarrowPage>
 	{#if $loading}
-		<!-- loading --->
+...
 	{:else if $statusCode === 401}
 		<div class="container signedOut">
 			<p>{locale.profileSignInPrompt()}</p>

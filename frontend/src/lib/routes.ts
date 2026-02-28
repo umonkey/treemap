@@ -55,6 +55,7 @@ export const routes = {
 	statsState: () => '/stats/state',
 	statsStreets: () => '/stats/streets',
 	treeAdd: (lat: number, lng: number) => `/add?lat=${lat}&lng=${lng}`,
+	uploads: () => '/uploads',
 	addRow: (start: ILatLng, end: ILatLng) =>
 		build('/add/row', {
 			alat: start.lat.toString(),

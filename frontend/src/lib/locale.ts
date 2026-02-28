@@ -31,6 +31,10 @@ class EnglishLocale {
 		return 'Profile';
 	}
 
+	public profileTitle(): string {
+		return 'Profile';
+	}
+
 	public sideAdd(): string {
 		return 'Add a tree';
 	}
@@ -693,6 +697,10 @@ class RussianLocale extends EnglishLocale {
 		return 'Профиль';
 	}
 
+	public profileTitle(): string {
+		return 'Профиль';
+	}
+
 	public sideAdd(): string {
 		return 'Добавить дерево';
 	}
@@ -1332,6 +1340,10 @@ class ArmenianLocale extends EnglishLocale {
 	}
 
 	public sideProfile(): string {
+		return 'Պրոֆիլ';
+	}
+
+	public profileTitle(): string {
 		return 'Պրոֆիլ';
 	}
 
