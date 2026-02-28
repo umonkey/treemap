@@ -3,6 +3,7 @@
 	import { load } from './PhotoUploader.ts';
 	import { onMount } from 'svelte';
 	import { FileUploaderDisplay } from '$lib/ui';
+	import { restartUploadQueue } from '$lib/upload';
 
 	const { label, treeId, onChange, small } = $props<{
 		label?: string;
@@ -34,10 +35,10 @@
 	<FileUploaderDisplay
 		items={$thumbnails.map((thumbnail) => ({
 			src: URL.createObjectURL(thumbnail.file),
-			busy: false,
-			error: false
+			busy: thumbnail.busy,
+			error: thumbnail.error
 		}))}
-		onRetry={() => {}}
+		onRetry={restartUploadQueue}
 	/>
 
 	<div class="filler"></div>
