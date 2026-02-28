@@ -9,7 +9,7 @@
 	const tree = data.tree;
 	const treeId = data.id;
 
-	const { canSubmit, hasFiles, handleChange, handleSubmit } = load(treeId);
+	const { canSubmit, handleChange } = load();
 </script>
 
 <NarrowPage title={locale.photoTitle()}>
@@ -18,14 +18,6 @@
 			<p>{locale.photoIntro()}</p>
 
 			<PhotoUploader {treeId} onChange={handleChange} />
-
-			{#if $hasFiles}
-				<Buttons>
-					<Button type="submit" onClick={handleSubmit} disabled={!$canSubmit}
-						>{locale.photoUpload()}</Button
-					>
-				</Buttons>
-			{/if}
 		</Form>
 
 		<UploadForm id={tree.id} />
