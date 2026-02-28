@@ -25,7 +25,7 @@ const getTreeCircleProps = (tree: ITree) => {
 		props.fillColor = '#000';
 		props.fillOpacity = 0.2;
 		props.radius = 0.5;
-	} else if (tree.state === 'sick' || tree.state === 'deformed') {
+	} else if (tree.state === 'sick' || tree.state === 'deformed' || tree.state === 'unknown') {
 		props.color = '#228B22';
 		props.fillColor = '#FFD700';
 	} else if (tree.state === 'dead') {
