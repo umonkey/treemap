@@ -21,6 +21,25 @@ import { incrementUploadCount, decrementUploadCount, resetUploadCount } from '$l
 const ERROR_DELAY = 5 * 1000;
 const SUCCESS_DELAY = 2 * 1000;
 
+/**
+ * Get the delay to wait after a successful upload.
+ */
+function getSuccessDelay(): number {
+	if (typeof navigator !== 'undefined' && 'connection' in navigator) {
+		const conn = (navigator as Navigator & { connection?: { type?: string } }).connection;
+
+		if (conn?.type === 'wifi' || conn?.type === 'ethernet') {
+			return 0;
+		}
+
+		if (conn?.type === 'cellular') {
+			return SUCCESS_DELAY;
+		}
+	}
+
+	return SUCCESS_DELAY;
+}
+
 let isProcessing = false;
 
 /**
@@ -109,8 +128,12 @@ export async function processUploadQueue() {
 
 				uploadBus.emit('success', pending.tree_id);
 
-				// Wait a bit before retrying or moving to next.
-				await new Promise((resolve) => setTimeout(resolve, SUCCESS_DELAY));
+				// Let slow networks cool down.
+				const delay = getSuccessDelay();
+
+				if (delay > 0) {
+					await new Promise((resolve) => setTimeout(resolve, delay));
+				}
 			} catch (e) {
 				console.error(`[upload] Failed to upload ${pending.id}:`, e);
 
