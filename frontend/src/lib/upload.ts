@@ -18,7 +18,8 @@ import { get } from 'svelte/store';
 import { incrementUploadCount, decrementUploadCount, resetUploadCount } from '$lib/stores/upload';
 
 // Delay between file upload attempts.
-const DELAY = 1000;
+const ERROR_DELAY = 5 * 1000;
+const SUCCESS_DELAY = 2 * 1000;
 
 let isProcessing = false;
 
@@ -107,15 +108,19 @@ export async function processUploadQueue() {
 				decrementUploadCount();
 
 				uploadBus.emit('success', pending.tree_id);
+
+				// Wait a bit before retrying or moving to next.
+				await new Promise((resolve) => setTimeout(resolve, SUCCESS_DELAY));
 			} catch (e) {
 				console.error(`[upload] Failed to upload ${pending.id}:`, e);
+
 				await db.uploads.update(pending.id, {
 					status: 'failed',
 					retry_count: pending.retry_count + 1
 				});
 
 				// Wait a bit before retrying or moving to next.
-				await new Promise((resolve) => setTimeout(resolve, DELAY));
+				await new Promise((resolve) => setTimeout(resolve, ERROR_DELAY));
 			}
 		}
 	} finally {
