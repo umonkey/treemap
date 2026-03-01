@@ -195,14 +195,6 @@ class EnglishLocale {
 		return 'healthy';
 	}
 
-	public stateSick(): string {
-		return 'sick';
-	}
-
-	public stateDeformed(): string {
-		return 'deformed';
-	}
-
 	public stateDead(): string {
 		return 'dead';
 	}
@@ -845,14 +837,6 @@ class RussianLocale extends EnglishLocale {
 		return 'здорово';
 	}
 
-	public stateSick(): string {
-		return 'больное';
-	}
-
-	public stateDeformed(): string {
-		return 'деформировано';
-	}
-
 	public stateDead(): string {
 		return 'мертво';
 	}
@@ -1489,14 +1473,6 @@ class ArmenianLocale extends EnglishLocale {
 
 	public stateHealthy(): string {
 		return 'առողջ';
-	}
-
-	public stateSick(): string {
-		return 'հիվանդ';
-	}
-
-	public stateDeformed(): string {
-		return 'դեֆորմացված';
 	}
 
 	public stateDead(): string {

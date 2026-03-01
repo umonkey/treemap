@@ -27,8 +27,6 @@
 			<select {value} onchange={handleChange}>
 				<option value="unknown">{locale.stateUnknown()}</option>
 				<option value="healthy">{locale.stateHealthy()}</option>
-				<option value="sick">{locale.stateSick()}</option>
-				<option value="deformed">{locale.stateDeformed()}</option>
 				<option value="dead">{locale.stateDead()}</option>
 				<option value="gone">{locale.stateGone()}</option>
 				<option value="stump">{locale.stateStump()}</option>

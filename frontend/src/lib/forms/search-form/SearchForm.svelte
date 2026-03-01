@@ -35,8 +35,7 @@
 
 		<ul>
 			<li>
-				<a href={routes.searchQuery('sick')}>Больные</a> или
-				<a href={routes.searchQuery('dead')}>мёртвые</a>
+				<a href={routes.searchQuery('dead')}>Мёртвые</a>
 				или
 				<a href={routes.searchQuery('gone')}>удалённые</a>
 				деревья, или <a href={routes.searchQuery('stump')}>пни</a>
@@ -69,8 +68,7 @@
 
 		<ul>
 			<li>
-				<a href={routes.searchQuery('sick')}>Sick</a> or
-				<a href={routes.searchQuery('dead')}>dead</a>
+				<a href={routes.searchQuery('dead')}>Dead</a>
 				or
 				<a href={routes.searchQuery('gone')}>gone</a>
 				trees, or <a href={routes.searchQuery('stump')}>stumps</a>
