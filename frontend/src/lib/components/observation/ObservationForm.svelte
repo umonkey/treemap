@@ -3,7 +3,7 @@
 	import { locale } from '$lib/locale';
 	import { apiClient } from '$lib/api';
 	import { isAuthenticated } from '$lib/stores/authStore';
-	import { getUser } from '$lib/stores/userStore';
+	import { addUsers, getUser } from '$lib/stores/userStore';
 	import type { IObservation } from '$lib/types';
 	import { Button, Buttons, CheckInput, Form, HelpButton, SignInButton } from '$lib/ui';
 	import { toast } from '@zerodevx/svelte-toast';
@@ -43,6 +43,14 @@
 		const response = await apiClient.getObservations(id);
 		if (response.data) {
 			observation = { ...observation, ...response.data };
+
+			if (observation.created_by && !$getUser(observation.created_by)) {
+				apiClient.getUser(observation.created_by).then((res) => {
+					if (res.data) {
+						addUsers([res.data]);
+					}
+				});
+			}
 		}
 		loading = false;
 	});
