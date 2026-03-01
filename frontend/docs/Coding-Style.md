@@ -3,7 +3,7 @@
 ## Folder Structure
 
 - `src/lib/buses`: contains mitt based buses to send signals across components.
-- `src/lib/components`: contains components.
+- `src/lib/components`: contains components, grouped in domain-based subfolders, e.g. "comments", "observations".
 - `src/lib/forms`: contains forms that consist of multiple components.
 - `src/lib/icons`: contains SVG icons renamed as Svelte components for inlining.
 - `src/lib/stores`: contains Svelte stores.
@@ -49,6 +49,8 @@ import {(Header, NarrowPage)} from '$lib/ui';
 Components live in the `src/lib/components` folder, each component in its own folder.
 
 The markup of the component stays in the `.svelte` file, the styles are embedded in the component file, and the TypeScript code goes to the `.ts` file.
+
+Components are being imported from their own `.svelte` files.  Avoid using the deprecated `src/lib/components/index.ts`, as it breaks the chunking.
 
 
 ## Error handling

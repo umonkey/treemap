@@ -5,7 +5,6 @@ export { default as DeleteTreeForm } from './delete-tree-form/DeleteTreeForm.sve
 export { default as EditForm } from './edit-form/EditForm.svelte';
 export { default as HeightForm } from './height-form/HeightForm.svelte';
 export { default as MoveForm } from './move-form/MoveForm.svelte';
-export { default as ObservationForm } from './observation-form/ObservationForm.svelte';
 export { default as ReplaceForm } from './replace-form/ReplaceForm.svelte';
 export { default as ReportForm } from './report-form/ReportForm.svelte';
 export { default as SearchForm } from './search-form/SearchForm.svelte';

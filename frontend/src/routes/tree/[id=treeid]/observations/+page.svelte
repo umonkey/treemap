@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ObservationForm } from '$lib/forms';
+	import ObservationForm from '$lib/components/observation/ObservationForm.svelte';
 	import { NarrowPage, AuthWrapper, TreeTabs, TreeContextMenu } from '$lib/ui';
 	import { locale } from '$lib/locale';
 	import { formatSpecies } from '$lib/utils/trees';
