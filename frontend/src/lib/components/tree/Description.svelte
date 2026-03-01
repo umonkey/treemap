@@ -6,13 +6,11 @@
 	}>();
 </script>
 
-<div class="description">
-	{#if text}
+{#if text}
+	<div class="description">
 		<p class="formatted">{text}</p>
-	{:else}
-		<p>{locale.noDescription()}</p>
-	{/if}
-</div>
+	</div>
+{/if}
 
 <style>
 	.description {

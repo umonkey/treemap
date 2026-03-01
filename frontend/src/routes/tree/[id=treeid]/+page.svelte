@@ -71,6 +71,8 @@
 <style>
 	.comments {
 		padding: 0 var(--gap);
+		border-top: 1px solid var(--sep-color);
+		margin-top: var(--gap);
 	}
 
 	.empty {

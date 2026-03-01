@@ -284,10 +284,6 @@ class EnglishLocale {
 		return 'Year';
 	}
 
-	public noDescription(): string {
-		return 'There is no description for this tree. You can leave a comment to let us know about something interesting.';
-	}
-
 	public noComments(): string {
 		return 'No comments for this tree yet.';
 	}
@@ -939,10 +935,6 @@ class RussianLocale extends EnglishLocale {
 		return 'Год';
 	}
 
-	public noDescription(): string {
-		return 'Нет описания этого дерева. Вы можете оставить комментарий чтобы рассказать о каких-то интересных особенностях.';
-	}
-
 	public noComments(): string {
 		return 'Нет комментариев для этого дерева.';
 	}
@@ -1592,10 +1584,6 @@ class ArmenianLocale extends EnglishLocale {
 
 	public propYear(): string {
 		return 'Տարի';
-	}
-
-	public noDescription(): string {
-		return 'Այս ծառը նկարագրություն չունի: Դուք կարող եք մեկնաբանություն թողնել՝ հետաքրքիր տեղեկության մասին:';
 	}
 
 	public noComments(): string {
