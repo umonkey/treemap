@@ -243,14 +243,6 @@ class EnglishLocale {
 		return 'Map';
 	}
 
-	public treeTabsComments(count: number): string {
-		if (count > 0) {
-			return `Comments (${count})`;
-		}
-
-		return 'Comments';
-	}
-
 	public treeTabsObservations(): string {
 		return 'Observations';
 	}
@@ -660,6 +652,14 @@ class EnglishLocale {
 		return 'Auto-upload files';
 	}
 
+	public toastCommentAdded(): string {
+		return 'Comment added.';
+	}
+
+	public toastErrorAddingComment(): string {
+		return 'Error adding comment.';
+	}
+
 	public shortMonday(): string {
 		return 'Mon';
 	}
@@ -896,14 +896,6 @@ class RussianLocale extends EnglishLocale {
 
 	public treeTabsMap(): string {
 		return 'Карта';
-	}
-
-	public treeTabsComments(count: number): string {
-		if (count > 0) {
-			return `Комменты (${count})`;
-		}
-
-		return 'Комменты';
 	}
 
 	public treeTabsObservations(): string {
@@ -1319,6 +1311,14 @@ class RussianLocale extends EnglishLocale {
 		return 'Загружать файлы автоматически';
 	}
 
+	public toastCommentAdded(): string {
+		return 'Комментарий добавлен.';
+	}
+
+	public toastErrorAddingComment(): string {
+		return 'Ошибка добавления комментария.';
+	}
+
 	public shortMonday(): string {
 		return 'Пн';
 	}
@@ -1551,14 +1551,6 @@ class ArmenianLocale extends EnglishLocale {
 
 	public treeTabsMap(): string {
 		return 'Քարտեզ';
-	}
-
-	public treeTabsComments(count: number): string {
-		if (count > 0) {
-			return `Զրույց (${count})`;
-		}
-
-		return 'Զրույց';
 	}
 
 	public treeTabsObservations(): string {
@@ -1864,6 +1856,14 @@ class ArmenianLocale extends EnglishLocale {
 
 	public uploadsAuto(): string {
 		return 'Ֆայլերը վերբեռնել ավտոմատ';
+	}
+
+	public toastCommentAdded(): string {
+		return 'Մեկնաբանությունը ավելացված է:';
+	}
+
+	public toastErrorAddingComment(): string {
+		return 'Մեկնաբանություն ավելացնելու սխալ:';
 	}
 }
 

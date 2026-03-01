@@ -1,33 +1,79 @@
 <script lang="ts">
+	import { invalidateAll } from '$app/navigation';
+	import { apiClient } from '$lib/api';
 	import { locale } from '$lib/locale';
 	import { formatSpecies } from '$lib/utils/trees';
 	import { setLastTree } from '$lib/stores/mapStore';
+	import { toast } from '@zerodevx/svelte-toast';
 
 	import Actions from '$lib/components/tree/Actions.svelte';
+	import Comment from '$lib/components/tree/Comment.svelte';
 	import Description from '$lib/components/tree/Description.svelte';
 	import Links from '$lib/components/tree/Links.svelte';
 	import Properties from '$lib/components/tree/Properties.svelte';
 	import Title from '$lib/components/tree/Title.svelte';
-	import { Gallery, TreeContextMenu, TreeTabs, NarrowPage } from '$lib/ui';
+	import { CommentForm, Gallery, TreeContextMenu, TreeTabs, NarrowPage } from '$lib/ui';
 	import { onMount } from 'svelte';
 
 	const { data } = $props();
-	const tree = data.tree;
+	const tree = $derived(data.tree);
+	const comments = $derived(data.comments);
 
 	// Save last active tree.
 	onMount(() => {
 		setLastTree(tree.id);
 		console.debug('[map] Last active tree set to', tree.id);
 	});
+
+	const onSubmit = (message: string) => {
+		apiClient
+			.addComment(tree.id, message)
+			.then((res) => {
+				if (res.status >= 200 && res.status < 300) {
+					toast.push(locale.toastCommentAdded());
+					invalidateAll();
+				} else {
+					console.info(`Error ${res.status} adding a comment.`);
+					toast.push(locale.toastErrorAddingComment());
+				}
+			})
+			.catch((e) => {
+				console.error('Exception while adding a comment.', e);
+				toast.push(locale.toastErrorAddingComment());
+			});
+	};
 </script>
 
 <NarrowPage title={locale.treeShortTitle()} nopadding>
 	<Title title={formatSpecies(tree.species)} address={tree.address} />
-	<TreeTabs tree={tree.id} active="details" comment_count={tree.comment_count} />
+	<TreeTabs tree={tree.id} active="details" />
 	<Gallery id={tree.id} />
 	<Actions {tree} />
 	<Properties {tree} />
 	<Links {tree} />
 	<Description text={tree.notes} />
+
+	<div id="comments" class="comments">
+		{#if comments.length > 0}
+			{#each comments as comment}
+				<Comment {comment} />
+			{/each}
+		{:else}
+			<p class="empty">{locale.noComments()}</p>
+		{/if}
+
+		<CommentForm {onSubmit} />
+	</div>
+
 	<TreeContextMenu id={tree.id} />
 </NarrowPage>
+
+<style>
+	.comments {
+		padding: 0 var(--gap);
+	}
+
+	.empty {
+		padding: var(--gap) 0;
+	}
+</style>

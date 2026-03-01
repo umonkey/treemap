@@ -11,7 +11,7 @@
 
 <NarrowPage title={locale.treeTabsObservations()} nopadding>
 	<Title title={formatSpecies(tree.species)} address={tree.address} />
-	<TreeTabs tree={tree.id} active="observations" comment_count={tree.comment_count} />
+	<TreeTabs tree={tree.id} active="observations" />
 	<TreeContextMenu id={tree.id} />
 
 	<div class="padded">

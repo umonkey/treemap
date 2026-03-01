@@ -6,9 +6,8 @@
 		title: 'UI/TreeTabs',
 		component: TreeTabs,
 		argTypes: {
-			tree: { control: 'numer' },
-			active: { control: 'text' },
-			comment_count: { control: 'number' }
+			tree: { control: 'text' },
+			active: { control: 'text' }
 		}
 	});
 </script>
@@ -17,24 +16,14 @@
 	name="Primary"
 	args={{
 		tree: 'tree1',
-		active: 'details',
-		comment_count: 76
+		active: 'details'
 	}}
 />
 
 <Story
-	name="Comments"
+	name="History"
 	args={{
 		tree: 'tree1',
-		active: 'comments',
-		comment_count: 76
-	}}
-/>
-
-<Story
-	name="No Comments"
-	args={{
-		tree: 'tree1',
-		active: 'comments'
+		active: 'history'
 	}}
 />

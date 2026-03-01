@@ -33,7 +33,7 @@
 			>{#if isTreeLiked}<HeartSolidIcon />{:else}<HeartIcon />{/if}</a
 		>
 	</div>
-	<div><a href={routes.treeComments(tree.id)}><ChatIcon /></a></div>
+	<div><a href="#comments"><ChatIcon /></a></div>
 	<div><a href={routes.treeUploadPhotos(tree.id)}><CameraIcon /></a></div>
 	<div><ShareButton id={tree.id} /></div>
 	{#if FEATURES.bookmarks}

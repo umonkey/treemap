@@ -19,7 +19,7 @@
 		<p>Error loading tree: {$error.description}</p>
 	{:else}
 		<Title title={formatSpecies($tree.species)} address={$tree.address} />
-		<TreeTabs tree={$tree.id} active="history" comment_count={$tree?.comment_count ?? 0} />
+		<TreeTabs tree={$tree.id} active="history" />
 		<TreeContextMenu id={$tree.id} />
 
 		<div class="padded">

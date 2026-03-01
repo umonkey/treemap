@@ -63,7 +63,6 @@ export const routes = {
 			blat: end.lat.toString(),
 			blng: end.lng.toString()
 		}),
-	treeComments: (id: string) => `/tree/${id}/comments`,
 	treeDead: (id: string) => `/tree/${id}/dead`,
 	treeDelete: (id: string) => `/tree/${id}/delete`,
 	treeDetails: (id: string) => `/tree/${id}`,
