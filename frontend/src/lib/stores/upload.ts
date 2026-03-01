@@ -7,11 +7,13 @@ const AUTOUPLOAD_KEY = 'autoUpload';
 type UploadStore = {
 	pending: number;
 	autoupload: boolean;
+	uploading: boolean;
 };
 
 export const uploadStore = writable<UploadStore>({
 	pending: 0,
-	autoupload: ls.read(AUTOUPLOAD_KEY) ?? true
+	autoupload: ls.read(AUTOUPLOAD_KEY) ?? true,
+	uploading: false
 });
 
 uploadStore.subscribe((value: UploadStore) => {
@@ -25,6 +27,13 @@ getPendingCount().then((count) => {
 		return store;
 	});
 });
+
+export const setUploading = (value: boolean) => {
+	uploadStore.update((store) => {
+		store.uploading = value;
+		return store;
+	});
+};
 
 export const resetUploadCount = () => {
 	uploadStore.update((store) => {

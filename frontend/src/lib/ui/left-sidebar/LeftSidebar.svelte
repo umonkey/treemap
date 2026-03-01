@@ -54,11 +54,13 @@
 			<li>
 				<a href={routes.profile()}>
 					<span class="icon">
-						{#if $uploadStore.pending > 0}
+						{#if $uploadStore.uploading}
 							<SpinnerIcon />
-							<span class="badge">{$uploadStore.pending}</span>
 						{:else}
 							<UserIcon />
+						{/if}
+						{#if $uploadStore.pending > 0}
+							<span class="badge">{$uploadStore.pending}</span>
 						{/if}
 					</span>
 					<span>{locale.sideProfile()}</span>

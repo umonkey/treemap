@@ -17,13 +17,15 @@
 	<a href={routes.newTrees()}><div><BellIcon /></div></a>
 	<a href="/profile"
 		><div>
-			{#if $uploadStore.pending > 0}
+			{#if $uploadStore.uploading}
 				<SpinnerIcon />
-				<span class="badge">{$uploadStore.pending}</span>
 			{:else if $isAuthenticated && $authStore?.picture}
 				<img src={$authStore.picture} alt="userpic" />
 			{:else}
 				<UserIcon />
+			{/if}
+			{#if $uploadStore.pending > 0}
+				<span class="badge">{$uploadStore.pending}</span>
 			{/if}
 		</div></a
 	>

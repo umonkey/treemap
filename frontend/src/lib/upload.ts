@@ -15,7 +15,12 @@ import { apiClient } from './api';
 import { uploadBus } from '$lib/buses/upload';
 import { uploadStore } from '$lib/stores/upload';
 import { get } from 'svelte/store';
-import { incrementUploadCount, decrementUploadCount, resetUploadCount } from '$lib/stores/upload';
+import {
+	incrementUploadCount,
+	decrementUploadCount,
+	resetUploadCount,
+	setUploading
+} from '$lib/stores/upload';
 
 // Delay between file upload attempts.
 const ERROR_DELAY = 5 * 1000;
@@ -97,6 +102,7 @@ export async function processUploadQueue() {
 	console.debug('Going to process the upload queue.');
 
 	isProcessing = true;
+	setUploading(true);
 
 	try {
 		while (true) {
@@ -148,6 +154,7 @@ export async function processUploadQueue() {
 		}
 	} finally {
 		isProcessing = false;
+		setUploading(false);
 	}
 }
 
