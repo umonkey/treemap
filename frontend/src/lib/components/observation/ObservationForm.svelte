@@ -3,7 +3,7 @@
 	import { locale } from '$lib/locale';
 	import { apiClient } from '$lib/api';
 	import type { IObservation } from '$lib/types';
-	import { Button, Buttons, Form } from '$lib/ui';
+	import { Button, Buttons, Form, HelpButton } from '$lib/ui';
 	import { toast } from '@zerodevx/svelte-toast';
 
 	const { id } = $props<{ id: string }>();
@@ -62,20 +62,35 @@
 		{ id: 'nests', label: locale.observationNests() },
 		{ id: 'nesting_boxes', label: locale.observationNestingBoxes() }
 	];
+
+	const HELP_URL = 'https://github.com/umonkey/treemap/wiki/Defects';
 </script>
 
 {#if loading}
 	<p>Loading...</p>
 {:else}
 	<Form onSubmit={handleSubmit}>
-		<div class="observation-grid">
-			{#each fields as field}
-				<label class="checkbox-item">
-					<input type="checkbox" bind:checked={observation[field.id as keyof IObservation]} />
-					<span>{field.label}</span>
-				</label>
-			{/each}
-		</div>
+		<table class="observation-table">
+			<tbody>
+				{#each fields as field}
+					<tr>
+						<td class="checkbox-cell">
+							<input
+								type="checkbox"
+								id={field.id}
+								bind:checked={observation[field.id as keyof IObservation]}
+							/>
+						</td>
+						<td class="label-cell">
+							<label for={field.id}>{field.label}</label>
+						</td>
+						<td class="help-cell">
+							<HelpButton help={HELP_URL} />
+						</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
 
 		<Buttons>
 			<Button type="submit" disabled={saving}>{locale.editSave()}</Button>
@@ -84,29 +99,42 @@
 {/if}
 
 <style>
-	.observation-grid {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: var(--gap);
+	.observation-table {
+		width: 100%;
+		border-collapse: collapse;
 		margin-bottom: var(--gap-large);
+
+		tr {
+			border: none;
+		}
+
+		td {
+			padding: calc(var(--gap) / 2) 0;
+			vertical-align: middle;
+		}
 	}
 
-	.checkbox-item {
-		display: flex;
-		align-items: center;
-		gap: var(--gap);
-		cursor: pointer;
-		padding: var(--gap) 0;
+	.checkbox-cell {
+		width: 30px;
 
 		input {
 			width: 20px;
 			height: 20px;
+			cursor: pointer;
+			display: block;
 		}
 	}
 
-	@media (max-width: 600px) {
-		.observation-grid {
-			grid-template-columns: 1fr;
+	.label-cell {
+		label {
+			cursor: pointer;
+			display: block;
+			width: 100%;
 		}
+	}
+
+	.help-cell {
+		width: 40px;
+		text-align: right;
 	}
 </style>
