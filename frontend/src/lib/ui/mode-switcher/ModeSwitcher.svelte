@@ -111,7 +111,7 @@
 			line-height: 20px;
 			text-align: center;
 
-			color: white;
+			color: light-dark(black, white);
 			font-weight: 300;
 		}
 	}
