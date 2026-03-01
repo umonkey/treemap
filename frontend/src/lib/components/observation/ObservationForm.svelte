@@ -44,7 +44,11 @@
 		if (response.data) {
 			observation = { ...observation, ...response.data };
 
-			if (observation.created_by && observation.created_by !== '0' && !$getUser(observation.created_by)) {
+			if (
+				observation.created_by &&
+				observation.created_by !== '0' &&
+				!$getUser(observation.created_by)
+			) {
 				apiClient.getUser(observation.created_by).then((res) => {
 					if (res.data) {
 						addUsers([res.data]);
