@@ -1,5 +1,20 @@
 # Coding Style
 
+## Folder Structure
+
+- `src/lib/buses`: contains mitt based buses to send signals across components.
+- `src/lib/components`: contains components.
+- `src/lib/forms`: contains forms that consist of multiple components.
+- `src/lib/icons`: contains SVG icons renamed as Svelte components for inlining.
+- `src/lib/stores`: contains Svelte stores.
+- `src/lib/styles`: contains global style sheets.
+- `src/lib/ui`: contains simple components, deprecated over `src/lib/components`.
+- `src/lib/utils`: contains helper functions that aren't related to components or Svelte.
+- `src/lib/api.ts`: contains the API interaction code.
+- `src/lib/locale.ts`: UI translation strings for English, Russian and Armenian languages.
+- `src/lib/routes.ts`: contains functions that format page paths, serves as a single source of truth.
+
+
 ## General rules
 
 - Adhere strictly to idiomatic SvelteKit 5:
@@ -34,6 +49,7 @@ import {(Header, NarrowPage)} from '$lib/ui';
 Components live in the `src/lib/components` folder, each component in its own folder.
 
 The markup of the component stays in the `.svelte` file, the styles are embedded in the component file, and the TypeScript code goes to the `.ts` file.
+
 
 ## Error handling
 

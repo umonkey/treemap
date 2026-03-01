@@ -76,6 +76,7 @@ export const routes = {
 	treeMap: (id: string) => `/tree/${id}/map`,
 	treeMeasure: (id: string) => `/tree/${id}/measure`,
 	treeMove: (id: string) => `/tree/${id}/move`,
+	treeObservations: (id: string) => `/tree/${id}/observations`,
 	treeReplace: (id: string) => `/tree/${id}/replace`,
 	treeUploadPhotos: (id: string) => `/tree/${id}/upload`
 };

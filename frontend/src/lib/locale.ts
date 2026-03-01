@@ -251,6 +251,23 @@ class EnglishLocale {
 		return 'Comments';
 	}
 
+	public treeTabsObservations(): string {
+		return 'Observations';
+	}
+
+	public observationBarkDamage(): string { return 'Bark damage'; }
+	public observationDryBranches(): string { return 'Dry branches'; }
+	public observationLeaking(): string { return 'Leaking'; }
+	public observationRootDamage(): string { return 'Root damage'; }
+	public observationOpenRoots(): string { return 'Open roots'; }
+	public observationTopping(): string { return 'Topping'; }
+	public observationFungalBodies(): string { return 'Fungal bodies'; }
+	public observationVfork(): string { return 'V-fork'; }
+	public observationCavities(): string { return 'Cavities'; }
+	public observationVines(): string { return 'Vines'; }
+	public observationNests(): string { return 'Nests'; }
+	public observationNestingBoxes(): string { return 'Nesting boxes'; }
+
 	public treeTabsChanges(): string {
 		return 'History';
 	}
@@ -889,6 +906,23 @@ class RussianLocale extends EnglishLocale {
 		return 'Комменты';
 	}
 
+	public treeTabsObservations(): string {
+		return 'Наблюдения';
+	}
+
+	public observationBarkDamage(): string { return 'Повреждение коры'; }
+	public observationDryBranches(): string { return 'Сухие ветви'; }
+	public observationLeaking(): string { return 'Течь'; }
+	public observationRootDamage(): string { return 'Повреждение корней'; }
+	public observationOpenRoots(): string { return 'Открытые корни'; }
+	public observationTopping(): string { return 'Топпинг'; }
+	public observationFungalBodies(): string { return 'Грибы'; }
+	public observationVfork(): string { return 'V-образная развилка'; }
+	public observationCavities(): string { return 'Дупла'; }
+	public observationVines(): string { return 'Лианы'; }
+	public observationNests(): string { return 'Гнезда'; }
+	public observationNestingBoxes(): string { return 'Скворечники'; }
+
 	public treeTabsChanges(): string {
 		return 'Правки';
 	}
@@ -1526,6 +1560,23 @@ class ArmenianLocale extends EnglishLocale {
 
 		return 'Զրույց';
 	}
+
+	public treeTabsObservations(): string {
+		return 'Դիտարկումներ';
+	}
+
+	public observationBarkDamage(): string { return 'Կեղևի վնասվածք'; }
+	public observationDryBranches(): string { return 'Չոր ճյուղեր'; }
+	public observationLeaking(): string { return 'Հյութահոսություն'; }
+	public observationRootDamage(): string { return 'Արմատների վնասվածք'; }
+	public observationOpenRoots(): string { return 'Բաց արմատներ'; }
+	public observationTopping(): string { return 'Գագատահատում'; }
+	public observationFungalBodies(): string { return 'Սնկեր'; }
+	public observationVfork(): string { return 'V-աձև ճյուղավորում'; }
+	public observationCavities(): string { return 'Փչակներ'; }
+	public observationVines(): string { return 'Մագլցող բույսեր'; }
+	public observationNests(): string { return 'Բներ'; }
+	public observationNestingBoxes(): string { return 'Թռչնաբներ'; }
 
 	public treeTabsChanges(): string {
 		return 'Պատմություն';

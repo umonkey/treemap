@@ -26,6 +26,11 @@
 			url: routes.treeComments(tree)
 		},
 		{
+			id: 'observations',
+			title: locale.treeTabsObservations(),
+			url: routes.treeObservations(tree)
+		},
+		{
 			id: 'history',
 			title: locale.treeTabsChanges(),
 			url: routes.treeHistory(tree)
