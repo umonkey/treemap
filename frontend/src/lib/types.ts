@@ -247,6 +247,25 @@ export type DuplicateList = {
 	}[];
 };
 
+export interface IObservation {
+	id: string;
+	tree_id: string;
+	created_at: number;
+	created_by: string;
+	bark_damage: boolean;
+	dry_branches: boolean;
+	leaking: boolean;
+	root_damage: boolean;
+	open_roots: boolean;
+	topping: boolean;
+	fungal_bodies: boolean;
+	vfork: boolean;
+	cavities: boolean;
+	vines: boolean;
+	nests: boolean;
+	nesting_boxes: boolean;
+}
+
 export type StreetReport = {
 	street: string;
 	total: number;

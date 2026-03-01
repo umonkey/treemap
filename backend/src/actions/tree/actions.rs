@@ -168,6 +168,31 @@ pub async fn get_tree_history_action(
     Ok(Json(res))
 }
 
+#[get("/{id:\\d+}/observations")]
+pub async fn get_tree_observations_action(
+    state: Data<AppState>,
+    path: Path<PathInfo>,
+) -> Result<Json<ObservationRead>> {
+    let observation = state.observations.get(path.id).await?;
+    Ok(Json(ObservationRead::from_domain(&observation)))
+}
+
+#[post("/{id:\\d+}/observations")]
+pub async fn add_tree_observation_action(
+    state: Data<AppState>,
+    path: Path<PathInfo>,
+    payload: Json<AddObservationRequest>,
+    req: HttpRequest,
+) -> Result<Json<ObservationRead>> {
+    let user_id = state.get_user_id(&req)?;
+    let observation = state
+        .observations
+        .add(path.id, user_id, payload.to_flags())
+        .await?;
+
+    Ok(Json(ObservationRead::from_domain(&observation)))
+}
+
 #[get("/stats")]
 pub async fn get_tree_stats_action(state: Data<AppState>) -> Result<Json<TreeStats>> {
     let stats = state.trees.get_stats().await?;
@@ -434,6 +459,8 @@ pub fn tree_router(cfg: &mut ServiceConfig) {
         .service(get_tree_comments_action)
         .service(get_tree_defaults_action)
         .service(get_tree_history_action)
+        .service(get_tree_observations_action)
+        .service(add_tree_observation_action)
         .service(get_tree_stats_action)
         .service(get_trees_action)
         .service(get_updated_trees_action)

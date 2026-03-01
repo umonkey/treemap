@@ -3,6 +3,7 @@ use crate::domain::health::*;
 use crate::domain::heatmap::HeatmapService;
 use crate::domain::like::LikeService;
 use crate::domain::login::LoginService;
+use crate::domain::observation::ObservationService;
 use crate::domain::prop::PropService;
 use crate::domain::settings::SettingsService;
 use crate::domain::species::SpeciesService;
@@ -33,6 +34,7 @@ pub struct AppState {
     pub health: Arc<HealthService>,
     pub heatmap: Arc<HeatmapService>,
     pub likes: Arc<LikeService>,
+    pub observations: Arc<ObservationService>,
     pub comments: Arc<CommentService>,
     pub login: Arc<LoginService>,
     pub species: Arc<SpeciesService>,
@@ -59,6 +61,7 @@ impl AppState {
             health: locator.get::<HealthService>()?,
             heatmap: locator.get::<HeatmapService>()?,
             comments: locator.get::<CommentService>()?,
+            observations: locator.get::<ObservationService>()?,
             login: locator.get::<LoginService>()?,
             species: locator.get::<SpeciesService>()?,
             settings: locator.get::<SettingsService>()?,

@@ -6,6 +6,7 @@ pub mod health;
 pub mod heatmap;
 pub mod like;
 pub mod login;
+pub mod observation;
 pub mod osm;
 pub mod photo;
 pub mod prop;
