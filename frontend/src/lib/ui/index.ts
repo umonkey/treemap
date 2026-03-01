@@ -7,6 +7,7 @@ export { default as Buttons } from './buttons/Buttons.svelte';
 export { default as CanopyInput } from './canopy-input/CanopyInput.svelte';
 export { default as ChangeList } from './change-list/ChangeList.svelte';
 export { default as Chart } from './chart/Chart.svelte';
+export { default as CheckInput } from './check-input/CheckInput.svelte';
 export { default as CircumferenceEditor } from './circumference-editor/CircumferenceEditor.svelte';
 export { default as CircumferenceInput } from './circumference-input/CircumferenceInput.svelte';
 export { default as CommentForm } from './comment-form/CommentForm.svelte';

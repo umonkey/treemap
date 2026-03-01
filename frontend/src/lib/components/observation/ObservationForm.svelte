@@ -4,7 +4,7 @@
 	import { apiClient } from '$lib/api';
 	import { isAuthenticated } from '$lib/stores/authStore';
 	import type { IObservation } from '$lib/types';
-	import { Button, Buttons, Form, HelpButton, SignInButton } from '$lib/ui';
+	import { Button, Buttons, CheckInput, Form, HelpButton, SignInButton } from '$lib/ui';
 	import { toast } from '@zerodevx/svelte-toast';
 
 	const { id } = $props<{ id: string }>();
@@ -76,11 +76,10 @@
 				{#each fields as field}
 					<tr>
 						<td class="checkbox-cell">
-							<input
-								type="checkbox"
+							<CheckInput
 								id={field.id}
 								disabled={!$isAuthenticated}
-								bind:checked={observation[field.id as keyof IObservation]}
+								bind:value={observation[field.id as keyof IObservation] as boolean}
 							/>
 						</td>
 						<td class="label-cell">
@@ -124,18 +123,7 @@
 	}
 
 	.checkbox-cell {
-		width: 30px;
-
-		input {
-			width: 20px;
-			height: 20px;
-			cursor: pointer;
-			display: block;
-
-			&:disabled {
-				cursor: default;
-			}
-		}
+		width: 50px;
 	}
 
 	.label-cell {
