@@ -22,6 +22,12 @@ impl ObservationService {
         user_id: u64,
         flags: ObservationFlags,
     ) -> Result<Observation> {
+        if let Some(last) = self.repository.get_last_by_tree(tree_id).await? {
+            if last.matches_flags(&flags) {
+                return Ok(last);
+            }
+        }
+
         let id = get_unique_id()?;
         let now = get_timestamp();
 

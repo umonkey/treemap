@@ -23,7 +23,7 @@ pub struct Observation {
     pub bug_holes: bool,
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, PartialEq)]
 pub struct ObservationFlags {
     pub bark_damage: bool,
     pub dry_branches: bool,
@@ -61,6 +61,22 @@ impl Observation {
             nesting_boxes: false,
             bug_holes: false,
         }
+    }
+
+    pub fn matches_flags(&self, flags: &ObservationFlags) -> bool {
+        self.bark_damage == flags.bark_damage
+            && self.dry_branches == flags.dry_branches
+            && self.leaking == flags.leaking
+            && self.root_damage == flags.root_damage
+            && self.open_roots == flags.open_roots
+            && self.topping == flags.topping
+            && self.fungal_bodies == flags.fungal_bodies
+            && self.vfork == flags.vfork
+            && self.cavities == flags.cavities
+            && self.vines == flags.vines
+            && self.nests == flags.nests
+            && self.nesting_boxes == flags.nesting_boxes
+            && self.bug_holes == flags.bug_holes
     }
 
     pub fn from_attributes(attributes: &Attributes) -> Result<Self> {
