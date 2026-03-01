@@ -19,7 +19,7 @@ impl From<User> for MeResponse {
             id: user.id.to_string(),
             name: user.name.clone(),
             email: user.email.clone(),
-            picture: user.email.clone(),
+            picture: user.picture.clone(),
             trees_count: user.trees_count,
             comments_count: user.comments_count,
             updates_count: user.updates_count,
