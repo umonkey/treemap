@@ -193,4 +193,28 @@ CREATE TABLE IF NOT EXISTS training (
 CREATE INDEX IF NOT EXISTS IDX_training_user_id ON training (user_id);
 CREATE INDEX IF NOT EXISTS IDX_training_added_at ON training (added_at);
 
+
+CREATE TABLE IF NOT EXISTS observations (
+    `id` INT NOT NULL,
+    `tree_id` INT NOT NULL,
+    `created_by` INT NOT NULL,
+    `created_at` INT NOT NULL,
+    `bark_damage` INT NOT NULL DEFAULT '0',
+    `dry_branches` INT NOT NULL DEFAULT '0',
+    `leaking` INT NOT NULL DEFAULT '0',
+    `root_damage` INT NOT NULL DEFAULT '0',
+    `open_roots` INT NOT NULL DEFAULT '0',
+    `topping` INT NOT NULL DEFAULT '0',
+    `fungal_bodies` INT NOT NULL DEFAULT '0',
+    `vfork` INT NOT NULL DEFAULT '0',
+    `cavities` INT NOT NULL DEFAULT '0',
+    `vines` INT NOT NULL DEFAULT '0',
+    `nests` INT NOT NULL DEFAULT '0',
+    `nesting_boxes` INT NOT NULL DEFAULT '0',
+    `bug_holes` INT NOT NULL DEFAULT '0',
+    PRIMARY KEY(`id`)
+);
+CREATE INDEX IF NOT EXISTS observations_tree_id ON observations (tree_id);
+
+
 COMMIT;

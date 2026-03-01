@@ -11,7 +11,7 @@ export const Tree: ITree = {
 	height: 0.0,
 	circumference: 0.89,
 	diameter: 4.0,
-	state: 'sick',
+	state: 'healthy',
 	year: 1980,
 	added_at: 1720282295,
 	updated_at: 1720282741,

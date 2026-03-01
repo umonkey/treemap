@@ -1,5 +1,6 @@
 export { handleShareTree } from './shareTree';
 export { loadMe } from './loadMe';
+export { loadObservations } from './loadObservations';
 export { loadSpeciesMismatch } from './loadSpeciesMismatch';
 export { loadSpeciesStats } from './loadSpeciesStats';
 export { loadStateStats } from './loadStateStats';

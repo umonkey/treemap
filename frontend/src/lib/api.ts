@@ -29,7 +29,8 @@ import type {
 	DuplicateList,
 	StreetReport,
 	IUser,
-	IUserList
+	IUserList,
+	IObservation
 } from '$lib/types';
 import { Response } from '$lib/types_response';
 import { get } from 'svelte/store';
@@ -516,6 +517,20 @@ export class ApiClient {
 
 	public async getTreeHistory(id: string): Promise<IResponse<IChangeList>> {
 		return await this.request('GET', `v1/trees/${id}/history`);
+	}
+
+	public async getObservations(treeId: string): Promise<IResponse<IObservation>> {
+		return await this.request('GET', `v1/trees/${treeId}/observations`);
+	}
+
+	public async addObservations(observation: IObservation): Promise<IResponse<IObservation>> {
+		return await this.request('POST', `v1/trees/${observation.tree_id}/observations`, {
+			body: JSON.stringify(observation),
+			headers: {
+				'Content-Type': 'application/json',
+				...this.getAuthHeaders()
+			}
+		});
 	}
 
 	public async getRecentComments(): Promise<IResponse<ICommentList>> {

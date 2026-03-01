@@ -3,10 +3,9 @@
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
 
-	const { tree, active, comment_count } = $props<{
+	const { tree, active } = $props<{
 		tree: string;
 		active: string;
-		comment_count?: number;
 	}>();
 
 	const tabs = [
@@ -21,9 +20,9 @@
 			url: routes.treeStreetView(tree)
 		},
 		{
-			id: 'comments',
-			title: locale.treeTabsComments(comment_count ?? 0),
-			url: routes.treeComments(tree)
+			id: 'observations',
+			title: locale.treeTabsObservations(),
+			url: routes.treeObservations(tree)
 		},
 		{
 			id: 'history',

@@ -195,14 +195,6 @@ class EnglishLocale {
 		return 'healthy';
 	}
 
-	public stateSick(): string {
-		return 'sick';
-	}
-
-	public stateDeformed(): string {
-		return 'deformed';
-	}
-
 	public stateDead(): string {
 		return 'dead';
 	}
@@ -251,12 +243,49 @@ class EnglishLocale {
 		return 'Map';
 	}
 
-	public treeTabsComments(count: number): string {
-		if (count > 0) {
-			return `Comments (${count})`;
-		}
+	public treeTabsObservations(): string {
+		return 'Observations';
+	}
 
-		return 'Comments';
+	public observationBarkDamage(): string {
+		return 'Bark damage';
+	}
+	public observationDryBranches(): string {
+		return 'Dry branches';
+	}
+	public observationLeaking(): string {
+		return 'Leaking';
+	}
+	public observationRootDamage(): string {
+		return 'Root damage';
+	}
+	public observationOpenRoots(): string {
+		return 'Open roots';
+	}
+	public observationBugHoles(): string {
+		return 'Bug holes';
+	}
+
+	public observationTopping(): string {
+		return 'Topping';
+	}
+	public observationFungalBodies(): string {
+		return 'Fungal bodies';
+	}
+	public observationVfork(): string {
+		return 'V-fork';
+	}
+	public observationCavities(): string {
+		return 'Cavities';
+	}
+	public observationVines(): string {
+		return 'Vines';
+	}
+	public observationNests(): string {
+		return 'Nests';
+	}
+	public observationNestingBoxes(): string {
+		return 'Nesting boxes';
 	}
 
 	public treeTabsChanges(): string {
@@ -283,10 +312,6 @@ class EnglishLocale {
 		return 'Year';
 	}
 
-	public noDescription(): string {
-		return 'There is no description for this tree. You can leave a comment to let us know about something interesting.';
-	}
-
 	public noComments(): string {
 		return 'No comments for this tree yet.';
 	}
@@ -301,6 +326,10 @@ class EnglishLocale {
 
 	public commentSignIn(): string {
 		return 'You need to be authenticated to add comments.';
+	}
+
+	public observationSignIn(): string {
+		return 'You need to be authenticated to save observations.';
 	}
 
 	public commentSubmit(): string {
@@ -651,6 +680,14 @@ class EnglishLocale {
 		return 'Auto-upload files';
 	}
 
+	public toastCommentAdded(): string {
+		return 'Comment added.';
+	}
+
+	public toastErrorAddingComment(): string {
+		return 'Error adding comment.';
+	}
+
 	public shortMonday(): string {
 		return 'Mon';
 	}
@@ -845,14 +882,6 @@ class RussianLocale extends EnglishLocale {
 		return 'здорово';
 	}
 
-	public stateSick(): string {
-		return 'больное';
-	}
-
-	public stateDeformed(): string {
-		return 'деформировано';
-	}
-
 	public stateDead(): string {
 		return 'мертво';
 	}
@@ -897,12 +926,49 @@ class RussianLocale extends EnglishLocale {
 		return 'Карта';
 	}
 
-	public treeTabsComments(count: number): string {
-		if (count > 0) {
-			return `Комменты (${count})`;
-		}
+	public treeTabsObservations(): string {
+		return 'Наблюдения';
+	}
 
-		return 'Комменты';
+	public observationBarkDamage(): string {
+		return 'Повреждение коры';
+	}
+	public observationDryBranches(): string {
+		return 'Сухие ветки';
+	}
+	public observationLeaking(): string {
+		return 'Течёт жидкость';
+	}
+	public observationRootDamage(): string {
+		return 'Повреждение корней';
+	}
+	public observationOpenRoots(): string {
+		return 'Открытые корни';
+	}
+	public observationBugHoles(): string {
+		return 'Отверстия насекомых';
+	}
+
+	public observationTopping(): string {
+		return 'Топпинг';
+	}
+	public observationFungalBodies(): string {
+		return 'Грибы (плодовые тела)';
+	}
+	public observationVfork(): string {
+		return 'V-образная развилка';
+	}
+	public observationCavities(): string {
+		return 'Дупла';
+	}
+	public observationVines(): string {
+		return 'Лианы';
+	}
+	public observationNests(): string {
+		return 'Гнёзда';
+	}
+	public observationNestingBoxes(): string {
+		return 'Скворечники';
 	}
 
 	public treeTabsChanges(): string {
@@ -929,10 +995,6 @@ class RussianLocale extends EnglishLocale {
 		return 'Год';
 	}
 
-	public noDescription(): string {
-		return 'Нет описания этого дерева. Вы можете оставить комментарий чтобы рассказать о каких-то интересных особенностях.';
-	}
-
 	public noComments(): string {
 		return 'Нет комментариев для этого дерева.';
 	}
@@ -947,6 +1009,10 @@ class RussianLocale extends EnglishLocale {
 
 	public commentSignIn(): string {
 		return 'Нужно залогиниться, чтобы оставить комментарий.';
+	}
+
+	public observationSignIn(): string {
+		return 'Нужно залогиниться, чтобы сохранить наблюдения.';
 	}
 
 	public commentSubmit(): string {
@@ -1301,6 +1367,14 @@ class RussianLocale extends EnglishLocale {
 		return 'Загружать файлы автоматически';
 	}
 
+	public toastCommentAdded(): string {
+		return 'Комментарий добавлен.';
+	}
+
+	public toastErrorAddingComment(): string {
+		return 'Ошибка добавления комментария.';
+	}
+
 	public shortMonday(): string {
 		return 'Пн';
 	}
@@ -1491,14 +1565,6 @@ class ArmenianLocale extends EnglishLocale {
 		return 'առողջ';
 	}
 
-	public stateSick(): string {
-		return 'հիվանդ';
-	}
-
-	public stateDeformed(): string {
-		return 'դեֆորմացված';
-	}
-
 	public stateDead(): string {
 		return 'չորացած';
 	}
@@ -1543,12 +1609,49 @@ class ArmenianLocale extends EnglishLocale {
 		return 'Քարտեզ';
 	}
 
-	public treeTabsComments(count: number): string {
-		if (count > 0) {
-			return `Զրույց (${count})`;
-		}
+	public treeTabsObservations(): string {
+		return 'Դիտարկումներ';
+	}
 
-		return 'Զրույց';
+	public observationBarkDamage(): string {
+		return 'Կեղևի վնասվածք';
+	}
+	public observationDryBranches(): string {
+		return 'Չոր ճյուղեր';
+	}
+	public observationLeaking(): string {
+		return 'Հյութահոսություն';
+	}
+	public observationRootDamage(): string {
+		return 'Արմատների վնասվածք';
+	}
+	public observationOpenRoots(): string {
+		return 'Բաց արմատներ';
+	}
+	public observationBugHoles(): string {
+		return 'Միջատների անցքեր';
+	}
+
+	public observationTopping(): string {
+		return 'Գագատահատում';
+	}
+	public observationFungalBodies(): string {
+		return 'Սնկեր';
+	}
+	public observationVfork(): string {
+		return 'V-աձև ճյուղավորում';
+	}
+	public observationCavities(): string {
+		return 'Փչակներ';
+	}
+	public observationVines(): string {
+		return 'Մագլցող բույսեր';
+	}
+	public observationNests(): string {
+		return 'Բներ';
+	}
+	public observationNestingBoxes(): string {
+		return 'Թռչնաբներ';
 	}
 
 	public treeTabsChanges(): string {
@@ -1575,10 +1678,6 @@ class ArmenianLocale extends EnglishLocale {
 		return 'Տարի';
 	}
 
-	public noDescription(): string {
-		return 'Այս ծառը նկարագրություն չունի: Դուք կարող եք մեկնաբանություն թողնել՝ հետաքրքիր տեղեկության մասին:';
-	}
-
 	public noComments(): string {
 		return 'Այս ծառի մասին դեռևս մեկնաբանություններ չկան:';
 	}
@@ -1593,6 +1692,10 @@ class ArmenianLocale extends EnglishLocale {
 
 	public commentSignIn(): string {
 		return 'Մեկնաբանություններ ավելացնելու համար անհրաժեշտ է վավերացում:';
+	}
+
+	public observationSignIn(): string {
+		return 'Դիտարկումները պահպանելու համար անհրաժեշտ է վավերացում:';
 	}
 
 	public commentSubmit(): string {
@@ -1837,6 +1940,14 @@ class ArmenianLocale extends EnglishLocale {
 
 	public uploadsAuto(): string {
 		return 'Ֆայլերը վերբեռնել ավտոմատ';
+	}
+
+	public toastCommentAdded(): string {
+		return 'Մեկնաբանությունը ավելացված է:';
+	}
+
+	public toastErrorAddingComment(): string {
+		return 'Մեկնաբանություն ավելացնելու սխալ:';
 	}
 }
 

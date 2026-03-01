@@ -100,10 +100,6 @@ export const formatState = (value: string | null): string => {
 		return locale.stateHealthy();
 	}
 
-	if (value === 'sick') {
-		return locale.stateSick();
-	}
-
 	if (value === 'dead') {
 		return locale.stateDead();
 	}
@@ -114,10 +110,6 @@ export const formatState = (value: string | null): string => {
 
 	if (value === 'stump') {
 		return locale.stateStump();
-	}
-
-	if (value === 'deformed') {
-		return locale.stateDeformed();
 	}
 
 	return locale.stateUnknown();

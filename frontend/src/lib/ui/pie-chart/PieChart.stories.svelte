@@ -16,16 +16,8 @@
 	args={{
 		data: [
 			{
-				label: 'deformed',
-				value: 5
-			},
-			{
 				label: 'healthy',
 				value: 288
-			},
-			{
-				label: 'sick',
-				value: 5
 			},
 			{
 				label: 'stump',

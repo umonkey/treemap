@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
-	import { Button, Buttons, NarrowPage, Form, AuthWrapper } from '$lib/ui';
+	import { NarrowPage, Form, AuthWrapper } from '$lib/ui';
 	import PhotoUploader from '$lib/components/PhotoUploader.svelte';
 	import { UploadForm } from '$lib/forms';
 	import { load } from './hooks';
@@ -9,7 +9,7 @@
 	const tree = data.tree;
 	const treeId = data.id;
 
-	const { canSubmit, handleChange } = load();
+	const { handleChange } = load();
 </script>
 
 <NarrowPage title={locale.photoTitle()}>

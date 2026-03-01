@@ -105,6 +105,99 @@ pub struct ThumbnailPayload {
     pub file: String,
 }
 
+#[derive(Debug, Serialize)]
+pub struct ObservationRead {
+    pub id: String,
+    pub created_at: u64,
+    pub created_by: String,
+    pub bark_damage: bool,
+    pub dry_branches: bool,
+    pub leaking: bool,
+    pub root_damage: bool,
+    pub open_roots: bool,
+    pub topping: bool,
+    pub fungal_bodies: bool,
+    pub vfork: bool,
+    pub cavities: bool,
+    pub vines: bool,
+    pub nests: bool,
+    pub nesting_boxes: bool,
+    pub bug_holes: bool,
+}
+
+impl ObservationRead {
+    pub fn from_domain(obs: &crate::domain::observation::Observation) -> Self {
+        Self {
+            id: obs.id.to_string(),
+            created_at: obs.created_at,
+            created_by: obs.created_by.to_string(),
+            bark_damage: obs.bark_damage,
+            dry_branches: obs.dry_branches,
+            leaking: obs.leaking,
+            root_damage: obs.root_damage,
+            open_roots: obs.open_roots,
+            topping: obs.topping,
+            fungal_bodies: obs.fungal_bodies,
+            vfork: obs.vfork,
+            cavities: obs.cavities,
+            vines: obs.vines,
+            nests: obs.nests,
+            nesting_boxes: obs.nesting_boxes,
+            bug_holes: obs.bug_holes,
+        }
+    }
+}
+
+#[derive(Debug, Deserialize)]
+pub struct AddObservationRequest {
+    #[serde(default)]
+    pub bark_damage: bool,
+    #[serde(default)]
+    pub dry_branches: bool,
+    #[serde(default)]
+    pub leaking: bool,
+    #[serde(default)]
+    pub root_damage: bool,
+    #[serde(default)]
+    pub open_roots: bool,
+    #[serde(default)]
+    pub topping: bool,
+    #[serde(default)]
+    pub fungal_bodies: bool,
+    #[serde(default)]
+    pub vfork: bool,
+    #[serde(default)]
+    pub cavities: bool,
+    #[serde(default)]
+    pub vines: bool,
+    #[serde(default)]
+    pub nests: bool,
+    #[serde(default)]
+    pub nesting_boxes: bool,
+    #[serde(default)]
+    pub bug_holes: bool,
+}
+
+impl AddObservationRequest {
+    pub fn to_flags(&self) -> crate::domain::observation::ObservationFlags {
+        crate::domain::observation::ObservationFlags {
+            bark_damage: self.bark_damage,
+            dry_branches: self.dry_branches,
+            leaking: self.leaking,
+            root_damage: self.root_damage,
+            open_roots: self.open_roots,
+            topping: self.topping,
+            fungal_bodies: self.fungal_bodies,
+            vfork: self.vfork,
+            cavities: self.cavities,
+            vines: self.vines,
+            nests: self.nests,
+            nesting_boxes: self.nesting_boxes,
+            bug_holes: self.bug_holes,
+        }
+    }
+}
+
 // Paging settings for new and updated tree listing.
 #[derive(Debug, Deserialize)]
 pub struct AddedTreesRequest {

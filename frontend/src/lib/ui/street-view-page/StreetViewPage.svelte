@@ -20,7 +20,7 @@
 	<p>{$error}</p>
 {:else}
 	<Title title={formatSpecies($data.species)} address={$data.address} />
-	<TreeTabs tree={$data.id} active="360" comment_count={$data.comment_count} />
+	<TreeTabs tree={$data.id} active="360" />
 
 	<StreetView lat={$data.lat} lng={$data.lon} />
 
