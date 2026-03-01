@@ -6,7 +6,7 @@
 	import type { ITree } from '$lib/types';
 	import { onMount } from 'svelte';
 	import ShareButton from '$lib/components/tree/ShareButton.svelte';
-	import { CameraIcon, ChatIcon, HeartIcon, HeartSolidIcon, SaveIcon } from '$lib/icons';
+	import { CameraIcon, HeartIcon, HeartSolidIcon, SaveIcon } from '$lib/icons';
 
 	const { tree } = $props<{
 		tree: ITree;
@@ -33,7 +33,6 @@
 			>{#if isTreeLiked}<HeartSolidIcon />{:else}<HeartIcon />{/if}</a
 		>
 	</div>
-	<div><a href="#comments"><ChatIcon /></a></div>
 	<div><a href={routes.treeUploadPhotos(tree.id)}><CameraIcon /></a></div>
 	<div><ShareButton id={tree.id} /></div>
 	{#if FEATURES.bookmarks}
