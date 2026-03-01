@@ -5,6 +5,7 @@
 	import { mapLastTree } from '$lib/stores/mapStore';
 	import { searchStore } from '$lib/stores';
 	import { uploadStore } from '$lib/stores/upload';
+	import { authStore } from '$lib/stores/authStore';
 	import Logo from '$lib/assets/trees-of-yerevan.svelte';
 </script>
 
@@ -56,6 +57,8 @@
 					<span class="icon">
 						{#if $uploadStore.uploading}
 							<SpinnerIcon />
+						{:else if $authStore?.picture}
+							<img src={$authStore.picture} alt="userpic" />
 						{:else}
 							<UserIcon />
 						{/if}
@@ -142,7 +145,14 @@
 						flex-shrink: 0;
 						flex-grow: 0;
 						height: 24px;
+						width: 24px;
+						overflow: hidden;
 						position: relative;
+
+						img {
+							width: 24px;
+							height: 24px;
+						}
 					}
 				}
 
