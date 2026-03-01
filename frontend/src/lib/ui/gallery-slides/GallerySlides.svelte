@@ -9,12 +9,17 @@
 	}>();
 
 	const { handleExpand, handleLeft, handleRight, element } = hooks();
+
+	let contain = $state(false);
+	const toggleContain = () => (contain = !contain);
 </script>
 
-<div class="slides" bind:this={$element}>
+<div class="slides" class:contain bind:this={$element}>
 	{#each slides as item, idx}
 		<div>
-			<img src={item.small} alt="See how good is this tree." />
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+			<img src={item.small} alt="See how good is this tree." onclick={toggleContain} />
 
 			{#if idx > 0}
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -42,7 +47,9 @@
 		</div>
 	{:else}
 		<div>
-			<img src={FALLBACK} alt="no photos of this tree" />
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+			<img src={FALLBACK} alt="no photos of this tree" onclick={toggleContain} />
 		</div>
 	{/each}
 </div>
@@ -82,7 +89,12 @@
 				height: 100%;
 				width: 100%;
 				z-index: 1;
+				cursor: pointer;
 			}
+		}
+
+		&.contain img {
+			object-fit: contain;
 		}
 
 		.label {
