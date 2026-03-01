@@ -14,7 +14,6 @@
 - `src/lib/locale.ts`: UI translation strings for English, Russian and Armenian languages.
 - `src/lib/routes.ts`: contains functions that format page paths, serves as a single source of truth.
 
-
 ## General rules
 
 - Adhere strictly to idiomatic SvelteKit 5:
@@ -50,8 +49,7 @@ Components live in the `src/lib/components` folder, each component in its own fo
 
 The markup of the component stays in the `.svelte` file, the styles are embedded in the component file, and the TypeScript code goes to the `.ts` file.
 
-Components are being imported from their own `.svelte` files.  Avoid using the deprecated `src/lib/components/index.ts`, as it breaks the chunking.
-
+Components are being imported from their own `.svelte` files. Avoid using the deprecated `src/lib/components/index.ts`, as it breaks the chunking.
 
 ## Error handling
 
