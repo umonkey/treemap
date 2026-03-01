@@ -3,6 +3,7 @@
 	import { locale } from '$lib/locale';
 	import { apiClient } from '$lib/api';
 	import { isAuthenticated } from '$lib/stores/authStore';
+	import { getUser } from '$lib/stores/userStore';
 	import type { IObservation } from '$lib/types';
 	import { Button, Buttons, CheckInput, Form, HelpButton, SignInButton } from '$lib/ui';
 	import { toast } from '@zerodevx/svelte-toast';
@@ -21,6 +22,7 @@
 		leaking: false,
 		root_damage: false,
 		open_roots: false,
+		bug_holes: false,
 		topping: false,
 		fungal_bodies: false,
 		vfork: false,
@@ -29,6 +31,13 @@
 		nests: false,
 		nesting_boxes: false
 	});
+
+	const user = $derived($getUser(observation.created_by));
+	const date = $derived(
+		observation.created_at > 0
+			? new Date(observation.created_at * 1000).toISOString().split('T')[0]
+			: ''
+	);
 
 	onMount(async () => {
 		const response = await apiClient.getObservations(id);
@@ -55,6 +64,7 @@
 		{ id: 'leaking', label: locale.observationLeaking() },
 		{ id: 'root_damage', label: locale.observationRootDamage() },
 		{ id: 'open_roots', label: locale.observationOpenRoots() },
+		{ id: 'bug_holes', label: locale.observationBugHoles() },
 		{ id: 'topping', label: locale.observationTopping() },
 		{ id: 'fungal_bodies', label: locale.observationFungalBodies() },
 		{ id: 'vfork', label: locale.observationVfork() },
@@ -70,6 +80,14 @@
 {#if loading}
 	<p>Loading...</p>
 {:else}
+	<div class="observation-status">
+		{#if observation.created_at > 0 && observation.created_by}
+			<p>Last observation made on {date} by {user?.name ?? 'unknown user'}</p>
+		{:else}
+			<p>There are no observations for this tree, add the first one.</p>
+		{/if}
+	</div>
+
 	<Form onSubmit={handleSubmit}>
 		<table class="observation-table">
 			<tbody>
@@ -147,5 +165,11 @@
 		width: 100%;
 		text-align: center;
 		color: var(--text-color-secondary);
+	}
+
+	.observation-status {
+		margin-bottom: var(--gap-large);
+		color: var(--text-color-secondary);
+		font-size: 0.9em;
 	}
 </style>

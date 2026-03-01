@@ -257,6 +257,7 @@ export interface IObservation {
 	leaking: boolean;
 	root_damage: boolean;
 	open_roots: boolean;
+	bug_holes: boolean;
 	topping: boolean;
 	fungal_bodies: boolean;
 	vfork: boolean;

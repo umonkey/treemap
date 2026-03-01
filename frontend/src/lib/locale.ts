@@ -262,6 +262,10 @@ class EnglishLocale {
 	public observationOpenRoots(): string {
 		return 'Open roots';
 	}
+	public observationBugHoles(): string {
+		return 'Bug holes';
+	}
+
 	public observationTopping(): string {
 		return 'Topping';
 	}
@@ -930,10 +934,10 @@ class RussianLocale extends EnglishLocale {
 		return 'Повреждение коры';
 	}
 	public observationDryBranches(): string {
-		return 'Сухие ветви';
+		return 'Сухие ветки';
 	}
 	public observationLeaking(): string {
-		return 'Течь';
+		return 'Течёт жидкость';
 	}
 	public observationRootDamage(): string {
 		return 'Повреждение корней';
@@ -941,11 +945,15 @@ class RussianLocale extends EnglishLocale {
 	public observationOpenRoots(): string {
 		return 'Открытые корни';
 	}
+	public observationBugHoles(): string {
+		return 'Отверстия насекомых';
+	}
+
 	public observationTopping(): string {
 		return 'Топпинг';
 	}
 	public observationFungalBodies(): string {
-		return 'Грибы';
+		return 'Грибы (плодовые тела)';
 	}
 	public observationVfork(): string {
 		return 'V-образная развилка';
@@ -957,7 +965,7 @@ class RussianLocale extends EnglishLocale {
 		return 'Лианы';
 	}
 	public observationNests(): string {
-		return 'Гнезда';
+		return 'Гнёзда';
 	}
 	public observationNestingBoxes(): string {
 		return 'Скворечники';
@@ -1620,6 +1628,10 @@ class ArmenianLocale extends EnglishLocale {
 	public observationOpenRoots(): string {
 		return 'Բաց արմատներ';
 	}
+	public observationBugHoles(): string {
+		return 'Միջատների անցքեր';
+	}
+
 	public observationTopping(): string {
 		return 'Գագատահատում';
 	}
