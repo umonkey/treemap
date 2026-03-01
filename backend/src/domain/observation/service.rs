@@ -42,6 +42,7 @@ impl ObservationService {
             vines: flags.vines,
             nests: flags.nests,
             nesting_boxes: flags.nesting_boxes,
+            bug_holes: flags.bug_holes,
         };
 
         self.repository.add(&observation).await?;

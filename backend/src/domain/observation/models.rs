@@ -20,6 +20,7 @@ pub struct Observation {
     pub vines: bool,
     pub nests: bool,
     pub nesting_boxes: bool,
+    pub bug_holes: bool,
 }
 
 #[derive(Debug, Clone, Default)]
@@ -36,6 +37,7 @@ pub struct ObservationFlags {
     pub vines: bool,
     pub nests: bool,
     pub nesting_boxes: bool,
+    pub bug_holes: bool,
 }
 
 impl Observation {
@@ -57,6 +59,7 @@ impl Observation {
             vines: false,
             nests: false,
             nesting_boxes: false,
+            bug_holes: false,
         }
     }
 
@@ -78,6 +81,7 @@ impl Observation {
             vines: attributes.require_i64("vines")? != 0,
             nests: attributes.require_i64("nests")? != 0,
             nesting_boxes: attributes.require_i64("nesting_boxes")? != 0,
+            bug_holes: attributes.require_i64("bug_holes")? != 0,
         })
     }
 
@@ -140,6 +144,10 @@ impl Observation {
             (
                 "nesting_boxes".to_string(),
                 Value::from(if self.nesting_boxes { 1 } else { 0 }),
+            ),
+            (
+                "bug_holes".to_string(),
+                Value::from(if self.bug_holes { 1 } else { 0 }),
             ),
         ])
     }

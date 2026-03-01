@@ -122,6 +122,7 @@ pub struct ObservationRead {
     pub vines: bool,
     pub nests: bool,
     pub nesting_boxes: bool,
+    pub bug_holes: bool,
 }
 
 impl ObservationRead {
@@ -142,6 +143,7 @@ impl ObservationRead {
             vines: obs.vines,
             nests: obs.nests,
             nesting_boxes: obs.nesting_boxes,
+            bug_holes: obs.bug_holes,
         }
     }
 }
@@ -172,6 +174,8 @@ pub struct AddObservationRequest {
     pub nests: bool,
     #[serde(default)]
     pub nesting_boxes: bool,
+    #[serde(default)]
+    pub bug_holes: bool,
 }
 
 impl AddObservationRequest {
@@ -189,6 +193,7 @@ impl AddObservationRequest {
             vines: self.vines,
             nests: self.nests,
             nesting_boxes: self.nesting_boxes,
+            bug_holes: self.bug_holes,
         }
     }
 }

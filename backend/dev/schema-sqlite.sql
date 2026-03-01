@@ -211,6 +211,7 @@ CREATE TABLE IF NOT EXISTS observations (
     `vines` INT NOT NULL DEFAULT '0',
     `nests` INT NOT NULL DEFAULT '0',
     `nesting_boxes` INT NOT NULL DEFAULT '0',
+    `bug_holes` INT NOT NULL DEFAULT '0',
     PRIMARY KEY(`id`)
 );
 CREATE INDEX IF NOT EXISTS observations_tree_id ON observations (tree_id);
