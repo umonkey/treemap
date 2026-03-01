@@ -22,14 +22,37 @@ impl ObservationService {
         user_id: u64,
         flags: ObservationFlags,
     ) -> Result<Observation> {
-        if let Some(last) = self.repository.get_last_by_tree(tree_id).await? {
+        let now = get_timestamp();
+
+        if let Some(mut last) = self.repository.get_last_by_tree(tree_id).await? {
             if last.matches_flags(&flags) {
+                return Ok(last);
+            }
+
+            // If the last observation is from the same user within 1 hour, update it.
+            if last.created_by == user_id && now - last.created_at < 3600 {
+                last.created_at = now;
+                last.bark_damage = flags.bark_damage;
+                last.dry_branches = flags.dry_branches;
+                last.leaking = flags.leaking;
+                last.root_damage = flags.root_damage;
+                last.open_roots = flags.open_roots;
+                last.topping = flags.topping;
+                last.fungal_bodies = flags.fungal_bodies;
+                last.vfork = flags.vfork;
+                last.cavities = flags.cavities;
+                last.vines = flags.vines;
+                last.nests = flags.nests;
+                last.nesting_boxes = flags.nesting_boxes;
+                last.bug_holes = flags.bug_holes;
+
+                self.repository.update(&last).await?;
+
                 return Ok(last);
             }
         }
 
         let id = get_unique_id()?;
-        let now = get_timestamp();
 
         let observation = Observation {
             id,
