@@ -324,6 +324,10 @@ class EnglishLocale {
 		return 'You need to be authenticated to add comments.';
 	}
 
+	public observationSignIn(): string {
+		return 'You need to be authenticated to save observations.';
+	}
+
 	public commentSubmit(): string {
 		return 'Submit comment';
 	}
@@ -999,6 +1003,10 @@ class RussianLocale extends EnglishLocale {
 		return 'Нужно залогиниться, чтобы оставить комментарий.';
 	}
 
+	public observationSignIn(): string {
+		return 'Нужно залогиниться, чтобы сохранить наблюдения.';
+	}
+
 	public commentSubmit(): string {
 		return 'Отправить комментарий';
 	}
@@ -1672,6 +1680,10 @@ class ArmenianLocale extends EnglishLocale {
 
 	public commentSignIn(): string {
 		return 'Մեկնաբանություններ ավելացնելու համար անհրաժեշտ է վավերացում:';
+	}
+
+	public observationSignIn(): string {
+		return 'Դիտարկումները պահպանելու համար անհրաժեշտ է վավերացում:';
 	}
 
 	public commentSubmit(): string {

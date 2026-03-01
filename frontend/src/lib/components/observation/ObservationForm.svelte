@@ -2,8 +2,9 @@
 	import { onMount } from 'svelte';
 	import { locale } from '$lib/locale';
 	import { apiClient } from '$lib/api';
+	import { isAuthenticated } from '$lib/stores/authStore';
 	import type { IObservation } from '$lib/types';
-	import { Button, Buttons, Form, HelpButton } from '$lib/ui';
+	import { Button, Buttons, Form, HelpButton, SignInButton } from '$lib/ui';
 	import { toast } from '@zerodevx/svelte-toast';
 
 	const { id } = $props<{ id: string }>();
@@ -78,6 +79,7 @@
 							<input
 								type="checkbox"
 								id={field.id}
+								disabled={!$isAuthenticated}
 								bind:checked={observation[field.id as keyof IObservation]}
 							/>
 						</td>
@@ -93,7 +95,14 @@
 		</table>
 
 		<Buttons>
-			<Button type="submit" disabled={saving}>{locale.editSave()}</Button>
+			{#if $isAuthenticated}
+				<Button type="submit" disabled={saving}>{locale.editSave()}</Button>
+			{:else}
+				<div class="auth-prompt">
+					<p>{locale.observationSignIn()}</p>
+					<SignInButton />
+				</div>
+			{/if}
 		</Buttons>
 	</Form>
 {/if}
@@ -122,6 +131,10 @@
 			height: 20px;
 			cursor: pointer;
 			display: block;
+
+			&:disabled {
+				cursor: default;
+			}
 		}
 	}
 
@@ -136,5 +149,15 @@
 	.help-cell {
 		width: 40px;
 		text-align: right;
+	}
+
+	.auth-prompt {
+		display: flex;
+		flex-direction: column;
+		gap: var(--gap);
+		align-items: center;
+		width: 100%;
+		text-align: center;
+		color: var(--text-color-secondary);
 	}
 </style>

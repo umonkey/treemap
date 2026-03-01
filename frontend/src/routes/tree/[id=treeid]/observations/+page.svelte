@@ -1,6 +1,6 @@
 <script lang="ts">
 	import ObservationForm from '$lib/components/observation/ObservationForm.svelte';
-	import { NarrowPage, AuthWrapper, TreeTabs, TreeContextMenu } from '$lib/ui';
+	import { NarrowPage, TreeTabs, TreeContextMenu } from '$lib/ui';
 	import { locale } from '$lib/locale';
 	import { formatSpecies } from '$lib/utils/trees';
 	import Title from '$lib/components/tree/Title.svelte';
@@ -15,9 +15,7 @@
 	<TreeContextMenu id={tree.id} />
 
 	<div class="padded">
-		<AuthWrapper>
-			<ObservationForm id={tree.id} />
-		</AuthWrapper>
+		<ObservationForm id={tree.id} />
 	</div>
 </NarrowPage>
 
