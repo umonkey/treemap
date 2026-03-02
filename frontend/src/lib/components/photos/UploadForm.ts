@@ -9,7 +9,6 @@ export const hooks = () => {
 	const loading = writable<boolean>(false);
 	const tree = writable<ITree>(DEFAULT_TREE);
 	const error = writable<string | null>(null);
-	const thumbnail = writable<string | null>(null);
 
 	const reload = (id: string) => {
 		loading.set(true);
@@ -33,7 +32,6 @@ export const hooks = () => {
 		const res = await apiClient.changeTreeThumbnail(get(tree).id, file.id);
 
 		if (res.status >= 200 && res.status < 300) {
-			thumbnail.set(file.small_id);
 			toast.push('Thumbnail changed.');
 		} else {
 			toast.push('Error changing thumbnail.');
@@ -50,5 +48,5 @@ export const hooks = () => {
 		}
 	};
 
-	return { loading, tree, thumbnail, error, reload, handleMakeThumbnail, handleDelete };
+	return { loading, tree, error, reload, handleMakeThumbnail, handleDelete };
 };
