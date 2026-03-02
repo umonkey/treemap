@@ -5,6 +5,7 @@ export { default as BellIcon } from './BellIcon.svelte';
 export { default as CameraIcon } from './CameraIcon.svelte';
 export { default as ChartIcon } from './ChartIcon.svelte';
 export { default as ChatIcon } from './ChatIcon.svelte';
+export { default as CheckListIcon } from './CheckListIcon.svelte';
 export { default as CircumferenceIcon } from './CircumferenceIcon.svelte';
 export { default as CloseIcon } from './CloseIcon.svelte';
 export { default as CreateIcon } from './CreateIcon.svelte';

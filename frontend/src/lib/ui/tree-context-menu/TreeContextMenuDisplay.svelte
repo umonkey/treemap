@@ -9,7 +9,8 @@
 		TreeIcon,
 		MeasureHeight,
 		MeasureDiameter,
-		MeasureGrith
+		MeasureGrith,
+		CheckListIcon
 	} from '$lib/icons';
 	import '$lib/styles/colors.css';
 	import '$lib/styles/animations.css';
@@ -61,6 +62,10 @@
 				</li>
 				<li>
 					<TreeIcon /> <a href={routes.treeReplace(id)}>{locale.contextReplace()}</a>
+				</li>
+				<li class="sep">
+					<CheckListIcon />
+					<a href={routes.treeObservations(id)}>{locale.treeTabsObservations()}</a>
 				</li>
 			</ul>
 		</div>

@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 	import { locale } from '$lib/locale';
 	import { apiClient } from '$lib/api';
+	import { routes } from '$lib/routes';
 	import { isAuthenticated } from '$lib/stores/authStore';
 	import { addUsers, getUser } from '$lib/stores/userStore';
 	import type { IObservation } from '$lib/types';
@@ -66,6 +68,7 @@
 			toast.push(response.error.description);
 		} else {
 			toast.push('Observations saved');
+			goto(routes.mapPreview(id));
 		}
 		saving = false;
 	}
