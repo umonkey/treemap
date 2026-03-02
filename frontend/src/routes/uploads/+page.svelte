@@ -26,6 +26,16 @@
 <TabList items={tabs} />
 
 <NarrowPage>
-	<AutoUploadCheckbox />
-	<UploadsList />
+	<div>
+		<AutoUploadCheckbox />
+		<UploadsList />
+	</div>
 </NarrowPage>
+
+<style>
+div {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+</style>

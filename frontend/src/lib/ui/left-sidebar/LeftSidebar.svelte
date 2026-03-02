@@ -146,7 +146,6 @@
 						flex-grow: 0;
 						height: 24px;
 						width: 24px;
-						overflow: hidden;
 						position: relative;
 
 						img {
