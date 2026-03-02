@@ -1,11 +1,8 @@
 <script lang="ts">
-	import { FormElement } from '$lib/ui';
-
 	let {
 		value = $bindable(false),
 		label = '',
 		hint = '',
-		help,
 		disabled = false,
 		id,
 		onChange
@@ -13,7 +10,6 @@
 		value: boolean;
 		label?: string;
 		hint?: string;
-		help?: string;
 		disabled?: boolean;
 		id?: string;
 		onChange?: (value: boolean) => void;
@@ -28,20 +24,31 @@
 </script>
 
 {#if label || hint}
-	<FormElement {label} {hint} {help}>
-		<label class="switch" class:disabled>
+	<label class:disabled>
+		<div class="switch">
 			<input type="checkbox" {id} bind:checked={value} {disabled} onchange={handleChange} />
 			<span class="slider"></span>
-		</label>
-	</FormElement>
+		</div>
+		<span>{label}</span>
+	</label>
 {:else}
-	<label class="switch standalone" class:disabled>
-		<input type="checkbox" {id} bind:checked={value} {disabled} onchange={handleChange} />
-		<span class="slider"></span>
+	<label class="standalone" class:disabled>
+		<div class="switch">
+			<input type="checkbox" {id} bind:checked={value} {disabled} onchange={handleChange} />
+			<span class="slider"></span>
+		</div>
 	</label>
 {/if}
 
 <style>
+	label {
+		display: flex;
+		flex-direction: row;
+		gap: 1rem;
+		align-items: center;
+		cursor: pointer;
+	}
+
 	.switch {
 		position: relative;
 		display: inline-block;
@@ -58,7 +65,6 @@
 
 	.slider {
 		position: absolute;
-		cursor: pointer;
 		top: 0;
 		left: 0;
 		right: 0;

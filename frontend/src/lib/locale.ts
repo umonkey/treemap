@@ -946,7 +946,7 @@ class RussianLocale extends EnglishLocale {
 		return 'Открытые корни';
 	}
 	public observationBugHoles(): string {
-		return 'Отверстия насекомых';
+		return 'Отверстия от насекомых';
 	}
 
 	public observationTopping(): string {
