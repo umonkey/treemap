@@ -192,7 +192,7 @@ class EnglishLocale {
 	}
 
 	public stateHealthy(): string {
-		return 'healthy';
+		return 'alive';
 	}
 
 	public stateDead(): string {
@@ -879,7 +879,7 @@ class RussianLocale extends EnglishLocale {
 	}
 
 	public stateHealthy(): string {
-		return 'здорово';
+		return 'живое';
 	}
 
 	public stateDead(): string {
@@ -1562,7 +1562,7 @@ class ArmenianLocale extends EnglishLocale {
 	}
 
 	public stateHealthy(): string {
-		return 'առողջ';
+		return 'կենդանի';
 	}
 
 	public stateDead(): string {
