@@ -104,6 +104,12 @@ export async function processUploadQueue() {
 	isProcessing = true;
 	setUploading(true);
 
+	// Auto-restart previously failed uploads.
+	await db.uploads
+		.where('status')
+		.anyOf('failed', 'uploading')
+		.modify({ status: 'pending', retry_count: 0 });
+
 	try {
 		while (true) {
 			const pending = await db.transaction('rw', db.uploads, async () => {

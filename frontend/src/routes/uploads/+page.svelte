@@ -33,9 +33,9 @@
 </NarrowPage>
 
 <style>
-div {
-	display: flex;
-	flex-direction: column;
-	gap: 1rem;
-}
+	div {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
 </style>
