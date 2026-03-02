@@ -10,6 +10,7 @@
 	import Comment from '$lib/components/tree/Comment.svelte';
 	import Description from '$lib/components/tree/Description.svelte';
 	import Links from '$lib/components/tree/Links.svelte';
+	import Observations from '$lib/components/observation/Observations.svelte';
 	import Properties from '$lib/components/tree/Properties.svelte';
 	import Title from '$lib/components/tree/Title.svelte';
 	import { CommentForm, Gallery, TreeContextMenu, TreeTabs, NarrowPage } from '$lib/ui';
@@ -18,6 +19,7 @@
 	const { data } = $props();
 	const tree = $derived(data.tree);
 	const comments = $derived(data.comments);
+	const observation = $derived(data.observation);
 
 	// Save last active tree.
 	onMount(() => {
@@ -50,6 +52,7 @@
 	<Gallery id={tree.id} />
 	<Actions {tree} />
 	<Properties {tree} />
+	<Observations {observation} />
 	<Links {tree} />
 	<Description text={tree.notes} />
 

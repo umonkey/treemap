@@ -1,6 +1,6 @@
 import { apiClient } from '$lib/api';
 import { addUsers } from '$lib/stores/userStore';
-import type { IComment, ITree } from '$lib/types';
+import type { IComment, IObservation, ITree } from '$lib/types';
 import type { Load } from '@sveltejs/kit';
 import { error } from '@sveltejs/kit';
 
@@ -10,6 +10,7 @@ export const load: Load = async ({
 	id: string;
 	tree: ITree;
 	comments: IComment[];
+	observation: IObservation | null;
 }> => {
 	const treeId = params.id;
 
@@ -17,9 +18,10 @@ export const load: Load = async ({
 		error(404);
 	}
 
-	const [treeRes, commentsRes] = await Promise.all([
+	const [treeRes, commentsRes, observationRes] = await Promise.all([
 		apiClient.getTree(treeId),
-		apiClient.getTreeComments(treeId)
+		apiClient.getTreeComments(treeId),
+		apiClient.getObservations(treeId)
 	]);
 
 	if (treeRes.status === 200 && treeRes.data) {
@@ -34,7 +36,8 @@ export const load: Load = async ({
 		return {
 			id: treeId,
 			tree: treeRes.data,
-			comments
+			comments,
+			observation: observationRes.data ?? null
 		};
 	}
 
