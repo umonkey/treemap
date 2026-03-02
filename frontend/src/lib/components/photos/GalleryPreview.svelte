@@ -9,7 +9,7 @@
 	// request tree details again.
 
 	import { isMapperMode } from '$lib/stores/modeStore';
-	import { hooks } from './hooks';
+	import { hooks } from './GalleryPreview';
 	import GalleryPreviewDisplay from './GalleryPreviewDisplay.svelte';
 
 	const { id } = $props<{

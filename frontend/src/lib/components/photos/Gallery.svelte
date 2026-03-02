@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { hooks } from './hooks';
+	import { hooks } from './Gallery';
 	import { GallerySlides } from '$lib/ui';
 
 	const { id } = $props<{ id: string }>();

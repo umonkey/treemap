@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
 	import { NarrowPage, Form, AuthWrapper } from '$lib/ui';
-	import PhotoUploader from '$lib/components/PhotoUploader.svelte';
-	import { UploadForm } from '$lib/forms';
+	import PhotoUploader from '$lib/components/photos/PhotoUploader.svelte';
+	import UploadForm from '$lib/components/photos/UploadForm.svelte';
 	import { load } from './hooks';
 
 	const { data } = $props();

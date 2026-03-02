@@ -3,7 +3,7 @@
 	import GalleryPreviewDisplay from './GalleryPreviewDisplay.svelte';
 
 	const { Story } = defineMeta({
-		title: 'UI/GalleryPreview',
+		title: 'Components/Photos/GalleryPreview',
 		component: GalleryPreviewDisplay,
 		argTypes: {
 			loading: { control: 'boolean' },

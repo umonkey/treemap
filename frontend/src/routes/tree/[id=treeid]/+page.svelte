@@ -13,7 +13,8 @@
 	import Observations from '$lib/components/observation/Observations.svelte';
 	import Properties from '$lib/components/tree/Properties.svelte';
 	import Title from '$lib/components/tree/Title.svelte';
-	import { CommentForm, Gallery, TreeContextMenu, TreeTabs, NarrowPage } from '$lib/ui';
+	import Gallery from '$lib/components/photos/Gallery.svelte';
+	import { CommentForm, TreeContextMenu, TreeTabs, NarrowPage } from '$lib/ui';
 	import { onMount } from 'svelte';
 
 	const { data } = $props();

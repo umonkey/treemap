@@ -17,8 +17,6 @@ export { default as FileUploaderDisplay } from './file-uploader-display/FileUplo
 export { default as FilteredChangeList } from './filtered-change-list/FilteredChangeList.svelte';
 export { default as Form } from './form/Form.svelte';
 export { default as FormElement } from './form-element/FormElement.svelte';
-export { default as Gallery } from './gallery/Gallery.svelte';
-export { default as GalleryPreview } from './gallery-preview/GalleryPreview.svelte';
 export { default as GallerySlides } from './gallery-slides/GallerySlides.svelte';
 export { default as Header } from './header/Header.svelte';
 export { default as HeightInput } from './height-input/HeightInput.svelte';

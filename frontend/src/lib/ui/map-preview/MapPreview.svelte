@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { GalleryPreview, Buttons, Button, TreeContextMenu } from '$lib/ui';
+	import { Buttons, Button, TreeContextMenu } from '$lib/ui';
+	import GalleryPreview from '$lib/components/photos/GalleryPreview.svelte';
 	import { CloseIcon, ShareIcon, SettingsIcon } from '$lib/icons';
 	import { routes } from '$lib/routes';
 	import { formatSpecies, shortDetails } from '$lib/utils/trees';

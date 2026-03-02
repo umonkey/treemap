@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { routes } from '$lib/routes';
 	import { fileAttribution } from '$lib/utils/strings';
-	import { hooks } from './hooks';
+	import { hooks } from './UploadForm';
 	import { Buttons, Button } from '$lib/ui';
 
 	const { id } = $props<{ id: string }>();

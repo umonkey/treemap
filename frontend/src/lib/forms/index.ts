@@ -9,4 +9,3 @@ export { default as ReplaceForm } from './replace-form/ReplaceForm.svelte';
 export { default as ReportForm } from './report-form/ReportForm.svelte';
 export { default as SearchForm } from './search-form/SearchForm.svelte';
 export { default as TreeDeadForm } from './tree-dead-form/TreeDeadForm.svelte';
-export { default as UploadForm } from './upload-form/UploadForm.svelte';
