@@ -13,6 +13,10 @@ database = "sqlite"
 # Details: https://docs.turso.tech/sdk/rust/quickstart
 #turso_url = "libsql://foobar.aws-eu-west-1.turso.io"
 
+# Queue configuration.  Will use SQS if sqs_url is defined, otherwise SQLite.
+# You'd also need to set secrets SQS_KEY and SQS_SECRET.
+#sqs_url = "https://sqs.eu-west-1.amazonaws.com/123456789012/trees_updates"
+
 # Path to where the file based secrets are stored.
 #secrets_path = "/run/secrets"
 

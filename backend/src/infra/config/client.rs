@@ -74,9 +74,7 @@ pub struct Config {
     pub files_bucket: Option<String>,
 
     // Background job queue.
-    pub sqs_region: Option<String>,
-    pub sqs_endpoint: Option<String>,
-    pub sqs_queue: Option<String>,
+    pub sqs_url: Option<String>,
 }
 
 impl Config {

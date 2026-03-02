@@ -140,6 +140,33 @@ impl Locatable for SqsQueue {
         let config = locator.get::<Config>()?;
         let secrets = locator.get::<Secrets>()?;
 
+        let sqs_url = config
+            .sqs_url
+            .clone()
+            .ok_or(Error::Config("sqs_url not set".to_string()))?;
+
+        let url = url::Url::parse(&sqs_url)
+            .map_err(|e| Error::Config(format!("Invalid sqs_url: {e}")))?;
+
+        let host = url.host_str().unwrap_or_default();
+
+        let region = if host.starts_with("sqs.") && host.ends_with(".amazonaws.com") {
+            host.split('.').nth(1).unwrap_or("us-east-1").to_string()
+        } else {
+            "us-east-1".to_string()
+        };
+
+        let endpoint = format!(
+            "{}://{}{}",
+            url.scheme(),
+            host,
+            if let Some(port) = url.port() {
+                format!(":{port}")
+            } else {
+                "".to_string()
+            }
+        );
+
         let sqs_key = secrets
             .sqs_key
             .clone()
@@ -150,23 +177,13 @@ impl Locatable for SqsQueue {
             .clone()
             .ok_or(Error::Config("Secret SQS_SECRET not set".to_string()))?;
 
-        let sqs_region = config.sqs_region.clone().ok_or(Error::Config(
-            "Config option SQS_REGION not set".to_string(),
-        ))?;
-
-        let sqs_endpoint = config.sqs_endpoint.clone().ok_or(Error::Config(
-            "Config option SQS_ENDPOINT not set".to_string(),
-        ))?;
-
-        let aws_config = AwsConfig::sqs(&sqs_key, &sqs_secret, &sqs_region, &sqs_endpoint)?;
+        let aws_config = AwsConfig::sqs(&sqs_key, &sqs_secret, &region, &endpoint)?;
 
         let client = aws_sdk_sqs::Client::new(&aws_config);
 
-        let queue_url = config
-            .sqs_queue
-            .clone()
-            .ok_or(Error::Config("sqs_queue URL not set".to_string()))?;
-
-        Ok(Self { client, queue_url })
+        Ok(Self {
+            client,
+            queue_url: sqs_url,
+        })
     }
 }

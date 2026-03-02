@@ -20,7 +20,7 @@ impl Locatable for Queue {
     fn create(locator: &Locator) -> Result<Self> {
         let config = locator.get::<Config>()?;
 
-        let queue: Arc<dyn BaseQueueInterface> = if config.sqs_queue.is_some() {
+        let queue: Arc<dyn BaseQueueInterface> = if config.sqs_url.is_some() {
             locator.get::<SqsQueue>()?
         } else {
             locator.get::<DatabaseQueue>()?
