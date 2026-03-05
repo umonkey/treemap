@@ -680,6 +680,14 @@ class EnglishLocale {
 		return 'Auto-upload files';
 	}
 
+	public uploadsDisabledHint(): string {
+		return 'Files will not be uploading unless you open this page and click the start button. You can queue the files and upload them when you feel comfortable.';
+	}
+
+	public uploadsEnabledHint(): string {
+		return 'The photos will be uploading as soon as you take them, unless your phone is in data saving or power saving mode.';
+	}
+
 	public toastCommentAdded(): string {
 		return 'Comment added.';
 	}
@@ -1367,6 +1375,14 @@ class RussianLocale extends EnglishLocale {
 		return 'Загружать файлы автоматически';
 	}
 
+	public uploadsDisabledHint(): string {
+		return 'Файлы не будут загружаться, пока вы не откроете эту страницу и не нажмете кнопку запуска. Вы можете ставить файлы в очередь и загружать их, когда вам будет удобно.';
+	}
+
+	public uploadsEnabledHint(): string {
+		return 'Фотографии будут загружаться сразу после того, как вы их сделаете, если только ваш телефон не находится в режиме экономии трафика или энергии.';
+	}
+
 	public toastCommentAdded(): string {
 		return 'Комментарий добавлен.';
 	}
@@ -1940,6 +1956,14 @@ class ArmenianLocale extends EnglishLocale {
 
 	public uploadsAuto(): string {
 		return 'Ֆայլերը վերբեռնել ավտոմատ';
+	}
+
+	public uploadsDisabledHint(): string {
+		return 'Ֆայլերը չեն վերբեռնվի, քանի դեռ չեք բացել այս էջը և սեղմել սկսելու կոճակը: Դուք կարող եք հերթագրել ֆայլերը և վերբեռնել դրանք, երբ ձեզ հարմար լինի:';
+	}
+
+	public uploadsEnabledHint(): string {
+		return 'Լուսանկարները կվերբեռնվեն հենց որ դրանք նկարեք, եթե ձեր հեռախոսը տվյալների խնայողության կամ էներգիայի խնայողության ռեժիմում չէ:';
 	}
 
 	public toastCommentAdded(): string {
