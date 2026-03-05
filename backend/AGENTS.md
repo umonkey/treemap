@@ -30,3 +30,26 @@ The API follows the Action-Domain-Responder model.
 - When asked for a solution, suggest the best one for this project, but mention alternatives.
 - Before implementing any changes, provide the implementation plan and ask for the user's confirmation.
 - After changing any code, run "make format check" and fix any reported formatting and linter issues.
+
+
+## Useful commands
+
+- `make build`: build the project (release mode).
+- `make check`: run clippy and check the code.
+- `make format`: format the code.
+- `make serve`: run the backend locally.
+- `make test`: run unit tests.
+- `make sqlite-seed`: install test data into a local SQLite database.
+
+### CLI Commands
+
+The binary also supports several CLI commands (run via `cargo run -- <command>`):
+
+- `osm-pull`: get new trees from OpenStreetMap.
+- `osm-push`: send new trees to OSM.
+- `osm-push-changes`: send tree updates to OSM.
+- `queue-consumer`: run the queue consumer daemon.
+- `serve`: run the web server.
+- `update-tree-address N`: update street address for a single tree.
+- `update-tree-addresses`: update street address for all trees.
+- `upload-files`: move local files to S3.
