@@ -119,6 +119,8 @@ describe('AddForm', async () => {
 			lat: 1.0,
 			lon: 2.0
 		});
+
+		expect(mockedGoto).toHaveBeenCalledWith('/tree/tree1/observations');
 	});
 
 	// We allow adding trees with default values, all good.
@@ -167,5 +169,7 @@ describe('AddForm', async () => {
 
 		expect(request).not.toBeNull();
 		expect(request?.year).toBe(1980);
+
+		expect(mockedGoto).toHaveBeenCalledWith('/tree/tree1/observations');
 	});
 });

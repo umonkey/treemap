@@ -151,11 +151,7 @@ export const hooks = () => {
 			if (res.status >= 200 && res.status < 400 && res.data) {
 				toast.push('Tree added.');
 
-				if (get(isMapperMode)) {
-					goto(routes.mapPreview(res.data.trees[0].id));
-				} else {
-					goto(routes.treeDetails(res.data.trees[0].id));
-				}
+				goto(routes.treeObservations(res.data.trees[0].id));
 			} else {
 				console.error(`Error ${res.status} updating tree.`);
 				toast.push('Error updating tree.');
