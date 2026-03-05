@@ -15,6 +15,7 @@ import { apiClient } from './api';
 import { uploadBus } from '$lib/buses/upload';
 import { uploadStore } from '$lib/stores/upload';
 import { get } from 'svelte/store';
+import { isDataSaving, isLowPower } from '$lib/utils/device';
 import {
 	incrementUploadCount,
 	decrementUploadCount,
@@ -70,6 +71,16 @@ export const autoStartUpload = async () => {
 	await db.uploads.where('status').equals('completed').delete();
 
 	if (get(uploadStore).autoupload) {
+		if (isDataSaving()) {
+			console.debug('[upload] Data saving mode is enabled, auto-upload skipped.');
+			return;
+		}
+
+		if (await isLowPower()) {
+			console.debug('[upload] Low power mode is detected, auto-upload skipped.');
+			return;
+		}
+
 		console.debug('Auto-upload enabled, triggering.');
 		processUploadQueue();
 	} else {
@@ -196,7 +207,7 @@ export async function uploadSingleFile(
 // Start processing on load if online.
 if (typeof window !== 'undefined') {
 	window.addEventListener('online', () => {
-		processUploadQueue();
+		autoStartUpload();
 	});
 
 	// Initial check.
