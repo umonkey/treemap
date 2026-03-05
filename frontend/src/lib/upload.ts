@@ -126,19 +126,19 @@ export async function processUploadQueue() {
 		while (true) {
 			const pending = await db.transaction('rw', db.uploads, async () => {
 				const item = await db.uploads
-					.where('status')
-					.anyOf('pending', 'failed')
-					.filter((u) => u.retry_count < 5)
+					.orderBy('created_at')
+					.reverse()
+					.filter((u) => (u.status === 'pending' || u.status === 'failed') && u.retry_count < 5)
 					.first();
 
-				if (item && item.id) {
+				if (item?.id) {
 					await db.uploads.update(item.id, { status: 'uploading', progress: 0 });
 				}
 
 				return item;
 			});
 
-			if (!pending || !pending.id) {
+			if (!pending?.id) {
 				resetUploadCount();
 				break;
 			}
