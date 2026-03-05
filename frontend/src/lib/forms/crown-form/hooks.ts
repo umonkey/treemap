@@ -89,5 +89,5 @@ export const editor = (tree_id: string) => {
 
 	reload(tree_id);
 
-	return { loading, loadError, saveError, value, history, reload, save, close, handleChange };
+	return { loading, loadError, saveError, value, history, reload, busy, save, close, handleChange };
 };
