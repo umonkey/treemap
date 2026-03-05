@@ -3,7 +3,7 @@
 //! tree creation or manipulation.
 
 use super::models::Upload;
-use crate::infra::database::{Database, InsertQuery, SelectQuery, Value};
+use crate::infra::database::{Database, InsertQuery, SelectQuery, UpdateQuery, Value};
 use crate::services::{Locatable, Locator};
 use crate::types::*;
 use std::sync::Arc;
@@ -29,6 +29,14 @@ impl UploadRepository {
     pub async fn add(&self, file: &Upload) -> Result<()> {
         let query = InsertQuery::new(TABLE).with_values(file.to_attributes());
         self.db.add_record(query).await?;
+        Ok(())
+    }
+
+    pub async fn finish(&self, id: u64, timestamp: u64) -> Result<()> {
+        let query = UpdateQuery::new(TABLE)
+            .with_condition("id", Value::from(id as i64))
+            .with_value("uploaded_at", Value::from(timestamp as i64));
+        self.db.update(query).await?;
         Ok(())
     }
 }

@@ -37,6 +37,7 @@ impl UploadService {
                 added_by: user_id,
                 added_at: get_timestamp(),
                 size,
+                uploaded_at: None,
             })
             .await?;
 
@@ -51,6 +52,7 @@ impl UploadService {
     }
 
     pub async fn finish_upload(&self, id: u64) -> Result<()> {
+        self.uploads.finish(id, get_timestamp()).await?;
         info!("Upload {id} finished");
         Ok(())
     }

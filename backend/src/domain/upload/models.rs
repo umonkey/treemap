@@ -12,6 +12,7 @@ pub struct Upload {
     pub added_at: u64,
     pub added_by: u64,
     pub size: u64,
+    pub uploaded_at: Option<u64>,
 }
 
 impl Upload {
@@ -22,15 +23,22 @@ impl Upload {
             added_at: attributes.require_u64("added_at")?,
             added_by: attributes.require_u64("added_by")?,
             size: attributes.require_u64("size")?,
+            uploaded_at: attributes.get_u64("uploaded_at")?,
         })
     }
 
     pub fn to_attributes(&self) -> Attributes {
-        Attributes::from(&[
+        let mut props = vec![
             ("id".to_string(), Value::from(self.id as i64)),
             ("added_at".to_string(), Value::from(self.added_at as i64)),
             ("added_by".to_string(), Value::from(self.added_by as i64)),
             ("size".to_string(), Value::from(self.size as i64)),
-        ])
+        ];
+
+        if let Some(uploaded_at) = self.uploaded_at {
+            props.push(("uploaded_at".to_string(), Value::from(uploaded_at as i64)));
+        }
+
+        Attributes::from(&props)
     }
 }

@@ -143,6 +143,7 @@ impl PhotoService {
                 added_at: get_timestamp(),
                 added_by,
                 size: data.len() as u64,
+                uploaded_at: Some(get_timestamp()),
             })
             .await?;
 

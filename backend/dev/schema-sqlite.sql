@@ -96,6 +96,7 @@ CREATE TABLE IF NOT EXISTS uploads (
     `added_at` INT NOT NULL,
     `added_by` INT NOT NULL,
     `size` INT NOT NULL,
+    `uploaded_at` INT NULL,
     PRIMARY KEY(`id`)
 );
 
