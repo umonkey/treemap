@@ -4,6 +4,7 @@
 	import { authStore, isAuthenticated } from '$lib/stores/authStore';
 	import { uploadStore } from '$lib/stores/upload';
 	import { mapLastTree } from '$lib/stores/mapStore';
+	import UserPic from './nav/UserPic.svelte';
 </script>
 
 <nav class="mobile">
@@ -19,8 +20,8 @@
 		><div>
 			{#if $uploadStore.uploading}
 				<SpinnerIcon />
-			{:else if $isAuthenticated && $authStore?.picture}
-				<img src={$authStore.picture} alt="userpic" />
+			{:else if $isAuthenticated}
+				<UserPic src={$authStore?.picture} alt="userpic" class="user-pic-nav" />
 			{:else}
 				<UserIcon />
 			{/if}
@@ -68,7 +69,7 @@
 		}
 	}
 
-	img {
+	:global(.user-pic-nav) {
 		width: 24px;
 		height: 24px;
 		border-radius: 50%;

@@ -3,6 +3,7 @@
 	import { Buttons, Button, SignOutButton } from '$lib/ui';
 	import HEADER_IMAGE from '$lib/assets/header.jpg';
 	import { routes } from '$lib/routes';
+	import UserPic from '$lib/components/nav/UserPic.svelte';
 
 	const { name, userpic, trees_count, updates_count, files_count } = $props<{
 		name: string;
@@ -17,7 +18,7 @@
 	<img class="header" src={HEADER_IMAGE} alt="header background" />
 
 	<div class="container signedIn">
-		<img class="userpic" src={userpic} alt="userpic" />
+		<UserPic src={userpic} alt="userpic" class="userpic-header" />
 
 		<h1>{name}</h1>
 
@@ -39,7 +40,7 @@
 		width: 100%;
 	}
 
-	img.userpic {
+	:global(.userpic-header) {
 		width: 90px;
 		height: 90px;
 		border-radius: 50%;

@@ -7,6 +7,7 @@
 	import { uploadStore } from '$lib/stores/upload';
 	import { authStore } from '$lib/stores/authStore';
 	import Logo from '$lib/assets/trees-of-yerevan.svelte';
+	import UserPic from '$lib/components/nav/UserPic.svelte';
 </script>
 
 <aside class="left">
@@ -57,10 +58,8 @@
 					<span class="icon">
 						{#if $uploadStore.uploading}
 							<SpinnerIcon />
-						{:else if $authStore?.picture}
-							<img src={$authStore.picture} alt="userpic" />
 						{:else}
-							<UserIcon />
+							<UserPic src={$authStore?.picture} alt="userpic" class="user-pic-sidebar" />
 						{/if}
 						{#if $uploadStore.pending > 0}
 							<span class="badge">{$uploadStore.pending}</span>
@@ -147,13 +146,13 @@
 						height: 24px;
 						width: 24px;
 						position: relative;
+					}
 
-						img {
-							width: 24px;
-							height: 24px;
-							border-radius: 50%;
-							margin-left: 4px;
-						}
+					:global(.user-pic-sidebar) {
+						width: 24px;
+						height: 24px;
+						border-radius: 50%;
+						margin-left: 4px;
 					}
 				}
 

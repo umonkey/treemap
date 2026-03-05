@@ -1,0 +1,40 @@
+<script lang="ts">
+	import { UserIcon } from '$lib/icons';
+
+	const {
+		src,
+		alt = 'userpic',
+		class: className
+	} = $props<{
+		src?: string | null;
+		alt?: string;
+		class?: string;
+	}>();
+
+	let error = $state(false);
+
+	const handleError = () => {
+		error = true;
+	};
+</script>
+
+{#if src && !error}
+	<img {src} {alt} class={className} referrerpolicy="no-referrer" onerror={handleError} />
+{:else}
+	<div class={className}>
+		<UserIcon />
+	</div>
+{/if}
+
+<style>
+	img {
+		object-fit: cover;
+		display: block;
+	}
+
+	div {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+</style>
