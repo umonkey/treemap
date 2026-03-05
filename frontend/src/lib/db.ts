@@ -8,6 +8,7 @@ export interface IUpload {
 	created_at: number;
 	retry_count: number;
 	file_id: string | null;
+	progress?: number;
 }
 
 const db = new Dexie('TreeMapUploads') as Dexie & {

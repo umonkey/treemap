@@ -57,7 +57,8 @@ export async function addPhotoToUploadQueue(tree_id: string | number, file: File
 		image: file,
 		created_at: Date.now(),
 		retry_count: 0,
-		file_id: null
+		file_id: null,
+		progress: 0
 	});
 
 	incrementUploadCount();
@@ -120,7 +121,7 @@ export async function processUploadQueue() {
 					.first();
 
 				if (item && item.id) {
-					await db.uploads.update(item.id, { status: 'uploading' });
+					await db.uploads.update(item.id, { status: 'uploading', progress: 0 });
 				}
 
 				return item;
@@ -132,7 +133,7 @@ export async function processUploadQueue() {
 			}
 
 			try {
-				await uploadSingleFile(pending.tree_id, pending.image);
+				await uploadSingleFile(pending.tree_id, pending.image, pending.id);
 
 				await db.uploads.delete(pending.id);
 
@@ -167,8 +168,16 @@ export async function processUploadQueue() {
 /**
  * Upload a single file and attach it to a tree.
  */
-export async function uploadSingleFile(tree_id: string, blob: Blob): Promise<string> {
-	const res = await apiClient.uploadSingleFile(blob);
+export async function uploadSingleFile(
+	tree_id: string,
+	blob: Blob,
+	upload_id?: number
+): Promise<string> {
+	const res = await apiClient.uploadSingleFile(blob, (progress) => {
+		if (upload_id) {
+			db.uploads.update(upload_id, { progress });
+		}
+	});
 	if (res.status !== 200 || !res.data) {
 		throw new Error(res.error?.description || 'Failed to upload file');
 	}

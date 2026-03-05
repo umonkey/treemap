@@ -421,7 +421,10 @@ export class ApiClient {
 	 * This is how you upload all files.
 	 * The response is the file id, which is then used for adding photos to trees.
 	 */
-	public async uploadSingleFile(file: Blob): Promise<IResponse<string>> {
+	public async uploadSingleFile(
+		file: Blob,
+		onProgress?: (p: number) => void
+	): Promise<IResponse<string>> {
 		const ticketRes = await this.request<IUploadTicket>('POST', 'v1/upload', {
 			body: JSON.stringify({ size: file.size }),
 			headers: {
@@ -442,20 +445,47 @@ export class ApiClient {
 
 		try {
 			const start = performance.now();
-			const uploadRes = await fetch(url, {
-				method: 'PUT',
-				body: file
-			});
-			const duration = Math.round(performance.now() - start);
-			console.log(`[api] File upload took ${duration} ms, status=${uploadRes.status}`);
 
-			if (!uploadRes.ok) {
+			const uploadResult = await new Promise<{ ok: boolean; status: number; statusText: string }>(
+				(resolve, reject) => {
+					const xhr = new XMLHttpRequest();
+					xhr.open('PUT', url);
+
+					if (onProgress) {
+						xhr.upload.onprogress = (e) => {
+							if (e.lengthComputable) {
+								const percentComplete = Math.round((e.loaded / e.total) * 100);
+								onProgress(percentComplete);
+							}
+						};
+					}
+
+					xhr.onload = () => {
+						resolve({
+							ok: xhr.status >= 200 && xhr.status < 300,
+							status: xhr.status,
+							statusText: xhr.statusText
+						});
+					};
+
+					xhr.onerror = () => {
+						reject(new Error('Network error during upload'));
+					};
+
+					xhr.send(file);
+				}
+			);
+
+			const duration = Math.round(performance.now() - start);
+			console.log(`[api] File upload took ${duration} ms, status=${uploadResult.status}`);
+
+			if (!uploadResult.ok) {
 				return {
-					status: uploadRes.status,
+					status: uploadResult.status,
 					data: undefined,
 					error: {
 						code: 'upload_error',
-						description: `Failed to upload file to S3: ${uploadRes.statusText}`
+						description: `Failed to upload file to S3: ${uploadResult.statusText}`
 					}
 				};
 			}
