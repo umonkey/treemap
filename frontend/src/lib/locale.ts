@@ -528,20 +528,12 @@ class EnglishLocale {
 		return 'Replace tree';
 	}
 
-	public measureHeight(): string {
-		return 'Enter tree height in meters:';
-	}
-
 	public measureHeightUpdated(): string {
 		return 'Height updated.';
 	}
 
 	public measureLocationUpdated(): string {
 		return 'Location updated.';
-	}
-
-	public measureCanopy(): string {
-		return 'Enter canopy diameter in meters:';
 	}
 
 	public measureCanopyUpdated(): string {
@@ -552,16 +544,8 @@ class EnglishLocale {
 		return 'Trunk circumference updated.';
 	}
 
-	public measureTrunk(): string {
-		return 'Enter trunk circumference in centimeters:';
-	}
-
 	public measureTrunkUpdated(): string {
 		return 'Trunk circumference updated.';
-	}
-
-	public measureState(): string {
-		return 'Select tree state:';
 	}
 
 	public measureStateUpdated(): string {
@@ -1163,32 +1147,16 @@ class RussianLocale extends EnglishLocale {
 		return 'Замена дерева';
 	}
 
-	public measureHeight(): string {
-		return 'Введите высоту дерева в метрах:';
-	}
-
 	public measureHeightUpdated(): string {
 		return 'Высота обновлена.';
-	}
-
-	public measureCanopy(): string {
-		return 'Введите диаметр кроны в метрах:';
 	}
 
 	public measureCanopyUpdated(): string {
 		return 'Диаметр кроны обновлён.';
 	}
 
-	public measureTrunk(): string {
-		return 'Введите обхват ствола в сантиметрах:';
-	}
-
 	public measureTrunkUpdated(): string {
 		return 'Обхват ствола обновлён.';
-	}
-
-	public measureState(): string {
-		return 'Укажите состояние дерева:';
 	}
 
 	public measureStateUpdated(): string {
@@ -1838,32 +1806,16 @@ class ArmenianLocale extends EnglishLocale {
 		return 'Չափել ծառը';
 	}
 
-	public measureHeight(): string {
-		return 'Մուտքագրեք ծառի բարձրությունը մետրերով:';
-	}
-
 	public measureHeightUpdated(): string {
 		return 'Բարձրությունը թարմացված է:';
-	}
-
-	public measureCanopy(): string {
-		return 'Մուտքագրեք հովանի տրամագիծը մետրերով:';
 	}
 
 	public measureCanopyUpdated(): string {
 		return 'Հովանի տրամագիծը թարմացված է:';
 	}
 
-	public measureTrunk(): string {
-		return 'Մուտքագրեք բնի շրջագիծը սանտիմետրերով:';
-	}
-
 	public measureTrunkUpdated(): string {
 		return 'Բնի շրջագիծը թարմացված է:';
-	}
-
-	public measureState(): string {
-		return 'Ընտրեք ծառի վիճակը:';
 	}
 
 	public measureStateUpdated(): string {

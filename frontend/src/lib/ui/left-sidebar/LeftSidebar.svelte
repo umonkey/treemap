@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
-	import { BellIcon, HomeIcon, MapIcon, SearchIcon, UserIcon, SpinnerIcon } from '$lib/icons';
+	import { BellIcon, HomeIcon, MapIcon, SearchIcon, SpinnerIcon } from '$lib/icons';
 	import { mapLastTree } from '$lib/stores/mapStore';
 	import { searchStore } from '$lib/stores';
 	import { uploadStore } from '$lib/stores/upload';
