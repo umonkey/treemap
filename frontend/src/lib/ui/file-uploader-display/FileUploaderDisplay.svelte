@@ -1,12 +1,14 @@
 <script lang="ts">
 	import { LazyImage } from '$lib/ui';
 	import { CircumferenceIcon, SpinnerIcon } from '$lib/icons';
+	import { routes } from '$lib/routes';
 	import FALLBACK from '$lib/assets/tree.jpg';
 
 	type Item = {
 		src: string;
 		busy: boolean;
 		error: boolean;
+		originalIndex?: number;
 	};
 
 	const { items, onRetry, small } = $props<{
@@ -16,15 +18,18 @@
 	}>();
 
 	const reversed = (items: Item[]) => {
-		let copy = [...items];
-		copy.reverse();
-		return copy;
+		return items.map((item, originalIndex) => ({ ...item, originalIndex })).reverse();
 	};
 </script>
 
 <div class="items" class:small={!!small}>
-	{#each reversed(items) as item, idx}
-		<div class="item preview" class:uploading={item.busy} class:error={item.error}>
+	{#each reversed(items) as item}
+		<a
+			href={routes.uploads()}
+			class="item preview"
+			class:uploading={item.busy}
+			class:error={item.error}
+		>
 			<div class="img">
 				<LazyImage src={item.src} fallback={FALLBACK} alt="preview" />
 			</div>
@@ -34,11 +39,20 @@
 				</div>
 			{/if}
 			{#if item.error}
-				<button class="retry" onclick={() => onRetry(idx)}>
+				<button
+					class="retry"
+					onclick={(e) => {
+						e.stopPropagation();
+						e.preventDefault();
+						if (item.originalIndex !== undefined) {
+							onRetry(item.originalIndex);
+						}
+					}}
+				>
 					<CircumferenceIcon />
 				</button>
 			{/if}
-		</div>
+		</a>
 	{/each}
 </div>
 
@@ -72,13 +86,15 @@
 		position: relative;
 
 		aspect-ratio: 1;
-
-		aspect-ratio: 1;
 		box-sizing: border-box;
 		border-radius: 8px;
 		overflow: hidden;
 
 		border: 1px solid rgba(128, 128, 128, 0.5);
+
+		display: block;
+		text-decoration: none;
+		color: inherit;
 
 		&.uploading .img {
 			opacity: 0.2;
