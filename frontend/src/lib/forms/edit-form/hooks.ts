@@ -133,7 +133,6 @@ export const hooks = () => {
 			})
 			.then((res) => {
 				if (res.status >= 200 && res.status < 400) {
-					toast.push('Tree updated.');
 					goto(routes.mapPreview(u.id));
 				} else {
 					console.error(`Error ${res.status} updating tree.`);
