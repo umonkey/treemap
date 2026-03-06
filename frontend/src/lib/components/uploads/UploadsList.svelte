@@ -25,12 +25,6 @@
 </p>
 
 {#if uploads.length > 0}
-	<div class="uploads-grid">
-		{#each uploads as upload (upload.id)}
-			<UploadRow {upload} />
-		{/each}
-	</div>
-
 	<Buttons>
 		<Button type="button" onClick={processUploadQueue}>
 			{locale.uploadsStart()}
@@ -39,6 +33,12 @@
 			{locale.uploadsRestart()}
 		</Button>
 	</Buttons>
+
+	<div class="uploads-grid">
+		{#each uploads as upload (upload.id)}
+			<UploadRow {upload} />
+		{/each}
+	</div>
 {:else}
 	<p>{locale.uploadsEmpty()}</p>
 {/if}
@@ -48,7 +48,7 @@
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
 		gap: 10px;
-		margin-bottom: 1rem;
+		margin-top: 1rem;
 	}
 
 	.hint {
