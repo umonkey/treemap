@@ -68,7 +68,7 @@ describe('DeleteTreeForm', async () => {
 
 		expect(saved).toBe(true);
 		expect(capturedComment).toBeUndefined();
-		expect(mockedGoto).toHaveBeenCalledWith('/map?preview=tree1');
+		expect(mockedGoto).toHaveBeenCalledWith('/tree/tree1/upload');
 	});
 
 	test('handle form with comment', async () => {
@@ -127,6 +127,6 @@ describe('DeleteTreeForm', async () => {
 
 		expect(saved).toBe(true);
 		expect(capturedComment).toBe('duplicate of tree123');
-		expect(mockedGoto).toHaveBeenCalledWith('/map?preview=tree1');
+		expect(mockedGoto).toHaveBeenCalledWith('/tree/tree1/upload');
 	});
 });
