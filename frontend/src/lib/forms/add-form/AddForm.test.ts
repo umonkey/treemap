@@ -8,8 +8,10 @@ import { DEFAULT_TREE } from '$lib/constants';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { cleanup, render, screen } from '@testing-library/svelte';
 import { apiClient } from '$lib/api';
+import { routes } from '$lib/routes';
 
 beforeEach(() => {
+	mockedGoto.mockClear();
 	const mockFetch = vi.fn();
 
 	mockFetch.mockImplementation(async (req) => {
@@ -120,7 +122,7 @@ describe('AddForm', async () => {
 			lon: 2.0
 		});
 
-		expect(mockedGoto).toHaveBeenCalledWith('/tree/tree1/observations');
+		expect(mockedGoto).toHaveBeenCalledWith(routes.mapPreview('tree1'));
 	});
 
 	// We allow adding trees with default values, all good.
@@ -170,6 +172,6 @@ describe('AddForm', async () => {
 		expect(request).not.toBeNull();
 		expect(request?.year).toBe(1980);
 
-		expect(mockedGoto).toHaveBeenCalledWith('/tree/tree1/observations');
+		expect(mockedGoto).toHaveBeenCalledWith(routes.mapPreview('tree1'));
 	});
 });

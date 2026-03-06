@@ -92,7 +92,16 @@ export const hooks = ({ start, end }: { start: ILatLng; end: ILatLng }) => {
 
 			if (status >= 200 && status < 300 && d) {
 				toast.push('Trees added.');
-				goto(routes.mapPreview(d.trees[0].id));
+
+				const id = d.trees[0].id;
+				const currentState = get(state);
+				if (currentState === 'healthy' || currentState === 'dead') {
+					goto(routes.treeObservations(id));
+				} else if (currentState === 'stump' || currentState === 'gone') {
+					goto(routes.treeUploadPhotos(id));
+				} else {
+					goto(routes.mapPreview(id));
+				}
 			} else if (e) {
 				console.error(`Error ${status} adding trees.`);
 				toast.push('Error adding trees.');

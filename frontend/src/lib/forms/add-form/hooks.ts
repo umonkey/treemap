@@ -150,7 +150,14 @@ export const hooks = () => {
 			if (res.status >= 200 && res.status < 400 && res.data) {
 				toast.push('Tree added.');
 
-				goto(routes.treeObservations(res.data.trees[0].id));
+				const id = res.data.trees[0].id;
+				if (t.state === 'healthy' || t.state === 'dead') {
+					goto(routes.treeObservations(id));
+				} else if (t.state === 'stump' || t.state === 'gone') {
+					goto(routes.treeUploadPhotos(id));
+				} else {
+					goto(routes.mapPreview(id));
+				}
 			} else {
 				console.error(`Error ${res.status} updating tree.`);
 				toast.push('Error updating tree.');
