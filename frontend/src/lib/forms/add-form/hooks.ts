@@ -1,7 +1,6 @@
 import type { IAddTreesRequest, ITree, ILatLng } from '$lib/types';
 import { apiClient } from '$lib/api';
 import { get } from 'svelte/store';
-import { isMapperMode } from '$lib/stores/modeStore';
 import { routes, goto } from '$lib/routes';
 import { toast } from '@zerodevx/svelte-toast';
 import { writable } from 'svelte/store';

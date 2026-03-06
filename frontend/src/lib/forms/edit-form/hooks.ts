@@ -117,6 +117,7 @@ export const hooks = () => {
 
 	const handleConfirm = () => {
 		const u = get(updated);
+		saving.set(true);
 
 		apiClient
 			.updateTree(u.id, {
@@ -138,6 +139,9 @@ export const hooks = () => {
 					console.error(`Error ${res.status} updating tree.`);
 					toast.push('Error updating tree.');
 				}
+			})
+			.finally(() => {
+				saving.set(false);
 			});
 	};
 
