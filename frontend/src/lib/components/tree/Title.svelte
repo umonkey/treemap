@@ -36,7 +36,7 @@
 		justify-content: space-between;
 		align-items: center;
 		height: 50px;
-		padding: 0 var(--gap);
+		padding: 0;
 		gap: var(--gap);
 
 		h1 {
