@@ -18,6 +18,7 @@
 		{ id: 'vfork', label: locale.observationVfork(), beneficial: false },
 		{ id: 'cavities', label: locale.observationCavities(), beneficial: false },
 		{ id: 'vines', label: locale.observationVines(), beneficial: false },
+		{ id: 'inclined', label: locale.observationInclined(), beneficial: false },
 		{ id: 'nests', label: locale.observationNests(), beneficial: true },
 		{ id: 'nesting_boxes', label: locale.observationNestingBoxes(), beneficial: true }
 	];

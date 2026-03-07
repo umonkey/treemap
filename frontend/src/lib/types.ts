@@ -265,6 +265,7 @@ export interface IObservation {
 	vines: boolean;
 	nests: boolean;
 	nesting_boxes: boolean;
+	inclined: boolean;
 }
 
 export type StreetReport = {

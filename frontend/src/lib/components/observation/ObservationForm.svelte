@@ -30,6 +30,7 @@
 		vfork: false,
 		cavities: false,
 		vines: false,
+		inclined: false,
 		nests: false,
 		nesting_boxes: false
 	});
@@ -85,6 +86,7 @@
 		{ id: 'vfork', label: locale.observationVfork() },
 		{ id: 'cavities', label: locale.observationCavities() },
 		{ id: 'vines', label: locale.observationVines() },
+		{ id: 'inclined', label: locale.observationInclined() },
 		{ id: 'nests', label: locale.observationNests() },
 		{ id: 'nesting_boxes', label: locale.observationNestingBoxes() }
 	];

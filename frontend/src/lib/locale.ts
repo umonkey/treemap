@@ -281,6 +281,9 @@ class EnglishLocale {
 	public observationVines(): string {
 		return 'Vines';
 	}
+	public observationInclined(): string {
+		return 'Inclined';
+	}
 	public observationNests(): string {
 		return 'Nests';
 	}
@@ -956,6 +959,9 @@ class RussianLocale extends EnglishLocale {
 	public observationVines(): string {
 		return 'Лианы';
 	}
+	public observationInclined(): string {
+		return 'Наклон';
+	}
 	public observationNests(): string {
 		return 'Гнёзда';
 	}
@@ -1630,6 +1636,9 @@ class ArmenianLocale extends EnglishLocale {
 	}
 	public observationVines(): string {
 		return 'Մագլցող բույսեր';
+	}
+	public observationInclined(): string {
+		return 'Թեքված';
 	}
 	public observationNests(): string {
 		return 'Բներ';

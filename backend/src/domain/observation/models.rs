@@ -21,6 +21,7 @@ pub struct Observation {
     pub nests: bool,
     pub nesting_boxes: bool,
     pub bug_holes: bool,
+    pub inclined: bool,
 }
 
 #[derive(Debug, Clone, Default, PartialEq)]
@@ -38,6 +39,7 @@ pub struct ObservationFlags {
     pub nests: bool,
     pub nesting_boxes: bool,
     pub bug_holes: bool,
+    pub inclined: bool,
 }
 
 impl Observation {
@@ -60,6 +62,7 @@ impl Observation {
             nests: false,
             nesting_boxes: false,
             bug_holes: false,
+            inclined: false,
         }
     }
 
@@ -77,6 +80,7 @@ impl Observation {
             && self.nests == flags.nests
             && self.nesting_boxes == flags.nesting_boxes
             && self.bug_holes == flags.bug_holes
+            && self.inclined == flags.inclined
     }
 
     pub fn from_attributes(attributes: &Attributes) -> Result<Self> {
@@ -98,6 +102,7 @@ impl Observation {
             nests: attributes.require_i64("nests")? != 0,
             nesting_boxes: attributes.require_i64("nesting_boxes")? != 0,
             bug_holes: attributes.require_i64("bug_holes")? != 0,
+            inclined: attributes.require_i64("inclined")? != 0,
         })
     }
 
@@ -164,6 +169,10 @@ impl Observation {
             (
                 "bug_holes".to_string(),
                 Value::from(if self.bug_holes { 1 } else { 0 }),
+            ),
+            (
+                "inclined".to_string(),
+                Value::from(if self.inclined { 1 } else { 0 }),
             ),
         ])
     }

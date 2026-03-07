@@ -45,6 +45,7 @@ impl ObservationService {
                 last.nests = flags.nests;
                 last.nesting_boxes = flags.nesting_boxes;
                 last.bug_holes = flags.bug_holes;
+                last.inclined = flags.inclined;
 
                 self.repository.update(&last).await?;
 
@@ -72,6 +73,7 @@ impl ObservationService {
             nests: flags.nests,
             nesting_boxes: flags.nesting_boxes,
             bug_holes: flags.bug_holes,
+            inclined: flags.inclined,
         };
 
         self.repository.add(&observation).await?;

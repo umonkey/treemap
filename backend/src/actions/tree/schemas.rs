@@ -123,6 +123,7 @@ pub struct ObservationRead {
     pub nests: bool,
     pub nesting_boxes: bool,
     pub bug_holes: bool,
+    pub inclined: bool,
 }
 
 impl ObservationRead {
@@ -144,6 +145,7 @@ impl ObservationRead {
             nests: obs.nests,
             nesting_boxes: obs.nesting_boxes,
             bug_holes: obs.bug_holes,
+            inclined: obs.inclined,
         }
     }
 }
@@ -176,6 +178,8 @@ pub struct AddObservationRequest {
     pub nesting_boxes: bool,
     #[serde(default)]
     pub bug_holes: bool,
+    #[serde(default)]
+    pub inclined: bool,
 }
 
 impl AddObservationRequest {
@@ -194,6 +198,7 @@ impl AddObservationRequest {
             nests: self.nests,
             nesting_boxes: self.nesting_boxes,
             bug_holes: self.bug_holes,
+            inclined: self.inclined,
         }
     }
 }
