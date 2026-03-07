@@ -10,17 +10,9 @@
 	const tree = data.tree;
 </script>
 
-<NarrowPage title={locale.treeTabsObservations()} back={routes.mapPreview(data.id)} nopadding>
+<NarrowPage title={locale.treeTabsObservations()} back={routes.mapPreview(data.id)}>
 	<Title title={tree.species} address={tree.address} />
 	<TreeContextMenu id={tree.id} />
 
-	<div class="padded">
-		<ObservationForm id={tree.id} />
-	</div>
+	<ObservationForm id={tree.id} />
 </NarrowPage>
-
-<style>
-	.padded {
-		padding: 0 var(--gap);
-	}
-</style>
