@@ -2,9 +2,10 @@
 	import { Header } from '$lib/ui';
 	import type { Snippet } from 'svelte';
 
-	const { children, title, nopadding } = $props<{
+	const { children, title, back, nopadding } = $props<{
 		children: Snippet;
 		title?: string;
+		back?: boolean | string | undefined;
 		nopadding?: boolean;
 	}>();
 </script>
@@ -16,7 +17,7 @@
 </svelte:head>
 
 {#if title}
-	<Header {title} />
+	<Header {title} {back} />
 {/if}
 
 <div class="narrow-page" class:padded={!nopadding}>

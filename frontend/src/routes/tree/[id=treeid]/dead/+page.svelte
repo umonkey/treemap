@@ -2,6 +2,7 @@
 	import { locale } from '$lib/locale';
 	import { NarrowPage } from '$lib/ui';
 	import { TreeDeadForm } from '$lib/forms';
+	import { routes } from '$lib/routes';
 
 	const { data } = $props<{
 		data: {
@@ -10,6 +11,6 @@
 	}>();
 </script>
 
-<NarrowPage title={locale.deadTitle()}>
+<NarrowPage title={locale.deadTitle()} back={routes.mapPreview(data.id)}>
 	<TreeDeadForm id={data.id} />
 </NarrowPage>

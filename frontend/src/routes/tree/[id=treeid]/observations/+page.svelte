@@ -5,12 +5,13 @@
 	import { locale } from '$lib/locale';
 	import { formatSpecies } from '$lib/utils/trees';
 	import Title from '$lib/components/tree/Title.svelte';
+	import { routes } from '$lib/routes';
 
 	const { data } = $props();
 	const tree = data.tree;
 </script>
 
-<NarrowPage title={locale.treeTabsObservations()} nopadding>
+<NarrowPage title={locale.treeTabsObservations()} back={routes.mapPreview(data.id)} nopadding>
 	<Title title={formatSpecies(tree.species)} address={tree.address} />
 	<TreeContextMenu id={tree.id} />
 

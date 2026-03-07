@@ -5,6 +5,7 @@
 	import { formatSpecies } from '$lib/utils/trees';
 	import { setLastTree } from '$lib/stores/mapStore';
 	import { toast } from '@zerodevx/svelte-toast';
+	import { routes } from '$lib/routes';
 
 	import Actions from '$lib/components/tree/Actions.svelte';
 	import Comment from '$lib/components/tree/Comment.svelte';
@@ -49,7 +50,7 @@
 	};
 </script>
 
-<NarrowPage title={locale.treeShortTitle()} nopadding>
+<NarrowPage title={locale.treeShortTitle()} back={routes.mapPreview(data.id)} nopadding>
 	<Title title={formatSpecies(tree.species)} address={tree.address} />
 	<TreeTabs tree={tree.id} active="details" />
 	<Gallery id={tree.id} />

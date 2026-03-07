@@ -2,6 +2,7 @@
 	import { locale } from '$lib/locale';
 	import { NarrowPage } from '$lib/ui';
 	import { DeleteTreeForm } from '$lib/forms';
+	import { routes } from '$lib/routes';
 
 	const { data } = $props<{
 		data: {
@@ -10,6 +11,6 @@
 	}>();
 </script>
 
-<NarrowPage title={locale.deleteTreeTitle()}>
+<NarrowPage title={locale.deleteTreeTitle()} back={routes.mapPreview(data.id)}>
 	<DeleteTreeForm id={data.id} />
 </NarrowPage>

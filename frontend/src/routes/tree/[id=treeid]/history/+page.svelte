@@ -5,6 +5,7 @@
 	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
 	import TreeTabs from '$lib/components/tree/TreeTabs.svelte';
 	import { ChangeList, NarrowPage } from '$lib/ui';
+	import { routes } from '$lib/routes';
 
 	const { data } = $props();
 	const { loading, tree, changes, error, reload } = loadTreeHistory();
@@ -14,7 +15,7 @@
 	});
 </script>
 
-<NarrowPage title="Tree History" nopadding>
+<NarrowPage title="Tree History" back={routes.mapPreview(data.id)} nopadding>
 	{#if $loading}
 		<p>Loading...</p>
 	{:else if $error}

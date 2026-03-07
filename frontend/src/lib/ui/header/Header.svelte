@@ -1,14 +1,19 @@
 <script lang="ts">
 	import { mobileSidebarStore } from '$lib/stores/mobileSidebarStore';
 	import { BackIcon, BarsIcon } from '$lib/icons';
+	import { goto } from '$lib/routes';
 
 	const { title, back = true } = $props<{
 		title: string;
-		back?: boolean;
+		back?: boolean | string | undefined;
 	}>();
 
 	const onBack = () => {
-		history.back();
+		if (back !== false && back !== true) {
+			goto(back);
+		} else {
+			history.back();
+		}
 	};
 
 	const onBars = () => {
