@@ -69,7 +69,4 @@ export { default as StreetView } from './street-view/StreetView.svelte';
 export { default as StreetViewPage } from './street-view-page/StreetViewPage.svelte';
 export { default as TabList } from './tab-list/TabList.svelte';
 export { default as TextInput } from './text-input/TextInput.svelte';
-export { default as TreeContextMenu } from './tree-context-menu/TreeContextMenu.svelte';
-export { default as TreeSheet } from './tree-sheet/TreeSheet.svelte';
-export { default as TreeTabs } from './tree-tabs/TreeTabs.svelte';
 export { default as YearInput } from './year-input/YearInput.svelte';

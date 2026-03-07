@@ -14,7 +14,9 @@
 	import Properties from '$lib/components/tree/Properties.svelte';
 	import Title from '$lib/components/tree/Title.svelte';
 	import Gallery from '$lib/components/photos/Gallery.svelte';
-	import { CommentForm, TreeContextMenu, TreeTabs, NarrowPage } from '$lib/ui';
+	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
+	import TreeTabs from '$lib/components/tree/TreeTabs.svelte';
+	import { CommentForm, NarrowPage } from '$lib/ui';
 	import { onMount } from 'svelte';
 
 	const { data } = $props();

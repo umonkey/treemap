@@ -1,13 +1,6 @@
 <script lang="ts">
-	import {
-		Button,
-		Buttons,
-		Form,
-		TreeSheet,
-		FilteredChangeList,
-		AuthWrapper,
-		CommentInput
-	} from '$lib/ui';
+	import { Button, Buttons, Form, FilteredChangeList, AuthWrapper, CommentInput } from '$lib/ui';
+	import TreeSheet from '$lib/components/tree/TreeSheet.svelte';
 	import { locale } from '$lib/locale';
 	import { stateUpdater } from '$lib/actions';
 

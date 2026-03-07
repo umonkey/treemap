@@ -6,7 +6,7 @@
 	 * in the container, overlaying that container with a blurry background.
 	 */
 	import { menuState } from '$lib/stores/treeMenu';
-	import TreeContextMenuDisplay from './TreeContextMenuDisplay.svelte';
+	import TreeContextMenuDisplay from '$lib/components/tree/TreeContextMenuDisplay.svelte';
 
 	const { id } = $props<{
 		id: string;

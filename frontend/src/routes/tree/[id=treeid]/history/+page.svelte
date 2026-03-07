@@ -2,7 +2,9 @@
 	import { formatSpecies } from '$lib/utils/trees';
 	import { loadTreeHistory } from '$lib/hooks';
 	import Title from '$lib/components/tree/Title.svelte';
-	import { ChangeList, NarrowPage, TreeTabs, TreeContextMenu } from '$lib/ui';
+	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
+	import TreeTabs from '$lib/components/tree/TreeTabs.svelte';
+	import { ChangeList, NarrowPage } from '$lib/ui';
 
 	const { data } = $props();
 	const { loading, tree, changes, error, reload } = loadTreeHistory();

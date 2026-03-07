@@ -1,6 +1,8 @@
 <script lang="ts">
 	import ObservationForm from '$lib/components/observation/ObservationForm.svelte';
-	import { NarrowPage, TreeTabs, TreeContextMenu } from '$lib/ui';
+	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
+	import TreeTabs from '$lib/components/tree/TreeTabs.svelte';
+	import { NarrowPage } from '$lib/ui';
 	import { locale } from '$lib/locale';
 	import { formatSpecies } from '$lib/utils/trees';
 	import Title from '$lib/components/tree/Title.svelte';

@@ -1,6 +1,6 @@
 <script module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import { TreeTabs } from '$lib/ui';
+	import TreeTabs from './TreeTabs.svelte';
 
 	const { Story } = defineMeta({
 		title: 'UI/TreeTabs',
