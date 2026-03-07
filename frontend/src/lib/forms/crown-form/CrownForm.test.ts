@@ -1,4 +1,4 @@
-import { mockedGoto, TREE_RESPONSE, HISTORY_RESPONSE } from './mocks';
+import { mockedGoto, TREE_RESPONSE } from './mocks';
 
 import CrownForm from './CrownForm.svelte';
 import type { IResponse, ITree } from '$lib/types';
@@ -20,15 +20,6 @@ describe('CrownForm', async () => {
 			return {
 				status: 200,
 				data: TREE_RESPONSE
-			};
-		};
-
-		apiClient.getTreeHistory = async (tree_id: string) => {
-			expect(tree_id).toBe('tree1');
-
-			return {
-				status: 200,
-				data: HISTORY_RESPONSE
 			};
 		};
 

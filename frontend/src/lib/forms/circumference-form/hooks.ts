@@ -1,6 +1,6 @@
 // Loads data required by the crown editor, performs updates.
 
-import type { IChange, ITree } from '$lib/types';
+import type { ITree } from '$lib/types';
 import { goto, routes } from '$lib/routes';
 import { addTrees } from '$lib/stores/treeStore';
 import { addUsers } from '$lib/stores/userStore';
@@ -16,7 +16,6 @@ export const editor = (tree_id: string) => {
 	const loadError = writable<string | undefined>(undefined);
 	const saveError = writable<string | undefined>(undefined);
 	const tree = writable<ITree | undefined>(undefined);
-	const history = writable<IChange[]>([]);
 	const value = writable<number>(0);
 
 	const reload = async (tree_id: string) => {
@@ -39,20 +38,7 @@ export const editor = (tree_id: string) => {
 			}
 		});
 
-		const p2 = await apiClient.getTreeHistory(tree_id).then((res) => {
-			if (res.status >= 200 && res.status < 300 && res.data) {
-				history.set(res.data.props);
-				addUsers(res.data.users);
-				console.debug(`[crown editor] History for tree ${tree_id} loaded.`);
-			} else if (res.error) {
-				loadError.set(res.error.description);
-				console.error(
-					`[crown editor] Failed to load history for tree ${tree_id}: ${res.error.description}.`
-				);
-			}
-		});
-
-		await Promise.all([p1, p2]).finally(() => {
+		await Promise.all([p1]).finally(() => {
 			loading.set(false);
 		});
 	};
@@ -92,5 +78,5 @@ export const editor = (tree_id: string) => {
 
 	reload(tree_id);
 
-	return { loading, loadError, saveError, value, history, reload, busy, save, close, handleChange };
+	return { loading, loadError, saveError, value, reload, busy, save, close, handleChange };
 };

@@ -1,9 +1,9 @@
 import type { IChange } from '$lib/types';
 import { addUsers } from '$lib/stores/userStore';
 import { describe, expect, it } from 'vitest';
-import { filter, format } from './hooks';
+import { filter, format } from './ChangeHistory';
 
-describe('FilteredChangeList hooks', () => {
+describe('ChangeHistory hooks', () => {
 	it('should filter correctly', () => {
 		const input = [
 			{

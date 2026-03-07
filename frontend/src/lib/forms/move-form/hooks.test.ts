@@ -1,5 +1,5 @@
 // This must go first for the mocks to work.
-import { mockedGoto, TREE_RESPONSE, HISTORY_RESPONSE } from './mocks';
+import { mockedGoto, TREE_RESPONSE } from './mocks';
 
 import type { ITree, IResponse, ISingleTree } from '$lib/types';
 import { apiClient } from '$lib/api';
@@ -18,12 +18,7 @@ describe('move-form/hooks', async () => {
 			data: TREE_RESPONSE
 		});
 
-		apiClient.getTreeHistory = async () => ({
-			status: 200,
-			data: HISTORY_RESPONSE
-		});
-
-		const { loading, value, history, reload, save } = editor(tree_id);
+		const { loading, value, reload, save } = editor(tree_id);
 
 		expect(get(loading)).toBe(true);
 
@@ -32,8 +27,6 @@ describe('move-form/hooks', async () => {
 			lng: 0
 		});
 
-		expect(get(history)).toHaveLength(0);
-
 		await reload(tree_id);
 		expect(get(loading)).toBe(false);
 
@@ -41,8 +34,6 @@ describe('move-form/hooks', async () => {
 			lat: 1.23,
 			lng: 2.34
 		});
-
-		expect(get(history)).toHaveLength(1);
 
 		apiClient.updateTreeLocation = async (
 			id: string,

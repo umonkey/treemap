@@ -13,7 +13,6 @@ export { default as CommentForm } from './comment-form/CommentForm.svelte';
 export { default as CommentInput } from './comment-input/CommentInput.svelte';
 export { default as FileUploader } from './file-uploader/FileUploader.svelte';
 export { default as FileUploaderDisplay } from './file-uploader-display/FileUploaderDisplay.svelte';
-export { default as FilteredChangeList } from './filtered-change-list/FilteredChangeList.svelte';
 export { default as Form } from './form/Form.svelte';
 export { default as FormElement } from './form-element/FormElement.svelte';
 export { default as GallerySlides } from './gallery-slides/GallerySlides.svelte';

@@ -1,6 +1,6 @@
 // Loads data required to move the tree, performs updates.
 
-import type { IChange, ITree, ILatLng } from '$lib/types';
+import type { ITree, ILatLng } from '$lib/types';
 import { apiClient } from '$lib/api';
 import { get } from 'svelte/store';
 import { goto, routes } from '$lib/routes';
@@ -15,7 +15,6 @@ export const editor = (tree_id: string) => {
 	const loadError = writable<string | undefined>(undefined);
 	const saveError = writable<string | undefined>(undefined);
 	const tree = writable<ITree | undefined>(undefined);
-	const history = writable<IChange[]>([]);
 	const value = writable<ILatLng>({ lat: 0, lng: 0 });
 	const updated = writable<ILatLng>({ lat: 0, lng: 0 });
 
@@ -41,15 +40,7 @@ export const editor = (tree_id: string) => {
 			}
 		});
 
-		const p2 = await apiClient.getTreeHistory(tree_id).then((res) => {
-			if (res.status >= 200 && res.status < 300 && res.data) {
-				history.set(res.data.props);
-			} else if (res.error) {
-				loadError.set(res.error.description);
-			}
-		});
-
-		await Promise.all([p1, p2]).finally(() => {
+		await Promise.all([p1]).finally(() => {
 			loading.set(false);
 		});
 	};
@@ -85,5 +76,5 @@ export const editor = (tree_id: string) => {
 
 	reload(tree_id);
 
-	return { loading, loadError, saveError, value, history, reload, save, close, handleChange };
+	return { loading, loadError, saveError, value, reload, save, close, handleChange };
 };

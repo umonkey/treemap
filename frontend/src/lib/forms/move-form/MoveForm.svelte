@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { LocationInput, Button, Buttons, Form, FilteredChangeList } from '$lib/ui';
+	import { LocationInput, Button, Buttons, Form } from '$lib/ui';
+	import ChangeHistory from '$lib/components/tree/ChangeHistory.svelte';
 	import { locale } from '$lib/locale';
 	import { editor } from './hooks';
 
@@ -7,8 +8,7 @@
 		id: string;
 	}>();
 
-	const { loading, busy, loadError, saveError, value, history, save, close, handleChange } =
-		editor(id);
+	const { loading, busy, loadError, saveError, value, save, close, handleChange } = editor(id);
 </script>
 
 {#if $loading}
@@ -29,5 +29,5 @@
 		<p>{$saveError}</p>
 	{/if}
 
-	<FilteredChangeList changes={$history} name="location" />
+	<ChangeHistory {id} name="location" />
 {/if}

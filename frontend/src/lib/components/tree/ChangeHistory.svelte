@@ -1,28 +1,27 @@
 <script lang="ts">
-	import type { IChange } from '$lib/types';
-	import { format } from './hooks';
+	import { load, format } from './ChangeHistory.ts';
 	import { locale } from '$lib/locale';
 
-	const { changes, name } = $props<{
-		changes: IChange[];
+	const { id, name } = $props<{
+		id: string;
 		name: string;
 	}>();
 
-	let formatted = $state([]);
-
-	$effect(() => {
-		formatted = format(changes, name);
-	});
+	const { loading, error, history } = load(id);
 
 	const className = `change-list ${name}`;
 </script>
 
 <div class={className}>
-	{#if formatted.length > 0}
+	{#if $loading}
+		<p>Loading change history...</p>
+	{:else if $error}
+		<p>Error loading change history.</p>
+	{:else if $history.length > 0}
 		<h2>Recent changes:</h2>
 		<table>
 			<tbody>
-				{#each formatted as change}
+				{#each format($history, name) as change}
 					<tr>
 						<td>{change.date}</td>
 						<td>{change.value}</td>

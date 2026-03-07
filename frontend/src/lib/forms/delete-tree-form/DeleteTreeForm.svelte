@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { Button, Buttons, Form, FilteredChangeList, AuthWrapper, CommentInput } from '$lib/ui';
+	import { Button, Buttons, Form, AuthWrapper, CommentInput } from '$lib/ui';
 	import TreeSheet from '$lib/components/tree/TreeSheet.svelte';
+	import ChangeHistory from '$lib/components/tree/ChangeHistory.svelte';
 	import { locale } from '$lib/locale';
 	import { stateUpdater } from '$lib/actions';
 
@@ -8,10 +9,7 @@
 		id: string;
 	}>();
 
-	const { loading, busy, error, history, tree, save, close, handleCommentChange } = stateUpdater(
-		id,
-		'gone'
-	);
+	const { loading, busy, error, tree, save, close, handleCommentChange } = stateUpdater(id, 'gone');
 </script>
 
 <AuthWrapper>
@@ -34,7 +32,7 @@
 				<Button type="cancel" onClick={close}>{locale.editCancel()}</Button>
 			</Buttons>
 
-			<FilteredChangeList changes={$history} name="state" />
+			<ChangeHistory {id} name="state" />
 		{/if}
 	</Form>
 </AuthWrapper>

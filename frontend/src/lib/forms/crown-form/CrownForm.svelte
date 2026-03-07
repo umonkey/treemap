@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { CanopyInput, Button, Buttons, Form, FilteredChangeList, AuthWrapper } from '$lib/ui';
+	import { CanopyInput, Button, Buttons, Form, AuthWrapper } from '$lib/ui';
+	import ChangeHistory from '$lib/components/tree/ChangeHistory.svelte';
 	import { locale } from '$lib/locale';
 	import { editor } from './hooks';
 
@@ -7,8 +8,7 @@
 		id: string;
 	}>();
 
-	const { loading, loadError, saveError, busy, value, history, save, close, handleChange } =
-		editor(id);
+	const { loading, loadError, saveError, busy, value, save, close, handleChange } = editor(id);
 </script>
 
 <AuthWrapper>
@@ -30,6 +30,6 @@
 			<p>{$saveError}</p>
 		{/if}
 
-		<FilteredChangeList changes={$history} name="diameter" />
+		<ChangeHistory {id} name="diameter" />
 	{/if}
 </AuthWrapper>

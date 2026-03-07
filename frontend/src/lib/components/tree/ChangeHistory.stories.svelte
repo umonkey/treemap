@@ -1,10 +1,10 @@
 <script module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import FilteredChangeList from './FilteredChangeList.svelte';
+	import ChangeHistory from './ChangeHistory.svelte';
 
 	const { Story } = defineMeta({
-		title: 'UI/FilteredChangeList',
-		component: FilteredChangeList,
+		title: 'UI/ChangeHistory',
+		component: ChangeHistory,
 		argTypes: {
 			changes: { control: 'object' },
 			name: { control: 'text' }

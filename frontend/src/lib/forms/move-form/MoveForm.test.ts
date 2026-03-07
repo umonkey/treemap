@@ -1,8 +1,8 @@
 // This must go first for the mocks to work.
-import { mockedGoto, TREE_RESPONSE, HISTORY_RESPONSE } from './mocks';
+import { mockedGoto, TREE_RESPONSE } from './mocks';
 
 import MoveForm from './MoveForm.svelte';
-import type { IResponse, ISingleTree, ITree, IChangeList } from '$lib/types';
+import type { IResponse, ISingleTree, ITree } from '$lib/types';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, test } from 'vitest';
 import { apiClient } from '$lib/api';
@@ -21,13 +21,6 @@ describe('MoveForm', async () => {
 			return {
 				status: 200,
 				data: TREE_RESPONSE
-			};
-		};
-
-		apiClient.getTreeHistory = async (): Promise<IResponse<IChangeList>> => {
-			return {
-				status: 200,
-				data: HISTORY_RESPONSE
 			};
 		};
 

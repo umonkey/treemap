@@ -1,5 +1,5 @@
 // This must go first for the mocks to work.
-import { mockedGoto, TREE_RESPONSE, HISTORY_RESPONSE } from './mocks';
+import { mockedGoto, TREE_RESPONSE } from './mocks';
 
 import type { ITree, IResponse } from '$lib/types';
 import { apiClient } from '$lib/api';
@@ -16,21 +16,14 @@ describe('circumference-form/hooks', async () => {
 			data: TREE_RESPONSE
 		});
 
-		apiClient.getTreeHistory = async () => ({
-			status: 200,
-			data: HISTORY_RESPONSE
-		});
-
-		const { loading, value, history, reload, save } = editor('tree1');
+		const { loading, value, reload, save } = editor('tree1');
 
 		expect(get(loading)).toBe(true);
 		expect(get(value)).toBe(0.0);
-		expect(get(history)).toHaveLength(0);
 
 		await reload('tree1');
 		expect(get(loading)).toBe(false);
 		expect(get(value)).toEqual(1.23);
-		expect(get(history)).toHaveLength(1);
 
 		apiClient.updateTreeCircumference = async (
 			id: string,

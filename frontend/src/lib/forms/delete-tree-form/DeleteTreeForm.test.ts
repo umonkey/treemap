@@ -30,11 +30,6 @@ describe('DeleteTreeForm', async () => {
 			}
 		});
 
-		apiClient.getTreeHistory = vi.fn().mockResolvedValue({
-			status: 200,
-			data: { props: [], users: [] }
-		});
-
 		apiClient.updateTreeState = vi
 			.fn()
 			.mockImplementation(async (id: string, value: string, comment?: string) => {
@@ -83,11 +78,6 @@ describe('DeleteTreeForm', async () => {
 				...DEFAULT_TREE,
 				users: []
 			}
-		});
-
-		apiClient.getTreeHistory = vi.fn().mockResolvedValue({
-			status: 200,
-			data: { props: [], users: [] }
 		});
 
 		apiClient.updateTreeState = vi
