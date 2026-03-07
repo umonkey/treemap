@@ -165,7 +165,8 @@ export const hooks = () => {
 		});
 	};
 
-	const handleCancel = () => {
+	const handleCancel = (e: Event) => {
+		e.preventDefault();
 		goto(routes.map());
 	};
 
