@@ -14,10 +14,8 @@ export const filter = (changes: IChange[], name: string) => {
 	return changes.filter((change) => change.name === name);
 };
 
-export const format = (changes: IChange[], name: string): Record[] => {
-	const filtered = filter(changes, name);
-
-	return filtered.map(
+export const format = (changes: IChange[]): Record[] => {
+	return changes.map(
 		(change) =>
 			({
 				date: formatDate(change.added_at),
@@ -27,7 +25,7 @@ export const format = (changes: IChange[], name: string): Record[] => {
 	);
 };
 
-export const load = (id: string) => {
+export const load = (id: string, propName: string) => {
 	const loading = writable<boolean>(true);
 	const error = writable<boolean>(false);
 	const history = writable<IChange[]>([]);
@@ -36,7 +34,7 @@ export const load = (id: string) => {
 		.getTreeHistory(id)
 		.then((res) => {
 			if (res.status >= 200 && res.status < 400 && res.data) {
-				history.set(res.data.props);
+				history.set(filter(res.data.props, propName));
 				addUsers(res.data.users);
 			} else {
 				error.set(true);

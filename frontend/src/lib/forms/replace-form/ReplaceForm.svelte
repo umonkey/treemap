@@ -18,6 +18,8 @@
 		YearInput,
 		Form
 	} from '$lib/ui';
+	import Title from '$lib/components/tree/Title.svelte';
+	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
 
 	const { id } = $props<{
 		id: string;
@@ -33,6 +35,7 @@
 		diameter,
 		circumference,
 		currentState,
+		tree,
 		year,
 		notes,
 		save,
@@ -45,6 +48,9 @@
 {:else if $loadError}
 	<p>{$loadError}</p>
 {:else}
+	<Title title={$tree?.species} address={$tree?.address} />
+	<TreeContextMenu id={$tree.id} />
+
 	<Form>
 		<p>{locale.replaceHint()}</p>
 		<hr />

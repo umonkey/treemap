@@ -14,6 +14,8 @@
 		StreetInput,
 		Form
 	} from '$lib/ui';
+	import Title from '$lib/components/tree/Title.svelte';
+	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
 	import { hooks } from './hooks';
 
 	const { id } = $props<{
@@ -42,10 +44,13 @@
 	$effect(() => reload(id));
 </script>
 
-<Form onSubmit={handleConfirm}>
-	{#if $loading}
-		<!-- Loading... -->
-	{:else}
+{#if $loading}
+	<!-- Loading... -->
+{:else}
+	<Title title={$tree?.species} address={$tree?.address} />
+	<TreeContextMenu id={$tree.id} />
+
+	<Form onSubmit={handleConfirm}>
 		<SpeciesInput value={$updated.species} onChange={handleSpeciesChange} />
 		<HeightInput value={$updated.height} onChange={handleHeightChange} />
 		<CanopyInput value={$updated.diameter} onChange={handleDiameterChange} />
@@ -66,5 +71,5 @@
 			<Button type="submit" onClick={handleConfirm} disabled={$saving}>{locale.editSave()}</Button>
 			<Button type="cancel" onClick={handleCancel} disabled={$saving}>{locale.editCancel()}</Button>
 		</Buttons>
-	{/if}
-</Form>
+	</Form>
+{/if}

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import ObservationForm from '$lib/components/observation/ObservationForm.svelte';
 	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
-	import TreeTabs from '$lib/components/tree/TreeTabs.svelte';
 	import { NarrowPage } from '$lib/ui';
 	import { locale } from '$lib/locale';
 	import { formatSpecies } from '$lib/utils/trees';
@@ -13,7 +12,6 @@
 
 <NarrowPage title={locale.treeTabsObservations()} nopadding>
 	<Title title={formatSpecies(tree.species)} address={tree.address} />
-	<TreeTabs tree={tree.id} active="observations" />
 	<TreeContextMenu id={tree.id} />
 
 	<div class="padded">

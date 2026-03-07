@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { HeightInput, Button, Buttons, Form, AuthWrapper } from '$lib/ui';
 	import ChangeHistory from '$lib/components/tree/ChangeHistory.svelte';
+	import Title from '$lib/components/tree/Title.svelte';
+	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
 	import { locale } from '$lib/locale';
 	import { editor } from './hooks';
 
@@ -8,7 +10,8 @@
 		id: string;
 	}>();
 
-	const { loading, busy, loadError, saveError, value, save, close, handleChange } = editor(id);
+	const { loading, busy, loadError, saveError, tree, value, save, close, handleChange } =
+		editor(id);
 </script>
 
 <AuthWrapper>
@@ -17,6 +20,9 @@
 	{:else if $loadError}
 		<p>{$loadError}</p>
 	{:else}
+		<Title title={$tree?.species} address={$tree?.address} />
+		<TreeContextMenu id={$tree.id} />
+
 		<Form onSubmit={save}>
 			<HeightInput value={$value} autofocus onChange={handleChange} />
 

@@ -3,6 +3,8 @@
 	import { NarrowPage, Form, AuthWrapper } from '$lib/ui';
 	import PhotoUploader from '$lib/components/photos/PhotoUploader.svelte';
 	import UploadForm from '$lib/components/photos/UploadForm.svelte';
+	import Title from '$lib/components/tree/Title.svelte';
+	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
 	import { load } from './hooks';
 
 	const { data } = $props();
@@ -14,6 +16,9 @@
 
 <NarrowPage title={locale.photoTitle()}>
 	<AuthWrapper>
+		<Title title={tree.species} address={tree.address} />
+		<TreeContextMenu id={tree.id} />
+
 		<Form>
 			<p>{locale.photoIntro()}</p>
 

@@ -98,6 +98,7 @@ export const editor = (tree_id: string) => {
 	return {
 		loading,
 		busy,
+		tree,
 		loadError,
 		saveError,
 		species,

@@ -7,7 +7,7 @@
 		name: string;
 	}>();
 
-	const { loading, error, history } = load(id);
+	const { loading, error, history } = load(id, name);
 
 	const className = `change-list ${name}`;
 </script>
@@ -21,7 +21,7 @@
 		<h2>Recent changes:</h2>
 		<table>
 			<tbody>
-				{#each format($history, name) as change}
+				{#each format($history) as change}
 					<tr>
 						<td>{change.date}</td>
 						<td>{change.value}</td>
