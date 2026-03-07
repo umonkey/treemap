@@ -50,7 +50,7 @@
 	<Title title={$tree?.species} address={$tree?.address} />
 	<TreeContextMenu id={$tree.id} />
 
-	<Form onSubmit={handleConfirm}>
+	<Form onSubmit={handleConfirm} sticky>
 		<SpeciesInput value={$updated.species} onChange={handleSpeciesChange} />
 		<HeightInput value={$updated.height} onChange={handleHeightChange} />
 		<CanopyInput value={$updated.diameter} onChange={handleDiameterChange} />
@@ -67,7 +67,7 @@
 
 		<NotesInput value={$updated.notes} onChange={handleNotesChange} />
 
-		<Buttons>
+		<Buttons sticky>
 			<Button type="submit" onClick={handleConfirm} disabled={$saving}>{locale.editSave()}</Button>
 			<Button type="cancel" onClick={handleCancel} disabled={$saving}>{locale.editCancel()}</Button>
 		</Buttons>
