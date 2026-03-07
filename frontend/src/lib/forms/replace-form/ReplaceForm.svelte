@@ -53,7 +53,6 @@
 
 	<Form>
 		<p>{locale.replaceHint()}</p>
-		<hr />
 
 		<SpeciesInput value={$species} onChange={(value: string) => species.set(value)} />
 		<HeightInput value={$height} onChange={(value: number | null) => height.set(value)} />
@@ -76,11 +75,3 @@
 		{/if}
 	</Form>
 {/if}
-
-<style>
-	hr {
-		border: 0;
-		border-top: 1px solid var(--sep-color);
-		margin: 1em 0;
-	}
-</style>

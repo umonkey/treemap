@@ -30,12 +30,12 @@
 				<Button type="submit" onClick={save} disabled={$busy}>{locale.editSave()}</Button>
 				<Button type="cancel" onClick={close}>{locale.editCancel()}</Button>
 			</Buttons>
+
+			{#if $saveError}
+				<p>{$saveError}</p>
+			{/if}
+
+			<ChangeHistory {id} name="diameter" />
 		</Form>
-
-		{#if $saveError}
-			<p>{$saveError}</p>
-		{/if}
-
-		<ChangeHistory {id} name="diameter" />
 	{/if}
 </AuthWrapper>

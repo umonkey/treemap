@@ -34,9 +34,9 @@
 				<Button onClick={save} disabled={$busy}>{locale.deadConfirm()}</Button>
 				<Button type="cancel" onClick={close}>{locale.editCancel()}</Button>
 			</Buttons>
-		</Form>
 
-		<ChangeHistory {id} name="state" />
+			<ChangeHistory {id} name="state" />
+		</Form>
 	{/if}
 </AuthWrapper>
 
