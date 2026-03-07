@@ -22,10 +22,10 @@
 	<Title title={$tree?.species} address={$tree?.address} />
 	<TreeContextMenu id={$tree.id} />
 
-	<Form onSubmit={save}>
+	<Form onSubmit={save} sticky>
 		<LocationInput value={$value} onChange={handleChange} open />
 
-		<Buttons>
+		<Buttons sticky>
 			<Button type="submit" onClick={save} disabled={$busy}>{locale.editSave()}</Button>
 			<Button type="cancel" onClick={close}>{locale.editCancel()}</Button>
 		</Buttons>

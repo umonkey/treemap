@@ -23,7 +23,7 @@
 		<Title title={$tree?.species} address={$tree?.address} />
 		<TreeContextMenu id={$tree.id} />
 
-		<Form onSubmit={save}>
+		<Form onSubmit={save} sticky>
 			<p>{locale.deleteHeader()}</p>
 
 			<TreeSheet tree={$tree} />
@@ -32,7 +32,7 @@
 
 			<CommentInput value={''} hint={locale.deleteCommentHint()} onChange={handleCommentChange} />
 
-			<Buttons>
+			<Buttons sticky>
 				<Button onClick={save} disabled={$busy}>{locale.deleteConfirm()}</Button>
 				<Button type="cancel" onClick={close}>{locale.editCancel()}</Button>
 			</Buttons>

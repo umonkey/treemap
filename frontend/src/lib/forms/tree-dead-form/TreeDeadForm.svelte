@@ -23,14 +23,14 @@
 		<Title title={$tree?.species} address={$tree?.address} />
 		<TreeContextMenu id={$tree.id} />
 
-		<Form onSubmit={save}>
+		<Form onSubmit={save} sticky>
 			<p>{locale.deadHeader()}</p>
 
 			<TreeSheet tree={$tree} />
 
 			<p>{locale.deadUploadHint()}</p>
 
-			<Buttons>
+			<Buttons sticky>
 				<Button onClick={save} disabled={$busy}>{locale.deadConfirm()}</Button>
 				<Button type="cancel" onClick={close}>{locale.editCancel()}</Button>
 			</Buttons>

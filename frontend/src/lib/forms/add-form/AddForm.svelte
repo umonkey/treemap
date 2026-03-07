@@ -50,7 +50,7 @@
 {#if $loading}
 	<!-- loading ... -->
 {:else}
-	<Form>
+	<Form sticky>
 		<LocationInput
 			value={$location}
 			label={locale.addConfirmLocation()}
@@ -64,7 +64,7 @@
 		<YearInput value={$tree.year} onChange={handleYearChange} />
 		<NotesInput value={$tree.notes} onChange={handleNotesChange} />
 
-		<Buttons>
+		<Buttons sticky>
 			<Button type="submit" onClick={handleConfirm} disabled={$saving}
 				>{locale.addConfirmButton()}</Button
 			>

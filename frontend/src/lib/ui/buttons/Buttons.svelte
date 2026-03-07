@@ -22,6 +22,7 @@
 			height: 34px;
 			padding: var(--gap);
 			background-color: var(--background-color);
+			border-top: 1px solid var(--sep-color);
 		}
 	}
 </style>

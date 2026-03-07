@@ -51,7 +51,7 @@
 	<Title title={$tree?.species} address={$tree?.address} />
 	<TreeContextMenu id={$tree.id} />
 
-	<Form>
+	<Form sticky>
 		<p>{locale.replaceHint()}</p>
 
 		<SpeciesInput value={$species} onChange={(value: string) => species.set(value)} />
@@ -65,7 +65,7 @@
 		<YearInput value={$year} onChange={(value: number) => year.set(value)} />
 		<NotesInput value={$notes} onChange={(value: string) => notes.set(value)} />
 
-		<Buttons>
+		<Buttons sticky>
 			<Button type="submit" onClick={save} disabled={$busy}>{locale.addConfirmButton()}</Button>
 			<Button type="cancel" onClick={close} disabled={$busy}>{locale.addCancelButton()}</Button>
 		</Buttons>

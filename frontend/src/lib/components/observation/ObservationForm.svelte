@@ -105,7 +105,7 @@
 		{/if}
 	</div>
 
-	<Form onSubmit={handleSubmit}>
+	<Form onSubmit={handleSubmit} sticky>
 		<table class="observation-table">
 			<tbody>
 				{#each fields as field}
@@ -128,7 +128,7 @@
 			</tbody>
 		</table>
 
-		<Buttons>
+		<Buttons sticky>
 			{#if $isAuthenticated}
 				<Button type="submit" disabled={saving}>{locale.editSave()}</Button>
 			{:else}
