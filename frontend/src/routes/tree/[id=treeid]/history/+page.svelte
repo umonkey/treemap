@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { formatSpecies } from '$lib/utils/trees';
 	import { loadTreeHistory } from '$lib/hooks';
 	import Title from '$lib/components/tree/Title.svelte';
 	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
@@ -21,7 +20,7 @@
 	{:else if $error}
 		<p>Error loading tree: {$error.description}</p>
 	{:else}
-		<Title title={formatSpecies($tree.species)} address={$tree.address} />
+		<Title title={$tree.species} address={$tree.address} />
 		<TreeTabs tree={$tree.id} active="history" />
 		<TreeContextMenu id={$tree.id} />
 

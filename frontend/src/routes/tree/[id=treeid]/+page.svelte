@@ -2,7 +2,6 @@
 	import { invalidateAll } from '$app/navigation';
 	import { apiClient } from '$lib/api';
 	import { locale } from '$lib/locale';
-	import { formatSpecies } from '$lib/utils/trees';
 	import { setLastTree } from '$lib/stores/mapStore';
 	import { toast } from '@zerodevx/svelte-toast';
 	import { routes } from '$lib/routes';
@@ -51,7 +50,7 @@
 </script>
 
 <NarrowPage title={locale.treeShortTitle()} back={routes.mapPreview(data.id)} nopadding>
-	<Title title={formatSpecies(tree.species)} address={tree.address} />
+	<Title title={tree.species} address={tree.address} />
 	<TreeTabs tree={tree.id} active="details" />
 	<Gallery id={tree.id} />
 	<Actions {tree} />

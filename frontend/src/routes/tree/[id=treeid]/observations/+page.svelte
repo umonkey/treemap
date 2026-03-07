@@ -3,7 +3,6 @@
 	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
 	import { NarrowPage } from '$lib/ui';
 	import { locale } from '$lib/locale';
-	import { formatSpecies } from '$lib/utils/trees';
 	import Title from '$lib/components/tree/Title.svelte';
 	import { routes } from '$lib/routes';
 
@@ -12,7 +11,7 @@
 </script>
 
 <NarrowPage title={locale.treeTabsObservations()} back={routes.mapPreview(data.id)} nopadding>
-	<Title title={formatSpecies(tree.species)} address={tree.address} />
+	<Title title={tree.species} address={tree.address} />
 	<TreeContextMenu id={tree.id} />
 
 	<div class="padded">

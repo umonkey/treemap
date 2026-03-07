@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { StreetView } from '$lib/ui';
-	import { formatSpecies } from '$lib/utils/trees';
 	import Actions from '$lib/components/tree/Actions.svelte';
 	import Description from '$lib/components/tree/Description.svelte';
 	import Links from '$lib/components/tree/Links.svelte';
@@ -21,7 +20,7 @@
 {:else if $error}
 	<p>{$error}</p>
 {:else}
-	<Title title={formatSpecies($data.species)} address={$data.address} />
+	<Title title={$data.species} address={$data.address} />
 	<TreeTabs tree={$data.id} active="360" />
 
 	<StreetView lat={$data.lat} lng={$data.lon} />

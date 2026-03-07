@@ -8,6 +8,7 @@
 	import { DotsIcon } from '$lib/icons';
 	import { routes } from '$lib/routes';
 	import { menuState } from '$lib/stores/treeMenu';
+	import { formatSpecies } from '$lib/utils/trees';
 
 	const { title, address = undefined } = $props<{
 		title: string;
@@ -21,7 +22,7 @@
 
 <div class="tree-title">
 	<h1>
-		<strong>{title}</strong>
+		<strong>{formatSpecies(title)}</strong>
 		{#if address}
 			&middot; <a href={routes.searchAddress(address)}>{address}</a>{/if}
 	</h1>

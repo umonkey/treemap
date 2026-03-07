@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { ITree } from '$lib/types';
-	import { formatState } from '$lib/utils/trees';
+	import { formatSpecies, formatState } from '$lib/utils/trees';
 	import { locale } from '$lib/locale';
 
 	const { tree } = $props<{
@@ -16,7 +16,7 @@
 		</tr>
 		<tr>
 			<th>{locale.speciesLabel()}:</th>
-			<td>{tree.species}</td>
+			<td>{formatSpecies(tree.species)}</td>
 		</tr>
 		<tr>
 			<th>{locale.stateLabel()}:</th>
