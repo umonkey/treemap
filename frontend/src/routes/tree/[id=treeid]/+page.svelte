@@ -50,9 +50,7 @@
 </script>
 
 <NarrowPage title={locale.treeShortTitle()} back={routes.mapPreview(data.id)} nopadding>
-	<div class="padded">
-		<Title title={tree.species} address={tree.address} />
-	</div>
+	<Title title={tree.species} address={tree.address} padded />
 
 	<TreeTabs tree={tree.id} active="details" />
 

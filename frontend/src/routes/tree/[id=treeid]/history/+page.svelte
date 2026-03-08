@@ -20,7 +20,7 @@
 	{:else if $error}
 		<p>Error loading tree: {$error.description}</p>
 	{:else}
-		<Title title={$tree.species} address={$tree.address} />
+		<Title title={$tree.species} address={$tree.address} padded />
 		<TreeTabs tree={$tree.id} active="history" />
 		<TreeContextMenu id={$tree.id} />
 

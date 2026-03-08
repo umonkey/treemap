@@ -10,9 +10,14 @@
 	import { menuState } from '$lib/stores/treeMenu';
 	import { formatSpecies } from '$lib/utils/trees';
 
-	const { title, address = undefined } = $props<{
+	const {
+		title,
+		address = undefined,
+		padded
+	} = $props<{
 		title: string;
 		address?: string;
+		padded?: boolean;
 	}>();
 
 	const onMenu = () => {
@@ -20,7 +25,7 @@
 	};
 </script>
 
-<div class="tree-title">
+<div class="tree-title" class:padded={!!padded}>
 	<h1>
 		<strong>{formatSpecies(title)}</strong>
 		{#if address}
@@ -67,5 +72,9 @@
 			width: 50px;
 			padding: 10px;
 		}
+	}
+
+	.padded {
+		padding: 0 var(--gap);
 	}
 </style>

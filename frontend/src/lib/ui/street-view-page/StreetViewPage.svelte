@@ -20,7 +20,7 @@
 {:else if $error}
 	<p>{$error}</p>
 {:else}
-	<Title title={$data.species} address={$data.address} />
+	<Title title={$data.species} address={$data.address} padded />
 	<TreeTabs tree={$data.id} active="360" />
 
 	<StreetView lat={$data.lat} lng={$data.lon} />
