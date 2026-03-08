@@ -1,4 +1,4 @@
-import type { ITree, IResponse, ISingleTree, IChangeList } from '$lib/types';
+import type { ITree, IResponse, ISingleTree } from '$lib/types';
 import { DEFAULT_TREE } from '$lib/constants';
 import { apiClient } from '$lib/api';
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
