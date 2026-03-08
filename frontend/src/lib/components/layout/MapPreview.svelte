@@ -3,8 +3,11 @@
 	import GalleryPreview from '$lib/components/photos/GalleryPreview.svelte';
 	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
 	import { CloseIcon, ShareIcon, SettingsIcon } from '$lib/icons';
+	import LocationIcon from '$lib/icons/LocationIcon.svelte';
+	import BatteryIcon from '$lib/icons/BatteryIcon.svelte';
+	import TagIcon from '$lib/icons/TagIcon.svelte';
 	import { routes } from '$lib/routes';
-	import { formatSpecies, shortDetails } from '$lib/utils/trees';
+	import { formatSpecies, formatState, shortDetails } from '$lib/utils/trees';
 	import { handleShareTree } from '$lib/hooks';
 	import { locale } from '$lib/locale';
 	import { hook } from './MapPreview';
@@ -26,9 +29,25 @@
 
 				<div class="props">
 					{#if $tree.address}
-						<div class="line">{$tree.address}</div>
+						<div class="line">
+							<div class="icon">
+								<LocationIcon />
+							</div>
+							<div class="value">{$tree.address}</div>
+						</div>
 					{/if}
-					<div class="line">{shortDetails($tree)}</div>
+					<div class="line">
+						<div class="icon">
+							<TagIcon />
+						</div>
+						<div class="value">{shortDetails($tree)}</div>
+					</div>
+					<div class="line">
+						<div class="icon">
+							<BatteryIcon />
+						</div>
+						<div class="value">{formatState($tree.state)}</div>
+					</div>
 				</div>
 			</div>
 
@@ -103,11 +122,24 @@
 
 		.props {
 			opacity: 0.7;
+			display: flex;
+			flex-direction: column;
+			gap: 5px;
 
 			.line {
 				white-space: nowrap;
 				overflow: hidden;
 				text-overflow: ellipsis;
+
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				gap: var(--gap);
+
+				.icon {
+					width: 20px;
+					height: 20px;
+				}
 			}
 		}
 	}

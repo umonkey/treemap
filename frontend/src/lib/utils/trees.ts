@@ -30,9 +30,6 @@ export const shortDetails = (tree: ITree): string => {
 		parts.push('C=?');
 	}
 
-	parts.push('·');
-	parts.push(formatState(tree.state));
-
 	return parts.join(' ');
 };
 
@@ -93,7 +90,7 @@ export const formatSpecies = (value: string | null): string => {
 
 export const formatState = (value: string | null): string => {
 	if (!value || value === 'Unknown') {
-		return 'Unknown species';
+		return 'Unknown state';
 	}
 
 	if (value === 'healthy') {
