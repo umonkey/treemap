@@ -3,7 +3,7 @@
 	import LeftSidebar from './LeftSidebar.svelte';
 
 	const { Story } = defineMeta({
-		title: 'UI/LeftSidebar',
+		title: 'Layout/LeftSidebar',
 		component: LeftSidebar,
 		argTypes: {}
 	});

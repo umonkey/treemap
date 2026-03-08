@@ -2,15 +2,21 @@
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
 	import { BellIcon, HomeIcon, MapIcon, SearchIcon, SpinnerIcon } from '$lib/icons';
-	import { mapLastTree } from '$lib/stores/mapStore';
 	import { searchStore } from '$lib/stores';
 	import { uploadStore } from '$lib/stores/upload';
+	import { isSidebarVisible, mobileSidebarStore } from '$lib/stores/mobileSidebarStore';
 	import { authStore } from '$lib/stores/authStore';
 	import Logo from '$lib/assets/trees-of-yerevan.svelte';
 	import UserPic from '$lib/components/nav/UserPic.svelte';
+
+	const onClose = () => {
+		mobileSidebarStore.set(false);
+	};
 </script>
 
-<aside class="left">
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<div class="overlay" class:visible={!!$isSidebarVisible} onclick={onClose}>
 	<div class="canvas">
 		<ul>
 			<li>
@@ -25,14 +31,7 @@
 					<span>{locale.sideSearch()}</span>
 				</a>
 			</li>
-			{#if $mapLastTree}
-				<li>
-					<a href={routes.mapPreview($mapLastTree, $searchStore)}>
-						<span class="icon"><MapIcon /></span>
-						<span>{locale.sideExplore()}</span>
-					</a>
-				</li>
-			{:else if $searchStore}
+			{#if $searchStore}
 				<li>
 					<a href={routes.searchQuery($searchStore)}>
 						<span class="icon"><MapIcon /></span>
@@ -82,108 +81,109 @@
 			<a href="https://github.com/umonkey/treemap/issues" target="_blank">{locale.sideBugs()}</a>
 		</div>
 	</div>
-</aside>
+</div>
 
 <style>
-	/**
-	 * Default style: phones, hide the left bar.
-	 */
-	aside {
-		display: none;
-	}
+	.canvas {
+		height: 100vh;
+		width: 300px;
+		position: fixed;
+		box-sizing: border-box;
 
-	/**
-	 * Desktop styles: show the left bar.
-	 */
-	@media (min-width: 1024px) {
-		aside {
-			display: block;
-			flex-basis: 300px;
-			flex-shrink: 0;
-			flex-grow: 0;
+		background-color: var(--form-background);
 
-			.canvas {
-				height: 100vh;
-				width: 300px;
-				position: fixed;
-				box-sizing: border-box;
+		display: flex;
+		flex-direction: column;
+		gap: calc(var(--gap) * 2);
 
-				background-color: var(--form-background);
+		padding: calc(2 * var(--gap));
+		border-right: 1px solid var(--sep-color);
 
+		text-align: left;
+		font-size: 18px;
+
+		color: var(--text-color);
+
+		ul {
+			margin: 0;
+			padding: 0 var(--gap);
+			list-style-type: none;
+			flex-grow: 1;
+
+			a {
 				display: flex;
-				flex-direction: column;
-				gap: calc(var(--gap) * 2);
+				flex-direction: row;
+				gap: var(--gap);
+				line-height: 24px;
+				color: inherit;
+				text-decoration: none;
+				padding: 10px 0;
+				margin-bottom: 10px;
+			}
 
-				padding: calc(2 * var(--gap));
-				border-right: 1px solid var(--sep-color);
+			.icon {
+				flex-basis: 30px;
+				flex-shrink: 0;
+				flex-grow: 0;
+				height: 24px;
+				width: 24px;
+				position: relative;
+			}
 
-				text-align: left;
-				font-size: 18px;
-
-				color: var(--text-color);
-
-				ul {
-					margin: 0;
-					padding: 0 var(--gap);
-					list-style-type: none;
-					flex-grow: 1;
-
-					a {
-						display: flex;
-						flex-direction: row;
-						gap: var(--gap);
-						line-height: 24px;
-						color: inherit;
-						text-decoration: none;
-						padding: 10px 0;
-						margin-bottom: 10px;
-					}
-
-					.icon {
-						flex-basis: 30px;
-						flex-shrink: 0;
-						flex-grow: 0;
-						height: 24px;
-						width: 24px;
-						position: relative;
-					}
-
-					:global(.user-pic-sidebar) {
-						width: 24px;
-						height: 24px;
-						border-radius: 50%;
-						margin-left: 4px;
-					}
-				}
-
-				.bottom {
-					flex-grow: 0;
-					flex-shrink: 0;
-					opacity: 0.5;
-				}
-
-				.links {
-					font-size: 14px;
-					text-align: center;
-
-					a {
-						color: inherit;
-						text-decoration: underline;
-					}
-				}
+			:global(.user-pic-sidebar) {
+				width: 24px;
+				height: 24px;
+				border-radius: 50%;
+				margin-left: 4px;
 			}
 		}
 
-		.badge {
-			position: absolute;
-			top: 0;
-			left: 100%;
-			transform: translate(-50%, -50%);
+		.bottom {
+			flex-grow: 0;
+			flex-shrink: 0;
+			opacity: 0.5;
+		}
 
-			font-size: 0.8rem;
-			background-color: #080;
-			padding: 0 0.5rem;
-			border-radius: 5px;
+		.links {
+			font-size: 14px;
+			text-align: center;
+
+			a {
+				color: inherit;
+				text-decoration: underline;
+			}
+		}
+	}
+
+	.badge {
+		position: absolute;
+		top: 0;
+		left: 100%;
+		transform: translate(-50%, -50%);
+
+		font-size: 0.8rem;
+		background-color: #080;
+		padding: 0 0.5rem;
+		border-radius: 5px;
+	}
+
+	/** Hide by default on small screens. **/
+	@media screen and (max-width: 1023px) {
+		.overlay {
+			animation: fadeIn 0.1s ease-in-out;
+
+			display: none;
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100vw;
+			height: 100dvh;
+			background-color: rgba(0, 0, 0, 0.5);
+			backdrop-filter: blur(2px);
+
+			&.visible {
+				display: block;
+			}
 		}
 	}
 </style>

@@ -1,7 +1,7 @@
 <script module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import { MapPreview } from '$lib/ui';
-	import './mocks';
+	import MapPreview from './MapPreview.svelte';
+	import './MapPreview.mocks.ts';
 
 	const { Story } = defineMeta({
 		title: 'UI/MapPreview',

@@ -9,11 +9,15 @@
 
 	const handleError = () => {
 		console.debug(`Error loading image ${src}, falling back to ${fallback}`);
-		img.src = fallback;
+		if (img) {
+			img.src = fallback;
+		}
 	};
 
 	const handleLoad = () => {
-		img.style.opacity = '1';
+		if (img) {
+			img.style.opacity = '1';
+		}
 	};
 </script>
 
