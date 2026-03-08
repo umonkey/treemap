@@ -15,18 +15,21 @@
 	import { hook } from './MapPreview';
 	import '$lib/styles/variables.css';
 
-	let expand = $state<boolean>(false);
-
-	const { visible, error, tree, observations, comments, handleClose, handleContextMenu } = hook();
-
-	const toggleExpand = (e: Event) => {
-		e.preventDefault();
-		expand = !expand;
-	};
+	const {
+		visible,
+		expand,
+		error,
+		tree,
+		observations,
+		comments,
+		handleClose,
+		handleContextMenu,
+		toggleExpand
+	} = hook();
 </script>
 
 {#if $visible}
-	<div class="preview" class:expand={!!expand}>
+	<div class="preview" class:expand={!!$expand}>
 		{#if $error}
 			<p>{$error}</p>
 		{:else if $tree}

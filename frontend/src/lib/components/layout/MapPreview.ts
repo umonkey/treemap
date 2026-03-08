@@ -14,10 +14,12 @@ export const hook = () => {
 	const error = writable<string | null>(null);
 	const observations = writable<IObservation | null>(null);
 	const comments = writable<IComment[]>([]);
+	const expand = writable<boolean>(false);
 
 	// This works by navigating to the map page which doesn't have ?preview=N in the address.
 	const handleClose = (e: Event) => {
 		e.preventDefault();
+		expand.set(false);
 		goto(mapHome());
 	};
 
@@ -66,5 +68,23 @@ export const hook = () => {
 		menuState.set(true);
 	};
 
-	return { visible, error, tree, observations, comments, handleClose, handleContextMenu };
+	const toggleExpand = (e: Event) => {
+		e.preventDefault();
+
+		expand.update((value) => {
+			return !value;
+		});
+	};
+
+	return {
+		visible,
+		error,
+		tree,
+		observations,
+		comments,
+		expand,
+		handleClose,
+		handleContextMenu,
+		toggleExpand
+	};
 };
