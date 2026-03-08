@@ -1,23 +1,29 @@
 <script lang="ts">
-	import DefaultImage from '$lib/assets/tree.jpg';
-	import { LazyImage } from '$lib/ui';
-	import { UploadIcon } from '$lib/icons';
-	import { routes } from '$lib/routes';
+import DefaultImage from "$lib/assets/tree.jpg";
+import { UploadIcon } from "$lib/icons";
+import { routes } from "$lib/routes";
+import { LazyImage } from "$lib/ui";
 
-	const { loading, error, mapper, tree_id, images } = $props<{
-		loading: boolean;
-		error?: string;
-		mapper: boolean;
-		tree_id: string;
-		images: string[];
-	}>();
+const { loading, error, mapper, tree_id, images } = $props<{
+	loading: boolean;
+	error?: string;
+	mapper: boolean;
+	tree_id: string;
+	images: string[];
+}>();
 </script>
 
 <div class="gallery" class:loading class:error={!!error} class:mapper>
 	{#if !!error}
 		<p>{error}</p>
-	{:else if !!loading}
-		<!-- loading -->
+	{:else if loading}
+		<div class="images">
+			<div class="tile placeholder"></div>
+			<div class="tile placeholder"></div>
+			<div class="tile placeholder"></div>
+			<div class="tile placeholder"></div>
+			<div class="tile placeholder"></div>
+		</div>
 	{:else}
 		<div class="images">
 			{#if mapper}
@@ -87,6 +93,23 @@
 					box-sizing: border-box;
 				}
 			}
+
+			&.placeholder {
+				background-color: var(--form-background);
+				animation: pulse 1.5s infinite ease-in-out;
+			}
+		}
+	}
+
+	@keyframes pulse {
+		0% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0.4;
+		}
+		100% {
+			opacity: 1;
 		}
 	}
 </style>
