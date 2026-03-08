@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { Button, Buttons, Form, AuthWrapper, CommentInput } from '$lib/ui';
-	import TreeSheet from '$lib/components/tree/TreeSheet.svelte';
+	import { stateUpdater } from '$lib/actions';
 	import ChangeHistory from '$lib/components/tree/ChangeHistory.svelte';
 	import Title from '$lib/components/tree/Title.svelte';
 	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
+	import TreeSheet from '$lib/components/tree/TreeSheet.svelte';
 	import { locale } from '$lib/locale';
-	import { stateUpdater } from '$lib/actions';
+	import { AuthWrapper, Button, Buttons, CommentInput, Form } from '$lib/ui';
 
 	const { id } = $props<{
 		id: string;
@@ -16,11 +16,11 @@
 
 <AuthWrapper>
 	{#if $error}
-		<p>{$error.description}</p>
+		<p>{$error}</p>
 	{:else if $loading}
 		<p>Checking the tree...</p>
-	{:else}
-		<Title title={$tree?.species} address={$tree?.address} />
+	{:else if $tree}
+		<Title title={$tree.species} address={$tree.address ?? undefined} />
 		<TreeContextMenu id={$tree.id} />
 
 		<Form onSubmit={save} sticky>

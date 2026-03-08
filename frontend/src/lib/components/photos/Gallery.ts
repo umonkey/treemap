@@ -1,10 +1,10 @@
-import { writable } from 'svelte/store';
-import type { IGalleryItem, ITreeFile } from '$lib/types';
 import { apiClient } from '$lib/api';
-import { get } from 'svelte/store';
-import { getUser } from '$lib/stores/userStore';
 import { routes } from '$lib/routes';
+import { getUser } from '$lib/stores/userStore';
+import type { IGalleryItem, ITreeFile } from '$lib/types';
 import { formatDate } from '$lib/utils/strings';
+import { writable } from 'svelte/store';
+import { get } from 'svelte/store';
 
 const added_at = (file: ITreeFile) => {
 	if (!file.added_at || !file.added_by) {
@@ -25,7 +25,7 @@ const formatSlides = (files: ITreeFile[]): IGalleryItem[] => {
 	const items = files.map((file: ITreeFile): IGalleryItem => {
 		return {
 			small: routes.file(file.small_id),
-			large: routes.file(file.source_id),
+			large: routes.file(file.source_id ?? file.large_id),
 			label: added_at(file)
 		};
 	});

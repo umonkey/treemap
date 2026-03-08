@@ -3,14 +3,14 @@
 	import { hooks } from './hooks';
 
 	type Props = {
-		address: string | undefined;
+		address: string | null | undefined;
 	};
 
 	const { address }: Props = $props();
 	const { report, handleStreetChange, reload } = hooks();
 
 	$effect(() => {
-		reload(address);
+		reload(address ?? null);
 	});
 </script>
 

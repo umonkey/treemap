@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { hooks } from './hooks';
 	import { locale } from '$lib/locale';
 	import HeatMap from '../HeatMap/index.svelte';
+	import { hooks } from './hooks';
 
 	type Props = {
-		id: number;
+		id: string;
 	};
 
 	const { id }: Props = $props();

@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { hooks } from './hooks';
+	import L from 'leaflet';
 	import { onMount } from 'svelte';
+	import { hooks } from './hooks';
 	import './styles.css';
 
 	const {
@@ -10,7 +11,7 @@
 		active = false,
 		disabled = false
 	} = $props<{
-		position: string;
+		position?: L.ControlPosition;
 		icon: string;
 		active?: boolean;
 		disabled?: boolean;

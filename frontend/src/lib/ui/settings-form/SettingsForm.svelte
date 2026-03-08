@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { AuthWrapper, Buttons, Button, Form, TextInput, FileUploader } from '$lib/ui';
 	import { locale } from '$lib/locale';
+	import { AuthWrapper, Button, Buttons, FileUploader, Form, TextInput } from '$lib/ui';
 	import { hooks } from './hooks';
 
 	const {
@@ -22,7 +22,7 @@
 		<!-- loading -->
 	{:else if $error}
 		<p>{$error}</p>
-	{:else}
+	{:else if $data}
 		<Form onSubmit={handleSave}>
 			<TextInput label="Display name:" value={$data.name} onChange={handleNameChange} />
 

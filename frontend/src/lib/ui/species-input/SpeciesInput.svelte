@@ -9,17 +9,17 @@
 	import { loadSuggestedSpecies } from '$lib/hooks';
 	import { locale } from '$lib/locale';
 	import type { ISpecies } from '$lib/types';
-	import { onMount } from 'svelte';
 	import { FormElement } from '$lib/ui';
+	import { onMount } from 'svelte';
 
-	const { value, onChange } = $props<{
-		value: string;
+	const { value = '', onChange } = $props<{
+		value?: string | null;
 		onChange: (value: string) => void;
 	}>();
 
 	// This is the editable input value.
 	// We change it on autocomplete clicks, etc.
-	let currentValue = $state<string>(value);
+	let currentValue = $state<string>(value ?? '');
 
 	const { data: suggested, reload } = loadSuggestedSpecies();
 

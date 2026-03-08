@@ -1,21 +1,21 @@
 <script lang="ts">
+	import Title from '$lib/components/tree/Title.svelte';
+	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
 	import { locale } from '$lib/locale';
 	import {
 		Button,
 		Buttons,
 		CanopyInput,
 		CircumferenceInput,
+		Form,
 		HeightInput,
 		LocationInput,
 		NotesInput,
-		StateInput,
-		YearInput,
 		SpeciesInput,
+		StateInput,
 		StreetInput,
-		Form
+		YearInput
 	} from '$lib/ui';
-	import Title from '$lib/components/tree/Title.svelte';
-	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
 	import { hooks } from './hooks';
 
 	const { id } = $props<{
@@ -46,8 +46,8 @@
 
 {#if $loading}
 	<!-- Loading... -->
-{:else}
-	<Title title={$tree?.species} address={$tree?.address} />
+{:else if $tree}
+	<Title title={$tree.species} address={$tree.address ?? undefined} />
 	<TreeContextMenu id={$tree.id} />
 
 	<Form onSubmit={handleConfirm} sticky>
@@ -57,11 +57,7 @@
 		<CircumferenceInput value={$updated.circumference} onChange={handleCircumferenceChange} />
 		<StateInput value={$updated.state} onChange={handleStateChange} />
 		<YearInput value={$updated.year} onChange={handleYearChange} />
-		<LocationInput
-			value={{ lat: $tree.lat, lng: $tree.lon }}
-			pin={{ lat: $tree.lat, lng: $tree.lon }}
-			onChange={handleLocationChange}
-		/>
+		<LocationInput value={{ lat: $tree.lat, lng: $tree.lon }} onChange={handleLocationChange} />
 
 		<StreetInput value={$tree.address} onChange={handleAddressChange} />
 

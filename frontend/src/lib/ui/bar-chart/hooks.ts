@@ -1,3 +1,5 @@
+import type { ChartType } from 'chart.js';
+
 type Item = {
 	label: string;
 	value: number;
@@ -15,7 +17,7 @@ export const formatChartProps = (items: Item[]) => {
 	const values = items.map((item) => item.value);
 
 	return {
-		type: 'bar',
+		type: 'bar' as ChartType,
 
 		data: {
 			labels: labels,

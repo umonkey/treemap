@@ -1,11 +1,7 @@
 import type { Load } from '@sveltejs/kit';
 import { error } from '@sveltejs/kit';
 
-export const load: Load = ({
-	params
-}): Promise<{
-	id: string;
-}> => {
+export const load: Load = ({ params }) => {
 	const id = params.id;
 
 	if (!id) {

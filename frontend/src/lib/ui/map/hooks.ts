@@ -9,14 +9,14 @@
 //
 // So we use the map bus instead.
 
-import L, { type Map } from 'leaflet';
-import type { ILatLng, MountFn } from '$lib/types';
-import { MAX_BOUNDS } from '$lib/constants';
-import { get, writable } from 'svelte/store';
 import { mapBus } from '$lib/buses';
-import { mapCenter, mapZoom } from '$lib/stores/mapStore';
+import { MAX_BOUNDS } from '$lib/constants';
 import { mapKey } from '$lib/map';
+import { mapCenter, mapZoom } from '$lib/stores/mapStore';
+import type { ILatLng, MountFn } from '$lib/types';
+import L, { type Map } from 'leaflet';
 import { setContext } from 'svelte';
+import { get, writable } from 'svelte/store';
 
 const getMaxBounds = () => {
 	const c1 = L.latLng(MAX_BOUNDS[0][0], MAX_BOUNDS[0][1]);
@@ -105,8 +105,25 @@ export const hook = (element: string, mount: MountFn) => {
 		]);
 	};
 
+	const handleZoom = (zoom: number) => {
+		const current = get(map)?.getZoom();
+
+		if (current === undefined) {
+			console.error('[map] Cannot zoom: map not initialized.');
+			return;
+		}
+
+		if (current === zoom) {
+			return;
+		}
+
+		console.debug(`[map] Request to zoom to ${zoom}`);
+		get(map)?.setZoom(zoom);
+	};
+
 	return {
 		map,
-		handleCenter
+		handleCenter,
+		handleZoom
 	};
 };

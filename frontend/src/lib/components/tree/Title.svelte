@@ -16,7 +16,7 @@
 		padded
 	} = $props<{
 		title: string;
-		address?: string;
+		address?: string | null;
 		padded?: boolean;
 	}>();
 

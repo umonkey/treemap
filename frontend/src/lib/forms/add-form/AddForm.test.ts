@@ -1,14 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // This must go first for the mocks to work.
 import { mockedGoto } from './mocks';
 
-import AddForm from './AddForm.svelte';
-import type { IAddTreesRequest, IResponse, ITreeList } from '$lib/types';
-import userEvent from '@testing-library/user-event';
-import { DEFAULT_TREE } from '$lib/constants';
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-import { cleanup, render, screen } from '@testing-library/svelte';
 import { apiClient } from '$lib/api';
+import { DEFAULT_TREE } from '$lib/constants';
 import { routes } from '$lib/routes';
+import type { IAddTreesRequest, IResponse, ITreeList } from '$lib/types';
+import { cleanup, render, screen } from '@testing-library/svelte';
+import userEvent from '@testing-library/user-event';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import AddForm from './AddForm.svelte';
 
 beforeEach(() => {
 	mockedGoto.mockClear();
@@ -74,8 +75,10 @@ describe('AddForm', async () => {
 		const user = userEvent.setup();
 
 		render(AddForm, {
-			lat: 1.0,
-			lng: 2.0
+			props: {
+				lat: 1.0,
+				lng: 2.0
+			}
 		});
 
 		const em = screen.getByRole('button', {
@@ -107,8 +110,10 @@ describe('AddForm', async () => {
 		};
 
 		render(AddForm, {
-			lat: 1.0,
-			lng: 2.0
+			props: {
+				lat: 1.0,
+				lng: 2.0
+			}
 		});
 
 		const em = screen.getByRole('button', {
@@ -117,7 +122,7 @@ describe('AddForm', async () => {
 
 		await user.click(em);
 
-		expect(request?.points[0]).toStrictEqual({
+		expect((request as any)?.points[0]).toStrictEqual({
 			lat: 1.0,
 			lon: 2.0
 		});
@@ -140,12 +145,9 @@ describe('AddForm', async () => {
 		};
 
 		render(AddForm, {
-			lat: 1.0,
-			lng: 2.0,
-			onAdded: () => {},
-			onCancel: () => {},
-			onBeforeSubmit: (req: IAddTreesRequest) => {
-				request = req;
+			props: {
+				lat: 1.0,
+				lng: 2.0
 			}
 		});
 
@@ -170,7 +172,7 @@ describe('AddForm', async () => {
 		await user.click(submit);
 
 		expect(request).not.toBeNull();
-		expect(request?.year).toBe(1980);
+		expect((request as any)?.year).toBe(1980);
 
 		expect(mockedGoto).toHaveBeenCalledWith(routes.mapPreview('tree1'));
 	});

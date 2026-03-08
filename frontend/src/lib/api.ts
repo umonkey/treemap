@@ -1,8 +1,9 @@
 import { config } from '$lib/env';
 import { authStore, isAuthenticated } from '$lib/stores/authStore';
-import { addUsers } from '$lib/stores/userStore';
 import { addTrees, getTree } from '$lib/stores/treeStore';
+import { addUsers } from '$lib/stores/userStore';
 import type {
+	DuplicateList,
 	IAddTreesRequest,
 	IChangeList,
 	ICommentList,
@@ -10,15 +11,16 @@ import type {
 	ILikeList,
 	IMarkers,
 	IMeResponse,
+	IObservation,
 	IRawError,
 	IReplaceTreeRequest,
 	IResponse,
 	ISingleTree,
 	ISpecies,
-	IStreet,
 	ISpeciesStats,
 	IStateStats,
 	IStats,
+	IStreet,
 	IStreetStats,
 	ITree,
 	ITreeDefaults,
@@ -26,11 +28,9 @@ import type {
 	ITreeList,
 	ITreeUpdatePayload,
 	IUploadTicket,
-	DuplicateList,
-	StreetReport,
 	IUser,
 	IUserList,
-	IObservation
+	StreetReport
 } from '$lib/types';
 import { Response } from '$lib/types_response';
 import { get } from 'svelte/store';
@@ -95,7 +95,7 @@ export class ApiClient {
 		return await this.request('GET', 'v1/heatmap');
 	}
 
-	public async getUserHeatMap(id: number): Promise<IResponse<IHeatMap[]>> {
+	public async getUserHeatMap(id: string): Promise<IResponse<IHeatMap[]>> {
 		return await this.request('GET', `v1/users/${id}/heatmap`);
 	}
 
@@ -446,35 +446,37 @@ export class ApiClient {
 		try {
 			const start = performance.now();
 
-			const uploadResult = await new Promise<{ ok: boolean; status: number; statusText: string }>(
-				(resolve, reject) => {
-					const xhr = new XMLHttpRequest();
-					xhr.open('PUT', url);
+			const uploadResult = await new Promise<{
+				ok: boolean;
+				status: number;
+				statusText: string;
+			}>((resolve, reject) => {
+				const xhr = new XMLHttpRequest();
+				xhr.open('PUT', url);
 
-					if (onProgress) {
-						xhr.upload.onprogress = (e) => {
-							if (e.lengthComputable) {
-								const percentComplete = Math.round((e.loaded / e.total) * 100);
-								onProgress(percentComplete);
-							}
-						};
-					}
-
-					xhr.onload = () => {
-						resolve({
-							ok: xhr.status >= 200 && xhr.status < 300,
-							status: xhr.status,
-							statusText: xhr.statusText
-						});
+				if (onProgress) {
+					xhr.upload.onprogress = (e) => {
+						if (e.lengthComputable) {
+							const percentComplete = Math.round((e.loaded / e.total) * 100);
+							onProgress(percentComplete);
+						}
 					};
-
-					xhr.onerror = () => {
-						reject(new Error('Network error during upload'));
-					};
-
-					xhr.send(file);
 				}
-			);
+
+				xhr.onload = () => {
+					resolve({
+						ok: xhr.status >= 200 && xhr.status < 300,
+						status: xhr.status,
+						statusText: xhr.statusText
+					});
+				};
+
+				xhr.onerror = () => {
+					reject(new Error('Network error during upload'));
+				};
+
+				xhr.send(file);
+			});
 
 			const duration = Math.round(performance.now() - start);
 			console.log(`[api] File upload took ${duration} ms, status=${uploadResult.status}`);

@@ -1,7 +1,7 @@
 <script lang="ts">
 	const { width = '100%', height = '100%' } = $props<{
-		width: string;
-		height: string;
+		width?: string;
+		height?: string;
 	}>();
 </script>
 

@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { formatData } from './hooks';
-	import { type IHeatMap } from '$lib/types';
 	import { locale } from '$lib/locale';
+	import { type IHeatMap } from '$lib/types';
+	import { formatData } from './hooks';
 
 	type Props = {
 		title?: string;
-		data: IHeatMap;
+		data: IHeatMap[];
 		docs?: string;
 	};
 
@@ -33,7 +33,7 @@
 				<tr>
 					<td class="dow"><span>{days[rowIndex]}</span></td>
 					{#each row as cell}
-						<td class="cell {cell.class}" style="background-color: {cell.color}" title={cell.title}>
+						<td class="cell" title={cell.title}>
 							<div class={`grade${cell.grade}`}></div>
 						</td>
 					{/each}

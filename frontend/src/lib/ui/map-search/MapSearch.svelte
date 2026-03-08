@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { routes } from '$lib/routes';
-	import { hooks } from './hooks';
 	import { onMount } from 'svelte';
+	import { hooks } from './hooks';
 
 	const { focused, value, handleReset, handleFocus, handleBlur, handleChange } = hooks({ onMount });
 </script>
@@ -28,7 +28,7 @@
 		<div>
 			Without <a href={routes.searchQuery('no:height')}>height</a>,
 			<a href={routes.searchQuery('no:diameter')}>diameter</a>,
-			<a href={routes.searchQuery('no:circumference')}>grith</a>,
+			<a href={routes.searchQuery('no:circumference')}>girth</a>,
 			<a href={routes.searchQuery('noimage')}>images</a>,
 			<a href={routes.searchQuery('unknown')}>species</a>
 			or just <a href={routes.searchQuery('incomplete')}>incomplete</a>.

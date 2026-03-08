@@ -11,17 +11,17 @@
 		square = false
 	} = $props<{
 		children: Snippet;
-		type: 'submit' | 'button' | 'reset' | 'cancel' | 'secondary' | 'tertiary';
-		onClick: () => void;
-		disabled?: boolean;
+		type?: 'submit' | 'button' | 'reset' | 'cancel' | 'secondary' | 'tertiary';
+		onClick?: (e: MouseEvent) => void;
 		link?: string;
+		disabled?: boolean;
 		square?: boolean;
 	}>();
 
 	const className = `button ${type}`;
 
 	const getTarget = () => {
-		if (link && link.startsWith('http')) {
+		if (link?.startsWith('http')) {
 			return '_blank';
 		}
 
@@ -30,13 +30,7 @@
 </script>
 
 {#if link}
-	<a
-		href={link}
-		disabled={!!disabled}
-		class={className}
-		target={getTarget()}
-		class:square={!!square}
-	>
+	<a href={link} class={className} target={getTarget()} class:square={!!square}>
 		{@render children()}
 	</a>
 {:else}

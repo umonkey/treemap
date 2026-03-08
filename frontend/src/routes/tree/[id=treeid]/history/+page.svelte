@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { loadTreeHistory } from '$lib/hooks';
 	import Title from '$lib/components/tree/Title.svelte';
 	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
 	import TreeTabs from '$lib/components/tree/TreeTabs.svelte';
-	import { ChangeList, NarrowPage } from '$lib/ui';
+	import { loadTreeHistory } from '$lib/hooks';
 	import { routes } from '$lib/routes';
+	import { ChangeList, NarrowPage } from '$lib/ui';
 
 	const { data } = $props();
 	const { loading, tree, changes, error, reload } = loadTreeHistory();
@@ -19,7 +19,7 @@
 		<p>Loading...</p>
 	{:else if $error}
 		<p>Error loading tree: {$error.description}</p>
-	{:else}
+	{:else if $tree}
 		<Title title={$tree.species} address={$tree.address} padded />
 		<TreeTabs tree={$tree.id} active="history" />
 		<TreeContextMenu id={$tree.id} />

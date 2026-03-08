@@ -1,22 +1,26 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	import type { ChartOptions, ChartType } from 'chart.js';
 	import Chart from 'chart.js/auto';
+	import { onDestroy, onMount } from 'svelte';
 
 	type Props = {
-		type: string;
+		type: ChartType;
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		data: any;
-		options?: Chart.ChartOptions;
+		options?: ChartOptions;
 	};
 
 	const { type, data, options }: Props = $props();
 
-	let canvas;
-	let chartInstance;
+	let canvas: HTMLCanvasElement;
+	let chartInstance: Chart;
 
 	// Use onMount to ensure the canvas element is in the DOM
 	onMount(() => {
 		const ctx = canvas.getContext('2d');
+		if (!ctx) {
+			return;
+		}
 
 		chartInstance = new Chart(ctx, {
 			type,

@@ -1,12 +1,12 @@
-import { mockedGoto, TREE_RESPONSE } from './mocks';
+import { TREE_RESPONSE, mockedGoto } from './mocks';
 
-import CrownForm from './CrownForm.svelte';
+import { apiClient } from '$lib/api';
+import { authStore } from '$lib/stores/authStore';
 import type { IResponse, ITree } from '$lib/types';
+import { cleanup, render, screen } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, test } from 'vitest';
-import { apiClient } from '$lib/api';
-import { cleanup, render, screen } from '@testing-library/svelte';
-import { authStore } from '$lib/stores/authStore';
+import CrownForm from './CrownForm.svelte';
 
 describe('CrownForm', async () => {
 	afterEach(cleanup);
@@ -14,7 +14,7 @@ describe('CrownForm', async () => {
 	test('should save changes', async () => {
 		const user = userEvent.setup();
 
-		let saved: boolean = false;
+		let saved = false;
 
 		apiClient.getTree = async () => {
 			return {
@@ -45,7 +45,7 @@ describe('CrownForm', async () => {
 			id: 'tree1'
 		});
 
-		const input = await screen.findByRole('spinbutton');
+		const input = (await screen.findByRole('spinbutton')) as HTMLInputElement;
 		expect(input.value).toBe('1.23');
 		await user.clear(input);
 		await user.type(input, '2.34');

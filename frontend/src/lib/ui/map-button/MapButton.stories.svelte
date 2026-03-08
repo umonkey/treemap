@@ -1,11 +1,12 @@
 <script lang="ts" module>
-	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import { Map, MapButton } from '$lib/ui';
-	import { fn } from '@storybook/test';
-	import { DEFAULT_MAP_CENTER } from '$lib/constants';
-	import ICON1 from '$lib/assets/locate.svg';
+	/* eslint-disable @typescript-eslint/no-explicit-any */
 	import ICON2 from '$lib/assets/crosshair.svg';
 	import ICON3 from '$lib/assets/fullscreen.svg';
+	import ICON1 from '$lib/assets/locate.svg';
+	import { DEFAULT_MAP_CENTER } from '$lib/constants';
+	import { Map, MapButton } from '$lib/ui';
+	import { defineMeta } from '@storybook/addon-svelte-csf';
+	import { fn } from '@storybook/test';
 
 	const { Story } = defineMeta({
 		title: 'Map/MapButton',
@@ -47,7 +48,7 @@
 	});
 </script>
 
-{#snippet wrapper(args)}
+{#snippet wrapper(args: any)}
 	<div class="wrapper">
 		<Map center={DEFAULT_MAP_CENTER}>
 			<MapButton {...args} />
@@ -55,7 +56,7 @@
 	</div>
 {/snippet}
 
-<Story name="Primary" args={{ simpleChild: true }} template={wrapper} />
+<Story name="Primary" args={{}} template={wrapper} />
 
 <style>
 	.wrapper {

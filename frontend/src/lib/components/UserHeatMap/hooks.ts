@@ -1,8 +1,8 @@
-import { writable } from 'svelte/store';
-import { type IHeatMap } from '$lib/types';
 import { apiClient } from '$lib/api';
+import { type IHeatMap } from '$lib/types';
+import { writable } from 'svelte/store';
 
-export const hooks = (user_id: number) => {
+export const hooks = (user_id: string) => {
 	const data = writable<IHeatMap[]>([]);
 	const error = writable<string | undefined>(undefined);
 	const loading = writable<boolean>(false);

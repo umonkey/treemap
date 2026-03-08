@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { hooks } from './hooks';
 	import { routes } from '$lib/routes';
+	import { hooks } from './hooks';
 
 	const { data, loading } = hooks();
 </script>
@@ -9,7 +9,7 @@
 
 {#if $loading}
 	<p>Checking...</p>
-{:else if $data?.duplicates?.length > 0}
+{:else if $data && $data.duplicates.length > 0}
 	<p>
 		This page lists trees that have been identified as duplicates, sharing the same coordinates.
 	</p>

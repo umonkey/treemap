@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { TextInput } from '$lib/ui';
 	import { locale } from '$lib/locale';
+	import { TextInput } from '$lib/ui';
 
 	const { value, onChange } = $props<{
-		value: string;
+		value: string | null;
 		onChange: (value: string) => void;
 	}>();
 </script>

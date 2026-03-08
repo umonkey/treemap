@@ -11,12 +11,12 @@
 		help,
 		onChange
 	} = $props<{
-		value: string | number;
-		placeholder: string;
-		label: string;
-		type: string;
-		multiline: boolean;
-		hint: string;
+		value?: string | number | null;
+		placeholder?: string;
+		label?: string;
+		type?: string;
+		multiline?: boolean;
+		hint?: string;
 		help?: string;
 		onChange: (value: string) => void;
 	}>();

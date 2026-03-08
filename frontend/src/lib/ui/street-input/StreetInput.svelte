@@ -9,19 +9,19 @@
 	import type { IStreet } from '$lib/types';
 	import { FormElement } from '$lib/ui';
 
-	const { value, onChange } = $props<{
-		value: string;
+	const { value = '', onChange } = $props<{
+		value?: string | null;
 		onChange: (value: string) => void;
 	}>();
 
 	// This is the editable input value.
 	// We change it on autocomplete clicks, etc.
-	let currentValue = $state<string>(value);
+	let currentValue = $state<string>(value ?? '');
 
 	let options: IStreet[] = $state([]);
 	let showOptions = $state<boolean>(false);
 
-	let input: HTMLInputElement = $state();
+	let input: HTMLInputElement | undefined = $state();
 
 	const handleInput = (event: Event) => {
 		const target = event.target as HTMLInputElement;
@@ -38,7 +38,9 @@
 	const handleOptionClick = (v: string) => {
 		showOptions = false;
 		currentValue = v;
-		input.value = v;
+		if (input) {
+			input.value = v;
+		}
 		onChange(v);
 	};
 

@@ -1,7 +1,7 @@
 <script lang="ts" module>
-	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import { Map, MapCenter, MapFullscreen } from '$lib/ui';
 	import { DEFAULT_MAP_CENTER } from '$lib/constants';
+	import { Map, MapCenter, MapFullscreen } from '$lib/ui';
+	import { defineMeta } from '@storybook/addon-svelte-csf';
 
 	const { Story } = defineMeta({
 		title: 'Map/MapFullscreen',
@@ -21,7 +21,7 @@
 	</div>
 {/snippet}
 
-<Story name="Primary" args={{ simpleChild: true }} template={wrapper} />
+<Story name="Primary" args={{}} template={wrapper} />
 
 <style>
 	.wrapper {

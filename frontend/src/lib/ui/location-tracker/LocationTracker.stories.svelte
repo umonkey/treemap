@@ -1,6 +1,6 @@
 <script lang="ts" module>
-	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import { LocationTracker } from '$lib/ui';
+	import { defineMeta } from '@storybook/addon-svelte-csf';
 
 	const { Story } = defineMeta({
 		title: 'Map/LocationTracker',
@@ -17,7 +17,7 @@
 	</div>
 {/snippet}
 
-<Story name="Primary" args={{ simpleChild: true }} template={wrapper} />
+<Story name="Primary" args={{}} template={wrapper} />
 
 <style>
 	.wrapper {

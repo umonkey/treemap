@@ -1,7 +1,7 @@
-import { get, writable } from 'svelte/store';
-import L from 'leaflet';
-import { type MountFn } from '$lib/types';
 import { getMap } from '$lib/map';
+import { type MountFn } from '$lib/types';
+import L from 'leaflet';
+import { get, writable } from 'svelte/store';
 
 type CallbackFn = () => void;
 
@@ -14,7 +14,7 @@ export const hooks = ({
 	onMount: MountFn;
 	onClick: CallbackFn;
 	icon: string;
-	position: string;
+	position: L.ControlPosition;
 }) => {
 	// The button control, remove on unmount.
 	const button = writable<L.Control | null>(null);
@@ -72,14 +72,15 @@ export const hooks = ({
 		get(buttonImage)?.setAttribute('src', value);
 	};
 
-	const handlePositionChange = (value: string) => {
+	const handlePositionChange = (value: L.ControlPosition) => {
 		console.debug(`[map] Button position changed to ${value}`);
 		get(button)?.setPosition(value);
 	};
 
 	const handleDisabledChange = (value: boolean) => {
 		console.debug(`[map] Button disabled state changed to ${value}`);
-		get(button)?.getContainer()?.firstChild?.toggleAttribute('disabled', value);
+		const em = get(button)?.getContainer()?.firstChild as HTMLElement | null;
+		em?.toggleAttribute('disabled', value);
 	};
 
 	const handleActiveChange = (value: boolean) => {
@@ -94,5 +95,10 @@ export const hooks = ({
 		}
 	};
 
-	return { handleImageChange, handlePositionChange, handleActiveChange, handleDisabledChange };
+	return {
+		handleImageChange,
+		handlePositionChange,
+		handleActiveChange,
+		handleDisabledChange
+	};
 };

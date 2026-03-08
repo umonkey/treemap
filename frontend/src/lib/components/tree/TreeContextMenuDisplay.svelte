@@ -1,17 +1,17 @@
 <script lang="ts">
-	import { locale } from '$lib/locale';
-	import { routes } from '$lib/routes';
 	import {
+		CheckListIcon,
 		EditIcon,
 		MapIcon,
+		MeasureDiameter,
+		MeasureGirth,
+		MeasureHeight,
 		SkullIcon,
 		TrashIcon,
-		TreeIcon,
-		MeasureHeight,
-		MeasureDiameter,
-		MeasureGrith,
-		CheckListIcon
+		TreeIcon
 	} from '$lib/icons';
+	import { locale } from '$lib/locale';
+	import { routes } from '$lib/routes';
 	import '$lib/styles/colors.css';
 	import '$lib/styles/animations.css';
 
@@ -43,7 +43,7 @@
 						</div>
 						<div class="icon">
 							<a href={routes.treeCircumference(id)}>
-								<MeasureGrith />
+								<MeasureGirth />
 							</a>
 						</div>
 					</div>

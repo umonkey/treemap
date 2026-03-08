@@ -13,7 +13,7 @@
 
 	<div class="padded">
 		{#each comments as comment}
-			<TreeListPreview id={comment.tree_id} />
+			<TreeListPreview id={comment.tree_id.toString()} />
 			<Comment {comment} />
 		{/each}
 	</div>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { cleanup, render, screen } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, test } from 'vitest';
@@ -13,7 +14,7 @@ describe('Button', async () => {
 
 		render(Button, {
 			props: {
-				children: () => 'Click Me',
+				children: (() => 'Click Me') as any,
 				onClick: () => {
 					clicked = true;
 				}
@@ -35,7 +36,7 @@ describe('Button', async () => {
 		render(Button, {
 			props: {
 				disabled: true,
-				children: () => 'Click Me',
+				children: (() => 'Click Me') as any,
 				onClick: () => {
 					clicked = true;
 				}

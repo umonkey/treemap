@@ -1,7 +1,7 @@
 import { DEFAULT_MAP_CENTER } from '$lib/constants';
+import type { ILatLng } from '$lib/types';
 import { ls } from '$lib/utils/localStorage';
 import { derived, writable } from 'svelte/store';
-import type { ILatLng } from '$lib/types';
 
 const STORE_ID = 'mapStore-v3';
 
@@ -12,10 +12,7 @@ type IMapStore = {
 
 export const mapStore = writable<IMapStore>(
 	ls.read(STORE_ID) || {
-		center: {
-			lat: DEFAULT_MAP_CENTER[0],
-			lng: DEFAULT_MAP_CENTER[1]
-		},
+		center: DEFAULT_MAP_CENTER,
 		zoom: 15
 	}
 );

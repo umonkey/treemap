@@ -12,7 +12,7 @@ export interface ITreeFile {
 	id: string;
 	small_id: string;
 	large_id: string;
-	source_id: string;
+	source_id?: string;
 	added_at?: number;
 	added_by?: string;
 }
@@ -271,6 +271,7 @@ export interface IObservation {
 export type StreetReport = {
 	street: string;
 	total: number;
+	area: number;
 
 	states: {
 		state: string;
@@ -287,7 +288,7 @@ export type StreetReport = {
 		count: number;
 	}[];
 
-	griths: {
+	girths: {
 		value: number;
 		count: number;
 	}[];
@@ -297,6 +298,6 @@ export type StreetReport = {
 		count: number;
 		height: number;
 		diameter: number;
-		grith: number;
+		girth: number;
 	}[];
 };

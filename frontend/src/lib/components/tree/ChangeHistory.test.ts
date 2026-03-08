@@ -1,5 +1,5 @@
-import type { IChange } from '$lib/types';
 import { addUsers } from '$lib/stores/userStore';
+import type { IChange } from '$lib/types';
 import { describe, expect, it } from 'vitest';
 import { filter, format } from './ChangeHistory';
 
@@ -34,7 +34,12 @@ describe('ChangeHistory hooks', () => {
 			{
 				id: 'user1',
 				name: 'John Doe',
-				picture: 'https://example.com/johndoe.jpg'
+				picture: 'https://example.com/johndoe.jpg',
+				email: 'john@example.com',
+				trees_count: 0,
+				comments_count: 0,
+				updates_count: 0,
+				files_count: 0
 			}
 		]);
 
@@ -49,7 +54,7 @@ describe('ChangeHistory hooks', () => {
 			}
 		] as IChange[];
 
-		const res = format(input, 'height');
+		const res = format(input);
 
 		expect(res).toStrictEqual([
 			{

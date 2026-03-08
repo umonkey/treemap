@@ -23,7 +23,7 @@ export { default as LearnIcon } from './LearnIcon.svelte';
 export { default as LeftButtonIcon } from './LeftButton.svelte';
 export { default as MapIcon } from './MapIcon.svelte';
 export { default as MeasureDiameter } from './MeasureDiameter.svelte';
-export { default as MeasureGrith } from './MeasureGrith.svelte';
+export { default as MeasureGirth } from './MeasureGirth.svelte';
 export { default as MeasureHeight } from './MeasureHeight.svelte';
 export { default as PlusIcon } from './PlusIcon.svelte';
 export { default as RightButtonIcon } from './RightButton.svelte';

@@ -1,7 +1,8 @@
 <script lang="ts" module>
-	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import { Map, MapRow } from '$lib/ui';
+	/* eslint-disable @typescript-eslint/no-explicit-any */
 	import { DEFAULT_MAP_CENTER } from '$lib/constants';
+	import { Map, MapRow } from '$lib/ui';
+	import { defineMeta } from '@storybook/addon-svelte-csf';
 
 	const { Story } = defineMeta({
 		title: 'Map/MapRow',
@@ -31,7 +32,7 @@
 	});
 </script>
 
-{#snippet wrapper(args)}
+{#snippet wrapper(args: any)}
 	<div class="wrapper">
 		<Map center={DEFAULT_MAP_CENTER}>
 			<MapRow {...args} />
@@ -39,7 +40,7 @@
 	</div>
 {/snippet}
 
-<Story name="Primary" args={{ simpleChild: true }} template={wrapper} />
+<Story name="Primary" args={{}} template={wrapper} />
 
 <style>
 	.wrapper {

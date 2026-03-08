@@ -1,9 +1,9 @@
 // Display current user's position on the map, if available.
 
-import { locationStore } from '$lib/stores';
-import L from 'leaflet';
 import { getContext, mapKey } from '$lib/map';
-import { type MountFn, type IMyPosition } from '$lib/types';
+import { locationStore } from '$lib/stores';
+import { type IMyPosition, type MountFn } from '$lib/types';
+import L from 'leaflet';
 import { get, writable } from 'svelte/store';
 
 export const hooks = (mount: MountFn) => {
@@ -13,7 +13,7 @@ export const hooks = (mount: MountFn) => {
 	// Main map component, used for displaying the dot.
 	const map = writable<L.Map | null>(null);
 
-	const handleChange = (pos: IMyPosition) => {
+	const handleChange = (pos: IMyPosition | null) => {
 		const m = get(map);
 
 		if (m === null) {

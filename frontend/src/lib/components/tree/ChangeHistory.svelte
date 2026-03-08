@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { load, format } from './ChangeHistory.ts';
 	import { locale } from '$lib/locale';
+	import { format, load } from './ChangeHistory';
 
 	const { id, name } = $props<{
 		id: string;

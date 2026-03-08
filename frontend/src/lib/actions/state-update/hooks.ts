@@ -64,5 +64,14 @@ export const stateUpdater = (tree_id: string, state: string) => {
 
 	reload(tree_id);
 
-	return { loading, busy, tree, reload, save, close, handleCommentChange };
+	return {
+		loading,
+		busy,
+		error,
+		tree,
+		reload,
+		save,
+		close,
+		handleCommentChange
+	};
 };

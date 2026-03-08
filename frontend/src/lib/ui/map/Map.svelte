@@ -1,34 +1,43 @@
 <script lang="ts">
 	import 'leaflet/dist/leaflet.css';
 	import { baseLayer } from '$lib/stores/mapLayerStore';
-	import { onMount, type Snippet } from 'svelte';
-	import { hook } from './hooks';
+	import { type ILatLng } from '$lib/types';
 	import {
 		MapLayers,
+		MapLocateMe,
+		MapMarkerLoader,
 		MapMyPosition,
 		MapResizeObserver,
 		MapState,
-		MapMarkerLoader,
-		MapTrees,
-		MapLocateMe
+		MapTrees
 	} from '$lib/ui';
+	import { type Snippet, onMount } from 'svelte';
+	import { hook } from './hooks';
 
 	const {
 		center,
+		zoom = undefined,
 		className = 'default',
 		children = undefined
 	} = $props<{
-		center: [number, number];
-		className: string;
+		center: ILatLng;
+		zoom?: number;
+		className?: string | null;
+		searchQuery?: string | null;
 		children?: Snippet | undefined;
 	}>();
 
-	const { handleCenter } = hook('map', onMount);
+	const { handleCenter, handleZoom } = hook('map', onMount);
 
 	// We need this to track when the map is ready, so we can render children.
-	let map: HTMLDivElement = $state<HTMLDivElement | undefined>(undefined);
+	let map: HTMLDivElement | undefined = $state(undefined);
 
 	$effect(() => handleCenter(center));
+	$effect(() => {
+		if (zoom !== undefined) {
+			handleZoom(zoom);
+		}
+	});
 </script>
 
 <div class="wrapper">

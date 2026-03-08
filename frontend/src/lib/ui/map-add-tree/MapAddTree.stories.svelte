@@ -1,8 +1,9 @@
 <script lang="ts" module>
-	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import { Map, MapCenter, MapAddTree } from '$lib/ui';
-	import { fn } from '@storybook/test';
+	/* eslint-disable @typescript-eslint/no-explicit-any */
 	import { DEFAULT_MAP_CENTER } from '$lib/constants';
+	import { Map, MapAddTree, MapCenter } from '$lib/ui';
+	import { defineMeta } from '@storybook/addon-svelte-csf';
+	import { fn } from '@storybook/test';
 
 	const { Story } = defineMeta({
 		title: 'Map/MapAddTree',
@@ -16,7 +17,7 @@
 	});
 </script>
 
-{#snippet wrapper(args)}
+{#snippet wrapper(args: any)}
 	<div class="wrapper">
 		<Map center={DEFAULT_MAP_CENTER}>
 			<MapCenter />
@@ -25,7 +26,7 @@
 	</div>
 {/snippet}
 
-<Story name="Primary" args={{ simpleChild: true }} template={wrapper} />
+<Story name="Primary" args={{}} template={wrapper} />
 
 <style>
 	.wrapper {

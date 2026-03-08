@@ -29,8 +29,9 @@ describe('hooks/loadSpeciesStats', async () => {
 				status: 200,
 				data: [
 					{
-						species: 'Populus',
-						count: 10
+						name: 'Populus',
+						count: 10,
+						subspecies: []
 					}
 				]
 			};
@@ -44,7 +45,7 @@ describe('hooks/loadSpeciesStats', async () => {
 		expect(get(loading)).toBe(false);
 		expect(get(error)).toBeUndefined();
 		expect(get(data).length).toEqual(1);
-		expect(get(data)[0].species).toEqual('Populus');
+		expect(get(data)[0].name).toEqual('Populus');
 	});
 
 	it('should return an error', async () => {

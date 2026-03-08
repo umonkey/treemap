@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { Header, Map, MapAddTree, MapAddRow, MapCenter, MapPin, MapSearch } from '$lib/ui';
 	import { locale } from '$lib/locale';
 	import { mapCenter, mapZoom } from '$lib/stores/mapStore';
 	import { isMapperMode } from '$lib/stores/modeStore';
+	import { Header, Map, MapAddRow, MapAddTree, MapCenter, MapPin, MapSearch } from '$lib/ui';
+	import { onDestroy, onMount } from 'svelte';
 	import { hooks } from './hooks';
-	import { onMount, onDestroy } from 'svelte';
 
 	const { data } = $props();
 
@@ -15,8 +15,12 @@
 
 	const title = data.searchQuery ? locale.mapTitleQuery(data.searchQuery) : locale.mapTitle();
 
-	$effect(() => handlePreviewChange(data.preview));
-	$effect(() => handleSearchQuery(data.searchQuery));
+	$effect(() => {
+		handlePreviewChange(data.preview);
+	});
+	$effect(() => {
+		handleSearchQuery(data.searchQuery);
+	});
 </script>
 
 <svelte:head>

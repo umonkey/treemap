@@ -1,11 +1,11 @@
 <script lang="ts">
+	import { DotsIcon } from '$lib/icons';
 	import { routes } from '$lib/routes';
 	import { getUser } from '$lib/stores/userStore';
 	import type { ITreeFile } from '$lib/types';
 	import { formatDate } from '$lib/utils/strings';
-	import { hooks } from './UploadForm';
 	import PhotoContextMenu from './PhotoContextMenu.svelte';
-	import { DotsIcon } from '$lib/icons';
+	import { hooks } from './UploadForm';
 
 	const { id } = $props<{ id: string }>();
 	const { loading, tree, error, reload, handleMakeThumbnail, handleDelete } = hooks();
@@ -51,7 +51,7 @@
 		{#each $tree.files as file}
 			{@const user = file.added_by ? $getUser(file.added_by) : null}
 			<div class="pic">
-				<a href={routes.file(file.source_id)} class="thumbnail" target="_blank">
+				<a href={routes.file(file.source_id ?? file.large_id)} class="thumbnail" target="_blank">
 					<img src={routes.file(file.small_id)} alt="thumbnail" />
 				</a>
 

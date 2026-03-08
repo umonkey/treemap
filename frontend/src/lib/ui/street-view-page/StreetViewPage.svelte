@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { StreetView } from '$lib/ui';
 	import Actions from '$lib/components/tree/Actions.svelte';
 	import Description from '$lib/components/tree/Description.svelte';
 	import Links from '$lib/components/tree/Links.svelte';
@@ -8,19 +7,22 @@
 	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
 	import TreeTabs from '$lib/components/tree/TreeTabs.svelte';
 	import { loadTree } from '$lib/hooks/loadTree';
+	import { StreetView } from '$lib/ui';
 
 	const { id } = $props<{ id: string }>();
 	const { loading, data, error, reload } = loadTree();
 
-	$effect(() => reload(id));
+	$effect(() => {
+		reload(id);
+	});
 </script>
 
 {#if $loading}
 	<!-- loading -->
 {:else if $error}
 	<p>{$error}</p>
-{:else}
-	<Title title={$data.species} address={$data.address} padded />
+{:else if $data}
+	<Title title={$data.species} address={$data.address ?? undefined} padded />
 	<TreeTabs tree={$data.id} active="360" />
 
 	<StreetView lat={$data.lat} lng={$data.lon} />

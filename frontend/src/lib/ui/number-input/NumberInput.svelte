@@ -19,7 +19,9 @@
 		hint?: string | undefined;
 		help?: string | undefined;
 		autofocus?: boolean;
-		step?: string;
+		min?: string | number;
+		max?: string | number;
+		step?: string | number;
 		onChange: (value: number) => void;
 	}>();
 

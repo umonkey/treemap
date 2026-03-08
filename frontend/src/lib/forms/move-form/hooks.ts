@@ -76,6 +76,7 @@ export const editor = (tree_id: string) => {
 
 	return {
 		loading,
+		busy,
 		loadError,
 		saveError,
 		tree,

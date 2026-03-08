@@ -4,22 +4,22 @@
 	 * sends the tree to the API, then reports success to the container.
 	 */
 
+	import Title from '$lib/components/tree/Title.svelte';
+	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
 	import { locale } from '$lib/locale';
-	import { editor } from './hooks';
 	import {
 		Button,
 		Buttons,
 		CanopyInput,
 		CircumferenceInput,
+		Form,
 		HeightInput,
 		NotesInput,
 		SpeciesInput,
 		StateInput,
-		YearInput,
-		Form
+		YearInput
 	} from '$lib/ui';
-	import Title from '$lib/components/tree/Title.svelte';
-	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
+	import { editor } from './hooks';
 
 	const { id } = $props<{
 		id: string;
@@ -47,8 +47,8 @@
 	<!-- loading -->
 {:else if $loadError}
 	<p>{$loadError}</p>
-{:else}
-	<Title title={$tree?.species} address={$tree?.address} />
+{:else if $tree}
+	<Title title={$tree.species} address={$tree.address ?? undefined} />
 	<TreeContextMenu id={$tree.id} />
 
 	<Form sticky>

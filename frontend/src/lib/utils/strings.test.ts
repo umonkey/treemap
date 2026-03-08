@@ -36,7 +36,12 @@ describe('fileAttribution', () => {
 			{
 				id: '12345',
 				name: 'Alice',
-				picture: 'none.jpg'
+				picture: 'none.jpg',
+				email: 'alice@example.com',
+				trees_count: 0,
+				comments_count: 0,
+				updates_count: 0,
+				files_count: 0
 			}
 		]);
 

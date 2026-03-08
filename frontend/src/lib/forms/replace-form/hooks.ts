@@ -2,12 +2,12 @@
 //
 // TODO: fail if the previous tree is already "gone"?
 
-import type { ITree, IReplaceTreeRequest } from '$lib/types';
+import { apiClient } from '$lib/api';
+import { goto, routes } from '$lib/routes';
 import { addTrees } from '$lib/stores/treeStore';
 import { addUsers } from '$lib/stores/userStore';
-import { apiClient } from '$lib/api';
+import type { IReplaceTreeRequest, ITree } from '$lib/types';
 import { get } from 'svelte/store';
-import { goto, routes } from '$lib/routes';
 import { writable } from 'svelte/store';
 
 export const editor = (tree_id: string) => {
@@ -18,12 +18,12 @@ export const editor = (tree_id: string) => {
 	const tree = writable<ITree | undefined>(undefined);
 
 	const species = writable<string>('');
-	const height = writable<number>(0);
-	const diameter = writable<number>(0);
-	const circumference = writable<number>(0);
+	const height = writable<number | null>(0);
+	const diameter = writable<number | null>(0);
+	const circumference = writable<number | null>(0);
 	const currentState = writable<string>('healthy');
-	const year = writable<number>(new Date().getFullYear());
-	const notes = writable<string>('');
+	const year = writable<number | null>(new Date().getFullYear());
+	const notes = writable<string | null>('');
 
 	const reload = async (tree_id: string) => {
 		console.debug(`[replace editor] Reloading tree ${tree_id}`);
