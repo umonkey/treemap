@@ -2,7 +2,6 @@
 	import { invalidateAll } from '$app/navigation';
 	import { apiClient } from '$lib/api';
 	import { locale } from '$lib/locale';
-	import { setLastTree } from '$lib/stores/mapStore';
 	import { toast } from '@zerodevx/svelte-toast';
 	import { routes } from '$lib/routes';
 
@@ -26,7 +25,6 @@
 
 	// Save last active tree.
 	onMount(() => {
-		setLastTree(tree.id);
 		console.debug('[map] Last active tree set to', tree.id);
 	});
 

@@ -15,7 +15,9 @@
 	};
 
 	const handleLoad = () => {
-		img.style.opacity = '1';
+		if (img) {
+			img.style.opacity = '1';
+		}
 	};
 </script>
 

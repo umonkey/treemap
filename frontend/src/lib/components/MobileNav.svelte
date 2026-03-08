@@ -3,18 +3,13 @@
 	import { routes } from '$lib/routes';
 	import { authStore, isAuthenticated } from '$lib/stores/authStore';
 	import { uploadStore } from '$lib/stores/upload';
-	import { mapLastTree } from '$lib/stores/mapStore';
 	import UserPic from './nav/UserPic.svelte';
 </script>
 
 <nav class="mobile">
 	<a href="/"><div><HomeIcon /></div></a>
 	<a href="/search"><div><SearchIcon /></div></a>
-	{#if $mapLastTree}
-		<a href={routes.mapPreview($mapLastTree)}><div><MapIcon /></div></a>
-	{:else}
-		<a href={routes.map()}><div><MapIcon /></div></a>
-	{/if}
+	<a href={routes.map()}><div><MapIcon /></div></a>
 	<a href={routes.newTrees()}><div><BellIcon /></div></a>
 	<a href="/profile"
 		><div>
