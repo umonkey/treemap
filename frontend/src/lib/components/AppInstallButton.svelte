@@ -1,19 +1,12 @@
 <script lang="ts">
-	import { isInstallable, pwaStore } from '$lib/stores/pwaStore';
-	import { onMount } from 'svelte';
+import { isInstallable, pwaStore } from "$lib/stores/pwaStore";
 
-	const onClick = () => {
-		const event = $pwaStore;
+const onClick = () => {
+	const event = $pwaStore;
+	if (event) {
 		event.prompt();
-	};
-
-	onMount(() => {
-		window.addEventListener('beforeinstallprompt', (e) => {
-			e.preventDefault();
-			pwaStore.update(() => e);
-			console.debug('[pwa] Install event stored.');
-		});
-	});
+	}
+};
 </script>
 
 {#if $isInstallable}
