@@ -1,16 +1,16 @@
 <script lang="ts">
-import DefaultImage from "$lib/assets/tree.jpg";
-import { UploadIcon } from "$lib/icons";
-import { routes } from "$lib/routes";
-import { LazyImage } from "$lib/ui";
+	import DefaultImage from '$lib/assets/tree.jpg';
+	import { UploadIcon } from '$lib/icons';
+	import { routes } from '$lib/routes';
+	import { LazyImage } from '$lib/ui';
 
-const { loading, error, mapper, tree_id, images } = $props<{
-	loading: boolean;
-	error?: string;
-	mapper: boolean;
-	tree_id: string;
-	images: string[];
-}>();
+	const { loading, error, mapper, tree_id, images } = $props<{
+		loading: boolean;
+		error?: string;
+		mapper: boolean;
+		tree_id: string;
+		images: string[];
+	}>();
 </script>
 
 <div class="gallery" class:loading class:error={!!error} class:mapper>
@@ -75,6 +75,7 @@ const { loading, error, mapper, tree_id, images } = $props<{
 			overflow: hidden;
 			flex-shrink: 0;
 			flex-grow: 0;
+			background-color: #000;
 
 			a {
 				display: block;
@@ -95,7 +96,7 @@ const { loading, error, mapper, tree_id, images } = $props<{
 			}
 
 			&.placeholder {
-				background-color: var(--form-background);
+				background-color: #000;
 				animation: pulse 1.5s infinite ease-in-out;
 			}
 		}

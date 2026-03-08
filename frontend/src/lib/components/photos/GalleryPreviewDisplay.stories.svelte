@@ -1,18 +1,18 @@
 <script module>
-import { defineMeta } from "@storybook/addon-svelte-csf";
-import GalleryPreviewDisplay from "./GalleryPreviewDisplay.svelte";
+	import { defineMeta } from '@storybook/addon-svelte-csf';
+	import GalleryPreviewDisplay from './GalleryPreviewDisplay.svelte';
 
-const { Story } = defineMeta({
-	title: "Components/Photos/GalleryPreview",
-	component: GalleryPreviewDisplay,
-	argTypes: {
-		loading: { control: "boolean" },
-		error: { control: "text" },
-		mapper: { control: "boolean" },
-		tree_id: { control: "text" },
-		images: { control: "object" },
-	},
-});
+	const { Story } = defineMeta({
+		title: 'Components/Photos/GalleryPreview',
+		component: GalleryPreviewDisplay,
+		argTypes: {
+			loading: { control: 'boolean' },
+			error: { control: 'text' },
+			mapper: { control: 'boolean' },
+			tree_id: { control: 'text' },
+			images: { control: 'object' }
+		}
+	});
 </script>
 
 <Story
