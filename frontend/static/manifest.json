@@ -60,8 +60,8 @@
 	],
 	"theme_color": "#14191f",
 	"background_color": "#14191f",
-	"display": "standalone",
-	"orientation": "fullscreen",
+	"display": "fullscreen",
+	"orientation": "any",
 	"start_url": "/",
 	"lang": "en",
 	"dir": "ltr"
