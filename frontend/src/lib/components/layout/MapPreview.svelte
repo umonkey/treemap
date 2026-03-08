@@ -88,13 +88,14 @@
 
 <style>
 	.preview {
+		z-index: 2;
+
 		display: flex;
 		flex-direction: column;
 		gap: var(--gap);
 
 		padding: var(--gap);
 		line-height: 1.5em;
-		z-index: var(--z-map-preview);
 
 		/* Default positioning for small phones */
 		position: fixed;

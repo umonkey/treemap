@@ -186,4 +186,15 @@
 			}
 		}
 	}
+
+	/** Must be belog the preview on desktop, above on mobile. **/
+	.overlay {
+		z-index: 3;
+	}
+
+	@media screen and (min-width: 1024px) {
+		.overlay {
+			z-index: 1;
+		}
+	}
 </style>
