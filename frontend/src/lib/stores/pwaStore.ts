@@ -1,6 +1,6 @@
 import { derived, writable } from 'svelte/store';
 
-interface BeforeInstallPromptEvent extends Event {
+export interface BeforeInstallPromptEvent extends Event {
 	readonly platforms: string[];
 	readonly userChoice: Promise<{
 		outcome: 'accepted' | 'dismissed';
@@ -9,7 +9,13 @@ interface BeforeInstallPromptEvent extends Event {
 	prompt(): Promise<void>;
 }
 
+declare global {
+	interface Window {
+		deferredPWAEvent?: BeforeInstallPromptEvent;
+	}
+}
+
 export const pwaStore = writable<BeforeInstallPromptEvent | undefined>(
-	typeof window !== 'undefined' ? (window as any).deferredPWAEvent : undefined
+	typeof window !== 'undefined' ? window.deferredPWAEvent : undefined
 );
 export const isInstallable = derived(pwaStore, ($pwaStore) => !!$pwaStore);

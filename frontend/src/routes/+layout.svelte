@@ -1,6 +1,6 @@
 <script lang="ts">
 	import '@fontsource-variable/inter';
-	import { pwaStore } from '$lib/stores/pwaStore';
+	import { type BeforeInstallPromptEvent, pwaStore } from '$lib/stores/pwaStore';
 	import { Layout, LocationTracker } from '$lib/ui';
 	import { autoStartUpload } from '$lib/upload';
 	import { validateStoredToken } from '$lib/utils/auth';
@@ -22,7 +22,7 @@
 
 		window.addEventListener('beforeinstallprompt', (e) => {
 			e.preventDefault();
-			pwaStore.set(e as any);
+			pwaStore.set(e as BeforeInstallPromptEvent);
 			console.debug('[pwa] Install event stored.');
 		});
 	});
