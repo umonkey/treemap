@@ -91,8 +91,6 @@ export const hooks = ({ start, end }: { start: ILatLng; end: ILatLng }) => {
 			const { status, data: d, error: e } = await apiClient.addTree(req);
 
 			if (status >= 200 && status < 300 && d) {
-				toast.push('Trees added.');
-
 				const id = d.trees[0].id;
 				const currentState = get(state);
 				if (currentState === 'healthy' || currentState === 'dead') {

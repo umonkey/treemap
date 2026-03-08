@@ -1,7 +1,6 @@
 import { toast } from '@zerodevx/svelte-toast';
 import { apiClient } from '$lib/api';
 import { writable } from 'svelte/store';
-import { locale } from '$lib/locale';
 import { goto, routes } from '$lib/routes';
 
 export const markDead = (id: string) => {
@@ -11,7 +10,6 @@ export const markDead = (id: string) => {
 		try {
 			busy.set(true);
 			await apiClient.updateTreeState(id, 'dead');
-			toast.push(locale.deadNotification());
 			goto(routes.mapPreview(id));
 		} catch (e) {
 			console.error(`Error deleting tree: ${e}`);

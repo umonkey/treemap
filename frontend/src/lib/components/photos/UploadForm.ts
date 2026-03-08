@@ -31,9 +31,7 @@ export const hooks = () => {
 	const handleMakeThumbnail = async (file: ITreeFile) => {
 		const res = await apiClient.changeTreeThumbnail(get(tree).id, file.id);
 
-		if (res.status >= 200 && res.status < 300) {
-			toast.push('Thumbnail changed.');
-		} else {
+		if (res.status >= 400) {
 			toast.push('Error changing thumbnail.');
 		}
 	};
@@ -41,9 +39,7 @@ export const hooks = () => {
 	const handleDelete = async (id: string) => {
 		const res = await apiClient.deleteFile(id);
 
-		if (res.status >= 200 && res.status < 300) {
-			toast.push('File deleted.');
-		} else {
+		if (res.status >= 400) {
 			toast.push('Error deleting file.');
 		}
 	};

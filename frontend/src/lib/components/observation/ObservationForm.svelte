@@ -68,7 +68,6 @@
 		if (response.error) {
 			toast.push(response.error.description);
 		} else {
-			toast.push('Observations saved');
 			goto(routes.mapPreview(id));
 		}
 		saving = false;

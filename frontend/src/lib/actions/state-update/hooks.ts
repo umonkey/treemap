@@ -1,12 +1,10 @@
 // Loads data required by a state update form, performs updates.
 
-import type { ITree } from '$lib/types';
+import { apiClient } from '$lib/api';
 import { goto, routes } from '$lib/routes';
 import { addTrees } from '$lib/stores/treeStore';
 import { addUsers } from '$lib/stores/userStore';
-import { apiClient } from '$lib/api';
-import { locale } from '$lib/locale';
-import { toast } from '@zerodevx/svelte-toast';
+import type { ITree } from '$lib/types';
 import { get, writable } from 'svelte/store';
 
 export const stateUpdater = (tree_id: string, state: string) => {
@@ -49,7 +47,6 @@ export const stateUpdater = (tree_id: string, state: string) => {
 			.then((res) => {
 				if (res.status === 200 && res.data) {
 					addTrees([res.data]);
-					toast.push(locale.measureStateUpdated());
 					goto(routes.treeUploadPhotos(tree_id));
 				} else if (res.error) {
 					error.set(res.error.description);

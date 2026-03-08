@@ -519,40 +519,12 @@ class EnglishLocale {
 		return 'Confirm death';
 	}
 
-	public deadNotification(): string {
-		return 'Tree marked as dead.';
-	}
-
 	public measureTitle(): string {
 		return 'Measure tree';
 	}
 
 	public replaceTitle(): string {
 		return 'Replace tree';
-	}
-
-	public measureHeightUpdated(): string {
-		return 'Height updated.';
-	}
-
-	public measureLocationUpdated(): string {
-		return 'Location updated.';
-	}
-
-	public measureCanopyUpdated(): string {
-		return 'Canopy diameter updated.';
-	}
-
-	public measureCircumferenceUpdated(): string {
-		return 'Trunk circumference updated.';
-	}
-
-	public measureTrunkUpdated(): string {
-		return 'Trunk circumference updated.';
-	}
-
-	public measureStateUpdated(): string {
-		return 'Tree state updated.';
 	}
 
 	public meters(value: string): string {
@@ -587,10 +559,6 @@ class EnglishLocale {
 		return 'You are about to replace a tree with a new one. The old tree will be marked as gone, the new one will be added at the exact location. The trees will be linekd to track planting history.';
 	}
 
-	public replaceSuccess(): string {
-		return 'The tree was replaced.';
-	}
-
 	public photosAdded(): string {
 		return 'Finished uploading all photos. They will show shortly.';
 	}
@@ -601,10 +569,6 @@ class EnglishLocale {
 
 	public settingsTitle(): string {
 		return 'Settings';
-	}
-
-	public settingsUpdated(): string {
-		return 'Settings updated.';
 	}
 
 	public mapPreviewDetails(): string {
@@ -673,10 +637,6 @@ class EnglishLocale {
 
 	public uploadsEnabledHint(): string {
 		return 'The photos will be uploading as soon as you take them, unless your phone is in data saving or power saving mode.';
-	}
-
-	public toastCommentAdded(): string {
-		return 'Comment added.';
 	}
 
 	public toastErrorAddingComment(): string {
@@ -1153,22 +1113,6 @@ class RussianLocale extends EnglishLocale {
 		return 'Замена дерева';
 	}
 
-	public measureHeightUpdated(): string {
-		return 'Высота обновлена.';
-	}
-
-	public measureCanopyUpdated(): string {
-		return 'Диаметр кроны обновлён.';
-	}
-
-	public measureTrunkUpdated(): string {
-		return 'Обхват ствола обновлён.';
-	}
-
-	public measureStateUpdated(): string {
-		return 'Состояние дерева обновлено.';
-	}
-
 	public meters(value: string): string {
 		return `${value} м`;
 	}
@@ -1245,24 +1189,12 @@ class RussianLocale extends EnglishLocale {
 		return 'Нет изменений для этого дерева.';
 	}
 
-	public measureCircumferenceUpdated(): string {
-		return 'Обхват ствола обновлён.';
-	}
-
 	public contextMove(): string {
 		return 'Уточнить координаты';
 	}
 
-	public measureLocationUpdated(): string {
-		return 'Координаты обновлены.';
-	}
-
 	public replaceHint(): string {
 		return 'Вы собираетесь заменить дерево на новое. Старое дерево будет помечено как удалённое, новое будет добавлено в том же месте. Деревья будут связаны, чтобы отслеживать историю посадки.';
-	}
-
-	public replaceSuccess(): string {
-		return 'Дерево заменено.';
 	}
 
 	public photosAdded(): string {
@@ -1275,10 +1207,6 @@ class RussianLocale extends EnglishLocale {
 
 	public settingsTitle(): string {
 		return 'Настройки';
-	}
-
-	public settingsUpdated(): string {
-		return 'Настройки обновлены.';
 	}
 
 	public mapPreviewDetails(): string {
@@ -1355,10 +1283,6 @@ class RussianLocale extends EnglishLocale {
 
 	public uploadsEnabledHint(): string {
 		return 'Фотографии будут загружаться сразу после того, как вы их сделаете, если только ваш телефон не находится в режиме экономии трафика или энергии.';
-	}
-
-	public toastCommentAdded(): string {
-		return 'Комментарий добавлен.';
 	}
 
 	public toastErrorAddingComment(): string {
@@ -1815,22 +1739,6 @@ class ArmenianLocale extends EnglishLocale {
 		return 'Չափել ծառը';
 	}
 
-	public measureHeightUpdated(): string {
-		return 'Բարձրությունը թարմացված է:';
-	}
-
-	public measureCanopyUpdated(): string {
-		return 'Հովանի տրամագիծը թարմացված է:';
-	}
-
-	public measureTrunkUpdated(): string {
-		return 'Բնի շրջագիծը թարմացված է:';
-	}
-
-	public measureStateUpdated(): string {
-		return 'Ծառի վիճակը թարմացված է:';
-	}
-
 	public meters(value: string): string {
 		return `${value} մ`;
 	}
@@ -1845,10 +1753,6 @@ class ArmenianLocale extends EnglishLocale {
 
 	public settingsTitle(): string {
 		return 'Կարգավորումներ';
-	}
-
-	public settingsUpdated(): string {
-		return 'Կարգավորումները թարմացված են։';
 	}
 
 	public mapPreviewDetails(): string {
@@ -1925,10 +1829,6 @@ class ArmenianLocale extends EnglishLocale {
 
 	public uploadsEnabledHint(): string {
 		return 'Լուսանկարները կվերբեռնվեն հենց որ դրանք նկարեք, եթե ձեր հեռախոսը տվյալների խնայողության կամ էներգիայի խնայողության ռեժիմում չէ:';
-	}
-
-	public toastCommentAdded(): string {
-		return 'Մեկնաբանությունը ավելացված է:';
 	}
 
 	public toastErrorAddingComment(): string {

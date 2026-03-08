@@ -148,8 +148,6 @@ export const hooks = () => {
 
 		apiClient.addTree(req).then((res) => {
 			if (res.status >= 200 && res.status < 400 && res.data) {
-				toast.push('Tree added.');
-
 				const id = res.data.trees[0].id;
 				if (t.state === 'healthy' || t.state === 'dead') {
 					goto(routes.treeObservations(id));
@@ -160,7 +158,7 @@ export const hooks = () => {
 				}
 			} else {
 				console.error(`Error ${res.status} updating tree.`);
-				toast.push('Error updating tree.');
+				toast.push('Error adding tree.');
 			}
 		});
 	};

@@ -1,12 +1,10 @@
 // Loads data required by the crown editor, performs updates.
 
-import type { ITree } from '$lib/types';
+import { apiClient } from '$lib/api';
 import { goto, routes } from '$lib/routes';
 import { addTrees } from '$lib/stores/treeStore';
 import { addUsers } from '$lib/stores/userStore';
-import { apiClient } from '$lib/api';
-import { locale } from '$lib/locale';
-import { toast } from '@zerodevx/svelte-toast';
+import type { ITree } from '$lib/types';
 import { writable } from 'svelte/store';
 import { get } from 'svelte/store';
 
@@ -53,8 +51,6 @@ export const editor = (tree_id: string) => {
 				if (res.status >= 200 && res.status < 300 && res.data) {
 					addTrees([res.data]);
 					console.debug(`[crown editor] Tree ${tree_id} updated.`);
-					toast.push(locale.measureCircumferenceUpdated());
-					console.debug('GOTO', routes.treeHistory(tree_id));
 					goto(routes.mapPreview(tree_id));
 				} else if (res.error) {
 					saveError.set(res.error.description);
@@ -79,5 +75,16 @@ export const editor = (tree_id: string) => {
 
 	reload(tree_id);
 
-	return { loading, loadError, saveError, tree, value, reload, busy, save, close, handleChange };
+	return {
+		loading,
+		loadError,
+		saveError,
+		tree,
+		value,
+		reload,
+		busy,
+		save,
+		close,
+		handleChange
+	};
 };

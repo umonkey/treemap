@@ -1,12 +1,10 @@
 // Loads data required to move the tree, performs updates.
 
-import type { ITree, ILatLng } from '$lib/types';
 import { apiClient } from '$lib/api';
-import { get } from 'svelte/store';
 import { goto, routes } from '$lib/routes';
-import { locale } from '$lib/locale';
+import type { ILatLng, ITree } from '$lib/types';
 import { roundCoord } from '$lib/utils/strings';
-import { toast } from '@zerodevx/svelte-toast';
+import { get } from 'svelte/store';
 import { writable } from 'svelte/store';
 
 export const editor = (tree_id: string) => {
@@ -55,7 +53,6 @@ export const editor = (tree_id: string) => {
 			.updateTreeLocation(tree_id, ll.lat, ll.lng)
 			.then((res) => {
 				if (res.status >= 200 && res.status < 300 && res.data) {
-					toast.push(locale.measureLocationUpdated());
 					goto(routes.mapPreview(tree_id));
 				} else if (res.error) {
 					saveError.set(res.error.description);
@@ -77,5 +74,15 @@ export const editor = (tree_id: string) => {
 
 	reload(tree_id);
 
-	return { loading, loadError, saveError, tree, value, reload, save, close, handleChange };
+	return {
+		loading,
+		loadError,
+		saveError,
+		tree,
+		value,
+		reload,
+		save,
+		close,
+		handleChange
+	};
 };

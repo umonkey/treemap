@@ -13,7 +13,6 @@
 		const res = await apiClient.updateUser(data.user.id, updatedUser);
 
 		if (res.status >= 200 && res.status < 300) {
-			toast.push('User properties updated.');
 			goto('/admin/users');
 		} else {
 			toast.push(`Error ${res.status} updating user.`);

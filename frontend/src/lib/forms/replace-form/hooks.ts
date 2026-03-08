@@ -8,8 +8,6 @@ import { addUsers } from '$lib/stores/userStore';
 import { apiClient } from '$lib/api';
 import { get } from 'svelte/store';
 import { goto, routes } from '$lib/routes';
-import { locale } from '$lib/locale';
-import { toast } from '@zerodevx/svelte-toast';
 import { writable } from 'svelte/store';
 
 export const editor = (tree_id: string) => {
@@ -73,7 +71,6 @@ export const editor = (tree_id: string) => {
 			.then((res) => {
 				if (res.status >= 200 && res.status < 300 && res.data) {
 					addTrees(res.data.trees);
-					toast.push(locale.replaceSuccess());
 
 					if (res.data.trees.length === 2) {
 						goto(routes.treeDetails(res.data.trees[1].id));

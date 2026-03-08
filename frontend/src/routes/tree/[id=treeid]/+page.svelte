@@ -35,7 +35,6 @@
 			.addComment(tree.id, message)
 			.then((res) => {
 				if (res.status >= 200 && res.status < 300) {
-					toast.push(locale.toastCommentAdded());
 					invalidateAll();
 				} else {
 					console.info(`Error ${res.status} adding a comment.`);
