@@ -1,5 +1,4 @@
 <script lang="ts">
-	import MobileSidebar from '$lib/components/layout/MobileSidebar.svelte';
 	import MapPreview from '$lib/components/layout/MapPreview.svelte';
 	import LeftSidebar from '$lib/components/layout/LeftSidebar.svelte';
 	import MobileNav from '$lib/components/MobileNav.svelte';
@@ -21,8 +20,6 @@
 		<MobileNav />
 	</main>
 </div>
-
-<MobileSidebar />
 
 <style>
 	/**

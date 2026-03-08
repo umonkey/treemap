@@ -4,73 +4,82 @@
 	import { BellIcon, HomeIcon, MapIcon, SearchIcon, SpinnerIcon } from '$lib/icons';
 	import { searchStore } from '$lib/stores';
 	import { uploadStore } from '$lib/stores/upload';
+	import { isSidebarVisible, mobileSidebarStore } from '$lib/stores/mobileSidebarStore';
 	import { authStore } from '$lib/stores/authStore';
 	import Logo from '$lib/assets/trees-of-yerevan.svelte';
 	import UserPic from '$lib/components/nav/UserPic.svelte';
+
+	const onClose = () => {
+		mobileSidebarStore.set(false);
+	};
 </script>
 
-<div class="canvas">
-	<ul>
-		<li>
-			<a href="/">
-				<span class="icon"><HomeIcon /></span>
-				<span>{locale.sideHome()}</span>
-			</a>
-		</li>
-		<li>
-			<a href="/search">
-				<span class="icon"><SearchIcon /></span>
-				<span>{locale.sideSearch()}</span>
-			</a>
-		</li>
-		{#if $searchStore}
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<div class="overlay" class:visible={!!$isSidebarVisible} onclick={onClose}>
+	<div class="canvas">
+		<ul>
 			<li>
-				<a href={routes.searchQuery($searchStore)}>
-					<span class="icon"><MapIcon /></span>
-					<span>{locale.sideExplore()}</span>
+				<a href="/">
+					<span class="icon"><HomeIcon /></span>
+					<span>{locale.sideHome()}</span>
 				</a>
 			</li>
-		{:else}
 			<li>
-				<a href={routes.map()}>
-					<span class="icon"><MapIcon /></span>
-					<span>{locale.sideExplore()}</span>
+				<a href="/search">
+					<span class="icon"><SearchIcon /></span>
+					<span>{locale.sideSearch()}</span>
 				</a>
 			</li>
-		{/if}
-		<li>
-			<a href={routes.newTrees()}>
-				<span class="icon"><BellIcon /></span>
-				<span>{locale.sideUpdates()}</span>
-			</a>
-		</li>
-		<li>
-			<a href={routes.profile()}>
-				<span class="icon">
-					{#if $uploadStore.uploading}
-						<SpinnerIcon />
-					{:else}
-						<UserPic src={$authStore?.picture} alt="userpic" class="user-pic-sidebar" />
-					{/if}
-					{#if $uploadStore.pending > 0}
-						<span class="badge">{$uploadStore.pending}</span>
-					{/if}
-				</span>
-				<span>{locale.sideProfile()}</span>
-			</a>
-		</li>
-	</ul>
+			{#if $searchStore}
+				<li>
+					<a href={routes.searchQuery($searchStore)}>
+						<span class="icon"><MapIcon /></span>
+						<span>{locale.sideExplore()}</span>
+					</a>
+				</li>
+			{:else}
+				<li>
+					<a href={routes.map()}>
+						<span class="icon"><MapIcon /></span>
+						<span>{locale.sideExplore()}</span>
+					</a>
+				</li>
+			{/if}
+			<li>
+				<a href={routes.newTrees()}>
+					<span class="icon"><BellIcon /></span>
+					<span>{locale.sideUpdates()}</span>
+				</a>
+			</li>
+			<li>
+				<a href={routes.profile()}>
+					<span class="icon">
+						{#if $uploadStore.uploading}
+							<SpinnerIcon />
+						{:else}
+							<UserPic src={$authStore?.picture} alt="userpic" class="user-pic-sidebar" />
+						{/if}
+						{#if $uploadStore.pending > 0}
+							<span class="badge">{$uploadStore.pending}</span>
+						{/if}
+					</span>
+					<span>{locale.sideProfile()}</span>
+				</a>
+			</li>
+		</ul>
 
-	<div class="bottom">
-		<Logo />
-	</div>
+		<div class="bottom">
+			<Logo />
+		</div>
 
-	<div class="bottom links">
-		<a href="https://github.com/KanachYerevan/kb/wiki/Mobile-Application" target="_blank"
-			>{locale.sideAbout()}</a
-		>
-		&middot;
-		<a href="https://github.com/umonkey/treemap/issues" target="_blank">{locale.sideBugs()}</a>
+		<div class="bottom links">
+			<a href="https://github.com/KanachYerevan/kb/wiki/Mobile-Application" target="_blank"
+				>{locale.sideAbout()}</a
+			>
+			&middot;
+			<a href="https://github.com/umonkey/treemap/issues" target="_blank">{locale.sideBugs()}</a>
+		</div>
 	</div>
 </div>
 
@@ -160,8 +169,21 @@
 
 	/** Hide by default on small screens. **/
 	@media screen and (max-width: 1023px) {
-		.canvas {
+		.overlay {
+			animation: fadeIn 0.1s ease-in-out;
+
 			display: none;
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100vw;
+			height: 100dvh;
+			background-color: rgba(0, 0, 0, 0.5);
+			backdrop-filter: blur(2px);
+
+			&.visible {
+				display: block;
+			}
 		}
 	}
 </style>
