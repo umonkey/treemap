@@ -42,7 +42,6 @@ export { default as MapRowPreview } from './map-row-preview/MapRowPreview.svelte
 export { default as MapSearch } from './map-search/MapSearch.svelte';
 export { default as MapState } from './map-state/MapState.svelte';
 export { default as MapTrees } from './map-trees/MapTrees.svelte';
-export { default as MobileSidebar } from './mobile-sidebar/MobileSidebar.svelte';
 export { default as ModeSwitcher } from './mode-switcher/ModeSwitcher.svelte';
 export { default as NarrowPage } from './narrow-page/NarrowPage.svelte';
 export { default as NotesInput } from './notes-input/NotesInput.svelte';

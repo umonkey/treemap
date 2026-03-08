@@ -4,7 +4,7 @@
 	import { fn } from '@storybook/test';
 
 	const { Story } = defineMeta({
-		title: 'UI/MobileSidebar',
+		title: 'Layout/MobileSidebar',
 		component: MobileSidebarDisplay,
 		argTypes: {
 			visible: { control: 'boolean' },
