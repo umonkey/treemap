@@ -44,5 +44,5 @@ export const hook = () => {
 		menuState.set(true);
 	};
 
-	return { visible, error, tree, reload, handleClose, handleContextMenu };
+	return { visible, error, tree, handleClose, handleContextMenu };
 };
