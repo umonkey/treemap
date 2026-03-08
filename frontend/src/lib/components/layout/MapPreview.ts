@@ -1,4 +1,4 @@
-import type { ITree } from '$lib/types';
+import type { ITree, IObservation } from '$lib/types';
 import { apiClient } from '$lib/api';
 import { goto } from '$lib/routes';
 import { mapHome } from '$lib/map';
@@ -10,6 +10,7 @@ export const hook = () => {
 	const visible = writable<boolean>(false);
 	const tree = writable<ITree | null>(null);
 	const error = writable<string | null>(null);
+	const observations = writable<IObservation | null>(null);
 
 	// This works by navigating to the map page which doesn't have ?preview=N in the address.
 	const handleClose = (e: Event) => {
@@ -34,6 +35,14 @@ export const hook = () => {
 				error.set(res.error.description);
 			}
 		});
+
+		apiClient.getObservations(id).then((res) => {
+			if (res.status == 200) {
+				observations.set(res.data ?? null);
+			} else {
+				observations.set(null);
+			}
+		});
 	};
 
 	mapPreviewStore.subscribe((value) => {
@@ -44,5 +53,5 @@ export const hook = () => {
 		menuState.set(true);
 	};
 
-	return { visible, error, tree, handleClose, handleContextMenu };
+	return { visible, error, tree, observations, handleClose, handleContextMenu };
 };

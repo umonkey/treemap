@@ -6,6 +6,7 @@
 	import LocationIcon from '$lib/icons/LocationIcon.svelte';
 	import BatteryIcon from '$lib/icons/BatteryIcon.svelte';
 	import TagIcon from '$lib/icons/TagIcon.svelte';
+	import Observations from '$lib/components/observation/Observations.svelte';
 	import { routes } from '$lib/routes';
 	import { formatSpecies, formatState, shortDetails } from '$lib/utils/trees';
 	import { handleShareTree } from '$lib/hooks';
@@ -15,7 +16,7 @@
 
 	let expand = $state<boolean>(false);
 
-	const { visible, error, tree, handleClose, handleContextMenu } = hook();
+	const { visible, error, tree, observations, handleClose, handleContextMenu } = hook();
 
 	const toggleExpand = (e: Event) => {
 		e.preventDefault();
@@ -29,6 +30,8 @@
 			<p>{$error}</p>
 		{:else if $tree}
 			<div class="header">
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
+				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<div class="title" onclick={toggleExpand}>{formatSpecies($tree.species)}</div>
 				<button class="close" onclick={handleClose}><CloseIcon /></button>
 			</div>
@@ -67,7 +70,7 @@
 			</Buttons>
 
 			<div class="extras">
-				<p>This block is only visible if you expand the preview.</p>
+				<Observations observation={$observations} />
 			</div>
 
 			<TreeContextMenu id={$tree.id} />
@@ -198,6 +201,7 @@
 
 				.extras {
 					display: block;
+					border-top: 1px solid var(--sep-color);
 				}
 			}
 		}
