@@ -96,7 +96,7 @@
 		}
 
 		img {
-			background-color: light-dark(#ccc, #eee);
+			background-color: light-dark(#ddd, #444);
 			border-radius: 30px;
 			overflow: hidden;
 			max-width: 100%;
