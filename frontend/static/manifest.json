@@ -61,7 +61,7 @@
 	"theme_color": "#14191f",
 	"background_color": "#14191f",
 	"display": "fullscreen",
-	"orientation": "any",
+	"orientation": "portrait-primary",
 	"start_url": "/",
 	"lang": "en",
 	"dir": "ltr"
