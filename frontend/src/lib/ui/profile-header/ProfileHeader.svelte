@@ -3,7 +3,7 @@
 	import { Buttons, Button, SignOutButton } from '$lib/ui';
 	import HEADER_IMAGE from '$lib/assets/header.jpg';
 	import { routes } from '$lib/routes';
-	import UserPic from '$lib/components/nav/UserPic.svelte';
+	import UserPic from '$lib/components/layout/UserPic.svelte';
 
 	const { name, userpic, trees_count, updates_count, files_count } = $props<{
 		name: string;

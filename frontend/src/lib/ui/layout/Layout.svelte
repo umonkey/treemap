@@ -1,7 +1,7 @@
 <script lang="ts">
 	import MapPreview from '$lib/components/layout/MapPreview.svelte';
 	import LeftSidebar from '$lib/components/layout/LeftSidebar.svelte';
-	import MobileNav from '$lib/components/MobileNav.svelte';
+	import MobileNav from '$lib/components/layout/MobileNav.svelte';
 
 	const { children } = $props();
 </script>

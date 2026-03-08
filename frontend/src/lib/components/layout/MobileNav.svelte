@@ -3,7 +3,7 @@
 	import { routes } from '$lib/routes';
 	import { authStore, isAuthenticated } from '$lib/stores/authStore';
 	import { uploadStore } from '$lib/stores/upload';
-	import UserPic from './nav/UserPic.svelte';
+	import UserPic from '$lib/components/layout/UserPic.svelte';
 </script>
 
 <nav class="mobile">

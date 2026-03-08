@@ -7,7 +7,7 @@
 	import { isSidebarVisible, mobileSidebarStore } from '$lib/stores/mobileSidebarStore';
 	import { authStore } from '$lib/stores/authStore';
 	import Logo from '$lib/assets/trees-of-yerevan.svelte';
-	import UserPic from '$lib/components/nav/UserPic.svelte';
+	import UserPic from '$lib/components/layout/UserPic.svelte';
 
 	const onClose = () => {
 		mobileSidebarStore.set(false);
