@@ -1,14 +1,15 @@
 <script lang="ts">
-import { isInstallable, pwaStore } from "$lib/stores/pwaStore";
+	import { isInstallable, pwaStore } from '$lib/stores/pwaStore';
+	import Button from '$lib/ui/button/Button.svelte';
 
-const onClick = () => {
-	const event = $pwaStore;
-	if (event) {
-		event.prompt();
-	}
-};
+	const onClick = () => {
+		const event = $pwaStore;
+		if (event) {
+			event.prompt();
+		}
+	};
 </script>
 
 {#if $isInstallable}
-	<button class="button" onclick={onClick}>Install application</button>
+	<Button {onClick} type="button">Install Application</Button>
 {/if}

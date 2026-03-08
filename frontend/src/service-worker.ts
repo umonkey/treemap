@@ -1,10 +1,10 @@
 /// <reference types="@sveltejs/kit" />
-import { build, files, version } from "$service-worker";
+import { build, files, version } from '$service-worker';
 
 const CACHE = `cache-${version}`;
 const ASSETS = [...build, ...files];
 
-self.addEventListener("install", (event: any) => {
+self.addEventListener('install', (event: any) => {
 	async function addFilesToCache() {
 		const cache = await caches.open(CACHE);
 		await cache.addAll(ASSETS);
@@ -13,7 +13,7 @@ self.addEventListener("install", (event: any) => {
 	event.waitUntil(addFilesToCache());
 });
 
-self.addEventListener("activate", (event: any) => {
+self.addEventListener('activate', (event: any) => {
 	async function deleteOldCaches() {
 		for (const key of await caches.keys()) {
 			if (key !== CACHE) await caches.delete(key);
@@ -23,8 +23,8 @@ self.addEventListener("activate", (event: any) => {
 	event.waitUntil(deleteOldCaches());
 });
 
-self.addEventListener("fetch", (event: any) => {
-	if (event.request.method !== "GET") return;
+self.addEventListener('fetch', (event: any) => {
+	if (event.request.method !== 'GET') return;
 
 	async function respond() {
 		const url = new URL(event.request.url);
@@ -51,7 +51,7 @@ self.addEventListener("fetch", (event: any) => {
 			const response = await cache.match(event.request);
 			if (response) return response;
 
-			return new Response("Offline", { status: 408 });
+			return new Response('Offline', { status: 408 });
 		}
 	}
 
