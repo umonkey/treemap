@@ -61,7 +61,12 @@ export const hooks = (mount: MountFn, destroy: DestroyFn) => {
 	};
 
 	mount(() => mapBus.on('select', handleTreeClick));
-	destroy(() => mapBus.off('select', handleTreeClick));
+
+	destroy(() => {
+		mapBus.off('select', handleTreeClick);
+		mapPreviewStore.set(undefined);
+		console.debug('DESTROY');
+	});
 
 	return { pin, handlePreviewChange, handleSearchQuery, handleAddTree, handleAddRow };
 };
