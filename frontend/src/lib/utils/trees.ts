@@ -89,10 +89,6 @@ export const formatSpecies = (value: string | null): string => {
 };
 
 export const formatState = (value: string | null): string => {
-	if (!value || value === 'Unknown') {
-		return 'Unknown state';
-	}
-
 	if (value === 'healthy') {
 		return locale.stateHealthy();
 	}

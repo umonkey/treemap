@@ -1,4 +1,6 @@
-import type { ITree, IObservation } from '$lib/types';
+import type { ITree, IObservation, IComment } from '$lib/types';
+import { addUsers } from '$lib/stores/userStore';
+import { addTrees } from '$lib/stores/treeStore';
 import { apiClient } from '$lib/api';
 import { goto } from '$lib/routes';
 import { mapHome } from '$lib/map';
@@ -11,6 +13,7 @@ export const hook = () => {
 	const tree = writable<ITree | null>(null);
 	const error = writable<string | null>(null);
 	const observations = writable<IObservation | null>(null);
+	const comments = writable<IComment[]>([]);
 
 	// This works by navigating to the map page which doesn't have ?preview=N in the address.
 	const handleClose = (e: Event) => {
@@ -37,10 +40,20 @@ export const hook = () => {
 		});
 
 		apiClient.getObservations(id).then((res) => {
-			if (res.status == 200) {
+			if (res.status === 200) {
 				observations.set(res.data ?? null);
 			} else {
 				observations.set(null);
+			}
+		});
+
+		apiClient.getTreeComments(id).then((res) => {
+			if (res.status === 200 && res.data) {
+				comments.set(res.data.comments);
+				addUsers(res.data?.users);
+				addTrees(res.data?.trees);
+			} else {
+				comments.set([]);
 			}
 		});
 	};
@@ -53,5 +66,5 @@ export const hook = () => {
 		menuState.set(true);
 	};
 
-	return { visible, error, tree, observations, handleClose, handleContextMenu };
+	return { visible, error, tree, observations, comments, handleClose, handleContextMenu };
 };

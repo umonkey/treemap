@@ -7,6 +7,7 @@
 	import BatteryIcon from '$lib/icons/BatteryIcon.svelte';
 	import TagIcon from '$lib/icons/TagIcon.svelte';
 	import Observations from '$lib/components/observation/Observations.svelte';
+	import Comment from '$lib/components/tree/Comment.svelte';
 	import { routes } from '$lib/routes';
 	import { formatSpecies, formatState, shortDetails } from '$lib/utils/trees';
 	import { handleShareTree } from '$lib/hooks';
@@ -16,7 +17,7 @@
 
 	let expand = $state<boolean>(false);
 
-	const { visible, error, tree, observations, handleClose, handleContextMenu } = hook();
+	const { visible, error, tree, observations, comments, handleClose, handleContextMenu } = hook();
 
 	const toggleExpand = (e: Event) => {
 		e.preventDefault();
@@ -71,6 +72,10 @@
 
 			<div class="extras">
 				<Observations observation={$observations} />
+
+				{#each $comments as comment}
+					<Comment {comment} />
+				{/each}
 			</div>
 
 			<TreeContextMenu id={$tree.id} />
@@ -200,8 +205,12 @@
 				height: 80vh;
 
 				.extras {
-					display: block;
-					border-top: 1px solid var(--sep-color);
+					margin-top: var(--gap);
+					overflow-y: scroll;
+
+					display: flex;
+					flex-direction: column;
+					gap: var(--gap);
 				}
 			}
 		}
