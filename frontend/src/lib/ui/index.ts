@@ -37,7 +37,6 @@ export { default as MapLocateMe } from './map-locate-me/MapLocateMe.svelte';
 export { default as MapMarkerLoader } from './map-marker-loader/MapMarkerLoader.svelte';
 export { default as MapMyPosition } from './map-my-position/MapMyPosition.svelte';
 export { default as MapPin } from './map-pin/MapPin.svelte';
-export { default as MapPreview } from './map-preview/MapPreview.svelte';
 export { default as MapResizeObserver } from './map-resize-observer/MapResizeObserver.svelte';
 export { default as MapRow } from './map-row/MapRow.svelte';
 export { default as MapRowPreview } from './map-row-preview/MapRowPreview.svelte';
