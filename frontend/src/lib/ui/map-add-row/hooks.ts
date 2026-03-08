@@ -4,7 +4,7 @@ import { get, writable } from 'svelte/store';
 import type { ILatLng, MountFn } from '$lib/types';
 import { getMap } from '$lib/map';
 import { getDistance } from '$lib/utils';
-import { mapBus } from '$lib/buses';
+import { mapPreviewStore } from '$lib/stores/mapPreviewStore';
 
 type ConfirmFn = (start: ILatLng, end: ILatLng) => void;
 
@@ -62,7 +62,8 @@ export const hooks = ({ onMount }: { onMount: MountFn }) => {
 			lng: center.lng
 		});
 
-		mapBus.emit('closePreview');
+		// TODO: close map preview
+		mapPreviewStore.set(undefined);
 
 		console.debug(`[map] Row start updated: ${center.lat},${center.lng}.`);
 	};

@@ -4,8 +4,8 @@ import { apiClient } from '$lib/api';
 import { writable } from 'svelte/store';
 import { mapBus } from '$lib/buses';
 import { routes, goto } from '$lib/routes';
-import { setLastTree } from '$lib/stores/mapStore';
 import { searchStore } from '$lib/stores';
+import { mapPreviewStore } from '$lib/stores/mapPreviewStore';
 import { get } from 'svelte/store';
 import type { ILatLng, MountFn, DestroyFn } from '$lib/types';
 
@@ -17,9 +17,7 @@ export const hooks = (mount: MountFn, destroy: DestroyFn) => {
 	// and also move the map to the new center.
 	const handlePreviewChange = async (tree_id: string | null) => {
 		console.debug(`[map] Preview id updated to ${tree_id}.`);
-
-		// Remember last value, used by the navigation pane.
-		setLastTree(tree_id);
+		mapPreviewStore.set(tree_id ?? undefined);
 
 		// No tree selected for preview.
 		if (tree_id === null) {

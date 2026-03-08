@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { Buttons, Button } from '$lib/ui';
 	import GalleryPreview from '$lib/components/photos/GalleryPreview.svelte';
 	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
@@ -11,10 +10,7 @@
 	import { hook } from './MapPreview';
 	import '$lib/styles/variables.css';
 
-	const { id } = $props<{ id: string }>();
-	const { visible, error, tree, handleClose, handleContextMenu, reload } = hook({ onMount });
-
-	$effect(() => reload(id));
+	const { visible, error, tree, handleClose, handleContextMenu } = hook();
 </script>
 
 {#if $visible}
@@ -131,7 +127,7 @@
 		.preview {
 			position: fixed;
 			top: 0;
-			right: 0;
+			left: 0;
 			width: 300px;
 			height: 100vh;
 			border-radius: 0px;

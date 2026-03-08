@@ -1,12 +1,16 @@
 <script lang="ts">
-	import { LeftSidebar, RightSidebar, MobileSidebar } from '$lib/ui';
+	import { LeftSidebar, MobileSidebar } from '$lib/ui';
+	import MapPreview from '$lib/components/layout/MapPreview.svelte';
 	import MobileNav from '$lib/components/MobileNav.svelte';
 
 	const { children } = $props();
 </script>
 
 <div class="layout">
-	<LeftSidebar />
+	<aside class="left">
+		<LeftSidebar />
+		<MapPreview />
+	</aside>
 
 	<main>
 		<article>
@@ -15,8 +19,6 @@
 
 		<MobileNav />
 	</main>
-
-	<RightSidebar />
 </div>
 
 <MobileSidebar />
@@ -54,6 +56,20 @@
 			article {
 				padding-bottom: 0px;
 			}
+		}
+	}
+
+	/** Hide the side bar on mobile. **/
+	aside {
+		display: none;
+	}
+
+	@media screen and (min-width: 1024px) {
+		aside {
+			display: block;
+			flex-basis: 300px;
+			flex-shrink: 0;
+			flex-grow: 0;
 		}
 	}
 </style>

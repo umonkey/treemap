@@ -3,16 +3,17 @@ import { apiClient } from '$lib/api';
 import { goto } from '$lib/routes';
 import { mapHome } from '$lib/map';
 import { menuState } from '$lib/stores/treeMenu';
+import { mapPreviewStore } from '$lib/stores/mapPreviewStore';
 import { writable } from 'svelte/store';
-import { mapBus } from '$lib/buses';
-import type { MountFn } from '$lib/types';
 
-export const hook = ({ onMount }: { onMount: MountFn }) => {
+export const hook = () => {
 	const visible = writable<boolean>(false);
 	const tree = writable<ITree | null>(null);
 	const error = writable<string | null>(null);
 
-	const handleClose = () => {
+	// This works by navigating to the map page which doesn't have ?preview=N in the address.
+	const handleClose = (e: Event) => {
+		e.preventDefault();
 		goto(mapHome());
 	};
 
@@ -35,22 +36,13 @@ export const hook = ({ onMount }: { onMount: MountFn }) => {
 		});
 	};
 
+	mapPreviewStore.subscribe((value) => {
+		reload(value ?? null);
+	});
+
 	const handleContextMenu = () => {
 		menuState.set(true);
 	};
-
-	// A third party asks to close the preview.
-	const handleClosePreview = () => {
-		visible.set(false);
-	};
-
-	onMount(() => {
-		mapBus.on('closePreview', handleClosePreview);
-
-		return () => {
-			mapBus.off('closePreview', handleClosePreview);
-		};
-	});
 
 	return { visible, error, tree, reload, handleClose, handleContextMenu };
 };

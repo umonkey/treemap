@@ -9,7 +9,9 @@
 
 	const handleError = () => {
 		console.debug(`Error loading image ${src}, falling back to ${fallback}`);
-		img.src = fallback;
+		if (img) {
+			img.src = fallback;
+		}
 	};
 
 	const handleLoad = () => {
