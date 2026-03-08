@@ -61,7 +61,7 @@
 
 	/** Hide the side bar on mobile. **/
 	aside {
-		display: none;
+		flex-basis: 0;
 	}
 
 	@media screen and (min-width: 1024px) {
@@ -71,5 +71,14 @@
 			flex-shrink: 0;
 			flex-grow: 0;
 		}
+	}
+
+	/** Make sure tree preview and menus overlap the map. **/
+	aside {
+		z-index: 2;
+	}
+
+	main {
+		z-index: 1;
 	}
 </style>

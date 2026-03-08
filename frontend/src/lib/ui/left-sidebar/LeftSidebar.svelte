@@ -10,79 +10,77 @@
 	import UserPic from '$lib/components/nav/UserPic.svelte';
 </script>
 
-<aside class="left">
-	<div class="canvas">
-		<ul>
+<div class="canvas">
+	<ul>
+		<li>
+			<a href="/">
+				<span class="icon"><HomeIcon /></span>
+				<span>{locale.sideHome()}</span>
+			</a>
+		</li>
+		<li>
+			<a href="/search">
+				<span class="icon"><SearchIcon /></span>
+				<span>{locale.sideSearch()}</span>
+			</a>
+		</li>
+		{#if $mapLastTree}
 			<li>
-				<a href="/">
-					<span class="icon"><HomeIcon /></span>
-					<span>{locale.sideHome()}</span>
+				<a href={routes.mapPreview($mapLastTree, $searchStore)}>
+					<span class="icon"><MapIcon /></span>
+					<span>{locale.sideExplore()}</span>
 				</a>
 			</li>
+		{:else if $searchStore}
 			<li>
-				<a href="/search">
-					<span class="icon"><SearchIcon /></span>
-					<span>{locale.sideSearch()}</span>
+				<a href={routes.searchQuery($searchStore)}>
+					<span class="icon"><MapIcon /></span>
+					<span>{locale.sideExplore()}</span>
 				</a>
 			</li>
-			{#if $mapLastTree}
-				<li>
-					<a href={routes.mapPreview($mapLastTree, $searchStore)}>
-						<span class="icon"><MapIcon /></span>
-						<span>{locale.sideExplore()}</span>
-					</a>
-				</li>
-			{:else if $searchStore}
-				<li>
-					<a href={routes.searchQuery($searchStore)}>
-						<span class="icon"><MapIcon /></span>
-						<span>{locale.sideExplore()}</span>
-					</a>
-				</li>
-			{:else}
-				<li>
-					<a href={routes.map()}>
-						<span class="icon"><MapIcon /></span>
-						<span>{locale.sideExplore()}</span>
-					</a>
-				</li>
-			{/if}
+		{:else}
 			<li>
-				<a href={routes.newTrees()}>
-					<span class="icon"><BellIcon /></span>
-					<span>{locale.sideUpdates()}</span>
+				<a href={routes.map()}>
+					<span class="icon"><MapIcon /></span>
+					<span>{locale.sideExplore()}</span>
 				</a>
 			</li>
-			<li>
-				<a href={routes.profile()}>
-					<span class="icon">
-						{#if $uploadStore.uploading}
-							<SpinnerIcon />
-						{:else}
-							<UserPic src={$authStore?.picture} alt="userpic" class="user-pic-sidebar" />
-						{/if}
-						{#if $uploadStore.pending > 0}
-							<span class="badge">{$uploadStore.pending}</span>
-						{/if}
-					</span>
-					<span>{locale.sideProfile()}</span>
-				</a>
-			</li>
-		</ul>
+		{/if}
+		<li>
+			<a href={routes.newTrees()}>
+				<span class="icon"><BellIcon /></span>
+				<span>{locale.sideUpdates()}</span>
+			</a>
+		</li>
+		<li>
+			<a href={routes.profile()}>
+				<span class="icon">
+					{#if $uploadStore.uploading}
+						<SpinnerIcon />
+					{:else}
+						<UserPic src={$authStore?.picture} alt="userpic" class="user-pic-sidebar" />
+					{/if}
+					{#if $uploadStore.pending > 0}
+						<span class="badge">{$uploadStore.pending}</span>
+					{/if}
+				</span>
+				<span>{locale.sideProfile()}</span>
+			</a>
+		</li>
+	</ul>
 
-		<div class="bottom">
-			<Logo />
-		</div>
-
-		<div class="bottom links">
-			<a href="https://github.com/KanachYerevan/kb/wiki/Mobile-Application" target="_blank"
-				>{locale.sideAbout()}</a
-			>
-			&middot;
-			<a href="https://github.com/umonkey/treemap/issues" target="_blank">{locale.sideBugs()}</a>
-		</div>
+	<div class="bottom">
+		<Logo />
 	</div>
-</aside>
+
+	<div class="bottom links">
+		<a href="https://github.com/KanachYerevan/kb/wiki/Mobile-Application" target="_blank"
+			>{locale.sideAbout()}</a
+		>
+		&middot;
+		<a href="https://github.com/umonkey/treemap/issues" target="_blank">{locale.sideBugs()}</a>
+	</div>
+</div>
 
 <style>
 	.canvas {
@@ -166,5 +164,12 @@
 		background-color: #080;
 		padding: 0 0.5rem;
 		border-radius: 5px;
+	}
+
+	/** Hide by default on small screens. **/
+	@media screen and (max-width: 1023px) {
+		.canvas {
+			display: none;
+		}
 	}
 </style>
