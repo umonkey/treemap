@@ -13,41 +13,46 @@
 	import { hook } from './MapPreview';
 	import '$lib/styles/variables.css';
 
+	let expand = $state<boolean>(false);
+
 	const { visible, error, tree, handleClose, handleContextMenu } = hook();
+
+	const toggleExpand = (e: Event) => {
+		e.preventDefault();
+		expand = !expand;
+	};
 </script>
 
 {#if $visible}
-	<div class="preview">
+	<div class="preview" class:expand={!!expand}>
 		{#if $error}
 			<p>{$error}</p>
 		{:else if $tree}
-			<div class="block">
-				<div class="header">
-					<div class="title">{formatSpecies($tree.species)}</div>
-					<button class="close" onclick={handleClose}><CloseIcon /></button>
-				</div>
+			<div class="header">
+				<div class="title" onclick={toggleExpand}>{formatSpecies($tree.species)}</div>
+				<button class="close" onclick={handleClose}><CloseIcon /></button>
+			</div>
 
-				<div class="props">
-					{#if $tree.address}
-						<div class="line">
-							<div class="icon">
-								<LocationIcon />
-							</div>
-							<div class="value">{$tree.address}</div>
-						</div>
-					{/if}
+			<div class="props">
+				{#if $tree.address}
 					<div class="line">
 						<div class="icon">
-							<TagIcon />
+							<LocationIcon />
 						</div>
-						<div class="value">{shortDetails($tree)}</div>
+						<div class="value">{$tree.address}</div>
 					</div>
-					<div class="line">
-						<div class="icon">
-							<BatteryIcon />
-						</div>
-						<div class="value">{formatState($tree.state)}</div>
+				{/if}
+				<div class="line">
+					<div class="icon">
+						<TagIcon />
 					</div>
+					<div class="value">{shortDetails($tree)}</div>
+				</div>
+				<div class="line">
+					<div class="icon">
+						<BatteryIcon />
+					</div>
+					<div class="value">{formatState($tree.state)}</div>
 				</div>
 			</div>
 
@@ -60,6 +65,10 @@
 				>
 				<Button type="secondary" onClick={handleContextMenu} square><SettingsIcon /></Button>
 			</Buttons>
+
+			<div class="extras">
+				<p>This block is only visible if you expand the preview.</p>
+			</div>
 
 			<TreeContextMenu id={$tree.id} />
 		{/if}
@@ -170,6 +179,26 @@
 				flex-direction: column;
 				gap: var(--gap);
 				margin-bottom: var(--gap);
+			}
+		}
+	}
+
+	/** On mobile, extrass need expansion. **/
+	@media screen and (max-width: 600px) {
+		.preview {
+			height: 266px;
+			transition: height 0.2s ease-in-out;
+
+			.extras {
+				display: none;
+			}
+
+			&.expand {
+				height: 80vh;
+
+				.extras {
+					display: block;
+				}
 			}
 		}
 	}
