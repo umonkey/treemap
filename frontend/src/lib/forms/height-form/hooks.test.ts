@@ -12,20 +12,6 @@ const TREE_RESPONSE = {
 	height: 1.23
 } as ISingleTree;
 
-const HISTORY_RESPONSE = {
-	props: [
-		{
-			id: 'change1',
-			tree_id: 'tree1',
-			name: 'diameter',
-			value: '1',
-			added_at: 0,
-			added_by: 'user1'
-		}
-	],
-	users: []
-} as IChangeList;
-
 vi.mock('$app/navigation', async () => {
 	return {
 		goto: vi.fn()
@@ -44,15 +30,6 @@ beforeEach(() => {
 				ok: true,
 				status: 200,
 				json: async () => TREE_RESPONSE
-			};
-		}
-
-		// Simulate change history.
-		if (req.url === 'https://api.treemaps.app/v1/trees/tree1/history') {
-			return {
-				ok: true,
-				status: 200,
-				json: async () => HISTORY_RESPONSE
 			};
 		}
 
@@ -78,16 +55,14 @@ describe('height-form/hooks', async () => {
 
 		let update_called = false;
 
-		const { loading, value, history, reload, save } = editor(tree.id);
+		const { loading, value, reload, save } = editor(tree.id);
 
 		expect(get(loading)).toBe(true);
 		expect(get(value)).toBe(0.0);
-		expect(get(history)).toHaveLength(0);
 
 		await reload(tree.id);
 		expect(get(loading)).toBe(false);
 		expect(get(value)).toEqual(1.23);
-		expect(get(history)).toHaveLength(1);
 
 		apiClient.updateTreeHeight = async (id: string, value: number): Promise<IResponse<ITree>> => {
 			expect(id).toEqual(tree.id);
