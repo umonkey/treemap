@@ -10,6 +10,6 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export const pwaStore = writable<BeforeInstallPromptEvent | undefined>(
-	undefined,
+	typeof window !== "undefined" ? (window as any).deferredPWAEvent : undefined,
 );
 export const isInstallable = derived(pwaStore, ($pwaStore) => !!$pwaStore);
