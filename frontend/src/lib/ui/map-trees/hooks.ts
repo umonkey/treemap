@@ -12,30 +12,25 @@ const getTreeCircleProps = (tree: ITree) => {
 	const props = {
 		radius: 0.5,
 		fillColor: '#228B22',
-		color: '#228B22',
 		weight: 1,
-		opacity: 1,
+		opacity: 0,
 		fillOpacity: 0.5
 	};
 
 	props.radius = Math.max(0.5, (tree.diameter ?? 4) / 2);
 
 	if (tree.state === 'stump' || tree.state === 'gone') {
-		props.color = '#000';
 		props.fillColor = '#000';
 		props.fillOpacity = 0.2;
 		props.radius = 0.5;
 	} else if (tree.state === 'unknown') {
-		props.color = '#228B22';
 		props.fillColor = '#FFD700';
 	} else if (tree.state === 'dead') {
-		props.color = '#8B4513';
 		props.fillColor = '#8B4513';
 		props.fillOpacity = 0.2;
 	}
 
 	if (!tree.diameter) {
-		props.opacity = 0.25;
 		props.fillOpacity = 0.25;
 	}
 
