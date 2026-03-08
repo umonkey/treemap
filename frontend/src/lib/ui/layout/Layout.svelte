@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { LeftSidebar, MobileSidebar } from '$lib/ui';
+	import { MobileSidebar } from '$lib/ui';
 	import MapPreview from '$lib/components/layout/MapPreview.svelte';
+	import LeftSidebar from '$lib/components/layout/LeftSidebar.svelte';
 	import MobileNav from '$lib/components/MobileNav.svelte';
 
 	const { children } = $props();

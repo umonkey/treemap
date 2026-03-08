@@ -22,7 +22,6 @@ export { default as HeightReport } from './height-report/HeightReport.svelte';
 export { default as HelpButton } from './help-button/HelpButton.svelte';
 export { default as Layout } from './layout/Layout.svelte';
 export { default as LazyImage } from './lazy-image/LazyImage.svelte';
-export { default as LeftSidebar } from './left-sidebar/LeftSidebar.svelte';
 export { default as LocationInput } from './location-input/LocationInput.svelte';
 export { default as LocationPicker } from './location-picker/LocationPicker.svelte';
 export { default as LocationTracker } from './location-tracker/LocationTracker.svelte';
