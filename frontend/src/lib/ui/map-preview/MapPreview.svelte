@@ -8,7 +8,7 @@
 	import { formatSpecies, shortDetails } from '$lib/utils/trees';
 	import { handleShareTree } from '$lib/hooks';
 	import { locale } from '$lib/locale';
-	import { hook } from './hooks';
+	import { hook } from './MapPreview';
 	import '$lib/styles/variables.css';
 
 	const { id } = $props<{ id: string }>();
