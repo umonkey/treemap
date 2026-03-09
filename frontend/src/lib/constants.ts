@@ -33,6 +33,7 @@ export const DEFAULT_TREE = {
 	year: null,
 	replaces: null,
 	replaced_by: null,
+	thumbnail_id: null,
 	files: [],
 	users: []
 } as ITree;

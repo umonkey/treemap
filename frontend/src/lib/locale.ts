@@ -73,10 +73,6 @@ class EnglishLocale {
 		return 'Added';
 	}
 
-	public updatesChanged(): string {
-		return 'Edited';
-	}
-
 	public updatesComments(): string {
 		return 'Comments';
 	}
@@ -660,6 +656,10 @@ class EnglishLocale {
 	public shortSunday(): string {
 		return 'Sun';
 	}
+
+	public tabTrees(): string {
+		return 'Trees';
+	}
 }
 
 class RussianLocale extends EnglishLocale {
@@ -735,10 +735,6 @@ class RussianLocale extends EnglishLocale {
 
 	public updatesAdded(): string {
 		return 'Новые';
-	}
-
-	public updatesChanged(): string {
-		return 'Изменённые';
 	}
 
 	public updatesComments(): string {
@@ -1308,6 +1304,10 @@ class RussianLocale extends EnglishLocale {
 	public shortSunday(): string {
 		return 'Вс';
 	}
+
+	public tabTrees(): string {
+		return 'Деревья';
+	}
 }
 
 class ArmenianLocale extends EnglishLocale {
@@ -1375,10 +1375,6 @@ class ArmenianLocale extends EnglishLocale {
 
 	public updatesAdded(): string {
 		return 'Ավելացված';
-	}
-
-	public updatesChanged(): string {
-		return 'Խմբագրված';
 	}
 
 	public updatesComments(): string {

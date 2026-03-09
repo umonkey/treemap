@@ -15,6 +15,7 @@ export const Tree: ITree = {
 	year: 1980,
 	replaces: null,
 	replaced_by: null,
+	thumbnail_id: null,
 	added_at: 1720282295,
 	updated_at: 1720282741,
 	added_by: '134022734140280832',

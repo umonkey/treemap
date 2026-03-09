@@ -9,14 +9,9 @@
 
 	const tabs = [
 		{
-			id: 'new',
-			title: locale.updatesAdded(),
-			url: routes.newTrees()
-		},
-		{
-			id: 'changes',
-			title: locale.updatesChanged(),
-			url: routes.changedTrees()
+			id: 'trees',
+			title: locale.tabTrees(),
+			url: routes.treeUpdates()
 		},
 		{
 			id: 'comments',

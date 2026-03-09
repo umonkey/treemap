@@ -56,6 +56,7 @@ export interface ITree {
 	year: number | null;
 	replaces: string | null;
 	replaced_by: string | null;
+	thumbnail_id: string | null;
 	files: ITreeFile[];
 }
 

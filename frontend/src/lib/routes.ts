@@ -25,7 +25,7 @@ const build = (path: string, params: Params) => {
 };
 
 export const routes = {
-	changedTrees: () => '/updates/changes',
+	treeUpdates: () => '/updates/trees',
 	comments: () => '/updates/comments',
 	file: (id: string) => `${config.fileBaseUrl}${id}.jpg`,
 	home: () => '/',
@@ -37,7 +37,6 @@ export const routes = {
 			q: search
 		}),
 	modeMapper: () => '/mode/mapper',
-	newTrees: () => '/updates/new',
 	profile: () => '/profile',
 	streetReport: (street?: string) => build('/report', { address: street }),
 	settings: () => '/settings',

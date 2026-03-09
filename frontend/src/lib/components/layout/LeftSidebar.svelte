@@ -47,7 +47,7 @@
 				</li>
 			{/if}
 			<li>
-				<a href={routes.newTrees()}>
+				<a href={routes.treeUpdates()}>
 					<span class="icon"><BellIcon /></span>
 					<span>{locale.sideUpdates()}</span>
 				</a>

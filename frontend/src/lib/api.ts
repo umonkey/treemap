@@ -573,8 +573,19 @@ export class ApiClient {
 		return await this.request('GET', 'v1/trees/new');
 	}
 
-	public async getUpdatedTrees(): Promise<IResponse<ITreeList>> {
-		return await this.request('GET', 'v1/trees/updated');
+	public async getUpdatedTrees({
+		count = 10,
+		skip = 0
+	}: {
+		count: number;
+		skip: number;
+	}): Promise<IResponse<ITreeList>> {
+		const params = new URLSearchParams({
+			count: count.toString(),
+			skip: skip.toString()
+		});
+
+		return await this.request('GET', `v1/trees/updated?${params.toString()}`);
 	}
 
 	public async changeTreeThumbnail(tree: string, file: string): Promise<IResponse<void>> {

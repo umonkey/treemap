@@ -10,7 +10,7 @@
 	<a href="/"><div><HomeIcon /></div></a>
 	<a href="/search"><div><SearchIcon /></div></a>
 	<a href={routes.map()}><div><MapIcon /></div></a>
-	<a href={routes.newTrees()}><div><BellIcon /></div></a>
+	<a href={routes.treeUpdates()}><div><BellIcon /></div></a>
 	<a href="/profile"
 		><div>
 			{#if $uploadStore.uploading}
