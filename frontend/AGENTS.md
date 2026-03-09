@@ -4,7 +4,7 @@ This directory contains the static frontend for the tree mapping application.
 
 ## Tech Stack
 
-- **Framework**: [SvelteKit 5](https://svelte.dev/) (using Runes).
+- **Framework**: [SvelteKit 5](https://svelte.dev/) (using Runes), client side rendering only.
 - **Language**: TypeScript.
 - **Styling**: Custom CSS with variables (see `src/lib/styles`).
 - **State Management**: Svelte Stores and Runes.

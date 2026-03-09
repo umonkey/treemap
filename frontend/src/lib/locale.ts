@@ -1837,14 +1837,18 @@ class ArmenianLocale extends EnglishLocale {
 }
 
 const guessLocale = () => {
-	const lang = navigator.language || 'en-US';
+	const languages = navigator.languages || [navigator.language || 'en-US'];
 
-	if (lang === 'ru-RU') {
-		return new RussianLocale();
-	}
-
-	if (lang === 'hy-AM') {
-		return new ArmenianLocale();
+	for (const lang of languages) {
+		if (lang.startsWith('ru')) {
+			return new RussianLocale();
+		}
+		if (lang.startsWith('hy')) {
+			return new ArmenianLocale();
+		}
+		if (lang.startsWith('en')) {
+			return new EnglishLocale();
+		}
 	}
 
 	return new EnglishLocale();
