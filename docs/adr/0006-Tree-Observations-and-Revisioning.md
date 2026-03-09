@@ -13,7 +13,7 @@ The old status system had several flaws:
 - Exclusivity: a tree could not be marked as both "sick" and "deformed" because the status was a single choice.
 - Complexity: unqualified volunteers struggled to accurately categorize trees using abstract status labels.
 
-The goal is to provide a "Data Science friendly" tool that even unqualified volunteers can use. This requires a simplified version of professional standards like the Visual Tree Assessment (VTA) Checklist, focusing only on traits that are easy to identify without specialized training.
+The goal is to provide a "Data Science friendly" tool that even unqualified volunteers can use. This requires a simplified version of professional standards like the [Visual Tree Assessment (VTA) Checklist](https://chainsawacademy.husqvarna.com/wp-content/uploads/2022/06/VTA.pdf), focusing only on traits that are easy to identify without specialized training.
 
 ## Decision
 
