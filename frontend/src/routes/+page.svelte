@@ -25,7 +25,7 @@
 <NarrowPage>
 	<h1>{locale.appTitle()}</h1>
 
-	{#if navigator.language === 'ru-RU'}
+	{#if locale.lang === 'ru'}
 		<p>
 			Добро пожаловать в карту деревьев Еревана. Здесь мы собираем информацию обо всех деревьях,
 			чтобы защитить их от вырубки. Сейчас у нас в базе данных <strong>{totalCount} деревьев</strong

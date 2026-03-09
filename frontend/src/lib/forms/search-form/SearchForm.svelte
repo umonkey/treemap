@@ -30,7 +30,7 @@
 		<hr />
 	{/if}
 
-	{#if navigator.language === 'ru-RU'}
+	{#if locale.lang === 'ru'}
 		<p>Некоторые запросы для примера:</p>
 
 		<ul>

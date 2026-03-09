@@ -1,4 +1,6 @@
 class EnglishLocale {
+	public readonly lang: string = 'en';
+
 	public appTitle(): string {
 		return 'Trees of Yerevan';
 	}
@@ -661,6 +663,8 @@ class EnglishLocale {
 }
 
 class RussianLocale extends EnglishLocale {
+	public override readonly lang = 'ru';
+
 	public appTitle(): string {
 		return 'Деревья Еревана';
 	}
@@ -1307,6 +1311,8 @@ class RussianLocale extends EnglishLocale {
 }
 
 class ArmenianLocale extends EnglishLocale {
+	public override readonly lang = 'hy';
+
 	public appTitle(): string {
 		return 'Երևանի ծառեր';
 	}
