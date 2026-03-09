@@ -11,7 +11,7 @@
 
 <NarrowPage title={locale.updatesNewTitle()} nopadding>
 	<div class="spacer">
-		<Tabs active="new" />
+		<Tabs active="trees" />
 
 		{#if $loading}
 			<p>Loading trees...</p>
