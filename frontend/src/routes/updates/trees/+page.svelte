@@ -26,9 +26,8 @@
 								<img src={tile.image ?? FALLBACK} alt={tile.species} />
 
 								<div class="meta">
-									<div>{tile.species}</div>
+									<div>{tile.updated_at} &middot; {tile.species}</div>
 									<div>{tile.address}</div>
-									<div>{tile.updated_at} &middot; {tile.user_name}</div>
 								</div>
 							</a>
 						</div>

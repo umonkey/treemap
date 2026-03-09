@@ -1,7 +1,7 @@
 import { get, writable } from 'svelte/store';
 import { apiClient } from '$lib/api';
 import { addTrees } from '$lib/stores/treeStore';
-import { addUsers, getUser } from '$lib/stores/userStore';
+import { addUsers } from '$lib/stores/userStore';
 import type { ITree } from '$lib/types';
 import { formatDate } from '$lib/utils/strings';
 import { formatSpecies } from '$lib/utils/trees';
@@ -16,20 +16,16 @@ type Tile = {
 	address: string | null;
 	image: string | null;
 	updated_at: string;
-	user_name: string;
 };
 
 const formatTile = (tree: ITree): Tile => {
-	const user = get(getUser)(tree.added_by);
-
 	return {
 		id: tree.id,
 		link: routes.treeDetails(tree.id),
 		species: formatSpecies(tree.species),
 		address: tree.address,
 		image: tree.thumbnail_id ? routes.file(tree.thumbnail_id) : null,
-		updated_at: formatDate(tree.added_at),
-		user_name: user.name
+		updated_at: formatDate(tree.added_at)
 	};
 };
 
