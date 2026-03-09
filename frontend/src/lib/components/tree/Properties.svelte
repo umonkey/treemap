@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
-	import { formatCentimeters, formatMeters, formatYear } from '$lib/utils/trees';
+	import { formatCentimeters, formatMeters, formatState, formatYear } from '$lib/utils/trees';
 	import type { ITree } from '$lib/types';
 
 	const { tree } = $props<{
@@ -23,7 +23,7 @@
 	</dl>
 	<dl>
 		<dt>{locale.propState()}</dt>
-		<dd>{tree.state}</dd>
+		<dd>{formatState(tree.state)}</dd>
 	</dl>
 	<dl>
 		<dt>{locale.propYear()}</dt>
