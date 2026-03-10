@@ -8,7 +8,8 @@
 		onClick,
 		link,
 		disabled = false,
-		square = false
+		square = false,
+		nowrap = false
 	} = $props<{
 		children: Snippet;
 		type?: 'submit' | 'button' | 'reset' | 'cancel' | 'secondary' | 'tertiary';
@@ -16,6 +17,7 @@
 		link?: string;
 		disabled?: boolean;
 		square?: boolean;
+		nowrap?: boolean;
 	}>();
 
 	const className = `button ${type}`;
@@ -34,8 +36,13 @@
 		{@render children()}
 	</a>
 {:else}
-	<button {type} disabled={!!disabled} class={className} onclick={onClick} class:square={!!square}
-		>{@render children()}</button
+	<button
+		{type}
+		disabled={!!disabled}
+		class={className}
+		onclick={onClick}
+		class:square={!!square}
+		class:nowrap={!!nowrap}>{@render children()}</button
 	>
 {/if}
 
@@ -86,5 +93,11 @@
 			padding: 7px;
 			overflow: hidden;
 		}
+	}
+
+	.nowrap {
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 </style>

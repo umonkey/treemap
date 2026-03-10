@@ -613,28 +613,8 @@ class EnglishLocale {
 		return 'Size';
 	}
 
-	public uploadsStart(): string {
-		return 'Start uploads';
-	}
-
-	public uploadsRestart(): string {
-		return 'Restart failed';
-	}
-
-	public uploadsEmpty(): string {
-		return 'There are no pending file uploads.';
-	}
-
 	public uploadsAuto(): string {
 		return 'Auto-upload files';
-	}
-
-	public uploadsDisabledHint(): string {
-		return 'Files will not be uploading unless you open this page and click the start button. You can queue the files and upload them when you feel comfortable.';
-	}
-
-	public uploadsEnabledHint(): string {
-		return 'The photos will be uploading as soon as you take them, unless your phone is in data saving or power saving mode.';
 	}
 
 	public toastErrorAddingComment(): string {
@@ -1261,28 +1241,8 @@ class RussianLocale extends EnglishLocale {
 		return 'Размер';
 	}
 
-	public uploadsStart(): string {
-		return 'Начать загрузку';
-	}
-
-	public uploadsRestart(): string {
-		return 'Перезапустить неудачные';
-	}
-
-	public uploadsEmpty(): string {
-		return 'Нет ожидающих загрузок файлов.';
-	}
-
 	public uploadsAuto(): string {
 		return 'Загружать файлы автоматически';
-	}
-
-	public uploadsDisabledHint(): string {
-		return 'Файлы не будут загружаться, пока вы не откроете эту страницу и не нажмете кнопку запуска. Вы можете ставить файлы в очередь и загружать их, когда вам будет удобно.';
-	}
-
-	public uploadsEnabledHint(): string {
-		return 'Фотографии будут загружаться сразу после того, как вы их сделаете, если только ваш телефон не находится в режиме экономии трафика или энергии.';
 	}
 
 	public toastErrorAddingComment(): string {
@@ -1809,28 +1769,8 @@ class ArmenianLocale extends EnglishLocale {
 		return 'Չափ';
 	}
 
-	public uploadsStart(): string {
-		return 'Սկսել վերբեռնումը';
-	}
-
-	public uploadsRestart(): string {
-		return 'Վերսկսել ձախողվածները';
-	}
-
-	public uploadsEmpty(): string {
-		return 'Վերբեռնվող ֆայլեր չկան:';
-	}
-
 	public uploadsAuto(): string {
 		return 'Ֆայլերը վերբեռնել ավտոմատ';
-	}
-
-	public uploadsDisabledHint(): string {
-		return 'Ֆայլերը չեն վերբեռնվի, քանի դեռ չեք բացել այս էջը և սեղմել սկսելու կոճակը: Դուք կարող եք հերթագրել ֆայլերը և վերբեռնել դրանք, երբ ձեզ հարմար լինի:';
-	}
-
-	public uploadsEnabledHint(): string {
-		return 'Լուսանկարները կվերբեռնվեն հենց որ դրանք նկարեք, եթե ձեր հեռախոսը տվյալների խնայողության կամ էներգիայի խնայողության ռեժիմում չէ:';
 	}
 
 	public toastErrorAddingComment(): string {
@@ -1838,22 +1778,45 @@ class ArmenianLocale extends EnglishLocale {
 	}
 }
 
-const guessLocale = () => {
+type LangCode = 'en' | 'ru' | 'hy';
+
+export const getLanguageCode = (): LangCode => {
 	const languages = navigator.languages || [navigator.language || 'en-US'];
 
 	for (const lang of languages) {
 		if (lang.startsWith('ru')) {
-			return new RussianLocale();
+			return 'ru';
 		}
+
 		if (lang.startsWith('hy')) {
-			return new ArmenianLocale();
-		}
-		if (lang.startsWith('en')) {
-			return new EnglishLocale();
+			return 'hy';
 		}
 	}
 
+	return 'en';
+};
+
+const guessLocale = () => {
+	const lang = getLanguageCode();
+
+	if (lang == 'ru') {
+		return new RussianLocale();
+	}
+
+	if (lang == 'hy') {
+		return new ArmenianLocale();
+	}
+
 	return new EnglishLocale();
+};
+
+type LangList<T> = {
+	[key in LangCode]: T;
+};
+
+export const localize = <T>(args: LangList<T>): T => {
+	const lang = getLanguageCode();
+	return args[lang];
 };
 
 export const locale = guessLocale();

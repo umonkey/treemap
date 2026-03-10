@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onDestroy, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import type { IUpload } from '$lib/db';
 	import { routes } from '$lib/routes';
 
@@ -11,12 +11,10 @@
 
 	onMount(() => {
 		objectUrl = URL.createObjectURL(upload.image);
-	});
 
-	onDestroy(() => {
-		if (objectUrl) {
+		return () => {
 			URL.revokeObjectURL(objectUrl);
-		}
+		};
 	});
 
 	const formatSize = (bytes: number) => {
