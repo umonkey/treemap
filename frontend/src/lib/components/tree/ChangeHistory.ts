@@ -3,11 +3,13 @@ import type { IChange } from '$lib/types';
 import { addUsers, getUser } from '$lib/stores/userStore';
 import { get, writable } from 'svelte/store';
 import { apiClient } from '$lib/api';
+import PLACEHOLDER from '$lib/assets/cat.jpeg';
 
 type Record = {
 	date: string;
 	value: string;
 	author: string;
+	image: string;
 };
 
 export const filter = (changes: IChange[], name: string) => {
@@ -15,14 +17,16 @@ export const filter = (changes: IChange[], name: string) => {
 };
 
 export const format = (changes: IChange[]): Record[] => {
-	return changes.map(
-		(change) =>
-			({
-				date: formatDate(change.added_at),
-				value: change.value,
-				author: get(getUser)(change.added_by)?.name ?? '(unknown user)'
-			}) as Record
-	);
+	return changes.map((change) => {
+		const user = get(getUser)(change.added_by);
+
+		return {
+			date: formatDate(change.added_at),
+			value: change.value,
+			author: user?.name ?? '(unknown user)',
+			image: user?.picture ?? PLACEHOLDER
+		} as Record;
+	});
 };
 
 export const load = (id: string, propName: string) => {

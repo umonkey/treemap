@@ -1,4 +1,5 @@
-import { type IUser, apiClient } from '$lib/api';
+import { apiClient } from '$lib/api';
+import { type IUser } from '$lib/types';
 import { writable } from 'svelte/store';
 
 export const hooks = () => {
@@ -6,7 +7,6 @@ export const hooks = () => {
 
 	const reload = (id: string) => {
 		apiClient.getTreeActors(id).then(({ status, data }) => {
-			console.debug('ACTORS', status, data?.users);
 			if (status === 200 && data?.users) {
 				actors.set(data.users);
 			} else {
