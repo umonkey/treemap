@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { NarrowPage } from '$lib/ui';
+	import WidePage from '$lib/components/layout/WidePage.svelte';
 	import Tabs from '$lib/components/updates/Tabs.svelte';
 	import InfiniteScroll from '$lib/components/layout/InfiniteScroll.svelte';
 	import { locale } from '$lib/locale';
@@ -9,7 +9,7 @@
 	const { loading, error, tiles, handleLoadMore } = hooks();
 </script>
 
-<NarrowPage title={locale.updatesNewTitle()} nopadding>
+<WidePage title={locale.updatesNewTitle()}>
 	<div class="spacer">
 		<Tabs active="trees" />
 
@@ -20,7 +20,7 @@
 		{:else}
 			<div class="tiles">
 				<InfiniteScroll onLoadMore={handleLoadMore}>
-					{#each $tiles as tile}
+					{#each $tiles as tile (tile.id)}
 						<div class="tile">
 							<a href={tile.link}>
 								<img src={tile.image ?? FALLBACK} alt={tile.species} />
@@ -36,12 +36,12 @@
 			</div>
 		{/if}
 	</div>
-</NarrowPage>
+</WidePage>
 
 <style>
 	.tiles {
 		display: grid;
-		grid-template-columns: repeat(3, 1fr);
+		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 		grid-gap: var(--gap);
 
 		.tile {
