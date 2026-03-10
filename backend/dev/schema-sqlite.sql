@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS trees (
     `state` TEXT NOT NULL DEFAULT "healthy",
     `added_at` INT NOT NULL,
     `updated_at` INT NOT NULL,
+    `updated_by` INT NOT NULL,
     `added_by` INT NOT NULL,
     `thumbnail_id` INT NULL,
     `year` INT NULL,

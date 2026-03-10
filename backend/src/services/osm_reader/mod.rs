@@ -138,6 +138,7 @@ impl OsmReaderService {
             state: DEFAULT_STATE.to_string(),
             added_at: now,
             updated_at: now,
+            updated_by: self.user_id,
             added_by: self.user_id,
             ..Default::default()
         };

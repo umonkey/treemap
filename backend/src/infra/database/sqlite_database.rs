@@ -322,7 +322,7 @@ impl DatabaseInterface for SqliteDatabase {
         let since = get_timestamp() - SUGGEST_WINDOW;
 
         let rows = self.fetch(
-            "SELECT species, COUNT(1) AS use_count FROM trees WHERE added_by = ? AND added_at >= ? AND LOWER(species) <> 'unknown' GROUP BY species ORDER BY use_count DESC LIMIT 10",
+            "SELECT species, COUNT(1) AS use_count FROM trees WHERE updated_by = ? AND updated_at >= ? AND LOWER(species) <> 'unknown' GROUP BY species ORDER BY use_count DESC LIMIT 10",
             &[Value::from(user_id), Value::from(since)],
         ).await?;
 

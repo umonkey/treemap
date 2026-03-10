@@ -355,6 +355,7 @@ mod tests {
             state: "unknown".to_string(),
             added_at: 0,
             updated_at: 0,
+            updated_by: 0,
             added_by: 0,
             thumbnail_id: None,
             year: None,

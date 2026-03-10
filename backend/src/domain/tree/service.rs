@@ -176,6 +176,7 @@ impl TreeService {
             added_at: now,
             added_by: req.user_id,
             updated_at: now,
+            updated_by: req.user_id,
             year: req.year,
             address: old.address.clone(),
             replaces: Some(old.id),
@@ -429,6 +430,7 @@ impl TreeService {
             },
             added_at: old.added_at,
             updated_at: now,
+            updated_by: req.user_id,
             added_by: old.added_by,
             thumbnail_id: old.thumbnail_id,
             year: match req.year {
@@ -618,6 +620,7 @@ impl TreeService {
             added_at: now,
             added_by: req.user_id,
             updated_at: now,
+            updated_by: req.user_id,
             thumbnail_id: None,
             year: req.year,
             address: req.address.clone(),

@@ -155,7 +155,8 @@ impl TreeRepository {
         let query = UpdateQuery::new(TABLE)
             .with_condition("id", Value::from(tree.id as i64))
             .with_values(tree.to_attributes())
-            .with_value("updated_at", Value::from(get_timestamp() as i64));
+            .with_value("updated_at", Value::from(get_timestamp() as i64))
+            .with_value("updated_by", Value::from(user_id as i64));
 
         self.db.update(query).await.map_err(|e| {
             error!("Error updating a tree: {e}");
@@ -171,7 +172,9 @@ impl TreeRepository {
         let query = UpdateQuery::new(TABLE)
             .with_condition("id", Value::from(old_id as i64))
             .with_value("state", Value::from("gone".to_string()))
-            .with_value("replaced_by", Value::from(new_id as i64));
+            .with_value("replaced_by", Value::from(new_id as i64))
+            .with_value("updated_at", Value::from(get_timestamp() as i64))
+            .with_value("updated_by", Value::from(user_id as i64));
 
         self.db.update(query).await.map_err(|e| {
             error!("Error updating a tree: {e}");
@@ -191,6 +194,7 @@ impl TreeRepository {
         let query = UpdateQuery::new(TABLE)
             .with_condition("id", Value::from(tree.id as i64))
             .with_value("updated_at", Value::from(get_timestamp() as i64))
+            .with_value("updated_by", Value::from(user_id as i64))
             .with_value("lat", Value::from(lat))
             .with_value("lon", Value::from(lon));
 
@@ -217,6 +221,7 @@ impl TreeRepository {
         let query = UpdateQuery::new(TABLE)
             .with_condition("id", Value::from(tree_id as i64))
             .with_value("updated_at", Value::from(get_timestamp() as i64))
+            .with_value("updated_by", Value::from(user_id as i64))
             .with_value("thumbnail_id", Value::from(thumbnail_id as i64));
 
         self.db.update(query).await.map_err(|e| {
@@ -231,7 +236,9 @@ impl TreeRepository {
     pub async fn update_osm_id(&self, tree_id: u64, osm_id: u64, user_id: u64) -> Result<()> {
         let query = UpdateQuery::new(TABLE)
             .with_condition("id", Value::from(tree_id as i64))
-            .with_value("osm_id", Value::from(osm_id as i64));
+            .with_value("osm_id", Value::from(osm_id as i64))
+            .with_value("updated_at", Value::from(get_timestamp() as i64))
+            .with_value("updated_by", Value::from(user_id as i64));
 
         self.db.update(query).await.map_err(|e| {
             error!("Error updating a tree: {e}");
