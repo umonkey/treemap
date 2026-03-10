@@ -37,6 +37,10 @@ impl UserService {
         self.users.get_multiple(&ids).await
     }
 
+    pub async fn get_tree_actors(&self, tree_id: u64) -> Result<Vec<User>> {
+        self.users.get_tree_actors(tree_id).await
+    }
+
     async fn get_monthly_active(&self) -> Result<Vec<u64>> {
         let after = get_timestamp() - 86400 * 30;
         let query: &str = "SELECT `added_by`, COUNT(1) AS `cnt` FROM `trees` WHERE `added_at` >= ? ORDER BY `cnt` DESC LIMIT 10";

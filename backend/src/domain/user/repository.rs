@@ -122,6 +122,22 @@ impl UserRepository {
         Ok(())
     }
 
+    pub async fn get_tree_actors(&self, tree_id: u64) -> Result<Vec<User>> {
+        let query = "SELECT DISTINCT * FROM users WHERE id IN (SELECT added_by FROM trees_images WHERE tree_id = ? UNION SELECT added_by FROM trees_props WHERE tree_id = ?) ORDER BY id";
+        let params = &[Value::from(tree_id as i64), Value::from(tree_id as i64)];
+
+        self.query_multiple_sql(query, params).await
+    }
+
+    async fn query_multiple_sql(&self, sql: &str, params: &[Value]) -> Result<Vec<User>> {
+        let records = self.db.sql(sql, params).await?;
+
+        records
+            .iter()
+            .map(|props| User::from_attributes(props).map_err(|_| Error::DatabaseStructure))
+            .collect()
+    }
+
     async fn query_single(&self, query: SelectQuery) -> Result<Option<User>> {
         match self.db.get_record(query).await {
             Ok(Some(props)) => Ok(Some(User::from_attributes(&props)?)),
@@ -147,5 +163,74 @@ impl Locatable for UserRepository {
     fn create(locator: &Locator) -> Result<Self> {
         let db = locator.get::<Database>()?;
         Ok(Self { db })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::domain::prop::PropRecord;
+    use crate::domain::tree_image::TreeImage;
+
+    fn setup() -> Arc<UserRepository> {
+        let locator = Locator::new();
+
+        locator
+            .get::<UserRepository>()
+            .expect("Error creating user repository.")
+    }
+
+    #[tokio::test]
+    async fn test_get_tree_actors() {
+        let repo = setup();
+        let db = repo.db.clone();
+
+        let user1 = User {
+            id: 1,
+            email: "user1@example.com".to_string(),
+            name: "User 1".to_string(),
+            ..Default::default()
+        };
+        repo.add(&user1).await.expect("Failed to add user 1");
+
+        let user2 = User {
+            id: 2,
+            email: "user2@example.com".to_string(),
+            name: "User 2".to_string(),
+            ..Default::default()
+        };
+        repo.add(&user2).await.expect("Failed to add user 2");
+
+        // Add a tree image by user 1
+        let image = TreeImage {
+            id: 1,
+            tree_id: 100,
+            added_by: 1,
+            ..Default::default()
+        };
+        db.add_record(InsertQuery::new("trees_images").with_values(image.to_attributes()))
+            .await
+            .expect("Failed to add image");
+
+        // Add a tree prop by user 2
+        let prop = PropRecord {
+            id: 1,
+            tree_id: 100,
+            added_by: 2,
+            name: "test".to_string(),
+            value: "value".to_string(),
+            ..Default::default()
+        };
+        db.add_record(InsertQuery::new("trees_props").with_values(prop.to_attributes()))
+            .await
+            .expect("Failed to add prop");
+
+        let actors = repo
+            .get_tree_actors(100)
+            .await
+            .expect("Failed to get actors");
+        assert_eq!(actors.len(), 2);
+        assert!(actors.iter().any(|u| u.id == 1));
+        assert!(actors.iter().any(|u| u.id == 2));
     }
 }

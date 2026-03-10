@@ -2,6 +2,7 @@ use super::schemas::AddFileRequest;
 use super::schemas::AddTreePayload;
 use super::schemas::FileUploadResponse;
 use super::schemas::*;
+use crate::actions::user::UserList;
 use crate::domain::tree::NewTreeDefaultsResponse;
 use crate::domain::tree::ReplaceTreeRequest;
 use crate::domain::tree::{AddTreeRequest, GetTreesRequest, TreeStats, UpdateTreeRequest};
@@ -448,6 +449,15 @@ pub async fn update_tree_thumbnail_action(
         .finish())
 }
 
+#[get("/{id:\\d+}/actors")]
+pub async fn get_tree_actors_action(
+    state: Data<AppState>,
+    path: Path<PathInfo>,
+) -> Result<Json<UserList>> {
+    let users = state.users.get_tree_actors(path.id).await?;
+    Ok(Json(UserList::from(users)))
+}
+
 // Configure the router.
 pub fn tree_router(cfg: &mut ServiceConfig) {
     cfg.service(add_comment_action)
@@ -456,6 +466,7 @@ pub fn tree_router(cfg: &mut ServiceConfig) {
         .service(add_trees_action)
         .service(get_new_trees_action)
         .service(get_tree_action)
+        .service(get_tree_actors_action)
         .service(get_tree_comments_action)
         .service(get_tree_defaults_action)
         .service(get_tree_history_action)

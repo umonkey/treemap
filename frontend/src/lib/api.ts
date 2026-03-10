@@ -547,6 +547,10 @@ export class ApiClient {
 		return await this.request('GET', `v1/trees/${id}/comments`);
 	}
 
+	public async getTreeActors(id: string): Promise<IResponse<IUserList>> {
+		return await this.request('GET', `v1/trees/${id}/actors`);
+	}
+
 	public async getTreeHistory(id: string): Promise<IResponse<IChangeList>> {
 		return await this.request('GET', `v1/trees/${id}/history`);
 	}
