@@ -29,8 +29,15 @@ export default defineConfig(({ mode }) => {
 	return {
 		plugins,
 
+		optimizeDeps: {
+			esbuildOptions: {
+				target: 'es2022',
+			},
+		},
+
 		build: {
-			sourcemap: true
+			sourcemap: true,
+			target: 'es2022',
 		},
 
 		test: {
