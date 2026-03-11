@@ -4,8 +4,8 @@
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import { MAPTILER_KEY } from '$lib/env';
 	import type { ILatLng } from '$lib/types';
-	import type { Snippet } from 'svelte';
-	import { markers, handleMoveEnd } from './MapLibre';
+	import { onMount, type Snippet } from 'svelte';
+	import { markers, handleMoveEnd, handleMount } from './MapLibre';
 
 	const {
 		center,
@@ -20,10 +20,20 @@
 	}>();
 
 	let bounds: LngLatBounds | undefined = $state();
+
+	onMount(handleMount);
 </script>
 
 <div class="map-container">
-	<MapLibre {style} {center} {zoom} class="map" bind:bounds={bounds} onmoveend={() => handleMoveEnd(bounds)} standardControls>
+	<MapLibre
+		{style}
+		{center}
+		{zoom}
+		class="map"
+		bind:bounds
+		onmoveend={() => handleMoveEnd(bounds)}
+		standardControls
+	>
 		{#if children}
 			{@render children()}
 		{/if}
@@ -32,22 +42,36 @@
 			<GeoJSON data={$markers}>
 				<CircleLayer
 					id="tree-canopies"
-					filter={["!", ["in", ["get", "state"], ["literal", ["stump", "gone"]]]]}
+					filter={['!', ['in', ['get', 'state'], ['literal', ['stump', 'gone']]]]}
 					paint={{
-						"circle-color": [
-							"match",
-							["get", "state"],
-							"stump", "#000000",
-							"gone", "#000000",
-							"unknown", "#ffd700",
-							"dead", "#8b4513",
-							"#228b22", // default
+						'circle-color': [
+							'match',
+							['get', 'state'],
+							'stump',
+							'#000000',
+							'gone',
+							'#000000',
+							'unknown',
+							'#ffd700',
+							'dead',
+							'#8b4513',
+							'#228b22' // default
 						],
-						"circle-opacity": 0.5,
-						"circle-radius": 20,
+						'circle-opacity': 0.5,
+						'circle-radius': [
+							'interpolate',
+							['exponential', 2],
+							['zoom'],
+							15,
+							['*', ['get', 'crown'], 0.35],
+							20,
+							['*', ['get', 'crown'], 11.35]
+						],
+						'circle-pitch-alignment': 'map'
 					}}
 				/>
 
+				<!--
 				<CircleLayer
 					id="tree-trunks"
 					paint={{
@@ -56,6 +80,7 @@
 						"circle-radius": 5,
 					}}
 				/>
+				-->
 			</GeoJSON>
 		{/if}
 	</MapLibre>
