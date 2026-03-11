@@ -1,5 +1,7 @@
 # MapLibre Switch-Over
 
 - [ ] Get a working MapTiler key
-- [ ] Create a new Map component
-- [ ] Make the component display trees
+- [x] Create a new Map component
+- [x] Make the component display trees
+- [ ] Remember map position
+- [x] Use tree cache

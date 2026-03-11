@@ -31,13 +31,13 @@ export default defineConfig(({ mode }) => {
 
 		optimizeDeps: {
 			esbuildOptions: {
-				target: 'es2022',
-			},
+				target: 'es2022'
+			}
 		},
 
 		build: {
 			sourcemap: true,
-			target: 'es2022',
+			target: 'es2022'
 		},
 
 		test: {
