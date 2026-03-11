@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { MapLibre, CircleLayer, GeoJSON } from 'svelte-maplibre';
+	import { MapLibre, FillLayer, GeoJSON } from 'svelte-maplibre';
 	import type { LngLatBounds } from 'maplibre-gl';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import { MAPTILER_KEY } from '$lib/env';
@@ -7,10 +7,12 @@
 	import { onMount, type Snippet } from 'svelte';
 	import { markers, handleMoveEnd, handleMount } from './MapLibre';
 
+	// style = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${MAPTILER_KEY}`,
+
 	const {
 		center,
 		zoom = 13,
-		style = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${MAPTILER_KEY}`,
+		style = "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
 		children = undefined
 	} = $props<{
 		center: ILatLng;
@@ -40,11 +42,11 @@
 
 		{#if $markers}
 			<GeoJSON data={$markers}>
-				<CircleLayer
+				<FillLayer
 					id="tree-canopies"
-					filter={['!', ['in', ['get', 'state'], ['literal', ['stump', 'gone']]]]}
+					filter={["==", ["get", "type"], "canopy"]}
 					paint={{
-						'circle-color': [
+						"fill-color": [
 							'match',
 							['get', 'state'],
 							'stump',
@@ -57,30 +59,18 @@
 							'#8b4513',
 							'#228b22' // default
 						],
-						'circle-opacity': 0.5,
-						'circle-radius': [
-							'interpolate',
-							['exponential', 2],
-							['zoom'],
-							10,
-							['*', ['get', 'crown'], 0.008564],
-							20,
-							['*', ['get', 'crown'], 8.77]
-						],
-						'circle-pitch-alignment': 'map'
+						"fill-opacity": 0.5,
 					}}
 				/>
 
-				<!--
-				<CircleLayer
+				<FillLayer
 					id="tree-trunks"
+					filter={["==", ["get", "type"], "trunk"]}
 					paint={{
-						"circle-color": "#000000",
-						"circle-opacity": 0.5,
-						"circle-radius": 5,
+						"fill-color": "#000000",
+						"fill-opacity": 0.5,
 					}}
 				/>
-				-->
 			</GeoJSON>
 		{/if}
 	</MapLibre>
