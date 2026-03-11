@@ -62,10 +62,10 @@
 							'interpolate',
 							['exponential', 2],
 							['zoom'],
-							15,
-							['*', ['get', 'crown'], 0.35],
+							10,
+							['*', ['get', 'crown'], 0.008564],
 							20,
-							['*', ['get', 'crown'], 11.35]
+							['*', ['get', 'crown'], 8.77]
 						],
 						'circle-pitch-alignment': 'map'
 					}}
