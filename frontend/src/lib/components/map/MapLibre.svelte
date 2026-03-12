@@ -2,11 +2,11 @@
 	import { MapLibre, FillLayer, GeoJSON } from 'svelte-maplibre';
 	import type { LngLatBounds } from 'maplibre-gl';
 	import 'maplibre-gl/dist/maplibre-gl.css';
-	import { MAPTILER_KEY } from '$lib/env';
 	import type { ILatLng } from '$lib/types';
 	import { onMount, type Snippet } from 'svelte';
-	import { markers, handleMoveStart, handleMoveEnd, handleClick, handleMount } from './MapLibre';
+	import { mapState } from './MapLibre.svelte.ts';
 
+	// import { MAPTILER_KEY } from '$lib/env';
 	// style = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${MAPTILER_KEY}`,
 
 	const {
@@ -23,7 +23,7 @@
 
 	let bounds: LngLatBounds | undefined = $state();
 
-	onMount(handleMount);
+	onMount(mapState.handleMount);
 </script>
 
 <div class="map-container">
@@ -33,16 +33,16 @@
 		{zoom}
 		class="map"
 		bind:bounds
-		onmovestart={() => handleMoveStart()}
-		onmoveend={() => handleMoveEnd(bounds)}
+		onmovestart={() => mapState.handleMoveStart()}
+		onmoveend={() => mapState.handleMoveEnd(bounds)}
 		standardControls
 	>
 		{#if children}
 			{@render children()}
 		{/if}
 
-		{#if $markers}
-			<GeoJSON data={$markers}>
+		{#if mapState.markers}
+			<GeoJSON data={mapState.markers}>
 				<FillLayer
 					id="tree-canopies"
 					filter={['==', ['get', 'type'], 'canopy']}
@@ -62,7 +62,7 @@
 						],
 						'fill-opacity': 0.5
 					}}
-					onclick={handleClick}
+					onclick={mapState.handleClick}
 				/>
 
 				<FillLayer
