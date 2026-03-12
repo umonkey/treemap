@@ -26,6 +26,9 @@ type Collection = {
 
 export const markers = writable<Collection | undefined>(undefined);
 
+// Fetch debounce timer.
+let fetchTimeout: ReturnType<typeof setTimeout>;
+
 const fixCrown = (tree: ITree): number => {
 	if (tree.state === 'gone' || tree.state === 'stump') {
 		return 1.0;
@@ -47,17 +50,27 @@ const updateGeoJSON = (trees: ITree[]) => {
 	console.debug(`Updated GeoJSON with ${items.length} features.`);
 };
 
-export const handleMoveEnd = (bounds: LngLatBounds) => {
-	updateGeoJSON(Object.values(get(treeStore)));
+const reloadTrees = (n: number, e: number, s: number, w: number) => {
+	clearTimeout(fetchTimeout);
 
-	apiClient
-		.getMarkers(bounds.getNorth(), bounds.getEast(), bounds.getSouth(), bounds.getNorth())
-		.then(({ status, data }) => {
-			if (status === 200 && data) {
-				console.debug(`Received ${data.trees.length} trees.`);
-				addTrees(data.trees);
-			}
-		});
+	fetchTimeout = setTimeout(() => {
+		apiClient
+			.getMarkers(n, e, s, w)
+			.then(({ status, data }) => {
+				if (status === 200 && data) {
+					console.debug(`Received ${data.trees.length} trees.`);
+					addTrees(data.trees);
+				}
+			});
+	}, 1000);
+}
+
+export const handleMoveEnd = (bounds: LngLatBounds) => {
+	reloadTrees(bounds.getNorth(), bounds.getEast(), bounds.getSouth(), bounds.getWest());
+};
+
+export const handleMoveStart = () => {
+	clearTimeout(fetchTimeout);
 };
 
 const formatGeoJSON = (trees: ITree[]): Collection => {
