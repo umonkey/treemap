@@ -2,6 +2,8 @@ import type { LngLatBounds } from 'maplibre-gl';
 import { apiClient } from '$lib/api';
 import { type ITree } from '$lib/types';
 import { treeStore, addTrees } from '$lib/stores/treeStore';
+import { mapStore } from '$lib/stores/mapStore';
+import { get } from 'svelte/store';
 import circle from '@turf/circle';
 
 type Properties = {
@@ -25,8 +27,13 @@ type Collection = {
 
 class MapLibre {
 	markers = $state<Collection | undefined>(undefined);
+	zoom = $state<number>(13);
 
 	fetchTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
+
+	public constructor() {
+		this.zoom = get(mapStore)?.zoom ?? 13;
+	}
 
 	private fixCrown(tree: ITree): number {
 		if (tree.state === 'gone' || tree.state === 'stump') {
