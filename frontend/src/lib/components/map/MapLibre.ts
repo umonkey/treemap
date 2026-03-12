@@ -54,16 +54,14 @@ const reloadTrees = (n: number, e: number, s: number, w: number) => {
 	clearTimeout(fetchTimeout);
 
 	fetchTimeout = setTimeout(() => {
-		apiClient
-			.getMarkers(n, e, s, w)
-			.then(({ status, data }) => {
-				if (status === 200 && data) {
-					console.debug(`Received ${data.trees.length} trees.`);
-					addTrees(data.trees);
-				}
-			});
+		apiClient.getMarkers(n, e, s, w).then(({ status, data }) => {
+			if (status === 200 && data) {
+				console.debug(`Received ${data.trees.length} trees.`);
+				addTrees(data.trees);
+			}
+		});
 	}, 1000);
-}
+};
 
 export const handleMoveEnd = (bounds: LngLatBounds) => {
 	reloadTrees(bounds.getNorth(), bounds.getEast(), bounds.getSouth(), bounds.getWest());
@@ -77,11 +75,7 @@ const formatGeoJSON = (trees: ITree[]): Collection => {
 	const features = trees.flatMap((tree) => {
 		const features = [];
 
-		const canopy = circle(
-			[tree.lon, tree.lat],
-			fixCrown(tree) / 2,
-			{ units: "meters", steps: 16 },
-		);
+		const canopy = circle([tree.lon, tree.lat], fixCrown(tree) / 2, { units: 'meters', steps: 16 });
 
 		features.push({
 			type: 'Feature',
@@ -89,16 +83,15 @@ const formatGeoJSON = (trees: ITree[]): Collection => {
 			geometry: canopy.geometry,
 			properties: {
 				id: tree.id,
-				type: "canopy",
-				state: tree.state,
+				type: 'canopy',
+				state: tree.state
 			}
 		});
 
-		const trunk = circle(
-			[tree.lon, tree.lat],
-			fixTrunk(tree.circumference ?? 0) / 2,
-			{ units: "meters", steps: 16 },
-		);
+		const trunk = circle([tree.lon, tree.lat], fixTrunk(tree.circumference ?? 0) / 2, {
+			units: 'meters',
+			steps: 16
+		});
 
 		features.push({
 			type: 'Feature',
@@ -106,8 +99,8 @@ const formatGeoJSON = (trees: ITree[]): Collection => {
 			geometry: trunk.geometry,
 			properties: {
 				id: tree.id,
-				type: "trunk",
-				state: tree.state,
+				type: 'trunk',
+				state: tree.state
 			}
 		});
 
@@ -130,3 +123,12 @@ export const handleMount = () => {
 		unsunscribe();
 	};
 };
+
+export const handleClick = (e: Event) => {
+	if (!e.features || e.features.length === 0) {
+		return;
+	}
+
+	const treeId = e.features[0].properties.id;
+	console.debug(`Tree ${treeId} clicked.`);
+}

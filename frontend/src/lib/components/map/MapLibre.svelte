@@ -5,14 +5,14 @@
 	import { MAPTILER_KEY } from '$lib/env';
 	import type { ILatLng } from '$lib/types';
 	import { onMount, type Snippet } from 'svelte';
-	import { markers, handleMoveStart, handleMoveEnd, handleMount } from './MapLibre';
+	import { markers, handleMoveStart, handleMoveEnd, handleClick, handleMount } from './MapLibre';
 
 	// style = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${MAPTILER_KEY}`,
 
 	const {
 		center,
 		zoom = 13,
-		style = "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
+		style = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
 		children = undefined
 	} = $props<{
 		center: ILatLng;
@@ -45,9 +45,9 @@
 			<GeoJSON data={$markers}>
 				<FillLayer
 					id="tree-canopies"
-					filter={["==", ["get", "type"], "canopy"]}
+					filter={['==', ['get', 'type'], 'canopy']}
 					paint={{
-						"fill-color": [
+						'fill-color': [
 							'match',
 							['get', 'state'],
 							'stump',
@@ -60,16 +60,17 @@
 							'#8b4513',
 							'#228b22' // default
 						],
-						"fill-opacity": 0.5,
+						'fill-opacity': 0.5
 					}}
+					onclick={handleClick}
 				/>
 
 				<FillLayer
 					id="tree-trunks"
-					filter={["==", ["get", "type"], "trunk"]}
+					filter={['==', ['get', 'type'], 'trunk']}
 					paint={{
-						"fill-color": "#000000",
-						"fill-opacity": 0.5,
+						'fill-color': '#000000',
+						'fill-opacity': 0.5
 					}}
 				/>
 			</GeoJSON>
