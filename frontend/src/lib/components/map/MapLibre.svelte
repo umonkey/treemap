@@ -11,12 +11,10 @@
 
 	const {
 		center,
-		zoom = 13,
 		style = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
 		children = undefined
 	} = $props<{
 		center: ILatLng;
-		zoom?: number;
 		style?: string;
 		children?: Snippet;
 	}>();
@@ -30,7 +28,7 @@
 	<MapLibre
 		{style}
 		{center}
-		{zoom}
+		zoom={mapState.zoom}
 		class="map"
 		bind:bounds
 		onmovestart={() => mapState.handleMoveStart()}
