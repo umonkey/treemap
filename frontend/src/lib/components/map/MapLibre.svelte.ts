@@ -1,28 +1,29 @@
-import { apiClient } from '$lib/api';
-import { mapStore } from '$lib/stores/mapStore';
-import type { LngLatBounds } from 'maplibre-gl';
-import { get } from 'svelte/store';
+import { apiClient } from "$lib/api";
+import { mapStore } from "$lib/stores/mapStore";
+import type { LngLatBounds } from "maplibre-gl";
+import { get } from "svelte/store";
 
 type Properties = {
 	id: string;
 	state: string;
 	type: string;
+	crown: number;
 };
 
 type Feature = {
-	type: 'Feature';
+	type: "Feature";
 	id: string;
-	geometry: any;
+	geometry: object;
 	properties: Properties;
 };
 
 type Collection = {
-	type: 'FeatureCollection';
+	type: "FeatureCollection";
 	features: Feature[];
 };
 
 class MapLibre {
-	markers = $state<Collection | undefined>(undefined);
+	markers = $state.raw<Collection | undefined>(undefined);
 	zoom = $state<number>(13);
 
 	fetchTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
@@ -52,7 +53,12 @@ class MapLibre {
 	};
 
 	public handleMoveEnd = (bounds: LngLatBounds) => {
-		this.reloadTrees(bounds.getNorth(), bounds.getEast(), bounds.getSouth(), bounds.getWest());
+		this.reloadTrees(
+			bounds.getNorth(),
+			bounds.getEast(),
+			bounds.getSouth(),
+			bounds.getWest(),
+		);
 		this.updateStore(bounds);
 	};
 
@@ -60,7 +66,7 @@ class MapLibre {
 		clearTimeout(this.fetchTimeout);
 	};
 
-	public handleClick = (e: any) => {
+	public handleClick = (e: { features?: { properties: Properties }[] }) => {
 		if (!e.features || e.features.length === 0) {
 			return;
 		}
@@ -73,12 +79,13 @@ class MapLibre {
 		clearTimeout(this.fetchTimeout);
 
 		this.fetchTimeout = setTimeout(() => {
-			console.debug('Requesting markers...');
+			console.debug("Requesting markers...");
 
 			apiClient.getGeoJSON(n, e, s, w).then(({ status, data }) => {
 				if (status === 200 && data) {
-					console.debug(`Received ${data.features.length} features.`);
-					this.markers = data.features;
+					const collection = data as unknown as Collection;
+					console.debug(`Received ${collection.features.length} features.`);
+					this.markers = collection;
 				}
 			});
 		}, 1000);

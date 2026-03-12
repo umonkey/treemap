@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { LngLatBounds } from 'maplibre-gl';
-	import { FillLayer, GeoJSON, MapLibre } from 'svelte-maplibre';
+	import { CircleLayer, GeoJSON, MapLibre } from 'svelte-maplibre';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import type { ILatLng } from '$lib/types';
 	import { type Snippet } from 'svelte';
@@ -40,35 +40,24 @@
 
 		{#if mapState.markers}
 			<GeoJSON data={mapState.markers}>
-				<FillLayer
-					id="tree-canopies"
-					filter={['==', ['get', 'type'], 'canopy']}
+				<CircleLayer
+					id="tree-crowns"
 					paint={{
-						'fill-color': [
-							'match',
-							['get', 'state'],
-							'stump',
-							'#000000',
-							'gone',
-							'#000000',
-							'unknown',
-							'#ffd700',
-							'dead',
-							'#8b4513',
-							'#228b22' // default
+						'circle-color': '#228b22',
+						'circle-radius': [
+							'interpolate',
+							['exponential', 2],
+							['zoom'],
+							10,
+							['*', ['get', 'crown'], 0.00428],
+							22,
+							['*', ['get', 'crown'], 17.534]
 						],
-						'fill-opacity': 0.5
+						'circle-opacity': 0.5,
+						'circle-pitch-alignment': 'map',
+						'circle-pitch-scale': 'map'
 					}}
 					onclick={mapState.handleClick}
-				/>
-
-				<FillLayer
-					id="tree-trunks"
-					filter={['==', ['get', 'type'], 'trunk']}
-					paint={{
-						'fill-color': '#000000',
-						'fill-opacity': 0.5
-					}}
 				/>
 			</GeoJSON>
 		{/if}
