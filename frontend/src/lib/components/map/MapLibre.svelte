@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { MapLibre, FillLayer, GeoJSON } from 'svelte-maplibre';
 	import type { LngLatBounds } from 'maplibre-gl';
+	import { FillLayer, GeoJSON, MapLibre } from 'svelte-maplibre';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import type { ILatLng } from '$lib/types';
-	import { onMount, type Snippet } from 'svelte';
+	import { type Snippet, onMount } from 'svelte';
 	import { mapState } from './MapLibre.svelte.ts';
 
 	// import { MAPTILER_KEY } from '$lib/env';
@@ -28,11 +28,12 @@
 	<MapLibre
 		{style}
 		{center}
-		zoom={mapState.zoom}
+		bind:zoom={mapState.zoom}
 		class="map"
 		bind:bounds
 		onmovestart={() => mapState.handleMoveStart()}
-		onmoveend={() => mapState.handleMoveEnd(bounds)}
+		onmoveend={() => bounds && mapState.handleMoveEnd(bounds)}
+		onzoom={() => mapState.handleZoom()}
 		standardControls
 	>
 		{#if children}
