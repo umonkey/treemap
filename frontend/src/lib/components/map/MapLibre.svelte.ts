@@ -1,27 +1,26 @@
-import type { LngLatBounds } from 'maplibre-gl';
 import { apiClient } from '$lib/api';
-import { type ITree } from '$lib/types';
-import { treeStore, addTrees } from '$lib/stores/treeStore';
 import { mapStore } from '$lib/stores/mapStore';
-import { get } from 'svelte/store';
+import { addTrees, treeStore } from '$lib/stores/treeStore';
+import { type ITree } from '$lib/types';
 import circle from '@turf/circle';
+import type { LngLatBounds } from 'maplibre-gl';
+import { get } from 'svelte/store';
 
 type Properties = {
 	id: string;
 	state: string;
-	crown: number;
-	trunk: number;
+	type: string;
 };
 
 type Feature = {
-	type: string;
+	type: 'Feature';
 	id: string;
 	geometry: any;
 	properties: Properties;
 };
 
 type Collection = {
-	type: string;
+	type: 'FeatureCollection';
 	features: Feature[];
 };
 
@@ -30,9 +29,33 @@ class MapLibre {
 	zoom = $state<number>(13);
 
 	fetchTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
+	storeTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
 
 	public constructor() {
 		this.zoom = get(mapStore)?.zoom ?? 13;
+	}
+
+	private updateStore(bounds?: LngLatBounds) {
+		clearTimeout(this.storeTimeout);
+		this.storeTimeout = setTimeout(() => {
+			mapStore.update((s) => {
+				const newState = { ...s, zoom: this.zoom };
+				if (bounds) {
+					const center = bounds.getCenter();
+					newState.center = { lat: center.lat, lng: center.lng };
+				}
+				return newState;
+			});
+		}, 500);
+	}
+
+	public handleZoom() {
+		this.updateStore();
+	}
+
+	public handleMoveEnd(bounds: LngLatBounds) {
+		this.reloadTrees(bounds.getNorth(), bounds.getEast(), bounds.getSouth(), bounds.getWest());
+		this.updateStore(bounds);
 	}
 
 	private fixCrown(tree: ITree): number {
@@ -68,10 +91,6 @@ class MapLibre {
 		}, 1000);
 	}
 
-	public handleMoveEnd(bounds: LngLatBounds) {
-		this.reloadTrees(bounds.getNorth(), bounds.getEast(), bounds.getSouth(), bounds.getWest());
-	}
-
 	public handleMoveStart() {
 		clearTimeout(this.fetchTimeout);
 	}
@@ -94,7 +113,7 @@ class MapLibre {
 					type: 'canopy',
 					state: tree.state
 				}
-			});
+			} as Feature);
 
 			const trunk = circle([tree.lon, tree.lat], this.fixTrunk(tree.circumference ?? 0) / 2, {
 				units: 'meters',
@@ -110,7 +129,7 @@ class MapLibre {
 					type: 'trunk',
 					state: tree.state
 				}
-			});
+			} as Feature);
 
 			return features;
 		});
@@ -132,7 +151,7 @@ class MapLibre {
 		};
 	}
 
-	public handleClick(e: Event) {
+	public handleClick(e: any) {
 		if (!e.features || e.features.length === 0) {
 			return;
 		}
