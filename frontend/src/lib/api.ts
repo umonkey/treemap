@@ -675,7 +675,8 @@ export class ApiClient {
 
 			const response = await fetch(request);
 			const duration = Math.round(performance.now() - start);
-			console.log(`[api] Sent ${method} to /${path} in ${duration} ms, status=${response.status}`);
+
+			// console.log(`[api] Sent ${method} to /${path} in ${duration} ms, status=${response.status}`);
 
 			if (response.status === 202) {
 				return {
