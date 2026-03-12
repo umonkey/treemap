@@ -8,7 +8,11 @@ pub fn respond_with_trees(trees: &[Tree]) -> HttpResponse {
     let features: Vec<_> = trees
         .iter()
         .map(|tree| {
-            let crown = tree.diameter.filter(|&d| d > 0.0).unwrap_or(4.0);
+            let crown = if tree.is_existing() {
+                tree.diameter.filter(|&d| d > 0.0).unwrap_or(4.0)
+            } else {
+                1.0
+            };
             let trunk = tree
                 .circumference
                 .filter(|&c| c > 0.0)
