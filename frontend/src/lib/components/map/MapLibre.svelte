@@ -1,25 +1,25 @@
 <script lang="ts">
-	import type { LngLatBounds } from 'maplibre-gl';
-	import { CircleLayer, GeoJSON, MapLibre } from 'svelte-maplibre';
-	import 'maplibre-gl/dist/maplibre-gl.css';
-	import type { ILatLng } from '$lib/types';
-	import { type Snippet } from 'svelte';
-	import { mapState } from './MapLibre.svelte.ts';
+import type { LngLatBounds } from "maplibre-gl";
+import { CircleLayer, GeoJSON, MapLibre } from "svelte-maplibre";
+import "maplibre-gl/dist/maplibre-gl.css";
+import type { ILatLng } from "$lib/types";
+import { type Snippet } from "svelte";
+import { mapState } from "./MapLibre.svelte.ts";
 
-	// import { MAPTILER_KEY } from '$lib/env';
-	// style = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${MAPTILER_KEY}`,
+// import { MAPTILER_KEY } from '$lib/env';
+// style = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${MAPTILER_KEY}`,
 
-	const {
-		center,
-		style = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
-		children = undefined
-	} = $props<{
-		center: ILatLng;
-		style?: string;
-		children?: Snippet;
-	}>();
+const {
+	center,
+	style = "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
+	children = undefined,
+} = $props<{
+	center: ILatLng;
+	style?: string;
+	children?: Snippet;
+}>();
 
-	let bounds: LngLatBounds | undefined = $state();
+let bounds: LngLatBounds | undefined = $state();
 </script>
 
 <div class="map-container">
@@ -68,6 +68,25 @@
 						'circle-pitch-scale': 'map'
 					}}
 					onclick={mapState.handleClick}
+				/>
+
+				<CircleLayer
+					id="tree-trunks"
+					paint={{
+						'circle-color': '#000000',
+						'circle-radius': [
+							'interpolate',
+							['exponential', 2],
+							['zoom'],
+							10,
+							['*', ['get', 'trunk'], 0.00428],
+							22,
+							['*', ['get', 'trunk'], 17.534]
+						],
+						'circle-opacity': 0.8,
+						'circle-pitch-alignment': 'map',
+						'circle-pitch-scale': 'map'
+					}}
 				/>
 			</GeoJSON>
 		{/if}
