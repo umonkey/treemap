@@ -5,3 +5,4 @@
 - [x] Make the component display trees
 - [ ] Remember map position
 - [x] Use tree cache
+- [x] Debounce data loads.

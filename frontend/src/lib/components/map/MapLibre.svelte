@@ -5,7 +5,7 @@
 	import { MAPTILER_KEY } from '$lib/env';
 	import type { ILatLng } from '$lib/types';
 	import { onMount, type Snippet } from 'svelte';
-	import { markers, handleMoveEnd, handleMount } from './MapLibre';
+	import { markers, handleMoveStart, handleMoveEnd, handleMount } from './MapLibre';
 
 	// style = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${MAPTILER_KEY}`,
 
@@ -33,6 +33,7 @@
 		{zoom}
 		class="map"
 		bind:bounds
+		onmovestart={() => handleMoveStart()}
 		onmoveend={() => handleMoveEnd(bounds)}
 		standardControls
 	>
