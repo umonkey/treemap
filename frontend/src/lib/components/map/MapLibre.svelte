@@ -3,7 +3,7 @@
 	import { FillLayer, GeoJSON, MapLibre } from 'svelte-maplibre';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import type { ILatLng } from '$lib/types';
-	import { type Snippet, onMount } from 'svelte';
+	import { type Snippet } from 'svelte';
 	import { mapState } from './MapLibre.svelte.ts';
 
 	// import { MAPTILER_KEY } from '$lib/env';
@@ -20,8 +20,6 @@
 	}>();
 
 	let bounds: LngLatBounds | undefined = $state();
-
-	onMount(mapState.handleMount);
 </script>
 
 <div class="map-container">

@@ -240,6 +240,27 @@ export class ApiClient {
 		return res;
 	}
 
+	public async getGeoJSON(
+		n: number,
+		e: number,
+		s: number,
+		w: number,
+		search?: string | null
+	): Promise<IResponse<IMarkers>> {
+		const params = new URLSearchParams({
+			n: n.toString(),
+			e: e.toString(),
+			s: s.toString(),
+			w: w.toString()
+		});
+
+		if (search) {
+			params.set('search', search);
+		}
+
+		return await this.request<IMarkers>('GET', `v1/trees/geo.json?${params.toString()}`);
+	}
+
 	public async addTree(props: IAddTreesRequest): Promise<IResponse<ITreeList>> {
 		return await this.request('POST', 'v1/trees', {
 			body: JSON.stringify(props),
