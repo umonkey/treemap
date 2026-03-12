@@ -49,14 +49,37 @@ class MapLibre {
 		}, 500);
 	}
 
-	public handleZoom() {
+	public handleZoom = () => {
 		this.updateStore();
-	}
+	};
 
-	public handleMoveEnd(bounds: LngLatBounds) {
+	public handleMoveEnd = (bounds: LngLatBounds) => {
 		this.reloadTrees(bounds.getNorth(), bounds.getEast(), bounds.getSouth(), bounds.getWest());
 		this.updateStore(bounds);
-	}
+	};
+
+	public handleMoveStart = () => {
+		clearTimeout(this.fetchTimeout);
+	};
+
+	public handleMount = () => {
+		const unsunscribe = treeStore.subscribe((trees) => {
+			this.updateGeoJSON(Object.values(trees));
+		});
+
+		return () => {
+			unsunscribe();
+		};
+	};
+
+	public handleClick = (e: any) => {
+		if (!e.features || e.features.length === 0) {
+			return;
+		}
+
+		const treeId = e.features[0].properties.id;
+		console.debug(`Tree ${treeId} clicked.`);
+	};
 
 	private fixCrown(tree: ITree): number {
 		if (tree.state === 'gone' || tree.state === 'stump') {
@@ -89,10 +112,6 @@ class MapLibre {
 				}
 			});
 		}, 1000);
-	}
-
-	public handleMoveStart() {
-		clearTimeout(this.fetchTimeout);
 	}
 
 	private formatGeoJSON(trees: ITree[]): Collection {
@@ -138,26 +157,6 @@ class MapLibre {
 			type: 'FeatureCollection',
 			features: features
 		};
-	}
-
-	// Listen for tree cache updates, update markers.
-	public handleMount() {
-		const unsunscribe = treeStore.subscribe((trees) => {
-			this.updateGeoJSON(Object.values(trees));
-		});
-
-		return () => {
-			unsunscribe();
-		};
-	}
-
-	public handleClick(e: any) {
-		if (!e.features || e.features.length === 0) {
-			return;
-		}
-
-		const treeId = e.features[0].properties.id;
-		console.debug(`Tree ${treeId} clicked.`);
 	}
 }
 
