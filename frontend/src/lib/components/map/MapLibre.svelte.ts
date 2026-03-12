@@ -53,12 +53,15 @@ class MapLibre {
 	};
 
 	public handleMoveEnd = (bounds: LngLatBounds) => {
-		this.reloadTrees(
-			bounds.getNorth(),
-			bounds.getEast(),
-			bounds.getSouth(),
-			bounds.getWest(),
-		);
+		const n = bounds.getNorth();
+		const s = bounds.getSouth();
+		const e = bounds.getEast();
+		const w = bounds.getWest();
+
+		const dLat = n - s;
+		const dLon = e - w;
+
+		this.reloadTrees(n + dLat / 2, e + dLon / 2, s - dLat / 2, w - dLon / 2);
 		this.updateStore(bounds);
 	};
 
