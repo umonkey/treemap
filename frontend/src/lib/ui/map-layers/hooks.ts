@@ -84,7 +84,7 @@ export const hooks = (mount: MountFn) => {
 			attribution: '&copy; <a href="https://myga.am/">Kanach Yerevan</a>',
 			maxZoom: 25,
 			maxNativeZoom: 21,
-			minZoom: 15,
+			minZoom: 2,
 			tms: true,
 			opacity: 0.9
 		});
