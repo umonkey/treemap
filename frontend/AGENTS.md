@@ -25,6 +25,11 @@ This directory contains the static frontend for the tree mapping application.
 - Note: Some existing components might still use legacy Svelte syntax (e.g., `export let`); update them to Runes when possible.
 - After changing code, run `npm run check` and `npm run lint`.
 
+## Code Formatting
+
+- Use single quotes when possible.
+- Try to maintain the existing formatting style, avoid re-formatting the code unless explicitly asked to.
+
 ## Useful commands
 
 - `npm run dev`: start the development server.
