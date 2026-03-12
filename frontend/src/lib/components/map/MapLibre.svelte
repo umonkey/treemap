@@ -32,6 +32,7 @@ let bounds: LngLatBounds | undefined = $state();
 		onmovestart={() => mapState.handleMoveStart()}
 		onmoveend={() => bounds && mapState.handleMoveEnd(bounds)}
 		onzoom={() => mapState.handleZoom()}
+		onload={(map) => mapState.handleMoveEnd(map.getBounds())}
 		standardControls
 	>
 		{#if children}
