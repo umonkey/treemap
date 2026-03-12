@@ -3,6 +3,7 @@ mod cli;
 mod domain;
 mod handlers;
 mod infra;
+mod responders;
 mod services;
 mod types;
 mod utils;
