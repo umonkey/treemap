@@ -54,7 +54,7 @@ describe('CircumferenceForm', async () => {
 		await user.type(input, '234');
 
 		const confirm = await screen.findByRole('button', {
-			name: /save changes/i
+			name: /submit changes/i
 		});
 
 		await user.click(confirm);

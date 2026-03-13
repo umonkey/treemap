@@ -1,7 +1,7 @@
 <script module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import { AddRowForm } from '$lib/ui';
 	import { fn } from '@storybook/test';
+	import AddRowForm from './AddRowForm.svelte';
 
 	// More on how to set up stories at: https://storybook.js.org/docs/writing-stories
 	const { Story } = defineMeta({

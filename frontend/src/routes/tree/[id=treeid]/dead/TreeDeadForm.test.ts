@@ -1,12 +1,12 @@
-import TreeDeadForm from './TreeDeadForm.svelte';
-import type { IResponse, ISingleTree, ITree } from '$lib/types';
-import userEvent from '@testing-library/user-event';
-import { DEFAULT_TREE } from '$lib/constants';
-import { afterEach, describe, expect, test, vi } from 'vitest';
-import { apiClient } from '$lib/api';
-import { cleanup, render, screen } from '@testing-library/svelte';
 import { goto } from '$app/navigation';
+import { apiClient } from '$lib/api';
+import { DEFAULT_TREE } from '$lib/constants';
 import { authStore } from '$lib/stores/authStore';
+import type { IResponse, ISingleTree, ITree } from '$lib/types';
+import { cleanup, render, screen } from '@testing-library/svelte';
+import userEvent from '@testing-library/user-event';
+import { afterEach, describe, expect, test, vi } from 'vitest';
+import TreeDeadForm from './TreeDeadForm.svelte';
 
 vi.mock('$app/navigation', async () => {
 	return {
@@ -22,7 +22,7 @@ describe('TreeDeadForm', async () => {
 	test('handle form', async () => {
 		const user = userEvent.setup();
 
-		let saved: boolean = false;
+		let saved = false;
 
 		apiClient.getTree = async (): Promise<IResponse<ISingleTree>> => {
 			console.debug('GET');
@@ -59,7 +59,7 @@ describe('TreeDeadForm', async () => {
 		});
 
 		const confirm = await screen.findByRole('button', {
-			name: /confirm/i
+			name: /submit/i
 		});
 
 		await user.click(confirm);

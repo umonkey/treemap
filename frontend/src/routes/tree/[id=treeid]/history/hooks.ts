@@ -1,8 +1,8 @@
-import type { IChange } from '$lib/types';
-import { get } from 'svelte/store';
-import { getUser } from '$lib/stores/userStore';
-import { formatDate } from '$lib/utils/strings';
 import PLACEHOLDER from '$lib/assets/cat.jpeg';
+import { getUser } from '$lib/stores/userStore';
+import type { IChange } from '$lib/types';
+import { formatDate } from '$lib/utils/strings';
+import { get } from 'svelte/store';
 
 type Response = {
 	header: string;
@@ -19,7 +19,7 @@ export const format = (changes: IChange[]): Response[] => {
 		return {
 			header: `${date}, ${userName}:`,
 			body: `${change.name} → ${change.value}`,
-			picture: user.picture ?? PLACEHOLDER
+			picture: user?.picture ?? PLACEHOLDER
 		} as Response;
 	});
 };

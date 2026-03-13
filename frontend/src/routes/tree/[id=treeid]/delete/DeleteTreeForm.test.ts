@@ -1,11 +1,11 @@
-import DeleteTreeForm from './DeleteTreeForm.svelte';
-import userEvent from '@testing-library/user-event';
-import { DEFAULT_TREE } from '$lib/constants';
-import { describe, expect, test, vi } from 'vitest';
-import { apiClient } from '$lib/api';
-import { render, screen } from '@testing-library/svelte';
 import { goto } from '$app/navigation';
+import { apiClient } from '$lib/api';
+import { DEFAULT_TREE } from '$lib/constants';
 import { authStore } from '$lib/stores/authStore';
+import { render, screen } from '@testing-library/svelte';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, test, vi } from 'vitest';
+import DeleteTreeForm from './DeleteTreeForm.svelte';
 
 vi.mock('$app/navigation', async () => {
 	return {
@@ -19,7 +19,7 @@ describe('DeleteTreeForm', async () => {
 	test('handle form without comment', async () => {
 		const user = userEvent.setup();
 
-		let saved: boolean = false;
+		let saved = false;
 		let capturedComment: string | undefined;
 
 		apiClient.getTree = vi.fn().mockResolvedValue({
@@ -56,7 +56,7 @@ describe('DeleteTreeForm', async () => {
 		});
 
 		const confirm = await screen.findByRole('button', {
-			name: /confirm/i
+			name: /submit/i
 		});
 
 		await user.click(confirm);
@@ -69,7 +69,7 @@ describe('DeleteTreeForm', async () => {
 	test('handle form with comment', async () => {
 		const user = userEvent.setup();
 
-		let saved: boolean = false;
+		let saved = false;
 		let capturedComment: string | undefined;
 
 		apiClient.getTree = vi.fn().mockResolvedValue({
@@ -106,7 +106,7 @@ describe('DeleteTreeForm', async () => {
 		});
 
 		const confirm = await screen.findByRole('button', {
-			name: /confirm/i
+			name: /submit/i
 		});
 
 		// Find the comment input and type a comment

@@ -34,7 +34,8 @@ describe('change-list/hooks', () => {
 		expect(formatted).toStrictEqual([
 			{
 				header: '01.01.1970, John Doe:',
-				body: 'height → 1'
+				body: 'height → 1',
+				picture: 'https://example.com/johndoe.jpg'
 			}
 		]);
 	});
@@ -56,7 +57,8 @@ describe('change-list/hooks', () => {
 		expect(formatted).toStrictEqual([
 			{
 				header: '01.01.1970, (unknown user):',
-				body: 'height → 1'
+				body: 'height → 1',
+				picture: '/src/lib/assets/cat.jpeg'
 			}
 		]);
 	});

@@ -51,7 +51,7 @@ describe('CrownForm', async () => {
 		await user.type(input, '2.34');
 
 		const confirm = await screen.findByRole('button', {
-			name: /save changes/i
+			name: /submit changes/i
 		});
 
 		await user.click(confirm);

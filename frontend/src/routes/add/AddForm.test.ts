@@ -5,6 +5,7 @@ import { mockedGoto } from './mocks';
 import { apiClient } from '$lib/api';
 import { DEFAULT_TREE } from '$lib/constants';
 import { routes } from '$lib/routes';
+import { authStore } from '$lib/stores/authStore';
 import type { IAddTreesRequest, IResponse, ITreeList } from '$lib/types';
 import { cleanup, render, screen } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
@@ -12,6 +13,11 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import AddForm from './AddForm.svelte';
 
 beforeEach(() => {
+	authStore.set({
+		token: 'secret',
+		name: 'John Doe',
+		picture: 'https://example.com/picture.jpg'
+	});
 	mockedGoto.mockClear();
 	const mockFetch = vi.fn();
 
@@ -117,7 +123,7 @@ describe('AddForm', async () => {
 		});
 
 		const em = screen.getByRole('button', {
-			name: /add tree/i
+			name: /submit changes/i
 		});
 
 		await user.click(em);
@@ -167,7 +173,7 @@ describe('AddForm', async () => {
 		await inputNumber(/year/i, '1980');
 
 		const submit = screen.getByRole('button', {
-			name: /add tree/i
+			name: /submit changes/i
 		});
 		await user.click(submit);
 

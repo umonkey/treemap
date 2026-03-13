@@ -1,12 +1,12 @@
-import HeightForm from './HeightForm.svelte';
-import type { IResponse, ISingleTree, ITree, IChangeList } from '$lib/types';
-import userEvent from '@testing-library/user-event';
-import { DEFAULT_TREE } from '$lib/constants';
-import { afterEach, describe, expect, test, vi } from 'vitest';
-import { apiClient } from '$lib/api';
-import { cleanup, render, screen } from '@testing-library/svelte';
 import { goto } from '$app/navigation';
+import { apiClient } from '$lib/api';
+import { DEFAULT_TREE } from '$lib/constants';
 import { authStore } from '$lib/stores/authStore';
+import type { IChangeList, IResponse, ISingleTree, ITree } from '$lib/types';
+import { cleanup, render, screen } from '@testing-library/svelte';
+import userEvent from '@testing-library/user-event';
+import { afterEach, describe, expect, test, vi } from 'vitest';
+import HeightForm from './HeightForm.svelte';
 
 const TREE_RESPONSE = {
 	...DEFAULT_TREE,
@@ -42,7 +42,7 @@ describe('HeightForm', async () => {
 	test('should save changes', async () => {
 		const user = userEvent.setup();
 
-		let saved: boolean = false;
+		let saved = false;
 
 		apiClient.getTree = async (): Promise<IResponse<ISingleTree>> => {
 			return {
@@ -84,7 +84,7 @@ describe('HeightForm', async () => {
 		await user.type(input, '1.23');
 
 		const confirm = await screen.findByRole('button', {
-			name: /save changes/i
+			name: /submit changes/i
 		});
 
 		await user.click(confirm);

@@ -1,13 +1,13 @@
 // This must go first for the mocks to work.
-import { mockedGoto, TREE_RESPONSE } from './mocks';
+import { TREE_RESPONSE, mockedGoto } from './mocks';
 
-import MoveForm from './MoveForm.svelte';
+import { apiClient } from '$lib/api';
+import { authStore } from '$lib/stores/authStore';
 import type { IResponse, ISingleTree, ITree } from '$lib/types';
+import { cleanup, render, screen } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, test } from 'vitest';
-import { apiClient } from '$lib/api';
-import { cleanup, render, screen } from '@testing-library/svelte';
-import { authStore } from '$lib/stores/authStore';
+import MoveForm from './MoveForm.svelte';
 
 describe('MoveForm', async () => {
 	afterEach(cleanup);
@@ -15,7 +15,7 @@ describe('MoveForm', async () => {
 	test('should save changes', async () => {
 		const user = userEvent.setup();
 
-		let update_called: boolean = false;
+		let update_called = false;
 
 		apiClient.getTree = async (): Promise<IResponse<ISingleTree>> => {
 			return {
@@ -52,7 +52,7 @@ describe('MoveForm', async () => {
 		});
 
 		const confirm = await screen.findByRole('button', {
-			name: /save changes/i
+			name: /submit changes/i
 		});
 
 		await user.click(confirm);
