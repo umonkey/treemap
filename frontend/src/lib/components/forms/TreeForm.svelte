@@ -126,6 +126,10 @@
 
 	/** Sticky buttons on phones **/
 	@media screen and (max-width: 600px) {
+		form {
+			padding-top: 1rem;
+		}
+
 		h2 {
 			display: none;
 		}
