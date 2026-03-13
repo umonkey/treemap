@@ -13,7 +13,7 @@
 <div class="report">
 	<h2>Report: {data.street}</h2>
 	<p>
-		There are {data.total} trees, providing {data.area} m² of shadow, average {(
+		There are {data.total} trees, providing {data.area} m² of shade, average {(
 			data.area / data.total
 		).toFixed(1)} m² per tree.
 	</p>
