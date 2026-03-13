@@ -1,9 +1,9 @@
 <script lang="ts">
-	import Header from '../header/Header.svelte';
-	import NarrowPage from '../narrow-page/NarrowPage.svelte';
-	import SignInButton from '../sign-in-button/SignInButton.svelte';
-	import ProfileHeader from '../profile-header/ProfileHeader.svelte';
-	import TabList from '../tab-list/TabList.svelte';
+	import Header from '$lib/ui/header/Header.svelte';
+	import NarrowPage from '$lib/ui/narrow-page/NarrowPage.svelte';
+	import SignInButton from '$lib/ui/sign-in-button/SignInButton.svelte';
+	import ProfileHeader from './ProfileHeader.svelte';
+	import TabList from '$lib/ui/tab-list/TabList.svelte';
 	import { loadMe } from '$lib/hooks';
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';

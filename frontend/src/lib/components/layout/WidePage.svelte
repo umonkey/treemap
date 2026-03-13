@@ -20,7 +20,7 @@
 	<Header {title} {back} />
 {/if}
 
-<div class="wide-page" class:padded={!nopadding}>
+<div class="wide-page" class:padded={!nopadding} class:hastitle={!!title}>
 	{@render children()}
 </div>
 
@@ -31,7 +31,7 @@
 		}
 	}
 
-	@media (max-width: 480px) {
+	@media (max-width: 600px) {
 		.wide-page {
 			padding-top: var(--gap);
 			padding-bottom: var(--gap);
@@ -39,6 +39,10 @@
 			&.padded {
 				padding-left: var(--gap);
 				padding-right: var(--gap);
+			}
+
+			&.hastitle {
+				padding-top: 50px;
 			}
 		}
 	}

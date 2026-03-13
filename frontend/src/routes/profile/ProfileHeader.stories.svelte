@@ -1,6 +1,6 @@
 <script module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import { ProfileHeader } from '$lib/ui';
+	import ProfileHeader from './ProfileHeader.svelte';
 	import CAT from '$lib/assets/cat.jpeg';
 
 	const { Story } = defineMeta({
