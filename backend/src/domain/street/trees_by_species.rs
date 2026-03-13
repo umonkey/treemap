@@ -60,6 +60,10 @@ impl TreesBySpeciesReporter {
         let trees = self.filter_by_species(species, trees);
 
         for tree in trees {
+            if tree.state == "replaced" || tree.state == "stump" || tree.state == "gone" {
+                continue;
+            }
+
             count += 1;
 
             if let Some(height) = tree.height {
