@@ -23,11 +23,7 @@ impl TreesAreaReporter {
     }
 
     fn get_tree_shadow(&self, tree: &Tree) -> f64 {
-        if tree.state == "stump"
-            || tree.state == "dead"
-            || tree.state == "gone"
-            || tree.state == "replaced"
-        {
+        if !tree.is_existing() || tree.state == "dead" {
             return 0.0;
         }
 

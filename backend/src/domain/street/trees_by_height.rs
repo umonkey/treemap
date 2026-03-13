@@ -1,5 +1,5 @@
 //! This class reports distribution of trees by height.
-//! Ignores stumps.
+//! Ignores non-existing trees (gone, stump, replaced).
 
 use super::schemas::TreesByHeightReport;
 use crate::domain::tree::Tree;
@@ -13,8 +13,9 @@ impl TreesByHeightReporter {
         Self {}
     }
 
-    pub fn report(&self, trees: &Vec<Tree>) -> Result<Vec<TreesByHeightReport>> {
-        let map = self.aggregate(trees);
+    pub fn report(&self, trees: &[Tree]) -> Result<Vec<TreesByHeightReport>> {
+        let trees: Vec<Tree> = trees.iter().filter(|t| t.is_existing()).cloned().collect();
+        let map = self.aggregate(&trees);
         let mut res = self.convert(map);
 
         res.sort_by(|a, b| a.value.cmp(&b.value));
@@ -22,14 +23,10 @@ impl TreesByHeightReporter {
         Ok(res)
     }
 
-    fn aggregate(&self, trees: &Vec<Tree>) -> HashMap<u64, usize> {
+    fn aggregate(&self, trees: &[Tree]) -> HashMap<u64, usize> {
         let mut map: HashMap<u64, usize> = HashMap::new();
 
         for tree in trees {
-            if tree.state == "stump" {
-                continue;
-            }
-
             let height = tree.height.unwrap_or(0.0);
 
             if height <= 0.0 {
