@@ -57,8 +57,8 @@ export const stateUpdater = (tree_id: string, state: string) => {
 			});
 	};
 
-	const close = (e: Event) => {
-		e.preventDefault();
+	const close = (e?: Event) => {
+		e?.preventDefault();
 		goto(routes.mapPreview(tree_id));
 	};
 

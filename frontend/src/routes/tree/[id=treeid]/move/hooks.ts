@@ -63,8 +63,7 @@ export const editor = (tree_id: string) => {
 			});
 	};
 
-	const close = (e: Event) => {
-		e.preventDefault();
+	const close = () => {
 		goto(routes.mapPreview(tree_id));
 	};
 

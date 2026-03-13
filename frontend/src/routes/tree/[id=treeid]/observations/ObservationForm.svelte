@@ -8,6 +8,7 @@
 	import { addUsers, getUser } from '$lib/stores/userStore';
 	import type { IObservation } from '$lib/types';
 	import { Button, Buttons, CheckInput, Form, HelpButton, SignInButton } from '$lib/ui';
+	import TreeForm from '$lib/components/forms/TreeForm.svelte';
 	import { toast } from '@zerodevx/svelte-toast';
 
 	const { id } = $props<{ id: string }>();
@@ -73,6 +74,10 @@
 		saving = false;
 	}
 
+	const handleCancel = () => {
+		goto(routes.mapPreview(id));
+	};
+
 	const fields = [
 		{ id: 'bark_damage', label: locale.observationBarkDamage() },
 		{ id: 'dry_branches', label: locale.observationDryBranches() },
@@ -96,15 +101,15 @@
 {#if loading}
 	<p>Loading...</p>
 {:else}
-	<div class="observation-status">
-		{#if observation.created_at > 0 && observation.created_by}
-			<p>Last observation made on {date} by {user?.name ?? 'unknown user'}</p>
-		{:else}
-			<p>There are no observations for this tree, add the first one.</p>
-		{/if}
-	</div>
+	<TreeForm {id} title="Observations" onSubmit={handleSubmit} onCancel={handleCancel} {saving}>
+		<div class="observation-status">
+			{#if observation.created_at > 0 && observation.created_by}
+				<p>Last observation made on {date} by {user?.name ?? 'unknown user'}</p>
+			{:else}
+				<p>There are no observations for this tree, add the first one.</p>
+			{/if}
+		</div>
 
-	<Form onSubmit={handleSubmit} sticky>
 		<table class="observation-table">
 			<tbody>
 				{#each fields as field}
@@ -126,18 +131,7 @@
 				{/each}
 			</tbody>
 		</table>
-
-		<Buttons sticky>
-			{#if $isAuthenticated}
-				<Button type="submit" disabled={saving}>{locale.editSave()}</Button>
-			{:else}
-				<div class="auth-prompt">
-					<p>{locale.observationSignIn()}</p>
-					<SignInButton />
-				</div>
-			{/if}
-		</Buttons>
-	</Form>
+	</TreeForm>
 {/if}
 
 <style>

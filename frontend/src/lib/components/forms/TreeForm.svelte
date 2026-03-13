@@ -5,6 +5,7 @@
 	import Button from '$lib/ui/button/Button.svelte';
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
+	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
 
 	type Props = {
 		id?: string;
@@ -46,28 +47,30 @@
 	};
 </script>
 
-<form onsubmit={handleSubmit} onkeydown={handleKeyDown}>
-	<h2>{title}</h2>
+<AuthWrapper>
+	<form onsubmit={handleSubmit} onkeydown={handleKeyDown}>
+		<h2>{title}</h2>
 
-	<div class="buttons phone">
-		<button type="button" onclick={handleCancel} disabled={saving}>Cancel</button>
-		<div class="sep" oncontextmenu={handleLongTap}>{title}</div>
-		<button type="submit" onclick={handleSubmit} disabled={saving}>Save</button>
-	</div>
+		<div class="buttons phone">
+			<button type="button" onclick={handleCancel} disabled={saving}>Cancel</button>
+			<div class="sep" oncontextmenu={handleLongTap}>{title}</div>
+			<button type="submit" onclick={handleSubmit} disabled={saving}>Save</button>
+		</div>
 
-	{#if children}
-		{@render children()}
-	{/if}
+		{#if children}
+			{@render children()}
+		{/if}
 
-	<div class="buttons desktop">
-		<Button type="submit" onClick={handleSubmit} disabled={saving}>{locale.editSave()}</Button>
-		<Button type="cancel" onClick={handleCancel} disabled={saving}>{locale.editCancel()}</Button>
-	</div>
+		<div class="buttons desktop">
+			<Button type="submit" onClick={handleSubmit} disabled={saving}>{locale.editSave()}</Button>
+			<Button type="cancel" onClick={handleCancel} disabled={saving}>{locale.editCancel()}</Button>
+		</div>
 
-	{#if id}
-		<TreeContextMenu {id} />
-	{/if}
-</form>
+		{#if id}
+			<TreeContextMenu {id} />
+		{/if}
+	</form>
+</AuthWrapper>
 
 <style>
 	form {

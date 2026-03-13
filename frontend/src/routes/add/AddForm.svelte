@@ -51,7 +51,7 @@
 {#if $loading}
 	<!-- loading ... -->
 {:else}
-	<TreeForm tree={{}} onSubmit={handleConfirm} onCancel={handleCancel} saving={$saving}>
+	<TreeForm title="Add Tree" onSubmit={handleConfirm} onCancel={handleCancel} saving={$saving}>
 		<LocationInput
 			value={$location}
 			label={locale.addConfirmLocation()}

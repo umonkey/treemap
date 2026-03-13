@@ -48,7 +48,12 @@
 	});
 </script>
 
-<TreeForm tree={{}} onSubmit={handleConfirm} onCancel={handleCancel} saving={$saving}>
+<TreeForm
+	title="Add Row of Trees"
+	onSubmit={handleConfirm}
+	onCancel={handleCancel}
+	saving={$saving}
+>
 	<MapRowPreview {start} {end} count={$count} />
 
 	<RowSizeInput value={$count} {distance} onChange={handleCountChange} />

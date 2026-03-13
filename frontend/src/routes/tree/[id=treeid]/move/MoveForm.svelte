@@ -20,7 +20,7 @@
 {:else if $loadError}
 	<p>{$loadError}</p>
 {:else if $tree}
-	<TreeForm tree={$tree} onSubmit={save} onCancel={close} saving={$busy}>
+	<TreeForm {id} title="Move Tree" onSubmit={save} onCancel={close} saving={$busy}>
 		<LocationInput value={$value} onChange={handleChange} open />
 
 		{#if $saveError}

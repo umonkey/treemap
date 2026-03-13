@@ -15,25 +15,23 @@
 	const { loading, busy, error, tree, save, close, handleCommentChange } = stateUpdater(id, 'gone');
 </script>
 
-<AuthWrapper>
-	{#if $error}
-		<p>{$error}</p>
-	{:else if $loading}
-		<p>Checking the tree...</p>
-	{:else if $tree}
-		<TreeForm tree={$tree} onSubmit={save} onCancel={close} saving={$busy}>
-			<p>{locale.deleteHeader()}</p>
+{#if $error}
+	<p>{$error}</p>
+{:else if $loading}
+	<p>Checking the tree...</p>
+{:else if $tree}
+	<TreeForm {id} title="Remove Tree" onSubmit={save} onCancel={close} saving={$busy}>
+		<p>{locale.deleteHeader()}</p>
 
-			<TreeSheet tree={$tree} />
+		<TreeSheet tree={$tree} />
 
-			<p>{locale.deleteUploadHint()}</p>
+		<p>{locale.deleteUploadHint()}</p>
 
-			<CommentInput value={''} hint={locale.deleteCommentHint()} onChange={handleCommentChange} />
+		<CommentInput value={''} hint={locale.deleteCommentHint()} onChange={handleCommentChange} />
 
-			<ChangeHistory {id} name="state" />
-		</TreeForm>
-	{/if}
-</AuthWrapper>
+		<ChangeHistory {id} name="state" />
+	</TreeForm>
+{/if}
 
 <style>
 	p {

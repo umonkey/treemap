@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Header, NarrowPage, AuthWrapper } from '$lib/ui';
+	import { Header, NarrowPage } from '$lib/ui';
 	import AddRowForm from './AddRowForm.svelte';
 	import { locale } from '$lib/locale';
 
@@ -18,7 +18,5 @@
 </svelte:head>
 
 <NarrowPage>
-	<AuthWrapper>
-		<AddRowForm start={data.start} end={data.end} />
-	</AuthWrapper>
+	<AddRowForm start={data.start} end={data.end} />
 </NarrowPage>

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import EditForm from './EditForm.svelte';
-	import { NarrowPage, AuthWrapper } from '$lib/ui';
+	import { NarrowPage } from '$lib/ui';
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
 
@@ -8,7 +8,5 @@
 </script>
 
 <NarrowPage title={locale.editTitle()} back={routes.mapPreview(data.id)}>
-	<AuthWrapper>
-		<EditForm id={data.id} />
-	</AuthWrapper>
+	<EditForm id={data.id} />
 </NarrowPage>

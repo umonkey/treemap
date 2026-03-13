@@ -15,20 +15,18 @@
 		editor(id);
 </script>
 
-<AuthWrapper>
-	{#if $loading}
-		<!-- loading -->
-	{:else if $loadError}
-		<p>{$loadError}</p>
-	{:else if $tree}
-		<TreeForm tree={$tree} onSubmit={save} onCancel={close} saving={$busy}>
-			<CanopyInput value={$value} autofocus onChange={handleChange} />
+{#if $loading}
+	<!-- loading -->
+{:else if $loadError}
+	<p>{$loadError}</p>
+{:else if $tree}
+	<TreeForm {id} title="Crown Diameter" onSubmit={save} onCancel={close} saving={$busy}>
+		<CanopyInput value={$value} autofocus onChange={handleChange} />
 
-			{#if $saveError}
-				<p>{$saveError}</p>
-			{/if}
+		{#if $saveError}
+			<p>{$saveError}</p>
+		{/if}
 
-			<ChangeHistory {id} name="diameter" />
-		</TreeForm>
-	{/if}
-</AuthWrapper>
+		<ChangeHistory {id} name="diameter" />
+	</TreeForm>
+{/if}

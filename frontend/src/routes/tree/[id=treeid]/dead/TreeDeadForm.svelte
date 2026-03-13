@@ -6,7 +6,7 @@
 	import TreeSheet from '$lib/components/tree/TreeSheet.svelte';
 	import TreeForm from '$lib/components/forms/TreeForm.svelte';
 	import { locale } from '$lib/locale';
-	import { AuthWrapper, Button, Buttons, Form } from '$lib/ui';
+	import { Button, Buttons, Form } from '$lib/ui';
 
 	const { id } = $props<{
 		id: string;
@@ -15,23 +15,21 @@
 	const { loading, busy, error, tree, save, close } = stateUpdater(id, 'dead');
 </script>
 
-<AuthWrapper>
-	{#if $error}
-		<p>{$error}</p>
-	{:else if $loading}
-		<p>Checking the tree...</p>
-	{:else if $tree}
-		<TreeForm tree={$tree} onSubmit={save} onCancel={close} saving={$busy}>
-			<p>{locale.deadHeader()}</p>
+{#if $error}
+	<p>{$error}</p>
+{:else if $loading}
+	<p>Checking the tree...</p>
+{:else if $tree}
+	<TreeForm {id} title="Dead Tree" onSubmit={save} onCancel={close} saving={$busy}>
+		<p>{locale.deadHeader()}</p>
 
-			<TreeSheet tree={$tree} />
+		<TreeSheet tree={$tree} />
 
-			<p>{locale.deadUploadHint()}</p>
+		<p>{locale.deadUploadHint()}</p>
 
-			<ChangeHistory {id} name="state" />
-		</TreeForm>
-	{/if}
-</AuthWrapper>
+		<ChangeHistory {id} name="state" />
+	</TreeForm>
+{/if}
 
 <style>
 	p {
