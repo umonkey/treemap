@@ -272,6 +272,7 @@ export interface IObservation {
 export type StreetReport = {
 	street: string;
 	total: number;
+	existing: number;
 	area: number;
 
 	states: {

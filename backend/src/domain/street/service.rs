@@ -40,6 +40,7 @@ impl StreetService {
         Ok(StreetReport {
             street: street.to_string(),
             total: trees.len(),
+            existing: self.count_existing(&trees),
             area: self.area.report(&trees)?,
             states: by_state,
             heights: by_height,
@@ -66,6 +67,10 @@ impl StreetService {
         }
 
         Ok(trees)
+    }
+
+    fn count_existing(&self, trees: &[Tree]) -> usize {
+        trees.iter().filter(|t| t.is_existing()).count()
     }
 }
 

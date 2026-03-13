@@ -14,7 +14,7 @@
 	<h2>Report: {data.street}</h2>
 	<p>
 		There are {data.total} trees, providing {data.area} m² of shade, average {(
-			data.area / data.total
+			data.area / data.existing
 		).toFixed(1)} m² per tree.
 	</p>
 	<p><a href={routes.searchAddress(data.street)}>Open trees on the map</a>.</p>

@@ -6,6 +6,7 @@ use serde::Serialize;
 pub struct StreetReport {
     pub street: String,
     pub total: usize,
+    pub existing: usize,
     pub area: u64,
     pub states: Vec<TreesByStateReport>,
     pub heights: Vec<TreesByHeightReport>,

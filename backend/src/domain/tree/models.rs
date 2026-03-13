@@ -116,7 +116,7 @@ impl Tree {
     }
 
     pub fn is_existing(&self) -> bool {
-        self.state != "gone" && self.state != "stump"
+        self.state != "gone" && self.state != "stump" && self.state != "replaced"
     }
 
     pub fn get_genus(&self) -> Option<String> {
