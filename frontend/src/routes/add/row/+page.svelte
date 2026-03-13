@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Header, NarrowPage } from '$lib/ui';
+	import { NarrowPage } from '$lib/ui';
 	import AddRowForm from './AddRowForm.svelte';
 	import { locale } from '$lib/locale';
 

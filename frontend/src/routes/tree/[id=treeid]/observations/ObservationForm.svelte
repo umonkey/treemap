@@ -7,7 +7,7 @@
 	import { isAuthenticated } from '$lib/stores/authStore';
 	import { addUsers, getUser } from '$lib/stores/userStore';
 	import type { IObservation } from '$lib/types';
-	import { Button, Buttons, CheckInput, Form, HelpButton, SignInButton } from '$lib/ui';
+	import { CheckInput, HelpButton } from '$lib/ui';
 	import TreeForm from '$lib/components/forms/TreeForm.svelte';
 	import { toast } from '@zerodevx/svelte-toast';
 
@@ -165,16 +165,6 @@
 	.help-cell {
 		width: 40px;
 		text-align: right;
-	}
-
-	.auth-prompt {
-		display: flex;
-		flex-direction: column;
-		gap: var(--gap);
-		align-items: center;
-		width: 100%;
-		text-align: center;
-		color: var(--text-color-secondary);
 	}
 
 	.observation-status {

@@ -1,14 +1,8 @@
 <script lang="ts">
-	import Title from '$lib/components/tree/Title.svelte';
-	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
 	import TreeForm from '$lib/components/forms/TreeForm.svelte';
-	import { locale } from '$lib/locale';
 	import {
-		Button,
-		Buttons,
 		CanopyInput,
 		CircumferenceInput,
-		Form,
 		HeightInput,
 		LocationInput,
 		NotesInput,

@@ -6,12 +6,9 @@
 
 	import { hooks } from './hooks';
 	import { locale } from '$lib/locale';
-	import { Form } from '$lib/ui';
 	import TreeForm from '$lib/components/forms/TreeForm.svelte';
 
 	import {
-		Button,
-		Buttons,
 		CanopyInput,
 		CircumferenceInput,
 		HeightInput,

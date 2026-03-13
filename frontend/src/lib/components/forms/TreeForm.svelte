@@ -3,7 +3,6 @@
 	import { locale } from '$lib/locale';
 	import { menuState } from '$lib/stores/treeMenu';
 	import Button from '$lib/ui/button/Button.svelte';
-	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
 	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
 
@@ -124,10 +123,6 @@
 
 	/** Sticky buttons on phones **/
 	@media screen and (max-width: 600px) {
-		form {
-			padding-top: 10px;
-		}
-
 		h2 {
 			display: none;
 		}

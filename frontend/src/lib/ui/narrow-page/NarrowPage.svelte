@@ -1,11 +1,9 @@
 <script lang="ts">
-	import { Header } from '$lib/ui';
 	import type { Snippet } from 'svelte';
 
-	const { children, title, back, nopadding } = $props<{
+	const { children, title, nopadding } = $props<{
 		children: Snippet;
 		title?: string;
-		back?: boolean | string | undefined;
 		nopadding?: boolean;
 	}>();
 </script>

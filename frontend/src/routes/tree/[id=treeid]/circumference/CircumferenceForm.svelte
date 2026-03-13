@@ -1,10 +1,7 @@
 <script lang="ts">
 	import ChangeHistory from '$lib/components/tree/ChangeHistory.svelte';
-	import Title from '$lib/components/tree/Title.svelte';
-	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
 	import TreeForm from '$lib/components/forms/TreeForm.svelte';
-	import { locale } from '$lib/locale';
-	import { Button, Buttons, CircumferenceInput, Form } from '$lib/ui';
+	import { CircumferenceInput } from '$lib/ui';
 	import { editor } from './hooks';
 
 	const { id } = $props<{
