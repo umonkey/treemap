@@ -2,20 +2,26 @@
 	import type { Snippet } from 'svelte';
 	import type { Tree } from '$lib/types';
 	import { locale } from '$lib/locale';
-	import Title from '$lib/components/tree/Title.svelte';
-	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 
 	type Props = {
 		children?: Snippet;
+		title?: string;
 		tree: Tree;
 		saving: boolean;
 		onSubmit: () => {};
 		onCancel: () => {};
 	};
 
-	const { children, tree, saving = false, onSubmit, onCancel }: Props = $props();
+	const {
+		children,
+		title = 'Edit Tree',
+		tree,
+		saving = false,
+		onSubmit,
+		onCancel
+	}: Props = $props();
 
 	const handleSubmit = (e?: Event) => {
 		e?.preventDefault();
@@ -35,14 +41,13 @@
 </script>
 
 <form onsubmit={handleSubmit} onkeydown={handleKeyDown}>
-	<div class="buttons phone">
-		<Button type="cancel" onClick={handleCancel} disabled={saving}>Cancel</Button>
-		<div class="sep"></div>
-		<Button type="submit" onClick={handleSubmit} disabled={saving}>Save</Button>
-	</div>
+	<h2>{title}</h2>
 
-	<Title title={tree.species} address={tree.address ?? undefined} />
-	<TreeContextMenu id={tree.id} />
+	<div class="buttons phone">
+		<button type="button" onclick={handleCancel} disabled={saving}>Cancel</button>
+		<div class="sep">{title}</div>
+		<button type="submit" onclick={handleSubmit} disabled={saving}>Save</button>
+	</div>
 
 	{#if children}
 		{@render children()}
@@ -62,50 +67,67 @@
 		gap: 1rem;
 	}
 
+	h2 {
+		font-size: 1.5rem;
+		font-weight: 300;
+		border-bottom: solid 1px rgba(128, 128, 128, 0.2);
+		padding-bottom: 0.5rem;
+	}
+
 	.buttons {
 		display: flex;
 		flex-direction: row;
 		gap: 1rem;
+		align-items: center;
+	}
 
-		&.phone {
-			display: none;
-		}
+	.buttons.phone {
+		background-color: light-dark(#bfc7d9, #333c4e);
+		position: fixed;
+		top: 0px;
+		left: 0;
+		width: 100%;
+		box-sizing: border-box;
+		z-index: 5;
+		padding: 0 0.5rem;
+		line-height: 40px;
 
 		.sep {
-			display: none;
+			flex: 1 1 auto;
+			text-align: center;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		button {
+			border: none;
+			background-color: inherit;
+			flex: 0 0 50px;
+			opacity: 0.75;
+			font-size: 0.9rem;
 		}
 	}
 
 	/** Sticky buttons on phones **/
 	@media screen and (max-width: 600px) {
 		form {
-			padding-top: 40px;
+			padding-top: 10px;
 		}
 
-		.buttons {
-			position: fixed;
-			top: 40px;
-			left: 0;
-			width: 100%;
-			box-sizing: border-box;
+		h2 {
+			display: none;
+		}
 
-			z-index: 5;
+		.buttons.desktop {
+			display: none;
+		}
+	}
 
-			padding: 0.5rem;
-			background-color: var(--background-color);
-
-			&.desktop {
-				display: none;
-			}
-
-			&.phone {
-				display: flex;
-			}
-
-			.sep {
-				display: block;
-				flex: 1 1 auto;
-			}
+	/** Sticky buttons on phones **/
+	@media screen and (min-width: 601px) {
+		.buttons.phone {
+			display: none;
 		}
 	}
 </style>

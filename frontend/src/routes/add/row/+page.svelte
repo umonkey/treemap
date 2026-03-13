@@ -17,8 +17,6 @@
 	<title>{locale.addRowTitle()}</title>
 </svelte:head>
 
-<Header title={locale.addRowTitle()} />
-
 <NarrowPage>
 	<AuthWrapper>
 		<AddRowForm start={data.start} end={data.end} />

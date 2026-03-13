@@ -48,7 +48,13 @@
 {#if $loading}
 	<!-- Loading... -->
 {:else if $tree}
-	<TreeForm tree={$tree} onSubmit={handleConfirm} onCancel={handleCancel} saving={$saving}>
+	<TreeForm
+		title="Edit Tree"
+		tree={$tree}
+		onSubmit={handleConfirm}
+		onCancel={handleCancel}
+		saving={$saving}
+	>
 		<SpeciesInput value={$updated.species} onChange={handleSpeciesChange} />
 		<HeightInput value={$updated.height} onChange={handleHeightChange} />
 		<CanopyInput value={$updated.diameter} onChange={handleDiameterChange} />

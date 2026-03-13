@@ -16,10 +16,6 @@
 	{/if}
 </svelte:head>
 
-{#if title}
-	<Header {title} {back} />
-{/if}
-
 <div class="narrow-page" class:padded={!nopadding}>
 	{@render children()}
 </div>
