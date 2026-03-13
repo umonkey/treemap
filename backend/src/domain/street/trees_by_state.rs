@@ -25,7 +25,10 @@ impl TreesByStateReporter {
         let mut map: HashMap<String, usize> = HashMap::new();
 
         for tree in trees {
-            let state = tree.state.clone();
+            let state = match tree.state.as_str() {
+                "healthy" | "sick" | "deformed" => "alive".to_string(),
+                _ => tree.state.clone(),
+            };
             let count = map.entry(state).or_insert(0);
             *count += 1;
         }
@@ -86,15 +89,12 @@ mod tests {
         let reporter = setup();
         let report = reporter.report(&trees).unwrap();
         assert!(!report.is_empty());
-        assert_eq!(report.len(), 3);
+        assert_eq!(report.len(), 2);
 
-        assert_eq!(report[0].state, "gone");
-        assert_eq!(report[0].count, 1);
+        assert_eq!(report[0].state, "alive");
+        assert_eq!(report[0].count, 3);
 
-        assert_eq!(report[1].state, "healthy");
-        assert_eq!(report[1].count, 2);
-
-        assert_eq!(report[2].state, "sick");
-        assert_eq!(report[2].count, 1);
+        assert_eq!(report[1].state, "gone");
+        assert_eq!(report[1].count, 1);
     }
 }

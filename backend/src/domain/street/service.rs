@@ -74,7 +74,7 @@ impl StreetService {
         let substring = street.to_lowercase();
 
         for tree in self.trees.all().await? {
-            if tree.state == "replaced" {
+            if tree.state == "replaced" || tree.species.to_lowercase() == "error" {
                 continue;
             }
 
