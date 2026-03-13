@@ -273,7 +273,8 @@ export type StreetReport = {
 	street: string;
 	total: number;
 	existing: number;
-	area: number;
+	total_shade: number;
+	average_shade: number;
 
 	states: {
 		state: string;

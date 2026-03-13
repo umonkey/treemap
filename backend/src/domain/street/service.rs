@@ -37,11 +37,14 @@ impl StreetService {
         let by_crown = self.by_crown.report(&trees)?;
         let by_girth = self.by_girth.report(&trees)?;
 
+        let (total_shade, average_shade) = self.area.report(&trees)?;
+
         Ok(StreetReport {
             street: street.to_string(),
             total: trees.len(),
             existing: self.count_existing(&trees),
-            area: self.area.report(&trees)?,
+            total_shade,
+            average_shade,
             states: by_state,
             heights: by_height,
             crowns: by_crown,

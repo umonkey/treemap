@@ -15,9 +15,9 @@
 <div class="report">
 	<h2>Report: {data.street}</h2>
 	<p>
-		There are {data.total} trees, providing {data.area} m² of shade, average {(
-			data.area / data.existing
-		).toFixed(1)} m² per tree.
+		There are {data.total} trees, providing {Math.round(data.total_shade)} m² of shade, average {data.average_shade.toFixed(
+			1
+		)} m² per tree.
 	</p>
 
 	<Buttons>

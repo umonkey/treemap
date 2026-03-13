@@ -12,14 +12,26 @@ impl TreesAreaReporter {
         Self {}
     }
 
-    pub fn report(&self, trees: &Vec<Tree>) -> Result<u64> {
+    pub fn report(&self, trees: &Vec<Tree>) -> Result<(f64, f64)> {
         let mut total: f64 = 0.0;
+        let mut count: u64 = 0;
 
         for tree in trees {
-            total += self.get_tree_shadow(tree);
+            let area = self.get_tree_shadow(tree);
+
+            if area > 0.0 {
+                total += area;
+                count += 1;
+            }
         }
 
-        Ok(total.round() as u64)
+        let average_area = if count > 0 {
+            total / (count as f64)
+        } else {
+            0.0
+        };
+
+        Ok((total, average_area))
     }
 
     fn get_tree_shadow(&self, tree: &Tree) -> f64 {
@@ -55,7 +67,7 @@ mod tests {
     fn test_empty() {
         let reporter = setup();
         let res = reporter.report(&vec![]).unwrap();
-        assert_eq!(res, 0);
+        assert_eq!(res, (0.0, 0.0));
     }
 
     #[test]
@@ -80,6 +92,8 @@ mod tests {
         let reporter = setup();
         let res = reporter.report(&trees).unwrap();
 
-        assert_eq!(res, 5);
+        let expected_total = 1.49 * std::f64::consts::PI;
+        assert!((res.0 - expected_total).abs() < 1e-10);
+        assert!((res.1 - expected_total / 3.0).abs() < 1e-10);
     }
 }
