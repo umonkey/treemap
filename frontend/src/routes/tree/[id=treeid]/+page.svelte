@@ -2,8 +2,8 @@
 	import { invalidateAll } from '$app/navigation';
 	import { apiClient } from '$lib/api';
 	import { locale } from '$lib/locale';
-	import { toast } from '@zerodevx/svelte-toast';
 	import { routes } from '$lib/routes';
+	import { showError } from '$lib/errors';
 
 	import Actions from '$lib/components/tree/Actions.svelte';
 	import Comment from '$lib/components/tree/Comment.svelte';
@@ -36,12 +36,12 @@
 					invalidateAll();
 				} else {
 					console.info(`Error ${res.status} adding a comment.`);
-					toast.push(locale.toastErrorAddingComment());
+					showError(locale.toastErrorAddingComment());
 				}
 			})
 			.catch((e) => {
 				console.error('Exception while adding a comment.', e);
-				toast.push(locale.toastErrorAddingComment());
+				showError(locale.toastErrorAddingComment());
 			});
 	};
 </script>

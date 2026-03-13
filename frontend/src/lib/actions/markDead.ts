@@ -1,7 +1,7 @@
-import { toast } from '@zerodevx/svelte-toast';
 import { apiClient } from '$lib/api';
 import { writable } from 'svelte/store';
 import { goto, routes } from '$lib/routes';
+import { showError } from '$lib/errors';
 
 export const markDead = (id: string) => {
 	const busy = writable<boolean>(false);
@@ -13,7 +13,7 @@ export const markDead = (id: string) => {
 			goto(routes.mapPreview(id));
 		} catch (e) {
 			console.error(`Error deleting tree: ${e}`);
-			toast.push('Error deleting tree.');
+			showError('Error deleting tree.');
 		} finally {
 			busy.set(false);
 		}

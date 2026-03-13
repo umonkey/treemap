@@ -5,7 +5,7 @@
 	import { goto } from '$app/navigation';
 	import type { IUser } from '$lib/types';
 	import type { PageData } from './$types';
-	import { toast } from '@zerodevx/svelte-toast';
+	import { showError } from '$lib/errors';
 
 	let { data }: { data: PageData } = $props();
 
@@ -15,7 +15,7 @@
 		if (res.status >= 200 && res.status < 300) {
 			goto('/admin/users');
 		} else {
-			toast.push(`Error ${res.status} updating user.`);
+			showError(`Error ${res.status} updating user.`);
 		}
 	};
 </script>

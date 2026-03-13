@@ -1,7 +1,7 @@
 import { apiClient } from '$lib/api';
 import { goto, routes } from '$lib/routes';
-import { toast } from '@zerodevx/svelte-toast';
 import { writable } from 'svelte/store';
+import { showError } from '$lib/errors';
 
 export const updateCrownDiameter = (id: string) => {
 	const busy = writable<boolean>(false);
@@ -13,7 +13,7 @@ export const updateCrownDiameter = (id: string) => {
 			goto(routes.mapPreview(id));
 		} catch (e) {
 			console.error(`Error updating tree canopy: ${e}`);
-			toast.push('Error updating tree canopy.');
+			showError('Error updating tree canopy.');
 		} finally {
 			busy.set(false);
 		}

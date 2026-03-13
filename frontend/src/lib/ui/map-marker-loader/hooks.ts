@@ -3,11 +3,11 @@
 import { apiClient } from '$lib/api';
 import { getMap } from '$lib/map';
 import { markerStore } from '$lib/stores/markerStore';
-import { toast } from '@zerodevx/svelte-toast';
 import { type Map, type LatLngBounds } from 'leaflet';
 import { type MountFn } from '$lib/types';
 import { searchStore } from '$lib/stores';
 import { get } from 'svelte/store';
+import { showError } from '$lib/errors';
 
 // Expand current map bounds by 100% in all directions, one extra screen.
 // This makes us load some extra markers, which makes panning more natural.
@@ -44,7 +44,7 @@ export const hooks = ({ onMount }: { onMount: MountFn }) => {
 			console.debug(`[map] Received ${data.trees.length} markers.`);
 			markerStore.set(data.trees);
 		} else if (error) {
-			toast.push(`Error loading markers: ${error.description}`);
+			showError(`Error loading markers: ${error.description}`);
 		}
 	};
 

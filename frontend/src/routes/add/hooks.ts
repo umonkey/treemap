@@ -1,7 +1,7 @@
 import { apiClient } from '$lib/api';
 import { goto, routes } from '$lib/routes';
 import type { IAddTreesRequest, ILatLng, ITree } from '$lib/types';
-import { toast } from '@zerodevx/svelte-toast';
+import { showError } from '$lib/errors';
 import { get } from 'svelte/store';
 import { writable } from 'svelte/store';
 
@@ -159,7 +159,7 @@ export const hooks = () => {
 				}
 			} else {
 				console.error(`Error ${res.status} updating tree.`);
-				toast.push('Error adding tree.');
+				showError('Error adding tree.');
 			}
 		});
 	};

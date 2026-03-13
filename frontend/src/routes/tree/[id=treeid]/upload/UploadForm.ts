@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store';
 import type { ITree, ITreeFile } from '$lib/types';
 import { apiClient } from '$lib/api';
-import { toast } from '@zerodevx/svelte-toast';
+import { showError } from '$lib/errors';
 import { get } from 'svelte/store';
 import { DEFAULT_TREE } from '$lib/constants';
 
@@ -32,7 +32,7 @@ export const hooks = () => {
 		const res = await apiClient.changeTreeThumbnail(get(tree).id, file.id);
 
 		if (res.status >= 400) {
-			toast.push('Error changing thumbnail.');
+			showError('Error changing thumbnail.');
 		}
 	};
 
@@ -40,7 +40,7 @@ export const hooks = () => {
 		const res = await apiClient.deleteFile(id);
 
 		if (res.status >= 400) {
-			toast.push('Error deleting file.');
+			showError('Error deleting file.');
 		}
 	};
 

@@ -9,7 +9,7 @@
 	import type { IObservation } from '$lib/types';
 	import { CheckInput, HelpButton } from '$lib/ui';
 	import TreeForm from '$lib/components/forms/TreeForm.svelte';
-	import { toast } from '@zerodevx/svelte-toast';
+	import { showError } from '$lib/errors';
 
 	const { id } = $props<{ id: string }>();
 
@@ -67,7 +67,7 @@
 		saving = true;
 		const response = await apiClient.addObservations(observation);
 		if (response.error) {
-			toast.push(response.error.description);
+			showError(response.error.description);
 		} else {
 			goto(routes.mapPreview(id));
 		}

@@ -1,10 +1,10 @@
-import { toast } from '@zerodevx/svelte-toast';
 import { apiClient } from '$lib/api';
 import { get, writable } from 'svelte/store';
 import { getDistance } from '$lib/utils';
 import type { ILatLng, ILatLon, IAddTreesRequest } from '$lib/types';
 import { goto, routes } from '$lib/routes';
 import { spreadDots } from '$lib/map';
+import { showError } from '$lib/errors';
 
 export const hooks = ({ start, end }: { start: ILatLng; end: ILatLng }) => {
 	const count = writable<number>(3);
@@ -102,7 +102,7 @@ export const hooks = ({ start, end }: { start: ILatLng; end: ILatLng }) => {
 				}
 			} else if (e) {
 				console.error(`Error ${status} adding trees.`);
-				toast.push('Error adding trees.');
+				showError('Error adding trees.');
 			}
 		} finally {
 			saving.set(false);

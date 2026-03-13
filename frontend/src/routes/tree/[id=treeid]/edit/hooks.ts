@@ -4,7 +4,7 @@ import { apiClient } from '$lib/api';
 import { routes, goto } from '$lib/routes';
 import { DEFAULT_TREE } from '$lib/constants';
 import { get } from 'svelte/store';
-import { toast } from '@zerodevx/svelte-toast';
+import { showError } from '$lib/errors';
 
 export const hooks = () => {
 	const tree = writable<ITree>(DEFAULT_TREE);
@@ -137,7 +137,7 @@ export const hooks = () => {
 					goto(routes.mapPreview(u.id));
 				} else {
 					console.error(`Error ${res.status} updating tree.`);
-					toast.push('Error updating tree.');
+					showError('Error updating tree.');
 				}
 			})
 			.finally(() => {
