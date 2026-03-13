@@ -24,8 +24,11 @@ pub struct NominatimClient {
 
 impl NominatimClient {
     pub async fn get_street_address(&self, lat: f64, lon: f64) -> Result<Option<String>> {
+        // NB! Use zoom=16 to avoid street confusion.  With zoom=18 it often takes street
+        // names from the closes bigger building which can have address from the adjacent
+        // street.  With zoom=16 we get much better results.
         let url = format!(
-            "https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lon}&zoom=18&addressdetails=1"
+            "https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lon}&zoom=16&addressdetails=1"
         );
 
         debug!("Requesting address from Nominatim: {url}");
