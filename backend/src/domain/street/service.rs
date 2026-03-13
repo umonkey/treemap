@@ -54,7 +54,7 @@ impl StreetService {
         let substring = street.to_lowercase();
 
         for tree in self.trees.all().await? {
-            if tree.state == "gone" {
+            if tree.state == "replaced" {
                 continue;
             }
 

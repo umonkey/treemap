@@ -26,11 +26,6 @@ impl TreesByStateReporter {
 
         for tree in trees {
             let state = tree.state.clone();
-
-            if state == "gone" {
-                continue;
-            }
-
             let count = map.entry(state).or_insert(0);
             *count += 1;
         }
@@ -91,12 +86,15 @@ mod tests {
         let reporter = setup();
         let report = reporter.report(&trees).unwrap();
         assert!(!report.is_empty());
-        assert_eq!(report.len(), 2);
+        assert_eq!(report.len(), 3);
 
-        assert_eq!(report[0].state, "healthy");
-        assert_eq!(report[0].count, 2);
+        assert_eq!(report[0].state, "gone");
+        assert_eq!(report[0].count, 1);
 
-        assert_eq!(report[1].state, "sick");
-        assert_eq!(report[1].count, 1);
+        assert_eq!(report[1].state, "healthy");
+        assert_eq!(report[1].count, 2);
+
+        assert_eq!(report[2].state, "sick");
+        assert_eq!(report[2].count, 1);
     }
 }
