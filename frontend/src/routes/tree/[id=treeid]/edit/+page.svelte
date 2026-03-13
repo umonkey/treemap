@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { EditForm } from '$lib/forms';
+	import EditForm from './EditForm.svelte';
 	import { NarrowPage, AuthWrapper } from '$lib/ui';
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';

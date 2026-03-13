@@ -8,6 +8,7 @@
 	import { locale } from '$lib/locale';
 	import type { ILatLng } from '$lib/types';
 	import { Form, MapRowPreview, RowSizeInput } from '$lib/ui';
+	import TreeForm from '$lib/components/forms/TreeForm.svelte';
 
 	import {
 		Button,
@@ -47,7 +48,7 @@
 	});
 </script>
 
-<Form>
+<TreeForm tree={{}} onSubmit={handleConfirm} onCancel={handleCancel} saving={$saving}>
 	<MapRowPreview {start} {end} count={$count} />
 
 	<RowSizeInput value={$count} {distance} onChange={handleCountChange} />
@@ -61,16 +62,7 @@
 	<NotesInput value={null} onChange={handleNotesChange} />
 
 	<p>{locale.rowStepInfo($count, $step)}</p>
-
-	<Buttons>
-		<Button type="submit" onClick={handleConfirm} disabled={$saving}
-			>{locale.addRowConfirmButton()}</Button
-		>
-		<Button type="cancel" onClick={handleCancel} disabled={$saving}
-			>{locale.addCancelButton()}</Button
-		>
-	</Buttons>
-</Form>
+</TreeForm>
 
 <style>
 	p {

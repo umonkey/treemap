@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { AddRowForm, Header, NarrowPage, AuthWrapper } from '$lib/ui';
+	import { Header, NarrowPage, AuthWrapper } from '$lib/ui';
+	import AddRowForm from './AddRowForm.svelte';
 	import { locale } from '$lib/locale';
 
 	import type { ILatLng } from '$lib/types';

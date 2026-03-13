@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { AddForm } from '$lib/forms';
+	import AddForm from './AddForm.svelte';
 	import { Header, NarrowPage, AuthWrapper } from '$lib/ui';
 	import { locale } from '$lib/locale';
 

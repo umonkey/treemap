@@ -7,6 +7,7 @@
 	import { hooks } from './hooks';
 	import { locale } from '$lib/locale';
 	import { Form } from '$lib/ui';
+	import TreeForm from '$lib/components/forms/TreeForm.svelte';
 
 	import {
 		Button,
@@ -50,7 +51,7 @@
 {#if $loading}
 	<!-- loading ... -->
 {:else}
-	<Form sticky>
+	<TreeForm tree={{}} onSubmit={handleConfirm} onCancel={handleCancel} saving={$saving}>
 		<LocationInput
 			value={$location}
 			label={locale.addConfirmLocation()}
@@ -63,14 +64,5 @@
 		<StateInput value={$tree.state} onChange={handleStateChange} />
 		<YearInput value={$tree.year} onChange={handleYearChange} />
 		<NotesInput value={$tree.notes} onChange={handleNotesChange} />
-
-		<Buttons sticky>
-			<Button type="submit" onClick={handleConfirm} disabled={$saving}
-				>{locale.addConfirmButton()}</Button
-			>
-			<Button type="cancel" onClick={handleCancel} disabled={$saving}
-				>{locale.addCancelButton()}</Button
-			>
-		</Buttons>
-	</Form>
+	</TreeForm>
 {/if}

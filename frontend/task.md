@@ -5,3 +5,4 @@ Move buttons upstairs on phones
 - [ ] Broken padding on: http://localhost:5173/map
 - [ ] Move form components back to pages
 - [x] Fix type values in Button
+- [x] (...) in tree edit closes form

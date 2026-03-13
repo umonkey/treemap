@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
-	import { MoveForm } from '$lib/forms';
+	import MoveForm from './MoveForm.svelte';
 	import { NarrowPage, AuthWrapper } from '$lib/ui';
 	import { routes } from '$lib/routes';
 

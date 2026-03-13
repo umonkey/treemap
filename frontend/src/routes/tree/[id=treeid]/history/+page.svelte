@@ -4,7 +4,8 @@
 	import TreeTabs from '$lib/components/tree/TreeTabs.svelte';
 	import { loadTreeHistory } from '$lib/hooks';
 	import { routes } from '$lib/routes';
-	import { ChangeList, NarrowPage } from '$lib/ui';
+	import { NarrowPage } from '$lib/ui';
+	import ChangeList from './ChangeList.svelte';
 
 	const { data } = $props();
 	const { loading, tree, changes, error, reload } = loadTreeHistory();

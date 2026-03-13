@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
 	import { NarrowPage, Form, AuthWrapper } from '$lib/ui';
-	import PhotoUploader from '$lib/components/photos/PhotoUploader.svelte';
-	import UploadForm from '$lib/components/photos/UploadForm.svelte';
+	import PhotoUploader from './PhotoUploader.svelte';
+	import UploadForm from './UploadForm.svelte';
 	import Title from '$lib/components/tree/Title.svelte';
 	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
 	import TreeForm from '$lib/components/forms/TreeForm.svelte';

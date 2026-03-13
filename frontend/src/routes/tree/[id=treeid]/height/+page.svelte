@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
-	import { HeightForm } from '$lib/forms';
+	import HeightForm from './HeightForm.svelte';
 	import { NarrowPage } from '$lib/ui';
 	import { routes } from '$lib/routes';
 

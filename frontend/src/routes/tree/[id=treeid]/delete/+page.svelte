@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
 	import { NarrowPage } from '$lib/ui';
-	import { DeleteTreeForm } from '$lib/forms';
+	import DeleteTreeForm from './DeleteTreeForm.svelte';
 	import { routes } from '$lib/routes';
 
 	const { data } = $props<{

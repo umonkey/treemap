@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
-	import { ReplaceForm } from '$lib/forms';
+	import ReplaceForm from './ReplaceForm.svelte';
 	import { NarrowPage } from '$lib/ui';
 	import { routes } from '$lib/routes';
 
