@@ -15,7 +15,7 @@
 #
 # This approach saves time drastically, which saves CI/CD resources.
 
-FROM docker.io/library/rust:1.88-alpine3.22 as builder
+FROM docker.io/library/rust:1.88-alpine3.22 AS builder
 RUN apk add --no-cache musl-dev openssl-dev
 ENV RUSTFLAGS=-Ctarget-feature=-crt-static
 ENV OPENSSL_DIR=/usr
@@ -44,7 +44,7 @@ COPY dev/schema-sqlite.sql /app
 COPY static /app/static
 COPY config.toml.dev /app
 
-ENV RUST_LOG info,treemap=debug
+ENV RUST_LOG=info,treemap=debug
 
 EXPOSE 8000/tcp
 CMD ["/app/startup.sh"]
