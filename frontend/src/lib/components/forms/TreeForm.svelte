@@ -113,6 +113,11 @@
 			white-space: nowrap;
 			overflow: hidden;
 			text-overflow: ellipsis;
+
+			/** Prevent text selection on context menu **/
+			user-select: none;
+			-webkit-user-select: none;
+			-webkit-touch-callout: none;
 		}
 
 		button {
