@@ -20,9 +20,9 @@
 
 <form>
 	<div class="buttons phone">
-		<Button type="cancel" onClick={onCancel} disabled={saving}>{locale.editCancel()}</Button>
+		<Button type="cancel" onClick={onCancel} disabled={saving}>Cancel</Button>
 		<div class="sep"></div>
-		<Button type="submit" onClick={onSubmit} disabled={saving}>{locale.editSave()}</Button>
+		<Button type="submit" onClick={onSubmit} disabled={saving}>Save</Button>
 	</div>
 
 	<Title title={tree.species} address={tree.address ?? undefined} />
