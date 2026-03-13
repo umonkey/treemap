@@ -1,18 +1,19 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
+	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
 	import { locale } from '$lib/locale';
 	import { menuState } from '$lib/stores/treeMenu';
-	import Button from '$lib/ui/button/Button.svelte';
-	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
 	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
+	import Button from '$lib/ui/button/Button.svelte';
+	import type { Snippet } from 'svelte';
 
 	type Props = {
 		id?: string;
 		children?: Snippet;
 		title?: string;
-		saving: boolean;
-		onSubmit: () => {};
-		onCancel: () => {};
+		saving?: boolean;
+		onSubmit: () => void;
+		onCancel: () => void;
+		tree?: unknown;
 	};
 
 	const {
@@ -47,11 +48,13 @@
 </script>
 
 <AuthWrapper>
+	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<form onsubmit={handleSubmit} onkeydown={handleKeyDown}>
 		<h2>{title}</h2>
 
 		<div class="buttons phone">
 			<button type="button" onclick={handleCancel} disabled={saving}>Cancel</button>
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
 			<div class="sep" oncontextmenu={handleLongTap}>{title}</div>
 			<button type="submit" onclick={handleSubmit} disabled={saving}>Save</button>
 		</div>
