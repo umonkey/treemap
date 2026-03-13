@@ -2,7 +2,7 @@ import { goto } from '$app/navigation';
 import { apiClient } from '$lib/api';
 import { DEFAULT_TREE } from '$lib/constants';
 import { authStore } from '$lib/stores/authStore';
-import type { IResponse, ISingleTree, ITree } from '$lib/types';
+import type { IChangeList, IResponse, ISingleTree, ITree } from '$lib/types';
 import { cleanup, render, screen } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, test, vi } from 'vitest';
@@ -54,13 +54,25 @@ describe('TreeDeadForm', async () => {
 			picture: 'https://example.com/picture.jpg'
 		});
 
+		apiClient.getTreeHistory = async (): Promise<IResponse<IChangeList>> => {
+			return {
+				status: 200,
+				data: {
+					props: [],
+					users: []
+				}
+			};
+		};
+
 		render(TreeDeadForm, {
 			id: 'tree1'
 		});
 
-		const confirm = await screen.findByRole('button', {
-			name: /submit/i
-		});
+		const confirm = (
+			await screen.findAllByRole('button', {
+				name: /submit/i
+			})
+		)[0];
 
 		await user.click(confirm);
 

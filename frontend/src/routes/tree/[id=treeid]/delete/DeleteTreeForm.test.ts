@@ -51,13 +51,23 @@ describe('DeleteTreeForm', async () => {
 			picture: 'https://example.com/picture.jpg'
 		});
 
+		apiClient.getTreeHistory = vi.fn().mockResolvedValue({
+			status: 200,
+			data: {
+				props: [],
+				users: []
+			}
+		});
+
 		render(DeleteTreeForm, {
 			id: 'tree1'
 		});
 
-		const confirm = await screen.findByRole('button', {
-			name: /submit/i
-		});
+		const confirm = (
+			await screen.findAllByRole('button', {
+				name: /submit/i
+			})
+		)[0];
 
 		await user.click(confirm);
 
@@ -101,13 +111,23 @@ describe('DeleteTreeForm', async () => {
 			picture: 'https://example.com/picture.jpg'
 		});
 
+		apiClient.getTreeHistory = vi.fn().mockResolvedValue({
+			status: 200,
+			data: {
+				props: [],
+				users: []
+			}
+		});
+
 		render(DeleteTreeForm, {
 			id: 'tree1'
 		});
 
-		const confirm = await screen.findByRole('button', {
-			name: /submit/i
-		});
+		const confirm = (
+			await screen.findAllByRole('button', {
+				name: /submit/i
+			})
+		)[0];
 
 		// Find the comment input and type a comment
 		const commentInput = await screen.findByRole('textbox');

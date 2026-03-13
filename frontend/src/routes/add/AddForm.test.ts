@@ -87,9 +87,9 @@ describe('AddForm', async () => {
 			}
 		});
 
-		const em = screen.getByRole('button', {
+		const em = screen.getAllByRole('button', {
 			name: /cancel/i
-		});
+		})[0];
 
 		await user.click(em);
 

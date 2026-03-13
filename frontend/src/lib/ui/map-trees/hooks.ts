@@ -71,6 +71,10 @@ export const hooks = ({ onMount }: { onMount: MountFn }) => {
 
 		mapBus.emit('select', tree.id);
 
+		if (navigator.vibrate) {
+			navigator.vibrate(50);
+		}
+
 		// Re-center on last clicked tree.  Scenario:
 		// (1) Click a tree, map centers on it, triggered by the MapPreview component.
 		// (2) Move the map manually.
