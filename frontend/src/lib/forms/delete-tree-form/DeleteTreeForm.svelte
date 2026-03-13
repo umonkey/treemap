@@ -4,8 +4,9 @@
 	import Title from '$lib/components/tree/Title.svelte';
 	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
 	import TreeSheet from '$lib/components/tree/TreeSheet.svelte';
+	import TreeForm from '$lib/components/forms/TreeForm.svelte';
 	import { locale } from '$lib/locale';
-	import { AuthWrapper, Button, Buttons, CommentInput, Form } from '$lib/ui';
+	import { AuthWrapper, CommentInput, Form } from '$lib/ui';
 
 	const { id } = $props<{
 		id: string;
@@ -20,10 +21,7 @@
 	{:else if $loading}
 		<p>Checking the tree...</p>
 	{:else if $tree}
-		<Title title={$tree.species} address={$tree.address ?? undefined} />
-		<TreeContextMenu id={$tree.id} />
-
-		<Form onSubmit={save} sticky>
+		<TreeForm tree={$tree} onSubmit={save} onCancel={close} saving={$busy}>
 			<p>{locale.deleteHeader()}</p>
 
 			<TreeSheet tree={$tree} />
@@ -32,13 +30,8 @@
 
 			<CommentInput value={''} hint={locale.deleteCommentHint()} onChange={handleCommentChange} />
 
-			<Buttons sticky>
-				<Button onClick={save} disabled={$busy}>{locale.deleteConfirm()}</Button>
-				<Button type="cancel" onClick={close}>{locale.editCancel()}</Button>
-			</Buttons>
-
 			<ChangeHistory {id} name="state" />
-		</Form>
+		</TreeForm>
 	{/if}
 </AuthWrapper>
 

@@ -5,7 +5,8 @@
 	import UploadForm from '$lib/components/photos/UploadForm.svelte';
 	import Title from '$lib/components/tree/Title.svelte';
 	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
-	import { routes } from '$lib/routes';
+	import TreeForm from '$lib/components/forms/TreeForm.svelte';
+	import { goto, routes } from '$lib/routes';
 	import { load } from './hooks';
 
 	const { data } = $props();
@@ -13,19 +14,20 @@
 	const treeId = data.id;
 
 	const { handleChange } = load();
+
+	const close = () => {
+		goto(routes.mapPreview(data.id));
+	};
 </script>
 
 <NarrowPage title={locale.photoTitle()} back={routes.mapPreview(data.id)}>
 	<AuthWrapper>
-		<Title title={tree.species} address={tree.address} />
-		<TreeContextMenu id={tree.id} />
-
-		<Form>
+		<TreeForm {tree} onSubmit={close} onCancel={close}>
 			<p>{locale.photoIntro()}</p>
 
 			<PhotoUploader {treeId} onChange={handleChange} />
-		</Form>
 
-		<UploadForm id={tree.id} />
+			<UploadForm id={tree.id} />
+		</TreeForm>
 	</AuthWrapper>
 </NarrowPage>

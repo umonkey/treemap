@@ -51,6 +51,11 @@
 		}
 	}
 
+	.change-list {
+		width: 100%;
+		overflow-x: hidden;
+	}
+
 	.change-list.height td:nth-child(2) {
 		text-align: right;
 	}

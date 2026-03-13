@@ -6,6 +6,7 @@
 
 	import Title from '$lib/components/tree/Title.svelte';
 	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
+	import TreeForm from '$lib/components/forms/TreeForm.svelte';
 	import { locale } from '$lib/locale';
 	import {
 		Button,
@@ -48,10 +49,7 @@
 {:else if $loadError}
 	<p>{$loadError}</p>
 {:else if $tree}
-	<Title title={$tree.species} address={$tree.address ?? undefined} />
-	<TreeContextMenu id={$tree.id} />
-
-	<Form sticky>
+	<TreeForm tree={$tree} onSubmit={save} onCancel={close} saving={$busy}>
 		<p>{locale.replaceHint()}</p>
 
 		<SpeciesInput value={$species} onChange={(value: string) => species.set(value)} />
@@ -65,13 +63,8 @@
 		<YearInput value={$year} onChange={(value: number) => year.set(value)} />
 		<NotesInput value={$notes} onChange={(value: string) => notes.set(value)} />
 
-		<Buttons sticky>
-			<Button type="submit" onClick={save} disabled={$busy}>{locale.addConfirmButton()}</Button>
-			<Button type="cancel" onClick={close} disabled={$busy}>{locale.addCancelButton()}</Button>
-		</Buttons>
-
 		{#if $saveError}
 			<p>{$saveError}</p>
 		{/if}
-	</Form>
+	</TreeForm>
 {/if}

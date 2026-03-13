@@ -16,13 +16,23 @@
 	};
 
 	const { children, tree, saving = false, onSubmit, onCancel }: Props = $props();
+
+	const handleSubmit = (e: Event) => {
+		e.preventDefault();
+		onSubmit();
+	};
+
+	const handleClose = (e: Event) => {
+		e.preventDefault();
+		onClose();
+	};
 </script>
 
 <form>
 	<div class="buttons phone">
-		<Button type="cancel" onClick={onCancel} disabled={saving}>Cancel</Button>
+		<Button type="cancel" onClick={handleClose} disabled={saving}>Cancel</Button>
 		<div class="sep"></div>
-		<Button type="submit" onClick={onSubmit} disabled={saving}>Save</Button>
+		<Button type="submit" onClick={handleSubmit} disabled={saving}>Save</Button>
 	</div>
 
 	<Title title={tree.species} address={tree.address ?? undefined} />
@@ -33,8 +43,8 @@
 	{/if}
 
 	<div class="buttons desktop">
-		<Button type="submit" onClick={onSubmit} disabled={saving}>{locale.editSave()}</Button>
-		<Button type="cancel" onClick={onCancel} disabled={saving}>{locale.editCancel()}</Button>
+		<Button type="submit" onClick={handleSubmit} disabled={saving}>{locale.editSave()}</Button>
+		<Button type="cancel" onClick={handleClose} disabled={saving}>{locale.editCancel()}</Button>
 	</div>
 </form>
 

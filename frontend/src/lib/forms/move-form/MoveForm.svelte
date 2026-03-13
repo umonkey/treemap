@@ -2,6 +2,7 @@
 	import ChangeHistory from '$lib/components/tree/ChangeHistory.svelte';
 	import Title from '$lib/components/tree/Title.svelte';
 	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
+	import TreeForm from '$lib/components/forms/TreeForm.svelte';
 	import { locale } from '$lib/locale';
 	import { Button, Buttons, Form, LocationInput } from '$lib/ui';
 	import { editor } from './hooks';
@@ -19,21 +20,13 @@
 {:else if $loadError}
 	<p>{$loadError}</p>
 {:else if $tree}
-	<Title title={$tree.species} address={$tree.address ?? undefined} />
-	<TreeContextMenu id={$tree.id} />
-
-	<Form onSubmit={save} sticky>
+	<TreeForm tree={$tree} onSubmit={save} onCancel={close} saving={$busy}>
 		<LocationInput value={$value} onChange={handleChange} open />
-
-		<Buttons sticky>
-			<Button type="submit" onClick={save} disabled={$busy}>{locale.editSave()}</Button>
-			<Button type="cancel" onClick={close}>{locale.editCancel()}</Button>
-		</Buttons>
 
 		{#if $saveError}
 			<p>{$saveError}</p>
 		{/if}
 
 		<ChangeHistory {id} name="location" />
-	</Form>
+	</TreeForm>
 {/if}
