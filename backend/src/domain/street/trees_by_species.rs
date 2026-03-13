@@ -1,5 +1,5 @@
 //! This class reports distribution of trees by species.
-//! Ignores stumps.
+//! Ignores non-existing trees (gone, stump, replaced).
 
 use super::schemas::TreesBySpeciesReport;
 use crate::domain::tree::Tree;
@@ -12,23 +12,20 @@ impl TreesBySpeciesReporter {
         Self {}
     }
 
-    pub fn report(&self, trees: &Vec<Tree>) -> Result<Vec<TreesBySpeciesReport>> {
-        let species = self.get_species(trees);
-        let mut res = self.get_reports(&species, trees);
+    pub fn report(&self, trees: &[Tree]) -> Result<Vec<TreesBySpeciesReport>> {
+        let trees: Vec<Tree> = trees.iter().filter(|t| t.is_existing()).cloned().collect();
+        let species = self.get_species(&trees);
+        let mut res = self.get_reports(&species, &trees);
 
         res.sort_by(|a, b| a.species.cmp(&b.species));
 
         Ok(res)
     }
 
-    fn get_species(&self, trees: &Vec<Tree>) -> Vec<String> {
+    fn get_species(&self, trees: &[Tree]) -> Vec<String> {
         let mut species: Vec<String> = Vec::new();
 
         for tree in trees {
-            if tree.state == "stump" {
-                continue;
-            }
-
             if tree.species.is_empty() {
                 continue;
             }
@@ -60,10 +57,6 @@ impl TreesBySpeciesReporter {
         let trees = self.filter_by_species(species, trees);
 
         for tree in trees {
-            if !tree.is_existing() {
-                continue;
-            }
-
             count += 1;
 
             if let Some(height) = tree.height {
@@ -108,7 +101,7 @@ impl TreesBySpeciesReporter {
 
         trees
             .iter()
-            .filter(|tree| tree.species == species && tree.state != "stump")
+            .filter(|tree| tree.species == species)
             .cloned()
             .collect()
     }
