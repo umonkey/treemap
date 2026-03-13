@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
-	import { SearchForm } from '$lib/forms';
+	import SearchForm from './SearchForm.svelte';
 	import { NarrowPage } from '$lib/ui';
 </script>
 

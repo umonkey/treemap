@@ -106,6 +106,8 @@
 
 <style>
 	.search {
+		padding-top: 1rem;
+
 		li {
 			margin: 0 0 var(--gap);
 		}
