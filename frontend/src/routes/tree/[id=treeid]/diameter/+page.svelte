@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
-	import { CrownForm } from '$lib/forms';
+	import CrownForm from './CrownForm.svelte';
 	import { NarrowPage } from '$lib/ui';
 	import { routes } from '$lib/routes';
 

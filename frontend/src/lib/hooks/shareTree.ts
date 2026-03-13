@@ -1,9 +1,9 @@
-import { toast } from '@zerodevx/svelte-toast';
 import { routes } from '$lib/routes';
+import { showError } from '$lib/errors';
 
 export const handleShareTree = async (id: string) => {
 	if (!navigator.share) {
-		toast.push("Your browser doesn't support sharing.");
+		showError("Your browser doesn't support sharing.");
 		return;
 	}
 
@@ -14,6 +14,6 @@ export const handleShareTree = async (id: string) => {
 		});
 	} catch (e) {
 		console.error('Error sharing a tree.', e);
-		toast.push('Error sharing this page.');
+		showError('Error sharing this page.');
 	}
 };

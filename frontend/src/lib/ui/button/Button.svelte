@@ -37,7 +37,7 @@
 	</a>
 {:else}
 	<button
-		{type}
+		type={type == 'submit' ? 'submit' : 'button'}
 		disabled={!!disabled}
 		class={className}
 		onclick={onClick}

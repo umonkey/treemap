@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { AddForm } from '$lib/forms';
-	import { Header, NarrowPage, AuthWrapper } from '$lib/ui';
+	import AddForm from './AddForm.svelte';
+	import { Header, NarrowPage } from '$lib/ui';
 	import { locale } from '$lib/locale';
 
 	const { data } = $props<{
@@ -18,7 +18,5 @@
 <Header title={locale.addTitle()} />
 
 <NarrowPage>
-	<AuthWrapper>
-		<AddForm lat={data.lat} lng={data.lng} />
-	</AuthWrapper>
+	<AddForm lat={data.lat} lng={data.lng} />
 </NarrowPage>

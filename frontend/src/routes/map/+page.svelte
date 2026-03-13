@@ -51,7 +51,7 @@
 		position: relative;
 
 		/* Add space (50px) to the bottom nav bar on mobile */
-		height: calc(100dvh - var(--header-height) - var(--bottom-nav-height));
+		height: calc(100dvh - var(--bottom-nav-height));
 	}
 
 	@media (min-width: 1024px) {

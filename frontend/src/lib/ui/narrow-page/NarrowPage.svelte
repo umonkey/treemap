@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { Header } from '$lib/ui';
 	import type { Snippet } from 'svelte';
+	import Header from '../header/Header.svelte';
 
 	const { children, title, back, nopadding } = $props<{
 		children: Snippet;
 		title?: string;
-		back?: boolean | string | undefined;
+		back?: string;
 		nopadding?: boolean;
 	}>();
 </script>
@@ -16,7 +16,7 @@
 	{/if}
 </svelte:head>
 
-{#if title}
+{#if title || back}
 	<Header {title} {back} />
 {/if}
 
@@ -43,6 +43,13 @@
 				padding-left: var(--gap);
 				padding-right: var(--gap);
 			}
+		}
+	}
+
+	/** On phones, we have a sticky header. **/
+	@media screen and (max-width: 600px) {
+		.narrow-page {
+			margin-top: 30px;
 		}
 	}
 </style>

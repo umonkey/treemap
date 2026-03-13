@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { AddRowForm, Header, NarrowPage, AuthWrapper } from '$lib/ui';
+	import { NarrowPage } from '$lib/ui';
+	import AddRowForm from './AddRowForm.svelte';
 	import { locale } from '$lib/locale';
 
 	import type { ILatLng } from '$lib/types';
@@ -16,10 +17,6 @@
 	<title>{locale.addRowTitle()}</title>
 </svelte:head>
 
-<Header title={locale.addRowTitle()} />
-
 <NarrowPage>
-	<AuthWrapper>
-		<AddRowForm start={data.start} end={data.end} />
-	</AuthWrapper>
+	<AddRowForm start={data.start} end={data.end} />
 </NarrowPage>

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
-	import { CircumferenceForm } from '$lib/forms';
+	import CircumferenceForm from './CircumferenceForm.svelte';
 	import { NarrowPage } from '$lib/ui';
 	import { routes } from '$lib/routes';
 

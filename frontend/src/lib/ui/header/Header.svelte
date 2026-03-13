@@ -73,6 +73,19 @@
 		display: block;
 	}
 
+	/** Sticky header on phones **/
+	@media screen and (max-width: 600px) {
+		.header {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			box-sizing: border-box;
+			background-color: var(--background-color);
+			z-index: 5;
+		}
+	}
+
 	/* Hide burger menu on desktop */
 	@media (min-width: 1024px) {
 		button.bars {

@@ -31,7 +31,7 @@
 		{#if address}
 			&middot; <a href={routes.searchAddress(address)}>{address}</a>{/if}
 	</h1>
-	<button class="edit" onclick={onMenu}>
+	<button class="edit" onclick={onMenu} type="button">
 		<DotsIcon />
 	</button>
 </div>

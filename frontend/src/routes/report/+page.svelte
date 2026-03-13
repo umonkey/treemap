@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
-	import { ReportForm } from '$lib/forms';
+	import ReportForm from './ReportForm.svelte';
 	import { NarrowPage } from '$lib/ui';
 
 	const { data } = $props();

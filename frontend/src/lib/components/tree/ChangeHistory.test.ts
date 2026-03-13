@@ -60,7 +60,8 @@ describe('ChangeHistory hooks', () => {
 			{
 				date: '25.04.2025',
 				value: '1',
-				author: 'John Doe'
+				author: 'John Doe',
+				image: 'https://example.com/johndoe.jpg'
 			}
 		]);
 	});
