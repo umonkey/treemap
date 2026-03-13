@@ -45,4 +45,11 @@
 			}
 		}
 	}
+
+	/** On phones, we have a sticky header. **/
+	@media screen and (max-width: 600px) {
+		.narrow-page {
+			margin-top: 30px;
+		}
+	}
 </style>

@@ -15,7 +15,10 @@
 {#if data}
 	<h3>Objects by state</h3>
 
-	<p>This chart includes existing trees and places where trees were once growing but were cut down.  This shows the potential for additional panting.</p>
+	<p>
+		This chart includes existing trees and places where trees were once growing but were cut down.
+		This shows the potential for additional panting.
+	</p>
 
 	<div class="chart">
 		<PieChart data={formatData(data)} />

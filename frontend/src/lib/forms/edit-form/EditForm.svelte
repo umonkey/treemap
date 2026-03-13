@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Title from '$lib/components/tree/Title.svelte';
 	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
+	import TreeForm from '$lib/components/forms/TreeForm.svelte';
 	import { locale } from '$lib/locale';
 	import {
 		Button,
@@ -47,10 +48,7 @@
 {#if $loading}
 	<!-- Loading... -->
 {:else if $tree}
-	<Title title={$tree.species} address={$tree.address ?? undefined} />
-	<TreeContextMenu id={$tree.id} />
-
-	<Form onSubmit={handleConfirm} sticky>
+	<TreeForm tree={$tree} onSubmit={handleConfirm} onCancel={handleCancel} saving={$saving}>
 		<SpeciesInput value={$updated.species} onChange={handleSpeciesChange} />
 		<HeightInput value={$updated.height} onChange={handleHeightChange} />
 		<CanopyInput value={$updated.diameter} onChange={handleDiameterChange} />
@@ -62,10 +60,5 @@
 		<StreetInput value={$tree.address} onChange={handleAddressChange} />
 
 		<NotesInput value={$updated.notes} onChange={handleNotesChange} />
-
-		<Buttons sticky>
-			<Button type="submit" onClick={handleConfirm} disabled={$saving}>{locale.editSave()}</Button>
-			<Button type="cancel" onClick={handleCancel} disabled={$saving}>{locale.editCancel()}</Button>
-		</Buttons>
-	</Form>
+	</TreeForm>
 {/if}
