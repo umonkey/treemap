@@ -11,11 +11,10 @@
 			girth: number;
 		}[];
 		street: string;
+		total: number;
 	};
 
-	const { data, street }: Props = $props();
-
-	const total = data.reduce((sum, { count }) => sum + count, 0);
+	const { data, street, total }: Props = $props();
 </script>
 
 {#if data}

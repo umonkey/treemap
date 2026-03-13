@@ -29,5 +29,5 @@
 	<HeightReport data={data.heights} title="Trees by height" />
 	<HeightReport data={data.crowns} title="Trees by crown diameter" />
 	<HeightReport data={data.girths} title="Trees by trunk girth" />
-	<SpeciesReport data={data.species} street={data.street} />
+	<SpeciesReport data={data.species} street={data.street} total={data.total} />
 </div>
