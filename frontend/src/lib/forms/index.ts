@@ -1,5 +1,4 @@
 export { default as AddForm } from './add-form/AddForm.svelte';
-export { default as CircumferenceForm } from './circumference-form/CircumferenceForm.svelte';
 export { default as CrownForm } from './crown-form/CrownForm.svelte';
 export { default as DeleteTreeForm } from './delete-tree-form/DeleteTreeForm.svelte';
 export { default as EditForm } from './edit-form/EditForm.svelte';
