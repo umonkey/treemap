@@ -2,6 +2,8 @@
 	import { routes } from '$lib/routes';
 	import type { StreetReport } from '$lib/types';
 	import { HeightReport, SpeciesReport, StateReport } from '$lib/ui';
+	import { Button, Buttons } from '$lib/ui';
+	import { apiClient } from '$lib/api';
 
 	type Props = {
 		data: StreetReport;
@@ -17,7 +19,11 @@
 			data.area / data.existing
 		).toFixed(1)} m² per tree.
 	</p>
-	<p><a href={routes.searchAddress(data.street)}>Open trees on the map</a>.</p>
+
+	<Buttons>
+		<Button link={routes.searchAddress(data.street)}>Open map</Button>
+		<Button link={apiClient.getStreetReportCSV(data.street)}>Download CSV</Button>
+	</Buttons>
 
 	<StateReport data={data.states} />
 	<HeightReport data={data.heights} title="Trees by height" />

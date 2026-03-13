@@ -19,6 +19,7 @@ build:
 
 check: lint
 	cargo check
+	cargo test -- --color=always
 
 clean:
 	rm -f *.profraw

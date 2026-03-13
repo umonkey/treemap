@@ -50,6 +50,25 @@ impl StreetService {
         })
     }
 
+    pub async fn get_trees_on_street(&self, street: &str) -> Result<Vec<Tree>> {
+        let mut trees: Vec<Tree> = vec![];
+        let substring = street.to_lowercase();
+
+        for tree in self.trees.all().await? {
+            if tree.species.to_lowercase() == "error" {
+                continue;
+            }
+
+            if let Some(address) = &tree.address {
+                if address.to_lowercase().contains(&substring) {
+                    trees.push(tree);
+                }
+            }
+        }
+
+        Ok(trees)
+    }
+
     async fn find_trees(&self, street: &str) -> Result<Vec<Tree>> {
         let mut trees: Vec<Tree> = vec![];
         let substring = street.to_lowercase();

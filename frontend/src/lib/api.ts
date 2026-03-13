@@ -132,6 +132,11 @@ export class ApiClient {
 		return await this.request('GET', `v1/streets/report?${params.toString()}`);
 	}
 
+	public getStreetReportCSV(address: string): string {
+		const params = new URLSearchParams({ address });
+		return `${this.root}v1/streets/report.csv?${params.toString()}`;
+	}
+
 	public async getStateStats(): Promise<IResponse<IStateStats[]>> {
 		return await this.request('GET', 'v1/stats/state');
 	}
