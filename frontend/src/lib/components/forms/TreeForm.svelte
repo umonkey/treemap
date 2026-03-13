@@ -17,20 +17,26 @@
 
 	const { children, tree, saving = false, onSubmit, onCancel }: Props = $props();
 
-	const handleSubmit = (e: Event) => {
-		e.preventDefault();
+	const handleSubmit = (e?: Event) => {
+		e?.preventDefault();
 		onSubmit();
 	};
 
-	const handleClose = (e: Event) => {
-		e.preventDefault();
-		onClose();
+	const handleCancel = (e?: Event) => {
+		e?.preventDefault();
+		onCancel();
+	};
+
+	const handleKeyDown = (event: KeyboardEvent) => {
+		if (event.key === 'Enter' && event.ctrlKey) {
+			onSubmit();
+		}
 	};
 </script>
 
-<form>
+<form onsubmit={handleSubmit} onkeydown={handleKeyDown}>
 	<div class="buttons phone">
-		<Button type="cancel" onClick={handleClose} disabled={saving}>Cancel</Button>
+		<Button type="cancel" onClick={handleCancel} disabled={saving}>Cancel</Button>
 		<div class="sep"></div>
 		<Button type="submit" onClick={handleSubmit} disabled={saving}>Save</Button>
 	</div>
@@ -44,7 +50,7 @@
 
 	<div class="buttons desktop">
 		<Button type="submit" onClick={handleSubmit} disabled={saving}>{locale.editSave()}</Button>
-		<Button type="cancel" onClick={handleClose} disabled={saving}>{locale.editCancel()}</Button>
+		<Button type="cancel" onClick={handleCancel} disabled={saving}>{locale.editCancel()}</Button>
 	</div>
 </form>
 
