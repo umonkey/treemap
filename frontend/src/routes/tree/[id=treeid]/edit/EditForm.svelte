@@ -50,7 +50,7 @@
 {:else if $tree}
 	<TreeForm
 		title="Edit Tree"
-		tree={$tree}
+		{id}
 		onSubmit={handleConfirm}
 		onCancel={handleCancel}
 		saving={$saving}

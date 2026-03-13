@@ -1,23 +1,24 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import type { Tree } from '$lib/types';
 	import { locale } from '$lib/locale';
+	import { menuState } from '$lib/stores/treeMenu';
 	import Button from '$lib/ui/button/Button.svelte';
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
+	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
 
 	type Props = {
+		id?: string;
 		children?: Snippet;
 		title?: string;
-		tree: Tree;
 		saving: boolean;
 		onSubmit: () => {};
 		onCancel: () => {};
 	};
 
 	const {
+		id = undefined,
 		children,
 		title = 'Edit Tree',
-		tree,
 		saving = false,
 		onSubmit,
 		onCancel
@@ -38,6 +39,11 @@
 			onSubmit();
 		}
 	};
+
+	const handleLongTap = (e: Event) => {
+		e.preventDefault();
+		menuState.update((value) => !value);
+	};
 </script>
 
 <form onsubmit={handleSubmit} onkeydown={handleKeyDown}>
@@ -45,7 +51,7 @@
 
 	<div class="buttons phone">
 		<button type="button" onclick={handleCancel} disabled={saving}>Cancel</button>
-		<div class="sep">{title}</div>
+		<div class="sep" oncontextmenu={handleLongTap}>{title}</div>
 		<button type="submit" onclick={handleSubmit} disabled={saving}>Save</button>
 	</div>
 
@@ -57,6 +63,10 @@
 		<Button type="submit" onClick={handleSubmit} disabled={saving}>{locale.editSave()}</Button>
 		<Button type="cancel" onClick={handleCancel} disabled={saving}>{locale.editCancel()}</Button>
 	</div>
+
+	{#if id}
+		<TreeContextMenu {id} />
+	{/if}
 </form>
 
 <style>
