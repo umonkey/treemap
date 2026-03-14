@@ -32,9 +32,9 @@
 
 <Header title={locale.profileTitle()} />
 
-<TabList items={tabs} />
-
 <NarrowPage>
+	<TabList items={tabs} />
+
 	{#if $loading}
 		...
 	{:else if $statusCode === 401}

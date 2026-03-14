@@ -30,11 +30,11 @@
 
 <Header title={locale.uploadsTitle()} />
 
-<TabList items={tabs} />
-
 <NarrowPage>
 	<div>
 		<AuthWrapper>
+			<TabList items={tabs} />
+
 			<AutoUploadCheckbox />
 
 			<p class="hint">
