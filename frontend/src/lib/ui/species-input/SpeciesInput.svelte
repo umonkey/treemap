@@ -11,6 +11,7 @@
 	import type { ISpecies } from '$lib/types';
 	import { FormElement } from '$lib/ui';
 	import { onMount } from 'svelte';
+	import SelectButton from '$lib/ui/SelectButton.svelte';
 
 	const { value = '', onChange } = $props<{
 		value?: string | null;
@@ -49,12 +50,7 @@
 		onChange(v);
 	};
 
-	const handleSuggestionClick = (e: Event, v: string) => {
-		e.preventDefault();
-		if (e.target instanceof HTMLElement) {
-			e.target.blur();
-		}
-
+	const handleSuggestionClick = (v: string) => {
 		showOptions = false;
 		currentValue = v;
 		onChange(v);
@@ -108,7 +104,7 @@
 	{#if $suggested && $suggested.length > 0}
 		<div class="suggested">
 			{#each $suggested as option}
-				<button onclick={(e) => handleSuggestionClick(e, option)} type="button">{option}</button>
+				<SelectButton value={option} label={option} onClick={handleSuggestionClick} />
 			{/each}
 		</div>
 	{/if}
@@ -169,16 +165,8 @@
 		padding: 0;
 		margin: 1rem 0 0;
 
-		button {
-			border: 1px solid transparent;
-			padding: 4px 8px;
-			margin: 0 0.5rem 0.5rem 0;
-			cursor: pointer;
-			background-color: var(--sep-color);
-
-			&:hover {
-				border: 1px solid var(--text-color-inactive);
-			}
-		}
+		display: flex;
+		flex-direction: row;
+		gap: 0.5rem;
 	}
 </style>

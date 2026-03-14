@@ -818,7 +818,7 @@ class RussianLocale extends EnglishLocale {
 	}
 
 	public stateDead(): string {
-		return 'мертво';
+		return 'мертвоё';
 	}
 
 	public stateGone(): string {

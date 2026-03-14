@@ -55,10 +55,10 @@
 			onChange={handleLocationChange}
 		/>
 		<SpeciesInput value={$tree.species} onChange={handleSpeciesChange} />
+		<StateInput value={$tree.state} onChange={handleStateChange} />
 		<HeightInput value={$tree.height} onChange={handleHeightChange} />
 		<CanopyInput value={$tree.diameter} onChange={handleDiameterChange} />
 		<CircumferenceInput value={$tree.circumference} onChange={handleCircumferenceChange} />
-		<StateInput value={$tree.state} onChange={handleStateChange} />
 		<YearInput value={$tree.year} onChange={handleYearChange} />
 		<NotesInput value={$tree.notes} onChange={handleNotesChange} />
 	</TreeForm>

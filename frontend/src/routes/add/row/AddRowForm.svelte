@@ -57,10 +57,10 @@
 	<RowSizeInput value={$count} {distance} onChange={handleCountChange} />
 
 	<SpeciesInput value="" onChange={handleSpeciesChange} />
+	<StateInput value="unknown" onChange={handleStateChange} />
 	<HeightInput value={0} onChange={handleHeightChange} />
 	<CanopyInput value={0} onChange={handleDiameterChange} />
 	<CircumferenceInput value={0} onChange={handleCircumferenceChange} />
-	<StateInput value="unknown" onChange={handleStateChange} />
 	<YearInput value={null} onChange={handleYearChange} />
 	<NotesInput value={null} onChange={handleNotesChange} />
 

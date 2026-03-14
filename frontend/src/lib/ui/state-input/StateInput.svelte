@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { HelpButton } from '$lib/ui';
 	import { locale } from '$lib/locale';
+	import { HelpButton } from '$lib/ui';
+	import SelectButton from '$lib/ui/SelectButton.svelte';
 
 	const {
 		value,
@@ -12,58 +13,57 @@
 		onChange: (value: string) => void;
 	}>();
 
-	const handleChange = (e: Event) => {
-		if (e.target) {
-			const select = e.target as HTMLSelectElement;
-			onChange(select.value ?? 'unknown');
-		}
-	};
+	const states = [
+		{ id: 'unknown', label: locale.stateUnknown() },
+		{ id: 'healthy', label: locale.stateHealthy() },
+		{ id: 'dead', label: locale.stateDead() },
+		{ id: 'gone', label: locale.stateGone() },
+		{ id: 'stump', label: locale.stateStump() },
+		{ id: 'replaced', label: locale.stateReplaced() }
+	];
 </script>
 
-<div class="input form">
-	<label>
-		{#if label}<span>{locale.stateLabel()}</span>{/if}
-		<div class="group">
-			<select {value} onchange={handleChange}>
-				<option value="unknown">{locale.stateUnknown()}</option>
-				<option value="healthy">{locale.stateHealthy()}</option>
-				<option value="dead">{locale.stateDead()}</option>
-				<option value="gone">{locale.stateGone()}</option>
-				<option value="stump">{locale.stateStump()}</option>
-				<option value="replaced">{locale.stateReplaced()}</option>
-			</select>
-			<HelpButton help="https://github.com/KanachYerevan/kb/wiki/Understanding-tree-state" />
+<div class="input form state-input">
+	{#if label}<span class="label">{locale.stateLabel()}</span>{/if}
+
+	<div class="group">
+		<div class="buttons">
+			{#each states as state}
+				<SelectButton
+					value={state.id}
+					label={state.label}
+					active={value === state.id}
+					onClick={onChange}
+				/>
+			{/each}
 		</div>
-	</label>
+		<HelpButton help="https://github.com/KanachYerevan/kb/wiki/Understanding-tree-state" />
+	</div>
 </div>
 
 <style>
-	label {
+	.state-input {
 		display: block;
 	}
 
-	span {
+	.label {
 		display: block;
 		margin-bottom: var(--gap);
-	}
-
-	select {
-		width: 100%;
-		padding: var(--gap);
-		border: 1px solid var(--border);
-		border-radius: var(--radius);
-		box-sizing: border-box;
-		background-color: transparent;
-		border: 1px solid var(--sep-color);
-		border-radius: 6px;
-		color: var(--form-color);
-		outline: none;
-		line-height: 1.25em;
+		opacity: 0.75;
+		font-size: 14px;
 	}
 
 	.group {
 		display: flex;
 		flex-direction: row;
 		gap: var(--gap);
+		align-items: flex-start;
+	}
+
+	.buttons {
+		display: flex;
+		flex-wrap: wrap;
+		flex-grow: 1;
+		gap: 0.5rem;
 	}
 </style>

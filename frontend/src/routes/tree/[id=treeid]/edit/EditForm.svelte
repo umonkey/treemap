@@ -50,10 +50,11 @@
 		saving={$saving}
 	>
 		<SpeciesInput value={$updated.species} onChange={handleSpeciesChange} />
+		<StateInput value={$updated.state} onChange={handleStateChange} />
+
 		<HeightInput value={$updated.height} onChange={handleHeightChange} />
 		<CanopyInput value={$updated.diameter} onChange={handleDiameterChange} />
 		<CircumferenceInput value={$updated.circumference} onChange={handleCircumferenceChange} />
-		<StateInput value={$updated.state} onChange={handleStateChange} />
 		<YearInput value={$updated.year} onChange={handleYearChange} />
 		<LocationInput value={{ lat: $tree.lat, lng: $tree.lon }} onChange={handleLocationChange} />
 
