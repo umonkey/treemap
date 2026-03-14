@@ -1,9 +1,10 @@
-import mitt from 'mitt';
 import type { ILatLng } from '$lib/types';
+import mitt from 'mitt';
 
 type MapBusEvent = {
 	center: ILatLng;
 	select: string;
+	menu: string;
 	fit: {
 		start: ILatLng;
 		end: ILatLng;

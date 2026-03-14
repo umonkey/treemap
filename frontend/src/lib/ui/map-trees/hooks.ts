@@ -1,11 +1,11 @@
 // Listen to marker cache update, render items.
 
+import { mapBus } from '$lib/buses';
 import { getMap } from '$lib/map';
 import { markerStore } from '$lib/stores/markerStore';
-import L, { type LayerGroup, type Map } from 'leaflet';
 import type { ITree, MountFn } from '$lib/types';
+import L, { type LayerGroup, type Map } from 'leaflet';
 import { get, writable } from 'svelte/store';
-import { mapBus } from '$lib/buses';
 
 const getTreeCircleProps = (tree: ITree) => {
 	// Default color is for healthy trees.
@@ -89,23 +89,37 @@ export const hooks = ({ onMount }: { onMount: MountFn }) => {
 		lastId.set(tree.id);
 	};
 
+	const handleContextMenu = (tree: ITree, e: L.LeafletMouseEvent) => {
+		L.DomEvent.stop(e);
+
+		console.debug(`[map] Tree ${tree.id} context menu.`);
+
+		mapBus.emit('menu', tree.id);
+
+		if (navigator.vibrate) {
+			navigator.vibrate([50, 50]);
+		}
+	};
+
 	const renderTrees = (trees: ITree[]): LayerGroup => {
 		const group = L.layerGroup();
 
 		// Draw crowns first.  They are bigger and overlap a lot,
 		// so better keep them down.
-		trees.forEach((tree: ITree) => {
+		for (const tree of trees) {
 			const point = L.circle([tree.lat, tree.lon], getTreeCircleProps(tree));
 			point.on('click', () => handleClick(tree));
+			point.on('contextmenu', (e: L.LeafletMouseEvent) => handleContextMenu(tree, e));
 			point.addTo(group);
-		});
+		}
 
 		// Draw trunks on top of crowns.
-		trees.forEach((tree: ITree) => {
+		for (const tree of trees) {
 			const point = L.circle([tree.lat, tree.lon], getTrunkProps(tree));
 			point.on('click', () => handleClick(tree));
+			point.on('contextmenu', (e: L.LeafletMouseEvent) => handleContextMenu(tree, e));
 			point.addTo(group);
-		});
+		}
 
 		return group;
 	};

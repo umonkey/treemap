@@ -1,13 +1,14 @@
 // Loads data to show current state of the tree.
 
 import { apiClient } from '$lib/api';
-import { writable } from 'svelte/store';
 import { mapBus } from '$lib/buses';
-import { routes, goto } from '$lib/routes';
+import { goto, routes } from '$lib/routes';
 import { searchStore } from '$lib/stores';
 import { mapPreviewStore } from '$lib/stores/mapPreviewStore';
+import { menuState } from '$lib/stores/treeMenu';
+import type { DestroyFn, ILatLng, MountFn } from '$lib/types';
+import { writable } from 'svelte/store';
 import { get } from 'svelte/store';
-import type { ILatLng, MountFn, DestroyFn } from '$lib/types';
 
 export const hooks = (mount: MountFn, destroy: DestroyFn) => {
 	const pin = writable<ILatLng | null>(null);
@@ -48,6 +49,12 @@ export const hooks = (mount: MountFn, destroy: DestroyFn) => {
 		goto(routes.mapPreview(id, get(searchStore)));
 	};
 
+	const handleTreeMenu = (id: string) => {
+		console.debug(`[map] Received menu request for tree ${id}.`);
+		goto(routes.mapPreview(id, get(searchStore)));
+		menuState.set(true);
+	};
+
 	const handleSearchQuery = (query: string | null) => {
 		searchStore.set(query ?? undefined);
 	};
@@ -60,12 +67,22 @@ export const hooks = (mount: MountFn, destroy: DestroyFn) => {
 		goto(routes.addRow(start, end));
 	};
 
-	mount(() => mapBus.on('select', handleTreeClick));
+	mount(() => {
+		mapBus.on('select', handleTreeClick);
+		mapBus.on('menu', handleTreeMenu);
+	});
 
 	destroy(() => {
 		mapBus.off('select', handleTreeClick);
+		mapBus.off('menu', handleTreeMenu);
 		mapPreviewStore.set(undefined);
 	});
 
-	return { pin, handlePreviewChange, handleSearchQuery, handleAddTree, handleAddRow };
+	return {
+		pin,
+		handlePreviewChange,
+		handleSearchQuery,
+		handleAddTree,
+		handleAddRow
+	};
 };
