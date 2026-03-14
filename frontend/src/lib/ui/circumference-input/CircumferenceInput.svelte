@@ -7,11 +7,15 @@
 		autofocus?: boolean;
 		onChange: (value: number) => void;
 	}>();
+
+	const normalize = (value: number | null): number | null => {
+		return value ? +(value * 100).toFixed() : null;
+	};
 </script>
 
 <NumberInput
 	label={locale.circumferenceLabel()}
-	value={value ? value * 100 : null}
+	value={normalize(value)}
 	{autofocus}
 	placeholder="0.0"
 	onChange={(value: number) => onChange(value / 100)}

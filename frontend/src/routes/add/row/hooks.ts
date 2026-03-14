@@ -92,7 +92,6 @@ export const hooks = ({ start, end }: { start: ILatLng; end: ILatLng }) => {
 
 			if (status >= 200 && status < 300 && d) {
 				const id = d.trees[0].id;
-				const currentState = get(state);
 				goto(routes.mapPreview(id));
 			} else if (e) {
 				console.error(`Error ${status} adding trees.`);
