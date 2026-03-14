@@ -178,7 +178,7 @@ class EnglishLocale {
 	}
 
 	public circumferenceHint(): string {
-		return 'Measure at chest level, aka 120 cm from the ground.';
+		return 'Measure at chest level, aka 120 cm from the ground. If there are multiple trunks, measure the thickest one.';
 	}
 
 	public stateLabel(): string {
@@ -802,7 +802,7 @@ class RussianLocale extends EnglishLocale {
 	}
 
 	public circumferenceHint(): string {
-		return 'Измеряют на высоте 120-130 см от земли.';
+		return 'Измеряют на высоте 120-130 см от земли. Если стволов несколько, измерьте самый толстый.';
 	}
 
 	public stateLabel(): string {
@@ -1426,7 +1426,7 @@ class ArmenianLocale extends EnglishLocale {
 	}
 
 	public circumferenceHint(): string {
-		return 'Չափել կրծքավանդակի մակարդակով, այսինքն՝ 120 սմ հողից:';
+		return 'Չափել կրծքավանդակի մակարդակով, այսինքն՝ 120 սմ հողից: Եթե կան մի քանի բներ, չափեք ամենահաստը:';
 	}
 
 	public stateLabel(): string {
@@ -1799,11 +1799,11 @@ export const getLanguageCode = (): LangCode => {
 const guessLocale = () => {
 	const lang = getLanguageCode();
 
-	if (lang == 'ru') {
+	if (lang === 'ru') {
 		return new RussianLocale();
 	}
 
-	if (lang == 'hy') {
+	if (lang === 'hy') {
 		return new ArmenianLocale();
 	}
 
