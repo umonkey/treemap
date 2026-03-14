@@ -7,6 +7,6 @@
 	const { data } = $props();
 </script>
 
-<NarrowPage title={locale.editTitle()} back={routes.mapPreview(data.id)}>
+<NarrowPage>
 	<EditForm id={data.id} />
 </NarrowPage>
