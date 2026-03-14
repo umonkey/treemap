@@ -38,13 +38,23 @@
 	};
 
 	// This is called when the user clicks an autocomplete suggestion.
-	const handleOptionClick = (v: string) => {
+	const handleOptionClick = (e: Event, v: string) => {
+		e.preventDefault();
+		if (e.target instanceof HTMLElement) {
+			e.target.blur();
+		}
+
 		showOptions = false;
 		currentValue = v;
 		onChange(v);
 	};
 
-	const handleSuggestionClick = (v: string) => {
+	const handleSuggestionClick = (e: Event, v: string) => {
+		e.preventDefault();
+		if (e.target instanceof HTMLElement) {
+			e.target.blur();
+		}
+
 		showOptions = false;
 		currentValue = v;
 		onChange(v);
@@ -88,7 +98,7 @@
 			{#each options as option}
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-				<li onclick={() => handleOptionClick(option.name)}>
+				<li onclick={(e) => handleOptionClick(e, option.name)}>
 					{option.name} <small>~ {option.local}</small>
 				</li>
 			{/each}
@@ -96,13 +106,11 @@
 	{/if}
 
 	{#if $suggested && $suggested.length > 0}
-		<ul class="suggested" aria-label="history">
+		<div class="suggested">
 			{#each $suggested as option}
-				<!-- svelte-ignore a11y_click_events_have_key_events -->
-				<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-				<li onclick={() => handleSuggestionClick(option)}><u>{option}</u></li>
+				<button onclick={(e) => handleSuggestionClick(e, option)} type="button">{option}</button>
 			{/each}
-		</ul>
+		</div>
 	{/if}
 </FormElement>
 
@@ -157,26 +165,19 @@
 		opacity: 0.5;
 	}
 
-	ul.suggested {
+	.suggested {
 		padding: 0;
-		list-style-type: none;
+		margin: 1rem 0 0;
 
-		li {
-			display: inline-block;
-			opacity: 0.5;
-			margin-right: 0.25em;
+		button {
+			border: 1px solid transparent;
+			padding: 4px 8px;
+			margin: 0 0.5rem 0 0;
+			cursor: pointer;
+			background-color: var(--sep-color);
 
-			u {
-				cursor: pointer;
-				color: var(--link-color);
-			}
-
-			&:after {
-				content: ',';
-			}
-
-			&:last-child:after {
-				content: '';
+			&:hover {
+				border: 1px solid var(--text-color-inactive);
 			}
 		}
 	}

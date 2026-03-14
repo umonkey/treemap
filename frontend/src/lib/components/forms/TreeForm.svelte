@@ -79,7 +79,7 @@
 		position: relative;
 		display: flex;
 		flex-direction: column;
-		gap: 1rem;
+		gap: 2rem;
 	}
 
 	h2 {
@@ -87,6 +87,7 @@
 		font-weight: 300;
 		border-bottom: solid 1px rgba(128, 128, 128, 0.2);
 		padding-bottom: 0.5rem;
+		margin: 1rem 0 0;
 	}
 
 	.buttons {
