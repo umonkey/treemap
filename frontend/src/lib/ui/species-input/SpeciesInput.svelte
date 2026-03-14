@@ -172,7 +172,7 @@
 		button {
 			border: 1px solid transparent;
 			padding: 4px 8px;
-			margin: 0 0.5rem 0 0;
+			margin: 0 0.5rem 0.5rem 0;
 			cursor: pointer;
 			background-color: var(--sep-color);
 
