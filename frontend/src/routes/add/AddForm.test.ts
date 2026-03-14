@@ -123,7 +123,7 @@ describe('AddForm', async () => {
 		});
 
 		const em = screen.getByRole('button', {
-			name: /submit changes/i
+			name: /save changes/i
 		});
 
 		await user.click(em);
@@ -173,7 +173,7 @@ describe('AddForm', async () => {
 		await inputNumber(/year/i, '1980');
 
 		const submit = screen.getByRole('button', {
-			name: /submit changes/i
+			name: /save changes/i
 		});
 		await user.click(submit);
 

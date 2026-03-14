@@ -29,7 +29,7 @@ export const format = (changes: IChange[]): Record[] => {
 	});
 };
 
-export const load = (id: string, propName: string) => {
+export const load = (id: string, propName: string, limit: number) => {
 	const loading = writable<boolean>(true);
 	const error = writable<boolean>(false);
 	const history = writable<IChange[]>([]);
@@ -38,7 +38,7 @@ export const load = (id: string, propName: string) => {
 		.getTreeHistory(id)
 		.then((res) => {
 			if (res.status >= 200 && res.status < 400 && res.data) {
-				history.set(filter(res.data.props, propName));
+				history.set(filter(res.data.props, propName).slice(0, limit));
 				addUsers(res.data.users);
 			} else {
 				error.set(true);

@@ -2,12 +2,17 @@
 	import { locale } from '$lib/locale';
 	import { format, load } from './ChangeHistory';
 
-	const { id, name } = $props<{
+	const {
+		id,
+		name,
+		limit = 10
+	} = $props<{
 		id: string;
 		name: string;
+		limit?: number;
 	}>();
 
-	const { loading, error, history } = load(id, name);
+	const { loading, error, history } = load(id, name, limit);
 
 	const className = `change-list ${name}`;
 </script>

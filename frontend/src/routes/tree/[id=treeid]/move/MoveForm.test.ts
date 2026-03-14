@@ -52,7 +52,7 @@ describe('MoveForm', async () => {
 		});
 
 		const confirm = await screen.findByRole('button', {
-			name: /submit changes/i
+			name: /save changes/i
 		});
 
 		await user.click(confirm);

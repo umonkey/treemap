@@ -11,6 +11,7 @@
 		children?: Snippet;
 		title?: string;
 		saving?: boolean;
+		canSave?: boolean;
 		onSubmit: () => void;
 		onCancel: () => void;
 		tree?: unknown;
@@ -21,6 +22,7 @@
 		children,
 		title = 'Edit Tree',
 		saving = false,
+		canSave = true,
 		onSubmit,
 		onCancel
 	}: Props = $props();
@@ -56,7 +58,7 @@
 			<button type="button" onclick={handleCancel} disabled={saving}>Cancel</button>
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
 			<div class="sep" oncontextmenu={handleLongTap}>{title}</div>
-			<button type="submit" disabled={saving}>Save</button>
+			<button type="submit" disabled={!canSave || saving}>Save</button>
 		</div>
 
 		{#if children}
@@ -64,7 +66,9 @@
 		{/if}
 
 		<div class="buttons desktop">
-			<Button type="submit" onClick={handleSubmit} disabled={saving}>Save changes</Button>
+			<Button type="submit" onClick={handleSubmit} disabled={!canSave || saving}
+				>Save changes</Button
+			>
 			<Button type="cancel" onClick={handleCancel} disabled={saving}>{locale.editCancel()}</Button>
 		</div>
 

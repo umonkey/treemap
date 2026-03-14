@@ -65,7 +65,6 @@ export const hooks = (mount: MountFn, destroy: DestroyFn) => {
 	destroy(() => {
 		mapBus.off('select', handleTreeClick);
 		mapPreviewStore.set(undefined);
-		console.debug('DESTROY');
 	});
 
 	return { pin, handlePreviewChange, handleSearchQuery, handleAddTree, handleAddRow };

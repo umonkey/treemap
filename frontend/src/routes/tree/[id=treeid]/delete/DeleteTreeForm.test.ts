@@ -65,7 +65,7 @@ describe('DeleteTreeForm', async () => {
 
 		const confirm = (
 			await screen.findAllByRole('button', {
-				name: /submit/i
+				name: /save/i
 			})
 		)[0];
 
@@ -125,7 +125,7 @@ describe('DeleteTreeForm', async () => {
 
 		const confirm = (
 			await screen.findAllByRole('button', {
-				name: /submit/i
+				name: /save/i
 			})
 		)[0];
 
