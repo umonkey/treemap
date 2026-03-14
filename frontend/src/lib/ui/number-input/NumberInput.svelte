@@ -25,7 +25,7 @@
 		onChange: (value: number) => void;
 	}>();
 
-	const handleChange = (e: Event) => {
+	const handleInput = (e: Event) => {
 		if (e.target) {
 			onChange((e.target as HTMLInputElement).valueAsNumber);
 		}
@@ -43,6 +43,6 @@
 		{min}
 		{max}
 		{step}
-		onchange={handleChange}
+		oninput={handleInput}
 	/>
 </FormElement>
