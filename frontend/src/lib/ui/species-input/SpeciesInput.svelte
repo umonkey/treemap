@@ -104,7 +104,9 @@
 	{#if $suggested && $suggested.length > 0}
 		<div class="suggested">
 			{#each $suggested as option}
-				<SelectButton value={option} label={option} onClick={handleSuggestionClick} />
+				{#if option}
+					<SelectButton value={option} label={option} onClick={handleSuggestionClick} />
+				{/if}
 			{/each}
 		</div>
 	{/if}
@@ -167,6 +169,7 @@
 
 		display: flex;
 		flex-direction: row;
+		flex-wrap: wrap;
 		gap: 0.5rem;
 	}
 </style>
