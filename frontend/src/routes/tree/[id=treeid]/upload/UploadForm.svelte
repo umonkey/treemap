@@ -59,7 +59,7 @@
 					{file.added_at ? formatDate(file.added_at) : ''} — {user?.name ?? 'unknown'}
 				</div>
 
-				<button class="menu-trigger" onclick={() => openMenu(file)}>
+				<button class="menu-trigger" onclick={() => openMenu(file)} type="button">
 					<DotsIcon />
 				</button>
 			</div>
