@@ -1,0 +1,40 @@
+name: trees
+
+services:
+  backend:
+    build:
+      context: backend
+    container_name: backend
+    command: /app/startup.sh
+    restart: unless-stopped
+    volumes:
+      - var:/app/var
+      - ./backend/config.toml:/app/config.toml
+    environment:
+      - FILES_KEY=${FILES_KEY}
+      - FILES_SECRET=${FILES_SECRET}
+      - JWT_SECRET=${JWT_SECRET}
+      - RUST_LOG=info
+      - SQS_KEY=${SQS_KEY}
+      - SQS_SECRET=${SQS_SECRET}
+      - TREEMAP_CONFIG=/app/config.toml
+      - TURSO_TOKEN=${TURSO_TOKEN}
+
+  caddy:
+    image: caddy:latest
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - backend
+
+volumes:
+  var:
+  caddy_data:
+  caddy_config:
