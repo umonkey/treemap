@@ -21,14 +21,14 @@ services:
       - TURSO_TOKEN=${TURSO_TOKEN}
 
   caddy:
-    image: caddy:latest
+    build:
+      context: services/caddy
     container_name: caddy
     restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
       - caddy_config:/config
     depends_on:
