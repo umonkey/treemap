@@ -22,4 +22,4 @@ echo $CR_TOKEN | docker login ghcr.io -u $CR_USER --password-stdin
 
 git pull
 docker compose -f compose.prod.yaml pull
-exec docker compose -f compose.prod.yaml up
+docker compose -f compose.prod.yaml up -d
