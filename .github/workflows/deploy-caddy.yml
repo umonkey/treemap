@@ -51,8 +51,12 @@ jobs:
       - name: Deploy to cloud.treemaps.app
         if: github.ref == 'refs/heads/master'
         uses: appleboy/ssh-action@v1.2.0
+        env:
+          CR_USER: ${{ github.actor }}
+          CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           host: cloud.treemaps.app
           username: app
           key: ${{ secrets.SSH_KEY }}
+          envs: CR_USER,CR_TOKEN
           script: ./update-deployment.sh
