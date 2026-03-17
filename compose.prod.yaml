@@ -5,11 +5,12 @@ name: trees
 
 services:
   backend:
-    build:
-      context: backend
+    image: ghcr.io/umonkey/treemap:latest
     container_name: backend
     command: /app/startup.sh
     restart: unless-stopped
+    ports:
+      - "8000:8000"
     volumes:
       - var:/app/var
       - ./backend/config.toml:/app/config.toml
@@ -21,7 +22,7 @@ services:
       - SQS_KEY=${SQS_KEY}
       - SQS_SECRET=${SQS_SECRET}
       - TREEMAP_CONFIG=/app/config.toml
-      - TURSO_TOKEN=${TURSO_TOKEN}
+      - TURSO_TOKEN=${TURSO_AUTH_TOKEN}
 
   caddy:
     build:
@@ -34,6 +35,8 @@ services:
     volumes:
       - caddy_data:/data
       - caddy_config:/config
+    environment:
+      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
     depends_on:
       - backend
 
