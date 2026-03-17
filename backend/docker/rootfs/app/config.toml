@@ -1,21 +1,12 @@
 # This is the default configuration file for the application.
 
 # Database configuration.
-# Values: sqlite, turso.
-database = "turso"
+database = "sqlite"
+sqlite_path = "var/database.sqlite"
 
 # Define the file storage backend.
 # The actual backend is configured below.
 file_storage = "s3"
-
-# SQLite database path.
-#sqlite_path = "var/database.sqlite"
-
-# Turso database configuration.
-# Turso is essentially a cloud SQLite.
-# The token will be read from the environment variable TURSO_TOKEN.
-# Details: https://docs.turso.tech/sdk/rust/quickstart
-turso_url = "libsql://treemap-umonkey.aws-eu-west-1.turso.io"
 
 # Path to where the file based secrets are stored.
 #secrets_path = "/run/secrets"

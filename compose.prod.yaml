@@ -1,0 +1,44 @@
+# This file runs the production environment on a virtual server.
+
+
+name: trees
+
+services:
+  backend:
+    image: ghcr.io/umonkey/treemap:latest
+    container_name: backend
+    command: /app/startup.sh
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - var:/app/var
+    environment:
+      - FILES_KEY=${FILES_KEY}
+      - FILES_SECRET=${FILES_SECRET}
+      - JWT_SECRET=${JWT_SECRET}
+      - RUST_LOG=info
+      - SQS_KEY=${SQS_KEY}
+      - SQS_SECRET=${SQS_SECRET}
+      - TREEMAP_CONFIG=/app/config.toml
+      - TURSO_TOKEN=${TURSO_AUTH_TOKEN}
+
+  caddy:
+    image: ghcr.io/umonkey/treemap-caddy:latest
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    environment:
+      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
+    depends_on:
+      - backend
+
+volumes:
+  var:
+  caddy_data:
+  caddy_config:

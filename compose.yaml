@@ -4,16 +4,15 @@
 # application in a dev environment.
 #
 # The web UI is available at:
-# http://127.0.0.1:5173/
-#
-# The backend needs to be rebuild and restarted on every change, the frontend
-# works in hot-reload mode.
+
+name: trees_dev
 
 services:
+
   backend:
     build:
       context: backend
-    container_name: trees-backend
+    container_name: trees_backend
     command: /app/startup.sh
     restart: unless-stopped
     ports:
@@ -33,7 +32,7 @@ services:
   frontend:
     build:
       context: frontend
-    container_name: trees-frontend
+    container_name: trees_frontend
     restart: unless-stopped
     ports:
       - "5173:5173"

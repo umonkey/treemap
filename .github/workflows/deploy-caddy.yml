@@ -1,24 +1,19 @@
-# This workflow builds and deploys the app to our server.
-# It builds a combined image (backend + frontend) and pushes
-# that as ghcr.io/umonkey/treemap:latest
+# This workflow builds and deploys the Caddy reverse proxy.
+# We need a custom build to use Cloudflare for DNS challenge.
 #
-# The workflow uses some caching to speed up Docker builds.
+# The image is built and pushed as: ghcr.io/umonkey/treemap-caddy:latest
 
-name: Deploy Backend
+name: Deploy Caddy
 
 on:
   push:
     branches:
       - master
     paths:
-      - 'backend/**'
-      - 'frontend/**'
-      - 'Dockerfile'
+      - 'services/caddy/**'
   pull_request:
     paths:
-      - 'backend/**'
-      - 'frontend/**'
-      - 'Dockerfile'
+      - 'services/caddy/**'
   workflow_dispatch:
 
 env:
@@ -27,6 +22,9 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/caddy
 
     steps:
       - uses: actions/checkout@v4
@@ -44,13 +42,11 @@ jobs:
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v6
         with:
-          context: .
+          context: services/caddy
           push: ${{ github.ref == 'refs/heads/master' }}
-          tags: ghcr.io/umonkey/treemap:latest
-          cache-from: |
-            type=gha,scope=treemap
-            ghcr.io/umonkey/treemap:latest
-          cache-to: type=gha,mode=max,scope=treemap
+          tags: ghcr.io/umonkey/treemap-caddy:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Deploy to cloud.treemaps.app
         if: github.ref == 'refs/heads/master'
