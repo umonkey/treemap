@@ -33,14 +33,19 @@ COPY backend/Cargo.toml backend/Cargo.lock ./
 # STEP 1: build the backend.
 # Create a dummy main.rs to build only dependencies.
 RUN mkdir src && echo "fn main() {}" > src/main.rs
-RUN cargo build --release
+RUN --mount=type=cache,target=/usr/local/cargo/registry \
+    --mount=type=cache,target=/app/target \
+    cargo build --release
 RUN rm -rf src
 
 # Now build the main application.
 COPY backend/src src
 COPY backend/dev dev
 RUN touch src/main.rs
-RUN cargo build --release
+RUN --mount=type=cache,target=/usr/local/cargo/registry \
+    --mount=type=cache,target=/app/target \
+    cargo build --release && \
+    cp target/release/treemap /app/treemap-bin
 
 
 ##############################
@@ -50,7 +55,8 @@ RUN cargo build --release
 FROM docker.io/library/node:22-alpine AS frontend-builder
 WORKDIR /app
 COPY frontend/package*.json ./
-RUN npm ci
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci
 COPY frontend/. .
 RUN npm run build
 
@@ -65,7 +71,7 @@ LABEL org.opencontainers.image.source=https://github.com/umonkey/treemap
 LABEL org.opencontainers.image.description="A simple self-contained backend and frontend image using an SQLite database."
 RUN apk add --no-cache sqlite supervisor logrotate bash
 WORKDIR /app
-COPY --from=builder /app/target/release/treemap bin/treemap
+COPY --from=builder /app/treemap-bin bin/treemap
 COPY backend/docker/rootfs/ /
 COPY backend/dev/schema-sqlite.sql /app
 COPY backend/config.toml.dev /app

@@ -47,8 +47,10 @@ jobs:
           context: .
           push: ${{ github.ref == 'refs/heads/master' }}
           tags: ghcr.io/umonkey/treemap:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: |
+            type=gha,scope=treemap
+            ghcr.io/umonkey/treemap:latest
+          cache-to: type=gha,mode=max,scope=treemap
 
       - name: Deploy to cloud.treemaps.app
         if: github.ref == 'refs/heads/master'
