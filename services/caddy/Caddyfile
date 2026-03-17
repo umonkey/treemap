@@ -1,7 +1,7 @@
 yerevan.treemaps.app, api.treemaps.app {
-    tls {
-        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-    }
+	tls {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+	}
 
-    reverse_proxy backend:8000
+	reverse_proxy backend:8000
 }
