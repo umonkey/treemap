@@ -25,6 +25,9 @@ jobs:
     defaults:
       run:
         working-directory: services/caddy
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - uses: actions/checkout@v4
