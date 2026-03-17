@@ -24,6 +24,10 @@ on:
 env:
   SSH_KEY: ${{ secrets.SSH_KEY }}
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
