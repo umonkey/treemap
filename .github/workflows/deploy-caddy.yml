@@ -60,4 +60,4 @@ jobs:
           ssh-keyscan -H cloud.treemaps.app >> ~/.ssh/known_hosts
           eval $(ssh-agent -s)
           echo "$SSH_KEY" | tr -d '\r' | ssh-add -
-          ssh app@cloud.treemaps.app "CR_USER='${{ github.actor }}' CR_TOKEN='${{ secrets.GITHUB_TOKEN }}' ./update-deployment.sh"
+          ssh app@cloud.treemaps.app "CR_USER='${{ github.actor }}' CR_TOKEN='${{ secrets.GITHUB_TOKEN }}' ./treemap/update-deployment.sh"
