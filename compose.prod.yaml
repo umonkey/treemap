@@ -24,8 +24,7 @@ services:
       - TURSO_TOKEN=${TURSO_AUTH_TOKEN}
 
   caddy:
-    build:
-      context: services/caddy
+    image: ghcr.io/umonkey/treemap-caddy:latest
     container_name: caddy
     restart: unless-stopped
     ports:
