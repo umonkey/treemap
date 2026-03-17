@@ -18,10 +18,6 @@
 #
 # This approach saves time drastically, which saves CI/CD resources.
 
-LABEL maintainer="hex@umonkey.net"
-LABEL org.opencontainers.image.source=https://github.com/umonkey/treemap
-LABEL org.opencontainers.image.description="A simple self-contained backend and frontend image using an SQLite database."
-
 #############################
 # PHASE 1: build the backend.
 #############################
@@ -64,14 +60,16 @@ RUN npm run build
 #################################
 
 FROM docker.io/library/alpine:3.22
+LABEL maintainer="hex@umonkey.net"
+LABEL org.opencontainers.image.source=https://github.com/umonkey/treemap
+LABEL org.opencontainers.image.description="A simple self-contained backend and frontend image using an SQLite database."
 RUN apk add --no-cache sqlite supervisor logrotate bash
 WORKDIR /app
 COPY --from=builder /app/target/release/treemap bin/treemap
-COPY --from=frontend-builder /app/build /app/static
 COPY backend/docker/rootfs/ /
 COPY backend/dev/schema-sqlite.sql /app
-COPY backend/static /app/static
 COPY backend/config.toml.dev /app
+COPY --from=frontend-builder /app/build /app/static
 
 ENV RUST_LOG=info,treemap=debug
 
