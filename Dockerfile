@@ -18,6 +18,10 @@
 #
 # This approach saves time drastically, which saves CI/CD resources.
 
+LABEL maintainer="hex@umonkey.net"
+LABEL org.opencontainers.image.source=https://github.com/umonkey/treemap
+LABEL org.opencontainers.image.description="A simple self-contained backend and frontend image using an SQLite database."
+
 #############################
 # PHASE 1: build the backend.
 #############################
