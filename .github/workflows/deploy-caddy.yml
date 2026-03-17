@@ -16,6 +16,9 @@ on:
       - 'services/caddy/**'
   workflow_dispatch:
 
+env:
+  SSH_KEY: ${{ secrets.SSH_KEY }}
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -44,3 +47,12 @@ jobs:
           tags: ghcr.io/umonkey/treemap-caddy:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Deploy to cloud.treemaps.app
+        if: github.ref == 'refs/heads/master'
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: cloud.treemaps.app
+          username: app
+          key: ${{ secrets.SSH_KEY }}
+          script: ./update-deployment.sh
