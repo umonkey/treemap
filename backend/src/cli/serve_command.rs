@@ -60,7 +60,7 @@ pub async fn serve_command() {
             .app_data(PayloadConfig::new(config.payload_size))
             // Prioritize because of collisions with wildcards later.
             .service(web::scope("/health").configure(health_router))
-            .service(web::scope("/trees").configure(meta_router))
+            .service(web::scope("/tree").configure(meta_router))
             .service(web::scope("/v1/comments").configure(comment_router))
             .service(web::scope("/v1/upload").configure(upload_router))
             .service(web::scope("/v1/settings").configure(settings_router))
