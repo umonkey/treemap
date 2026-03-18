@@ -1,9 +1,16 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
-	import { Header } from '$lib/ui';
+	import { onMount } from 'svelte';
+	import { pageState } from './hooks.svelte.ts';
 	import MapLibre from '$lib/components/map/MapLibre.svelte';
 
 	const { data } = $props();
+
+	onMount(pageState.onMount);
+
+	$effect(() => {
+		pageState.handleTreeChange(data.preview);
+	});
 </script>
 
 <svelte:head>

@@ -12,77 +12,68 @@
 	import { formatSpecies, formatState, shortDetails } from '$lib/utils/trees';
 	import { handleShareTree } from '$lib/hooks';
 	import { locale } from '$lib/locale';
-	import { hook } from './MapPreview';
+	import { previewState } from './MapPreview.svelte.ts';
+	import { onMount } from 'svelte';
 	import '$lib/styles/variables.css';
 
-	const {
-		visible,
-		expand,
-		error,
-		tree,
-		observations,
-		comments,
-		handleClose,
-		handleContextMenu,
-		toggleExpand
-	} = hook();
+	onMount(previewState.onMount);
 </script>
 
-{#if $visible}
-	<div class="preview" class:expand={!!$expand}>
-		{#if $error}
-			<p>{$error}</p>
-		{:else if $tree}
-			<div class="header">
-				<!-- svelte-ignore a11y_no_static_element_interactions -->
-				<!-- svelte-ignore a11y_click_events_have_key_events -->
-				<div class="title" onclick={toggleExpand}>{formatSpecies($tree.species)}</div>
-				<button class="close" onclick={handleClose}><CloseIcon /></button>
+{#if previewState.tree}
+	<div class="preview" class:expand={!!previewState.expand}>
+		<div class="header">
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<div class="title" onclick={previewState.toggleExpand}>
+				{formatSpecies(previewState.tree.species)}
 			</div>
+			<button class="close" onclick={previewState.handleClose}><CloseIcon /></button>
+		</div>
 
-			<div class="props">
-				{#if $tree.address}
-					<div class="line">
-						<div class="icon">
-							<LocationIcon />
-						</div>
-						<div class="value">{$tree.address}</div>
-					</div>
-				{/if}
+		<div class="props">
+			{#if previewState.tree.address}
 				<div class="line">
 					<div class="icon">
-						<TagIcon />
+						<LocationIcon />
 					</div>
-					<div class="value">{shortDetails($tree)}</div>
+					<div class="value">{previewState.tree.address}</div>
 				</div>
-				<div class="line">
-					<div class="icon">
-						<BatteryIcon />
-					</div>
-					<div class="value">{formatState($tree.state)}</div>
+			{/if}
+			<div class="line">
+				<div class="icon">
+					<TagIcon />
 				</div>
+				<div class="value">{shortDetails(previewState.tree)}</div>
 			</div>
-
-			<GalleryPreview id={$tree.id} />
-
-			<Buttons>
-				<Button link={routes.treeDetails($tree.id)}>{locale.mapPreviewDetails()}</Button>
-				<Button type="secondary" onClick={() => handleShareTree($tree.id)} square
-					><ShareIcon /></Button
-				>
-				<Button type="secondary" onClick={handleContextMenu} square><SettingsIcon /></Button>
-			</Buttons>
-
-			<div class="extras">
-				<Observations observation={$observations} />
-
-				{#each $comments as comment}
-					<Comment {comment} />
-				{/each}
+			<div class="line">
+				<div class="icon">
+					<BatteryIcon />
+				</div>
+				<div class="value">{formatState(previewState.tree.state)}</div>
 			</div>
+		</div>
 
-			<TreeContextMenu id={$tree.id} />
-		{/if}
+		<GalleryPreview id={previewState.tree.id} />
+
+		<Buttons>
+			<Button link={routes.treeDetails(previewState.tree.id)}>{locale.mapPreviewDetails()}</Button>
+			<Button type="secondary" onClick={() => handleShareTree(previewState.tree.id)} square
+				><ShareIcon /></Button
+			>
+			<Button type="secondary" onClick={previewState.handleContextMenu} square
+				><SettingsIcon /></Button
+			>
+		</Buttons>
+
+		<div class="extras">
+			<Observations observation={previewState.observations} />
+
+			{#each previewState.comments as comment}
+				<Comment {comment} />
+			{/each}
+		</div>
+
+		<TreeContextMenu id={previewState.tree.id} />
 	</div>
 {/if}
 
