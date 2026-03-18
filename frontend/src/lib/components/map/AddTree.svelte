@@ -1,11 +1,11 @@
 <script lang="ts">
+	import CrossHair from '$lib/icons/CrossHair.svelte';
+	import Icon from '$lib/icons/MapTreeIcon.svelte';
+	import Button from '$lib/ui/button/Button.svelte';
 	import { type LngLat } from 'maplibre-gl';
 	import { getMapContext } from 'svelte-maplibre';
 	import { Control } from 'svelte-maplibre';
-	import Icon from '$lib/icons/MapTreeIcon.svelte';
-	import Button from '$lib/ui/button/Button.svelte';
 	import { addState } from './AddTree.svelte.ts';
-	import CrossHair from '$lib/icons/CrossHair.svelte';
 
 	const { map } = getMapContext();
 
@@ -14,8 +14,10 @@
 	}>();
 
 	const handleConfirm = () => {
-		const ll = map.getCenter();
-		addState.handleConfirm(ll);
+		const ll = map?.getCenter();
+		if (ll) {
+			addState.handleConfirm(ll);
+		}
 	};
 
 	$effect(() => {

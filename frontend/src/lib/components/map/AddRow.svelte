@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { type LngLat } from 'maplibre-gl';
-	import { getMapContext, GeoJSON, LineLayer } from 'svelte-maplibre';
-	import { Control } from 'svelte-maplibre';
+	import CrossHair from '$lib/icons/CrossHair.svelte';
 	import Icon from '$lib/icons/Ruler.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
-	import { addState } from './AddRow.svelte.ts';
-	import CrossHair from '$lib/icons/CrossHair.svelte';
+	import { type LngLat } from 'maplibre-gl';
 	import { onMount } from 'svelte';
+	import { GeoJSON, LineLayer, getMapContext } from 'svelte-maplibre';
+	import { Control } from 'svelte-maplibre';
+	import { addState } from './AddRow.svelte.ts';
 
 	const { map } = getMapContext();
 
@@ -16,13 +16,16 @@
 
 	onMount(() => {
 		const handler = () => {
-			addState.handleMove(map.getCenter());
+			const center = map?.getCenter();
+			if (center) {
+				addState.handleMove(center);
+			}
 		};
 
-		map.on('move', handler);
+		map?.on('move', handler);
 
 		return () => {
-			map.off('move', handler);
+			map?.off('move', handler);
 		};
 	});
 

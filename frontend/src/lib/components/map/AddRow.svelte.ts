@@ -8,7 +8,8 @@ class AddState {
 	start = $state<LngLat>();
 	end = $state<LngLat>();
 
-	line = $state();
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	line = $state<any>();
 
 	onConfirm = $state<ClickFn>(() => {});
 
