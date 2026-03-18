@@ -1,10 +1,10 @@
 <script lang="ts">
-	import type { LngLat } from 'maplibre-gl';
-	import { Marker } from 'svelte-maplibre';
 	import ICON from '$lib/assets/marker-icon-2x.png';
+	import type { LngLatLike } from 'maplibre-gl';
+	import { Marker } from 'svelte-maplibre';
 
 	const { center } = $props<{
-		center: LngLat;
+		center: LngLatLike;
 	}>();
 </script>
 

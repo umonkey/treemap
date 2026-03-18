@@ -48,7 +48,9 @@
 			{@render children()}
 		{/if}
 
-		<Marker center={mapState.center} />
+		{#if mapState.marker}
+			<Marker center={mapState.marker} />
+		{/if}
 
 		<AddTree onConfirm={mapState.handleAddTree} />
 		<AddRow onConfirm={mapState.handleAddRow} />

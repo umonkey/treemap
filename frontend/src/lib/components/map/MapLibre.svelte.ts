@@ -1,11 +1,11 @@
 import { apiClient } from '$lib/api';
-import { Debouncer } from '$lib/utils/debounce';
 import { mapBus } from '$lib/buses';
+import { goto, routes } from '$lib/routes';
 import { mapStore } from '$lib/stores/mapStore';
 import type { ILatLng } from '$lib/types';
-import type { LngLat, LngLatBounds } from 'maplibre-gl';
+import { Debouncer } from '$lib/utils/debounce';
+import { type LngLat, type LngLatBounds, LngLat as LngLat2 } from 'maplibre-gl';
 import { get } from 'svelte/store';
-import { goto, routes } from '$lib/routes';
 
 type Properties = {
 	id: string;
@@ -32,6 +32,7 @@ class MapLibre {
 	markers = $state.raw<Collection | undefined>(undefined);
 	zoom = $state<number>(13);
 	center = $state<ILatLng | undefined>(undefined);
+	marker = $state<LngLat>();
 
 	fetchDebouncer = new Debouncer(100);
 	storeDebouncer = new Debouncer(500);
@@ -97,6 +98,7 @@ class MapLibre {
 		if (feature.geometry?.type === 'Point') {
 			const [lng, lat] = feature.geometry.coordinates;
 			this.center = { lat, lng };
+			this.marker = new LngLat2(lng, lat);
 		}
 	};
 
