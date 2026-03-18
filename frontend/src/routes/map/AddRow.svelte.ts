@@ -10,7 +10,7 @@ class AddState {
 	end = $state<LngLat>();
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	line = $state<any>();
+	line = $state.raw<any>();
 
 	public toggle = (e: Event) => {
 		e.preventDefault();
