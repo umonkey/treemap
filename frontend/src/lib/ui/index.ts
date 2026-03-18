@@ -23,7 +23,6 @@ export { default as LazyImage } from './lazy-image/LazyImage.svelte';
 export { default as LocationInput } from './location-input/LocationInput.svelte';
 export { default as LocationPicker } from './location-picker/LocationPicker.svelte';
 export { default as LocationTracker } from './location-tracker/LocationTracker.svelte';
-export { default as MapRowPreview } from './map-row-preview/MapRowPreview.svelte';
 export { default as ModeSwitcher } from './mode-switcher/ModeSwitcher.svelte';
 export { default as NarrowPage } from './narrow-page/NarrowPage.svelte';
 export { default as NotesInput } from './notes-input/NotesInput.svelte';

@@ -7,7 +7,8 @@
 	import { hooks } from './hooks';
 	import { locale } from '$lib/locale';
 	import type { ILatLng } from '$lib/types';
-	import { MapRowPreview, RowSizeInput } from '$lib/ui';
+	import { RowSizeInput } from '$lib/ui';
+	import MapRowPreview from '$lib/components/map/MapRowPreview.svelte';
 	import TreeForm from '$lib/components/forms/TreeForm.svelte';
 
 	import {

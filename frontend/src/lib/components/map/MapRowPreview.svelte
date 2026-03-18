@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { ILatLng } from '$lib/types';
-	import { GeoJSON, CircleLayer, LineLayer, getMapContext } from 'svelte-maplibre';
+	import { GeoJSON, CircleLayer, LineLayer } from 'svelte-maplibre';
 	import MapLibre from '$lib/components/map/MapLibre.svelte';
 	import { previewState } from './MapRowPreview.svelte.ts';
 

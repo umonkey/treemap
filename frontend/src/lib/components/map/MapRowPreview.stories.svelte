@@ -1,6 +1,6 @@
 <script lang="ts" module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import { MapRowPreview } from '$lib/ui';
+	import MapRowPreview from './MapRowPreview.svelte';
 
 	const { Story } = defineMeta({
 		title: 'Map/MapRowPreview',
