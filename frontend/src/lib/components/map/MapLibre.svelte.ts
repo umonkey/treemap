@@ -1,5 +1,8 @@
 import { apiClient } from '$lib/api';
+import { Debouncer } from '$lib/utils/debounce';
+import { mapBus } from '$lib/buses';
 import { mapStore } from '$lib/stores/mapStore';
+import type { ILatLng } from '$lib/types';
 import type { LngLatBounds } from 'maplibre-gl';
 import { get } from 'svelte/store';
 
@@ -27,27 +30,29 @@ type Collection = {
 class MapLibre {
 	markers = $state.raw<Collection | undefined>(undefined);
 	zoom = $state<number>(13);
+	center = $state<ILatLng | undefined>(undefined);
 
-	fetchTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
-	storeTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
+	fetchDebouncer = new Debouncer(100);
+	storeDebouncer = new Debouncer(500);
 
 	public constructor() {
 		this.zoom = get(mapStore)?.zoom ?? 13;
+		this.center = get(mapStore)?.center;
 	}
 
 	private updateStore(bounds?: LngLatBounds) {
-		clearTimeout(this.storeTimeout);
-
-		this.storeTimeout = setTimeout(() => {
+		this.storeDebouncer.run(() => {
 			mapStore.update((s) => {
 				const newState = { ...s, zoom: this.zoom };
+
 				if (bounds) {
 					const center = bounds.getCenter();
 					newState.center = { lat: center.lat, lng: center.lng };
 				}
+
 				return newState;
 			});
-		}, 500);
+		});
 	}
 
 	public handleZoom = () => {
@@ -68,25 +73,34 @@ class MapLibre {
 	};
 
 	public handleMoveStart = () => {
-		clearTimeout(this.fetchTimeout);
+		// pass
 	};
 
+	// Handles a click to a tree.
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public handleClick = (e: any) => {
 		if (!e.features || e.features.length === 0) {
 			return;
 		}
 
-		const treeId = e.features[0].properties.id;
+		const feature = e.features[0];
+		const treeId = feature.properties.id;
 		console.debug(`Tree ${treeId} clicked.`);
+
+		mapBus.emit('select', treeId);
+
+		if (navigator.vibrate) {
+			navigator.vibrate(50);
+		}
+
+		if (feature.geometry?.type === 'Point') {
+			const [lng, lat] = feature.geometry.coordinates;
+			this.center = { lat, lng };
+		}
 	};
 
 	private reloadTrees(n: number, e: number, s: number, w: number) {
-		clearTimeout(this.fetchTimeout);
-
-		this.fetchTimeout = setTimeout(() => {
-			console.debug('Requesting markers...');
-
+		this.fetchDebouncer.run(() => {
 			apiClient.getGeoJSON(n, e, s, w).then(({ status, data }) => {
 				if (status === 200 && data) {
 					const collection = data as unknown as Collection;
@@ -94,7 +108,7 @@ class MapLibre {
 					this.markers = collection;
 				}
 			});
-		}, 1000);
+		});
 	}
 }
 

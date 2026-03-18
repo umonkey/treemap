@@ -20,12 +20,18 @@
 	}>();
 
 	let bounds: LngLatBounds | undefined = $state();
+
+	$effect(() => {
+		if (center) {
+			mapState.center = center;
+		}
+	});
 </script>
 
 <div class="map-container">
 	<MapLibre
 		{style}
-		{center}
+		bind:center={mapState.center}
 		bind:zoom={mapState.zoom}
 		class="map"
 		bind:bounds
