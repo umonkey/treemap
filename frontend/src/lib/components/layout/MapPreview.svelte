@@ -1,64 +1,64 @@
 <script lang="ts">
-	import { Buttons, Button } from '$lib/ui';
-	import GalleryPreview from '$lib/components/photos/GalleryPreview.svelte';
-	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
-	import { CloseIcon, ShareIcon, SettingsIcon } from '$lib/icons';
-	import LocationIcon from '$lib/icons/LocationIcon.svelte';
-	import BatteryIcon from '$lib/icons/BatteryIcon.svelte';
-	import TagIcon from '$lib/icons/TagIcon.svelte';
 	import Observations from '$lib/components/observation/Observations.svelte';
+	import GalleryPreview from '$lib/components/photos/GalleryPreview.svelte';
 	import Comment from '$lib/components/tree/Comment.svelte';
-	import { routes } from '$lib/routes';
-	import { formatSpecies, formatState, shortDetails } from '$lib/utils/trees';
+	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
 	import { handleShareTree } from '$lib/hooks';
+	import { CloseIcon, SettingsIcon, ShareIcon } from '$lib/icons';
+	import BatteryIcon from '$lib/icons/BatteryIcon.svelte';
+	import LocationIcon from '$lib/icons/LocationIcon.svelte';
+	import TagIcon from '$lib/icons/TagIcon.svelte';
 	import { locale } from '$lib/locale';
-	import { previewState } from './MapPreview.svelte.ts';
+	import { routes } from '$lib/routes';
+	import { Button, Buttons } from '$lib/ui';
+	import { formatSpecies, formatState, shortDetails } from '$lib/utils/trees';
 	import { onMount } from 'svelte';
+	import { previewState } from './MapPreview.svelte.ts';
 	import '$lib/styles/variables.css';
 
 	onMount(previewState.onMount);
 </script>
 
 {#if previewState.tree}
+	{@const tree = previewState.tree}
 	<div class="preview" class:expand={!!previewState.expand}>
 		<div class="header">
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
 			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<div class="title" onclick={previewState.toggleExpand}>
-				{formatSpecies(previewState.tree.species)}
+				{formatSpecies(tree.species)}
 			</div>
 			<button class="close" onclick={previewState.handleClose}><CloseIcon /></button>
 		</div>
 
 		<div class="props">
-			{#if previewState.tree.address}
+			{#if tree.address}
 				<div class="line">
 					<div class="icon">
 						<LocationIcon />
 					</div>
-					<div class="value">{previewState.tree.address}</div>
+					<div class="value">{tree.address}</div>
 				</div>
 			{/if}
 			<div class="line">
 				<div class="icon">
 					<TagIcon />
 				</div>
-				<div class="value">{shortDetails(previewState.tree)}</div>
+				<div class="value">{shortDetails(tree)}</div>
 			</div>
 			<div class="line">
 				<div class="icon">
 					<BatteryIcon />
 				</div>
-				<div class="value">{formatState(previewState.tree.state)}</div>
+				<div class="value">{formatState(tree.state)}</div>
 			</div>
 		</div>
 
-		<GalleryPreview id={previewState.tree.id} />
+		<GalleryPreview id={tree.id} />
 
 		<Buttons>
-			<Button link={routes.treeDetails(previewState.tree.id)}>{locale.mapPreviewDetails()}</Button>
-			<Button type="secondary" onClick={() => handleShareTree(previewState.tree.id)} square
-				><ShareIcon /></Button
+			<Button link={routes.treeDetails(tree.id)}>{locale.mapPreviewDetails()}</Button>
+			<Button type="secondary" onClick={() => handleShareTree(tree.id)} square><ShareIcon /></Button
 			>
 			<Button type="secondary" onClick={previewState.handleContextMenu} square
 				><SettingsIcon /></Button
@@ -73,7 +73,7 @@
 			{/each}
 		</div>
 
-		<TreeContextMenu id={previewState.tree.id} />
+		<TreeContextMenu id={tree.id} />
 	</div>
 {/if}
 
