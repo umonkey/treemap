@@ -7,6 +7,7 @@
 	import { mapState } from './MapLibre.svelte.ts';
 	import AddTree from './AddTree.svelte';
 	import AddRow from './AddRow.svelte';
+	import Marker from './Marker.svelte';
 
 	// import { MAPTILER_KEY } from '$lib/env';
 	// style = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${MAPTILER_KEY}`,
@@ -46,6 +47,8 @@
 		{#if children}
 			{@render children()}
 		{/if}
+
+		<Marker center={mapState.center} />
 
 		<AddTree onConfirm={mapState.handleAddTree} />
 		<AddRow onConfirm={mapState.handleAddRow} />
