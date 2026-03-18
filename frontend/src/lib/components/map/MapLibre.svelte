@@ -6,6 +6,7 @@
 	import { type Snippet } from 'svelte';
 	import { mapState } from './MapLibre.svelte.ts';
 	import AddTree from './AddTree.svelte';
+	import AddRow from './AddRow.svelte';
 
 	// import { MAPTILER_KEY } from '$lib/env';
 	// style = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${MAPTILER_KEY}`,
@@ -47,6 +48,7 @@
 		{/if}
 
 		<AddTree onConfirm={mapState.handleAddTree} />
+		<AddRow onConfirm={mapState.handleAddRow} />
 
 		{#if mapState.markers}
 			<GeoJSON data={mapState.markers}>

@@ -1,22 +1,30 @@
 <script lang="ts">
 	import { type LngLat } from 'maplibre-gl';
-	import { getMapContext } from 'svelte-maplibre';
+	import { getMapContext, GeoJSON, LineLayer } from 'svelte-maplibre';
 	import { Control } from 'svelte-maplibre';
-	import Icon from '$lib/icons/MapTreeIcon.svelte';
+	import Icon from '$lib/icons/Ruler.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
-	import { addState } from './AddTree.svelte.ts';
+	import { addState } from './AddRow.svelte.ts';
 	import CrossHair from '$lib/icons/CrossHair.svelte';
+	import { onMount } from 'svelte';
 
 	const { map } = getMapContext();
 
 	const { onConfirm } = $props<{
-		onConfirm: (ll: LngLat) => void;
+		onConfirm: (start: LngLat, end: LngLat) => void;
 	}>();
 
-	const handleConfirm = () => {
-		const ll = map.getCenter();
-		addState.handleConfirm(ll);
-	};
+	onMount(() => {
+		const handler = () => {
+			addState.handleMove(map.getCenter());
+		};
+
+		map.on('move', handler);
+
+		return () => {
+			map.off('move', handler);
+		};
+	});
 
 	$effect(() => {
 		addState.onConfirm = onConfirm;
@@ -32,13 +40,28 @@
 </Control>
 
 {#if addState.active}
+	{#if addState.line}
+		<GeoJSON data={addState.line}>
+			<LineLayer
+				layout={{ 'line-cap': 'round', 'line-join': 'round' }}
+				paint={{
+					'line-color': '#007cbf',
+					'line-width': 5,
+					'line-opacity': 0.8
+				}}
+			/>
+		</GeoJSON>
+	{/if}
+
 	<div class="center">
 		<CrossHair />
 	</div>
 
 	<div class="panel">
-		<Button onClick={handleConfirm}>Add</Button>
+		<Button type="secondary" onClick={addState.handleStart}>|&lt;</Button>
+		<Button onClick={addState.handleConfirm}>Add</Button>
 		<Button type="secondary" onClick={addState.handleCancel}>Cancel</Button>
+		<Button type="secondary" onClick={addState.handleEnd}>&gt;|</Button>
 	</div>
 {/if}
 

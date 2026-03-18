@@ -105,6 +105,10 @@ class MapLibre {
 		goto(routes.treeAdd(lat, lng));
 	};
 
+	public handleAddRow = (start: LngLat, end: LngLat) => {
+		goto(routes.addRow(start, end));
+	};
+
 	private reloadTrees(n: number, e: number, s: number, w: number) {
 		this.fetchDebouncer.run(() => {
 			apiClient.getGeoJSON(n, e, s, w).then(({ status, data }) => {
