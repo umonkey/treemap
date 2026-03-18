@@ -8,7 +8,7 @@
 	import { locale } from '$lib/locale';
 	import type { ILatLng } from '$lib/types';
 	import { RowSizeInput } from '$lib/ui';
-	import MapRowPreview from '$lib/components/map/MapRowPreview.svelte';
+	import MapRowPreview from './MapRowPreview.svelte';
 	import TreeForm from '$lib/components/forms/TreeForm.svelte';
 
 	import {
