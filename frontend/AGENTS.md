@@ -8,7 +8,7 @@ This directory contains the static frontend for the tree mapping application.
 - **Language**: TypeScript.
 - **Styling**: Custom CSS with variables (see `src/lib/styles`).
 - **State Management**: Svelte Stores and Runes.
-- **Map Library**: Leaflet.
+- **Map Library**: MapLibre GL via `svelte-maplibre`.
 
 ## Directory Structure
 
