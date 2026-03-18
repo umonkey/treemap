@@ -8,7 +8,7 @@
 	}>();
 </script>
 
-<Marker lngLat={center} offset={[0, -21]}>
+<Marker lngLat={center} offset={[0, -16]}>
 	<img src={ICON} alt="You are here" />
 </Marker>
 
