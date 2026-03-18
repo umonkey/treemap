@@ -1,7 +1,7 @@
-import { apiClient } from "$lib/api";
-import { mapStore } from "$lib/stores/mapStore";
-import type { LngLatBounds } from "maplibre-gl";
-import { get } from "svelte/store";
+import { apiClient } from '$lib/api';
+import { mapStore } from '$lib/stores/mapStore';
+import type { LngLatBounds } from 'maplibre-gl';
+import { get } from 'svelte/store';
 
 type Properties = {
 	id: string;
@@ -12,7 +12,7 @@ type Properties = {
 };
 
 type Feature = {
-	type: "Feature";
+	type: 'Feature';
 	id: string;
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	geometry: any;
@@ -20,7 +20,7 @@ type Feature = {
 };
 
 type Collection = {
-	type: "FeatureCollection";
+	type: 'FeatureCollection';
 	features: Feature[];
 };
 
@@ -85,7 +85,7 @@ class MapLibre {
 		clearTimeout(this.fetchTimeout);
 
 		this.fetchTimeout = setTimeout(() => {
-			console.debug("Requesting markers...");
+			console.debug('Requesting markers...');
 
 			apiClient.getGeoJSON(n, e, s, w).then(({ status, data }) => {
 				if (status === 200 && data) {

@@ -1,25 +1,25 @@
 <script lang="ts">
-import type { LngLatBounds } from "maplibre-gl";
-import { CircleLayer, GeoJSON, MapLibre } from "svelte-maplibre";
-import "maplibre-gl/dist/maplibre-gl.css";
-import type { ILatLng } from "$lib/types";
-import { type Snippet } from "svelte";
-import { mapState } from "./MapLibre.svelte.ts";
+	import type { LngLatBounds } from 'maplibre-gl';
+	import { CircleLayer, GeoJSON, MapLibre } from 'svelte-maplibre';
+	import 'maplibre-gl/dist/maplibre-gl.css';
+	import type { ILatLng } from '$lib/types';
+	import { type Snippet } from 'svelte';
+	import { mapState } from './MapLibre.svelte.ts';
 
-// import { MAPTILER_KEY } from '$lib/env';
-// style = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${MAPTILER_KEY}`,
+	// import { MAPTILER_KEY } from '$lib/env';
+	// style = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${MAPTILER_KEY}`,
 
-const {
-	center,
-	style = "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
-	children = undefined,
-} = $props<{
-	center: ILatLng;
-	style?: string;
-	children?: Snippet;
-}>();
+	const {
+		center,
+		style = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+		children = undefined
+	} = $props<{
+		center: ILatLng;
+		style?: string;
+		children?: Snippet;
+	}>();
 
-let bounds: LngLatBounds | undefined = $state();
+	let bounds: LngLatBounds | undefined = $state();
 </script>
 
 <div class="map-container">
