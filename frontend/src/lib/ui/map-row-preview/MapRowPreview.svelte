@@ -1,7 +1,8 @@
 <script lang="ts">
 	import type { ILatLng } from '$lib/types';
-	import { Map, MapRow, MapMyPosition, MapFullscreen } from '$lib/ui';
-	import { hooks } from './hooks';
+	import { GeoJSON, CircleLayer, LineLayer, getMapContext } from 'svelte-maplibre';
+	import MapLibre from '$lib/components/map/MapLibre.svelte';
+	import { previewState } from './MapRowPreview.svelte.ts';
 
 	const { start, end, count } = $props<{
 		start: ILatLng;
@@ -9,17 +10,40 @@
 		count: number;
 	}>();
 
-	const { handleBoundsChange } = hooks();
-
-	$effect(() => handleBoundsChange(start, end));
+	$effect(() => previewState.update(start, end, count));
 </script>
 
 <div class="container">
-	<Map center={start} zoom={19}>
-		<MapFullscreen />
-		<MapMyPosition />
-		<MapRow {start} {end} {count} />
-	</Map>
+	<MapLibre>
+		<GeoJSON data={previewState.data}>
+			<LineLayer
+				layout={{ 'line-cap': 'round', 'line-join': 'round' }}
+				paint={{
+					'line-color': '#007cbf',
+					'line-width': 2,
+					'line-opacity': 0.8
+				}}
+			/>
+
+			<CircleLayer
+				paint={{
+					'circle-color': '#228B22',
+					'circle-radius': [
+						'interpolate',
+						['exponential', 2],
+						['zoom'],
+						10,
+						['*', 5, 0.00428],
+						22,
+						['*', 5, 17.534]
+					],
+					'circle-opacity': 0.5,
+					'circle-pitch-alignment': 'map',
+					'circle-pitch-scale': 'map'
+				}}
+			/>
+		</GeoJSON>
+	</MapLibre>
 </div>
 
 <style>

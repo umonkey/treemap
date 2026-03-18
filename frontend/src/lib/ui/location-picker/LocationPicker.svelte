@@ -2,7 +2,6 @@
 	import MapLibre from '$lib/components/map/MapLibre.svelte';
 	import MapCenter from '$lib/components/map/MapCenter.svelte';
 	import Marker from '$lib/components/map/Marker.svelte';
-	import { Map, MapPin } from '$lib/ui';
 	import type { ILatLng } from '$lib/types';
 	import { pickerState } from './LocationPicker.svelte.ts';
 
