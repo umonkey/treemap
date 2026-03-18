@@ -1,7 +1,7 @@
 <script lang="ts">
-	import CrossHair from '$lib/icons/CrossHair.svelte';
 	import Icon from '$lib/icons/Ruler.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
+	import MapCenter from '$lib/components/map/MapCenter.svelte';
 	import { onMount } from 'svelte';
 	import { GeoJSON, LineLayer, getMapContext } from 'svelte-maplibre';
 	import { Control } from 'svelte-maplibre';
@@ -48,9 +48,7 @@
 		</GeoJSON>
 	{/if}
 
-	<div class="center">
-		<CrossHair />
-	</div>
+	<MapCenter />
 
 	<div class="panel">
 		<Button type="secondary" onClick={addState.handleStart}>|&lt;</Button>
@@ -67,16 +65,6 @@
 
 	.active {
 		background-color: rgba(0 128 0 / 0.5);
-	}
-
-	.center {
-		position: absolute;
-		left: 50%;
-		top: 50%;
-		z-index: 10;
-		transform: translate(-50%, -50%);
-		width: 50px;
-		height: 50px;
 	}
 
 	.panel {

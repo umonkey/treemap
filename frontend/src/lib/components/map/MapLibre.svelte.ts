@@ -34,6 +34,8 @@ class MapLibre {
 	center = $state<ILatLng>(DEFAULT_MAP_CENTER);
 	marker = $state<LngLat>();
 
+	onMove: (ll: ILatLng) => void = () => {};
+
 	fetchDebouncer = new Debouncer(100);
 	storeDebouncer = new Debouncer(500);
 
@@ -72,6 +74,10 @@ class MapLibre {
 
 		this.reloadTrees(n + dLat / 2, e + dLon / 2, s - dLat / 2, w - dLon / 2);
 		this.updateStore(bounds);
+
+		if (this.onMove) {
+			this.onMove(this.center);
+		}
 	};
 
 	public handleMoveStart = () => {

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import CrossHair from '$lib/icons/CrossHair.svelte';
+	import MapCenter from '$lib/components/map/MapCenter.svelte';
 	import Icon from '$lib/icons/MapTreeIcon.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
 	import { getMapContext } from 'svelte-maplibre';
@@ -26,9 +26,7 @@
 </Control>
 
 {#if addState.active}
-	<div class="center">
-		<CrossHair />
-	</div>
+	<MapCenter />
 
 	<div class="panel">
 		<Button onClick={handleConfirm}>Add</Button>
@@ -43,16 +41,6 @@
 
 	.active {
 		background-color: rgba(0 128 0 / 0.5);
-	}
-
-	.center {
-		position: absolute;
-		left: 50%;
-		top: 50%;
-		z-index: 10;
-		transform: translate(-50%, -50%);
-		width: 50px;
-		height: 50px;
 	}
 
 	.panel {

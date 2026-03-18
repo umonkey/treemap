@@ -1,8 +1,10 @@
 <script lang="ts">
-	import { Map, MapCenter, MapPin, MapFullscreen } from '$lib/ui';
+	import MapLibre from '$lib/components/map/MapLibre.svelte';
+	import MapCenter from '$lib/components/map/MapCenter.svelte';
+	import Marker from '$lib/components/map/Marker.svelte';
+	import { Map, MapPin } from '$lib/ui';
 	import type { ILatLng } from '$lib/types';
-	import { onMount, onDestroy } from 'svelte';
-	import { hooks } from './hooks';
+	import { pickerState } from './LocationPicker.svelte.ts';
 
 	const { center, pin, onMove } = $props<{
 		center: ILatLng;
@@ -10,18 +12,20 @@
 		onMove: (ll: ILatLng) => void;
 	}>();
 
-	hooks(onMount, onDestroy, onMove);
+	$effect(() => {
+		pickerState.onMove = onMove;
+		pickerState.handleCenter(center);
+	});
 </script>
 
 <div class="mapContainer">
-	<Map {center} zoom={19}>
+	<MapLibre onMove={pickerState.handleMove}>
 		<MapCenter />
-		<MapFullscreen />
 
 		{#if pin}
-			<MapPin center={pin} />
+			<Marker center={pin} />
 		{/if}
-	</Map>
+	</MapLibre>
 </div>
 
 <style>

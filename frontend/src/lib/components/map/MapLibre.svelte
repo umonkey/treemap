@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { LngLatBounds } from 'maplibre-gl';
+	import type { ILatLng } from '$lib/types';
 	import { CircleLayer, GeoJSON, MapLibre } from 'svelte-maplibre';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import { type Snippet, onMount } from 'svelte';
@@ -11,15 +12,21 @@
 
 	const {
 		style = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
-		children = undefined
+		children = undefined,
+		onMove
 	} = $props<{
 		style?: string;
 		children?: Snippet;
+		onMove?: (ll: ILatLng) => void;
 	}>();
 
 	let bounds: LngLatBounds | undefined = $state();
 
 	onMount(mapState.onMount);
+
+	$effect(() => {
+		mapState.onMove = onMove;
+	});
 </script>
 
 <div class="map-container">
