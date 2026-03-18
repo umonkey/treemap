@@ -1,7 +1,6 @@
 import { DEFAULT_MAP_CENTER } from '$lib/constants';
 import { apiClient } from '$lib/api';
 import { mapBus } from '$lib/buses';
-import { goto, routes } from '$lib/routes';
 import { mapStore } from '$lib/stores/mapStore';
 import type { ILatLng } from '$lib/types';
 import { Debouncer } from '$lib/utils/debounce';
@@ -95,15 +94,6 @@ class MapLibre {
 		if (navigator.vibrate) {
 			navigator.vibrate(50);
 		}
-	};
-
-	public handleAddTree = (ll: LngLat) => {
-		const { lat, lng } = ll;
-		goto(routes.treeAdd(lat, lng));
-	};
-
-	public handleAddRow = (start: LngLat, end: LngLat) => {
-		goto(routes.addRow(start, end));
 	};
 
 	private reloadTrees(n: number, e: number, s: number, w: number) {

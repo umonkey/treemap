@@ -4,8 +4,6 @@
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import { type Snippet, onMount } from 'svelte';
 	import { mapState } from './MapLibre.svelte.ts';
-	import AddTree from './AddTree.svelte';
-	import AddRow from './AddRow.svelte';
 	import Marker from './Marker.svelte';
 
 	// import { MAPTILER_KEY } from '$lib/env';
@@ -44,9 +42,6 @@
 		{#if mapState.marker}
 			<Marker center={mapState.marker} />
 		{/if}
-
-		<AddTree onConfirm={mapState.handleAddTree} />
-		<AddRow onConfirm={mapState.handleAddRow} />
 
 		{#if mapState.markers}
 			<GeoJSON data={mapState.markers}>

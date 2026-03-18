@@ -3,6 +3,7 @@ import { mapBus } from '$lib/buses';
 import { apiClient } from '$lib/api';
 import { menuState } from '$lib/stores/treeMenu';
 import { showError } from '$lib/errors';
+import { goto, routes } from '$lib/routes';
 
 class PreviewState {
 	tree = $state<ITree>();
@@ -14,13 +15,15 @@ class PreviewState {
 		this.expand = !this.expand;
 	};
 
-	public handleClose = () => {
+	public handleClose = async () => {
 		this.tree = undefined;
 		this.observations = null;
 		this.comments = [];
 		this.expand = false;
 
 		mapBus.emit('pin', undefined);
+
+		await goto(routes.map());
 	};
 
 	public handleContextMenu = () => {

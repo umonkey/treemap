@@ -1,19 +1,17 @@
 import type { LngLat } from 'maplibre-gl';
-
-export type ClickFn = (ll: LngLat) => void;
+import { goto, routes } from '$lib/routes';
 
 class AddState {
 	active = $state<boolean>(false);
-	onConfirm = $state<ClickFn>(() => {});
 
 	public toggle = (e: Event) => {
 		e.preventDefault();
 		this.active = !this.active;
 	};
 
-	public handleConfirm = (ll: LngLat) => {
+	public handleConfirm = async (ll: LngLat) => {
 		this.active = false;
-		this.onConfirm(ll);
+		await goto(routes.treeAdd(ll.lat, ll.lng));
 	};
 
 	public handleCancel = () => {

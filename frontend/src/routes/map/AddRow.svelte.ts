@@ -1,4 +1,5 @@
 import { type LngLat } from 'maplibre-gl';
+import { goto, routes } from '$lib/routes';
 
 export type ClickFn = (start: LngLat, end: LngLat) => void;
 
@@ -11,18 +12,16 @@ class AddState {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	line = $state<any>();
 
-	onConfirm = $state<ClickFn>(() => {});
-
 	public toggle = (e: Event) => {
 		e.preventDefault();
 		this.active = !this.active;
 	};
 
-	public handleConfirm = () => {
+	public handleConfirm = async () => {
 		if (this.start && this.end) {
-			this.onConfirm(this.start, this.end);
 			this.active = false;
 			this.line = undefined;
+			await goto(routes.addRow(this.start, this.end));
 		}
 	};
 

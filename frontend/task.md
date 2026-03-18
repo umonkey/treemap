@@ -11,3 +11,4 @@
 - [ ] Add separate map layer config component
 - [x] Add a marker pointer for selected tree, etc
 - [ ] Make sure map search works
+- [ ] Make sure moving tree works

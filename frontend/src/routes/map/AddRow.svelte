@@ -2,7 +2,6 @@
 	import CrossHair from '$lib/icons/CrossHair.svelte';
 	import Icon from '$lib/icons/Ruler.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
-	import { type LngLat } from 'maplibre-gl';
 	import { onMount } from 'svelte';
 	import { GeoJSON, LineLayer, getMapContext } from 'svelte-maplibre';
 	import { Control } from 'svelte-maplibre';
@@ -10,13 +9,10 @@
 
 	const { map } = getMapContext();
 
-	const { onConfirm } = $props<{
-		onConfirm: (start: LngLat, end: LngLat) => void;
-	}>();
-
 	onMount(() => {
 		const handler = () => {
 			const center = map?.getCenter();
+
 			if (center) {
 				addState.handleMove(center);
 			}
@@ -27,10 +23,6 @@
 		return () => {
 			map?.off('move', handler);
 		};
-	});
-
-	$effect(() => {
-		addState.onConfirm = onConfirm;
 	});
 </script>
 

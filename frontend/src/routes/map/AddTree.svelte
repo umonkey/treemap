@@ -2,27 +2,19 @@
 	import CrossHair from '$lib/icons/CrossHair.svelte';
 	import Icon from '$lib/icons/MapTreeIcon.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
-	import { type LngLat } from 'maplibre-gl';
 	import { getMapContext } from 'svelte-maplibre';
 	import { Control } from 'svelte-maplibre';
 	import { addState } from './AddTree.svelte.ts';
 
 	const { map } = getMapContext();
 
-	const { onConfirm } = $props<{
-		onConfirm: (ll: LngLat) => void;
-	}>();
-
 	const handleConfirm = () => {
 		const ll = map?.getCenter();
+
 		if (ll) {
 			addState.handleConfirm(ll);
 		}
 	};
-
-	$effect(() => {
-		addState.onConfirm = onConfirm;
-	});
 </script>
 
 <Control position="top-left">
