@@ -1,10 +1,16 @@
-import { DEFAULT_MAP_CENTER } from '$lib/constants';
 import { apiClient } from '$lib/api';
 import { mapBus } from '$lib/buses';
+import { DEFAULT_MAP_CENTER } from '$lib/constants';
 import { mapStore } from '$lib/stores/mapStore';
 import type { ILatLng } from '$lib/types';
 import { Debouncer } from '$lib/utils/debounce';
-import { type LngLat, type LngLatBounds, LngLat as LngLat2 } from 'maplibre-gl';
+import {
+	type LngLat,
+	LngLat as LngLat2,
+	type LngLatBounds,
+	LngLatBounds as LngLatBounds2,
+	type Map
+} from 'maplibre-gl';
 import { get } from 'svelte/store';
 
 type Properties = {
@@ -29,6 +35,8 @@ type Collection = {
 };
 
 class MapLibre {
+	map: Map | undefined = undefined;
+
 	markers = $state.raw<Collection | undefined>(undefined);
 	zoom = $state<number>(13);
 	center = $state<ILatLng>(DEFAULT_MAP_CENTER);
@@ -43,6 +51,21 @@ class MapLibre {
 		this.zoom = get(mapStore)?.zoom ?? 13;
 		this.center = get(mapStore)?.center ?? DEFAULT_MAP_CENTER;
 	}
+
+	public handleLoad = () => {
+		if (this.map) {
+			this.handleMoveEnd(this.map.getBounds());
+		}
+	};
+
+	public handleFit = ({ start, end }: { start: ILatLng; end: ILatLng }) => {
+		if (this.map) {
+			const bounds = new LngLatBounds2();
+			bounds.extend([start.lng, start.lat]);
+			bounds.extend([end.lng, end.lat]);
+			this.map.fitBounds(bounds, { padding: 50 });
+		}
+	};
 
 	private updateStore(bounds?: LngLatBounds) {
 		this.storeDebouncer.run(() => {
@@ -127,9 +150,11 @@ class MapLibre {
 
 	public onMount = () => {
 		mapBus.on('pin', this.handlePinChange);
+		mapBus.on('fit', this.handleFit);
 
 		return () => {
 			mapBus.off('pin', this.handlePinChange);
+			mapBus.off('fit', this.handleFit);
 		};
 	};
 

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { LngLatBounds } from 'maplibre-gl';
 	import type { ILatLng } from '$lib/types';
+	import type { LngLatBounds } from 'maplibre-gl';
 	import { CircleLayer, GeoJSON, MapLibre } from 'svelte-maplibre';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import { type Snippet, onMount } from 'svelte';
@@ -32,14 +32,15 @@
 <div class="map-container">
 	<MapLibre
 		{style}
+		bind:map={mapState.map}
 		bind:center={mapState.center}
 		bind:zoom={mapState.zoom}
 		class="map"
 		bind:bounds
-		onmovestart={() => mapState.handleMoveStart()}
+		onmovestart={mapState.handleMoveStart}
 		onmoveend={() => bounds && mapState.handleMoveEnd(bounds)}
-		onzoom={() => mapState.handleZoom()}
-		onload={(map) => mapState.handleMoveEnd(map.getBounds())}
+		onzoom={mapState.handleZoom}
+		onload={mapState.handleLoad}
 		standardControls
 	>
 		{#if children}
