@@ -1,9 +1,10 @@
-import type { ILatLng } from '$lib/types';
 import { mapBus } from '$lib/buses';
 import { spreadDots } from '$lib/map';
+import type { ILatLng } from '$lib/types';
 
 const renderGeoJSON = (start: ILatLng, end: ILatLng, count: number) => {
-	const res = {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const res: any = {
 		type: 'FeatureCollection',
 		features: []
 	};
@@ -33,7 +34,8 @@ const renderGeoJSON = (start: ILatLng, end: ILatLng, count: number) => {
 };
 
 class PreviewState {
-	data = $state.raw();
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	data = $state.raw<any>();
 
 	public update = (start: ILatLng, end: ILatLng, count: number) => {
 		mapBus.emit('fit', { start, end });
