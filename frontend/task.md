@@ -7,3 +7,4 @@
 - [x] Use tree cache
 - [x] Debounce data loads.
 - [ ] Reorder so that small trees are above big.
+- [ ] Center the map on tree click.
