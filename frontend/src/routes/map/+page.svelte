@@ -5,6 +5,7 @@
 	import { Header, Map, MapAddRow, MapAddTree, MapCenter, MapPin, MapSearch } from '$lib/ui';
 	import { onDestroy, onMount } from 'svelte';
 	import { hooks } from './hooks';
+	import MapLibre from '$lib/components/map/MapLibre.svelte';
 
 	const { data } = $props();
 
@@ -30,19 +31,7 @@
 <Header {title} />
 
 <div class="mapContainer">
-	<Map center={$mapCenter} zoom={$mapZoom} searchQuery={data.searchQuery}>
-		{#if $pin}
-			<MapPin center={$pin} />
-		{/if}
-
-		<MapSearch />
-
-		{#if $isMapperMode}
-			<MapCenter />
-			<MapAddTree onConfirm={handleAddTree} />
-			<MapAddRow onConfirm={handleAddRow} />
-		{/if}
-	</Map>
+	<MapLibre center={$mapCenter} />
 </div>
 
 <style>

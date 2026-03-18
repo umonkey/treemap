@@ -1,4 +1,5 @@
 import type { ITree, IObservation, IComment } from '$lib/types';
+import { mapBus } from '$lib/buses';
 import { addUsers } from '$lib/stores/userStore';
 import { addTrees } from '$lib/stores/treeStore';
 import { apiClient } from '$lib/api';
@@ -36,6 +37,11 @@ export const hook = () => {
 			if (res.status === 200 && res.data) {
 				tree.set(res.data);
 				visible.set(true);
+
+				mapBus.emit('center', {
+					lat: res.data.lat,
+					lng: res.data.lon
+				});
 			} else if (res.error) {
 				error.set(res.error.description);
 			}

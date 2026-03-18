@@ -1,3 +1,4 @@
+import { DEFAULT_MAP_CENTER } from '$lib/constants';
 import { apiClient } from '$lib/api';
 import { mapBus } from '$lib/buses';
 import { goto, routes } from '$lib/routes';
@@ -31,7 +32,7 @@ type Collection = {
 class MapLibre {
 	markers = $state.raw<Collection | undefined>(undefined);
 	zoom = $state<number>(13);
-	center = $state<ILatLng | undefined>(undefined);
+	center = $state<ILatLng>(DEFAULT_MAP_CENTER);
 	marker = $state<LngLat>();
 
 	fetchDebouncer = new Debouncer(100);
@@ -39,7 +40,7 @@ class MapLibre {
 
 	public constructor() {
 		this.zoom = get(mapStore)?.zoom ?? 13;
-		this.center = get(mapStore)?.center;
+		this.center = get(mapStore)?.center ?? DEFAULT_MAP_CENTER;
 	}
 
 	private updateStore(bounds?: LngLatBounds) {
@@ -96,9 +97,9 @@ class MapLibre {
 		}
 
 		if (feature.geometry?.type === 'Point') {
-			const [lng, lat] = feature.geometry.coordinates;
-			this.center = { lat, lng };
-			this.marker = new LngLat2(lng, lat);
+			// const [lng, lat] = feature.geometry.coordinates;
+			// this.center = { lat, lng };
+			// this.marker = new LngLat2(lng, lat);
 		}
 	};
 
@@ -122,6 +123,18 @@ class MapLibre {
 			});
 		});
 	}
+
+	public handleCenter = (ll: ILatLng) => {
+		this.center = ll;
+	}
+
+	public onMount = () => {
+		mapBus.on('center', this.handleCenter);
+
+		return () => {
+			mapBus.off('center', this.handleCenter);
+		};
+	};
 }
 
 export const mapState = new MapLibre();

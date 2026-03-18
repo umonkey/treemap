@@ -3,7 +3,7 @@
 	import { CircleLayer, GeoJSON, MapLibre } from 'svelte-maplibre';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import type { ILatLng } from '$lib/types';
-	import { type Snippet } from 'svelte';
+	import { type Snippet, onMount } from 'svelte';
 	import { mapState } from './MapLibre.svelte.ts';
 	import AddTree from './AddTree.svelte';
 	import AddRow from './AddRow.svelte';
@@ -13,22 +13,16 @@
 	// style = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${MAPTILER_KEY}`,
 
 	const {
-		center,
 		style = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
 		children = undefined
 	} = $props<{
-		center: ILatLng;
 		style?: string;
 		children?: Snippet;
 	}>();
 
 	let bounds: LngLatBounds | undefined = $state();
 
-	$effect(() => {
-		if (center) {
-			mapState.center = center;
-		}
-	});
+	onMount(mapState.onMount);
 </script>
 
 <div class="map-container">
