@@ -10,3 +10,4 @@
 - [x] Center the map on tree click.
 - [ ] Add separate map layer config component
 - [ ] Add a marker pointer for selected tree, etc
+- [ ] Make sure map search works
