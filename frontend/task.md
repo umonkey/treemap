@@ -9,5 +9,5 @@
 - [ ] Reorder so that small trees are above big.
 - [x] Center the map on tree click.
 - [ ] Add separate map layer config component
-- [ ] Add a marker pointer for selected tree, etc
+- [x] Add a marker pointer for selected tree, etc
 - [ ] Make sure map search works
