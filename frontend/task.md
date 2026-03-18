@@ -8,3 +8,5 @@
 - [x] Debounce data loads.
 - [ ] Reorder so that small trees are above big.
 - [x] Center the map on tree click.
+- [ ] Add separate map layer config component
+- [ ] Add a marker pointer for selected tree, etc

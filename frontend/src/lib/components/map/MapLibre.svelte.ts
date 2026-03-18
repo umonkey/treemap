@@ -99,6 +99,10 @@ class MapLibre {
 		}
 	};
 
+	public handleAddTree = () => {
+		alert('ADD TREE!');
+	};
+
 	private reloadTrees(n: number, e: number, s: number, w: number) {
 		this.fetchDebouncer.run(() => {
 			apiClient.getGeoJSON(n, e, s, w).then(({ status, data }) => {
