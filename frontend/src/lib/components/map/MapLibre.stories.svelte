@@ -1,5 +1,4 @@
 <script lang="ts" module>
-	import { DEFAULT_MAP_CENTER } from '$lib/constants';
 	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import MapLibre from './MapLibre.svelte';
 
@@ -14,7 +13,7 @@
 
 {#snippet wrapper()}
 	<div class="wrapper">
-		<MapLibre center={DEFAULT_MAP_CENTER} />
+		<MapLibre />
 	</div>
 {/snippet}
 

@@ -80,7 +80,7 @@ export const hooks = ({ onMount }: { onMount: MountFn }) => {
 		// (2) Move the map manually.
 		// (3) Click the same tree again, map should re-center.
 		if (tree.id === get(lastId)) {
-			mapBus.emit('center', {
+			mapBus.emit('pin', {
 				lat: tree.lat,
 				lng: tree.lon
 			});

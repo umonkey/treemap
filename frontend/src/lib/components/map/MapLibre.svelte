@@ -2,7 +2,6 @@
 	import type { LngLatBounds } from 'maplibre-gl';
 	import { CircleLayer, GeoJSON, MapLibre } from 'svelte-maplibre';
 	import 'maplibre-gl/dist/maplibre-gl.css';
-	import type { ILatLng } from '$lib/types';
 	import { type Snippet, onMount } from 'svelte';
 	import { mapState } from './MapLibre.svelte.ts';
 	import AddTree from './AddTree.svelte';

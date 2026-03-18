@@ -1,18 +1,13 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
-	import { mapCenter, mapZoom } from '$lib/stores/mapStore';
-	import { isMapperMode } from '$lib/stores/modeStore';
-	import { Header, Map, MapAddRow, MapAddTree, MapCenter, MapPin, MapSearch } from '$lib/ui';
+	import { Header } from '$lib/ui';
 	import { onDestroy, onMount } from 'svelte';
 	import { hooks } from './hooks';
 	import MapLibre from '$lib/components/map/MapLibre.svelte';
 
 	const { data } = $props();
 
-	const { pin, handlePreviewChange, handleSearchQuery, handleAddTree, handleAddRow } = hooks(
-		onMount,
-		onDestroy
-	);
+	const { handlePreviewChange, handleSearchQuery } = hooks(onMount, onDestroy);
 
 	const title = data.searchQuery ? locale.mapTitleQuery(data.searchQuery) : locale.mapTitle();
 
@@ -31,7 +26,7 @@
 <Header {title} />
 
 <div class="mapContainer">
-	<MapLibre center={$mapCenter} />
+	<MapLibre />
 </div>
 
 <style>

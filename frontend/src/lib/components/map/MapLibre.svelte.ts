@@ -95,12 +95,6 @@ class MapLibre {
 		if (navigator.vibrate) {
 			navigator.vibrate(50);
 		}
-
-		if (feature.geometry?.type === 'Point') {
-			// const [lng, lat] = feature.geometry.coordinates;
-			// this.center = { lat, lng };
-			// this.marker = new LngLat2(lng, lat);
-		}
 	};
 
 	public handleAddTree = (ll: LngLat) => {
@@ -124,16 +118,27 @@ class MapLibre {
 		});
 	}
 
-	public handleCenter = (ll: ILatLng) => {
-		this.center = ll;
-	}
+	// This is triggered by the MapPreview element via mapBus, to tell us
+	// that the user clicked another tree, or closed the preview.
+	public handlePinChange = (ll: ILatLng | undefined) => {
+		if (ll) {
+			this.marker = this.ll(ll);
+			this.center = ll;
+		} else {
+			this.marker = undefined;
+		}
+	};
 
 	public onMount = () => {
-		mapBus.on('center', this.handleCenter);
+		mapBus.on('pin', this.handlePinChange);
 
 		return () => {
-			mapBus.off('center', this.handleCenter);
+			mapBus.off('pin', this.handlePinChange);
 		};
+	};
+
+	private ll = (ll: ILatLng): LngLat => {
+		return new LngLat2(ll.lng, ll.lat);
 	};
 }
 

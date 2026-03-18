@@ -7,12 +7,9 @@ import { searchStore } from '$lib/stores';
 import { mapPreviewStore } from '$lib/stores/mapPreviewStore';
 import { menuState } from '$lib/stores/treeMenu';
 import type { DestroyFn, ILatLng, MountFn } from '$lib/types';
-import { writable } from 'svelte/store';
 import { get } from 'svelte/store';
 
 export const hooks = (mount: MountFn, destroy: DestroyFn) => {
-	const pin = writable<ILatLng | null>(null);
-
 	// This is called when the preview id changes in the URL.
 	// We need to let the preview control know about this,
 	// and also move the map to the new center.
@@ -22,19 +19,15 @@ export const hooks = (mount: MountFn, destroy: DestroyFn) => {
 
 		// No tree selected for preview.
 		if (tree_id === null) {
-			pin.set(null);
+			mapBus.emit('pin', undefined);
 			return;
 		}
 
 		const res = await apiClient.getTree(tree_id);
 
 		if (res.status === 200 && res.data) {
-			mapBus.emit('center', {
-				lat: res.data.lat,
-				lng: res.data.lon
-			});
-
-			pin.set({
+			// FIXME: is this needed?
+			mapBus.emit('pin', {
 				lat: res.data.lat,
 				lng: res.data.lon
 			});
@@ -79,7 +72,6 @@ export const hooks = (mount: MountFn, destroy: DestroyFn) => {
 	});
 
 	return {
-		pin,
 		handlePreviewChange,
 		handleSearchQuery,
 		handleAddTree,

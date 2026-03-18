@@ -1,7 +1,5 @@
 import type { ITree, IObservation, IComment } from '$lib/types';
 import { mapBus } from '$lib/buses';
-import { addUsers } from '$lib/stores/userStore';
-import { addTrees } from '$lib/stores/treeStore';
 import { apiClient } from '$lib/api';
 import { goto } from '$lib/routes';
 import { mapHome } from '$lib/map';
@@ -38,7 +36,7 @@ export const hook = () => {
 				tree.set(res.data);
 				visible.set(true);
 
-				mapBus.emit('center', {
+				mapBus.emit('pin', {
 					lat: res.data.lat,
 					lng: res.data.lon
 				});
@@ -58,8 +56,6 @@ export const hook = () => {
 		apiClient.getTreeComments(id).then((res) => {
 			if (res.status === 200 && res.data) {
 				comments.set(res.data.comments);
-				addUsers(res.data?.users);
-				addTrees(res.data?.trees);
 			} else {
 				comments.set([]);
 			}

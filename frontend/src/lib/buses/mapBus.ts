@@ -3,6 +3,7 @@ import mitt from 'mitt';
 
 type MapBusEvent = {
 	center: ILatLng;
+	pin: ILatLng | undefined;
 	select: string;
 	menu: string;
 	fit: {
