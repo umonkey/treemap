@@ -3,8 +3,9 @@ import { Debouncer } from '$lib/utils/debounce';
 import { mapBus } from '$lib/buses';
 import { mapStore } from '$lib/stores/mapStore';
 import type { ILatLng } from '$lib/types';
-import type { LngLatBounds } from 'maplibre-gl';
+import type { LngLat, LngLatBounds } from 'maplibre-gl';
 import { get } from 'svelte/store';
+import { goto, routes } from '$lib/routes';
 
 type Properties = {
 	id: string;
@@ -99,8 +100,9 @@ class MapLibre {
 		}
 	};
 
-	public handleAddTree = () => {
-		alert('ADD TREE!');
+	public handleAddTree = (ll: LngLat) => {
+		const { lat, lng } = ll;
+		goto(routes.treeAdd(lat, lng));
 	};
 
 	private reloadTrees(n: number, e: number, s: number, w: number) {

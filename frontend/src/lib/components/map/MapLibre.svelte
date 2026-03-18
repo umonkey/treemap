@@ -5,7 +5,7 @@
 	import type { ILatLng } from '$lib/types';
 	import { type Snippet } from 'svelte';
 	import { mapState } from './MapLibre.svelte.ts';
-	import LibreTreeButton from './LibreTreeButton.svelte';
+	import AddTree from './AddTree.svelte';
 
 	// import { MAPTILER_KEY } from '$lib/env';
 	// style = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${MAPTILER_KEY}`,
@@ -46,7 +46,7 @@
 			{@render children()}
 		{/if}
 
-		<LibreTreeButton onClick={mapState.handleAddTree} />
+		<AddTree onConfirm={mapState.handleAddTree} />
 
 		{#if mapState.markers}
 			<GeoJSON data={mapState.markers}>
