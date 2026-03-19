@@ -12,3 +12,4 @@
 - [x] Add a marker pointer for selected tree, etc
 - [ ] Make sure map search works
 - [x] Make sure moving tree works
+- [ ] Drone imagery

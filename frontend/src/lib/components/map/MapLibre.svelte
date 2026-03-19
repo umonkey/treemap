@@ -8,11 +8,12 @@
 	import { mapState } from './MapLibre.svelte.ts';
 	import Marker from './Marker.svelte';
 
-	// import { MAPTILER_KEY } from '$lib/env';
+	import { MAPTILER_KEY } from '$lib/env';
 	// style = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${MAPTILER_KEY}`,
+	// style = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
 
 	const {
-		style = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+		style = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${MAPTILER_KEY}`,
 		children = undefined,
 		onMove
 	} = $props<{
