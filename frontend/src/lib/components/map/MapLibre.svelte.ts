@@ -87,6 +87,8 @@ class MapLibre {
 	};
 
 	public handleMoveEnd = (bounds: LngLatBounds) => {
+		console.debug(`MapLibre moved, new bounds: W=${bounds.getWest().toFixed(5)} S=${bounds.getSouth().toFixed(5)} E=${bounds.getEast().toFixed(5)} N=${bounds.getNorth().toFixed(5)}`);
+
 		const n = bounds.getNorth();
 		const s = bounds.getSouth();
 		const e = bounds.getEast();
