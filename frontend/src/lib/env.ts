@@ -17,7 +17,7 @@ export const MAPS_KEY = 'AIzaSyBatIJw8enkS9rXnssEsFjSCuATGOxE6ec';
 
 // MapTiler key.
 // This is used to display vector tiles.
-export const MAPTILER_KEY = import.meta.env.VITE_MAPTILER_KEY ?? 'Be5pkF1cxLOmxuHCu5aM';
+export const MAPTILER_KEY = import.meta.env.VITE_MAPTILER_KEY ?? 'dUojMAUC4kTIAQW9ZBHc';
 
 export const config = {
 	apiRoot: PUBLIC_API_ROOT,

@@ -2,6 +2,7 @@
 	import BASIC from './basic.png';
 	import DRONE from './drone.png';
 	import LIGHT from './light.png';
+	import DARK from './dark.png';
 
 	import { selectorState } from './LayerSelector.svelte.ts';
 </script>
@@ -17,7 +18,7 @@
 		>
 			<img src={BASIC} alt="Basic layer preview" />
 		</button>
-		<div class="label">Basic</div>
+		<div class="label">Basic OSM</div>
 	</div>
 
 	<div class="item" class:active={selectorState.base == 'light'}>
@@ -37,7 +38,7 @@
 			aria-label="Select Dark base layer"
 			onclick={() => selectorState.setBase('dark')}
 		>
-			<img src={LIGHT} alt="Dark layer preview" />
+			<img src={DARK} alt="Dark layer preview" />
 		</button>
 		<div class="label">Dark</div>
 	</div>

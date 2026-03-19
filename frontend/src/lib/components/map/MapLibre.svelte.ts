@@ -17,6 +17,7 @@ import {
 
 const BASIC_LAYER = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${MAPTILER_KEY}`;
 const LIGHT_LAYER = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json';
+const DARK_LAYER = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json';
 const DRONE_LAYER = 'https://treemap-tiles.fra1.cdn.digitaloceanspaces.com/{z}/{x}/{y}.png';
 
 type Properties = {
@@ -166,11 +167,16 @@ class MapLibre {
 		mapBus.on('pin', this.handlePinChange);
 		mapBus.on('fit', this.handleFit);
 
+		const unsub = mapLayerStore.subscribe(() => {
+			this.updateLayers();
+		});
+
 		this.updateLayers();
 
 		return () => {
 			mapBus.off('pin', this.handlePinChange);
 			mapBus.off('fit', this.handleFit);
+			unsub();
 		};
 	};
 
@@ -179,10 +185,14 @@ class MapLibre {
 	};
 
 	private updateLayers = () => {
+		console.debug('Updating layers...');
+
 		const base = get(mapLayerStore).base;
 
 		if (base === 'light') {
 			this.layer = LIGHT_LAYER;
+		} else if (base === 'dark') {
+			this.layer = DARK_LAYER;
 		} else {
 			this.layer = BASIC_LAYER;
 		}

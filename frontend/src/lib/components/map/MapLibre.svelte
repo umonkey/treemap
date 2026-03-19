@@ -8,6 +8,7 @@
 	import { type Snippet, onMount } from 'svelte';
 	import { mapState } from './MapLibre.svelte.ts';
 	import Marker from './Marker.svelte';
+	import LayerButton from './LayerButton.svelte';
 
 	const { children = undefined, onMove } = $props<{
 		children?: Snippet;
@@ -41,6 +42,8 @@
 		{#if children}
 			{@render children()}
 		{/if}
+
+		<LayerButton />
 
 		{#if mapState.marker}
 			<Marker center={mapState.marker} />
