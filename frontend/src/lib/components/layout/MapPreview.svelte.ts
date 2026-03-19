@@ -32,7 +32,8 @@ class PreviewState {
 
 	private handleTreeSelect = (id: string | undefined) => {
 		if (!id) {
-			return this.handleClose();
+			this.tree = undefined;
+			return;
 		}
 
 		apiClient.getTree(id).then((res) => {
