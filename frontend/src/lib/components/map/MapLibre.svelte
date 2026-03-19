@@ -3,21 +3,13 @@
 	import type { ILatLng } from '$lib/types';
 	import type { LngLatBounds } from 'maplibre-gl';
 	import { CircleLayer, GeoJSON, MapLibre } from 'svelte-maplibre';
+	import { RasterLayer, RasterTileSource } from 'svelte-maplibre';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import { type Snippet, onMount } from 'svelte';
 	import { mapState } from './MapLibre.svelte.ts';
 	import Marker from './Marker.svelte';
 
-	import { MAPTILER_KEY } from '$lib/env';
-	// style = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${MAPTILER_KEY}`,
-	// style = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
-
-	const {
-		style = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${MAPTILER_KEY}`,
-		children = undefined,
-		onMove
-	} = $props<{
-		style?: string;
+	const { children = undefined, onMove } = $props<{
 		children?: Snippet;
 		onMove?: (ll: ILatLng) => void;
 	}>();
@@ -33,7 +25,7 @@
 
 <div class="map-container">
 	<MapLibre
-		{style}
+		style={mapState.layer}
 		bind:map={mapState.map}
 		bind:center={mapState.center}
 		bind:zoom={mapState.zoom}
@@ -52,6 +44,17 @@
 
 		{#if mapState.marker}
 			<Marker center={mapState.marker} />
+		{/if}
+
+		{#if mapState.droneLayer}
+			<RasterTileSource id="drone-source" tiles={[mapState.droneLayer]} tileSize={128} scheme="tms">
+				<RasterLayer
+					id="drone-layer"
+					paint={{
+						'raster-opacity': 0.75
+					}}
+				/>
+			</RasterTileSource>
 		{/if}
 
 		{#if mapState.markers}

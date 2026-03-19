@@ -4,6 +4,9 @@ import { DEFAULT_MAP_CENTER } from '$lib/constants';
 import { mapStore } from '$lib/stores/mapStore';
 import type { ILatLng } from '$lib/types';
 import { Debouncer } from '$lib/utils/debounce';
+import { MAPTILER_KEY } from '$lib/env';
+import { mapLayerStore } from '$lib/stores/mapLayerStore';
+import { get } from 'svelte/store';
 import {
 	type LngLat,
 	LngLat as LngLat2,
@@ -11,7 +14,10 @@ import {
 	LngLatBounds as LngLatBounds2,
 	type Map
 } from 'maplibre-gl';
-import { get } from 'svelte/store';
+
+const BASIC_LAYER = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${MAPTILER_KEY}`;
+const LIGHT_LAYER = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json';
+const DRONE_LAYER = 'https://treemap-tiles.fra1.cdn.digitaloceanspaces.com/{z}/{x}/{y}.png';
 
 type Properties = {
 	id: string;
@@ -36,6 +42,8 @@ type Collection = {
 
 class MapLibre {
 	map = $state.raw<Map>();
+	layer = $state<string>(BASIC_LAYER);
+	droneLayer = $state<string | undefined>(undefined);
 
 	markers = $state.raw<Collection | undefined>(undefined);
 	zoom = $state<number>(13);
@@ -158,6 +166,8 @@ class MapLibre {
 		mapBus.on('pin', this.handlePinChange);
 		mapBus.on('fit', this.handleFit);
 
+		this.updateLayers();
+
 		return () => {
 			mapBus.off('pin', this.handlePinChange);
 			mapBus.off('fit', this.handleFit);
@@ -166,6 +176,22 @@ class MapLibre {
 
 	private ll = (ll: ILatLng): LngLat => {
 		return new LngLat2(ll.lng, ll.lat);
+	};
+
+	private updateLayers = () => {
+		const base = get(mapLayerStore).base;
+
+		if (base === 'light') {
+			this.layer = LIGHT_LAYER;
+		} else {
+			this.layer = BASIC_LAYER;
+		}
+
+		if (get(mapLayerStore).drone) {
+			this.droneLayer = DRONE_LAYER;
+		} else {
+			this.droneLayer = undefined;
+		}
 	};
 }
 

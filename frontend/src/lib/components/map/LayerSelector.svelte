@@ -1,7 +1,7 @@
 <script lang="ts">
 	import BASIC from './basic.png';
-	import LIGHT from './light.png';
 	import DRONE from './drone.png';
+	import LIGHT from './light.png';
 
 	import { selectorState } from './LayerSelector.svelte.ts';
 </script>
@@ -10,22 +10,34 @@
 
 <div class="items">
 	<div class="item" class:active={selectorState.base == 'basic'}>
-		<button type="button" onclick={() => selectorState.setBase('basic')}>
-			<img src={BASIC} />
+		<button
+			type="button"
+			aria-label="Select Basic base layer"
+			onclick={() => selectorState.setBase('basic')}
+		>
+			<img src={BASIC} alt="Basic layer preview" />
 		</button>
 		<div class="label">Basic</div>
 	</div>
 
 	<div class="item" class:active={selectorState.base == 'light'}>
-		<button type="button" onclick={() => selectorState.setBase('light')}>
-			<img src={LIGHT} />
+		<button
+			type="button"
+			aria-label="Select Light base layer"
+			onclick={() => selectorState.setBase('light')}
+		>
+			<img src={LIGHT} alt="Light layer preview" />
 		</button>
 		<div class="label">Light</div>
 	</div>
 
 	<div class="item" class:active={selectorState.base == 'dark'}>
-		<button type="button" onclick={() => selectorState.setBase('dark')}>
-			<img src={LIGHT} />
+		<button
+			type="button"
+			aria-label="Select Dark base layer"
+			onclick={() => selectorState.setBase('dark')}
+		>
+			<img src={LIGHT} alt="Dark layer preview" />
 		</button>
 		<div class="label">Dark</div>
 	</div>
@@ -35,8 +47,8 @@
 
 <div class="items">
 	<div class="item" class:active={!!selectorState.drone}>
-		<button type="button" onclick={selectorState.toggleDrone}>
-			<img src={DRONE} />
+		<button type="button" aria-label="Toggle Drone layer" onclick={selectorState.toggleDrone}>
+			<img src={DRONE} alt="Drone layer preview" />
 		</button>
 		<div class="label">Drone</div>
 	</div>
