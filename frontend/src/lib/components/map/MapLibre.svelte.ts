@@ -35,7 +35,7 @@ type Collection = {
 };
 
 class MapLibre {
-	map: Map | undefined = undefined;
+	map = $state.raw<Map>();
 
 	markers = $state.raw<Collection | undefined>(undefined);
 	zoom = $state<number>(13);
