@@ -1,33 +1,33 @@
 <script lang="ts">
-import { MAX_BOUNDS } from "$lib/constants";
-import type { ILatLng } from "$lib/types";
-import type { LngLatBounds } from "maplibre-gl";
-import { CircleLayer, GeoJSON, MapLibre } from "svelte-maplibre";
-import "maplibre-gl/dist/maplibre-gl.css";
-import { type Snippet, onMount } from "svelte";
-import { mapState } from "./MapLibre.svelte.ts";
-import Marker from "./Marker.svelte";
+	import { MAX_BOUNDS } from '$lib/constants';
+	import type { ILatLng } from '$lib/types';
+	import type { LngLatBounds } from 'maplibre-gl';
+	import { CircleLayer, GeoJSON, MapLibre } from 'svelte-maplibre';
+	import 'maplibre-gl/dist/maplibre-gl.css';
+	import { type Snippet, onMount } from 'svelte';
+	import { mapState } from './MapLibre.svelte.ts';
+	import Marker from './Marker.svelte';
 
-// import { MAPTILER_KEY } from '$lib/env';
-// style = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${MAPTILER_KEY}`,
+	// import { MAPTILER_KEY } from '$lib/env';
+	// style = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${MAPTILER_KEY}`,
 
-const {
-	style = "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
-	children = undefined,
-	onMove,
-} = $props<{
-	style?: string;
-	children?: Snippet;
-	onMove?: (ll: ILatLng) => void;
-}>();
+	const {
+		style = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+		children = undefined,
+		onMove
+	} = $props<{
+		style?: string;
+		children?: Snippet;
+		onMove?: (ll: ILatLng) => void;
+	}>();
 
-let bounds: LngLatBounds | undefined = $state();
+	let bounds: LngLatBounds | undefined = $state();
 
-onMount(mapState.onMount);
+	onMount(mapState.onMount);
 
-$effect(() => {
-	mapState.onMove = onMove;
-});
+	$effect(() => {
+		mapState.onMove = onMove;
+	});
 </script>
 
 <div class="map-container">

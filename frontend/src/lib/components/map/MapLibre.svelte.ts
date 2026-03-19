@@ -87,7 +87,9 @@ class MapLibre {
 	};
 
 	public handleMoveEnd = (bounds: LngLatBounds) => {
-		console.debug(`MapLibre moved, new bounds: W=${bounds.getWest().toFixed(5)} S=${bounds.getSouth().toFixed(5)} E=${bounds.getEast().toFixed(5)} N=${bounds.getNorth().toFixed(5)}`);
+		console.debug(
+			`MapLibre moved, new bounds: W=${bounds.getWest().toFixed(5)} S=${bounds.getSouth().toFixed(5)} E=${bounds.getEast().toFixed(5)} N=${bounds.getNorth().toFixed(5)}`
+		);
 
 		const n = bounds.getNorth();
 		const s = bounds.getSouth();
@@ -99,6 +101,8 @@ class MapLibre {
 
 		this.reloadTrees(n + dLat / 2, e + dLon / 2, s - dLat / 2, w - dLon / 2);
 		this.updateStore(bounds);
+
+		mapBus.emit('center', this.center);
 
 		if (this.onMove) {
 			this.onMove(this.center);

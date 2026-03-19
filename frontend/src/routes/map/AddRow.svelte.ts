@@ -1,4 +1,6 @@
-import { type LngLat } from 'maplibre-gl';
+import { mapBus } from '$lib/buses/mapBus';
+import map, { type LngLat } from 'maplibre-gl';
+import { type ILatLng } from '$lib/types';
 import { goto, routes } from '$lib/routes';
 
 export type ClickFn = (start: LngLat, end: LngLat) => void;
@@ -59,6 +61,18 @@ class AddState {
 					[this.end.lng, this.end.lat]
 				]
 			}
+		};
+	};
+
+	private handleCenter = (ll: ILatLng) => {
+		this.center = new map.LngLat(ll.lng, ll.lat);
+	};
+
+	public onMount = () => {
+		mapBus.on('center', this.handleCenter);
+
+		return () => {
+			mapBus.off('center', this.handleCenter);
 		};
 	};
 }

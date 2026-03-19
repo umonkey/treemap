@@ -3,27 +3,11 @@
 	import Button from '$lib/ui/button/Button.svelte';
 	import MapCenter from '$lib/components/map/MapCenter.svelte';
 	import { onMount } from 'svelte';
-	import { GeoJSON, LineLayer, getMapContext } from 'svelte-maplibre';
+	import { GeoJSON, LineLayer } from 'svelte-maplibre';
 	import { Control } from 'svelte-maplibre';
 	import { addState } from './AddRow.svelte.ts';
 
-	const { map } = getMapContext();
-
-	onMount(() => {
-		const handler = () => {
-			const center = map?.getCenter();
-
-			if (center) {
-				addState.handleMove(center);
-			}
-		};
-
-		map?.on('move', handler);
-
-		return () => {
-			map?.off('move', handler);
-		};
-	});
+	onMount(addState.onMount);
 </script>
 
 <Control position="top-left">

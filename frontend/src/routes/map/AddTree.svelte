@@ -2,19 +2,11 @@
 	import MapCenter from '$lib/components/map/MapCenter.svelte';
 	import Icon from '$lib/icons/MapTreeIcon.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
-	import { getMapContext } from 'svelte-maplibre';
 	import { Control } from 'svelte-maplibre';
 	import { addState } from './AddTree.svelte.ts';
+	import { onMount } from 'svelte';
 
-	const { map } = getMapContext();
-
-	const handleConfirm = () => {
-		const ll = map?.getCenter();
-
-		if (ll) {
-			addState.handleConfirm(ll);
-		}
-	};
+	onMount(addState.onMount);
 </script>
 
 <Control position="top-left">
@@ -29,7 +21,7 @@
 	<MapCenter />
 
 	<div class="panel">
-		<Button onClick={handleConfirm}>Add</Button>
+		<Button onClick={addState.handleConfirm}>Add</Button>
 		<Button type="secondary" onClick={addState.handleCancel}>Cancel</Button>
 	</div>
 {/if}

@@ -1,5 +1,5 @@
-import { ModeEnum } from "$lib/enums";
-import type { IMeResponse, ITree } from "$lib/types";
+import { ModeEnum } from '$lib/enums';
+import type { IMeResponse, ITree } from '$lib/types';
 
 export const DEFAULT_MAP_CENTER = { lat: 40.181389, lng: 44.514444 };
 export const DEFAULT_MODE = ModeEnum.Explorer;
@@ -7,42 +7,42 @@ export const DEFAULT_MODE = ModeEnum.Explorer;
 export const MAX_BOUNDS: [[number, number], [number, number]] = [
 	[
 		44.41675, // west
-		40.11426, // south
+		40.11426 // south
 	],
 	[
 		44.61444, // east
-		40.24785, // north
-	],
+		40.24785 // north
+	]
 ];
 
 export const DEFAULT_TREE = {
-	id: "tree1",
+	id: 'tree1',
 	lat: 40.181389,
 	lon: 44.514444,
-	address: "Yerevan, Armenia",
+	address: 'Yerevan, Armenia',
 	osm_id: null,
-	species: "Populus nigra",
+	species: 'Populus nigra',
 	notes: null,
 	height: null,
 	circumference: null,
 	diameter: null,
-	state: "healthy",
+	state: 'healthy',
 	added_at: 0,
 	updated_at: 0,
-	added_by: "user1",
+	added_by: 'user1',
 	year: null,
 	replaces: null,
 	replaced_by: null,
 	thumbnail_id: null,
 	files: [],
-	users: [],
+	users: []
 } as ITree;
 
 export const DEFAULT_ME = {
-	name: "user1",
-	picture: "https://example.com/foobar.jpg",
+	name: 'user1',
+	picture: 'https://example.com/foobar.jpg',
 	trees_count: 0,
 	comments_count: 0,
 	updates_count: 0,
-	files_count: 0,
+	files_count: 0
 } as IMeResponse;
