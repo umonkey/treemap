@@ -38,7 +38,7 @@
 	@media (min-width: 1024px) {
 		.mapContainer {
 			/* No need for bottom nav bar on desktop */
-			height: calc(100dvh - var(--header-height));
+			height: 100dvh;
 		}
 	}
 </style>
