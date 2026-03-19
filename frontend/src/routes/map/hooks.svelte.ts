@@ -21,6 +21,7 @@ class PageState {
 
 		return () => {
 			mapBus.off('select', handler);
+			mapBus.emit('preview', undefined);
 		};
 	};
 }

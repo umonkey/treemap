@@ -30,7 +30,11 @@ class PreviewState {
 		menuState.set(true);
 	};
 
-	private handleTreeSelect = (id: string) => {
+	private handleTreeSelect = (id: string | undefined) => {
+		if (!id) {
+			return this.handleClose();
+		}
+
 		apiClient.getTree(id).then((res) => {
 			if (res.status === 200 && res.data) {
 				this.tree = res.data;

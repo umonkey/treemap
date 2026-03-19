@@ -12,13 +12,15 @@ type MapBusEvent = {
 	select: string;
 
 	// Triggered by the map container to show a preview.
-	preview: string;
+	preview: string | undefined;
 
 	menu: string;
+
 	fit: {
 		start: ILatLng;
 		end: ILatLng;
 	};
+
 	onMoved: {
 		lat: number;
 		lon: number;
