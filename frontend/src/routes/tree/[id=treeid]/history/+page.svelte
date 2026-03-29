@@ -3,7 +3,6 @@
 	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
 	import TreeTabs from '$lib/components/tree/TreeTabs.svelte';
 	import { loadTreeHistory } from '$lib/hooks';
-	import { routes } from '$lib/routes';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import ChangeList from './ChangeList.svelte';
 

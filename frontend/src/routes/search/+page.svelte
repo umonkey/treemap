@@ -5,7 +5,7 @@
 	import SearchBar from '$lib/components/SearchBar.svelte';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
 
-	import { Form, StreetInput, SpeciesInput, Buttons, Button } from '$lib/ui';
+	import { Form, StreetInput, SpeciesInput } from '$lib/ui';
 	import { hooks } from './hooks';
 
 	let query = $state<string>('');
@@ -109,18 +109,14 @@
 </Dialog>
 
 <style>
-	.search {
-		padding-top: 1rem;
+	li {
+		margin: 0 0 var(--gap);
+	}
 
-		li {
-			margin: 0 0 var(--gap);
-		}
-
-		hr {
-			border: none;
-			border-top: 1px solid var(--sep-color);
-			height: 0;
-			margin: var(--gap) 0;
-		}
+	hr {
+		border: none;
+		border-top: 1px solid var(--sep-color);
+		height: 0;
+		margin: var(--gap) 0;
 	}
 </style>

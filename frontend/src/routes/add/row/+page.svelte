@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Dialog } from '$lib/ui';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import AddRowForm from './AddRowForm.svelte';
 	import { locale } from '$lib/locale';

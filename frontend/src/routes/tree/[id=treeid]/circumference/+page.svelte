@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
-	import { routes } from '$lib/routes';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import ChangeHistory from '$lib/components/tree/ChangeHistory.svelte';
 	import TreeForm from '$lib/components/forms/TreeForm.svelte';

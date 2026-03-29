@@ -2,7 +2,6 @@
 	import { locale } from '$lib/locale';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import DeleteTreeForm from './DeleteTreeForm.svelte';
-	import { routes } from '$lib/routes';
 
 	const { data } = $props<{
 		data: {

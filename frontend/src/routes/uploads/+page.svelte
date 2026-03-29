@@ -2,7 +2,7 @@
 	import AutoUploadCheckbox from '$lib/components/AutoUploadCheckbox.svelte';
 	import UploadRow from '$lib/components/uploads/UploadRow.svelte';
 	import { Buttons, Button } from '$lib/ui';
-	import { Header, TabList } from '$lib/ui';
+	import { TabList } from '$lib/ui';
 	import { locale } from './lang';
 	import { onMount } from 'svelte';
 	import { processUploadQueue, restartUploadQueue } from '$lib/upload';

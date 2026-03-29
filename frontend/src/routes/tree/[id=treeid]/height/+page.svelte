@@ -4,7 +4,6 @@
 	import { HeightInput } from '$lib/ui';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import { locale } from '$lib/locale';
-	import { routes } from '$lib/routes';
 	import { heightState } from './hooks.svelte.ts';
 
 	const { data } = $props();

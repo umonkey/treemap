@@ -2,7 +2,6 @@
 	import { invalidateAll } from '$app/navigation';
 	import { apiClient } from '$lib/api';
 	import { locale } from '$lib/locale';
-	import { routes } from '$lib/routes';
 	import { showError } from '$lib/errors';
 
 	import Actions from '$lib/components/tree/Actions.svelte';

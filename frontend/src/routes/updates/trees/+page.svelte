@@ -1,5 +1,4 @@
 <script lang="ts">
-	import WidePage from '$lib/components/layout/WidePage.svelte';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import Tabs from '$lib/components/updates/Tabs.svelte';
 	import InfiniteScroll from '$lib/components/layout/InfiniteScroll.svelte';
@@ -87,12 +86,6 @@
 				text-overflow: ellipsis;
 			}
 		}
-	}
-
-	.spacer {
-		display: flex;
-		flex-direction: column;
-		gap: var(--gap);
 	}
 
 	@media screen and (max-width: 600px) {

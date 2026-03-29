@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
-	import { routes } from '$lib/routes';
 	import ChangeHistory from '$lib/components/tree/ChangeHistory.svelte';
 	import TreeForm from '$lib/components/forms/TreeForm.svelte';
 	import { CanopyInput } from '$lib/ui';

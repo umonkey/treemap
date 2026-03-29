@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Header from '$lib/ui/header/Header.svelte';
 	import SignInButton from '$lib/ui/sign-in-button/SignInButton.svelte';
 	import ProfileHeader from './ProfileHeader.svelte';
 	import TabList from '$lib/ui/tab-list/TabList.svelte';
