@@ -2,7 +2,6 @@
 	import SignInButton from '$lib/ui/sign-in-button/SignInButton.svelte';
 	import ProfileHeader from './ProfileHeader.svelte';
 	import TabList from '$lib/ui/tab-list/TabList.svelte';
-	import LayerSelector from '$lib/components/map/LayerSelector.svelte';
 	import { loadMe } from '$lib/hooks';
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
@@ -46,8 +45,6 @@
 			updates_count={$data.updates_count}
 			files_count={$data.files_count}
 		/>
-
-		<LayerSelector />
 
 		<UserHeatMap id={$data.id} />
 	{/if}
