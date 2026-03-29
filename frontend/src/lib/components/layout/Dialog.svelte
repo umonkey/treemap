@@ -3,10 +3,17 @@
 	import Overlay from '$lib/components/layout/Overlay.svelte';
 	import { handleClose } from './Dialog.svelte.ts';
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
+	import Button from '$lib/ui/button/Button.svelte';
 
-	const { title, children } = $props<{
+	type ButtonDef = {
+		title: string;
+		onClick: () => void;
+	};
+
+	const { title, children, buttons } = $props<{
 		title: string;
 		children: Snippet;
+		buttons?: ButtonDef[];
 	}>();
 </script>
 
@@ -29,6 +36,14 @@
 		<div class="body">
 			{@render children()}
 		</div>
+
+		{#if buttons}
+			<div class="actions">
+				{#each buttons as button}
+					<Button onClick={button.onClick}>{button.title}</Button>
+				{/each}
+			</div>
+		{/if}
 	</div>
 </Overlay>
 
@@ -51,7 +66,8 @@
 		flex: 0 0 40px;
 	}
 
-	.title {
+	.title,
+	.actions {
 		padding: 0.5rem 1rem;
 		height: 40px;
 		background-color: rgba(0, 0, 0, 0.2);
