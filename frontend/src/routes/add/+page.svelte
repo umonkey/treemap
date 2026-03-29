@@ -1,6 +1,6 @@
 <script lang="ts">
 	import AddForm from './AddForm.svelte';
-	import { Header, NarrowPage } from '$lib/ui';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import { locale } from '$lib/locale';
 
 	const { data } = $props<{
@@ -11,12 +11,6 @@
 	}>();
 </script>
 
-<svelte:head>
-	<title>{locale.addTitle()}</title>
-</svelte:head>
-
-<Header title={locale.addTitle()} />
-
-<NarrowPage>
+<Dialog title={locale.addTitle()}>
 	<AddForm lat={data.lat} lng={data.lng} />
-</NarrowPage>
+</Dialog>

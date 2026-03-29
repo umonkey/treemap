@@ -1,6 +1,6 @@
 <script lang="ts">
 	import UserEditForm from '$lib/components/admin/UserEditForm/index.svelte';
-	import { Header, NarrowPage } from '$lib/ui';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import { apiClient } from '$lib/api';
 	import { goto } from '$app/navigation';
 	import type { IUser } from '$lib/types';
@@ -20,13 +20,6 @@
 	};
 </script>
 
-<svelte:head>
-	<title>User Editor</title>
-</svelte:head>
-
-<Header title="User Editor" />
-
-<NarrowPage>
-	<h1>Edit User</h1>
+<Dialog title="User Editor">
 	<UserEditForm user={data.user} {onSave} />
-</NarrowPage>
+</Dialog>

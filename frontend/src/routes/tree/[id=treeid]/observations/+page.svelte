@@ -1,6 +1,6 @@
 <script lang="ts">
 	import ObservationForm from './ObservationForm.svelte';
-	import { NarrowPage } from '$lib/ui';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
 
@@ -8,6 +8,6 @@
 	const tree = data.tree;
 </script>
 
-<NarrowPage title={locale.treeTabsObservations()} back={routes.mapPreview(data.id)}>
+<Dialog title={locale.treeTabsObservations()}>
 	<ObservationForm id={tree.id} />
-</NarrowPage>
+</Dialog>

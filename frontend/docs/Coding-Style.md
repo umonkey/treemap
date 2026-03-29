@@ -27,20 +27,14 @@
 
 ## Page structure
 
-All pages are wrapped with the `NarrowPage` component, and using the `Header` component to display a title. Example:
+All pages are wrapped with the `Dialog` component. Example:
 
 ```svelte
-import {(Header, NarrowPage)} from '$lib/ui';
+import Dialog from '$lib/components/layout/Dialog.svelte';
 
-<svelte:head>
-	<title>Mapper mode</title>
-</svelte:head>
-
-<Header title="Mapper mode" />
-
-<NarrowPage>
+<Dialog title="Mapper mode">
 	<!-- page contents goes here -->
-</NarrowPage>
+</Dialog>
 ```
 
 ## Component structure

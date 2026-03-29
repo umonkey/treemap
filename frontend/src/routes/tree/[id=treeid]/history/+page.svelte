@@ -4,7 +4,7 @@
 	import TreeTabs from '$lib/components/tree/TreeTabs.svelte';
 	import { loadTreeHistory } from '$lib/hooks';
 	import { routes } from '$lib/routes';
-	import { NarrowPage } from '$lib/ui';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import ChangeList from './ChangeList.svelte';
 
 	const { data } = $props();
@@ -15,7 +15,7 @@
 	});
 </script>
 
-<NarrowPage title="Tree History" back={routes.mapPreview(data.id)} nopadding>
+<Dialog title="Tree History">
 	{#if $loading}
 		<p>Loading...</p>
 	{:else if $error}
@@ -29,7 +29,7 @@
 			<ChangeList changes={$changes} />
 		</div>
 	{/if}
-</NarrowPage>
+</Dialog>
 
 <style>
 	.padded,

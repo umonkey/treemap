@@ -1,10 +1,10 @@
 <script lang="ts">
 	import EditForm from './EditForm.svelte';
-	import { NarrowPage } from '$lib/ui';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
 
 	const { data } = $props();
 </script>
 
-<NarrowPage>
+<Dialog title="Edit Tree">
 	<EditForm id={data.id} />
-</NarrowPage>
+</Dialog>

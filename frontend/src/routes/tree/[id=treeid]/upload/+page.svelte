@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
-	import { NarrowPage } from '$lib/ui';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import PhotoUploader from './PhotoUploader.svelte';
 	import UploadForm from './UploadForm.svelte';
 	import TreeForm from '$lib/components/forms/TreeForm.svelte';
@@ -18,7 +18,7 @@
 	};
 </script>
 
-<NarrowPage title={locale.photoTitle()} back={routes.mapPreview(data.id)}>
+<Dialog title={locale.photoTitle()}>
 	<TreeForm {tree} onSubmit={close} onCancel={close}>
 		<p>{locale.photoIntro()}</p>
 
@@ -26,4 +26,4 @@
 
 		<UploadForm id={tree.id} />
 	</TreeForm>
-</NarrowPage>
+</Dialog>

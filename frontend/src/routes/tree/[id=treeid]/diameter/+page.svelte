@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
-	import { NarrowPage } from '$lib/ui';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import { routes } from '$lib/routes';
 	import ChangeHistory from '$lib/components/tree/ChangeHistory.svelte';
 	import TreeForm from '$lib/components/forms/TreeForm.svelte';
@@ -14,7 +14,7 @@
 	});
 </script>
 
-<NarrowPage title={locale.measureTitle()} back={routes.mapPreview(data.id)}>
+<Dialog title={locale.measureTitle()}>
 	<TreeForm
 		id={data.id}
 		title="Crown Diameter"
@@ -25,4 +25,4 @@
 		<CanopyInput value={null} autofocus onChange={crownState.handleChange} />
 		<ChangeHistory id={data.id} name="diameter" />
 	</TreeForm>
-</NarrowPage>
+</Dialog>

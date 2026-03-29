@@ -1,6 +1,8 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import Overlay from '$lib/components/layout/Overlay.svelte';
+	import { handleClose } from './Dialog.svelte.ts';
+	import CloseIcon from '$lib/icons/CloseIcon.svelte';
 
 	const { title, children } = $props<{
 		title: string;
@@ -8,10 +10,20 @@
 	}>();
 </script>
 
+<svelte:head>
+	<title>{title}</title>
+</svelte:head>
+
 <Overlay>
 	<div class="dialog">
 		<div class="title">
+			<div class="button"></div>
 			<h1>{title}</h1>
+			<div class="button">
+				<button type="button" onclick={handleClose}>
+					<CloseIcon />
+				</button>
+			</div>
 		</div>
 
 		<div class="body">
@@ -35,17 +47,28 @@
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 	}
 
+	.button {
+		flex: 0 0 40px;
+	}
+
 	.title {
 		padding: 0.5rem 1rem;
+		height: 40px;
 		background-color: rgba(0, 0, 0, 0.2);
+
+		display: flex;
+		flex-direction: row;
+		align-items: center;
 	}
 
 	h1 {
 		font-size: 1.25rem;
 		font-weight: 400;
-		line-height: 1.5rem;
+		line-height: 1.25rem;
 		text-align: center;
 		margin: 0;
+
+		flex: 1 1 auto;
 	}
 
 	.body {
@@ -53,6 +76,7 @@
 		margin: 0 auto;
 		padding: 1rem;
 
+		min-height: 40vh;
 		max-height: 80vh;
 		overflow-x: hidden;
 		overflow-y: scroll;
@@ -60,5 +84,22 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
+	}
+
+	button {
+		background-color: transparent;
+		border: none;
+		border-radius: 5px;
+		height: 40px;
+		width: 40px;
+		cursor: pointer;
+		opacity: 0.5;
+	}
+
+	@media screen and (min-width: 1024px) {
+		.dialog {
+			width: 600px;
+			max-width: 600px;
+		}
 	}
 </style>

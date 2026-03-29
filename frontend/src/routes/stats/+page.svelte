@@ -1,17 +1,9 @@
 <script lang="ts">
 	import { routes } from '$lib/routes';
-	import { Header, NarrowPage } from '$lib/ui';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
 </script>
 
-<svelte:head>
-	<title>Stats — Trees of Yerevan</title>
-</svelte:head>
-
-<Header title="Tree Map" />
-
-<NarrowPage>
-	<h2>Data reports</h2>
-
+<Dialog title="Data Reports">
 	<ul>
 		<li><a href={routes.statsSpecies()}>Top species</a></li>
 		<li><a href={routes.statsStreets()}>Top streets</a></li>
@@ -36,7 +28,7 @@
 			>this link</a
 		>.
 	</p>
-</NarrowPage>
+</Dialog>
 
 <style>
 	ul {

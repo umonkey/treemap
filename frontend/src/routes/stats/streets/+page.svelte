@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { loadStreetStats } from '$lib/hooks';
 	import { routes } from '$lib/routes';
-	import { Header } from '$lib/ui';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
 
 	const { loading, error, data, reload, reorder } = loadStreetStats();
 
@@ -10,15 +10,7 @@
 	});
 </script>
 
-<svelte:head>
-	<title>Trees by species</title>
-</svelte:head>
-
-<Header title="Statistics" />
-
-<div class="padded">
-	<h1>Trees by address</h1>
-
+<Dialog title="Trees by Address">
 	{#if $loading}
 		<p>Loading...</p>
 	{:else if $error}
@@ -41,7 +33,7 @@
 			</tbody>
 		</table>
 	{/if}
-</div>
+</Dialog>
 
 <style>
 	table {

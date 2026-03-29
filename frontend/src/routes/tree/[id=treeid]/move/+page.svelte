@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
 	import MoveForm from './MoveForm.svelte';
-	import { NarrowPage } from '$lib/ui';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import { routes } from '$lib/routes';
 
 	const { data } = $props();
 </script>
 
-<NarrowPage title={locale.measureTitle()} back={routes.mapPreview(data.id)}>
+<Dialog title={locale.measureTitle()}>
 	<MoveForm id={data.id} />
-</NarrowPage>
+</Dialog>

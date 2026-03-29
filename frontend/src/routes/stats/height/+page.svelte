@@ -1,7 +1,7 @@
 <script lang="ts">
 	import NewTreesListItem from '$lib/components/updates/NewTreesListItem.svelte';
 	import { loadTreesByHeight } from '$lib/hooks';
-	import { Header, NarrowPage } from '$lib/ui';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
 
 	const { loading, error, data, reload } = loadTreesByHeight();
 
@@ -18,13 +18,7 @@
 	};
 </script>
 
-<svelte:head>
-	<title>Highest trees</title>
-</svelte:head>
-
-<Header title="Highest trees" />
-
-<NarrowPage>
+<Dialog title="Highest Trees">
 	{#if $loading}
 		<p>Loading...</p>
 	{:else if $error}
@@ -34,4 +28,4 @@
 			<NewTreesListItem {tree} extra={format(tree.height)} />
 		{/each}
 	{/if}
-</NarrowPage>
+</Dialog>

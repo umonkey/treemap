@@ -1,5 +1,6 @@
 <script lang="ts">
 	import WidePage from '$lib/components/layout/WidePage.svelte';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import Tabs from '$lib/components/updates/Tabs.svelte';
 	import InfiniteScroll from '$lib/components/layout/InfiniteScroll.svelte';
 	import { locale } from '$lib/locale';
@@ -9,34 +10,32 @@
 	const { loading, error, tiles, handleLoadMore } = hooks();
 </script>
 
-<WidePage title={locale.updatesNewTitle()}>
-	<div class="spacer">
-		<Tabs active="trees" />
+<Dialog title={locale.updatesNewTitle()}>
+	<Tabs active="trees" />
 
-		{#if $loading}
-			<p>Loading trees...</p>
-		{:else if $error}
-			<p>Error loading trees.</p>
-		{:else}
-			<div class="tiles">
-				<InfiniteScroll onLoadMore={handleLoadMore}>
-					{#each $tiles as tile (tile.id)}
-						<div class="tile">
-							<a href={tile.link}>
-								<img src={tile.image ?? FALLBACK} alt={tile.species} />
+	{#if $loading}
+		<p>Loading trees...</p>
+	{:else if $error}
+		<p>Error loading trees.</p>
+	{:else}
+		<div class="tiles">
+			<InfiniteScroll onLoadMore={handleLoadMore}>
+				{#each $tiles as tile (tile.id)}
+					<div class="tile">
+						<a href={tile.link}>
+							<img src={tile.image ?? FALLBACK} alt={tile.species} />
 
-								<div class="meta">
-									<div>{tile.updated_at} &middot; {tile.species}</div>
-									<div>{tile.address}</div>
-								</div>
-							</a>
-						</div>
-					{/each}
-				</InfiniteScroll>
-			</div>
-		{/if}
-	</div>
-</WidePage>
+							<div class="meta">
+								<div>{tile.updated_at} &middot; {tile.species}</div>
+								<div>{tile.address}</div>
+							</div>
+						</a>
+					</div>
+				{/each}
+			</InfiniteScroll>
+		</div>
+	{/if}
+</Dialog>
 
 <style>
 	.tiles {

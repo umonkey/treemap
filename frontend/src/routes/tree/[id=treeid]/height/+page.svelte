@@ -2,7 +2,7 @@
 	import ChangeHistory from '$lib/components/tree/ChangeHistory.svelte';
 	import TreeForm from '$lib/components/forms/TreeForm.svelte';
 	import { HeightInput } from '$lib/ui';
-	import { NarrowPage } from '$lib/ui';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
 	import { heightState } from './hooks.svelte.ts';
@@ -14,7 +14,7 @@
 	});
 </script>
 
-<NarrowPage title={locale.measureTitle()} back={routes.mapPreview(data.id)}>
+<Dialog title={locale.measureTitle()}>
 	<TreeForm
 		id={data.id}
 		title="Tree Height"
@@ -25,4 +25,4 @@
 		<HeightInput value={null} autofocus onChange={heightState.handleChange} />
 		<ChangeHistory id={data.id} name="height" />
 	</TreeForm>
-</NarrowPage>
+</Dialog>

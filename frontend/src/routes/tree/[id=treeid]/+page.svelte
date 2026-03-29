@@ -15,7 +15,8 @@
 	import Gallery from '$lib/components/photos/Gallery.svelte';
 	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
 	import TreeTabs from '$lib/components/tree/TreeTabs.svelte';
-	import { CommentForm, NarrowPage } from '$lib/ui';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
+	import { CommentForm } from '$lib/ui';
 	import { onMount } from 'svelte';
 
 	const { data } = $props();
@@ -46,7 +47,7 @@
 	};
 </script>
 
-<NarrowPage title={locale.treeShortTitle()} back={routes.mapPreview(data.id)} nopadding>
+<Dialog title={locale.treeShortTitle()}>
 	<Title title={tree.species} address={tree.address} padded />
 
 	<TreeTabs tree={tree.id} active="details" />
@@ -71,7 +72,7 @@
 	</div>
 
 	<TreeContextMenu id={tree.id} />
-</NarrowPage>
+</Dialog>
 
 <style>
 	.comments {

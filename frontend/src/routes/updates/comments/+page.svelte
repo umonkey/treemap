@@ -2,19 +2,17 @@
 	import TreeListPreview from '$lib/components/TreeListPreview.svelte';
 	import Comment from '$lib/components/tree/Comment.svelte';
 	import Tabs from '$lib/components/updates/Tabs.svelte';
-	import { NarrowPage } from '$lib/ui';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
 
 	const { data } = $props();
 	const { comments } = data;
 </script>
 
-<NarrowPage title="Recent Comments" nopadding>
+<Dialog title="Recent Comments">
 	<Tabs active="comments" />
 
-	<div class="padded">
-		{#each comments as comment}
-			<TreeListPreview id={comment.tree_id.toString()} />
-			<Comment {comment} />
-		{/each}
-	</div>
-</NarrowPage>
+	{#each comments as comment}
+		<TreeListPreview id={comment.tree_id.toString()} />
+		<Comment {comment} />
+	{/each}
+</Dialog>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
-	import { NarrowPage } from '$lib/ui';
 	import { routes } from '$lib/routes';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import ChangeHistory from '$lib/components/tree/ChangeHistory.svelte';
 	import TreeForm from '$lib/components/forms/TreeForm.svelte';
 	import { CircumferenceInput } from '$lib/ui';
@@ -14,7 +14,7 @@
 	});
 </script>
 
-<NarrowPage title={locale.measureTitle()} back={routes.mapPreview(data.id)}>
+<Dialog title={locale.measureTitle()}>
 	<TreeForm
 		id={data.id}
 		title="Tree Circumference"
@@ -25,4 +25,4 @@
 		<CircumferenceInput value={null} autofocus onChange={girthState.handleChange} />
 		<ChangeHistory id={data.id} name="circumference" />
 	</TreeForm>
-</NarrowPage>
+</Dialog>

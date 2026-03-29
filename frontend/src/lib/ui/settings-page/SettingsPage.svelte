@@ -1,14 +1,9 @@
 <script lang="ts">
-	import { SettingsForm, Header, NarrowPage } from '$lib/ui';
+	import { SettingsForm } from '$lib/ui';
 	import { locale } from '$lib/locale';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
 </script>
 
-<svelte:head>
-	<title>{locale.settingsTitle()}</title>
-</svelte:head>
-
-<Header title={locale.settingsTitle()} />
-
-<NarrowPage>
+<Dialog title={locale.settingsTitle()}>
 	<SettingsForm />
-</NarrowPage>
+</Dialog>

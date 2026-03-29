@@ -1,12 +1,13 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 
-	const { children } = $props<{
+	const { children, onClick } = $props<{
 		children: Snippet;
+		onClick?: () => void;
 	}>();
 </script>
 
-<div class="overlay">
+<div class="overlay" onclick={onClick}>
 	{@render children()}
 </div>
 

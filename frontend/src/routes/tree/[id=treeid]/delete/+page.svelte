@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
-	import { NarrowPage } from '$lib/ui';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import DeleteTreeForm from './DeleteTreeForm.svelte';
 	import { routes } from '$lib/routes';
 
@@ -11,6 +11,6 @@
 	}>();
 </script>
 
-<NarrowPage title={locale.deleteTreeTitle()} back={routes.mapPreview(data.id)}>
+<Dialog title={locale.deleteTreeTitle()}>
 	<DeleteTreeForm id={data.id} />
-</NarrowPage>
+</Dialog>

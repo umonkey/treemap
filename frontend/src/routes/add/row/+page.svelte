@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { NarrowPage } from '$lib/ui';
+	import { Dialog } from '$lib/ui';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import AddRowForm from './AddRowForm.svelte';
 	import { locale } from '$lib/locale';
 
@@ -13,10 +14,6 @@
 	}>();
 </script>
 
-<svelte:head>
-	<title>{locale.addRowTitle()}</title>
-</svelte:head>
-
-<NarrowPage>
+<Dialog title={locale.addRowTitle()}>
 	<AddRowForm start={data.start} end={data.end} />
-</NarrowPage>
+</Dialog>

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Header from '$lib/ui/header/Header.svelte';
-	import NarrowPage from '$lib/ui/narrow-page/NarrowPage.svelte';
 	import SignInButton from '$lib/ui/sign-in-button/SignInButton.svelte';
 	import ProfileHeader from './ProfileHeader.svelte';
 	import TabList from '$lib/ui/tab-list/TabList.svelte';
@@ -10,6 +9,7 @@
 	import { routes } from '$lib/routes';
 	import UserHeatMap from '$lib/components/UserHeatMap/index.svelte';
 	import { uploadStore } from '$lib/stores/upload';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
 
 	const { loading, error, data, statusCode, reload } = loadMe();
 
@@ -27,13 +27,7 @@
 	]);
 </script>
 
-<svelte:head>
-	<title>{locale.profileTitle()}</title>
-</svelte:head>
-
-<Header title={locale.profileTitle()} />
-
-<NarrowPage>
+<Dialog title={locale.profileTitle()}>
 	<TabList items={tabs} />
 
 	{#if $loading}
@@ -58,4 +52,4 @@
 
 		<UserHeatMap id={$data.id} />
 	{/if}
-</NarrowPage>
+</Dialog>
