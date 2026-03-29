@@ -2,8 +2,8 @@
 	import { locale } from '$lib/locale';
 	import { onMount } from 'svelte';
 	import { pageState } from './hooks.svelte.ts';
-	import AddTree from './AddTree.svelte';
-	import AddRow from './AddRow.svelte';
+	import AddTree from '$lib/components/map/AddTree.svelte';
+	import AddRow from '$lib/components/map/AddRow.svelte';
 	import MapLibre from '$lib/components/map/MapLibre.svelte';
 
 	const { data } = $props();

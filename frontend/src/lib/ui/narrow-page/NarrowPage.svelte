@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import Header from '../header/Header.svelte';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
 
 	const { children, title, back, nopadding } = $props<{
 		children: Snippet;
@@ -16,22 +17,27 @@
 	{/if}
 </svelte:head>
 
-{#if title || back}
-	<Header {title} {back} />
-{/if}
-
-<div class="narrow-page" class:padded={!nopadding}>
+<Dialog title={title}>
 	{@render children()}
-</div>
+</Dialog>
 
 <style>
+	.dialog {
+		position: absolute;
+
+		top: 50%;
+		left: 50%;
+		max-width: 500px;
+		max-height: 80vh;
+		transform: translate(-50%, -50%);
+
+		background-color: var(--form-background);
+	}
+
 	.narrow-page {
 		max-width: 600px;
 		margin: 0 auto;
-
-		&.padded {
-			padding: var(--gap) 0;
-		}
+		padding: 0 1rem;
 	}
 
 	@media (max-width: 480px) {

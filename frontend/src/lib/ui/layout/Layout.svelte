@@ -2,6 +2,7 @@
 	import MapPreview from '$lib/components/layout/MapPreview.svelte';
 	import LeftSidebar from '$lib/components/layout/LeftSidebar.svelte';
 	import MobileNav from '$lib/components/layout/MobileNav.svelte';
+	import MapLibre from '$lib/components/map/MapLibre.svelte';
 
 	const { children } = $props();
 </script>
@@ -13,6 +14,8 @@
 	</aside>
 
 	<main>
+		<MapLibre />
+
 		<article>
 			{@render children()}
 		</article>

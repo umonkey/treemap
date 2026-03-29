@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
 	import SearchForm from './SearchForm.svelte';
-	import { NarrowPage } from '$lib/ui';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
 </script>
 
-<NarrowPage title={locale.searchTitle()}>
+<Dialog title={locale.searchTitle()}>
 	<SearchForm />
-</NarrowPage>
+</Dialog>
