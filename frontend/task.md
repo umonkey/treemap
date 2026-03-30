@@ -10,12 +10,6 @@
 - [x] Center the map on tree click.
 - [x] Add separate map layer config component
 - [x] Add a marker pointer for selected tree, etc
-- [ ] Make sure map search works
+- [x] Make sure map search works
 - [x] Make sure moving tree works
 - [x] Drone imagery
-
-## Search refactor
-
-- Store a structure with all search options.
-- Modify that structure in different parts of UI.
-- Reload the map data on structure change.

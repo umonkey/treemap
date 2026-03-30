@@ -9,6 +9,7 @@
 	import LocationControl from './LocationControl.svelte';
 	import { mapState } from './MapLibre.svelte.ts';
 	import Marker from './Marker.svelte';
+	import SearchControl from './SearchControl.svelte';
 
 	const { children = undefined, onMove } = $props<{
 		children?: Snippet;
@@ -36,7 +37,6 @@
 		maxBounds={MAX_BOUNDS}
 	>
 		<NavigationControl position="top-left" />
-
 		<LocationControl />
 
 		{#if children}
@@ -113,10 +113,13 @@
 			</GeoJSON>
 		{/if}
 	</MapLibre>
+
+	<SearchControl />
 </div>
 
 <style>
 	.map-container {
+		position: relative;
 		width: 100%;
 		height: 100%;
 		z-index: var(--z-map);

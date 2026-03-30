@@ -5,6 +5,7 @@ import { config } from '$lib/env';
 import { showError } from '$lib/errors';
 import { mapLayerStore } from '$lib/stores/mapLayerStore';
 import { mapStore } from '$lib/stores/mapStore';
+import { searchStore } from '$lib/stores/searchStore';
 import type { ILatLng } from '$lib/types';
 import { Debouncer } from '$lib/utils/debounce';
 import {
@@ -173,6 +174,8 @@ class MapLibre {
 			return;
 		}
 
+		const search = get(searchStore);
+
 		const { n, e, s, w } = extendBounds({
 			n: bounds.getNorth(),
 			s: bounds.getSouth(),
@@ -182,7 +185,7 @@ class MapLibre {
 
 		this.fetchDebouncer.run(() => {
 			apiClient
-				.getGeoJSON(n, e, s, w)
+				.getGeoJSON(n, e, s, w, search)
 				.then(({ status, data }) => {
 					if (status === 200 && data) {
 						const collection = data as unknown as Collection;
