@@ -2,32 +2,21 @@
 	import AutoUploadCheckbox from '$lib/components/AutoUploadCheckbox.svelte';
 	import UploadRow from '$lib/components/uploads/UploadRow.svelte';
 	import { Buttons, Button } from '$lib/ui';
-	import { TabList } from '$lib/ui';
 	import { locale } from './lang';
 	import { onMount } from 'svelte';
 	import { processUploadQueue, restartUploadQueue } from '$lib/upload';
-	import { routes } from '$lib/routes';
 	import { uploadStore } from '$lib/stores/upload';
 	import { hooks } from './hooks';
 	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
-
-	const tabs = $derived([
-		{ title: locale.profileTitle(), link: routes.profile() },
-		{
-			title: locale.uploadsTitle(),
-			link: routes.uploads(),
-			active: true,
-			badge: $uploadStore.pending > 0 ? $uploadStore.pending : undefined
-		}
-	]);
+	import Tabs from '$lib/components/profile/Tabs.svelte';
 
 	const { uploads } = hooks(onMount);
 </script>
 
 <Dialog title={locale.uploadsTitle()}>
 	<AuthWrapper>
-		<TabList items={tabs} />
+		<Tabs active="uploads" />
 
 		<AutoUploadCheckbox />
 
