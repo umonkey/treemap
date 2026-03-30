@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
-	import { BellIcon, HomeIcon, MapIcon, SearchIcon, SpinnerIcon } from '$lib/icons';
-	import { searchStore } from '$lib/stores';
+	import { BellIcon, HomeIcon, SearchIcon, SpinnerIcon } from '$lib/icons';
 	import { uploadStore } from '$lib/stores/upload';
 	import { isSidebarVisible, mobileSidebarStore } from '$lib/stores/mobileSidebarStore';
 	import { authStore } from '$lib/stores/authStore';
@@ -31,21 +30,6 @@
 					<span>{locale.sideSearch()}</span>
 				</a>
 			</li>
-			{#if $searchStore}
-				<li>
-					<a href={routes.searchQuery($searchStore)}>
-						<span class="icon"><MapIcon /></span>
-						<span>{locale.sideExplore()}</span>
-					</a>
-				</li>
-			{:else}
-				<li>
-					<a href={routes.map()}>
-						<span class="icon"><MapIcon /></span>
-						<span>{locale.sideExplore()}</span>
-					</a>
-				</li>
-			{/if}
 			<li>
 				<a href={routes.treeUpdates()}>
 					<span class="icon"><BellIcon /></span>
