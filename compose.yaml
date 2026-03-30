@@ -38,9 +38,10 @@ services:
       - "5173:5173"
     volumes:
       - ./frontend:/app
-      - /app/.svelte-kit
+      - svelte_kit_data:/app/.svelte-kit
     depends_on:
       - backend
 
 volumes:
   var:
+  svelte_kit_data:
