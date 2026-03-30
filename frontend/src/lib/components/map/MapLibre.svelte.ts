@@ -1,4 +1,5 @@
 import { apiClient } from '$lib/api';
+import { showError } from '$lib/errors';
 import { mapBus } from '$lib/buses';
 import { DEFAULT_MAP_CENTER } from '$lib/constants';
 import { config } from '$lib/env';
@@ -165,13 +166,19 @@ class MapLibre {
 
 	private reloadTrees(n: number, e: number, s: number, w: number) {
 		this.fetchDebouncer.run(() => {
-			apiClient.getGeoJSON(n, e, s, w).then(({ status, data }) => {
-				if (status === 200 && data) {
-					const collection = data as unknown as Collection;
-					console.debug(`Received ${collection.features.length} features.`);
-					this.markers = collection;
-				}
-			});
+			apiClient
+				.getGeoJSON(n, e, s, w)
+				.then(({ status, data }) => {
+					if (status === 200 && data) {
+						const collection = data as unknown as Collection;
+						console.debug(`Received ${collection.features.length} features.`);
+						this.markers = collection;
+					}
+				})
+				.catch((e) => {
+					console.error('Error loading trees.', e);
+					showError('Error loading trees, please try again.');
+				});
 		});
 	}
 
