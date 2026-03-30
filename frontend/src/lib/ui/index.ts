@@ -29,7 +29,6 @@ export { default as NumberInput } from './number-input/NumberInput.svelte';
 export { default as PieChart } from './pie-chart/PieChart.svelte';
 export { default as RowSizeInput } from './row-size-input/RowSizeInput.svelte';
 export { default as SettingsForm } from './settings-form/SettingsForm.svelte';
-export { default as SettingsPage } from './settings-page/SettingsPage.svelte';
 export { default as SignInButton } from './sign-in-button/SignInButton.svelte';
 export { default as SignOutButton } from './sign-out-button/SignOutButton.svelte';
 export { default as SpeciesInput } from './species-input/SpeciesInput.svelte';

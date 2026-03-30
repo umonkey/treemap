@@ -100,6 +100,8 @@
 		max-width: 600px;
 		margin: 0 auto;
 		padding: 1rem;
+		width: 100%;
+		box-sizing: border-box;
 
 		min-height: 40vh;
 		max-height: 80vh;
@@ -109,6 +111,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
+		align-items: stretch;
 	}
 
 	button {
