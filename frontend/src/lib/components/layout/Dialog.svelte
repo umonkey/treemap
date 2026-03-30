@@ -86,6 +86,10 @@
 		padding: 0.5rem 0;
 	}
 
+	.actions {
+		height: 60px;
+	}
+
 	h1 {
 		font-size: 1.25rem;
 		font-weight: 400;
