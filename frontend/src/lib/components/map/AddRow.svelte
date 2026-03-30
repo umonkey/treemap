@@ -2,6 +2,8 @@
 	import Icon from '$lib/icons/Ruler.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
 	import MapCenter from '$lib/components/map/MapCenter.svelte';
+	import LineStartIcon from '$lib/icons/LineStartIcon.svelte';
+	import LineEndIcon from '$lib/icons/LineEndIcon.svelte';
 	import { onMount } from 'svelte';
 	import { GeoJSON, LineLayer } from 'svelte-maplibre';
 	import { Control } from 'svelte-maplibre';
@@ -35,10 +37,18 @@
 	<MapCenter />
 
 	<div class="panel">
-		<Button type="secondary" onClick={addState.handleStart}>|&lt;</Button>
+		<Button type="secondary" onClick={addState.handleStart}>
+			<div class="icon">
+				<LineStartIcon />
+			</div>
+		</Button>
 		<Button onClick={addState.handleConfirm}>Add</Button>
 		<Button type="secondary" onClick={addState.handleCancel}>Cancel</Button>
-		<Button type="secondary" onClick={addState.handleEnd}>&gt;|</Button>
+		<Button type="secondary" onClick={addState.handleEnd}>
+			<div class="icon">
+				<LineEndIcon />
+			</div>
+		</Button>
 	</div>
 {/if}
 
@@ -66,5 +76,10 @@
 		display: flex;
 		flex-direction: row;
 		gap: 1rem;
+
+		.icon {
+			width: 20px;
+			height: 20px;
+		}
 	}
 </style>

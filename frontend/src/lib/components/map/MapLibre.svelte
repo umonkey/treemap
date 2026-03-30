@@ -122,4 +122,10 @@
 		width: 100%;
 		height: 100%;
 	}
+
+	@media screen and (max-width: 600px) {
+		.map-container {
+			height: calc(100% - var(--bottom-nav-height));
+		}
+	}
 </style>
