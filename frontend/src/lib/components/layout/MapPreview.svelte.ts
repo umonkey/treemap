@@ -30,7 +30,7 @@ class PreviewState {
 		menuState.set(true);
 	};
 
-	private handleTreeSelect = (id: string | undefined) => {
+	private handleTreeSelect = (id: string) => {
 		if (!id) {
 			this.tree = undefined;
 			return;
@@ -67,10 +67,10 @@ class PreviewState {
 	};
 
 	public onMount = () => {
-		mapBus.on('preview', this.handleTreeSelect);
+		mapBus.on('select', this.handleTreeSelect);
 
 		return () => {
-			mapBus.off('preview', this.handleTreeSelect);
+			mapBus.off('select', this.handleTreeSelect);
 		};
 	};
 }
