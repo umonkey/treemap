@@ -46,14 +46,9 @@ export class TreeLayerState {
 	fetchDebouncer = new Debouncer(100);
 	moveBouncer = new MapBouncer();
 
-	public reloadTrees = (map: Map) => {
+	private reload = (map: Map) => {
 		const bounds = map.getBounds();
 		const search = get(searchStore);
-
-		if (!this.moveBouncer.changed(bounds)) {
-			console.debug('TreeLayer reload triggered, but map not moved.');
-			return;
-		}
 
 		const { n, e, s, w } = extendBounds({
 			n: bounds.getNorth(),
@@ -77,6 +72,17 @@ export class TreeLayerState {
 					showError('Error loading trees, please try again.');
 				});
 		});
+	};
+
+	private handleMove = (map: Map) => {
+		const bounds = map.getBounds();
+
+		if (!this.moveBouncer.changed(bounds)) {
+			console.debug('TreeLayer reload triggered, but map not moved.');
+			return;
+		}
+
+		this.reload(map);
 	};
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -104,27 +110,24 @@ export class TreeLayerState {
 			return;
 		}
 
-		const reload = () => this.reloadTrees(map);
+		const handleMove = () => this.handleMove(map);
+		const reload = () => this.reload(map);
 
 		mapBus.on('reload', reload);
 
 		if (map) {
-			map.on('moveend', reload);
-			map.on('zoomend', reload);
+			map.on('moveend', handleMove);
+			map.on('zoomend', handleMove);
 			reload();
 		}
-
-		const unsubSearch = searchStore.subscribe(reload);
 
 		return () => {
 			mapBus.off('reload', reload);
 
 			if (map) {
-				map.off('moveend', reload);
-				map.off('zoomend', reload);
+				map.off('moveend', handleMove);
+				map.off('zoomend', handleMove);
 			}
-
-			unsubSearch();
 		};
 	};
 }
