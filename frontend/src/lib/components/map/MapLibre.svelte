@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { MAX_BOUNDS } from '$lib/constants';
 	import type { ILatLng } from '$lib/types';
-	import { CircleLayer, GeoJSON, MapLibre, NavigationControl } from 'svelte-maplibre';
+	import { MapLibre, NavigationControl } from 'svelte-maplibre';
 	import { RasterLayer, RasterTileSource } from 'svelte-maplibre';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import { type Snippet, onMount } from 'svelte';
@@ -10,6 +10,7 @@
 	import { mapState } from './MapLibre.svelte.ts';
 	import Marker from './Marker.svelte';
 	import SearchControl from './SearchControl.svelte';
+	import TreeLayer from './TreeLayer.svelte';
 
 	const { children = undefined, onMove } = $props<{
 		children?: Snippet;
@@ -60,58 +61,7 @@
 			</RasterTileSource>
 		{/if}
 
-		{#if mapState.markers}
-			<GeoJSON data={mapState.markers}>
-				<CircleLayer
-					id="tree-crowns"
-					paint={{
-						'circle-color': [
-							'match',
-							['get', 'state'],
-							['stump', 'gone'],
-							'#000000',
-							'unknown',
-							'#ffd700',
-							'dead',
-							'#8b4513',
-							'#228B22'
-						],
-						'circle-radius': [
-							'interpolate',
-							['exponential', 2],
-							['zoom'],
-							10,
-							['*', ['get', 'crown'], 0.00428],
-							22,
-							['*', ['get', 'crown'], 17.534]
-						],
-						'circle-opacity': ['match', ['get', 'state'], ['stump', 'gone'], 0.2, 0.5],
-						'circle-pitch-alignment': 'map',
-						'circle-pitch-scale': 'map'
-					}}
-					onclick={mapState.handleClick}
-				/>
-
-				<CircleLayer
-					id="tree-trunks"
-					paint={{
-						'circle-color': '#000000',
-						'circle-radius': [
-							'interpolate',
-							['exponential', 2],
-							['zoom'],
-							10,
-							['*', ['get', 'trunk'], 0.00428],
-							22,
-							['*', ['get', 'trunk'], 17.534]
-						],
-						'circle-opacity': 0.8,
-						'circle-pitch-alignment': 'map',
-						'circle-pitch-scale': 'map'
-					}}
-				/>
-			</GeoJSON>
-		{/if}
+		<TreeLayer />
 	</MapLibre>
 
 	<SearchControl />
