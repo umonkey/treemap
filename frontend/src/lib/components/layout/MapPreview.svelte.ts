@@ -1,7 +1,7 @@
 import type { ITree, IObservation, IComment } from '$lib/types';
 import { mapBus } from '$lib/buses';
+import { menuBus } from '$lib/buses/menuBus';
 import { apiClient } from '$lib/api';
-import { menuState } from '$lib/stores/treeMenu';
 import { showError } from '$lib/errors';
 import { goto, routes } from '$lib/routes';
 
@@ -27,7 +27,9 @@ class PreviewState {
 	};
 
 	public handleContextMenu = () => {
-		menuState.set(true);
+		if (this.tree) {
+			menuBus.emit('show', this.tree.id);
+		}
 	};
 
 	private handleTreeSelect = (id: string) => {

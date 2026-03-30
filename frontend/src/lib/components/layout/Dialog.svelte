@@ -1,19 +1,20 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
 	import Overlay from '$lib/components/layout/Overlay.svelte';
-	import { handleClose } from './Dialog.svelte.ts';
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
+	import type { Snippet } from 'svelte';
+	import { handleClose } from './Dialog.svelte.ts';
 
 	type ButtonDef = {
 		title: string;
 		onClick: () => void;
 	};
 
-	const { title, children, buttons } = $props<{
+	const { title, children, buttons, header } = $props<{
 		title: string;
 		children: Snippet;
 		buttons?: ButtonDef[];
+		header?: Snippet;
 	}>();
 </script>
 
@@ -23,15 +24,19 @@
 
 <Overlay onClick={handleClose}>
 	<div class="dialog">
-		<div class="title">
-			<div class="button"></div>
-			<h1>{title}</h1>
-			<div class="button">
-				<button type="button" onclick={handleClose}>
-					<CloseIcon />
-				</button>
+		{#if header}
+			{@render header()}
+		{:else}
+			<div class="title">
+				<div class="button"></div>
+				<h1>{title}</h1>
+				<div class="button">
+					<button type="button" onclick={handleClose}>
+						<CloseIcon />
+					</button>
+				</div>
 			</div>
-		</div>
+		{/if}
 
 		<div class="body">
 			{@render children()}

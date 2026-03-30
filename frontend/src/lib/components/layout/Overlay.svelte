@@ -18,7 +18,7 @@
 <style>
 	.overlay {
 		position: absolute;
-		z-index: 100;
+		z-index: var(--z-dialog);
 
 		top: 0;
 		left: 0;

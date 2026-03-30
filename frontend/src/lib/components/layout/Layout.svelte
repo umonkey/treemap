@@ -5,6 +5,7 @@
 	import MapLibre from '$lib/components/map/MapLibre.svelte';
 	import AddTree from '$lib/components/map/AddTree.svelte';
 	import AddRow from '$lib/components/map/AddRow.svelte';
+	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
 
 	const { children } = $props();
 </script>
@@ -26,6 +27,7 @@
 		</article>
 
 		<MobileNav />
+		<TreeContextMenu />
 	</main>
 </div>
 

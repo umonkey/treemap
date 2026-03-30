@@ -7,21 +7,23 @@
 
 	import { DotsIcon } from '$lib/icons';
 	import { routes } from '$lib/routes';
-	import { menuState } from '$lib/stores/treeMenu';
 	import { formatSpecies } from '$lib/utils/trees';
+	import { menuBus } from '$lib/buses/menuBus';
 
 	const {
+		id,
 		title,
 		address = undefined,
 		padded
 	} = $props<{
+		id: string;
 		title: string;
 		address?: string | null;
 		padded?: boolean;
 	}>();
 
 	const onMenu = () => {
-		menuState.update((value) => !value);
+		menuBus.emit('show', id);
 	};
 </script>
 

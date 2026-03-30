@@ -12,7 +12,6 @@
 	import Properties from '$lib/components/tree/Properties.svelte';
 	import Title from '$lib/components/tree/Title.svelte';
 	import Gallery from '$lib/components/photos/Gallery.svelte';
-	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
 	import TreeTabs from '$lib/components/tree/TreeTabs.svelte';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import { CommentForm } from '$lib/ui';
@@ -47,7 +46,7 @@
 </script>
 
 <Dialog title={tree.species}>
-	<Title title={tree.species} address={tree.address} padded />
+	<Title id={tree.id} title={tree.species} address={tree.address} padded />
 
 	<TreeTabs tree={tree.id} active="details" />
 
@@ -69,8 +68,6 @@
 
 		<CommentForm {onSubmit} />
 	</div>
-
-	<TreeContextMenu id={tree.id} />
 </Dialog>
 
 <style>

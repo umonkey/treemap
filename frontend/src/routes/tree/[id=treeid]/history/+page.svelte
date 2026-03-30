@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Title from '$lib/components/tree/Title.svelte';
-	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
 	import TreeTabs from '$lib/components/tree/TreeTabs.svelte';
 	import { loadTreeHistory } from '$lib/hooks';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
@@ -20,9 +19,8 @@
 	{:else if $error}
 		<p>Error loading tree: {$error.description}</p>
 	{:else if $tree}
-		<Title title={$tree.species} address={$tree.address} padded />
+		<Title id={$tree.id} title={$tree.species} address={$tree.address} padded />
 		<TreeTabs tree={$tree.id} active="history" />
-		<TreeContextMenu id={$tree.id} />
 
 		<div class="padded">
 			<ChangeList changes={$changes} />
