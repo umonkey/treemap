@@ -17,7 +17,7 @@
 	};
 </script>
 
-<TreeForm {tree} onSubmit={close} onCancel={close}>
+<TreeForm {tree} title="Add Tree Photos" onSubmit={close} onCancel={close}>
 	<p>{locale.photoIntro()}</p>
 	<PhotoUploader {treeId} onChange={handleChange} />
 	<UploadForm id={tree.id} />

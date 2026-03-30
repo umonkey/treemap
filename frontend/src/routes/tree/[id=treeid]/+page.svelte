@@ -44,7 +44,7 @@
 	};
 </script>
 
-<Dialog title={tree.species} nopadding>
+<Dialog title={tree.species || 'Unknown tree'} nopadding>
 	<div>
 		<Title id={tree.id} title={tree.species} address={tree.address} padded />
 

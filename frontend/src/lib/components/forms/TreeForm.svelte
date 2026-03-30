@@ -8,7 +8,7 @@
 	type Props = {
 		id?: string;
 		children?: Snippet;
-		title?: string;
+		title: string;
 		saving?: boolean;
 		canSave?: boolean;
 		onSubmit: () => void;
