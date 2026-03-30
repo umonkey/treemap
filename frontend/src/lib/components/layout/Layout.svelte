@@ -3,6 +3,8 @@
 	import LeftSidebar from '$lib/components/layout/LeftSidebar.svelte';
 	import MobileNav from '$lib/components/layout/MobileNav.svelte';
 	import MapLibre from '$lib/components/map/MapLibre.svelte';
+	import AddTree from '$lib/components/map/AddTree.svelte';
+	import AddRow from '$lib/components/map/AddRow.svelte';
 
 	const { children } = $props();
 </script>
@@ -14,7 +16,10 @@
 	</aside>
 
 	<main>
-		<MapLibre />
+		<MapLibre>
+			<AddTree />
+			<AddRow />
+		</MapLibre>
 
 		<article>
 			{@render children()}

@@ -18,7 +18,6 @@ export { default as Header } from './header/Header.svelte';
 export { default as HeightInput } from './height-input/HeightInput.svelte';
 export { default as HeightReport } from './height-report/HeightReport.svelte';
 export { default as HelpButton } from './help-button/HelpButton.svelte';
-export { default as Layout } from './layout/Layout.svelte';
 export { default as LazyImage } from './lazy-image/LazyImage.svelte';
 export { default as LocationInput } from './location-input/LocationInput.svelte';
 export { default as LocationPicker } from './location-picker/LocationPicker.svelte';

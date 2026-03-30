@@ -30,9 +30,9 @@ export const routes = {
 	file: (id: string) => `${config.fileBaseUrl}${id}.jpg`,
 	home: () => '/',
 	learn: () => '/learn',
-	map: () => '/map',
+	map: () => '/',
 	mapPreview: (id: string, search?: string | undefined | null) =>
-		build('/map', {
+		build('/', {
 			preview: id,
 			q: search
 		}),
