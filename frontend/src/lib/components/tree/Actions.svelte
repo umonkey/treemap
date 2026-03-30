@@ -2,6 +2,8 @@
 	import ShareButton from '$lib/components/tree/ShareButton.svelte';
 	import { FEATURES } from '$lib/features';
 	import { CameraIcon, HeartIcon, HeartSolidIcon, SaveIcon } from '$lib/icons';
+	import WikiIcon from '$lib/icons/WikipediaIcon.svelte';
+	import OpenStreetMapIcon from '$lib/icons/OpenStreetMapIcon.svelte';
 	import { like, preloadMeLikes, unlike } from '$lib/likes';
 	import { routes } from '$lib/routes';
 	import { isLiked } from '$lib/stores/likeStore';
@@ -40,6 +42,22 @@
 	</div>
 
 	<div class="icon"><a href={routes.treeUploadPhotos(tree.id)}><CameraIcon /></a></div>
+
+	{#if tree.species}
+		<div class="icon">
+			<a href="https://en.wikipedia.org/w/index.php?search={tree.species}" target="_blank">
+				<WikiIcon />
+			</a>
+		</div>
+	{/if}
+
+	{#if tree.osm_id}
+		<div class="icon">
+			<a href={`https://www.openstreetmap.org/node/${tree.osm_id}`} target="_blank">
+				<OpenStreetMapIcon />
+			</a>
+		</div>
+	{/if}
 
 	<div class="icon"><ShareButton id={tree.id} /></div>
 

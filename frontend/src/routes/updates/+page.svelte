@@ -1,15 +1,14 @@
 <script lang="ts">
 	import Tabs from '$lib/components/updates/Tabs.svelte';
-	import { NarrowPage, AuthWrapper } from '$lib/ui';
+	import { AuthWrapper } from '$lib/ui';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
 </script>
 
-<NarrowPage title="Updates" nopadding>
+<Dialog title="Updates">
 	<Tabs active="new" />
 
-	<div class="padded">
-		<AuthWrapper>
-			<p>This page is under construction. Please come back later.</p>
-			<p>This page will contain all recently added trees, comments and other updates.</p>
-		</AuthWrapper>
-	</div></NarrowPage
->
+	<AuthWrapper>
+		<p>This page is under construction. Please come back later.</p>
+		<p>This page will contain all recently added trees, comments and other updates.</p>
+	</AuthWrapper>
+</Dialog>

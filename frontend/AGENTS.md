@@ -8,7 +8,7 @@ This directory contains the static frontend for the tree mapping application.
 - **Language**: TypeScript.
 - **Styling**: Custom CSS with variables (see `src/lib/styles`).
 - **State Management**: Svelte Stores and Runes.
-- **Map Library**: Leaflet.
+- **Map Library**: MapLibre GL via `svelte-maplibre`.
 
 ## Directory Structure
 
@@ -24,6 +24,11 @@ This directory contains the static frontend for the tree mapping application.
 - Use Svelte 5 Runes ($state, $derived, $effect, $props) for new components.
 - Note: Some existing components might still use legacy Svelte syntax (e.g., `export let`); update them to Runes when possible.
 - After changing code, run `npm run check` and `npm run lint`.
+
+## Code Formatting
+
+- Use single quotes when possible.
+- Try to maintain the existing formatting style, avoid re-formatting the code unless explicitly asked to.
 
 ## Useful commands
 

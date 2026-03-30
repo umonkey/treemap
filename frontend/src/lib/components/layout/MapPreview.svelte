@@ -1,88 +1,76 @@
 <script lang="ts">
-	import { Buttons, Button } from '$lib/ui';
-	import GalleryPreview from '$lib/components/photos/GalleryPreview.svelte';
-	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
-	import { CloseIcon, ShareIcon, SettingsIcon } from '$lib/icons';
-	import LocationIcon from '$lib/icons/LocationIcon.svelte';
-	import BatteryIcon from '$lib/icons/BatteryIcon.svelte';
-	import TagIcon from '$lib/icons/TagIcon.svelte';
 	import Observations from '$lib/components/observation/Observations.svelte';
+	import GalleryPreview from '$lib/components/photos/GalleryPreview.svelte';
 	import Comment from '$lib/components/tree/Comment.svelte';
-	import { routes } from '$lib/routes';
-	import { formatSpecies, formatState, shortDetails } from '$lib/utils/trees';
 	import { handleShareTree } from '$lib/hooks';
+	import { CloseIcon, SettingsIcon, ShareIcon } from '$lib/icons';
+	import BatteryIcon from '$lib/icons/BatteryIcon.svelte';
+	import LocationIcon from '$lib/icons/LocationIcon.svelte';
+	import TagIcon from '$lib/icons/TagIcon.svelte';
 	import { locale } from '$lib/locale';
-	import { hook } from './MapPreview';
+	import { routes } from '$lib/routes';
+	import { Button, Buttons } from '$lib/ui';
+	import { formatSpecies, formatState, shortDetails } from '$lib/utils/trees';
+	import { onMount } from 'svelte';
+	import { previewState } from './MapPreview.svelte.ts';
 	import '$lib/styles/variables.css';
 
-	const {
-		visible,
-		expand,
-		error,
-		tree,
-		observations,
-		comments,
-		handleClose,
-		handleContextMenu,
-		toggleExpand
-	} = hook();
+	onMount(previewState.onMount);
 </script>
 
-{#if $visible}
-	<div class="preview" class:expand={!!$expand}>
-		{#if $error}
-			<p>{$error}</p>
-		{:else if $tree}
-			<div class="header">
-				<!-- svelte-ignore a11y_no_static_element_interactions -->
-				<!-- svelte-ignore a11y_click_events_have_key_events -->
-				<div class="title" onclick={toggleExpand}>{formatSpecies($tree.species)}</div>
-				<button class="close" onclick={handleClose}><CloseIcon /></button>
+{#if previewState.tree}
+	{@const tree = previewState.tree}
+	<div class="preview" class:expand={!!previewState.expand}>
+		<div class="header">
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<div class="title" onclick={previewState.toggleExpand}>
+				{formatSpecies(tree.species)}
 			</div>
+			<button class="close" onclick={previewState.handleClose}><CloseIcon /></button>
+		</div>
 
-			<div class="props">
-				{#if $tree.address}
-					<div class="line">
-						<div class="icon">
-							<LocationIcon />
-						</div>
-						<div class="value">{$tree.address}</div>
-					</div>
-				{/if}
+		<div class="props">
+			{#if tree.address}
 				<div class="line">
 					<div class="icon">
-						<TagIcon />
+						<LocationIcon />
 					</div>
-					<div class="value">{shortDetails($tree)}</div>
+					<div class="value">{tree.address}</div>
 				</div>
-				<div class="line">
-					<div class="icon">
-						<BatteryIcon />
-					</div>
-					<div class="value">{formatState($tree.state)}</div>
+			{/if}
+			<div class="line">
+				<div class="icon">
+					<TagIcon />
 				</div>
+				<div class="value">{shortDetails(tree)}</div>
 			</div>
-
-			<GalleryPreview id={$tree.id} />
-
-			<Buttons>
-				<Button link={routes.treeDetails($tree.id)}>{locale.mapPreviewDetails()}</Button>
-				<Button type="secondary" onClick={() => handleShareTree($tree.id)} square
-					><ShareIcon /></Button
-				>
-				<Button type="secondary" onClick={handleContextMenu} square><SettingsIcon /></Button>
-			</Buttons>
-
-			<div class="extras">
-				<Observations observation={$observations} />
-
-				{#each $comments as comment}
-					<Comment {comment} />
-				{/each}
+			<div class="line">
+				<div class="icon">
+					<BatteryIcon />
+				</div>
+				<div class="value">{formatState(tree.state)}</div>
 			</div>
+		</div>
 
-			<TreeContextMenu id={$tree.id} />
-		{/if}
+		<GalleryPreview id={tree.id} />
+
+		<Buttons>
+			<Button link={routes.treeDetails(tree.id)}>{locale.mapPreviewDetails()}</Button>
+			<Button type="secondary" onClick={() => handleShareTree(tree.id)} square><ShareIcon /></Button
+			>
+			<Button type="secondary" onClick={previewState.handleContextMenu} square
+				><SettingsIcon /></Button
+			>
+		</Buttons>
+
+		<div class="extras">
+			<Observations observation={previewState.observations} />
+
+			{#each previewState.comments as comment}
+				<Comment {comment} />
+			{/each}
+		</div>
 	</div>
 {/if}
 
@@ -198,6 +186,8 @@
 	/** On mobile, extrass need expansion. **/
 	@media screen and (max-width: 600px) {
 		.preview {
+			position: fixed;
+			bottom: var(--bottom-nav-height);
 			height: 266px;
 			transition: height 0.2s ease-in-out;
 

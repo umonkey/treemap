@@ -1,23 +1,16 @@
 <script lang="ts">
 	import { loadStateStats } from '$lib/hooks';
 	import { routes } from '$lib/routes';
-	import { Header, NarrowPage } from '$lib/ui';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
 
 	const { loading, error, data, reload } = loadStateStats();
+
 	$effect(() => {
 		reload();
 	});
 </script>
 
-<svelte:head>
-	<title>Trees by state</title>
-</svelte:head>
-
-<Header title="Trees by state" />
-
-<NarrowPage>
-	<h1>Trees by state</h1>
-
+<Dialog title="Trees by Status">
 	{#if $loading}
 		<p>Loading...</p>
 	{:else if $error}
@@ -46,7 +39,7 @@
 			</tbody>
 		</table>
 	{/if}
-</NarrowPage>
+</Dialog>
 
 <style>
 	table {

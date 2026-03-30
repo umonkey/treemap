@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { routes } from '$lib/routes';
 	import type { StreetReport } from '$lib/types';
-	import { HeightReport, SpeciesReport, StateReport } from '$lib/ui';
+	import { HeightReport, StateReport } from '$lib/ui';
+	import SpeciesReport from '$lib/ui/species-report/SpeciesReport.svelte';
 	import { Button, Buttons } from '$lib/ui';
 	import { apiClient } from '$lib/api';
 

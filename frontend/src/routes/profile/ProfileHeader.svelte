@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
-	import { Buttons, Button, SignOutButton } from '$lib/ui';
+	import { Buttons, SignOutButton } from '$lib/ui';
 	import HEADER_IMAGE from '$lib/assets/header.jpg';
-	import { routes } from '$lib/routes';
 	import UserPic from '$lib/components/layout/UserPic.svelte';
 
 	const { name, userpic, trees_count, updates_count, files_count } = $props<{
@@ -30,7 +29,6 @@
 
 		<Buttons>
 			<SignOutButton />
-			<Button link={routes.settings()} type="secondary">{locale.settingsButton()}</Button>
 		</Buttons>
 	</div>
 </div>

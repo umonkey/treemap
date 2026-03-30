@@ -1,10 +1,8 @@
 <script lang="ts">
 	import Title from '$lib/components/tree/Title.svelte';
-	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
 	import TreeTabs from '$lib/components/tree/TreeTabs.svelte';
 	import { loadTreeHistory } from '$lib/hooks';
-	import { routes } from '$lib/routes';
-	import { NarrowPage } from '$lib/ui';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import ChangeList from './ChangeList.svelte';
 
 	const { data } = $props();
@@ -15,21 +13,20 @@
 	});
 </script>
 
-<NarrowPage title="Tree History" back={routes.mapPreview(data.id)} nopadding>
+<Dialog title="Tree History" nopadding>
 	{#if $loading}
 		<p>Loading...</p>
 	{:else if $error}
 		<p>Error loading tree: {$error.description}</p>
 	{:else if $tree}
-		<Title title={$tree.species} address={$tree.address} padded />
+		<Title id={$tree.id} title={$tree.species} address={$tree.address} padded />
 		<TreeTabs tree={$tree.id} active="history" />
-		<TreeContextMenu id={$tree.id} />
 
 		<div class="padded">
 			<ChangeList changes={$changes} />
 		</div>
 	{/if}
-</NarrowPage>
+</Dialog>
 
 <style>
 	.padded,

@@ -3,7 +3,7 @@
 	import Question from '$lib/components/learn/Question.svelte';
 	import Results from '$lib/components/learn/Results.svelte';
 	import SoundPlayer from '$lib/components/learn/SoundPlayer.svelte';
-	import { NarrowPage } from '$lib/ui';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
 
 	import { getRandomQuestions } from '$lib/learn/questions';
 	import { locale } from '$lib/locale';
@@ -28,7 +28,7 @@
 	};
 </script>
 
-<NarrowPage title={locale.learnTitle()}>
+<Dialog title={locale.learnTitle()}>
 	<ProgressBar total={questions.length} complete={idx} />
 
 	{#if idx === questions.length}
@@ -38,4 +38,4 @@
 	{/if}
 
 	<SoundPlayer />
-</NarrowPage>
+</Dialog>

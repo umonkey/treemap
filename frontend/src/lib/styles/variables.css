@@ -5,13 +5,14 @@
 	color-scheme: light dark;
 
 	/* Z-indexes */
+	--z-sidebar: 1;
 	--z-map: 2;
-	--z-crosshair: 5;
-	--z-menu: 6;
-	--z-mobile-nav: 7;
+	--z-dialog: 5;
+	--z-mobile-nav: 6;
+	--z-menu: 7;
 	--z-map-preview: 8;
 	--z-add-button: 10;
-	--z-mobile-sidebar: 11;
+	--z-mobile-sidebar: 3;
 	--z-learn-result: 11;
 
 	/* Screen sizes */

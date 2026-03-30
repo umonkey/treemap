@@ -29,8 +29,15 @@ export default defineConfig(({ mode }) => {
 	return {
 		plugins,
 
+		optimizeDeps: {
+			esbuildOptions: {
+				target: 'esnext'
+			}
+		},
+
 		build: {
-			sourcemap: true
+			sourcemap: true,
+			target: 'esnext'
 		},
 
 		test: {

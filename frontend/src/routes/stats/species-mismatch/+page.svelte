@@ -1,7 +1,7 @@
 <script lang="ts">
 	import NewTreesListItem from '$lib/components/updates/NewTreesListItem.svelte';
 	import { loadSpeciesMismatch } from '$lib/hooks';
-	import { Header, NarrowPage } from '$lib/ui';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
 
 	const { loading, error, data, reload } = loadSpeciesMismatch();
 
@@ -10,13 +10,7 @@
 	});
 </script>
 
-<svelte:head>
-	<title>Mismatched species</title>
-</svelte:head>
-
-<Header title="Species mismatches" />
-
-<NarrowPage>
+<Dialog title="Species Mismatches">
 	{#if $loading}
 		<p>Loading...</p>
 	{:else if $error}
@@ -30,4 +24,4 @@
 			{/each}
 		{/if}
 	{/if}
-</NarrowPage>
+</Dialog>

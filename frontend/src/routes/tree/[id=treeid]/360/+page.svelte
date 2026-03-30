@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
-	import { StreetViewPage, NarrowPage } from '$lib/ui';
-	import { routes } from '$lib/routes';
+	import { StreetViewPage } from '$lib/ui';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
 
 	const { data } = $props();
 </script>
 
-<NarrowPage title={locale.treeShortTitle()} back={routes.mapPreview(data.id)} nopadding>
+<Dialog title={locale.treeShortTitle()} nopadding>
 	<StreetViewPage id={data.id} />
-</NarrowPage>
+</Dialog>

@@ -1,8 +1,8 @@
-import { OSM_AUTH_CLIENT_ID } from '$lib/env';
+import { config } from '$lib/env';
 
 export const getAuthenticateUrl = (origin: string): string => {
 	const params = new URLSearchParams({
-		client_id: OSM_AUTH_CLIENT_ID,
+		client_id: config.osmAuthClientId,
 		redirect_uri: `${origin}/auth/osm/callback`.replace('http:', 'https:'),
 		response_type: 'code',
 		scope: 'write_api write_redactions',

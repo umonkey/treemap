@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
-	import { NarrowPage } from '$lib/ui';
 	import PhotoUploader from './PhotoUploader.svelte';
 	import UploadForm from './UploadForm.svelte';
 	import TreeForm from '$lib/components/forms/TreeForm.svelte';
@@ -18,12 +17,8 @@
 	};
 </script>
 
-<NarrowPage title={locale.photoTitle()} back={routes.mapPreview(data.id)}>
-	<TreeForm {tree} onSubmit={close} onCancel={close}>
-		<p>{locale.photoIntro()}</p>
-
-		<PhotoUploader {treeId} onChange={handleChange} />
-
-		<UploadForm id={tree.id} />
-	</TreeForm>
-</NarrowPage>
+<TreeForm {tree} title="Add Tree Photos" onSubmit={close} onCancel={close}>
+	<p>{locale.photoIntro()}</p>
+	<PhotoUploader {treeId} onChange={handleChange} />
+	<UploadForm id={tree.id} />
+</TreeForm>

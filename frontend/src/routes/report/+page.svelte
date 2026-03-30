@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
 	import ReportForm from './ReportForm.svelte';
-	import { NarrowPage } from '$lib/ui';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
 
 	const { data } = $props();
 </script>
 
-<NarrowPage title={locale.reportTitle()}>
+<Dialog title={locale.reportTitle()}>
 	<ReportForm address={data.address} />
-</NarrowPage>
+</Dialog>

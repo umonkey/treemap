@@ -17,10 +17,6 @@ class EnglishLocale {
 		return 'Search';
 	}
 
-	public sideExplore(): string {
-		return 'Explore Map';
-	}
-
 	public sideUpdates(): string {
 		return 'Recent updates';
 	}
@@ -661,10 +657,6 @@ class RussianLocale extends EnglishLocale {
 		return 'Поиск';
 	}
 
-	public sideExplore(): string {
-		return 'Карта';
-	}
-
 	public sideUpdates(): string {
 		return 'Обновления';
 	}
@@ -1287,10 +1279,6 @@ class ArmenianLocale extends EnglishLocale {
 
 	public sideSearch(): string {
 		return 'Որոնել';
-	}
-
-	public sideExplore(): string {
-		return 'Տեսնել քարտեզը';
 	}
 
 	public sideUpdates(): string {

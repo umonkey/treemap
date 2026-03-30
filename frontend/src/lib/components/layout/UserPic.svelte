@@ -18,23 +18,27 @@
 	};
 </script>
 
-{#if src && !error}
-	<img {src} {alt} class={className} referrerpolicy="no-referrer" onerror={handleError} />
-{:else}
-	<div class={className}>
-		<UserIcon />
-	</div>
-{/if}
+<div class="userpic">
+	{#if src && !error}
+		<img {src} {alt} class={className} referrerpolicy="no-referrer" onerror={handleError} />
+	{:else}
+		<div class={className}>
+			<UserIcon />
+		</div>
+	{/if}
+</div>
 
 <style>
-	img {
-		object-fit: cover;
-		display: block;
-	}
+	.userpic {
+		img {
+			object-fit: cover;
+			display: block;
+		}
 
-	div {
-		display: flex;
-		align-items: center;
-		justify-content: center;
+		div {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
 	}
 </style>

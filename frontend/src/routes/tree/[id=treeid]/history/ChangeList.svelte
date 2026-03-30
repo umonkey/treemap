@@ -51,6 +51,7 @@
 		border-radius: 50%;
 		border: 2px solid #fff;
 		box-sizing: border-box;
+		object-fit: cover;
 	}
 
 	.body {

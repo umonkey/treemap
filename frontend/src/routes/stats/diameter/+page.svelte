@@ -1,7 +1,7 @@
 <script lang="ts">
 	import NewTreesListItem from '$lib/components/updates/NewTreesListItem.svelte';
 	import { loadTreesByDiameter } from '$lib/hooks';
-	import { Header, NarrowPage } from '$lib/ui';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
 
 	const { loading, error, data, reload } = loadTreesByDiameter();
 
@@ -18,13 +18,7 @@
 	};
 </script>
 
-<svelte:head>
-	<title>Widest trees</title>
-</svelte:head>
-
-<Header title="Widest trees" />
-
-<NarrowPage>
+<Dialog title="Widest Trees">
 	{#if $loading}
 		<p>Loading...</p>
 	{:else if $error}
@@ -34,4 +28,4 @@
 			<NewTreesListItem {tree} extra={format(tree.diameter)} />
 		{/each}
 	{/if}
-</NarrowPage>
+</Dialog>

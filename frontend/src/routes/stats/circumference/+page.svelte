@@ -1,7 +1,7 @@
 <script lang="ts">
 	import NewTreesListItem from '$lib/components/updates/NewTreesListItem.svelte';
 	import { loadTreesByCircumference } from '$lib/hooks';
-	import { Header, NarrowPage } from '$lib/ui';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
 
 	const { loading, error, data, reload } = loadTreesByCircumference();
 
@@ -18,13 +18,7 @@
 	};
 </script>
 
-<svelte:head>
-	<title>Thickest trees</title>
-</svelte:head>
-
-<Header title="Thickest trees" />
-
-<NarrowPage>
+<Dialog title="Thickest Trees">
 	{#if $loading}
 		<p>Loading...</p>
 	{:else if $error}
@@ -34,4 +28,4 @@
 			<NewTreesListItem {tree} extra={format(tree.circumference)} />
 		{/each}
 	{/if}
-</NarrowPage>
+</Dialog>

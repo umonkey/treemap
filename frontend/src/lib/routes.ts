@@ -30,9 +30,9 @@ export const routes = {
 	file: (id: string) => `${config.fileBaseUrl}${id}.jpg`,
 	home: () => '/',
 	learn: () => '/learn',
-	map: () => '/map',
+	map: () => '/',
 	mapPreview: (id: string, search?: string | undefined | null) =>
-		build('/map', {
+		build('/', {
 			preview: id,
 			q: search
 		}),
@@ -41,10 +41,10 @@ export const routes = {
 	streetReport: (street?: string) => build('/report', { address: street }),
 	settings: () => '/settings',
 	search: () => '/search',
-	searchAddress: (query: string) => `/map?q=addr:"${query}"`,
-	searchQuery: (query: string) => `/map?q=${query}`,
-	searchSpecies: (query: string) => `/map?q=species:"${query}"`,
-	searchState: (query: string) => `/map?q=state:"${query}"`,
+	searchAddress: (query: string) => `/?q=addr:"${query}"`,
+	searchQuery: (query: string) => `/?q=${query}`,
+	searchSpecies: (query: string) => `/?q=species:"${query}"`,
+	searchState: (query: string) => `/?q=state:"${query}"`,
 	stats: () => '/stats',
 	statsCircumference: () => '/stats/circumference',
 	statsDiameter: () => '/stats/diameter',
@@ -71,9 +71,9 @@ export const routes = {
 	treeEdit: (id: string) => `/tree/${id}/edit`,
 	treeHeight: (id: string) => `/tree/${id}/height`,
 	treeHistory: (id: string) => `/tree/${id}/history`,
-	treeMap: (id: string) => `/tree/${id}/map`,
 	treeMove: (id: string) => `/tree/${id}/move`,
 	treeObservations: (id: string) => `/tree/${id}/observations`,
 	treeReplace: (id: string) => `/tree/${id}/replace`,
-	treeUploadPhotos: (id: string) => `/tree/${id}/upload`
+	treeUploadPhotos: (id: string) => `/tree/${id}/upload`,
+	layers: () => '/layers'
 };

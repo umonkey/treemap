@@ -18,7 +18,7 @@ export const mapStore = writable<IMapStore>(
 );
 
 mapStore.subscribe((value) => {
-	console.debug('[map] Storing center and zoom.');
+	// console.debug('[map] Storing center and zoom.');
 	ls.write(STORE_ID, value);
 });
 

@@ -2,20 +2,18 @@
 	import { invalidateAll } from '$app/navigation';
 	import { apiClient } from '$lib/api';
 	import { locale } from '$lib/locale';
-	import { routes } from '$lib/routes';
 	import { showError } from '$lib/errors';
 
 	import Actions from '$lib/components/tree/Actions.svelte';
 	import Comment from '$lib/components/tree/Comment.svelte';
 	import Description from '$lib/components/tree/Description.svelte';
-	import Links from '$lib/components/tree/Links.svelte';
 	import Observations from '$lib/components/observation/Observations.svelte';
 	import Properties from '$lib/components/tree/Properties.svelte';
 	import Title from '$lib/components/tree/Title.svelte';
 	import Gallery from '$lib/components/photos/Gallery.svelte';
-	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
 	import TreeTabs from '$lib/components/tree/TreeTabs.svelte';
-	import { CommentForm, NarrowPage } from '$lib/ui';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
+	import { CommentForm } from '$lib/ui';
 	import { onMount } from 'svelte';
 
 	const { data } = $props();
@@ -46,32 +44,31 @@
 	};
 </script>
 
-<NarrowPage title={locale.treeShortTitle()} back={routes.mapPreview(data.id)} nopadding>
-	<Title title={tree.species} address={tree.address} padded />
+<Dialog title={tree.species || 'Unknown tree'} nopadding>
+	<div>
+		<Title id={tree.id} title={tree.species} address={tree.address} padded />
 
-	<TreeTabs tree={tree.id} active="details" />
+		<TreeTabs tree={tree.id} active="details" />
 
-	<Gallery id={tree.id} />
-	<Actions {tree} />
-	<Properties {tree} />
-	<Observations {observation} />
-	<Links {tree} />
-	<Description text={tree.notes} />
+		<Gallery id={tree.id} />
+		<Actions {tree} />
+		<Properties {tree} />
+		<Observations {observation} />
+		<Description text={tree.notes} />
 
-	<div id="comments" class="comments">
-		{#if comments.length > 0}
-			{#each comments as comment}
-				<Comment {comment} />
-			{/each}
-		{:else}
-			<p class="empty">{locale.noComments()}</p>
-		{/if}
+		<div id="comments" class="comments">
+			{#if comments.length > 0}
+				{#each comments as comment}
+					<Comment {comment} />
+				{/each}
+			{:else}
+				<p class="empty">{locale.noComments()}</p>
+			{/if}
 
-		<CommentForm {onSubmit} />
+			<CommentForm {onSubmit} />
+		</div>
 	</div>
-
-	<TreeContextMenu id={tree.id} />
-</NarrowPage>
+</Dialog>
 
 <style>
 	.comments {

@@ -1,7 +1,6 @@
 <script lang="ts">
-	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
-	import { locale } from '$lib/locale';
-	import { menuState } from '$lib/stores/treeMenu';
+	import { menuBus } from '$lib/buses/menuBus';
+	import Overlay from '$lib/components/layout/Overlay.svelte';
 	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
 	import type { Snippet } from 'svelte';
@@ -9,7 +8,7 @@
 	type Props = {
 		id?: string;
 		children?: Snippet;
-		title?: string;
+		title: string;
 		saving?: boolean;
 		canSave?: boolean;
 		onSubmit: () => void;
@@ -45,113 +44,143 @@
 
 	const handleLongTap = (e: Event) => {
 		e.preventDefault();
-		menuState.update((value) => !value);
+
+		if (id) {
+			menuBus.emit('show', id);
+		}
 	};
 </script>
 
-<AuthWrapper>
+<Overlay onClick={handleCancel}>
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<form onsubmit={handleSubmit} onkeydown={handleKeyDown}>
-		<h2>{title}</h2>
-
-		<div class="buttons phone">
-			<button type="button" onclick={handleCancel} disabled={saving}>Cancel</button>
-			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<div class="sep" oncontextmenu={handleLongTap}>{title}</div>
-			<button type="submit" disabled={!canSave || saving}>Save</button>
+	<form class="dialog" onsubmit={handleSubmit} onkeydown={handleKeyDown}>
+		<div class="title">
+			<button class="phone" type="button" onclick={handleCancel} disabled={saving}>Cancel</button>
+			<h1 oncontextmenu={handleLongTap}>{title}</h1>
+			<button class="phone" type="submit" disabled={!canSave || saving}>Save</button>
 		</div>
 
-		{#if children}
-			{@render children()}
-		{/if}
+		<div class="body">
+			{#if children}
+				<AuthWrapper>
+					{@render children()}
+				</AuthWrapper>
+			{/if}
+		</div>
 
 		<div class="buttons desktop">
-			<Button type="submit" onClick={handleSubmit} disabled={!canSave || saving}
-				>Save changes</Button
-			>
-			<Button type="cancel" onClick={handleCancel} disabled={saving}>{locale.editCancel()}</Button>
+			<Button onClick={handleSubmit}>Save Changes</Button>
+			<Button onClick={handleCancel} type="cancel">Cancel</Button>
 		</div>
-
-		{#if id}
-			<TreeContextMenu {id} />
-		{/if}
 	</form>
-</AuthWrapper>
+</Overlay>
 
 <style>
-	form {
-		position: relative;
+	.dialog {
+		position: absolute;
 		display: flex;
 		flex-direction: column;
-		gap: 2rem;
+
+		top: 50%;
+		left: 50%;
+		max-width: 600px;
+		width: 600px;
+		transform: translate(-50%, -50%);
+
+		background-color: var(--background-color);
+		border-radius: 10px;
+		overflow: hidden;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 	}
 
-	h2 {
-		font-size: 1.5rem;
-		font-weight: 300;
-		border-bottom: solid 1px rgba(128, 128, 128, 0.2);
-		padding-bottom: 0.5rem;
-		margin: 1rem 0 0;
-	}
+	.title {
+		width: 100%;
+		padding: 0.5rem 1rem;
+		box-sizing: border-box;
 
-	.buttons {
+		height: 40px;
+		background-color: rgba(0, 0, 0, 0.2);
+
 		display: flex;
 		flex-direction: row;
-		gap: 1rem;
 		align-items: center;
 	}
 
-	.buttons.phone {
-		background-color: light-dark(#bfc7d9, #333c4e);
-		position: fixed;
-		top: 0px;
-		left: 0;
-		width: 100%;
-		box-sizing: border-box;
-		z-index: 5;
-		padding: 0 0.5rem;
-		line-height: 40px;
-
-		.sep {
-			flex: 1 1 auto;
-			text-align: center;
-			white-space: nowrap;
-			overflow: hidden;
-			text-overflow: ellipsis;
-
-			/** Prevent text selection on context menu **/
-			user-select: none;
-			-webkit-user-select: none;
-			-webkit-touch-callout: none;
-		}
+	.title {
+		padding: 0.5rem 0;
 
 		button {
 			border: none;
 			background-color: inherit;
+			height: 40px;
+			padding: 0 1rem;
 			flex: 0 0 50px;
 			opacity: 0.75;
 			font-size: 0.9rem;
+			cursor: pointer;
 		}
 	}
 
-	/** Sticky buttons on phones **/
+	h1 {
+		font-size: 1.25rem;
+		font-weight: 400;
+		line-height: 40px;
+		text-align: center;
+		margin: 0;
+
+		flex: 1 0 auto;
+	}
+
+	.body {
+		max-width: 600px;
+		margin: 0 auto;
+		padding: 1rem;
+		width: 100%;
+		box-sizing: border-box;
+
+		min-height: 40vh;
+		max-height: 80vh;
+		overflow-x: hidden;
+		overflow-y: scroll;
+
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		align-items: stretch;
+	}
+
+	.buttons {
+		padding: 1rem;
+		display: flex;
+		flex-direction: row;
+		gap: 1rem;
+	}
+
+	/** Make the dialog full-screen on mobile devices. **/
 	@media screen and (max-width: 600px) {
-		form {
-			padding-top: 1rem;
+		.dialog {
+			width: 100vw;
+			height: calc(100vh - var(--bottom-nav-height));
+			border-radius: 0;
+			max-width: 100vw;
+
+			transform: none;
+			top: 0;
+			left: 0;
+			bottom: 0;
 		}
 
-		h2 {
-			display: none;
+		.body {
+			max-height: none;
 		}
 
-		.buttons.desktop {
+		.desktop {
 			display: none;
 		}
 	}
 
-	/** Sticky buttons on phones **/
 	@media screen and (min-width: 601px) {
-		.buttons.phone {
+		.phone {
 			display: none;
 		}
 	}
