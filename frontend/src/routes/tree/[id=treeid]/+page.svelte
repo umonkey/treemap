@@ -45,7 +45,7 @@
 	};
 </script>
 
-<Dialog title={tree.species}>
+<Dialog title={tree.species} nopadding>
 	<Title id={tree.id} title={tree.species} address={tree.address} padded />
 
 	<TreeTabs tree={tree.id} active="details" />

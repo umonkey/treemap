@@ -6,6 +6,6 @@
 	const { data } = $props();
 </script>
 
-<Dialog title={locale.treeShortTitle()}>
+<Dialog title={locale.treeShortTitle()} nopadding>
 	<StreetViewPage id={data.id} />
 </Dialog>

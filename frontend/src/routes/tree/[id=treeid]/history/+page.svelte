@@ -13,7 +13,7 @@
 	});
 </script>
 
-<Dialog title="Tree History">
+<Dialog title="Tree History" nopadding>
 	{#if $loading}
 		<p>Loading...</p>
 	{:else if $error}

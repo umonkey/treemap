@@ -10,9 +10,10 @@
 		onClick: () => void;
 	};
 
-	const { title, children, buttons, header } = $props<{
+	const { title, children, buttons, header, nopadding } = $props<{
 		title: string;
 		children: Snippet;
+		nopadding?: boolean;
 		buttons?: ButtonDef[];
 		header?: Snippet;
 	}>();
@@ -38,7 +39,7 @@
 			</div>
 		{/if}
 
-		<div class="body">
+		<div class="body" class:nopadding={!!nopadding}>
 			{@render children()}
 		</div>
 
@@ -121,6 +122,10 @@
 		flex-direction: column;
 		gap: 1rem;
 		align-items: stretch;
+
+		&.nopadding {
+			padding: 1rem 0;
+		}
 	}
 
 	button {
