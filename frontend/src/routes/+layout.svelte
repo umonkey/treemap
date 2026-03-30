@@ -1,14 +1,13 @@
 <script lang="ts">
 	import '@fontsource-variable/inter';
 	import { type BeforeInstallPromptEvent, pwaStore } from '$lib/stores/pwaStore';
-	import { LocationTracker } from '$lib/ui';
 	import { autoStartUpload } from '$lib/upload';
 	import { validateStoredToken } from '$lib/utils/auth';
 	import { SvelteToast } from '@zerodevx/svelte-toast';
 	import { onMount } from 'svelte';
 
-	import Layout from '$lib/components/layout/Layout.svelte';
 	import GoogleTracker from '$lib/components/GoogleTracker.svelte';
+	import Layout from '$lib/components/layout/Layout.svelte';
 
 	import '$lib/styles/variables.css';
 	import '$lib/styles/colors.css';
@@ -35,4 +34,3 @@
 
 <SvelteToast />
 <GoogleTracker />
-<LocationTracker />

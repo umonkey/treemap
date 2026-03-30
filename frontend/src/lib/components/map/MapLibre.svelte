@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { MAX_BOUNDS } from '$lib/constants';
 	import type { ILatLng } from '$lib/types';
-	import { CircleLayer, GeoJSON, MapLibre } from 'svelte-maplibre';
+	import { CircleLayer, GeoJSON, MapLibre, NavigationControl } from 'svelte-maplibre';
 	import { RasterLayer, RasterTileSource } from 'svelte-maplibre';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import { type Snippet, onMount } from 'svelte';
+	import LayerButton from './LayerButton.svelte';
+	import LocationControl from './LocationControl.svelte';
 	import { mapState } from './MapLibre.svelte.ts';
 	import Marker from './Marker.svelte';
-	import LayerButton from './LayerButton.svelte';
 
 	const { children = undefined, onMove } = $props<{
 		children?: Snippet;
@@ -33,8 +34,11 @@
 		onzoom={mapState.handleZoom}
 		onload={mapState.handleLoad}
 		maxBounds={MAX_BOUNDS}
-		standardControls
 	>
+		<NavigationControl position="top-left" />
+
+		<LocationControl />
+
 		{#if children}
 			{@render children()}
 		{/if}
