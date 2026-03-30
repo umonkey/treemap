@@ -7,7 +7,6 @@
 	import Actions from '$lib/components/tree/Actions.svelte';
 	import Comment from '$lib/components/tree/Comment.svelte';
 	import Description from '$lib/components/tree/Description.svelte';
-	import Links from '$lib/components/tree/Links.svelte';
 	import Observations from '$lib/components/observation/Observations.svelte';
 	import Properties from '$lib/components/tree/Properties.svelte';
 	import Title from '$lib/components/tree/Title.svelte';
@@ -46,27 +45,28 @@
 </script>
 
 <Dialog title={tree.species} nopadding>
-	<Title id={tree.id} title={tree.species} address={tree.address} padded />
+	<div>
+		<Title id={tree.id} title={tree.species} address={tree.address} padded />
 
-	<TreeTabs tree={tree.id} active="details" />
+		<TreeTabs tree={tree.id} active="details" />
 
-	<Gallery id={tree.id} />
-	<Actions {tree} />
-	<Properties {tree} />
-	<Observations {observation} />
-	<Links {tree} />
-	<Description text={tree.notes} />
+		<Gallery id={tree.id} />
+		<Actions {tree} />
+		<Properties {tree} />
+		<Observations {observation} />
+		<Description text={tree.notes} />
 
-	<div id="comments" class="comments">
-		{#if comments.length > 0}
-			{#each comments as comment}
-				<Comment {comment} />
-			{/each}
-		{:else}
-			<p class="empty">{locale.noComments()}</p>
-		{/if}
+		<div id="comments" class="comments">
+			{#if comments.length > 0}
+				{#each comments as comment}
+					<Comment {comment} />
+				{/each}
+			{:else}
+				<p class="empty">{locale.noComments()}</p>
+			{/if}
 
-		<CommentForm {onSubmit} />
+			<CommentForm {onSubmit} />
+		</div>
 	</div>
 </Dialog>
 

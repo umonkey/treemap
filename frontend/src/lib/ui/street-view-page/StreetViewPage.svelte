@@ -1,7 +1,6 @@
 <script lang="ts">
 	import Actions from '$lib/components/tree/Actions.svelte';
 	import Description from '$lib/components/tree/Description.svelte';
-	import Links from '$lib/components/tree/Links.svelte';
 	import Properties from '$lib/components/tree/Properties.svelte';
 	import Title from '$lib/components/tree/Title.svelte';
 	import TreeTabs from '$lib/components/tree/TreeTabs.svelte';
@@ -28,6 +27,5 @@
 
 	<Actions tree={$data} />
 	<Properties tree={$data} />
-	<Links tree={$data} />
 	<Description text={$data.notes} />
 {/if}
