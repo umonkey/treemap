@@ -21,6 +21,7 @@ export class SearchState {
 
 	clear = () => {
 		this.value = '';
+		searchStore.set(undefined);
 		this.commit();
 	};
 }
