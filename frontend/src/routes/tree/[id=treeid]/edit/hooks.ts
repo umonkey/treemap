@@ -145,8 +145,8 @@ export const hooks = () => {
 			});
 	};
 
-	const handleCancel = () => {
-		goto(routes.treeDetails(get(tree).id));
+	const handleCancel = async () => {
+		await goto(routes.treeDetails(get(tree).id));
 	};
 
 	return {

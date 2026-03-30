@@ -23,7 +23,7 @@
 </svelte:head>
 
 <Overlay onClick={handleClose}>
-	<div class="dialog">
+	<form class="dialog">
 		{#if header}
 			{@render header()}
 		{:else}
@@ -49,7 +49,7 @@
 				{/each}
 			</div>
 		{/if}
-	</div>
+	</form>
 </Overlay>
 
 <style>

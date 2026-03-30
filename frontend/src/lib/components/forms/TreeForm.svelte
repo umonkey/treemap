@@ -2,6 +2,7 @@
 	import { menuBus } from '$lib/buses/menuBus';
 	import Overlay from '$lib/components/layout/Overlay.svelte';
 	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
+	import Button from '$lib/ui/button/Button.svelte';
 	import type { Snippet } from 'svelte';
 
 	type Props = {
@@ -54,9 +55,9 @@
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<form class="dialog" onsubmit={handleSubmit} onkeydown={handleKeyDown}>
 		<div class="title">
-			<button type="button" onclick={handleCancel} disabled={saving}>Cancel</button>
+			<button class="phone" type="button" onclick={handleCancel} disabled={saving}>Cancel</button>
 			<h1 oncontextmenu={handleLongTap}>{title}</h1>
-			<button type="submit" disabled={!canSave || saving}>Save</button>
+			<button class="phone" type="submit" disabled={!canSave || saving}>Save</button>
 		</div>
 
 		<div class="body">
@@ -65,6 +66,11 @@
 					{@render children()}
 				</AuthWrapper>
 			{/if}
+		</div>
+
+		<div class="buttons desktop">
+			<Button onClick={handleSubmit}>Save Changes</Button>
+			<Button onClick={handleCancel} type="cancel">Cancel</Button>
 		</div>
 	</form>
 </Overlay>
@@ -106,6 +112,8 @@
 		button {
 			border: none;
 			background-color: inherit;
+			height: 40px;
+			padding: 0 1rem;
 			flex: 0 0 50px;
 			opacity: 0.75;
 			font-size: 0.9rem;
@@ -141,10 +149,39 @@
 		align-items: stretch;
 	}
 
-	/** Sticky buttons on phones **/
+	.buttons {
+		padding: 1rem;
+		display: flex;
+		flex-direction: row;
+		gap: 1rem;
+	}
+
+	/** Make the dialog full-screen on mobile devices. **/
 	@media screen and (max-width: 600px) {
-		form {
-			padding-top: 1rem;
+		.dialog {
+			width: 100vw;
+			height: calc(100vh - var(--bottom-nav-height));
+			border-radius: 0;
+			max-width: 100vw;
+
+			transform: none;
+			top: 0;
+			left: 0;
+			bottom: 0;
+		}
+
+		.body {
+			max-height: none;
+		}
+
+		.desktop {
+			display: none;
+		}
+	}
+
+	@media screen and (min-width: 601px) {
+		.phone {
+			display: none;
 		}
 	}
 </style>
