@@ -1,6 +1,7 @@
 import { apiClient } from '$lib/api';
 import { get, writable } from 'svelte/store';
 import { getDistance } from '$lib/utils';
+import { mapBus } from '$lib/buses/mapBus';
 import type { ILatLng, ILatLon, IAddTreesRequest } from '$lib/types';
 import { goto, routes } from '$lib/routes';
 import { spreadDots } from '$lib/map';
@@ -99,6 +100,7 @@ export const hooks = ({ start, end }: { start: ILatLng; end: ILatLng }) => {
 			}
 		} finally {
 			saving.set(false);
+			mapBus.emit('reload');
 		}
 	};
 

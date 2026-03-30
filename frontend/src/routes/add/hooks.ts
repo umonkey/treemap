@@ -1,5 +1,6 @@
 import { apiClient } from '$lib/api';
 import { goto, routes } from '$lib/routes';
+import { mapBus } from '$lib/buses/mapBus';
 import type { IAddTreesRequest, ILatLng, ITree } from '$lib/types';
 import { showError } from '$lib/errors';
 import { get } from 'svelte/store';
@@ -147,21 +148,27 @@ export const hooks = () => {
 			files: []
 		} as IAddTreesRequest;
 
-		apiClient.addTree(req).then((res) => {
-			if (res.status >= 200 && res.status < 400 && res.data) {
-				const id = res.data.trees[0].id;
-				if (t.state === 'healthy' || t.state === 'dead') {
-					goto(routes.treeObservations(id));
-				} else if (t.state === 'stump' || t.state === 'gone') {
-					goto(routes.treeUploadPhotos(id));
+		apiClient
+			.addTree(req)
+			.then((res) => {
+				if (res.status >= 200 && res.status < 400 && res.data) {
+					const id = res.data.trees[0].id;
+
+					if (t.state === 'healthy' || t.state === 'dead') {
+						goto(routes.treeObservations(id));
+					} else if (t.state === 'stump' || t.state === 'gone') {
+						goto(routes.treeUploadPhotos(id));
+					} else {
+						goto(routes.mapPreview(id));
+					}
 				} else {
-					goto(routes.mapPreview(id));
+					console.error(`Error ${res.status} updating tree.`);
+					showError('Error adding tree.');
 				}
-			} else {
-				console.error(`Error ${res.status} updating tree.`);
-				showError('Error adding tree.');
-			}
-		});
+			})
+			.finally(() => {
+				mapBus.emit('reload');
+			});
 	};
 
 	const handleCancel = () => {

@@ -16,6 +16,9 @@ type MapBusEvent = {
 
 	menu: string;
 
+	// Reload when a tree was added or updated.
+	reload: void;
+
 	fit: {
 		start: ILatLng;
 		end: ILatLng;

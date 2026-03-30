@@ -1,8 +1,8 @@
 import { apiClient } from '$lib/api';
-import { showError } from '$lib/errors';
 import { mapBus } from '$lib/buses';
 import { DEFAULT_MAP_CENTER } from '$lib/constants';
 import { config } from '$lib/env';
+import { showError } from '$lib/errors';
 import { mapLayerStore } from '$lib/stores/mapLayerStore';
 import { mapStore } from '$lib/stores/mapStore';
 import type { ILatLng } from '$lib/types';
@@ -40,6 +40,18 @@ type Feature = {
 type Collection = {
 	type: 'FeatureCollection';
 	features: Feature[];
+};
+
+const extendBounds = ({ n, e, s, w }: { n: number; e: number; s: number; w: number }) => {
+	const dLat = n - s;
+	const dLon = e - w;
+
+	return {
+		n: n + dLat / 2,
+		e: e + dLon / 2,
+		s: s - dLat / 2,
+		w: w - dLon / 2
+	};
 };
 
 class MapLibre {
@@ -83,7 +95,7 @@ class MapLibre {
 		}
 	};
 
-	private updateStore(bounds?: LngLatBounds) {
+	private updateStore = (bounds?: LngLatBounds) => {
 		this.storeDebouncer.run(() => {
 			mapStore.update((s) => {
 				const newState = { ...s, zoom: this.zoom };
@@ -96,7 +108,7 @@ class MapLibre {
 				return newState;
 			});
 		});
-	}
+	};
 
 	public handleZoom = () => {
 		this.updateStore();
@@ -112,18 +124,8 @@ class MapLibre {
 			return;
 		}
 
-		const bounds = this.bounds;
-
-		const n = bounds.getNorth();
-		const s = bounds.getSouth();
-		const e = bounds.getEast();
-		const w = bounds.getWest();
-
-		const dLat = n - s;
-		const dLon = e - w;
-
-		this.reloadTrees(n + dLat / 2, e + dLon / 2, s - dLat / 2, w - dLon / 2);
-		this.updateStore(bounds);
+		this.reloadTrees();
+		this.updateStore(this.bounds);
 
 		mapBus.emit('center', this.center);
 
@@ -135,7 +137,7 @@ class MapLibre {
 	private boundsChanged = (bounds: LngLatBounds): boolean => {
 		const hash = `W=${bounds.getWest().toFixed(5)} S=${bounds.getSouth().toFixed(5)} E=${bounds.getEast().toFixed(5)} N=${bounds.getNorth().toFixed(5)}`;
 
-		if (hash != this.lastBounds) {
+		if (hash !== this.lastBounds) {
 			this.lastBounds = hash;
 			console.debug(`MapLibre moved, new bounds: ${hash}`);
 			return true;
@@ -164,7 +166,20 @@ class MapLibre {
 		}
 	};
 
-	private reloadTrees(n: number, e: number, s: number, w: number) {
+	private reloadTrees = () => {
+		const bounds = this.bounds;
+
+		if (!bounds) {
+			return;
+		}
+
+		const { n, e, s, w } = extendBounds({
+			n: bounds.getNorth(),
+			s: bounds.getSouth(),
+			e: bounds.getEast(),
+			w: bounds.getWest()
+		});
+
 		this.fetchDebouncer.run(() => {
 			apiClient
 				.getGeoJSON(n, e, s, w)
@@ -180,7 +195,7 @@ class MapLibre {
 					showError('Error loading trees, please try again.');
 				});
 		});
-	}
+	};
 
 	// This is triggered by the MapPreview element via mapBus, to tell us
 	// that the user clicked another tree, or closed the preview.
@@ -196,6 +211,7 @@ class MapLibre {
 	public onMount = () => {
 		mapBus.on('pin', this.handlePinChange);
 		mapBus.on('fit', this.handleFit);
+		mapBus.on('reload', this.reloadTrees);
 
 		const unsub = mapLayerStore.subscribe(() => {
 			this.updateLayers();
@@ -206,6 +222,7 @@ class MapLibre {
 		return () => {
 			mapBus.off('pin', this.handlePinChange);
 			mapBus.off('fit', this.handleFit);
+			mapBus.off('reload', this.reloadTrees);
 			unsub();
 		};
 	};
