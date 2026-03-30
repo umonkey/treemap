@@ -49,6 +49,7 @@ class MapLibre {
 	markers = $state.raw<Collection | undefined>(undefined);
 	zoom = $state<number>(13);
 	center = $state<ILatLng>(DEFAULT_MAP_CENTER);
+	bounds = $state<LngLatBounds>();
 	marker = $state<LngLat>();
 
 	// Last moved bounds, used to prevent cyclic updates.
@@ -66,7 +67,9 @@ class MapLibre {
 
 	public handleLoad = () => {
 		if (this.map) {
-			this.handleMoveEnd(this.map.getBounds());
+			this.bounds = this.map.getBounds();
+			console.debug('MapLibre load fired, loading the markers.');
+			this.handleMoveEnd();
 		}
 	};
 
@@ -98,10 +101,17 @@ class MapLibre {
 		this.updateStore();
 	};
 
-	public handleMoveEnd = (bounds: LngLatBounds) => {
-		if (!this.boundsChanged(bounds)) {
+	public handleMoveEnd = () => {
+		if (!this.bounds) {
+			console.debug('Bounds not set, ignoring MapLibre move.');
 			return;
 		}
+
+		if (!this.boundsChanged(this.bounds)) {
+			return;
+		}
+
+		const bounds = this.bounds;
 
 		const n = bounds.getNorth();
 		const s = bounds.getSouth();
@@ -133,10 +143,6 @@ class MapLibre {
 		console.debug('Oops, duplicate MapLibre move.');
 
 		return false;
-	};
-
-	public handleMoveStart = () => {
-		// pass
 	};
 
 	// Handles a click to a tree.

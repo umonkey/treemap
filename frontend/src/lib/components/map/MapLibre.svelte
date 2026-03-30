@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { MAX_BOUNDS } from '$lib/constants';
 	import type { ILatLng } from '$lib/types';
-	import type { LngLatBounds } from 'maplibre-gl';
 	import { CircleLayer, GeoJSON, MapLibre } from 'svelte-maplibre';
 	import { RasterLayer, RasterTileSource } from 'svelte-maplibre';
 	import 'maplibre-gl/dist/maplibre-gl.css';
@@ -14,8 +13,6 @@
 		children?: Snippet;
 		onMove?: (ll: ILatLng) => void;
 	}>();
-
-	let bounds: LngLatBounds | undefined = $state();
 
 	onMount(mapState.onMount);
 
@@ -31,9 +28,8 @@
 		bind:center={mapState.center}
 		bind:zoom={mapState.zoom}
 		class="map"
-		bind:bounds
-		onmovestart={mapState.handleMoveStart}
-		onmoveend={() => bounds && mapState.handleMoveEnd(bounds)}
+		bind:bounds={mapState.bounds}
+		onmoveend={mapState.handleMoveEnd}
 		onzoom={mapState.handleZoom}
 		onload={mapState.handleLoad}
 		maxBounds={MAX_BOUNDS}
