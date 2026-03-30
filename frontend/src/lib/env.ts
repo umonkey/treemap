@@ -1,25 +1,22 @@
-import { PUBLIC_API_ROOT, PUBLIC_FILE_BASE_URL } from '$env/static/public';
-
-export const AUTH_CALLBACK = `${PUBLIC_API_ROOT}v3/login/google`;
-export const AUTH_CLIENT_ID =
-	import.meta.env.VITE_AUTH_CLIENT_ID ??
-	'999312923392-6k26jala2pe5dk9u7o63o8nvts3a7f1f.apps.googleusercontent.com';
-
-export const GTM_ID = import.meta.env.VITE_GTM_ID ?? 'G-CEJ6L6RMWG';
-export const ENVIRONMENT = import.meta.env.VITE_ENVIRONMENT ?? 'development';
-
-export const OSM_AUTH_CLIENT_ID = 'mCL7JIK8ky2_7g6vC9t2cI-jUh1nsA1nK5bQ2AA2VK8';
-
-// Goole Maps Embed API key.
-// This is used to embed 360 Street View.
-// Restricted to yerevam.treemaps.app
-export const MAPS_KEY = 'AIzaSyBatIJw8enkS9rXnssEsFjSCuATGOxE6ec';
-
-// MapTiler key.
-// This is used to display vector tiles.
-export const MAPTILER_KEY = import.meta.env.VITE_MAPTILER_KEY ?? 'dUojMAUC4kTIAQW9ZBHc';
+import {
+	PUBLIC_API_ROOT,
+	PUBLIC_AUTH_CLIENT_ID,
+	PUBLIC_ENVIRONMENT,
+	PUBLIC_FILE_BASE_URL,
+	PUBLIC_GTM_ID,
+	PUBLIC_MAPS_KEY,
+	PUBLIC_MAPTILER_KEY,
+	PUBLIC_OSM_AUTH_CLIENT_ID
+} from '$env/static/public';
 
 export const config = {
 	apiRoot: PUBLIC_API_ROOT,
-	fileBaseUrl: PUBLIC_FILE_BASE_URL
+	fileBaseUrl: PUBLIC_FILE_BASE_URL,
+	authClientId: PUBLIC_AUTH_CLIENT_ID,
+	authCallback: `${PUBLIC_API_ROOT}v3/login/google`,
+	gtmId: PUBLIC_GTM_ID,
+	environment: PUBLIC_ENVIRONMENT,
+	osmAuthClientId: PUBLIC_OSM_AUTH_CLIENT_ID,
+	mapsKey: PUBLIC_MAPS_KEY,
+	mapTilerKey: PUBLIC_MAPTILER_KEY
 };

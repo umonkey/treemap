@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { GTM_ID } from '$lib/env';
+	import { config } from '$lib/env';
 	import { onMount } from 'svelte';
 
 	onMount(async () => {
@@ -11,14 +11,14 @@
 		}
 
 		gtag('js', new Date());
-		gtag('config', GTM_ID);
+		gtag('config', config.gtmId);
 
 		const s = document.createElement('script');
 		s.async = true;
-		s.src = `https://www.googletagmanager.com/gtag/js?id=${GTM_ID}`;
+		s.src = `https://www.googletagmanager.com/gtag/js?id=${config.gtmId}`;
 		document.head.appendChild(s);
 
-		console.debug(`GTM initialized for ${GTM_ID}.`);
+		console.debug(`GTM initialized for ${config.gtmId}.`);
 	});
 </script>
 

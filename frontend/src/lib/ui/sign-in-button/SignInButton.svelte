@@ -1,14 +1,14 @@
 <script lang="ts">
-	import { AUTH_CALLBACK, AUTH_CLIENT_ID } from '$lib/env';
+	import { config } from '$lib/env';
 	import { locale } from '$lib/locale';
 	import { Button } from '$lib/ui';
 
 	const onSignIn = () => {
 		const qs = new URLSearchParams({
-			client_id: AUTH_CLIENT_ID,
+			client_id: config.authClientId,
 			scope: 'openid email profile',
 			response_type: 'token',
-			redirect_uri: AUTH_CALLBACK,
+			redirect_uri: config.authCallback,
 			response_mode: 'form_post',
 			state: window.location.href
 

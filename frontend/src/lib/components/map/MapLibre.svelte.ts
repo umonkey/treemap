@@ -1,12 +1,11 @@
 import { apiClient } from '$lib/api';
 import { mapBus } from '$lib/buses';
 import { DEFAULT_MAP_CENTER } from '$lib/constants';
+import { config } from '$lib/env';
+import { mapLayerStore } from '$lib/stores/mapLayerStore';
 import { mapStore } from '$lib/stores/mapStore';
 import type { ILatLng } from '$lib/types';
 import { Debouncer } from '$lib/utils/debounce';
-import { MAPTILER_KEY } from '$lib/env';
-import { mapLayerStore } from '$lib/stores/mapLayerStore';
-import { get } from 'svelte/store';
 import {
 	type LngLat,
 	LngLat as LngLat2,
@@ -14,8 +13,9 @@ import {
 	LngLatBounds as LngLatBounds2,
 	type Map
 } from 'maplibre-gl';
+import { get } from 'svelte/store';
 
-const BASIC_LAYER = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${MAPTILER_KEY}`;
+const BASIC_LAYER = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${config.mapTilerKey}`;
 const LIGHT_LAYER = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json';
 const DARK_LAYER = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json';
 const DRONE_LAYER = 'https://treemap-tiles.fra1.cdn.digitaloceanspaces.com/{z}/{x}/{y}.png';
