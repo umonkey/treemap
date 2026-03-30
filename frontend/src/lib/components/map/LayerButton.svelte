@@ -5,20 +5,16 @@
 </script>
 
 <Control position="top-right">
-	<div class="maplibregl-ctrl-group" class:active={buttonState.active}>
-		<button type="button" title="Switch layers" onclick={buttonState.toggle}>
+	<div class="maplibregl-ctrl-group">
+		<button class="button" type="button" title="Switch layers" onclick={buttonState.toggle}>
 			<Icon />
 		</button>
 	</div>
 </Control>
 
 <style>
-	button {
+	.button {
 		padding: 4px;
 		color: #000;
-	}
-
-	.active {
-		background-color: rgba(0 128 0 / 0.5);
 	}
 </style>

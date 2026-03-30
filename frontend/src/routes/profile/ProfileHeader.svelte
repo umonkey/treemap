@@ -30,7 +30,6 @@
 
 		<Buttons>
 			<SignOutButton />
-			<Button link={routes.settings()} type="secondary">{locale.settingsButton()}</Button>
 		</Buttons>
 	</div>
 </div>
