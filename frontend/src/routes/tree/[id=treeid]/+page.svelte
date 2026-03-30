@@ -46,7 +46,7 @@
 	};
 </script>
 
-<Dialog title={locale.treeShortTitle()}>
+<Dialog title={tree.species}>
 	<Title title={tree.species} address={tree.address} padded />
 
 	<TreeTabs tree={tree.id} active="details" />

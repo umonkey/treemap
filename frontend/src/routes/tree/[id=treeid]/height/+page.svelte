@@ -3,7 +3,6 @@
 	import TreeForm from '$lib/components/forms/TreeForm.svelte';
 	import { HeightInput } from '$lib/ui';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
-	import { locale } from '$lib/locale';
 	import { heightState } from './hooks.svelte.ts';
 
 	const { data } = $props();
@@ -13,7 +12,7 @@
 	});
 </script>
 
-<Dialog title={locale.measureTitle()}>
+<Dialog title="Tree Height">
 	<TreeForm
 		id={data.id}
 		title="Tree Height"

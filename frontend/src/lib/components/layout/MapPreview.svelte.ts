@@ -66,11 +66,19 @@ class PreviewState {
 		});
 	};
 
+	private handlePreviewSignal = (id: string | undefined) => {
+		if (!id) {
+			this.handleClose();
+		}
+	};
+
 	public onMount = () => {
 		mapBus.on('select', this.handleTreeSelect);
+		mapBus.on('preview', this.handlePreviewSignal);
 
 		return () => {
 			mapBus.off('select', this.handleTreeSelect);
+			mapBus.off('preview', this.handlePreviewSignal);
 		};
 	};
 }

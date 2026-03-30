@@ -66,6 +66,8 @@
 
 	.button {
 		flex: 0 0 40px;
+		display: block;
+		height: 40px;
 	}
 
 	.title,
@@ -93,7 +95,7 @@
 	h1 {
 		font-size: 1.25rem;
 		font-weight: 400;
-		line-height: 1.25rem;
+		line-height: 40px;
 		text-align: center;
 		margin: 0;
 
