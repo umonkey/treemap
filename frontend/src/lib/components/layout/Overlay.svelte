@@ -11,6 +11,7 @@
 	{#if onClick}
 		<button class="backdrop" onclick={onClick} aria-label="Dismiss"></button>
 	{/if}
+
 	{@render children()}
 </div>
 

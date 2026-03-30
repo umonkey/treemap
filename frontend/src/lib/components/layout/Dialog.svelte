@@ -21,7 +21,7 @@
 	<title>{title}</title>
 </svelte:head>
 
-<Overlay>
+<Overlay onClick={handleClose}>
 	<div class="dialog">
 		<div class="title">
 			<div class="button"></div>
@@ -50,6 +50,8 @@
 <style>
 	.dialog {
 		position: absolute;
+		display: flex;
+		flex-direction: column;
 
 		top: 50%;
 		left: 50%;
@@ -68,13 +70,20 @@
 
 	.title,
 	.actions {
+		width: 100%;
 		padding: 0.5rem 1rem;
+		box-sizing: border-box;
+
 		height: 40px;
 		background-color: rgba(0, 0, 0, 0.2);
 
 		display: flex;
 		flex-direction: row;
 		align-items: center;
+	}
+
+	.title {
+		padding: 0.5rem 0;
 	}
 
 	h1 {
@@ -84,7 +93,7 @@
 		text-align: center;
 		margin: 0;
 
-		flex: 1 1 auto;
+		flex: 1 0 auto;
 	}
 
 	.body {
