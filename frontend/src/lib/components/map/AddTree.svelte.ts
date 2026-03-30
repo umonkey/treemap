@@ -32,9 +32,11 @@ class AddState {
 
 	public onMount = () => {
 		mapBus.on('center', this.handleCenter);
+		mapBus.on('select', this.handleCancel);
 
 		return () => {
 			mapBus.off('center', this.handleCenter);
+			mapBus.off('select', this.handleCancel);
 		};
 	};
 }
