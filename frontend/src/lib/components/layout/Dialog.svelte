@@ -55,7 +55,7 @@
 
 		top: 50%;
 		left: 50%;
-		max-width: 500px;
+		max-width: 600px;
 		transform: translate(-50%, -50%);
 
 		background-color: var(--background-color);

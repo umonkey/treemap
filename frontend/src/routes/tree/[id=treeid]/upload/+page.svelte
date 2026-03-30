@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
-	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import PhotoUploader from './PhotoUploader.svelte';
 	import UploadForm from './UploadForm.svelte';
 	import TreeForm from '$lib/components/forms/TreeForm.svelte';
@@ -18,12 +17,8 @@
 	};
 </script>
 
-<Dialog title={locale.photoTitle()}>
-	<TreeForm {tree} onSubmit={close} onCancel={close}>
-		<p>{locale.photoIntro()}</p>
-
-		<PhotoUploader {treeId} onChange={handleChange} />
-
-		<UploadForm id={tree.id} />
-	</TreeForm>
-</Dialog>
+<TreeForm {tree} onSubmit={close} onCancel={close}>
+	<p>{locale.photoIntro()}</p>
+	<PhotoUploader {treeId} onChange={handleChange} />
+	<UploadForm id={tree.id} />
+</TreeForm>

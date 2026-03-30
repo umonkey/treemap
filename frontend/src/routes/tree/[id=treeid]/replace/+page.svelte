@@ -1,11 +1,7 @@
 <script lang="ts">
-	import { locale } from '$lib/locale';
 	import ReplaceForm from './ReplaceForm.svelte';
-	import Dialog from '$lib/components/layout/Dialog.svelte';
 
 	const { data } = $props();
 </script>
 
-<Dialog title={locale.replaceTitle()}>
-	<ReplaceForm id={data.id} />
-</Dialog>
+<ReplaceForm id={data.id} />
