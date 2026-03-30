@@ -51,6 +51,9 @@ class MapLibre {
 	center = $state<ILatLng>(DEFAULT_MAP_CENTER);
 	marker = $state<LngLat>();
 
+	// Last moved bounds, used to prevent cyclic updates.
+	lastBounds = $state<string>();
+
 	onMove: (ll: ILatLng) => void = () => {};
 
 	fetchDebouncer = new Debouncer(100);
@@ -96,9 +99,9 @@ class MapLibre {
 	};
 
 	public handleMoveEnd = (bounds: LngLatBounds) => {
-		console.debug(
-			`MapLibre moved, new bounds: W=${bounds.getWest().toFixed(5)} S=${bounds.getSouth().toFixed(5)} E=${bounds.getEast().toFixed(5)} N=${bounds.getNorth().toFixed(5)}`
-		);
+		if (!this.boundsChanged(bounds)) {
+			return;
+		}
 
 		const n = bounds.getNorth();
 		const s = bounds.getSouth();
@@ -116,6 +119,20 @@ class MapLibre {
 		if (this.onMove) {
 			this.onMove(this.center);
 		}
+	};
+
+	private boundsChanged = (bounds: LngLatBounds): boolean => {
+		const hash = `W=${bounds.getWest().toFixed(5)} S=${bounds.getSouth().toFixed(5)} E=${bounds.getEast().toFixed(5)} N=${bounds.getNorth().toFixed(5)}`;
+
+		if (hash != this.lastBounds) {
+			this.lastBounds = hash;
+			console.debug(`MapLibre moved, new bounds: ${hash}`);
+			return true;
+		}
+
+		console.debug('Oops, duplicate MapLibre move.');
+
+		return false;
 	};
 
 	public handleMoveStart = () => {
