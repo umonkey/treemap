@@ -21,15 +21,12 @@
 			<AddTree />
 			<AddRow />
 		</MapLibre>
-
-		<article>
-			{@render children()}
-		</article>
-
-		<MobileNav />
-		<TreeContextMenu />
 	</main>
 </div>
+
+{@render children()}
+<MobileNav />
+<TreeContextMenu />
 
 <style>
 	/**
@@ -45,25 +42,6 @@
 		main {
 			width: 100%;
 			min-height: 100dvh;
-		}
-
-		/**
-		 * We have the navigation bar at the bottom which is fixed positioned.
-		 * This adds room for that bar.
-		 */
-		article {
-			padding-bottom: 50px;
-		}
-	}
-
-	/**
-	 * Desktop styles.  Navigation bar padding not needed.
-	 */
-	@media (min-width: 1024px) {
-		.layout {
-			article {
-				padding-bottom: 0px;
-			}
 		}
 	}
 
@@ -83,10 +61,16 @@
 
 	/** Make sure tree preview and menus overlap the map. **/
 	aside {
-		z-index: 1;
+		z-index: var(--z-sidebar);
 	}
 
 	main {
-		z-index: 2;
+		z-index: var(--z-map);
+	}
+
+	@media screen and (max-width: 600px) {
+		aside {
+			z-index: var(--z-mobile-sidebar);
+		}
 	}
 </style>

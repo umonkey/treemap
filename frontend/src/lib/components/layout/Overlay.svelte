@@ -17,7 +17,7 @@
 
 <style>
 	.overlay {
-		position: absolute;
+		position: fixed;
 		z-index: var(--z-dialog);
 
 		top: 0;
@@ -43,5 +43,12 @@
 		cursor: pointer;
 		padding: 0;
 		margin: 0;
+	}
+
+	/** On mobile devices, reserve space for the nav bar **/
+	@media screen and (max-width: 600px) {
+		.overlay {
+			bottom: var(--bottom-nav-height);
+		}
 	}
 </style>

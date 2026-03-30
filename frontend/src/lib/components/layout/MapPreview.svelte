@@ -186,6 +186,8 @@
 	/** On mobile, extrass need expansion. **/
 	@media screen and (max-width: 600px) {
 		.preview {
+			position: fixed;
+			bottom: var(--bottom-nav-height);
 			height: 266px;
 			transition: height 0.2s ease-in-out;
 

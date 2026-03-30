@@ -14,7 +14,6 @@
 - [x] Make sure moving tree works
 - [x] Drone imagery
 
-
 ## Search refactor
 
 - Store a structure with all search options.

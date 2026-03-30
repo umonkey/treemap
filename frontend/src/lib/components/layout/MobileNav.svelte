@@ -32,8 +32,8 @@
 		position: fixed;
 		bottom: 0;
 		width: 100%;
-		height: 50px;
-		line-height: 50px;
+		height: var(--bottom-nav-height);
+		line-height: var(--bottom-nav-height);
 		text-align: center;
 
 		display: flex;

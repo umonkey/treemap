@@ -60,7 +60,6 @@
 
 		top: 50%;
 		left: 50%;
-		max-width: 600px;
 		transform: translate(-50%, -50%);
 
 		background-color: var(--background-color);
@@ -108,7 +107,6 @@
 	}
 
 	.body {
-		max-width: 600px;
 		margin: 0 auto;
 		padding: 1rem;
 		width: 100%;
@@ -139,6 +137,25 @@
 		.dialog {
 			width: 600px;
 			max-width: 600px;
+		}
+	}
+
+	/** Make the dialog full-screen on mobile devices. **/
+	@media screen and (max-width: 600px) {
+		.dialog {
+			width: 100vw;
+			height: calc(100vh - var(--bottom-nav-height));
+			border-radius: 0;
+			max-width: 100vw;
+
+			transform: none;
+			top: 0;
+			left: 0;
+			bottom: 0;
+		}
+
+		.body {
+			max-height: none;
 		}
 	}
 </style>
