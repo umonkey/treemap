@@ -13,3 +13,10 @@
 - [ ] Make sure map search works
 - [x] Make sure moving tree works
 - [x] Drone imagery
+
+
+## Search refactor
+
+- Store a structure with all search options.
+- Modify that structure in different parts of UI.
+- Reload the map data on structure change.

@@ -83,10 +83,10 @@
 
 	/** Make sure tree preview and menus overlap the map. **/
 	aside {
-		z-index: 2;
+		z-index: 1;
 	}
 
 	main {
-		z-index: 1;
+		z-index: 2;
 	}
 </style>
