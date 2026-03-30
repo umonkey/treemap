@@ -212,6 +212,18 @@ pub async fn get_trees_action(
     Ok(Json(state.tree_loader.load_list(&trees).await?))
 }
 
+#[get("/geo.json")]
+pub async fn get_trees_json_action(
+    state: Data<AppState>,
+    query: Query<GetTreesRequest>,
+    req: HttpRequest,
+) -> Result<HttpResponse> {
+    let user_id = state.get_user_id(&req).unwrap_or(0);
+    let trees = state.trees.get_trees(&query, user_id).await?;
+
+    Ok(crate::responders::geo_json::respond_with_trees(&trees))
+}
+
 #[get("/updated")]
 pub async fn get_updated_trees_action(
     state: Data<AppState>,
@@ -474,6 +486,7 @@ pub fn tree_router(cfg: &mut ServiceConfig) {
         .service(add_tree_observation_action)
         .service(get_tree_stats_action)
         .service(get_trees_action)
+        .service(get_trees_json_action)
         .service(get_updated_trees_action)
         .service(like_tree_action)
         .service(move_tree_action)
