@@ -8,7 +8,6 @@
 	// By default, trees returned in batches don't contain files, so we have to
 	// request tree details again.
 
-	import { isMapperMode } from '$lib/stores/modeStore';
 	import { hooks } from './GalleryPreview';
 	import GalleryPreviewDisplay from './GalleryPreviewDisplay.svelte';
 
@@ -24,7 +23,7 @@
 <GalleryPreviewDisplay
 	loading={$loading}
 	error={$error}
-	mapper={$isMapperMode}
+	mapper={true}
 	tree_id={id}
 	images={$images}
 />
