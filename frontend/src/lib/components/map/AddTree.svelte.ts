@@ -9,6 +9,10 @@ class AddState {
 	public toggle = (e: Event) => {
 		e.preventDefault();
 		this.active = !this.active;
+
+		if (this.active) {
+			mapBus.emit('preview', undefined);
+		}
 	};
 
 	public handleConfirm = async () => {
