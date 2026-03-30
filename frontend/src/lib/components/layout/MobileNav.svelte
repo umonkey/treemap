@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { BellIcon, HomeIcon, MapIcon, SearchIcon, UserIcon, SpinnerIcon } from '$lib/icons';
+	import { BellIcon, HomeIcon, SearchIcon, UserIcon, SpinnerIcon } from '$lib/icons';
 	import { routes } from '$lib/routes';
 	import { authStore, isAuthenticated } from '$lib/stores/authStore';
 	import { uploadStore } from '$lib/stores/upload';
@@ -9,7 +9,6 @@
 <nav class="mobile">
 	<a href="/"><div><HomeIcon /></div></a>
 	<a href="/search"><div><SearchIcon /></div></a>
-	<a href={routes.map()}><div><MapIcon /></div></a>
 	<a href={routes.treeUpdates()}><div><BellIcon /></div></a>
 	<a href="/profile"
 		><div>
@@ -52,7 +51,7 @@
 
 		line-height: 24px;
 
-		flex-basis: 20%;
+		flex-basis: 25%;
 		flex-shrink: 0;
 		flex-grow: 0;
 
