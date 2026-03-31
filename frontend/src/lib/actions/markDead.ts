@@ -1,7 +1,7 @@
 import { apiClient } from '$lib/api';
-import { writable } from 'svelte/store';
-import { goto, routes } from '$lib/routes';
 import { showError } from '$lib/errors';
+import { goto, routes } from '$lib/routes';
+import { writable } from 'svelte/store';
 
 export const markDead = (id: string) => {
 	const busy = writable<boolean>(false);
@@ -12,7 +12,7 @@ export const markDead = (id: string) => {
 			await apiClient.updateTreeState(id, 'dead');
 			goto(routes.mapPreview(id));
 		} catch (e) {
-			console.error(`Error deleting tree: ${e}`);
+			console.error('Error deleting tree', e);
 			showError('Error deleting tree.');
 		} finally {
 			busy.set(false);

@@ -162,7 +162,7 @@ export const hooks = () => {
 						goto(routes.mapPreview(id));
 					}
 				} else {
-					console.error(`Error ${res.status} updating tree.`);
+					console.error(`Error ${res.status} updating tree.`, res);
 					showError('Error adding tree.');
 				}
 			})

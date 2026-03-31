@@ -113,7 +113,7 @@ export const load = ({
 						return updated;
 					});
 				} else {
-					console.error(`[FileUploader] Failed to upload file: ${file.name}`);
+					console.error(`[FileUploader] Failed to upload file: ${file.name}`, res);
 
 					// Update the UI status.
 					items.update((current) => {

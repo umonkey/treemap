@@ -136,7 +136,7 @@ export const hooks = () => {
 				if (res.status >= 200 && res.status < 400) {
 					goto(routes.mapPreview(u.id));
 				} else {
-					console.error(`Error ${res.status} updating tree.`);
+					console.error(`Error ${res.status} updating tree.`, res);
 					showError('Error updating tree.');
 				}
 			})

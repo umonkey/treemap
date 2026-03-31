@@ -707,9 +707,7 @@ export class ApiClient {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (e: any) {
 			const duration = Math.round(performance.now() - start);
-			console.error(
-				`[api] Sent ${method} to /${path} in ${duration} ms, error: ${(e as Error).message}`
-			);
+			console.error(`[api] Sent ${method} to /${path} in ${duration} ms`, e);
 			return {
 				status: 500,
 				data: undefined,

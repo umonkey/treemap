@@ -106,7 +106,7 @@ export class TreeLayerState {
 		const map = getMapContext()?.map;
 
 		if (!map) {
-			console.error('Map not available, cannot display trees.');
+			console.warn('Map not available, cannot display trees.');
 			return;
 		}
 

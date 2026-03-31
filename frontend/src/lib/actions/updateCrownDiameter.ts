@@ -1,7 +1,7 @@
 import { apiClient } from '$lib/api';
+import { showError } from '$lib/errors';
 import { goto, routes } from '$lib/routes';
 import { writable } from 'svelte/store';
-import { showError } from '$lib/errors';
 
 export const updateCrownDiameter = (id: string) => {
 	const busy = writable<boolean>(false);
@@ -12,7 +12,7 @@ export const updateCrownDiameter = (id: string) => {
 			await apiClient.updateTreeDiameter(id, value);
 			goto(routes.mapPreview(id));
 		} catch (e) {
-			console.error(`Error updating tree canopy: ${e}`);
+			console.error('Error updating tree canopy', e);
 			showError('Error updating tree canopy.');
 		} finally {
 			busy.set(false);

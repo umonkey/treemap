@@ -14,7 +14,7 @@ class LocalStorage {
 			// console.debug(`[storage] Read ${key} = ${value}`);
 			return JSON.parse(value);
 		} catch (e) {
-			console.error(`[storage] Error reading ${key}: ${e}`);
+			console.error(`[storage] Error reading ${key}`, e);
 		}
 	}
 
@@ -29,7 +29,7 @@ class LocalStorage {
 				// console.debug(`[storage] Wrote ${key} = ${data}`);
 			}
 		} catch (e) {
-			console.error(`[storage] Error writing ${key}: ${e}`);
+			console.error(`[storage] Error writing ${key}`, e);
 		}
 	}
 }
