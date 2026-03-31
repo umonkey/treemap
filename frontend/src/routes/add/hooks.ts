@@ -163,7 +163,7 @@ export const hooks = () => {
 					}
 				} else {
 					console.error(`Error ${res.status} updating tree.`, res);
-					showError('Error adding tree.');
+					showError(`Error ${res.status} adding tree.`);
 				}
 			})
 			.finally(() => {

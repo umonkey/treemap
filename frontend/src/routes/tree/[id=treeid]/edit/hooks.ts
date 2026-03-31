@@ -137,7 +137,7 @@ export const hooks = () => {
 					goto(routes.mapPreview(u.id));
 				} else {
 					console.error(`Error ${res.status} updating tree.`, res);
-					showError('Error updating tree.');
+					showError(`Error ${res.status} updating tree.`);
 				}
 			})
 			.finally(() => {

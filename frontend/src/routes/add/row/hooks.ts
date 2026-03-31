@@ -96,7 +96,7 @@ export const hooks = ({ start, end }: { start: ILatLng; end: ILatLng }) => {
 				goto(routes.mapPreview(id));
 			} else if (e) {
 				console.error(`Error ${status} adding trees.`, e);
-				showError('Error adding trees.');
+				showError(`Error ${status} adding trees.`);
 			}
 		} finally {
 			saving.set(false);

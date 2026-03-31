@@ -14,6 +14,6 @@ export const handleShareTree = async (id: string) => {
 		});
 	} catch (e) {
 		console.error('Error sharing a tree.', e);
-		showError('Error sharing this page.');
+		showError(`Error sharing this page: ${e}`);
 	}
 };

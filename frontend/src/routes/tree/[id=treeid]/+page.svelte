@@ -33,13 +33,13 @@
 				if (res.status >= 200 && res.status < 300) {
 					invalidateAll();
 				} else {
-					console.info(`Error ${res.status} adding a comment.`);
-					showError(locale.toastErrorAddingComment());
+					console.error(`Error ${res.status} adding a comment.`, res);
+					showError(`Error ${res.status} adding a comment.`);
 				}
 			})
 			.catch((e) => {
 				console.error('Exception while adding a comment.', e);
-				showError(locale.toastErrorAddingComment());
+				showError('Exception adding a comment.');
 			});
 	};
 </script>

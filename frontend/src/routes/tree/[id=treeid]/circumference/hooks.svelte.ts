@@ -36,7 +36,7 @@ class GirthState {
 					console.debug(`[crown editor] Tree ${id} updated.`);
 					goto(routes.mapPreview(id));
 				} else if (res.error) {
-					showError(res.error.description);
+					showError(`Error ${res.status} updating circumference: ${res.error.description}`);
 					console.error(
 						`[crown editor] Failed to update tree ${id}: ${res.error.description}.`,
 						res.error

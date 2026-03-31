@@ -67,7 +67,7 @@
 		saving = true;
 		const response = await apiClient.addObservations(observation);
 		if (response.error) {
-			showError(response.error.description);
+			showError(`Error ${response.status} adding observations: ${response.error.description}`);
 		} else {
 			goto(routes.mapPreview(id));
 		}

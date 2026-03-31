@@ -32,7 +32,7 @@ export const hooks = () => {
 		const res = await apiClient.changeTreeThumbnail(get(tree).id, file.id);
 
 		if (res.status >= 400) {
-			showError('Error changing thumbnail.');
+			showError(`Error ${res.status} changing thumbnail.`);
 		}
 	};
 
@@ -40,7 +40,7 @@ export const hooks = () => {
 		const res = await apiClient.deleteFile(id);
 
 		if (res.status >= 400) {
-			showError('Error deleting file.');
+			showError(`Error ${res.status} deleting file.`);
 		}
 	};
 
