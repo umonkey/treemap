@@ -31,6 +31,12 @@
 				</a>
 			</li>
 			<li>
+				<a href="/stats">
+					<span class="icon"><BellIcon /></span>
+					<span>{locale.sideReports()}</span>
+				</a>
+			</li>
+			<li>
 				<a href={routes.treeUpdates()}>
 					<span class="icon"><BellIcon /></span>
 					<span>{locale.sideUpdates()}</span>

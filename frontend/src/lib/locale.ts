@@ -25,6 +25,10 @@ class EnglishLocale {
 		return 'Data reports';
 	}
 
+	public sideStats(): string {
+		return 'Statistics';
+	}
+
 	public sideProfile(): string {
 		return 'Profile';
 	}
