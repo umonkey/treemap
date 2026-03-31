@@ -1,8 +1,7 @@
 <script lang="ts">
-	import { invalidateAll } from '$app/navigation';
-	import { apiClient } from '$lib/api';
 	import { locale } from '$lib/locale';
-	import { showError } from '$lib/errors';
+	import { pageState } from './hooks.svelte.ts';
+	import { formatSpecies } from '$lib/utils/trees';
 
 	import Actions from '$lib/components/tree/Actions.svelte';
 	import Comment from '$lib/components/tree/Comment.svelte';
@@ -14,60 +13,47 @@
 	import TreeTabs from '$lib/components/tree/TreeTabs.svelte';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import { CommentForm } from '$lib/ui';
-	import { onMount } from 'svelte';
 
 	const { data } = $props();
-	const tree = $derived(data.tree);
-	const comments = $derived(data.comments);
-	const observation = $derived(data.observation);
 
-	// Save last active tree.
-	onMount(() => {
-		console.debug('[map] Last active tree set to', tree.id);
+	$effect(() => {
+		pageState.reload(data.id);
 	});
-
-	const onSubmit = (message: string) => {
-		apiClient
-			.addComment(tree.id, message)
-			.then((res) => {
-				if (res.status >= 200 && res.status < 300) {
-					invalidateAll();
-				} else {
-					console.error(`Error ${res.status} adding a comment.`, res);
-					showError(`Error ${res.status} adding a comment.`);
-				}
-			})
-			.catch((e) => {
-				console.error('Exception while adding a comment.', e);
-				showError('Exception adding a comment.');
-			});
-	};
 </script>
 
-<Dialog title={tree.species || 'Unknown tree'} nopadding>
-	<div>
-		<Title id={tree.id} title={tree.species} address={tree.address} padded />
+<Dialog title={formatSpecies(pageState.tree?.species || null)} nopadding>
+	{#if pageState.tree}
+		<div>
+			<Title
+				id={pageState.tree.id}
+				title={pageState.tree.species}
+				address={pageState.tree.address}
+				padded
+			/>
 
-		<TreeTabs tree={tree.id} active="details" />
+			<TreeTabs tree={pageState.tree.id} active="details" />
 
-		<Gallery id={tree.id} />
-		<Actions {tree} />
-		<Properties {tree} />
-		<Observations {observation} />
-		<Description text={tree.notes} />
+			<Gallery id={pageState.tree.id} />
+			<Actions tree={pageState.tree} />
+			<Properties tree={pageState.tree} />
+			<Observations observation={pageState.observation || null} />
+			<Description text={pageState.tree.notes} />
 
-		<div id="comments" class="comments">
-			{#if comments.length > 0}
-				{#each comments as comment}
-					<Comment {comment} />
-				{/each}
-			{:else}
-				<p class="empty">{locale.noComments()}</p>
-			{/if}
+			<div id="comments" class="comments">
+				{#if pageState.comments.length > 0}
+					{#each pageState.comments as comment}
+						<Comment {comment} />
+					{/each}
+				{:else}
+					<p class="empty">{locale.noComments()}</p>
+				{/if}
 
-			<CommentForm {onSubmit} />
+				<CommentForm onSubmit={pageState.handleSubmitComment} />
+			</div>
 		</div>
-	</div>
+	{:else}
+		<p>Loading...</p>
+	{/if}
 </Dialog>
 
 <style>

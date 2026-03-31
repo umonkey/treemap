@@ -39,6 +39,8 @@ class MapLibre {
 	public constructor() {
 		this.zoom = get(mapStore)?.zoom ?? 13;
 		this.center = get(mapStore)?.center ?? DEFAULT_MAP_CENTER;
+
+		console.debug(`Read map center from mapStore: ${this.center.lat},${this.center.lng}`);
 	}
 
 	public handleLoad = () => {
@@ -107,19 +109,28 @@ class MapLibre {
 		}
 	};
 
+	private handleMoveRequest = (ll: ILatLng) => {
+		console.debug(`Handling request to move the map to ${ll.lat},${ll.lng}`);
+		this.center = ll;
+	};
+
 	public onMount = () => {
 		mapBus.on('pin', this.handlePinChange);
 		mapBus.on('fit', this.handleFit);
+		mapBus.on('move', this.handleMoveRequest);
 
 		const unsub = mapLayerStore.subscribe(() => {
 			this.updateLayers();
 		});
+
+		console.debug(`MapLibre initialized with center in ${this.center.lat},${this.center.lng}`);
 
 		this.updateLayers();
 
 		return () => {
 			mapBus.off('pin', this.handlePinChange);
 			mapBus.off('fit', this.handleFit);
+			mapBus.off('move', this.handleMoveRequest);
 			unsub();
 		};
 	};

@@ -6,6 +6,9 @@ type MapBusEvent = {
 	// The clients can use this to update the center, e.g. when moving trees.
 	center: ILatLng;
 
+	// Move the map to these coordinates.
+	move: ILatLng;
+
 	pin: ILatLng | undefined;
 
 	// Triggered by the map when a tree is clicked.
