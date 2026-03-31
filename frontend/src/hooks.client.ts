@@ -8,6 +8,11 @@ if (config.environment === 'production') {
 		allowUrls: [/https:\/\/yerevan\.treemaps\.app\//],
 		environment: config.environment,
 
+		ignoreErrors: [
+			// MapLibre GL does this when it fails to find an icon.
+			'Please make sure you have added the image with map.addImage'
+		],
+
 		// Enable API performance tracing.
 		tracesSampleRate: 1.0,
 		integrations: [
