@@ -12,7 +12,7 @@ if (config.environment === 'production') {
 		tracesSampleRate: 1.0,
 		integrations: [
 			Sentry.browserTracingIntegration(),
-			Sentry.captureConsoleIntegration({ levels: ['log', 'warn', 'error'] })
+			Sentry.captureConsoleIntegration({ levels: ['error'] })
 		],
 		tracePropagationTargets: ['localhost', /^https:\/\/api\.treemaps\.app/],
 		enableLogs: true
