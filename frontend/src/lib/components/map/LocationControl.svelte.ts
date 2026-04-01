@@ -35,10 +35,11 @@ export class LocationState {
 				}
 			},
 			(error) => {
-				console.error(`[GEO] Error ${error.code}: ${error.message}`, error);
-
 				if (error.code === 1) {
 					this.stop(); // access denied, stop tracking
+					console.debug('[GEO] User denied access, stopping.');
+				} else {
+					console.error(`[GEO] Error ${error.code}: ${error.message}`, error);
 				}
 			},
 			{
