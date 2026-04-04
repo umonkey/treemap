@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { DotsIcon } from '$lib/icons';
+	import DotsIcon from '$lib/icons/DotsIcon.svelte';
 	import { routes } from '$lib/routes';
 	import { getUser } from '$lib/stores/userStore';
 	import type { ITreeFile } from '$lib/types';

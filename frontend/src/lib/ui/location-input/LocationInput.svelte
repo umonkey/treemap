@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { LocationPicker, FormElement } from '$lib/ui';
-	import { MapIcon } from '$lib/icons';
+	import MapIcon from '$lib/icons/MapIcon.svelte';
 	import { locale } from '$lib/locale';
 	import type { ILatLng } from '$lib/types';
+	import { FormElement, LocationPicker } from '$lib/ui';
 
 	const { value, hint, label, onChange, open } = $props<{
 		value: ILatLng;

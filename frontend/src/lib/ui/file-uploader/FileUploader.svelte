@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { CameraIcon, GalleryIcon } from '$lib/icons';
-	import { load } from './hooks';
+	import CameraIcon from '$lib/icons/CameraIcon.svelte';
+	import GalleryIcon from '$lib/icons/GalleryIcon.svelte';
 	import { FileUploaderDisplay } from '$lib/ui';
+	import { load } from './hooks';
 
 	const { label, onBusy, onChange, small, single } = $props<{
 		label?: string;

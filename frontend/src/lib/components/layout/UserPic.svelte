@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { UserIcon } from '$lib/icons';
+	import UserIcon from '$lib/icons/UserIcon.svelte';
 
 	const {
 		src,

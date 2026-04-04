@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { mobileSidebarStore } from '$lib/stores/mobileSidebarStore';
-	import { BackIcon, BarsIcon } from '$lib/icons';
+	import BackIcon from '$lib/icons/BackIcon.svelte';
+	import BarsIcon from '$lib/icons/BarsIcon.svelte';
 	import { goto } from '$lib/routes';
+	import { mobileSidebarStore } from '$lib/stores/mobileSidebarStore';
 
 	const { title, back = true } = $props<{
 		title: string;

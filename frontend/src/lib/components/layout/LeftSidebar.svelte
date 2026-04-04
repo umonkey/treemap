@@ -1,8 +1,12 @@
 <script lang="ts">
 	import Logo from '$lib/assets/trees-of-yerevan.svelte';
 	import UserPic from '$lib/components/layout/UserPic.svelte';
-	import { BellIcon, CloseIcon, HomeIcon, SearchIcon, SpinnerIcon } from '$lib/icons';
+	import BellIcon from '$lib/icons/BellIcon.svelte';
 	import ChartIcon from '$lib/icons/ChartIcon.svelte';
+	import CloseIcon from '$lib/icons/CloseIcon.svelte';
+	import HomeIcon from '$lib/icons/HomeIcon.svelte';
+	import SearchIcon from '$lib/icons/SearchIcon.svelte';
+	import SpinnerIcon from '$lib/icons/SpinnerIcon.svelte';
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
 	import { authStore } from '$lib/stores/authStore';

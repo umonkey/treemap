@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { HelpIcon } from '$lib/icons';
+	import HelpIcon from '$lib/icons/HelpIcon.svelte';
 
 	const { help } = $props<{
 		help: string;

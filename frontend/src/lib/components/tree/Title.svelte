@@ -5,10 +5,10 @@
 	 * actions.
 	 **/
 
-	import { DotsIcon } from '$lib/icons';
+	import { menuBus } from '$lib/buses/menuBus';
+	import DotsIcon from '$lib/icons/DotsIcon.svelte';
 	import { routes } from '$lib/routes';
 	import { formatSpecies } from '$lib/utils/trees';
-	import { menuBus } from '$lib/buses/menuBus';
 
 	const {
 		id,

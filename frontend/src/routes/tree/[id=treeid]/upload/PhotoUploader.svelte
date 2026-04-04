@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { CameraIcon, GalleryIcon } from '$lib/icons';
+	import CameraIcon from '$lib/icons/CameraIcon.svelte';
+	import GalleryIcon from '$lib/icons/GalleryIcon.svelte';
 	import { FileUploaderDisplay } from '$lib/ui';
 	import { restartUploadQueue } from '$lib/upload';
 	import { onMount } from 'svelte';

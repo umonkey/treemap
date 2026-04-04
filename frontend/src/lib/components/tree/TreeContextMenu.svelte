@@ -1,19 +1,17 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { menuState } from './TreeContextMenu.svelte.ts';
-	import {
-		CheckListIcon,
-		EditIcon,
-		MapIcon,
-		MeasureDiameter,
-		MeasureGirth,
-		MeasureHeight,
-		SkullIcon,
-		TrashIcon,
-		TreeIcon
-	} from '$lib/icons';
+	import CheckListIcon from '$lib/icons/CheckListIcon.svelte';
+	import EditIcon from '$lib/icons/EditIcon.svelte';
+	import MapIcon from '$lib/icons/MapIcon.svelte';
+	import MeasureDiameter from '$lib/icons/MeasureDiameter.svelte';
+	import MeasureGirth from '$lib/icons/MeasureGirth.svelte';
+	import MeasureHeight from '$lib/icons/MeasureHeight.svelte';
+	import SkullIcon from '$lib/icons/SkullIcon.svelte';
+	import TrashIcon from '$lib/icons/TrashIcon.svelte';
+	import TreeIcon from '$lib/icons/TreeIcon.svelte';
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
+	import { onMount } from 'svelte';
+	import { menuState } from './TreeContextMenu.svelte.ts';
 	import '$lib/styles/colors.css';
 	import '$lib/styles/animations.css';
 

@@ -3,9 +3,11 @@
 	import GalleryPreview from '$lib/components/photos/GalleryPreview.svelte';
 	import Comment from '$lib/components/tree/Comment.svelte';
 	import { handleShareTree } from '$lib/hooks/shareTree';
-	import { CloseIcon, SettingsIcon, ShareIcon } from '$lib/icons';
 	import BatteryIcon from '$lib/icons/BatteryIcon.svelte';
+	import CloseIcon from '$lib/icons/CloseIcon.svelte';
 	import LocationIcon from '$lib/icons/LocationIcon.svelte';
+	import SettingsIcon from '$lib/icons/SettingsIcon.svelte';
+	import ShareIcon from '$lib/icons/ShareIcon.svelte';
 	import TagIcon from '$lib/icons/TagIcon.svelte';
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';

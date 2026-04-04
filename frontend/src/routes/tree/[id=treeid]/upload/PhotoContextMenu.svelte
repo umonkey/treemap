@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { TrashIcon, CreateIcon } from '$lib/icons';
+	import CreateIcon from '$lib/icons/CreateIcon.svelte';
+	import TrashIcon from '$lib/icons/TrashIcon.svelte';
 	import '$lib/styles/colors.css';
 	import '$lib/styles/animations.css';
 

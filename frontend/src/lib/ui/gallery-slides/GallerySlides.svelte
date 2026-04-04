@@ -1,6 +1,8 @@
 <script lang="ts">
 	import FALLBACK from '$lib/assets/tree.jpg';
-	import { ExpandIcon, LeftButtonIcon, RightButtonIcon } from '$lib/icons';
+	import ExpandIcon from '$lib/icons/ExpandIcon.svelte';
+	import LeftButtonIcon from '$lib/icons/LeftButton.svelte';
+	import RightButtonIcon from '$lib/icons/RightButton.svelte';
 	import type { IGalleryItem } from '$lib/types';
 	import { hooks } from './hooks';
 

@@ -1,6 +1,10 @@
 <script lang="ts">
 	import UserPic from '$lib/components/layout/UserPic.svelte';
-	import { BellIcon, HomeIcon, SearchIcon, SpinnerIcon, UserIcon } from '$lib/icons';
+	import BellIcon from '$lib/icons/BellIcon.svelte';
+	import HomeIcon from '$lib/icons/HomeIcon.svelte';
+	import SearchIcon from '$lib/icons/SearchIcon.svelte';
+	import SpinnerIcon from '$lib/icons/SpinnerIcon.svelte';
+	import UserIcon from '$lib/icons/UserIcon.svelte';
 	import { routes } from '$lib/routes';
 	import { authStore, isAuthenticated } from '$lib/stores/authStore';
 	import { mobileSidebarStore } from '$lib/stores/mobileSidebarStore';

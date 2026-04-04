@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { LazyImage } from '$lib/ui';
-	import { CircumferenceIcon, SpinnerIcon } from '$lib/icons';
-	import { routes } from '$lib/routes';
 	import FALLBACK from '$lib/assets/tree.jpg';
+	import CircumferenceIcon from '$lib/icons/CircumferenceIcon.svelte';
+	import SpinnerIcon from '$lib/icons/SpinnerIcon.svelte';
+	import { routes } from '$lib/routes';
+	import { LazyImage } from '$lib/ui';
 
 	type Item = {
 		src: string;

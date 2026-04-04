@@ -1,9 +1,12 @@
 <script lang="ts">
 	import ShareButton from '$lib/components/tree/ShareButton.svelte';
 	import { FEATURES } from '$lib/features';
-	import { CameraIcon, HeartIcon, HeartSolidIcon, SaveIcon } from '$lib/icons';
-	import WikiIcon from '$lib/icons/WikipediaIcon.svelte';
+	import CameraIcon from '$lib/icons/CameraIcon.svelte';
+	import HeartIcon from '$lib/icons/HeartIcon.svelte';
+	import HeartSolidIcon from '$lib/icons/HeartSolidIcon.svelte';
 	import OpenStreetMapIcon from '$lib/icons/OpenStreetMapIcon.svelte';
+	import SaveIcon from '$lib/icons/SaveIcon.svelte';
+	import WikiIcon from '$lib/icons/WikipediaIcon.svelte';
 	import { like, preloadMeLikes, unlike } from '$lib/likes';
 	import { routes } from '$lib/routes';
 	import { isLiked } from '$lib/stores/likeStore';

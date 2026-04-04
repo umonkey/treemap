@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { SearchIcon } from '$lib/icons';
+	import SearchIcon from '$lib/icons/SearchIcon.svelte';
 	import { locale } from '$lib/locale';
 
 	const { value, onInput, onSearch } = $props<{

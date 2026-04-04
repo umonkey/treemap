@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { CloseIcon, SearchIcon } from '$lib/icons';
+	import CloseIcon from '$lib/icons/CloseIcon.svelte';
+	import SearchIcon from '$lib/icons/SearchIcon.svelte';
 	import { searchState } from './SearchControl.svelte.ts';
 </script>
 
