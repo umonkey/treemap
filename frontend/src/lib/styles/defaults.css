@@ -13,3 +13,10 @@ p {
 	padding-left: var(--gap);
 	padding-right: var(--gap);
 }
+
+/**
+ * Handle MapLibre controls positioning for phones with notches/status bars.
+ */
+.maplibregl-ctrl-top-left {
+	margin-top: var(--safe-area-inset-top);
+}

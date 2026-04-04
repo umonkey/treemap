@@ -4,6 +4,10 @@
 	 */
 	color-scheme: light dark;
 
+	/* Safe areas */
+	--safe-area-inset-top: env(safe-area-inset-top, 0px);
+	--safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+
 	/* Z-indexes */
 	--z-sidebar: 1;
 	--z-map: 2;

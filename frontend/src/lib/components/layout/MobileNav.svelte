@@ -44,7 +44,8 @@ const toggleSidebar = () => {
 		position: fixed;
 		bottom: 0;
 		width: 100%;
-		height: var(--bottom-nav-height);
+		height: calc(var(--bottom-nav-height) + var(--safe-area-inset-bottom));
+		padding-bottom: var(--safe-area-inset-bottom);
 		line-height: var(--bottom-nav-height);
 		text-align: center;
 
@@ -55,6 +56,7 @@ const toggleSidebar = () => {
 		border-top: 1px solid var(--sep-color);
 
 		z-index: var(--z-mobile-nav);
+		box-sizing: border-box;
 	}
 
 	a,
