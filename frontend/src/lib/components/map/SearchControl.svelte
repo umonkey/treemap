@@ -1,8 +1,8 @@
 <script lang="ts">
-import { CloseIcon, SearchIcon } from "$lib/icons";
-import { SearchState } from "./SearchControl.svelte.ts";
+	import { CloseIcon, SearchIcon } from '$lib/icons';
+	import { SearchState } from './SearchControl.svelte.ts';
 
-const state = new SearchState();
+	const state = new SearchState();
 </script>
 
 <div class="search-container">
@@ -28,7 +28,7 @@ const state = new SearchState();
 <style>
 	.search-container {
 		position: absolute;
-		top: calc(10px + var(--safe-area-inset-top));
+		top: 10px;
 		left: 50px;
 		z-index: 10;
 	}
