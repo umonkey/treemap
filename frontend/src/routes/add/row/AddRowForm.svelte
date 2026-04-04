@@ -9,7 +9,7 @@
 	import type { ILatLng } from '$lib/types';
 	import MapRowPreview from './MapRowPreview.svelte';
 	import RowSizeInput from './RowSizeInput.svelte';
-	import { hooks } from './hooks';
+	import { pageState } from './page.svelte';
 
 	import CanopyInput from '$lib/ui/canopy-input/CanopyInput.svelte';
 	import CircumferenceInput from '$lib/ui/circumference-input/CircumferenceInput.svelte';
@@ -24,46 +24,34 @@
 		end: ILatLng;
 	}>();
 
-	const {
-		count,
-		step,
-		distance,
-		handleConfirm,
-		handleCancel,
-		handleCountChange,
-		saving,
-		handleSpeciesChange,
-		handleHeightChange,
-		handleDiameterChange,
-		handleCircumferenceChange,
-		handleStateChange,
-		handleYearChange,
-		handleNotesChange
-	} = hooks({
-		start,
-		end
+	$effect(() => {
+		pageState.init(start, end);
 	});
 </script>
 
 <TreeForm
 	title="Add Row of Trees"
-	onSubmit={handleConfirm}
-	onCancel={handleCancel}
-	saving={$saving}
+	onSubmit={pageState.handleConfirm}
+	onCancel={pageState.handleCancel}
+	saving={pageState.saving}
 >
-	<MapRowPreview {start} {end} count={$count} />
+	<MapRowPreview {start} {end} count={pageState.count} />
 
-	<RowSizeInput value={$count} {distance} onChange={handleCountChange} />
+	<RowSizeInput
+		value={pageState.count}
+		distance={pageState.distance}
+		onChange={pageState.handleCountChange}
+	/>
 
-	<SpeciesInput value="" onChange={handleSpeciesChange} />
-	<StateInput value="unknown" onChange={handleStateChange} />
-	<HeightInput value={0} onChange={handleHeightChange} />
-	<CanopyInput value={0} onChange={handleDiameterChange} />
-	<CircumferenceInput value={0} onChange={handleCircumferenceChange} />
-	<YearInput value={null} onChange={handleYearChange} />
-	<NotesInput value={null} onChange={handleNotesChange} />
+	<SpeciesInput value="" onChange={pageState.handleSpeciesChange} />
+	<StateInput value="unknown" onChange={pageState.handleStateChange} />
+	<HeightInput value={0} onChange={pageState.handleHeightChange} />
+	<CanopyInput value={0} onChange={pageState.handleDiameterChange} />
+	<CircumferenceInput value={0} onChange={pageState.handleCircumferenceChange} />
+	<YearInput value={null} onChange={pageState.handleYearChange} />
+	<NotesInput value={null} onChange={pageState.handleNotesChange} />
 
-	<p>{locale.rowStepInfo($count, $step)}</p>
+	<p>{locale.rowStepInfo(pageState.count, pageState.step)}</p>
 </TreeForm>
 
 <style>
