@@ -4,7 +4,7 @@
  * TODO: add a store to cache calls.
  */
 
-import { apiClient } from '$lib/api';
+import { getMe } from '$lib/api/users';
 import type { IError, IMeResponse } from '$lib/types';
 import { writable } from 'svelte/store';
 
@@ -18,7 +18,7 @@ export const loadMe = () => {
 		try {
 			loading.set(true);
 
-			const { status, data: payload, error: err } = await apiClient.getMe();
+			const { status, data: payload, error: err } = await getMe();
 
 			statusCode.set(status);
 

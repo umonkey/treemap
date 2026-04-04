@@ -2,7 +2,7 @@
  * Load trees ordered by trunk circumference
  */
 
-import { apiClient } from '$lib/api';
+import { getTopCircumference } from '$lib/api/stats';
 import { addTrees } from '$lib/stores/treeStore';
 import { addUsers } from '$lib/stores/userStore';
 import type { IError, ITree } from '$lib/types';
@@ -17,7 +17,7 @@ export const loadTreesByCircumference = () => {
 		try {
 			loading.set(true);
 
-			const { status, data: list, error: err } = await apiClient.getTopCircumference();
+			const { status, data: list, error: err } = await getTopCircumference();
 
 			if (status === 200 && list) {
 				addTrees(list.trees);

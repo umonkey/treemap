@@ -1,9 +1,11 @@
-import type { ITree, IObservation, IComment } from '$lib/types';
+import { getTreeComments } from '$lib/api/comments';
+import { getObservations } from '$lib/api/observations';
+import { getTree } from '$lib/api/trees';
 import { mapBus } from '$lib/buses';
 import { menuBus } from '$lib/buses/menuBus';
-import { apiClient } from '$lib/api';
 import { showError } from '$lib/errors';
 import { goto, routes } from '$lib/routes';
+import type { IComment, IObservation, ITree } from '$lib/types';
 
 class PreviewState {
 	tree = $state<ITree>();
@@ -38,7 +40,7 @@ class PreviewState {
 			return;
 		}
 
-		apiClient.getTree(id).then((res) => {
+		getTree(id).then((res) => {
 			if (res.status === 200 && res.data) {
 				this.tree = res.data;
 
@@ -51,7 +53,7 @@ class PreviewState {
 			}
 		});
 
-		apiClient.getObservations(id).then((res) => {
+		getObservations(id).then((res) => {
 			if (res.status === 200 && res.data) {
 				this.observations = res.data;
 			} else {
@@ -59,7 +61,7 @@ class PreviewState {
 			}
 		});
 
-		apiClient.getTreeComments(id).then((res) => {
+		getTreeComments(id).then((res) => {
 			if (res.status === 200 && res.data) {
 				this.comments = res.data.comments;
 			} else {

@@ -1,5 +1,5 @@
 import { goto } from '$app/navigation';
-import { apiClient } from '$lib/api';
+import { getTree, getTreeHistory, updateTreeState } from '$lib/api/trees';
 import { DEFAULT_TREE } from '$lib/constants';
 import { authStore } from '$lib/stores/authStore';
 import type { IChangeList, IResponse, ISingleTree, ITree } from '$lib/types';
@@ -14,6 +14,12 @@ vi.mock('$app/navigation', async () => {
 	};
 });
 
+vi.mock('$lib/api/trees', () => ({
+	getTree: vi.fn(),
+	updateTreeState: vi.fn(),
+	getTreeHistory: vi.fn()
+}));
+
 const mockedGoto = vi.mocked(goto);
 
 describe('TreeDeadForm', async () => {
@@ -24,7 +30,7 @@ describe('TreeDeadForm', async () => {
 
 		let saved = false;
 
-		apiClient.getTree = async (): Promise<IResponse<ISingleTree>> => {
+		vi.mocked(getTree).mockImplementation(async (): Promise<IResponse<ISingleTree>> => {
 			console.debug('GET');
 
 			return {
@@ -34,19 +40,21 @@ describe('TreeDeadForm', async () => {
 					users: []
 				}
 			};
-		};
+		});
 
-		apiClient.updateTreeState = async (id: string, value: string): Promise<IResponse<ITree>> => {
-			expect(id).toBe('tree1');
-			expect(value).toBe('dead');
+		vi.mocked(updateTreeState).mockImplementation(
+			async (id: string, value: string | null): Promise<IResponse<ITree>> => {
+				expect(id).toBe('tree1');
+				expect(value).toBe('dead');
 
-			saved = true;
+				saved = true;
 
-			return {
-				status: 200,
-				data: DEFAULT_TREE
-			};
-		};
+				return {
+					status: 200,
+					data: DEFAULT_TREE
+				};
+			}
+		);
 
 		authStore.set({
 			token: 'secret',
@@ -54,7 +62,7 @@ describe('TreeDeadForm', async () => {
 			picture: 'https://example.com/picture.jpg'
 		});
 
-		apiClient.getTreeHistory = async (): Promise<IResponse<IChangeList>> => {
+		vi.mocked(getTreeHistory).mockImplementation(async (): Promise<IResponse<IChangeList>> => {
 			return {
 				status: 200,
 				data: {
@@ -62,7 +70,7 @@ describe('TreeDeadForm', async () => {
 					users: []
 				}
 			};
-		};
+		});
 
 		render(TreeDeadForm, {
 			id: 'tree1'

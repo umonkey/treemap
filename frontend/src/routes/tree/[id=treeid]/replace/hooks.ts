@@ -2,7 +2,7 @@
 //
 // TODO: fail if the previous tree is already "gone"?
 
-import { apiClient } from '$lib/api';
+import { getTree, replaceTree } from '$lib/api/trees';
 import { goto, routes } from '$lib/routes';
 import { addTrees } from '$lib/stores/treeStore';
 import { addUsers } from '$lib/stores/userStore';
@@ -31,8 +31,7 @@ export const editor = (tree_id: string) => {
 		loading.set(true);
 		loadError.set(undefined);
 
-		await apiClient
-			.getTree(tree_id)
+		await getTree(tree_id)
 			.then((res) => {
 				if (res.status >= 200 && res.status < 300 && res.data) {
 					tree.set(res.data);
@@ -66,8 +65,7 @@ export const editor = (tree_id: string) => {
 			files: []
 		} as IReplaceTreeRequest;
 
-		await apiClient
-			.replaceTree(tree_id, req)
+		await replaceTree(tree_id, req)
 			.then((res) => {
 				if (res.status >= 200 && res.status < 300 && res.data) {
 					addTrees(res.data.trees);

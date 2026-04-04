@@ -2,7 +2,7 @@
 // This must go first for the mocks to work.
 import { mockedGoto } from './mocks';
 
-import { apiClient } from '$lib/api';
+import { addTree } from '$lib/api/trees';
 import { DEFAULT_TREE } from '$lib/constants';
 import { routes } from '$lib/routes';
 import { authStore } from '$lib/stores/authStore';
@@ -11,6 +11,10 @@ import { cleanup, render, screen } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import AddForm from './AddForm.svelte';
+
+vi.mock('$lib/api/trees', () => ({
+	addTree: vi.fn()
+}));
 
 beforeEach(() => {
 	authStore.set({
@@ -102,18 +106,20 @@ describe('AddForm', async () => {
 
 		let request: IAddTreesRequest | null = null;
 
-		apiClient.addTree = async (req: IAddTreesRequest): Promise<IResponse<ITreeList>> => {
-			request = req;
+		vi.mocked(addTree).mockImplementation(
+			async (req: IAddTreesRequest): Promise<IResponse<ITreeList>> => {
+				request = req;
 
-			return {
-				status: 200,
-				data: {
-					trees: [DEFAULT_TREE],
-					users: []
-				},
-				error: undefined
-			};
-		};
+				return {
+					status: 200,
+					data: {
+						trees: [DEFAULT_TREE],
+						users: []
+					},
+					error: undefined
+				};
+			}
+		);
 
 		render(AddForm, {
 			props: {
@@ -157,18 +163,20 @@ describe('AddForm', async () => {
 			}
 		});
 
-		apiClient.addTree = async (req: IAddTreesRequest): Promise<IResponse<ITreeList>> => {
-			request = req;
+		vi.mocked(addTree).mockImplementation(
+			async (req: IAddTreesRequest): Promise<IResponse<ITreeList>> => {
+				request = req;
 
-			return {
-				status: 200,
-				data: {
-					trees: [DEFAULT_TREE],
-					users: []
-				},
-				error: undefined
-			};
-		};
+				return {
+					status: 200,
+					data: {
+						trees: [DEFAULT_TREE],
+						users: []
+					},
+					error: undefined
+				};
+			}
+		);
 
 		await inputNumber(/year/i, '1980');
 

@@ -1,7 +1,7 @@
-import type { ITree, ITreeFile } from '$lib/types';
+import { getTree } from '$lib/api/trees';
 import { DEFAULT_TREE } from '$lib/constants';
-import { apiClient } from '$lib/api';
 import { routes } from '$lib/routes';
+import type { ITree, ITreeFile } from '$lib/types';
 import { writable } from 'svelte/store';
 
 export const hooks = () => {
@@ -13,8 +13,7 @@ export const hooks = () => {
 	const reload = (id: string) => {
 		loading.set(true);
 
-		apiClient
-			.getTree(id, true)
+		getTree(id, true)
 			.then((res) => {
 				if (res.status === 200 && res.data) {
 					tree.set(res.data);

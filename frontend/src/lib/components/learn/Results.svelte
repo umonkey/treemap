@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { apiClient } from '$lib/api';
+	import { addTraining } from '$lib/api/training';
 	import { soundBus } from '$lib/buses/soundBus';
 	import { locale } from '$lib/locale';
 	import { onMount } from 'svelte';
@@ -33,7 +33,7 @@
 
 		const rate = correct / total;
 
-		apiClient.addTraining(rate);
+		addTraining(rate);
 	});
 </script>
 

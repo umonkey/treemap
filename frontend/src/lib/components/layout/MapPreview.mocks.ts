@@ -1,8 +1,9 @@
-import { apiClient } from '$lib/api';
+import * as trees from '$lib/api/trees';
 import { DEFAULT_TREE } from '$lib/constants';
 import { addTrees } from '$lib/stores/treeStore';
 
-apiClient.getTree = (id: string) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(trees as any).getTree = (id: string) => {
 	if (id === 'gif2') {
 		return new Promise((resolve) => {
 			const tree = {

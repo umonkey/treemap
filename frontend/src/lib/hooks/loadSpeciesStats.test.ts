@@ -1,17 +1,21 @@
-import { apiClient } from '$lib/api';
+import { getSpeciesStats } from '$lib/api/stats';
 import type { IResponse, ISpeciesStats } from '$lib/types';
 import { get } from 'svelte/store';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { loadSpeciesStats } from './loadSpeciesStats';
+
+vi.mock('$lib/api/stats', () => ({
+	getSpeciesStats: vi.fn()
+}));
 
 describe('hooks/loadSpeciesStats', async () => {
 	it('should load empty list', async () => {
-		apiClient.getSpeciesStats = async (): Promise<IResponse<ISpeciesStats[]>> => {
+		vi.mocked(getSpeciesStats).mockImplementation(async (): Promise<IResponse<ISpeciesStats[]>> => {
 			return {
 				status: 200,
 				data: []
 			};
-		};
+		});
 
 		const { loading, error, data, reload } = loadSpeciesStats();
 		expect(get(loading)).toBe(true);
@@ -24,7 +28,7 @@ describe('hooks/loadSpeciesStats', async () => {
 	});
 
 	it('should load non-empty list', async () => {
-		apiClient.getSpeciesStats = async (): Promise<IResponse<ISpeciesStats[]>> => {
+		vi.mocked(getSpeciesStats).mockImplementation(async (): Promise<IResponse<ISpeciesStats[]>> => {
 			return {
 				status: 200,
 				data: [
@@ -35,7 +39,7 @@ describe('hooks/loadSpeciesStats', async () => {
 					}
 				]
 			};
-		};
+		});
 
 		const { loading, error, data, reload } = loadSpeciesStats();
 		expect(get(loading)).toBe(true);
@@ -49,7 +53,7 @@ describe('hooks/loadSpeciesStats', async () => {
 	});
 
 	it('should return an error', async () => {
-		apiClient.getSpeciesStats = async (): Promise<IResponse<ISpeciesStats[]>> => {
+		vi.mocked(getSpeciesStats).mockImplementation(async (): Promise<IResponse<ISpeciesStats[]>> => {
 			return {
 				status: 500,
 				data: undefined,
@@ -58,7 +62,7 @@ describe('hooks/loadSpeciesStats', async () => {
 					description: 'something went wrong'
 				}
 			};
-		};
+		});
 
 		const { loading, error, data, reload } = loadSpeciesStats();
 		expect(get(loading)).toBe(true);

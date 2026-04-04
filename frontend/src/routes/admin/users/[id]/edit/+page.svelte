@@ -1,16 +1,16 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { updateUser } from '$lib/api/users';
 	import UserEditForm from '$lib/components/admin/UserEditForm/index.svelte';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
-	import { apiClient } from '$lib/api';
-	import { goto } from '$app/navigation';
+	import { showError } from '$lib/errors';
 	import type { IUser } from '$lib/types';
 	import type { PageData } from './$types';
-	import { showError } from '$lib/errors';
 
 	let { data }: { data: PageData } = $props();
 
 	const onSave = async (updatedUser: Partial<IUser>) => {
-		const res = await apiClient.updateUser(data.user.id, updatedUser);
+		const res = await updateUser(data.user.id, updatedUser);
 
 		if (res.status >= 200 && res.status < 300) {
 			goto('/admin/users');

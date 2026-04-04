@@ -4,7 +4,7 @@
 	 * street addresses, including autocomplete based on the API vocabulary.
 	 */
 
-	import { apiClient } from '$lib/api';
+	import { searchStreets } from '$lib/api/streets';
 	import { locale } from '$lib/locale';
 	import type { IStreet } from '$lib/types';
 	import { FormElement } from '$lib/ui';
@@ -26,7 +26,7 @@
 	const handleInput = (event: Event) => {
 		const target = event.target as HTMLInputElement;
 
-		apiClient.searchStreets(target.value).then((res) => {
+		searchStreets(target.value).then((res) => {
 			if (res.status === 200 && res.data) {
 				options = res.data;
 				showOptions = options.length > 0;

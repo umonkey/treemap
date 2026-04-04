@@ -1,10 +1,10 @@
-import { writable } from 'svelte/store';
-import type { ITree, ILatLng } from '$lib/types';
-import { apiClient } from '$lib/api';
-import { routes, goto } from '$lib/routes';
+import { getTree, updateTree } from '$lib/api/trees';
 import { DEFAULT_TREE } from '$lib/constants';
-import { get } from 'svelte/store';
 import { showError } from '$lib/errors';
+import { goto, routes } from '$lib/routes';
+import type { ILatLng, ITree } from '$lib/types';
+import { writable } from 'svelte/store';
+import { get } from 'svelte/store';
 
 export const hooks = () => {
 	const tree = writable<ITree>(DEFAULT_TREE);
@@ -13,7 +13,7 @@ export const hooks = () => {
 	const saving = writable<boolean>(false);
 
 	const reload = (id: string) => {
-		apiClient.getTree(id).then((res) => {
+		getTree(id).then((res) => {
 			if (res.status === 200 && res.data) {
 				console.debug('[edit form] Tree data loaded.');
 				tree.set(res.data);
@@ -119,19 +119,18 @@ export const hooks = () => {
 		const u = get(updated);
 		saving.set(true);
 
-		apiClient
-			.updateTree(u.id, {
-				...get(tree),
-				species: u.species,
-				height: u.height,
-				diameter: u.diameter,
-				circumference: u.circumference,
-				state: u.state,
-				lat: u.lat,
-				lon: u.lon,
-				notes: u.notes,
-				year: u.year
-			})
+		updateTree(u.id, {
+			...get(tree),
+			species: u.species,
+			height: u.height,
+			diameter: u.diameter,
+			circumference: u.circumference,
+			state: u.state,
+			lat: u.lat,
+			lon: u.lon,
+			notes: u.notes,
+			year: u.year
+		})
 			.then((res) => {
 				if (res.status >= 200 && res.status < 400) {
 					goto(routes.mapPreview(u.id));

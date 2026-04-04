@@ -2,7 +2,7 @@
  * Load trees ordered by crown diameter
  */
 
-import { apiClient } from '$lib/api';
+import { getTopDiameter } from '$lib/api/stats';
 import { addTrees } from '$lib/stores/treeStore';
 import { addUsers } from '$lib/stores/userStore';
 import type { IError, ITree } from '$lib/types';
@@ -17,7 +17,7 @@ export const loadTreesByDiameter = () => {
 		try {
 			loading.set(true);
 
-			const { status, data: list, error: err } = await apiClient.getTopDiameter();
+			const { status, data: list, error: err } = await getTopDiameter();
 
 			if (status === 200 && list) {
 				addTrees(list.trees);

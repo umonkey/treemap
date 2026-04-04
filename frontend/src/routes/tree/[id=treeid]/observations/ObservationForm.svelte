@@ -1,15 +1,16 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { addObservations, getObservations } from '$lib/api/observations';
+	import { getUser as getUserApi } from '$lib/api/users';
+	import TreeForm from '$lib/components/forms/TreeForm.svelte';
+	import { showError } from '$lib/errors';
 	import { locale } from '$lib/locale';
-	import { apiClient } from '$lib/api';
 	import { routes } from '$lib/routes';
 	import { isAuthenticated } from '$lib/stores/authStore';
 	import { addUsers, getUser } from '$lib/stores/userStore';
 	import type { IObservation } from '$lib/types';
 	import { CheckInput, HelpButton } from '$lib/ui';
-	import TreeForm from '$lib/components/forms/TreeForm.svelte';
-	import { showError } from '$lib/errors';
+	import { onMount } from 'svelte';
 
 	const { id } = $props<{ id: string }>();
 
@@ -44,7 +45,7 @@
 	);
 
 	onMount(async () => {
-		const response = await apiClient.getObservations(id);
+		const response = await getObservations(id);
 		if (response.data) {
 			observation = { ...observation, ...response.data };
 
@@ -53,7 +54,7 @@
 				observation.created_by !== '0' &&
 				!$getUser(observation.created_by)
 			) {
-				apiClient.getUser(observation.created_by).then((res) => {
+				getUserApi(observation.created_by).then((res) => {
 					if (res.data) {
 						addUsers([res.data]);
 					}
@@ -65,7 +66,7 @@
 
 	async function handleSubmit() {
 		saving = true;
-		const response = await apiClient.addObservations(observation);
+		const response = await addObservations(observation);
 		if (response.error) {
 			showError(`Error ${response.status} adding observations: ${response.error.description}`);
 		} else {

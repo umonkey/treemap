@@ -5,13 +5,13 @@
 	 * and a history of recent inputs, also backed by the API.
 	 */
 
-	import { apiClient } from '$lib/api';
+	import { searchSpecies } from '$lib/api/species';
 	import { loadSuggestedSpecies } from '$lib/hooks';
 	import { locale } from '$lib/locale';
 	import type { ISpecies } from '$lib/types';
 	import { FormElement } from '$lib/ui';
-	import { onMount } from 'svelte';
 	import SelectButton from '$lib/ui/SelectButton.svelte';
+	import { onMount } from 'svelte';
 
 	const { value = '', onChange } = $props<{
 		value?: string | null;
@@ -30,7 +30,7 @@
 	const handleInput = (event: Event) => {
 		const target = event.target as HTMLInputElement;
 
-		apiClient.searchSpecies(target.value).then((res) => {
+		searchSpecies(target.value).then((res) => {
 			if (res.status === 200 && res.data) {
 				options = res.data;
 				showOptions = options.length > 0;

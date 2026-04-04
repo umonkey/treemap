@@ -10,8 +10,8 @@
  * TODO: needs proper error handling.
  */
 
+import { uploadSingleFile } from '$lib/api/uploads';
 import { get, writable } from 'svelte/store';
-import { apiClient } from '$lib/api';
 
 type Item = {
 	file: File;
@@ -95,8 +95,7 @@ export const load = ({
 		});
 
 		// Start the upload process.
-		apiClient
-			.uploadSingleFile(file)
+		uploadSingleFile(file)
 			.then((res) => {
 				if (res.status === 200 && res.data) {
 					// We got the id of the uploaded file.

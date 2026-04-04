@@ -1,13 +1,18 @@
 // This must go first for the mocks to work.
 import { TREE_RESPONSE, mockedGoto } from './mocks';
 
-import { apiClient } from '$lib/api';
+import * as treesApi from '$lib/api/trees';
 import { authStore } from '$lib/stores/authStore';
-import type { IResponse, ISingleTree, ITree } from '$lib/types';
+import type { IResponse, ITree } from '$lib/types';
 import { cleanup, render, screen } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
-import { afterEach, describe, expect, test } from 'vitest';
+import { afterEach, describe, expect, test, vi } from 'vitest';
 import MoveForm from './MoveForm.svelte';
+
+vi.mock('$lib/api/trees', () => ({
+	getTree: vi.fn(),
+	updateTreeLocation: vi.fn()
+}));
 
 describe('MoveForm', async () => {
 	afterEach(cleanup);
@@ -17,29 +22,25 @@ describe('MoveForm', async () => {
 
 		let update_called = false;
 
-		apiClient.getTree = async (): Promise<IResponse<ISingleTree>> => {
-			return {
-				status: 200,
-				data: TREE_RESPONSE
-			};
-		};
+		vi.mocked(treesApi.getTree).mockResolvedValue({
+			status: 200,
+			data: TREE_RESPONSE
+		});
 
-		apiClient.updateTreeLocation = async (
-			id: string,
-			lat: number,
-			lon: number
-		): Promise<IResponse<ITree>> => {
-			expect(id).toBe('tree1');
-			expect(lat).toBe(1.23);
-			expect(lon).toBe(2.34);
+		vi.mocked(treesApi.updateTreeLocation).mockImplementation(
+			async (id: string, lat: number, lon: number): Promise<IResponse<ITree>> => {
+				expect(id).toBe('tree1');
+				expect(lat).toBe(1.23);
+				expect(lon).toBe(2.34);
 
-			update_called = true;
+				update_called = true;
 
-			return {
-				status: 200,
-				data: TREE_RESPONSE
-			};
-		};
+				return {
+					status: 200,
+					data: TREE_RESPONSE
+				};
+			}
+		);
 
 		authStore.set({
 			token: 'secret',

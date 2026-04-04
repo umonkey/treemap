@@ -1,12 +1,12 @@
-import { apiClient } from '$lib/api';
+import { getGeoJSON } from '$lib/api/trees';
 import { mapBus } from '$lib/buses';
 import { showError } from '$lib/errors';
 import { searchStore } from '$lib/stores/searchStore';
 import { Debouncer } from '$lib/utils/debounce';
-import { MapBouncer } from './MapBouncer';
 import type { Map } from 'maplibre-gl';
 import { getMapContext } from 'svelte-maplibre';
 import { get } from 'svelte/store';
+import { MapBouncer } from './MapBouncer';
 
 type Properties = {
 	id: string;
@@ -58,8 +58,7 @@ export class TreeLayerState {
 		});
 
 		this.fetchDebouncer.run(() => {
-			apiClient
-				.getGeoJSON(n, e, s, w, search)
+			getGeoJSON(n, e, s, w, search)
 				.then(({ status, data }) => {
 					if (status === 200 && data) {
 						const collection = data as unknown as Collection;

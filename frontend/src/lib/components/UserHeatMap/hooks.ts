@@ -1,4 +1,4 @@
-import { apiClient } from '$lib/api';
+import { getUserHeatMap } from '$lib/api/users';
 import { type IHeatMap } from '$lib/types';
 import { writable } from 'svelte/store';
 
@@ -11,7 +11,7 @@ export const hooks = (user_id: string) => {
 		loading.set(true);
 
 		try {
-			const { status, data: d, error: e } = await apiClient.getUserHeatMap(user_id);
+			const { status, data: d, error: e } = await getUserHeatMap(user_id);
 
 			if (status === 200 && d) {
 				data.set(d);

@@ -1,6 +1,6 @@
+import { getObservations } from '$lib/api/observations';
+import type { IError, IObservation } from '$lib/types';
 import { writable } from 'svelte/store';
-import { apiClient } from '$lib/api';
-import type { IObservation, IError } from '$lib/types';
 
 export const loadObservations = () => {
 	const loading = writable(false);
@@ -11,7 +11,7 @@ export const loadObservations = () => {
 		loading.set(true);
 		error.set(null);
 
-		const response = await apiClient.getObservations(treeId);
+		const response = await getObservations(treeId);
 
 		if (response.error) {
 			error.set(response.error);

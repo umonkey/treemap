@@ -1,4 +1,4 @@
-import { apiClient } from '$lib/api';
+import { getStateStats } from '$lib/api/stats';
 import type { IError, IStateStats } from '$lib/types';
 import { writable } from 'svelte/store';
 
@@ -11,7 +11,7 @@ export const loadStateStats = () => {
 		try {
 			loading.set(true);
 
-			const { status, data: stats, error: err } = await apiClient.getStateStats();
+			const { status, data: stats, error: err } = await getStateStats();
 
 			if (status === 200 && stats) {
 				data.set(stats);

@@ -1,7 +1,7 @@
+import { getMe, updateSettings } from '$lib/api/users';
+import { goto, routes } from '$lib/routes';
 import type { IMeResponse } from '$lib/types';
-import { apiClient } from '$lib/api';
 import { get, writable } from 'svelte/store';
-import { routes, goto } from '$lib/routes';
 
 export const hooks = () => {
 	const loading = writable<boolean>(true);
@@ -12,8 +12,7 @@ export const hooks = () => {
 	const files = writable<string[]>([]);
 	const name = writable<string>('');
 
-	apiClient
-		.getMe()
+	getMe()
 		.then((res) => {
 			loading.set(true);
 			error.set(null);
@@ -35,11 +34,10 @@ export const hooks = () => {
 		saving.set(true);
 		saveError.set(null);
 
-		apiClient
-			.updateSettings({
-				name: get(name),
-				picture: get(files)[0] ?? null
-			})
+		updateSettings({
+			name: get(name),
+			picture: get(files)[0] ?? null
+		})
 			.then((res) => {
 				const { status, error: e } = res;
 

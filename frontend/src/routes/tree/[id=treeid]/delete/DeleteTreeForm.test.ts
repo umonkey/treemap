@@ -1,5 +1,5 @@
 import { goto } from '$app/navigation';
-import { apiClient } from '$lib/api';
+import { getTree, getTreeHistory, updateTreeState } from '$lib/api/trees';
 import { DEFAULT_TREE } from '$lib/constants';
 import { authStore } from '$lib/stores/authStore';
 import { render, screen } from '@testing-library/svelte';
@@ -13,6 +13,12 @@ vi.mock('$app/navigation', async () => {
 	};
 });
 
+vi.mock('$lib/api/trees', () => ({
+	getTree: vi.fn(),
+	updateTreeState: vi.fn(),
+	getTreeHistory: vi.fn()
+}));
+
 const mockedGoto = vi.mocked(goto);
 
 describe('DeleteTreeForm', async () => {
@@ -22,7 +28,7 @@ describe('DeleteTreeForm', async () => {
 		let saved = false;
 		let capturedComment: string | undefined;
 
-		apiClient.getTree = vi.fn().mockResolvedValue({
+		vi.mocked(getTree).mockResolvedValue({
 			status: 200,
 			data: {
 				...DEFAULT_TREE,
@@ -30,9 +36,8 @@ describe('DeleteTreeForm', async () => {
 			}
 		});
 
-		apiClient.updateTreeState = vi
-			.fn()
-			.mockImplementation(async (id: string, value: string, comment?: string) => {
+		vi.mocked(updateTreeState).mockImplementation(
+			async (id: string, value: string | null, comment?: string) => {
 				expect(id).toBe('tree1');
 				expect(value).toBe('gone');
 				capturedComment = comment;
@@ -43,7 +48,8 @@ describe('DeleteTreeForm', async () => {
 					status: 200,
 					data: DEFAULT_TREE
 				};
-			});
+			}
+		);
 
 		authStore.set({
 			token: 'secret',
@@ -51,7 +57,7 @@ describe('DeleteTreeForm', async () => {
 			picture: 'https://example.com/picture.jpg'
 		});
 
-		apiClient.getTreeHistory = vi.fn().mockResolvedValue({
+		vi.mocked(getTreeHistory).mockResolvedValue({
 			status: 200,
 			data: {
 				props: [],
@@ -82,7 +88,7 @@ describe('DeleteTreeForm', async () => {
 		let saved = false;
 		let capturedComment: string | undefined;
 
-		apiClient.getTree = vi.fn().mockResolvedValue({
+		vi.mocked(getTree).mockResolvedValue({
 			status: 200,
 			data: {
 				...DEFAULT_TREE,
@@ -90,9 +96,8 @@ describe('DeleteTreeForm', async () => {
 			}
 		});
 
-		apiClient.updateTreeState = vi
-			.fn()
-			.mockImplementation(async (id: string, value: string, comment?: string) => {
+		vi.mocked(updateTreeState).mockImplementation(
+			async (id: string, value: string | null, comment?: string) => {
 				expect(id).toBe('tree1');
 				expect(value).toBe('gone');
 				capturedComment = comment;
@@ -103,7 +108,8 @@ describe('DeleteTreeForm', async () => {
 					status: 200,
 					data: DEFAULT_TREE
 				};
-			});
+			}
+		);
 
 		authStore.set({
 			token: 'secret',
@@ -111,7 +117,7 @@ describe('DeleteTreeForm', async () => {
 			picture: 'https://example.com/picture.jpg'
 		});
 
-		apiClient.getTreeHistory = vi.fn().mockResolvedValue({
+		vi.mocked(getTreeHistory).mockResolvedValue({
 			status: 200,
 			data: {
 				props: [],

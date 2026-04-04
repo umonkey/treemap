@@ -1,4 +1,4 @@
-import { apiClient } from '$lib/api';
+import { verifyToken } from '$lib/api/users';
 import { authStore } from '$lib/stores/authStore';
 import type { Load } from '@sveltejs/kit';
 import { error } from '@sveltejs/kit';
@@ -24,7 +24,7 @@ export const load: Load = async ({
 		error(401);
 	}
 
-	const res = await apiClient.verifyToken(token);
+	const res = await verifyToken(token);
 
 	if (res.status === 200 && res.data) {
 		authStore.set({

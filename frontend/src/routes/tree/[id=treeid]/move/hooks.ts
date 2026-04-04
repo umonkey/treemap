@@ -1,6 +1,6 @@
 // Loads data required to move the tree, performs updates.
 
-import { apiClient } from '$lib/api';
+import { getTree, updateTreeLocation } from '$lib/api/trees';
 import { goto, routes } from '$lib/routes';
 import type { ILatLng, ITree } from '$lib/types';
 import { roundCoord } from '$lib/utils/strings';
@@ -22,7 +22,7 @@ export const editor = (tree_id: string) => {
 		loading.set(true);
 		loadError.set(undefined);
 
-		const p1 = await apiClient.getTree(tree_id).then((res) => {
+		const p1 = await getTree(tree_id).then((res) => {
 			if (res.status >= 200 && res.status < 300 && res.data) {
 				tree.set(res.data);
 
@@ -49,8 +49,7 @@ export const editor = (tree_id: string) => {
 
 		const ll = get(updated);
 
-		await apiClient
-			.updateTreeLocation(tree_id, ll.lat, ll.lng)
+		await updateTreeLocation(tree_id, ll.lat, ll.lng)
 			.then((res) => {
 				if (res.status >= 200 && res.status < 300 && res.data) {
 					goto(routes.mapPreview(tree_id));

@@ -1,13 +1,17 @@
-import { apiClient } from '$lib/api';
+import { getTree } from '$lib/api/trees';
 import { DEFAULT_TREE } from '$lib/constants';
 import type { IResponse, ISingleTree } from '$lib/types';
 import { get } from 'svelte/store';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { loadTree } from './loadTree';
+
+vi.mock('$lib/api/trees', () => ({
+	getTree: vi.fn()
+}));
 
 describe('hooks/loadTree', async () => {
 	it('should load a tree', async () => {
-		apiClient.getTree = async (): Promise<IResponse<ISingleTree>> => {
+		vi.mocked(getTree).mockImplementation(async (): Promise<IResponse<ISingleTree>> => {
 			return {
 				status: 200,
 				data: {
@@ -15,7 +19,7 @@ describe('hooks/loadTree', async () => {
 					users: []
 				}
 			};
-		};
+		});
 
 		const { loading, error, data, reload } = loadTree();
 		expect(get(loading)).toBe(true);
@@ -28,7 +32,7 @@ describe('hooks/loadTree', async () => {
 	});
 
 	it('should return an error', async () => {
-		apiClient.getTree = async (): Promise<IResponse<ISingleTree>> => {
+		vi.mocked(getTree).mockImplementation(async (): Promise<IResponse<ISingleTree>> => {
 			return {
 				status: 500,
 				data: undefined,
@@ -37,7 +41,7 @@ describe('hooks/loadTree', async () => {
 					description: 'something went wrong'
 				}
 			};
-		};
+		});
 
 		const { loading, error, data, reload } = loadTree();
 		expect(get(loading)).toBe(true);

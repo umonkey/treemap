@@ -1,8 +1,8 @@
 // Loads data required by the crown editor, performs updates.
 
-import { apiClient } from '$lib/api';
-import { goto, routes } from '$lib/routes';
+import { updateTreeDiameter } from '$lib/api/trees';
 import { showError } from '$lib/errors';
+import { goto, routes } from '$lib/routes';
 
 class CrownState {
 	id = $state<string | undefined>(undefined);
@@ -18,8 +18,7 @@ class CrownState {
 
 		this.canSave = false;
 
-		apiClient
-			.updateTreeDiameter(id, this.value)
+		updateTreeDiameter(id, this.value)
 			.then((res) => {
 				if (res.status >= 200 && res.status < 300 && res.data) {
 					console.debug(`[crown editor] Tree ${id} updated.`);

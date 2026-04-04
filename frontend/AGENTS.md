@@ -4,14 +4,15 @@ This directory contains the static frontend for the tree mapping application.
 
 ## Tech Stack
 
-- **Framework**: [SvelteKit 5](https://svelte.dev/) (using Runes), client side rendering only.
-- **Language**: TypeScript.
-- **Styling**: Custom CSS with variables (see `src/lib/styles`).
-- **State Management**: Svelte Stores and Runes.
-- **Map Library**: MapLibre GL via `svelte-maplibre`.
+- Framework: [SvelteKit 5](https://svelte.dev/) (using Runes). Client side rendering only, no SSR at all.
+- Language: TypeScript.
+- Styling: Custom CSS with variables (see `src/lib/styles`).
+- State Management: Svelte Stores and Runes.
+- Map Library: MapLibre GL via `svelte-maplibre`.
 
 ## Directory Structure
 
+- `src/lib/api`: domain-based API functions.
 - `src/lib/components`: domain-based components.
 - `src/lib/forms`: complex forms.
 - `src/lib/stores`: Svelte stores.

@@ -1,9 +1,10 @@
-import { writable } from 'svelte/store';
-import type { ITree, ITreeFile } from '$lib/types';
-import { apiClient } from '$lib/api';
-import { showError } from '$lib/errors';
-import { get } from 'svelte/store';
+import { changeTreeThumbnail, getTree } from '$lib/api/trees';
+import { deleteFile } from '$lib/api/uploads';
 import { DEFAULT_TREE } from '$lib/constants';
+import { showError } from '$lib/errors';
+import type { ITree, ITreeFile } from '$lib/types';
+import { writable } from 'svelte/store';
+import { get } from 'svelte/store';
 
 export const hooks = () => {
 	const loading = writable<boolean>(false);
@@ -13,8 +14,7 @@ export const hooks = () => {
 	const reload = (id: string) => {
 		loading.set(true);
 
-		apiClient
-			.getTree(id, true)
+		getTree(id, true)
 			.then((res) => {
 				if (res.status === 200 && res.data) {
 					tree.set(res.data);
@@ -29,7 +29,7 @@ export const hooks = () => {
 	};
 
 	const handleMakeThumbnail = async (file: ITreeFile) => {
-		const res = await apiClient.changeTreeThumbnail(get(tree).id, file.id);
+		const res = await changeTreeThumbnail(get(tree).id, file.id);
 
 		if (res.status >= 400) {
 			showError(`Error ${res.status} changing thumbnail.`);
@@ -37,7 +37,7 @@ export const hooks = () => {
 	};
 
 	const handleDelete = async (id: string) => {
-		const res = await apiClient.deleteFile(id);
+		const res = await deleteFile(id);
 
 		if (res.status >= 400) {
 			showError(`Error ${res.status} deleting file.`);

@@ -1,18 +1,22 @@
-import { apiClient } from '$lib/api';
+import { getMe } from '$lib/api/users';
 import { DEFAULT_ME } from '$lib/constants';
 import type { IMeResponse, IResponse } from '$lib/types';
 import { get } from 'svelte/store';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { loadMe } from './loadMe';
+
+vi.mock('$lib/api/users', () => ({
+	getMe: vi.fn()
+}));
 
 describe('hooks/loadMe', async () => {
 	it('should load a profile', async () => {
-		apiClient.getMe = async (): Promise<IResponse<IMeResponse>> => {
+		vi.mocked(getMe).mockImplementation(async (): Promise<IResponse<IMeResponse>> => {
 			return {
 				status: 200,
 				data: DEFAULT_ME
 			};
-		};
+		});
 
 		const { loading, error, data, reload } = loadMe();
 		expect(get(loading)).toBe(true);
@@ -25,7 +29,7 @@ describe('hooks/loadMe', async () => {
 	});
 
 	it('should return an error', async () => {
-		apiClient.getMe = async (): Promise<IResponse<IMeResponse>> => {
+		vi.mocked(getMe).mockImplementation(async (): Promise<IResponse<IMeResponse>> => {
 			return {
 				status: 500,
 				data: undefined,
@@ -34,7 +38,7 @@ describe('hooks/loadMe', async () => {
 					description: 'something went wrong'
 				}
 			};
-		};
+		});
 
 		const { loading, error, data, reload } = loadMe();
 		expect(get(loading)).toBe(true);

@@ -1,9 +1,9 @@
-import type { ITree, IResponse } from '$lib/types';
-import { DEFAULT_TREE } from '$lib/constants';
-import { apiClient } from '$lib/api';
-import { describe, expect, it, vi } from 'vitest';
-import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
+import { updateTreeDiameter } from '$lib/api/trees';
+import { DEFAULT_TREE } from '$lib/constants';
+import type { IResponse, ITree } from '$lib/types';
+import { get } from 'svelte/store';
+import { describe, expect, it, vi } from 'vitest';
 import { updateCrownDiameter } from './updateCrownDiameter';
 
 vi.mock('$app/navigation', async () => {
@@ -12,23 +12,29 @@ vi.mock('$app/navigation', async () => {
 	};
 });
 
+vi.mock('$lib/api/trees', () => ({
+	updateTreeDiameter: vi.fn()
+}));
+
 const mockedGoto = vi.mocked(goto);
 
 describe('actions/updateCrownDiameter', async () => {
 	it('should call the API', async () => {
-		let called: boolean = false;
+		let called = false;
 
-		apiClient.updateTreeDiameter = async (id: string, value: number): Promise<IResponse<ITree>> => {
-			expect(id).toEqual('tree1');
-			expect(value).toEqual(1.23);
+		vi.mocked(updateTreeDiameter).mockImplementation(
+			async (id: string, value: number): Promise<IResponse<ITree>> => {
+				expect(id).toEqual('tree1');
+				expect(value).toEqual(1.23);
 
-			called = true;
+				called = true;
 
-			return {
-				status: 200,
-				data: DEFAULT_TREE
-			};
-		};
+				return {
+					status: 200,
+					data: DEFAULT_TREE
+				};
+			}
+		);
 
 		const { busy, handleConfirm } = updateCrownDiameter('tree1');
 		expect(get(busy)).toBe(false);

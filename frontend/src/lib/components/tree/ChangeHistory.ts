@@ -1,9 +1,9 @@
-import { formatDate } from '$lib/utils/strings';
-import type { IChange } from '$lib/types';
-import { addUsers, getUser } from '$lib/stores/userStore';
-import { get, writable } from 'svelte/store';
-import { apiClient } from '$lib/api';
+import { getTreeHistory } from '$lib/api/trees';
 import PLACEHOLDER from '$lib/assets/cat.jpeg';
+import { addUsers, getUser } from '$lib/stores/userStore';
+import type { IChange } from '$lib/types';
+import { formatDate } from '$lib/utils/strings';
+import { get, writable } from 'svelte/store';
 
 type Record = {
 	date: string;
@@ -34,8 +34,7 @@ export const load = (id: string, propName: string, limit: number) => {
 	const error = writable<boolean>(false);
 	const history = writable<IChange[]>([]);
 
-	apiClient
-		.getTreeHistory(id)
+	getTreeHistory(id)
 		.then((res) => {
 			if (res.status >= 200 && res.status < 400 && res.data) {
 				history.set(filter(res.data.props, propName).slice(0, limit));

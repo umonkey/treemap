@@ -10,18 +10,18 @@
  * previously failed attempts.
  */
 
-import { db } from './db';
-import { apiClient } from './api';
+import { addPhotos, uploadSingleFile as uploadSingleFileApi } from '$lib/api/uploads';
 import { uploadBus } from '$lib/buses/upload';
 import { uploadStore } from '$lib/stores/upload';
-import { get } from 'svelte/store';
-import { isDataSaving, isLowPower } from '$lib/utils/device';
 import {
-	incrementUploadCount,
 	decrementUploadCount,
+	incrementUploadCount,
 	resetUploadCount,
 	setUploading
 } from '$lib/stores/upload';
+import { isDataSaving, isLowPower } from '$lib/utils/device';
+import { get } from 'svelte/store';
+import { db } from './db';
 
 // Delay between file upload attempts.
 const ERROR_DELAY = 5 * 1000;
@@ -132,7 +132,10 @@ export async function processUploadQueue() {
 					.first();
 
 				if (item?.id) {
-					await db.uploads.update(item.id, { status: 'uploading', progress: 0 });
+					await db.uploads.update(item.id, {
+						status: 'uploading',
+						progress: 0
+					});
 				}
 
 				return item;
@@ -184,7 +187,7 @@ export async function uploadSingleFile(
 	blob: Blob,
 	upload_id?: number
 ): Promise<string> {
-	const res = await apiClient.uploadSingleFile(blob, (progress) => {
+	const res = await uploadSingleFileApi(blob, (progress) => {
 		if (upload_id) {
 			db.uploads.update(upload_id, { progress });
 		}
@@ -196,7 +199,7 @@ export async function uploadSingleFile(
 	const file_id = res.data;
 
 	// 2. Attach to tree.
-	const attachRes = await apiClient.addPhotos(tree_id, [file_id]);
+	const attachRes = await addPhotos(tree_id, [file_id]);
 	if (attachRes.status >= 400) {
 		throw new Error(attachRes.error?.description || 'Failed to attach photo to tree');
 	}

@@ -1,6 +1,6 @@
 // This hook loads data on the tree and its change history.
 
-import { apiClient } from '$lib/api';
+import { getTree, getTreeHistory } from '$lib/api/trees';
 import { addUsers } from '$lib/stores/userStore';
 import type { IChange, IError, ISingleTree } from '$lib/types';
 import { writable } from 'svelte/store';
@@ -18,10 +18,10 @@ export const loadTreeHistory = () => {
 			tree.set(undefined);
 			changes.set([]);
 
-			const req1 = await apiClient.getTree(id);
+			const req1 = await getTree(id);
 
 			if (req1.status === 200 && req1.data) {
-				const req2 = await apiClient.getTreeHistory(id);
+				const req2 = await getTreeHistory(id);
 
 				if (req2.status === 200 && req2.data) {
 					addUsers(req2.data.users);

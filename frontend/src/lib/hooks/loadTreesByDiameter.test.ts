@@ -1,13 +1,17 @@
-import { apiClient } from '$lib/api';
+import { getTopDiameter } from '$lib/api/stats';
 import { DEFAULT_TREE } from '$lib/constants';
 import type { IResponse, ITreeList } from '$lib/types';
 import { get } from 'svelte/store';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { loadTreesByDiameter } from './loadTreesByDiameter';
+
+vi.mock('$lib/api/stats', () => ({
+	getTopDiameter: vi.fn()
+}));
 
 describe('hooks/loadTreesByDiameter', async () => {
 	it('should load empty list', async () => {
-		apiClient.getTopDiameter = async (): Promise<IResponse<ITreeList>> => {
+		vi.mocked(getTopDiameter).mockImplementation(async (): Promise<IResponse<ITreeList>> => {
 			return {
 				status: 200,
 				data: {
@@ -15,7 +19,7 @@ describe('hooks/loadTreesByDiameter', async () => {
 					users: []
 				}
 			};
-		};
+		});
 
 		const { loading, error, data, reload } = loadTreesByDiameter();
 		expect(get(loading)).toBe(true);
@@ -28,7 +32,7 @@ describe('hooks/loadTreesByDiameter', async () => {
 	});
 
 	it('should load non-empty list', async () => {
-		apiClient.getTopDiameter = async (): Promise<IResponse<ITreeList>> => {
+		vi.mocked(getTopDiameter).mockImplementation(async (): Promise<IResponse<ITreeList>> => {
 			return {
 				status: 200,
 				data: {
@@ -36,7 +40,7 @@ describe('hooks/loadTreesByDiameter', async () => {
 					users: []
 				}
 			};
-		};
+		});
 
 		const { loading, error, data, reload } = loadTreesByDiameter();
 		expect(get(loading)).toBe(true);
@@ -50,7 +54,7 @@ describe('hooks/loadTreesByDiameter', async () => {
 	});
 
 	it('should return an error', async () => {
-		apiClient.getTopDiameter = async (): Promise<IResponse<ITreeList>> => {
+		vi.mocked(getTopDiameter).mockImplementation(async (): Promise<IResponse<ITreeList>> => {
 			return {
 				status: 500,
 				data: undefined,
@@ -59,7 +63,7 @@ describe('hooks/loadTreesByDiameter', async () => {
 					description: 'something went wrong'
 				}
 			};
-		};
+		});
 
 		const { loading, error, data, reload } = loadTreesByDiameter();
 		expect(get(loading)).toBe(true);

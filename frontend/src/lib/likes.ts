@@ -1,4 +1,5 @@
-import { apiClient } from '$lib/api';
+import { likeTree, unlikeTree } from '$lib/api/trees';
+import { getMeLikes } from '$lib/api/users';
 import { haveOwnLikes, likeStore } from '$lib/stores/likeStore';
 import type { ILike } from '$lib/types';
 import { get } from 'svelte/store';
@@ -11,7 +12,7 @@ export const preloadMeLikes = async () => {
 
 	console.debug('[likes] Preloading own likes.');
 
-	const { status, data } = await apiClient.getMeLikes();
+	const { status, data } = await getMeLikes();
 
 	if (status === 200 && data) {
 		likeStore.update(() => data.likes.map((x: ILike) => x.tree_id));
@@ -19,7 +20,7 @@ export const preloadMeLikes = async () => {
 };
 
 export const like = async (tree: string) => {
-	const res = await apiClient.likeTree(tree);
+	const res = await likeTree(tree);
 
 	if (res.status < 400) {
 		likeStore.update((likes: string[] | undefined) => {
@@ -33,7 +34,7 @@ export const like = async (tree: string) => {
 };
 
 export const unlike = async (tree: string) => {
-	const res = await apiClient.unlikeTree(tree);
+	const res = await unlikeTree(tree);
 
 	if (res.status < 400) {
 		likeStore.update((likes: string[] | undefined) => {

@@ -1,4 +1,4 @@
-import { apiClient } from '$lib/api';
+import { suggestSpecies } from '$lib/api/species';
 import type { IError } from '$lib/types';
 import { writable } from 'svelte/store';
 
@@ -11,7 +11,7 @@ export const loadSuggestedSpecies = () => {
 		try {
 			loading.set(true);
 
-			const { status, data: stats, error: err } = await apiClient.suggestSpecies();
+			const { status, data: stats, error: err } = await suggestSpecies();
 
 			if (status === 200 && stats) {
 				data.set(stats);

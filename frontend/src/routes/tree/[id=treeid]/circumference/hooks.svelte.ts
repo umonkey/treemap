@@ -1,8 +1,8 @@
 // Loads data required by the crown editor, performs updates.
 
-import { apiClient } from '$lib/api';
-import { goto, routes } from '$lib/routes';
+import { updateTreeCircumference } from '$lib/api/trees';
 import { showError } from '$lib/errors';
+import { goto, routes } from '$lib/routes';
 
 class GirthState {
 	id = $state<string | undefined>(undefined);
@@ -29,8 +29,7 @@ class GirthState {
 
 		this.canSave = false;
 
-		apiClient
-			.updateTreeCircumference(id, this.value)
+		updateTreeCircumference(id, this.value)
 			.then((res) => {
 				if (res.status >= 200 && res.status < 300 && res.data) {
 					console.debug(`[crown editor] Tree ${id} updated.`);

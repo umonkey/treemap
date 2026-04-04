@@ -1,4 +1,4 @@
-import { apiClient } from '$lib/api';
+import { getTree } from '$lib/api/trees';
 import type { ITree } from '$lib/types';
 import type { Load } from '@sveltejs/kit';
 import { error } from '@sveltejs/kit';
@@ -15,7 +15,7 @@ export const load: Load = async ({
 		error(404);
 	}
 
-	const { status, data } = await apiClient.getTree(treeId);
+	const { status, data } = await getTree(treeId);
 
 	if (status === 200 && data) {
 		return {

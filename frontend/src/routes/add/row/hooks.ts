@@ -1,11 +1,11 @@
-import { apiClient } from '$lib/api';
-import { get, writable } from 'svelte/store';
-import { getDistance } from '$lib/utils';
+import { addTree } from '$lib/api/trees';
 import { mapBus } from '$lib/buses/mapBus';
-import type { ILatLng, ILatLon, IAddTreesRequest } from '$lib/types';
-import { goto, routes } from '$lib/routes';
-import { spreadDots } from '$lib/map';
 import { showError } from '$lib/errors';
+import { spreadDots } from '$lib/map';
+import { goto, routes } from '$lib/routes';
+import type { IAddTreesRequest, ILatLng, ILatLon } from '$lib/types';
+import { getDistance } from '$lib/utils';
+import { get, writable } from 'svelte/store';
 
 export const hooks = ({ start, end }: { start: ILatLng; end: ILatLng }) => {
 	const count = writable<number>(3);
@@ -89,7 +89,7 @@ export const hooks = ({ start, end }: { start: ILatLng; end: ILatLng }) => {
 		try {
 			saving.set(true);
 
-			const { status, data: d, error: e } = await apiClient.addTree(req);
+			const { status, data: d, error: e } = await addTree(req);
 
 			if (status >= 200 && status < 300 && d) {
 				const id = d.trees[0].id;

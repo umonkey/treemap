@@ -1,6 +1,6 @@
 // Loads data required by a state update form, performs updates.
 
-import { apiClient } from '$lib/api';
+import { getTree, updateTreeState } from '$lib/api/trees';
 import { goto, routes } from '$lib/routes';
 import { addTrees } from '$lib/stores/treeStore';
 import { addUsers } from '$lib/stores/userStore';
@@ -20,7 +20,7 @@ export const stateUpdater = (tree_id: string, state: string) => {
 		loading.set(true);
 		error.set(undefined);
 
-		const p1 = apiClient.getTree(tree_id).then((res) => {
+		const p1 = getTree(tree_id).then((res) => {
 			if (res.status === 200 && res.data) {
 				tree.set(res.data);
 				addTrees([res.data]);
@@ -42,8 +42,7 @@ export const stateUpdater = (tree_id: string, state: string) => {
 	const save = async () => {
 		busy.set(true);
 
-		await apiClient
-			.updateTreeState(tree_id, state, get(comment)?.trim() || undefined)
+		await updateTreeState(tree_id, state, get(comment)?.trim() || undefined)
 			.then((res) => {
 				if (res.status === 200 && res.data) {
 					addTrees([res.data]);

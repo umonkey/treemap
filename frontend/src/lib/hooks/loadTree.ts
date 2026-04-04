@@ -10,7 +10,7 @@
 // $effect(() => reload(id));
 // ```
 
-import { apiClient } from '$lib/api';
+import { getTree } from '$lib/api/trees';
 import type { IError, ISingleTree } from '$lib/types';
 import { writable } from 'svelte/store';
 
@@ -23,7 +23,7 @@ export const loadTree = () => {
 		try {
 			loading.set(true);
 
-			const { status, data: tree, error: err } = await apiClient.getTree(id);
+			const { status, data: tree, error: err } = await getTree(id);
 
 			if (status === 200 && tree) {
 				data.set(tree);

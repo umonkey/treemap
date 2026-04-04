@@ -1,4 +1,4 @@
-import { apiClient } from '$lib/api';
+import { getSpeciesMismatch } from '$lib/api/stats';
 import { addTrees } from '$lib/stores/treeStore';
 import { addUsers } from '$lib/stores/userStore';
 import type { IError, ITree } from '$lib/types';
@@ -13,7 +13,7 @@ export const loadSpeciesMismatch = () => {
 		try {
 			loading.set(true);
 
-			const { status, data: stats, error: err } = await apiClient.getSpeciesMismatch();
+			const { status, data: stats, error: err } = await getSpeciesMismatch();
 
 			if (status === 200 && stats) {
 				addTrees(stats.trees);

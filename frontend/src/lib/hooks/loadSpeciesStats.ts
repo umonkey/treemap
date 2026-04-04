@@ -1,4 +1,4 @@
-import { apiClient } from '$lib/api';
+import { getSpeciesStats } from '$lib/api/stats';
 import type { IError, ISpeciesStats } from '$lib/types';
 import { writable } from 'svelte/store';
 
@@ -11,7 +11,7 @@ export const loadSpeciesStats = () => {
 		try {
 			loading.set(true);
 
-			const { status, data: stats, error: err } = await apiClient.getSpeciesStats();
+			const { status, data: stats, error: err } = await getSpeciesStats();
 
 			if (status === 200 && stats) {
 				data.set(stats);

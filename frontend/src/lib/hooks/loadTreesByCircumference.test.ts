@@ -1,13 +1,17 @@
-import { apiClient } from '$lib/api';
+import { getTopCircumference } from '$lib/api/stats';
 import { DEFAULT_TREE } from '$lib/constants';
 import type { IResponse, ITreeList } from '$lib/types';
 import { get } from 'svelte/store';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { loadTreesByCircumference } from './loadTreesByCircumference';
+
+vi.mock('$lib/api/stats', () => ({
+	getTopCircumference: vi.fn()
+}));
 
 describe('hooks/loadTreesByCircumference', async () => {
 	it('should load empty list', async () => {
-		apiClient.getTopCircumference = async (): Promise<IResponse<ITreeList>> => {
+		vi.mocked(getTopCircumference).mockImplementation(async (): Promise<IResponse<ITreeList>> => {
 			return {
 				status: 200,
 				data: {
@@ -15,7 +19,7 @@ describe('hooks/loadTreesByCircumference', async () => {
 					users: []
 				}
 			};
-		};
+		});
 
 		const { loading, error, data, reload } = loadTreesByCircumference();
 		expect(get(loading)).toBe(true);
@@ -28,7 +32,7 @@ describe('hooks/loadTreesByCircumference', async () => {
 	});
 
 	it('should load non-empty list', async () => {
-		apiClient.getTopCircumference = async (): Promise<IResponse<ITreeList>> => {
+		vi.mocked(getTopCircumference).mockImplementation(async (): Promise<IResponse<ITreeList>> => {
 			return {
 				status: 200,
 				data: {
@@ -36,7 +40,7 @@ describe('hooks/loadTreesByCircumference', async () => {
 					users: []
 				}
 			};
-		};
+		});
 
 		const { loading, error, data, reload } = loadTreesByCircumference();
 		expect(get(loading)).toBe(true);
@@ -50,7 +54,7 @@ describe('hooks/loadTreesByCircumference', async () => {
 	});
 
 	it('should return an error', async () => {
-		apiClient.getTopCircumference = async (): Promise<IResponse<ITreeList>> => {
+		vi.mocked(getTopCircumference).mockImplementation(async (): Promise<IResponse<ITreeList>> => {
 			return {
 				status: 500,
 				data: undefined,
@@ -59,7 +63,7 @@ describe('hooks/loadTreesByCircumference', async () => {
 					description: 'something went wrong'
 				}
 			};
-		};
+		});
 
 		const { loading, error, data, reload } = loadTreesByCircumference();
 		expect(get(loading)).toBe(true);

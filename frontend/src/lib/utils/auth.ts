@@ -1,6 +1,6 @@
-import * as Sentry from '@sentry/browser';
-import { apiClient } from '$lib/api';
+import { verifyToken } from '$lib/api/users';
 import { authStore } from '$lib/stores/authStore';
+import * as Sentry from '@sentry/browser';
 import { get } from 'svelte/store';
 
 export const validateStoredToken = async () => {
@@ -19,7 +19,7 @@ export const validateStoredToken = async () => {
 
 	console.debug('[auth] Validating stored auth token...', auth.token);
 
-	const res = await apiClient.verifyToken(auth.token);
+	const res = await verifyToken(auth.token);
 
 	if (res.status === 401) {
 		console.info('[auth] Token expired.');

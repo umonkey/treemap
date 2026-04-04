@@ -10,7 +10,7 @@
 - `src/lib/styles`: contains global style sheets.
 - `src/lib/ui`: contains simple components, deprecated over `src/lib/components`.
 - `src/lib/utils`: contains helper functions that aren't related to components or Svelte.
-- `src/lib/api.ts`: contains the API interaction code.
+- `src/lib/api/`: domain-based API functions.
 - `src/lib/locale.ts`: UI translation strings for English, Russian and Armenian languages.
 - `src/lib/routes.ts`: contains functions that format page paths, serves as a single source of truth.
 
@@ -20,6 +20,12 @@
   - Runes: use `$state`, `$derived`, `$effect` and `$props` exclusively. Do not use legacy reactivity (`$:`, `export let`).
   - Snippets over slots: use snippets (`{#snippet}`) and `{@render ...}` instead of the legacy `<slot>` system.
   - Callback props over dispatch: use callback props (e.g., `onSave()`) instead of `createEventDispatcher`.
+- API Interaction:
+  - Do not use a single API client class.
+  - Split API calls into domain-specific files in `src/lib/api/`.
+  - Use the shared `request` and `getAuthHeaders` from `src/lib/api/client.ts`.
+  - Import API functions directly to enable efficient tree-shaking and chunking.
+  - Avoid creating a central `index.ts` barrel file for the API.
 - Prop declaration:
   - Default to `const`: use `const { ... } = $props()` for standard, read-only data flow.
   - Use `let` only for binding: only switch to `let { ... } = $props()` if the component requires at least one `$bindable()` prop.

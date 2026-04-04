@@ -1,11 +1,11 @@
-import { get, writable } from 'svelte/store';
-import { apiClient } from '$lib/api';
+import { getUpdatedTrees } from '$lib/api/trees';
+import { routes } from '$lib/routes';
 import { addTrees } from '$lib/stores/treeStore';
 import { addUsers } from '$lib/stores/userStore';
 import type { ITree } from '$lib/types';
 import { formatDate } from '$lib/utils/strings';
 import { formatSpecies } from '$lib/utils/trees';
-import { routes } from '$lib/routes';
+import { get, writable } from 'svelte/store';
 
 const PAGE_SIZE = 24;
 
@@ -41,8 +41,7 @@ export const hooks = () => {
 			skip: get(skip)
 		};
 
-		apiClient
-			.getUpdatedTrees(params)
+		getUpdatedTrees(params)
 			.then(({ status, data }) => {
 				if (status < 400 && data) {
 					addTrees(data.trees);

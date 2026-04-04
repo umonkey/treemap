@@ -1,8 +1,10 @@
-import { apiClient } from '$lib/api';
-import { addUsers } from '$lib/stores/userStore';
-import type { IComment, IObservation, ITree, ILatLng } from '$lib/types';
+import { addComment, getTreeComments } from '$lib/api/comments';
+import { getObservations } from '$lib/api/observations';
+import { getTree } from '$lib/api/trees';
 import { mapBus } from '$lib/buses/mapBus';
 import { showError } from '$lib/errors';
+import { addUsers } from '$lib/stores/userStore';
+import type { IComment, ILatLng, IObservation, ITree } from '$lib/types';
 
 class PageState {
 	id = $state<string>();
@@ -15,7 +17,7 @@ class PageState {
 		this.comments = [];
 		this.observation = undefined;
 
-		apiClient.getTree(id).then((res) => {
+		getTree(id).then((res) => {
 			if (res.status === 200 && res.data) {
 				this.tree = res.data;
 
@@ -26,14 +28,14 @@ class PageState {
 			}
 		});
 
-		apiClient.getTreeComments(id).then((res) => {
+		getTreeComments(id).then((res) => {
 			if (res.status === 200 && res.data) {
 				addUsers(res.data.users);
 				this.comments = res.data.comments;
 			}
 		});
 
-		apiClient.getObservations(id).then((res) => {
+		getObservations(id).then((res) => {
 			if (res.status === 200 && res.data) {
 				this.observation = res.data;
 			}
@@ -47,8 +49,7 @@ class PageState {
 			return;
 		}
 
-		apiClient
-			.addComment(treeId, message)
+		addComment(treeId, message)
 			.then((res) => {
 				if (res.status >= 200 && res.status < 300) {
 					// OK

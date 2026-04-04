@@ -1,4 +1,4 @@
-import { apiClient } from '$lib/api';
+import { getTreeFiles } from '$lib/api/trees';
 import { routes } from '$lib/routes';
 import { getUser } from '$lib/stores/userStore';
 import type { IGalleryItem, ITreeFile } from '$lib/types';
@@ -39,8 +39,7 @@ export const hooks = () => {
 	const slides = writable<IGalleryItem[]>([]);
 
 	const reload = (id: string) => {
-		apiClient
-			.getTreeFiles(id)
+		getTreeFiles(id)
 			.then((res) => {
 				if (res.status === 200 && res.data) {
 					slides.set(formatSlides(res.data));

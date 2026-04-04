@@ -1,8 +1,8 @@
 // Loads data required by the height editor, performs updates.
 
-import { apiClient } from '$lib/api';
-import { goto, routes } from '$lib/routes';
+import { updateTreeHeight } from '$lib/api/trees';
 import { showError } from '$lib/errors';
+import { goto, routes } from '$lib/routes';
 
 class HeightState {
 	id = $state<string | undefined>(undefined);
@@ -18,8 +18,7 @@ class HeightState {
 
 		this.canSave = false;
 
-		apiClient
-			.updateTreeHeight(id, this.value)
+		updateTreeHeight(id, this.value)
 			.then((res) => {
 				if (res.status >= 200 && res.status < 300 && res.data) {
 					goto(routes.mapPreview(id));

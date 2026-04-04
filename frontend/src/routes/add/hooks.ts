@@ -1,8 +1,8 @@
-import { apiClient } from '$lib/api';
-import { goto, routes } from '$lib/routes';
+import { addTree } from '$lib/api/trees';
 import { mapBus } from '$lib/buses/mapBus';
-import type { IAddTreesRequest, ILatLng, ITree } from '$lib/types';
 import { showError } from '$lib/errors';
+import { goto, routes } from '$lib/routes';
+import type { IAddTreesRequest, ILatLng, ITree } from '$lib/types';
 import { get } from 'svelte/store';
 import { writable } from 'svelte/store';
 
@@ -148,8 +148,7 @@ export const hooks = () => {
 			files: []
 		} as IAddTreesRequest;
 
-		apiClient
-			.addTree(req)
+		addTree(req)
 			.then((res) => {
 				if (res.status >= 200 && res.status < 400 && res.data) {
 					const id = res.data.trees[0].id;

@@ -1,10 +1,10 @@
 <script lang="ts">
+	import { getStreetReportCSV } from '$lib/api/streets';
 	import { routes } from '$lib/routes';
 	import type { StreetReport } from '$lib/types';
 	import { HeightReport, StateReport } from '$lib/ui';
-	import SpeciesReport from '$lib/ui/species-report/SpeciesReport.svelte';
 	import { Button, Buttons } from '$lib/ui';
-	import { apiClient } from '$lib/api';
+	import SpeciesReport from '$lib/ui/species-report/SpeciesReport.svelte';
 
 	type Props = {
 		data: StreetReport;
@@ -23,7 +23,7 @@
 
 	<Buttons>
 		<Button link={routes.searchAddress(data.street)}>Open map</Button>
-		<Button link={apiClient.getStreetReportCSV(data.street)}>Download CSV</Button>
+		<Button link={getStreetReportCSV(data.street)}>Download CSV</Button>
 	</Buttons>
 
 	<StateReport data={data.states} />

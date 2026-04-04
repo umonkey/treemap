@@ -1,4 +1,4 @@
-import { apiClient } from '$lib/api';
+import { getRecentComments } from '$lib/api/comments';
 import { addTrees } from '$lib/stores/treeStore';
 import { addUsers } from '$lib/stores/userStore';
 import type { IComment } from '$lib/types';
@@ -8,7 +8,7 @@ import { error } from '@sveltejs/kit';
 export const load: Load = async (): Promise<{
 	comments: IComment[];
 }> => {
-	const { status, data } = await apiClient.getRecentComments();
+	const { status, data } = await getRecentComments();
 
 	if (status === 200 && data) {
 		addUsers(data.users);
