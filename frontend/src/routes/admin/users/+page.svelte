@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Dialog from '$lib/components/layout/Dialog.svelte';
-	import UserList from '$lib/components/admin/UserList/index.svelte';
 	import type { PageData } from './$types';
+	import UserList from './UserList.svelte';
 
 	let { data }: { data: PageData } = $props();
 </script>

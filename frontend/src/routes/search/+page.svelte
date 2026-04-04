@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import SearchBar from '$lib/components/SearchBar.svelte';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
+	import SearchBar from './SearchBar.svelte';
 
 	import Form from '$lib/ui/form/Form.svelte';
 	import SpeciesInput from '$lib/ui/species-input/SpeciesInput.svelte';

@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { updateUser } from '$lib/api/users';
-	import UserEditForm from '$lib/components/admin/UserEditForm/index.svelte';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import { showError } from '$lib/errors';
 	import type { IUser } from '$lib/types';
 	import type { PageData } from './$types';
+	import UserEditForm from './UserEditForm.svelte';
 
 	let { data }: { data: PageData } = $props();
 

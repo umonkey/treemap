@@ -1,9 +1,9 @@
 <script lang="ts">
-	import ProgressBar from '$lib/components/learn/ProgressBar.svelte';
-	import Question from '$lib/components/learn/Question.svelte';
-	import Results from '$lib/components/learn/Results.svelte';
-	import SoundPlayer from '$lib/components/learn/SoundPlayer.svelte';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
+	import ProgressBar from './ProgressBar.svelte';
+	import Question from './Question.svelte';
+	import Results from './Results.svelte';
+	import SoundPlayer from './SoundPlayer.svelte';
 
 	import { getRandomQuestions } from '$lib/learn/questions';
 	import { locale } from '$lib/locale';

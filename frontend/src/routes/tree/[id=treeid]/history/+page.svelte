@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Dialog from '$lib/components/layout/Dialog.svelte';
-	import Title from '$lib/components/tree/Title.svelte';
-	import TreeTabs from '$lib/components/tree/TreeTabs.svelte';
+	import Title from '../components/Title.svelte';
+	import TreeTabs from '../components/TreeTabs.svelte';
 	import ChangeList from './ChangeList.svelte';
 	import { pageState } from './page.svelte';
 

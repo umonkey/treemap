@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
 	import NumberInput from '$lib/ui/number-input/NumberInput.svelte';
-	import { hooks } from './hooks';
+	import { hooks } from './RowSizeInput.hooks';
 
 	const { value, distance, autofocus, onChange } = $props<{
 		value: number | null;

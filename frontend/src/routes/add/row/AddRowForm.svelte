@@ -7,8 +7,8 @@
 	import TreeForm from '$lib/components/forms/TreeForm.svelte';
 	import { locale } from '$lib/locale';
 	import type { ILatLng } from '$lib/types';
-	import RowSizeInput from '$lib/ui/row-size-input/RowSizeInput.svelte';
 	import MapRowPreview from './MapRowPreview.svelte';
+	import RowSizeInput from './RowSizeInput.svelte';
 	import { hooks } from './hooks';
 
 	import CanopyInput from '$lib/ui/canopy-input/CanopyInput.svelte';

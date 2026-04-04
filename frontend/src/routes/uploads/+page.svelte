@@ -2,12 +2,12 @@
 	import AutoUploadCheckbox from '$lib/components/AutoUploadCheckbox.svelte';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import Tabs from '$lib/components/profile/Tabs.svelte';
-	import UploadRow from '$lib/components/uploads/UploadRow.svelte';
 	import { uploadStore } from '$lib/stores/upload';
 	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import { onMount } from 'svelte';
+	import UploadRow from './UploadRow.svelte';
 	import { locale } from './lang';
 	import { pageState } from './page.svelte';
 

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import ShareButton from '$lib/components/tree/ShareButton.svelte';
 	import { FEATURES } from '$lib/features';
 	import CameraIcon from '$lib/icons/CameraIcon.svelte';
 	import HeartIcon from '$lib/icons/HeartIcon.svelte';
@@ -13,6 +12,7 @@
 	import type { ITree } from '$lib/types';
 	import { onMount } from 'svelte';
 	import { hooks } from './Actions';
+	import ShareButton from './ShareButton.svelte';
 
 	const { tree } = $props<{
 		tree: ITree;

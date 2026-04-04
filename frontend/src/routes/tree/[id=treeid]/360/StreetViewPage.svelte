@@ -1,10 +1,10 @@
 <script lang="ts">
-	import Actions from '$lib/components/tree/Actions.svelte';
-	import Description from '$lib/components/tree/Description.svelte';
-	import Properties from '$lib/components/tree/Properties.svelte';
-	import Title from '$lib/components/tree/Title.svelte';
-	import TreeTabs from '$lib/components/tree/TreeTabs.svelte';
 	import StreetView from '$lib/ui/street-view/StreetView.svelte';
+	import Actions from '../components/Actions.svelte';
+	import Description from '../components/Description.svelte';
+	import Properties from '../components/Properties.svelte';
+	import Title from '../components/Title.svelte';
+	import TreeTabs from '../components/TreeTabs.svelte';
 	import { loadTree } from './hooks';
 
 	const { id } = $props<{ id: string }>();

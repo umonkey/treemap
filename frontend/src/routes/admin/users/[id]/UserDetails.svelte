@@ -1,8 +1,7 @@
 <script lang="ts">
 	import type { IUser } from '$lib/types';
-	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
-	import './styles.css';
+	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 
 	let { user }: { user: IUser } = $props();
 </script>
@@ -38,3 +37,17 @@
 		<Button link="/admin/users" type="cancel">Back to List</Button>
 	</Buttons>
 </div>
+
+<style>
+	.user-details dl {
+		display: grid;
+		grid-template-columns: max-content auto;
+		gap: 10px 20px;
+	}
+
+	.user-pic-large {
+		max-width: 200px;
+		border-radius: 8px;
+		margin-bottom: 20px;
+	}
+</style>

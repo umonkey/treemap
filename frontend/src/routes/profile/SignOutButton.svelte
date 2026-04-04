@@ -2,7 +2,7 @@
 	import { locale } from '$lib/locale';
 	import { goto, routes } from '$lib/routes';
 	import { authStore } from '$lib/stores/authStore';
-	import Button from '../button/Button.svelte';
+	import Button from '$lib/ui/button/Button.svelte';
 
 	const onClick = () => {
 		authStore.set(undefined);

@@ -1,5 +1,5 @@
-import { writable } from 'svelte/store';
 import { locale } from '$lib/locale';
+import { writable } from 'svelte/store';
 
 export const hooks = ({
 	distance,

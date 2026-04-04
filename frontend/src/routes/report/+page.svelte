@@ -4,7 +4,7 @@
 	import { locale } from '$lib/locale';
 	import Form from '$lib/ui/form/Form.svelte';
 	import StreetInput from '$lib/ui/street-input/StreetInput.svelte';
-	import StreetReport from '$lib/ui/street-report/StreetReport.svelte';
+	import StreetReport from './StreetReport.svelte';
 	import { hooks } from './hooks';
 
 	const address = $derived($page.url.searchParams.get('address'));

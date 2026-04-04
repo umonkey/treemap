@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { IUser } from '$lib/types';
-	import './styles.css';
+	import './UserList.css';
 
 	let { users }: { users: IUser[] } = $props();
 </script>

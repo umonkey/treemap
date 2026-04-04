@@ -7,13 +7,13 @@
 	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import Observations from '$lib/components/observation/Observations.svelte';
 	import Gallery from '$lib/components/photos/Gallery.svelte';
-	import Actions from '$lib/components/tree/Actions.svelte';
 	import Comment from '$lib/components/tree/Comment.svelte';
-	import Description from '$lib/components/tree/Description.svelte';
-	import Properties from '$lib/components/tree/Properties.svelte';
-	import Title from '$lib/components/tree/Title.svelte';
-	import TreeTabs from '$lib/components/tree/TreeTabs.svelte';
-	import CommentForm from '$lib/ui/comment-form/CommentForm.svelte';
+	import Actions from './components/Actions.svelte';
+	import CommentForm from './components/CommentForm.svelte';
+	import Description from './components/Description.svelte';
+	import Properties from './components/Properties.svelte';
+	import Title from './components/Title.svelte';
+	import TreeTabs from './components/TreeTabs.svelte';
 
 	const id = $derived($page.params.id as string);
 

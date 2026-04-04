@@ -1,8 +1,8 @@
 <script lang="ts">
-	import TreeListPreview from '$lib/components/TreeListPreview.svelte';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
+	import TreeListPreview from '$lib/components/layout/TreeListPreview.svelte';
 	import Comment from '$lib/components/tree/Comment.svelte';
 	import Tabs from '$lib/components/updates/Tabs.svelte';
-	import Dialog from '$lib/components/layout/Dialog.svelte';
 
 	const { data } = $props();
 	const { comments } = data;
