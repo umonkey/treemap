@@ -12,7 +12,7 @@ export class LocationState {
 		}
 
 		if (this.watchId !== null) {
-			console.debug(`[GEO] Already tracking, watch=${this.watchId}.`);
+			// console.debug(`[GEO] Already tracking, watch=${this.watchId}.`);
 			return;
 		}
 
