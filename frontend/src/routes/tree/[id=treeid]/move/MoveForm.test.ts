@@ -11,7 +11,8 @@ import MoveForm from './MoveForm.svelte';
 
 vi.mock('$lib/api/trees', () => ({
 	getTree: vi.fn(),
-	updateTreeLocation: vi.fn()
+	updateTreeLocation: vi.fn(),
+	getTreeHistory: vi.fn()
 }));
 
 describe('MoveForm', async () => {
@@ -25,6 +26,11 @@ describe('MoveForm', async () => {
 		vi.mocked(treesApi.getTree).mockResolvedValue({
 			status: 200,
 			data: TREE_RESPONSE
+		});
+
+		vi.mocked(treesApi.getTreeHistory).mockResolvedValue({
+			status: 200,
+			data: { props: [], users: [] }
 		});
 
 		vi.mocked(treesApi.updateTreeLocation).mockImplementation(
@@ -59,6 +65,6 @@ describe('MoveForm', async () => {
 		await user.click(confirm);
 
 		expect(update_called).toBe(true);
-		expect(mockedGoto).toHaveBeenCalledWith('/map?preview=tree1');
+		expect(mockedGoto).toHaveBeenCalledWith('/?preview=tree1');
 	});
 });

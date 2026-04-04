@@ -58,6 +58,6 @@ describe('move-form/hooks', async () => {
 		await save();
 		expect(update_called).toBe(true);
 
-		expect(mockedGoto).toHaveBeenCalledWith('/map?preview=tree1');
+		expect(mockedGoto).toHaveBeenCalledWith('/?preview=tree1');
 	});
 });

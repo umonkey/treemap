@@ -1,8 +1,6 @@
 <script lang="ts">
 	import type { IUser } from '$lib/types';
-	import './UserList.css';
-
-	let { users }: { users: IUser[] } = $props();
+	let { users } = $props<{ users: IUser[] }>();
 </script>
 
 <div class="user-list">
@@ -29,3 +27,24 @@
 		</tbody>
 	</table>
 </div>
+
+<style>
+	.user-list table {
+		width: 100%;
+		border-collapse: collapse;
+	}
+
+	.user-list th,
+	.user-list td {
+		padding: 8px;
+		border-bottom: 1px solid #ddd;
+		text-align: left;
+	}
+
+	.user-pic {
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		object-fit: cover;
+	}
+</style>
