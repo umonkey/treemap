@@ -2,7 +2,7 @@
 	import Observations from '$lib/components/observation/Observations.svelte';
 	import GalleryPreview from '$lib/components/photos/GalleryPreview.svelte';
 	import Comment from '$lib/components/tree/Comment.svelte';
-	import { handleShareTree } from '$lib/hooks';
+	import { handleShareTree } from '$lib/hooks/shareTree';
 	import { CloseIcon, SettingsIcon, ShareIcon } from '$lib/icons';
 	import BatteryIcon from '$lib/icons/BatteryIcon.svelte';
 	import LocationIcon from '$lib/icons/LocationIcon.svelte';

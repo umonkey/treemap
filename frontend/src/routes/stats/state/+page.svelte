@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { loadStateStats } from '$lib/hooks';
-	import { routes } from '$lib/routes';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
+	import { loadStateStats } from '$lib/hooks/loadStateStats';
+	import { routes } from '$lib/routes';
 
 	const { loading, error, data, reload } = loadStateStats();
 

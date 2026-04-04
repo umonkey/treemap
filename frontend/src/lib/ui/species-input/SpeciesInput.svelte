@@ -6,7 +6,7 @@
 	 */
 
 	import { searchSpecies } from '$lib/api/species';
-	import { loadSuggestedSpecies } from '$lib/hooks';
+	import { loadSuggestedSpecies } from '$lib/hooks/loadSuggestedSpecies';
 	import { locale } from '$lib/locale';
 	import type { ISpecies } from '$lib/types';
 	import { FormElement } from '$lib/ui';

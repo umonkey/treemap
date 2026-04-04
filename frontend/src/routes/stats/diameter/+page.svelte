@@ -1,7 +1,7 @@
 <script lang="ts">
-	import NewTreesListItem from '$lib/components/updates/NewTreesListItem.svelte';
-	import { loadTreesByDiameter } from '$lib/hooks';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
+	import NewTreesListItem from '$lib/components/updates/NewTreesListItem.svelte';
+	import { loadTreesByDiameter } from '$lib/hooks/loadTreesByDiameter';
 
 	const { loading, error, data, reload } = loadTreesByDiameter();
 

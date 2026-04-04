@@ -1,6 +1,6 @@
 <script lang="ts">
+	import { handleShareTree } from '$lib/hooks/shareTree';
 	import { ShareIcon } from '$lib/icons';
-	import { handleShareTree } from '$lib/hooks';
 
 	const { id } = $props<{ id: string }>();
 </script>

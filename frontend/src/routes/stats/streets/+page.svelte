@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { loadStreetStats } from '$lib/hooks';
-	import { routes } from '$lib/routes';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
+	import { loadStreetStats } from '$lib/hooks/loadStreetStats';
+	import { routes } from '$lib/routes';
 
 	const { loading, error, data, reload, reorder } = loadStreetStats();
 

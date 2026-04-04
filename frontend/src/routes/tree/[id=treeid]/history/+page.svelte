@@ -1,8 +1,8 @@
 <script lang="ts">
+	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import Title from '$lib/components/tree/Title.svelte';
 	import TreeTabs from '$lib/components/tree/TreeTabs.svelte';
-	import { loadTreeHistory } from '$lib/hooks';
-	import Dialog from '$lib/components/layout/Dialog.svelte';
+	import { loadTreeHistory } from '$lib/hooks/loadTreeHistory';
 	import ChangeList from './ChangeList.svelte';
 
 	const { data } = $props();

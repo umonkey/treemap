@@ -1,11 +1,11 @@
 <script lang="ts">
-	import SignInButton from '$lib/ui/sign-in-button/SignInButton.svelte';
-	import ProfileHeader from './ProfileHeader.svelte';
-	import { loadMe } from '$lib/hooks';
-	import { locale } from '$lib/locale';
 	import UserHeatMap from '$lib/components/UserHeatMap/index.svelte';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import Tabs from '$lib/components/profile/Tabs.svelte';
+	import { loadMe } from '$lib/hooks/loadMe';
+	import { locale } from '$lib/locale';
+	import SignInButton from '$lib/ui/sign-in-button/SignInButton.svelte';
+	import ProfileHeader from './ProfileHeader.svelte';
 
 	const { loading, error, data, statusCode, reload } = loadMe();
 

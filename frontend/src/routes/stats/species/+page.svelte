@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { loadSpeciesStats } from '$lib/hooks';
-	import { routes } from '$lib/routes';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
+	import { loadSpeciesStats } from '$lib/hooks/loadSpeciesStats';
+	import { routes } from '$lib/routes';
 
 	const { loading, error, data, reload, reorder } = loadSpeciesStats();
 
