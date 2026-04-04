@@ -1,11 +1,10 @@
-import { mapBus } from '$lib/buses';
+import { mapBus } from '$lib/buses/mapBus';
 import { DEFAULT_MAP_CENTER } from '$lib/constants';
 import { config } from '$lib/env';
 import { mapLayerStore } from '$lib/stores/mapLayerStore';
 import { mapStore } from '$lib/stores/mapStore';
 import type { ILatLng } from '$lib/types';
 import { Debouncer } from '$lib/utils/debounce';
-import { MapBouncer } from './MapBouncer';
 import {
 	type LngLat,
 	LngLat as LngLat2,
@@ -14,6 +13,7 @@ import {
 	type Map
 } from 'maplibre-gl';
 import { get } from 'svelte/store';
+import { MapBouncer } from './MapBouncer';
 
 const BASIC_LAYER = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${config.mapTilerKey}`;
 const LIGHT_LAYER = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json';

@@ -1,4 +1,4 @@
-import { mapBus } from '$lib/buses';
+import { mapBus } from '$lib/buses/mapBus';
 import { spreadDots } from '$lib/map';
 import type { ILatLng } from '$lib/types';
 

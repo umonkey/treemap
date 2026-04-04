@@ -24,7 +24,7 @@ This directory contains the static frontend for the tree mapping application.
 - Strictly follow the coding style described in [docs/Coding-Style.md](docs/Coding-Style.md).
 - Use Svelte 5 Runes ($state, $derived, $effect, $props) for new components.
 - Note: Some existing components might still use legacy Svelte syntax (e.g., `export let`); update them to Runes when possible.
-- After changing code, run `npm run check` and `npm run lint`.
+- After changing code, run `make format lint check`.
 
 ## Code Formatting
 

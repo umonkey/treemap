@@ -1,4 +1,4 @@
-import { mapBus } from '$lib/buses';
+import { mapBus } from '$lib/buses/mapBus';
 import type { ILatLng } from '$lib/types';
 
 type MoveFn = (ll: ILatLng) => void;

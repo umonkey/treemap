@@ -1,5 +1,5 @@
 import { getGeoJSON } from '$lib/api/trees';
-import { mapBus } from '$lib/buses';
+import { mapBus } from '$lib/buses/mapBus';
 import { showError } from '$lib/errors';
 import { searchStore } from '$lib/stores/searchStore';
 import { Debouncer } from '$lib/utils/debounce';

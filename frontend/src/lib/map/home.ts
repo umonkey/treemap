@@ -1,9 +1,9 @@
 // Returns map page route.
 // Depending on the search status, this does or does not add the search query.
 
-import { routes } from "$lib/routes";
-import { searchStore } from "$lib/stores/searchStore";
-import { get } from "svelte/store";
+import { routes } from '$lib/routes';
+import { searchStore } from '$lib/stores/searchStore';
+import { get } from 'svelte/store';
 
 export const mapHome = (): string => {
 	const query = get(searchStore);

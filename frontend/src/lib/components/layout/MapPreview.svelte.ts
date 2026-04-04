@@ -1,7 +1,7 @@
 import { getTreeComments } from '$lib/api/comments';
 import { getObservations } from '$lib/api/observations';
 import { getTree } from '$lib/api/trees';
-import { mapBus } from '$lib/buses';
+import { mapBus } from '$lib/buses/mapBus';
 import { menuBus } from '$lib/buses/menuBus';
 import { showError } from '$lib/errors';
 import { goto, routes } from '$lib/routes';
