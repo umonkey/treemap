@@ -122,14 +122,20 @@ impl TreeService {
 
         debug!("Found {} trees.", trees.len());
 
+        trees.retain(Self::is_visible);
+
         if let Some(search) = &request.search {
             let query = SearchQuery::from_string(search);
-            trees.retain(|t| query.r#match(t, user_id));
-        } else {
-            trees.retain(Self::is_visible);
+            for tree in trees.iter_mut() {
+                if !query.r#match(tree, user_id) {
+                    tree.state = "placeholder".to_string();
+                    tree.diameter = Some(1.0);
+                    tree.circumference = Some(0.0);
+                }
+            }
         }
 
-        debug!("Filtered {} trees.", trees.len());
+        debug!("Found {} visible trees.", trees.len());
 
         Ok(trees)
     }

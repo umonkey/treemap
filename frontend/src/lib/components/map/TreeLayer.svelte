@@ -20,6 +20,8 @@
 					'#ffd700',
 					'dead',
 					'#8b4513',
+					'placeholder',
+					'#808080',
 					'#228B22'
 				],
 				'circle-radius': [
@@ -31,7 +33,7 @@
 					22,
 					['*', ['get', 'crown'], 17.534]
 				],
-				'circle-opacity': ['match', ['get', 'state'], ['stump', 'gone'], 0.2, 0.5],
+				'circle-opacity': ['match', ['get', 'state'], ['stump', 'gone', 'placeholder'], 0.2, 0.5],
 				'circle-pitch-alignment': 'map',
 				'circle-pitch-scale': 'map'
 			}}
