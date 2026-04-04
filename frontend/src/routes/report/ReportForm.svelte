@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { Form, StreetInput, StreetReport } from '$lib/ui';
+	import Form from '$lib/ui/form/Form.svelte';
+	import StreetInput from '$lib/ui/street-input/StreetInput.svelte';
+	import StreetReport from '$lib/ui/street-report/StreetReport.svelte';
 	import { hooks } from './hooks';
 
 	type Props = {

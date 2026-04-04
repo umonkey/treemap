@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { locale } from '$lib/locale';
-	import { StreetViewPage } from '$lib/ui';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
+	import { locale } from '$lib/locale';
+	import StreetViewPage from '$lib/ui/street-view-page/StreetViewPage.svelte';
 
 	const { data } = $props();
 </script>

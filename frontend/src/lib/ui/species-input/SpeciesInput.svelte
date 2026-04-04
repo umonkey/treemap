@@ -9,8 +9,8 @@
 	import { loadSuggestedSpecies } from '$lib/hooks/loadSuggestedSpecies';
 	import { locale } from '$lib/locale';
 	import type { ISpecies } from '$lib/types';
-	import { FormElement } from '$lib/ui';
 	import SelectButton from '$lib/ui/SelectButton.svelte';
+	import FormElement from '$lib/ui/form-element/FormElement.svelte';
 	import { onMount } from 'svelte';
 
 	const { value = '', onChange } = $props<{

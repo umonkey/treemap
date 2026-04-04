@@ -1,10 +1,10 @@
 <script module>
-	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import { FileUploaderDisplay } from '$lib/ui';
-	import { fn } from '@storybook/test';
 	import IMAGE1 from '$lib/assets/explorer-mode-500px.jpeg';
 	import IMAGE2 from '$lib/assets/learning-mode-500px.jpeg';
 	import IMAGE3 from '$lib/assets/reports-mode-500px.jpeg';
+	import { defineMeta } from '@storybook/addon-svelte-csf';
+	import { fn } from '@storybook/test';
+	import FileUploaderDisplay from './FileUploaderDisplay.svelte';
 
 	const { Story } = defineMeta({
 		title: 'UI/FileUploaderDisplay',

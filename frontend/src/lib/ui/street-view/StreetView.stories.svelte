@@ -1,6 +1,6 @@
 <script module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import { StreetView } from '$lib/ui';
+	import StreetView from './StreetView.svelte';
 
 	const { Story } = defineMeta({
 		title: 'UI/StreetView',

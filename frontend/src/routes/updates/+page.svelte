@@ -1,7 +1,7 @@
 <script lang="ts">
-	import Tabs from '$lib/components/updates/Tabs.svelte';
-	import { AuthWrapper } from '$lib/ui';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
+	import Tabs from '$lib/components/updates/Tabs.svelte';
+	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
 </script>
 
 <Dialog title="Updates">

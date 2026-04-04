@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { SignInButton } from '$lib/ui';
 	import { isAuthenticated } from '$lib/stores/authStore';
+	import SignInButton from '../sign-in-button/SignInButton.svelte';
 
 	const { children } = $props();
 </script>

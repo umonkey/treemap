@@ -1,16 +1,14 @@
 <script lang="ts">
 	import TreeForm from '$lib/components/forms/TreeForm.svelte';
-	import {
-		CanopyInput,
-		CircumferenceInput,
-		HeightInput,
-		LocationInput,
-		NotesInput,
-		SpeciesInput,
-		StateInput,
-		StreetInput,
-		YearInput
-	} from '$lib/ui';
+	import CanopyInput from '$lib/ui/canopy-input/CanopyInput.svelte';
+	import CircumferenceInput from '$lib/ui/circumference-input/CircumferenceInput.svelte';
+	import HeightInput from '$lib/ui/height-input/HeightInput.svelte';
+	import LocationInput from '$lib/ui/location-input/LocationInput.svelte';
+	import NotesInput from '$lib/ui/notes-input/NotesInput.svelte';
+	import SpeciesInput from '$lib/ui/species-input/SpeciesInput.svelte';
+	import StateInput from '$lib/ui/state-input/StateInput.svelte';
+	import StreetInput from '$lib/ui/street-input/StreetInput.svelte';
+	import YearInput from '$lib/ui/year-input/YearInput.svelte';
 	import { hooks } from './hooks';
 
 	const { data } = $props();

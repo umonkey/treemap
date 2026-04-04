@@ -9,7 +9,8 @@
 	import { isAuthenticated } from '$lib/stores/authStore';
 	import { addUsers, getUser } from '$lib/stores/userStore';
 	import type { IObservation } from '$lib/types';
-	import { CheckInput, HelpButton } from '$lib/ui';
+	import CheckInput from '$lib/ui/check-input/CheckInput.svelte';
+	import HelpButton from '$lib/ui/help-button/HelpButton.svelte';
 	import { onMount } from 'svelte';
 
 	const { id } = $props<{ id: string }>();

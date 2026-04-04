@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { TextInput } from '$lib/ui';
+	import TextInput from '../text-input/TextInput.svelte';
 
 	const { value, onChange } = $props<{
 		value: string;

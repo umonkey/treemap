@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { BarChart } from '$lib/ui';
+	import BarChart from '../bar-chart/BarChart.svelte';
 	import { formatData } from './hooks';
 
 	type Props = {

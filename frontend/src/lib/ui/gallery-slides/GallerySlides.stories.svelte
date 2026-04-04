@@ -1,6 +1,6 @@
 <script module>
-	import { GallerySlides } from '$lib/ui';
 	import { defineMeta } from '@storybook/addon-svelte-csf';
+	import GallerySlides from './GallerySlides.svelte';
 
 	const { Story } = defineMeta({
 		title: 'UI/GallerySlides',

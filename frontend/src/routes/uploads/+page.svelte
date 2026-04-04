@@ -1,15 +1,16 @@
 <script lang="ts">
 	import AutoUploadCheckbox from '$lib/components/AutoUploadCheckbox.svelte';
-	import UploadRow from '$lib/components/uploads/UploadRow.svelte';
-	import { Buttons, Button } from '$lib/ui';
-	import { locale } from './lang';
-	import { onMount } from 'svelte';
-	import { processUploadQueue, restartUploadQueue } from '$lib/upload';
-	import { uploadStore } from '$lib/stores/upload';
-	import { hooks } from './hooks';
-	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import Tabs from '$lib/components/profile/Tabs.svelte';
+	import UploadRow from '$lib/components/uploads/UploadRow.svelte';
+	import { uploadStore } from '$lib/stores/upload';
+	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
+	import Button from '$lib/ui/button/Button.svelte';
+	import Buttons from '$lib/ui/buttons/Buttons.svelte';
+	import { processUploadQueue, restartUploadQueue } from '$lib/upload';
+	import { onMount } from 'svelte';
+	import { hooks } from './hooks';
+	import { locale } from './lang';
 
 	const { uploads } = hooks(onMount);
 </script>

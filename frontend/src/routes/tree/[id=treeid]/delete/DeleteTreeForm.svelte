@@ -4,7 +4,7 @@
 	import ChangeHistory from '$lib/components/tree/ChangeHistory.svelte';
 	import TreeSheet from '$lib/components/tree/TreeSheet.svelte';
 	import { locale } from '$lib/locale';
-	import { CommentInput } from '$lib/ui';
+	import CommentInput from '$lib/ui/comment-input/CommentInput.svelte';
 
 	const { id } = $props<{
 		id: string;

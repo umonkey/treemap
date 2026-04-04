@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Header } from '$lib/ui';
+	import Header from '$lib/ui/header/Header.svelte';
 	import type { Snippet } from 'svelte';
 
 	const { children, title, back, nopadding } = $props<{

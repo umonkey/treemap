@@ -13,7 +13,7 @@
 	import Properties from '$lib/components/tree/Properties.svelte';
 	import Title from '$lib/components/tree/Title.svelte';
 	import TreeTabs from '$lib/components/tree/TreeTabs.svelte';
-	import { CommentForm } from '$lib/ui';
+	import CommentForm from '$lib/ui/comment-form/CommentForm.svelte';
 
 	const id = $derived($page.params.id as string);
 

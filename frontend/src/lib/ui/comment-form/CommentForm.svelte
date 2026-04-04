@@ -1,7 +1,11 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
 	import { isAuthenticated } from '$lib/stores/authStore';
-	import { Button, Buttons, CommentInput, Form, SignInButton } from '$lib/ui';
+	import Button from '$lib/ui/button/Button.svelte';
+	import Buttons from '$lib/ui/buttons/Buttons.svelte';
+	import CommentInput from '$lib/ui/comment-input/CommentInput.svelte';
+	import Form from '$lib/ui/form/Form.svelte';
+	import SignInButton from '$lib/ui/sign-in-button/SignInButton.svelte';
 
 	const { onSubmit, authenticated } = $props<{
 		onSubmit: (message: string) => void;

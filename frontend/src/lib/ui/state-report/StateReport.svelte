@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { PieChart } from '$lib/ui';
+	import PieChart from '$lib/ui/pie-chart/PieChart.svelte';
 	import { formatData } from './hooks';
 
 	type Props = {

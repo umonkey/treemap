@@ -1,7 +1,7 @@
 <script module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import { FileUploader } from '$lib/ui';
 	import { fn } from '@storybook/test';
+	import FileUploader from './FileUploader.svelte';
 
 	const { Story } = defineMeta({
 		title: 'UI/FileUploader',

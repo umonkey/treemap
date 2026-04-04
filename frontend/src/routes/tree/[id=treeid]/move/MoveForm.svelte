@@ -1,7 +1,7 @@
 <script lang="ts">
-	import ChangeHistory from '$lib/components/tree/ChangeHistory.svelte';
 	import TreeForm from '$lib/components/forms/TreeForm.svelte';
-	import { LocationInput } from '$lib/ui';
+	import ChangeHistory from '$lib/components/tree/ChangeHistory.svelte';
+	import LocationInput from '$lib/ui/location-input/LocationInput.svelte';
 	import { editor } from './hooks';
 
 	const { id } = $props<{

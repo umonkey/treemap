@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { HelpButton } from '$lib/ui';
+	import HelpButton from '../help-button/HelpButton.svelte';
 
 	const { label, children, help, hint } = $props<{
 		children: Snippet;

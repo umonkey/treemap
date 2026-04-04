@@ -1,7 +1,7 @@
 <script lang="ts">
-	import ChangeHistory from '$lib/components/tree/ChangeHistory.svelte';
 	import TreeForm from '$lib/components/forms/TreeForm.svelte';
-	import { CircumferenceInput } from '$lib/ui';
+	import ChangeHistory from '$lib/components/tree/ChangeHistory.svelte';
+	import CircumferenceInput from '$lib/ui/circumference-input/CircumferenceInput.svelte';
 	import { girthState } from './hooks.svelte.ts';
 
 	const { data } = $props();

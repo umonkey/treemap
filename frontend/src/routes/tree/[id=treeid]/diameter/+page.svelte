@@ -1,7 +1,7 @@
 <script lang="ts">
-	import ChangeHistory from '$lib/components/tree/ChangeHistory.svelte';
 	import TreeForm from '$lib/components/forms/TreeForm.svelte';
-	import { CanopyInput } from '$lib/ui';
+	import ChangeHistory from '$lib/components/tree/ChangeHistory.svelte';
+	import CanopyInput from '$lib/ui/canopy-input/CanopyInput.svelte';
 	import { crownState } from './hooks.svelte.ts';
 
 	const { data } = $props();

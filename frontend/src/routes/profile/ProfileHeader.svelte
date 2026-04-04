@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { locale } from '$lib/locale';
-	import { Buttons, SignOutButton } from '$lib/ui';
 	import HEADER_IMAGE from '$lib/assets/header.jpg';
 	import UserPic from '$lib/components/layout/UserPic.svelte';
+	import { locale } from '$lib/locale';
+	import Buttons from '$lib/ui/buttons/Buttons.svelte';
+	import SignOutButton from '$lib/ui/sign-out-button/SignOutButton.svelte';
 
 	const { name, userpic, trees_count, updates_count, files_count } = $props<{
 		name: string;

@@ -7,7 +7,7 @@
 	import { searchStreets } from '$lib/api/streets';
 	import { locale } from '$lib/locale';
 	import type { IStreet } from '$lib/types';
-	import { FormElement } from '$lib/ui';
+	import FormElement from '$lib/ui/form-element/FormElement.svelte';
 
 	const { value = '', onChange } = $props<{
 		value?: string | null;

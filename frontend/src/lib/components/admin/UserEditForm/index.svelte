@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { IUser } from '$lib/types';
-	import { Button, Buttons } from '$lib/ui';
+	import Button from '$lib/ui/button/Button.svelte';
+	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import './styles.css';
 
 	let { user, onSave }: { user: IUser; onSave: (data: Partial<IUser>) => void } = $props();

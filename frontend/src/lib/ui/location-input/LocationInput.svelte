@@ -2,7 +2,8 @@
 	import MapIcon from '$lib/icons/MapIcon.svelte';
 	import { locale } from '$lib/locale';
 	import type { ILatLng } from '$lib/types';
-	import { FormElement, LocationPicker } from '$lib/ui';
+	import FormElement from '$lib/ui/form-element/FormElement.svelte';
+	import LocationPicker from '$lib/ui/location-picker/LocationPicker.svelte';
 
 	const { value, hint, label, onChange, open } = $props<{
 		value: ILatLng;

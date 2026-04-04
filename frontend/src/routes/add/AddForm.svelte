@@ -4,20 +4,18 @@
 	 * sends the tree to the API, then reports success to the container.
 	 */
 
-	import { hooks } from './hooks';
-	import { locale } from '$lib/locale';
 	import TreeForm from '$lib/components/forms/TreeForm.svelte';
+	import { locale } from '$lib/locale';
+	import { hooks } from './hooks';
 
-	import {
-		CanopyInput,
-		CircumferenceInput,
-		HeightInput,
-		LocationInput,
-		NotesInput,
-		SpeciesInput,
-		StateInput,
-		YearInput
-	} from '$lib/ui';
+	import CanopyInput from '$lib/ui/canopy-input/CanopyInput.svelte';
+	import CircumferenceInput from '$lib/ui/circumference-input/CircumferenceInput.svelte';
+	import HeightInput from '$lib/ui/height-input/HeightInput.svelte';
+	import LocationInput from '$lib/ui/location-input/LocationInput.svelte';
+	import NotesInput from '$lib/ui/notes-input/NotesInput.svelte';
+	import SpeciesInput from '$lib/ui/species-input/SpeciesInput.svelte';
+	import StateInput from '$lib/ui/state-input/StateInput.svelte';
+	import YearInput from '$lib/ui/year-input/YearInput.svelte';
 
 	const { lat, lng } = $props<{
 		lat: number | null;

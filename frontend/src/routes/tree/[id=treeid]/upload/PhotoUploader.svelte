@@ -1,7 +1,7 @@
 <script lang="ts">
 	import CameraIcon from '$lib/icons/CameraIcon.svelte';
 	import GalleryIcon from '$lib/icons/GalleryIcon.svelte';
-	import { FileUploaderDisplay } from '$lib/ui';
+	import FileUploaderDisplay from '$lib/ui/file-uploader-display/FileUploaderDisplay.svelte';
 	import { restartUploadQueue } from '$lib/upload';
 	import { onMount } from 'svelte';
 	import { load } from './PhotoUploader';

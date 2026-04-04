@@ -1,7 +1,7 @@
 <script module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
+	import Button from '../button/Button.svelte';
 	import Buttons from './Buttons.svelte';
-	import { Button } from '$lib/ui';
 
 	const { Story } = defineMeta({
 		title: 'UI/Buttons',

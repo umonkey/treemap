@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
-	import { NumberInput } from '$lib/ui';
+	import NumberInput from '$lib/ui/number-input/NumberInput.svelte';
 	import { hooks } from './hooks';
 
 	const { value, distance, autofocus, onChange } = $props<{

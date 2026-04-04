@@ -2,9 +2,11 @@
 	import { getStreetReportCSV } from '$lib/api/streets';
 	import { routes } from '$lib/routes';
 	import type { StreetReport } from '$lib/types';
-	import { HeightReport, StateReport } from '$lib/ui';
-	import { Button, Buttons } from '$lib/ui';
+	import Button from '$lib/ui/button/Button.svelte';
+	import Buttons from '$lib/ui/buttons/Buttons.svelte';
+	import HeightReport from '$lib/ui/height-report/HeightReport.svelte';
 	import SpeciesReport from '$lib/ui/species-report/SpeciesReport.svelte';
+	import StateReport from '$lib/ui/state-report/StateReport.svelte';
 
 	type Props = {
 		data: StreetReport;

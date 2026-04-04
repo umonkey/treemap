@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { uploadStore } from '$lib/stores/upload';
 	import { locale } from '$lib/locale';
-	import { CheckInput } from '$lib/ui';
+	import { uploadStore } from '$lib/stores/upload';
+	import CheckInput from '$lib/ui/check-input/CheckInput.svelte';
 
 	const onChange = (value: boolean) => {
 		uploadStore.update((store) => {

@@ -1,6 +1,11 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
-	import { AuthWrapper, Button, Buttons, FileUploader, Form, TextInput } from '$lib/ui';
+	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
+	import Button from '$lib/ui/button/Button.svelte';
+	import Buttons from '$lib/ui/buttons/Buttons.svelte';
+	import FileUploader from '$lib/ui/file-uploader/FileUploader.svelte';
+	import Form from '$lib/ui/form/Form.svelte';
+	import TextInput from '$lib/ui/text-input/TextInput.svelte';
 	import { hooks } from './hooks';
 
 	const {

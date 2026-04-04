@@ -5,7 +5,7 @@
 	import Title from '$lib/components/tree/Title.svelte';
 	import TreeTabs from '$lib/components/tree/TreeTabs.svelte';
 	import { loadTree } from '$lib/hooks/loadTree';
-	import { StreetView } from '$lib/ui';
+	import StreetView from '$lib/ui/street-view/StreetView.svelte';
 
 	const { id } = $props<{ id: string }>();
 	const { loading, data, error, reload } = loadTree();

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { GallerySlides } from '$lib/ui';
+	import GallerySlides from '$lib/ui/gallery-slides/GallerySlides.svelte';
 	import { hooks } from './Gallery';
 
 	const { id, initialImageId } = $props<{

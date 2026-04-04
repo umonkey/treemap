@@ -1,7 +1,7 @@
 <script lang="ts">
-	import ChangeHistory from '$lib/components/tree/ChangeHistory.svelte';
 	import TreeForm from '$lib/components/forms/TreeForm.svelte';
-	import { HeightInput } from '$lib/ui';
+	import ChangeHistory from '$lib/components/tree/ChangeHistory.svelte';
+	import HeightInput from '$lib/ui/height-input/HeightInput.svelte';
 	import { heightState } from './hooks.svelte.ts';
 
 	const { data } = $props();

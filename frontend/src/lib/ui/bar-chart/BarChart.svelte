@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Chart } from '$lib/ui';
+	import Chart from '../chart/Chart.svelte';
 	import { formatChartProps } from './hooks';
 
 	type Props = {

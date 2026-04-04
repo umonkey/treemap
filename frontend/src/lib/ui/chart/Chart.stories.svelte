@@ -1,6 +1,6 @@
 <script module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import { Chart } from '$lib/ui';
+	import Chart from './Chart.svelte';
 
 	const { Story } = defineMeta({
 		title: 'UI/Chart',

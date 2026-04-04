@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
-	import { HelpButton } from '$lib/ui';
 	import SelectButton from '$lib/ui/SelectButton.svelte';
+	import HelpButton from '$lib/ui/help-button/HelpButton.svelte';
 
 	const {
 		value,

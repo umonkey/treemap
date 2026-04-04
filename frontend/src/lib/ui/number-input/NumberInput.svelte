@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { FormElement } from '$lib/ui';
+	import FormElement from '$lib/ui/form-element/FormElement.svelte';
 
 	const {
 		value,

@@ -3,7 +3,7 @@
 	import UploadIcon from '$lib/icons/UploadIcon.svelte';
 	import { routes } from '$lib/routes';
 	import type { ITreeFile } from '$lib/types';
-	import { LazyImage } from '$lib/ui';
+	import LazyImage from '$lib/ui/lazy-image/LazyImage.svelte';
 
 	const { loading, error, mapper, tree_id, files } = $props<{
 		loading: boolean;

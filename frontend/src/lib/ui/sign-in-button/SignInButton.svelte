@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { config } from '$lib/env';
 	import { locale } from '$lib/locale';
-	import { Button } from '$lib/ui';
+	import Button from '$lib/ui/button/Button.svelte';
 
 	const onSignIn = () => {
 		const qs = new URLSearchParams({

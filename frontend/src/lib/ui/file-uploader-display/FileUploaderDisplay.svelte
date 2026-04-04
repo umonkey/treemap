@@ -3,7 +3,7 @@
 	import CircumferenceIcon from '$lib/icons/CircumferenceIcon.svelte';
 	import SpinnerIcon from '$lib/icons/SpinnerIcon.svelte';
 	import { routes } from '$lib/routes';
-	import { LazyImage } from '$lib/ui';
+	import LazyImage from '$lib/ui/lazy-image/LazyImage.svelte';
 
 	type Item = {
 		src: string;

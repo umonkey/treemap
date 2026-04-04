@@ -11,7 +11,8 @@
 	import TagIcon from '$lib/icons/TagIcon.svelte';
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
-	import { Button, Buttons } from '$lib/ui';
+	import Button from '$lib/ui/button/Button.svelte';
+	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import { formatSpecies, formatState, shortDetails } from '$lib/utils/trees';
 	import { onMount } from 'svelte';
 	import { previewState } from './MapPreview.svelte.ts';

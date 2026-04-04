@@ -1,6 +1,6 @@
 <script module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
-	import { SignInButton } from '$lib/ui';
+	import SignInButton from './SignInButton.svelte';
 
 	const { Story } = defineMeta({
 		title: 'UI/SignInButton',
