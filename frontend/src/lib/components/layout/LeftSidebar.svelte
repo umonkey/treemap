@@ -2,6 +2,7 @@
 	import Logo from '$lib/assets/trees-of-yerevan.svelte';
 	import UserPic from '$lib/components/layout/UserPic.svelte';
 	import { BellIcon, CloseIcon, HomeIcon, SearchIcon, SpinnerIcon } from '$lib/icons';
+	import ChartIcon from '$lib/icons/ChartIcon.svelte';
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
 	import { authStore } from '$lib/stores/authStore';
@@ -44,7 +45,7 @@
 			</li>
 			<li>
 				<a href="/stats" onclick={onClose}>
-					<span class="icon"><BellIcon /></span>
+					<span class="icon"><ChartIcon /></span>
 					<span>{locale.sideReports()}</span>
 				</a>
 			</li>
