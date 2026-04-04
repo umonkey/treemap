@@ -1,19 +1,19 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
-	import { pageState } from './hooks.svelte.ts';
 	import { formatSpecies } from '$lib/utils/trees';
+	import { pageState } from './hooks.svelte.ts';
 
+	import { page } from '$app/stores';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
+	import Observations from '$lib/components/observation/Observations.svelte';
+	import Gallery from '$lib/components/photos/Gallery.svelte';
 	import Actions from '$lib/components/tree/Actions.svelte';
 	import Comment from '$lib/components/tree/Comment.svelte';
 	import Description from '$lib/components/tree/Description.svelte';
-	import Observations from '$lib/components/observation/Observations.svelte';
 	import Properties from '$lib/components/tree/Properties.svelte';
 	import Title from '$lib/components/tree/Title.svelte';
-	import Gallery from '$lib/components/photos/Gallery.svelte';
 	import TreeTabs from '$lib/components/tree/TreeTabs.svelte';
-	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import { CommentForm } from '$lib/ui';
-	import { page } from '$app/stores';
 
 	const id = $derived($page.params.id as string);
 
@@ -34,7 +34,10 @@
 
 			<TreeTabs tree={pageState.tree.id} active="details" />
 
-			<Gallery id={pageState.tree.id} />
+			<Gallery
+				id={pageState.tree.id}
+				initialImageId={$page.url.searchParams.get('image') || undefined}
+			/>
 			<Actions tree={pageState.tree} />
 			<Properties tree={pageState.tree} />
 			<Observations observation={pageState.observation || null} />

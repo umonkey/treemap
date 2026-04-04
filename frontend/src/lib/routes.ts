@@ -1,6 +1,6 @@
 export { goto } from '$app/navigation';
-import type { ILatLng } from '$lib/types';
 import { config } from '$lib/env';
+import type { ILatLng } from '$lib/types';
 
 type Params = {
 	[key: string]: string | undefined | null;
@@ -64,7 +64,7 @@ export const routes = {
 		}),
 	treeDead: (id: string) => `/tree/${id}/dead`,
 	treeDelete: (id: string) => `/tree/${id}/delete`,
-	treeDetails: (id: string) => `/tree/${id}`,
+	treeDetails: (id: string, imageId?: string) => build(`/tree/${id}`, { image: imageId }),
 	treeStreetView: (id: string) => `/tree/${id}/360`,
 	treeDiameter: (id: string) => `/tree/${id}/diameter`,
 	treeCircumference: (id: string) => `/tree/${id}/circumference`,

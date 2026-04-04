@@ -25,5 +25,5 @@
 	error={galleryState.error}
 	mapper={true}
 	tree_id={id}
-	images={galleryState.images}
+	files={galleryState.files}
 />

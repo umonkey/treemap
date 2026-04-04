@@ -1,12 +1,13 @@
 <script module>
-	import { defineMeta } from '@storybook/addon-svelte-csf';
 	import { GallerySlides } from '$lib/ui';
+	import { defineMeta } from '@storybook/addon-svelte-csf';
 
 	const { Story } = defineMeta({
 		title: 'UI/GallerySlides',
 		component: GallerySlides,
 		argTypes: {
-			slides: { control: 'object' }
+			slides: { control: 'object' },
+			initialImageId: { control: 'text' }
 		}
 	});
 </script>
@@ -16,11 +17,13 @@
 	args={{
 		slides: [
 			{
+				id: '1',
 				small: 'https://placecats.com/neo/500/500',
 				large: 'https://placecats.com/neo/500/500',
 				label: 'First Image'
 			},
 			{
+				id: '2',
 				small: 'https://placecats.com/millie/500/500',
 				large: 'https://placecats.com/millie/500/500',
 				label: 'Second Image'
@@ -39,11 +42,13 @@
 	args={{
 		slides: [
 			{
+				id: '1',
 				small: 'https://placecats.com/neo/500/500',
 				large: 'https://placecats.com/neo/500/500',
 				label: 'First Image'
 			},
 			{
+				id: '2',
 				small: 'https://placecats.com/millie/500/500',
 				large: 'https://placecats.com/millie/500/500',
 				label: 'Second Image'

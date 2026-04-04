@@ -2,14 +2,15 @@
 	import DefaultImage from '$lib/assets/tree.jpg';
 	import { UploadIcon } from '$lib/icons';
 	import { routes } from '$lib/routes';
+	import type { ITreeFile } from '$lib/types';
 	import { LazyImage } from '$lib/ui';
 
-	const { loading, error, mapper, tree_id, images } = $props<{
+	const { loading, error, mapper, tree_id, files } = $props<{
 		loading: boolean;
 		error?: string;
 		mapper: boolean;
 		tree_id: string;
-		images: string[];
+		files: ITreeFile[];
 	}>();
 </script>
 
@@ -34,15 +35,19 @@
 				</div>
 			{/if}
 
-			{#each images as image}
+			{#each files as file}
 				<div class="tile">
-					<a href={routes.treeDetails(tree_id)} aria-labelledby="thumbnail">
-						<LazyImage src={image} alt="See how good is this tree." fallback={DefaultImage} />
+					<a href={routes.treeDetails(tree_id, file.id)} aria-labelledby="thumbnail">
+						<LazyImage
+							src={routes.file(file.small_id)}
+							alt="See how good is this tree."
+							fallback={DefaultImage}
+						/>
 					</a>
 				</div>
 			{/each}
 
-			{#if images.length === 0 && !mapper}
+			{#if files.length === 0 && !mapper}
 				<div class="tile">
 					<a href={routes.treeDetails(tree_id)} title="No photos of this tree.">
 						<LazyImage src={DefaultImage} alt="No photos for this tree." fallback={DefaultImage} />

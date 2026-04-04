@@ -1,3 +1,4 @@
+import type { IGalleryItem } from '$lib/types';
 import { get, writable } from 'svelte/store';
 
 export const hooks = () => {
@@ -29,5 +30,27 @@ export const hooks = () => {
 		scroll(40);
 	};
 
-	return { handleExpand, handleLeft, handleRight, element };
+	const scrollToId = (id: string, items: IGalleryItem[]) => {
+		const em = get(element);
+
+		if (em === null) {
+			return;
+		}
+
+		const index = items.findIndex((s) => s.id === id);
+		if (index === -1) {
+			return;
+		}
+
+		const slideElement = em.children[index] as HTMLElement;
+		if (slideElement) {
+			slideElement.scrollIntoView({
+				behavior: 'instant',
+				block: 'nearest',
+				inline: 'start'
+			});
+		}
+	};
+
+	return { handleExpand, handleLeft, handleRight, element, scrollToId };
 };

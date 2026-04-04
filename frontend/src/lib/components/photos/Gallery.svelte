@@ -1,8 +1,11 @@
 <script lang="ts">
-	import { hooks } from './Gallery';
 	import { GallerySlides } from '$lib/ui';
+	import { hooks } from './Gallery';
 
-	const { id } = $props<{ id: string }>();
+	const { id, initialImageId } = $props<{
+		id: string;
+		initialImageId?: string;
+	}>();
 	const { loading, error, slides, reload } = hooks();
 
 	$effect(() => reload(id));
@@ -14,7 +17,7 @@
 	{:else if $error}
 		<p>{$error}</p>
 	{:else}
-		<GallerySlides slides={$slides} />
+		<GallerySlides slides={$slides} {initialImageId} />
 	{/if}
 </div>
 

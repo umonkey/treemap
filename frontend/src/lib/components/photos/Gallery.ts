@@ -24,6 +24,7 @@ const added_at = (file: ITreeFile) => {
 const formatSlides = (files: ITreeFile[]): IGalleryItem[] => {
 	const items = files.map((file: ITreeFile): IGalleryItem => {
 		return {
+			id: file.id,
 			small: routes.file(file.small_id),
 			large: routes.file(file.source_id ?? file.large_id),
 			label: added_at(file)

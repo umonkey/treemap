@@ -222,6 +222,7 @@ export interface IRawError {
 }
 
 export interface IGalleryItem {
+	id: string;
 	small: string;
 	large: string;
 	label: string;

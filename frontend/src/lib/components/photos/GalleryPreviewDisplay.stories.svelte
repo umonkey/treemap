@@ -10,7 +10,7 @@
 			error: { control: 'text' },
 			mapper: { control: 'boolean' },
 			tree_id: { control: 'text' },
-			images: { control: 'object' }
+			files: { control: 'object' }
 		}
 	});
 </script>
@@ -22,7 +22,10 @@
 		error: '',
 		mapper: false,
 		tree_id: 'tree1',
-		images: ['https://placecats.com/neo/500/500', 'https://placecats.com/millie/500/500']
+		files: [
+			{ id: '1', small_id: '1', large_id: '1' },
+			{ id: '2', small_id: '2', large_id: '2' }
+		]
 	}}
 />
 
@@ -33,7 +36,10 @@
 		error: '',
 		mapper: true,
 		tree_id: 'tree1',
-		images: ['https://placecats.com/neo/500/500', 'https://placecats.com/millie/500/500']
+		files: [
+			{ id: '1', small_id: '1', large_id: '1' },
+			{ id: '2', small_id: '2', large_id: '2' }
+		]
 	}}
 />
 
@@ -44,7 +50,7 @@
 		error: '',
 		mapper: false,
 		tree_id: 'tree1',
-		images: []
+		files: []
 	}}
 />
 
@@ -55,7 +61,7 @@
 		error: '',
 		mapper: true,
 		tree_id: 'tree1',
-		images: []
+		files: []
 	}}
 />
 
@@ -66,6 +72,6 @@
 		error: '',
 		mapper: false,
 		tree_id: 'tree1',
-		images: []
+		files: []
 	}}
 />

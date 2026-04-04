@@ -4,14 +4,21 @@
 	import type { IGalleryItem } from '$lib/types';
 	import { hooks } from './hooks';
 
-	const { slides } = $props<{
+	const { slides, initialImageId } = $props<{
 		slides: IGalleryItem[];
+		initialImageId?: string;
 	}>();
 
-	const { handleExpand, handleLeft, handleRight, element } = hooks();
+	const { handleExpand, handleLeft, handleRight, element, scrollToId } = hooks();
 
 	let contain = $state(false);
 	const toggleContain = () => (contain = !contain);
+
+	$effect(() => {
+		if (initialImageId && slides.length > 0) {
+			scrollToId(initialImageId, slides);
+		}
+	});
 </script>
 
 <div class="slides" class:contain bind:this={$element}>
