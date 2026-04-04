@@ -40,6 +40,7 @@
 
 		<CircleLayer
 			id="tree-trunks"
+			filter={['>', ['get', 'trunk'], 0]}
 			paint={{
 				'circle-color': '#000000',
 				'circle-radius': [

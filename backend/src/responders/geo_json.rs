@@ -10,8 +10,6 @@ pub fn respond_with_trees(trees: &[Tree]) -> HttpResponse {
         .map(|tree| {
             let crown = if tree.is_existing() {
                 tree.diameter.filter(|&d| d > 0.0).unwrap_or(4.0)
-            } else if tree.state == "gone" {
-                5.0
             } else {
                 1.0
             };
@@ -20,7 +18,7 @@ pub fn respond_with_trees(trees: &[Tree]) -> HttpResponse {
                 .circumference
                 .filter(|&c| c > 0.0)
                 .map(|c| c / PI)
-                .unwrap_or(0.4);
+                .unwrap_or(0.0);
 
             json!({
                 "type": "Feature",
