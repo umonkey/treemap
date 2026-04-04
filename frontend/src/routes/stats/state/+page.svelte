@@ -1,20 +1,18 @@
 <script lang="ts">
 	import Dialog from '$lib/components/layout/Dialog.svelte';
-	import { loadStateStats } from '$lib/hooks/loadStateStats';
 	import { routes } from '$lib/routes';
-
-	const { loading, error, data, reload } = loadStateStats();
+	import { pageState } from './page.svelte';
 
 	$effect(() => {
-		reload();
+		pageState.reload();
 	});
 </script>
 
 <Dialog title="Trees by Status">
-	{#if $loading}
+	{#if pageState.loading}
 		<p>Loading...</p>
-	{:else if $error}
-		<p>{$error.description}</p>
+	{:else if pageState.error}
+		<p>{pageState.error.description}</p>
 	{:else}
 		<table>
 			<thead>
@@ -24,7 +22,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each $data as { state, count }}
+				{#each pageState.data as { state, count }}
 					<tr>
 						{#if state}
 							<td class="l"

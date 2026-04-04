@@ -2,39 +2,37 @@
 	import UserHeatMap from '$lib/components/UserHeatMap/index.svelte';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import Tabs from '$lib/components/profile/Tabs.svelte';
-	import { loadMe } from '$lib/hooks/loadMe';
 	import { locale } from '$lib/locale';
 	import SignInButton from '$lib/ui/sign-in-button/SignInButton.svelte';
 	import ProfileHeader from './ProfileHeader.svelte';
-
-	const { loading, error, data, statusCode, reload } = loadMe();
+	import { pageState } from './page.svelte';
 
 	$effect(() => {
-		reload();
+		pageState.reload();
 	});
 </script>
 
 <Dialog title={locale.profileTitle()}>
 	<Tabs active="profile" />
 
-	{#if $loading}
+	{#if pageState.loading}
 		...
-	{:else if $statusCode === 401}
+	{:else if pageState.statusCode === 401}
 		<div class="container signedOut">
 			<p>{locale.profileSignInPrompt()}</p>
 			<SignInButton />
 		</div>
-	{:else if $error}
-		<p>{$error.description}</p>
-	{:else if $data}
+	{:else if pageState.error}
+		<p>{pageState.error.description}</p>
+	{:else if pageState.data}
 		<ProfileHeader
-			name={$data.name}
-			userpic={$data.picture}
-			trees_count={$data.trees_count}
-			updates_count={$data.updates_count}
-			files_count={$data.files_count}
+			name={pageState.data.name}
+			userpic={pageState.data.picture}
+			trees_count={pageState.data.trees_count}
+			updates_count={pageState.data.updates_count}
+			files_count={pageState.data.files_count}
 		/>
 
-		<UserHeatMap id={$data.id} />
+		<UserHeatMap id={pageState.data.id} />
 	{/if}
 </Dialog>

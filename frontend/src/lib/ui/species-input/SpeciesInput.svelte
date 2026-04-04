@@ -6,12 +6,12 @@
 	 */
 
 	import { searchSpecies } from '$lib/api/species';
-	import { loadSuggestedSpecies } from '$lib/hooks/loadSuggestedSpecies';
 	import { locale } from '$lib/locale';
 	import type { ISpecies } from '$lib/types';
 	import SelectButton from '$lib/ui/SelectButton.svelte';
 	import FormElement from '$lib/ui/form-element/FormElement.svelte';
 	import { onMount } from 'svelte';
+	import { loadSuggestedSpecies } from './hooks';
 
 	const { value = '', onChange } = $props<{
 		value?: string | null;

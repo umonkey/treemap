@@ -1,30 +1,28 @@
 <script lang="ts">
 	import Dialog from '$lib/components/layout/Dialog.svelte';
-	import { loadStreetStats } from '$lib/hooks/loadStreetStats';
 	import { routes } from '$lib/routes';
-
-	const { loading, error, data, reload, reorder } = loadStreetStats();
+	import { pageState } from './page.svelte';
 
 	$effect(() => {
-		reload();
+		pageState.reload();
 	});
 </script>
 
 <Dialog title="Trees by Address">
-	{#if $loading}
+	{#if pageState.loading}
 		<p>Loading...</p>
-	{:else if $error}
-		<p>{$error.description}</p>
+	{:else if pageState.error}
+		<p>{pageState.error.description}</p>
 	{:else}
 		<table>
 			<thead>
 				<tr>
-					<th class="l" onclick={() => reorder('address')}>Address</th>
-					<th class="r" onclick={() => reorder('count')}>Count</th>
+					<th class="l" onclick={() => pageState.reorder('address')}>Address</th>
+					<th class="r" onclick={() => pageState.reorder('count')}>Count</th>
 				</tr>
 			</thead>
 			<tbody>
-				{#each $data as { address, count }}
+				{#each pageState.data as { address, count }}
 					<tr>
 						<td class="l"><a href={routes.searchAddress(address)}>{address}</a></td>
 						<td class="r">{count}</td>

@@ -1,25 +1,23 @@
 <script lang="ts">
 	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import NewTreesListItem from '$lib/components/updates/NewTreesListItem.svelte';
-	import { loadSpeciesMismatch } from '$lib/hooks/loadSpeciesMismatch';
-
-	const { loading, error, data, reload } = loadSpeciesMismatch();
+	import { pageState } from './page.svelte';
 
 	$effect(() => {
-		reload();
+		pageState.reload();
 	});
 </script>
 
 <Dialog title="Species Mismatches">
-	{#if $loading}
+	{#if pageState.loading}
 		<p>Loading...</p>
-	{:else if $error}
-		<p>{$error.description}</p>
-	{:else if $data}
-		{#if $data.length === 0}
+	{:else if pageState.error}
+		<p>{pageState.error.description}</p>
+	{:else if pageState.data}
+		{#if pageState.data.length === 0}
 			<p>There are no wongly identified species, all good.</p>
 		{:else}
-			{#each $data as tree}
+			{#each pageState.data as tree}
 				<NewTreesListItem {tree} />
 			{/each}
 		{/if}

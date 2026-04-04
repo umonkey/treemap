@@ -1,12 +1,10 @@
 <script lang="ts">
 	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import NewTreesListItem from '$lib/components/updates/NewTreesListItem.svelte';
-	import { loadTreesByCircumference } from '$lib/hooks/loadTreesByCircumference';
-
-	const { loading, error, data, reload } = loadTreesByCircumference();
+	import { pageState } from './page.svelte';
 
 	$effect(() => {
-		reload();
+		pageState.reload();
 	});
 
 	const format = (value: number | null): string => {
@@ -19,12 +17,12 @@
 </script>
 
 <Dialog title="Thickest Trees">
-	{#if $loading}
+	{#if pageState.loading}
 		<p>Loading...</p>
-	{:else if $error}
-		<p>{$error.description}</p>
+	{:else if pageState.error}
+		<p>{pageState.error.description}</p>
 	{:else}
-		{#each $data as tree}
+		{#each pageState.data as tree}
 			<NewTreesListItem {tree} extra={format(tree.circumference)} />
 		{/each}
 	{/if}

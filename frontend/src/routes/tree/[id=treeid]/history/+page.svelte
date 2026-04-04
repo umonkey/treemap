@@ -2,28 +2,32 @@
 	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import Title from '$lib/components/tree/Title.svelte';
 	import TreeTabs from '$lib/components/tree/TreeTabs.svelte';
-	import { loadTreeHistory } from '$lib/hooks/loadTreeHistory';
 	import ChangeList from './ChangeList.svelte';
+	import { pageState } from './page.svelte';
 
 	const { data } = $props();
-	const { loading, tree, changes, error, reload } = loadTreeHistory();
 
 	$effect(() => {
-		reload(data.id);
+		pageState.reload(data.id);
 	});
 </script>
 
 <Dialog title="Tree History" nopadding>
-	{#if $loading}
+	{#if pageState.loading}
 		<p>Loading...</p>
-	{:else if $error}
-		<p>Error loading tree: {$error.description}</p>
-	{:else if $tree}
-		<Title id={$tree.id} title={$tree.species} address={$tree.address} padded />
-		<TreeTabs tree={$tree.id} active="history" />
+	{:else if pageState.error}
+		<p>Error loading tree: {pageState.error.description}</p>
+	{:else if pageState.tree}
+		<Title
+			id={pageState.tree.id}
+			title={pageState.tree.species}
+			address={pageState.tree.address}
+			padded
+		/>
+		<TreeTabs tree={pageState.tree.id} active="history" />
 
 		<div class="padded">
-			<ChangeList changes={$changes} />
+			<ChangeList changes={pageState.changes} />
 		</div>
 	{/if}
 </Dialog>

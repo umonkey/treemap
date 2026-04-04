@@ -1,15 +1,3 @@
-// This hook should be used to get information on a specific single tree.
-//
-// The code returns the data from the store, if available.  If not, the data
-// is requested from the API, added to the store for future use, then returned.
-//
-// Usage in a component:
-//
-// ```javascript
-// const { loading, data, error, reload } = loadTree();
-// $effect(() => reload(id));
-// ```
-
 import { getTree } from '$lib/api/trees';
 import type { IError, ISingleTree } from '$lib/types';
 import { writable } from 'svelte/store';
