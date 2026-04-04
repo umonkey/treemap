@@ -7,12 +7,11 @@
 	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
-	import { processUploadQueue, restartUploadQueue } from '$lib/upload';
 	import { onMount } from 'svelte';
-	import { hooks } from './hooks';
 	import { locale } from './lang';
+	import { pageState } from './page.svelte';
 
-	const { uploads } = hooks(onMount);
+	onMount(pageState.onMount);
 </script>
 
 <Dialog title={locale.uploadsTitle()}>
@@ -29,18 +28,18 @@
 			{/if}
 		</p>
 
-		{#if $uploads.length > 0}
+		{#if pageState.uploads.length > 0}
 			<Buttons>
-				<Button type="button" onClick={processUploadQueue} nowrap>
+				<Button type="button" onClick={pageState.processQueue} nowrap>
 					{locale.uploadsStart()}
 				</Button>
-				<Button type="secondary" onClick={restartUploadQueue} nowrap>
+				<Button type="secondary" onClick={pageState.restartQueue} nowrap>
 					{locale.uploadsRestart()}
 				</Button>
 			</Buttons>
 
 			<div class="uploads-grid">
-				{#each $uploads as upload (upload.id)}
+				{#each pageState.uploads as upload (upload.id)}
 					<UploadRow {upload} />
 				{/each}
 			</div>

@@ -47,7 +47,7 @@ import Dialog from '$lib/components/layout/Dialog.svelte';
 
 Components live in the `src/lib/components` folder, each component in its own folder.
 
-The markup of the component stays in the `.svelte` file, the styles are embedded in the component file, and the TypeScript code goes to the `.svelte.ts` file. The `.svelte.ts` file normally has a state class `PageState` which uses `$state` as needed, and exports a static instance of it named `pageState`.
+The markup of the component stays in the `.svelte` file, the styles are embedded in the component file, and the TypeScript code goes to the `.svelte.ts` file. The `.svelte.ts` file normally has a state class `ComponentState` which uses `$state` as needed, and exports a static instance of it named `componentState`.
 
 To extract page parameters, use the page store like this:
 
@@ -57,6 +57,14 @@ const id = $derived($page.params.id as string);
 ```
 
 Components are being imported from their own `.svelte` files. Avoid using the deprecated `src/lib/components/index.ts`, as it breaks the chunking.
+
+## Page structure
+
+Pages follow the same principles as components:
+
+- Avoid using `+page.ts` unless absolutely necessary.
+- Use `page.svelte.ts` to store all page logic. The code should be in the `PageState` class, a static instance is exported as `pageState`.
+- Page arguments and parameters are read from the `page` store.
 
 ## Error handling
 

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import AutoUploadCheckbox from '$lib/components/AutoUploadCheckbox.svelte';
 	import TreeForm from '$lib/components/forms/TreeForm.svelte';
 	import { locale } from '$lib/locale';
 	import { goto, routes } from '$lib/routes';
@@ -27,5 +28,6 @@
 >
 	<p>{locale.photoIntro()}</p>
 	<PhotoUploader treeId={pageState.treeId} onChange={pageState.handleChange} />
+	<AutoUploadCheckbox />
 	<UploadForm />
 </TreeForm>
