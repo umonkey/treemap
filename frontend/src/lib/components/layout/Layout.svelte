@@ -1,20 +1,17 @@
 <script lang="ts">
-	import MapPreview from '$lib/components/layout/MapPreview.svelte';
-	import LeftSidebar from '$lib/components/layout/LeftSidebar.svelte';
-	import MobileNav from '$lib/components/layout/MobileNav.svelte';
-	import MapLibre from '$lib/components/map/MapLibre.svelte';
-	import AddTree from '$lib/components/map/AddTree.svelte';
-	import AddRow from '$lib/components/map/AddRow.svelte';
-	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
+import LeftSidebar from "$lib/components/layout/LeftSidebar.svelte";
+import MapPreview from "$lib/components/layout/MapPreview.svelte";
+import MobileNav from "$lib/components/layout/MobileNav.svelte";
+import AddRow from "$lib/components/map/AddRow.svelte";
+import AddTree from "$lib/components/map/AddTree.svelte";
+import MapLibre from "$lib/components/map/MapLibre.svelte";
+import TreeContextMenu from "$lib/components/tree/TreeContextMenu.svelte";
 
-	const { children } = $props();
+const { children } = $props();
 </script>
 
 <div class="layout">
-	<aside class="left">
-		<LeftSidebar />
-		<MapPreview />
-	</aside>
+	<aside class="left"></aside>
 
 	<main>
 		<MapLibre>
@@ -25,6 +22,8 @@
 </div>
 
 {@render children()}
+<MapPreview />
+<LeftSidebar />
 <MobileNav />
 <TreeContextMenu />
 
@@ -59,18 +58,7 @@
 		}
 	}
 
-	/** Make sure tree preview and menus overlap the map. **/
-	aside {
-		z-index: var(--z-sidebar);
-	}
-
 	main {
 		z-index: var(--z-map);
-	}
-
-	@media screen and (max-width: 600px) {
-		aside {
-			z-index: var(--z-mobile-sidebar);
-		}
 	}
 </style>

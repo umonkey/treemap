@@ -1,17 +1,30 @@
 <script lang="ts">
-	import { BellIcon, HomeIcon, SearchIcon, UserIcon, SpinnerIcon } from '$lib/icons';
-	import { routes } from '$lib/routes';
-	import { authStore, isAuthenticated } from '$lib/stores/authStore';
-	import { uploadStore } from '$lib/stores/upload';
-	import UserPic from '$lib/components/layout/UserPic.svelte';
+import UserPic from "$lib/components/layout/UserPic.svelte";
+import {
+	BellIcon,
+	HomeIcon,
+	SearchIcon,
+	SpinnerIcon,
+	UserIcon,
+} from "$lib/icons";
+import { routes } from "$lib/routes";
+import { authStore, isAuthenticated } from "$lib/stores/authStore";
+import { mobileSidebarStore } from "$lib/stores/mobileSidebarStore";
+import { uploadStore } from "$lib/stores/upload";
+
+const toggleSidebar = () => {
+	mobileSidebarStore.set(true);
+};
 </script>
 
 <nav class="mobile">
 	<a href="/"><div><HomeIcon /></div></a>
 	<a href="/search"><div><SearchIcon /></div></a>
 	<a href={routes.treeUpdates()}><div><BellIcon /></div></a>
-	<a href="/profile"
-		><div>
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<div class="nav-item" onclick={toggleSidebar}>
+		<div>
 			{#if $uploadStore.uploading}
 				<SpinnerIcon />
 			{:else if $isAuthenticated}
@@ -22,8 +35,8 @@
 			{#if $uploadStore.pending > 0}
 				<span class="badge">{$uploadStore.pending}</span>
 			{/if}
-		</div></a
-	>
+		</div>
+	</div>
 </nav>
 
 <style>
@@ -44,10 +57,12 @@
 		z-index: var(--z-mobile-nav);
 	}
 
-	a {
+	a,
+	.nav-item {
 		display: block;
 		align-content: center;
 		color: inherit;
+		cursor: pointer;
 
 		line-height: 24px;
 

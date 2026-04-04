@@ -1,49 +1,64 @@
 <script lang="ts">
-	import { locale } from '$lib/locale';
-	import { routes } from '$lib/routes';
-	import { BellIcon, HomeIcon, SearchIcon, SpinnerIcon } from '$lib/icons';
-	import { uploadStore } from '$lib/stores/upload';
-	import { isSidebarVisible, mobileSidebarStore } from '$lib/stores/mobileSidebarStore';
-	import { authStore } from '$lib/stores/authStore';
-	import Logo from '$lib/assets/trees-of-yerevan.svelte';
-	import UserPic from '$lib/components/layout/UserPic.svelte';
+import Logo from "$lib/assets/trees-of-yerevan.svelte";
+import UserPic from "$lib/components/layout/UserPic.svelte";
+import {
+	BellIcon,
+	CloseIcon,
+	HomeIcon,
+	SearchIcon,
+	SpinnerIcon,
+} from "$lib/icons";
+import { locale } from "$lib/locale";
+import { routes } from "$lib/routes";
+import { authStore } from "$lib/stores/authStore";
+import {
+	isSidebarVisible,
+	mobileSidebarStore,
+} from "$lib/stores/mobileSidebarStore";
+import { uploadStore } from "$lib/stores/upload";
 
-	const onClose = () => {
-		mobileSidebarStore.set(false);
-	};
+const onClose = () => {
+	mobileSidebarStore.set(false);
+};
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <div class="overlay" class:visible={!!$isSidebarVisible} onclick={onClose}>
-	<div class="canvas">
+	<div class="canvas" onclick={(e) => e.stopPropagation()}>
+		<div class="mobile-header">
+			<button class="close-btn" onclick={onClose}>
+				<CloseIcon />
+			</button>
+		</div>
+
 		<ul>
 			<li>
-				<a href="/">
+				<a href="/" onclick={onClose}>
 					<span class="icon"><HomeIcon /></span>
 					<span>{locale.sideHome()}</span>
 				</a>
 			</li>
 			<li>
-				<a href="/search">
+				<a href="/search" onclick={onClose}>
 					<span class="icon"><SearchIcon /></span>
 					<span>{locale.sideSearch()}</span>
 				</a>
 			</li>
 			<li>
-				<a href="/stats">
+				<a href="/stats" onclick={onClose}>
 					<span class="icon"><BellIcon /></span>
 					<span>{locale.sideReports()}</span>
 				</a>
 			</li>
 			<li>
-				<a href={routes.treeUpdates()}>
+				<a href={routes.treeUpdates()} onclick={onClose}>
 					<span class="icon"><BellIcon /></span>
 					<span>{locale.sideUpdates()}</span>
 				</a>
 			</li>
 			<li>
-				<a href={routes.profile()}>
+				<a href={routes.profile()} onclick={onClose}>
 					<span class="icon">
 						{#if $uploadStore.uploading}
 							<SpinnerIcon />
@@ -64,11 +79,15 @@
 		</div>
 
 		<div class="bottom links">
-			<a href="https://github.com/KanachYerevan/kb/wiki/Mobile-Application" target="_blank"
-				>{locale.sideAbout()}</a
+			<a
+				href="https://github.com/KanachYerevan/kb/wiki/Mobile-Application"
+				target="_blank"
+				onclick={onClose}>{locale.sideAbout()}</a
 			>
 			&middot;
-			<a href="https://github.com/umonkey/treemap/issues" target="_blank">{locale.sideBugs()}</a>
+			<a href="https://github.com/umonkey/treemap/issues" target="_blank" onclick={onClose}
+				>{locale.sideBugs()}</a
+			>
 		</div>
 	</div>
 </div>
@@ -78,6 +97,8 @@
 		height: 100vh;
 		width: 300px;
 		position: fixed;
+		top: 0;
+		left: 0;
 		box-sizing: border-box;
 
 		background-color: var(--form-background);
@@ -93,6 +114,10 @@
 		font-size: 18px;
 
 		color: var(--text-color);
+
+		.mobile-header {
+			display: none;
+		}
 
 		ul {
 			margin: 0;
@@ -175,11 +200,33 @@
 				display: block;
 			}
 		}
+
+		.canvas {
+			width: 100vw;
+			height: 100dvh;
+			border-right: none;
+
+			.mobile-header {
+				display: flex;
+				justify-content: flex-end;
+				padding-bottom: var(--gap);
+
+				.close-btn {
+					background: none;
+					border: none;
+					color: inherit;
+					width: 32px;
+					height: 32px;
+					padding: 0;
+					cursor: pointer;
+				}
+			}
+		}
 	}
 
 	/** Must be belog the preview on desktop, above on mobile. **/
 	.overlay {
-		z-index: 3;
+		z-index: var(--z-learn-result);
 	}
 
 	@media screen and (min-width: 1024px) {
