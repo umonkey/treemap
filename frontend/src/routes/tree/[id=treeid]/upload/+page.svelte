@@ -1,24 +1,31 @@
 <script lang="ts">
+	import { page } from '$app/stores';
+	import TreeForm from '$lib/components/forms/TreeForm.svelte';
 	import { locale } from '$lib/locale';
+	import { goto, routes } from '$lib/routes';
 	import PhotoUploader from './PhotoUploader.svelte';
 	import UploadForm from './UploadForm.svelte';
-	import TreeForm from '$lib/components/forms/TreeForm.svelte';
-	import { goto, routes } from '$lib/routes';
-	import { load } from './hooks';
+	import { pageState } from './page.svelte';
 
-	const { data } = $props();
-	const tree = data.tree;
-	const treeId = data.id;
-
-	const { handleChange } = load();
+	const id = $derived($page.params.id as string);
 
 	const close = () => {
-		goto(routes.mapPreview(data.id));
+		goto(routes.mapPreview(pageState.treeId));
 	};
+
+	$effect(() => {
+		pageState.reload(id);
+	});
 </script>
 
-<TreeForm {tree} title="Add Tree Photos" onSubmit={close} onCancel={close}>
+<TreeForm
+	tree={pageState.tree}
+	title="Add Tree Photos"
+	onSubmit={close}
+	onCancel={close}
+	canSave={true}
+>
 	<p>{locale.photoIntro()}</p>
-	<PhotoUploader {treeId} onChange={handleChange} />
-	<UploadForm id={tree.id} />
+	<PhotoUploader treeId={pageState.treeId} onChange={pageState.handleChange} />
+	<UploadForm />
 </TreeForm>

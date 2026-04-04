@@ -5,10 +5,7 @@
 	import type { ITreeFile } from '$lib/types';
 	import { formatDate } from '$lib/utils/strings';
 	import PhotoContextMenu from './PhotoContextMenu.svelte';
-	import { hooks } from './UploadForm';
-
-	const { id } = $props<{ id: string }>();
-	const { loading, tree, error, reload, handleMakeThumbnail, handleDelete } = hooks();
+	import { pageState } from './page.svelte';
 
 	let selectedFile = $state<ITreeFile | null>(null);
 	let menuVisible = $state(false);
@@ -25,30 +22,28 @@
 
 	const onMakeThumbnail = () => {
 		if (selectedFile) {
-			handleMakeThumbnail(selectedFile);
+			pageState.handleMakeThumbnail(selectedFile);
 		}
 		closeMenu();
 	};
 
 	const onDelete = () => {
 		if (selectedFile) {
-			handleDelete(selectedFile.id);
+			pageState.handleDelete(selectedFile.id);
 		}
 		closeMenu();
 	};
-
-	$effect(() => reload(id));
 </script>
 
-{#if $loading}
+{#if pageState.loading}
 	<!-- loading -->
-{:else if $error}
-	<p>{$error}</p>
-{:else if $tree?.files?.length > 0}
+{:else if pageState.error}
+	<p>{pageState.error}</p>
+{:else if pageState.tree.files.length > 0}
 	<h2>Manage existing photos</h2>
 
 	<div class="pics">
-		{#each $tree.files as file}
+		{#each pageState.tree.files as file}
 			{@const user = file.added_by ? $getUser(file.added_by) : null}
 			<div class="pic">
 				<a href={routes.file(file.source_id ?? file.large_id)} class="thumbnail" target="_blank">
