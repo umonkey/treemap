@@ -49,6 +49,10 @@ class EnglishLocale {
 		return 'Bugs';
 	}
 
+	public sideStatsMessage(count: number): string {
+		return `There are ${count} trees in our database.`;
+	}
+
 	public searchTitle(): string {
 		return 'Search';
 	}
@@ -689,6 +693,10 @@ class RussianLocale extends EnglishLocale {
 		return 'Баги';
 	}
 
+	public override sideStatsMessage(count: number): string {
+		return `В нашей базе ${count} деревьев.`;
+	}
+
 	public searchTitle(): string {
 		return 'Поиск';
 	}
@@ -1307,6 +1315,10 @@ class ArmenianLocale extends EnglishLocale {
 
 	public sideAbout(): string {
 		return 'Այս ծրագրի մասին';
+	}
+
+	public override sideStatsMessage(count: number): string {
+		return `Մեր տվյալների բազայում կա ${count} ծառ:`;
 	}
 
 	public searchTitle(): string {

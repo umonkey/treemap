@@ -1,20 +1,14 @@
 <script lang="ts">
-import UserPic from "$lib/components/layout/UserPic.svelte";
-import {
-	BellIcon,
-	HomeIcon,
-	SearchIcon,
-	SpinnerIcon,
-	UserIcon,
-} from "$lib/icons";
-import { routes } from "$lib/routes";
-import { authStore, isAuthenticated } from "$lib/stores/authStore";
-import { mobileSidebarStore } from "$lib/stores/mobileSidebarStore";
-import { uploadStore } from "$lib/stores/upload";
+	import UserPic from '$lib/components/layout/UserPic.svelte';
+	import { BellIcon, HomeIcon, SearchIcon, SpinnerIcon, UserIcon } from '$lib/icons';
+	import { routes } from '$lib/routes';
+	import { authStore, isAuthenticated } from '$lib/stores/authStore';
+	import { mobileSidebarStore } from '$lib/stores/mobileSidebarStore';
+	import { uploadStore } from '$lib/stores/upload';
 
-const toggleSidebar = () => {
-	mobileSidebarStore.set(true);
-};
+	const toggleSidebar = () => {
+		mobileSidebarStore.set(true);
+	};
 </script>
 
 <nav class="mobile">

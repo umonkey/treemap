@@ -1,25 +1,22 @@
 <script lang="ts">
-import Logo from "$lib/assets/trees-of-yerevan.svelte";
-import UserPic from "$lib/components/layout/UserPic.svelte";
-import {
-	BellIcon,
-	CloseIcon,
-	HomeIcon,
-	SearchIcon,
-	SpinnerIcon,
-} from "$lib/icons";
-import { locale } from "$lib/locale";
-import { routes } from "$lib/routes";
-import { authStore } from "$lib/stores/authStore";
-import {
-	isSidebarVisible,
-	mobileSidebarStore,
-} from "$lib/stores/mobileSidebarStore";
-import { uploadStore } from "$lib/stores/upload";
+	import Logo from '$lib/assets/trees-of-yerevan.svelte';
+	import UserPic from '$lib/components/layout/UserPic.svelte';
+	import { BellIcon, CloseIcon, HomeIcon, SearchIcon, SpinnerIcon } from '$lib/icons';
+	import { locale } from '$lib/locale';
+	import { routes } from '$lib/routes';
+	import { authStore } from '$lib/stores/authStore';
+	import { isSidebarVisible, mobileSidebarStore } from '$lib/stores/mobileSidebarStore';
+	import { uploadStore } from '$lib/stores/upload';
+	import { onMount } from 'svelte';
+	import { componentState } from './LeftSidebar.svelte.ts';
 
-const onClose = () => {
-	mobileSidebarStore.set(false);
-};
+	onMount(() => {
+		componentState.fetchStats();
+	});
+
+	const onClose = () => {
+		mobileSidebarStore.set(false);
+	};
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -74,6 +71,12 @@ const onClose = () => {
 			</li>
 		</ul>
 
+		<div class="stats">
+			{#if componentState.stats}
+				{locale.sideStatsMessage(componentState.stats.count)}
+			{/if}
+		</div>
+
 		<div class="bottom">
 			<Logo />
 		</div>
@@ -123,7 +126,7 @@ const onClose = () => {
 			margin: 0;
 			padding: 0 var(--gap);
 			list-style-type: none;
-			flex-grow: 1;
+			flex: 0 0;
 
 			a {
 				display: flex;
@@ -151,6 +154,15 @@ const onClose = () => {
 				border-radius: 50%;
 				margin-left: 4px;
 			}
+		}
+
+		.stats {
+			flex: 1 1;
+			border-top: 1px solid rgba(128, 128, 128, 0.2);
+			padding: 1rem 0 0;
+
+			font-size: 1rem;
+			opacity: 0.8;
 		}
 
 		.bottom {
