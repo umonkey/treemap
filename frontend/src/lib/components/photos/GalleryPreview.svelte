@@ -8,22 +8,22 @@
 	// By default, trees returned in batches don't contain files, so we have to
 	// request tree details again.
 
-	import { hooks } from './GalleryPreview';
+	import { galleryState } from './GalleryPreview.svelte.ts';
 	import GalleryPreviewDisplay from './GalleryPreviewDisplay.svelte';
 
 	const { id } = $props<{
 		id: string;
 	}>();
 
-	const { loading, error, images, reload } = hooks();
-
-	$effect(() => reload(id));
+	$effect(() => {
+		galleryState.reload(id);
+	});
 </script>
 
 <GalleryPreviewDisplay
-	loading={$loading}
-	error={$error}
+	loading={galleryState.loading}
+	error={galleryState.error}
 	mapper={true}
 	tree_id={id}
-	images={$images}
+	images={galleryState.images}
 />
