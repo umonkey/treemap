@@ -25,3 +25,5 @@ export class SearchState {
 		this.commit();
 	};
 }
+
+export const searchState = new SearchState();

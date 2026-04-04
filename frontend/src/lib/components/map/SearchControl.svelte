@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { CloseIcon, SearchIcon } from '$lib/icons';
-	import { SearchState } from './SearchControl.svelte.ts';
-
-	const state = new SearchState();
+	import { searchState } from './SearchControl.svelte.ts';
 </script>
 
 <div class="search-container">
@@ -13,12 +11,12 @@
 		<input
 			type="text"
 			placeholder="Search trees..."
-			bind:value={state.value}
-			onkeydown={(e) => e.key === 'Enter' && state.commit()}
+			bind:value={searchState.value}
+			onkeydown={(e) => e.key === 'Enter' && searchState.commit()}
 			class="search-input"
 		/>
-		{#if state.value}
-			<button type="button" class="clear-button" onclick={state.clear} title="Clear search">
+		{#if searchState.value}
+			<button type="button" class="clear-button" onclick={searchState.clear} title="Clear search">
 				<CloseIcon />
 			</button>
 		{/if}
