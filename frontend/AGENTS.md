@@ -16,7 +16,7 @@ This directory contains the static frontend for the tree mapping application.
 - `src/lib/components`: domain-based components.
 - `src/lib/forms`: complex forms.
 - `src/lib/stores`: Svelte stores.
-- `src/routes`: SvelteKit pages and layouts.
+- `src/routes`: SvelteKit pages and layouts, and page-local components.
 - `docs/Coding-Style.md`: detailed coding standards.
 
 ## Development workflow

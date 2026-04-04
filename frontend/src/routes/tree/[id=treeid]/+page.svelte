@@ -13,11 +13,12 @@
 	import TreeTabs from '$lib/components/tree/TreeTabs.svelte';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import { CommentForm } from '$lib/ui';
+	import { page } from '$app/stores';
 
-	const { data } = $props();
+	const id = $derived($page.params.id as string);
 
 	$effect(() => {
-		pageState.reload(data.id);
+		pageState.reload(id);
 	});
 </script>
 
