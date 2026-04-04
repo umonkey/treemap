@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { stateUpdater } from '$lib/actions';
+	import { stateUpdater } from '$lib/actions/state-update/hooks';
+	import TreeForm from '$lib/components/forms/TreeForm.svelte';
 	import ChangeHistory from '$lib/components/tree/ChangeHistory.svelte';
 	import TreeSheet from '$lib/components/tree/TreeSheet.svelte';
-	import TreeForm from '$lib/components/forms/TreeForm.svelte';
-	import { CommentInput } from '$lib/ui';
 	import { locale } from '$lib/locale';
+	import { CommentInput } from '$lib/ui';
 
 	const { id } = $props<{
 		id: string;
