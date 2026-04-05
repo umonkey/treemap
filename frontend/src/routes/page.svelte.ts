@@ -8,14 +8,14 @@ class PageState {
 	public updateSearch = (value: string | undefined) => {
 		console.debug(`Updating search query to: ${value}`);
 		searchStore.set(value);
-	}
+	};
 
 	public updatePreview = (value: string | undefined) => {
 		if (value) {
 			console.debug(`Updating preview to: ${value}`);
 			previewState.reload(value);
 		}
-	}
+	};
 }
 
 export const pageState = new PageState();

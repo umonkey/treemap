@@ -80,5 +80,9 @@ export const formatState = (value: string | null): string => {
 		return locale.stateStump();
 	}
 
+	if (value === 'replaced') {
+		return locale.stateReplaced();
+	}
+
 	return locale.stateUnknown();
 };
