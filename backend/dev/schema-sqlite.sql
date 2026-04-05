@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS trees_images (
     PRIMARY KEY(`id`)
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS trees_files_tree_id ON trees_images (id);
+CREATE INDEX IF NOT EXISTS trees_images_tree_id ON trees_images (tree_id);
 
 
 -- Tree attributes.
@@ -72,21 +72,6 @@ CREATE TABLE IF NOT EXISTS trees_props (
 CREATE INDEX IF NOT EXISTS trees_props_tree_id ON trees_props (tree_id);
 
 
-CREATE TABLE IF NOT EXISTS files (
-    `id` INT NOT NULL,
-    `tree_id` INT NOT NULL,
-    `added_at` INT NOT NULL,
-    `added_by` INT NOT NULL,
-    `deleted_at` INT NULL,
-    `deleted_by` INT NULL,
-    `small_id` INT NOT NULL,
-    `large_id` INT NOT NULL,
-    PRIMARY KEY(`id`)
-);
-
-CREATE INDEX IF NOT EXISTS files_tree_id ON files (tree_id);
-
-
 -- File uploads.
 -- This is a temporary table used to store the file upload ticket.
 -- Uploaded files are then used to create photos for trees.
@@ -98,17 +83,6 @@ CREATE TABLE IF NOT EXISTS uploads (
     `added_by` INT NOT NULL,
     `size` INT NOT NULL,
     `uploaded_at` INT NULL,
-    PRIMARY KEY(`id`)
-);
-
-
--- Upload tickets.
--- Ticket id is also the file name.
-CREATE TABLE IF NOT EXISTS upload_tickets (
-    `id` INT NOT NULL,
-    `created_at` INT NOT NULL,
-    `created_by` INT NOT NULL,
-    `upload_url` TEXT NOT NULL,
     PRIMARY KEY(`id`)
 );
 
@@ -157,14 +131,14 @@ CREATE INDEX IF NOT EXISTS queue_messages_attempts ON queue_messages (attempts);
 CREATE TABLE IF NOT EXISTS species (
     `name` TEXT NOT NULL,
     `local` TEXT NOT NULL,
-    `keywords` TEXT NULL,
+    `keywords` TEXT NOT NULL,
     `wikidata_id` TEXT NOT NULL,
     PRIMARY KEY(`name`)
 );
 
 
 CREATE TABLE IF NOT EXISTS osm_trees (
-    `id` INT UNSIGNED NOT NULL,
+    `id` INT NOT NULL,
     `lat` REAL NOT NULL,
     `lon` REAL NOT NULL,
     `genus` TEXT NULL,
@@ -173,17 +147,20 @@ CREATE TABLE IF NOT EXISTS osm_trees (
     `height` REAL NULL,
     `circumference` REAL NULL,
     `diameter_crown` REAL NULL,
+    `image` TEXT NULL,
     PRIMARY KEY(`id`)
 );
+
 
 CREATE TABLE IF NOT EXISTS likes (
     `tree_id` INT NOT NULL,
     `user_id` INT NOT NULL,
     `state` INT NOT NULL DEFAULT '0',
-    `updated_at` INT UNSIGNED NOT NULL,
+    `updated_at` INT NOT NULL,
     PRIMARY KEY(`tree_id`, `user_id`)
 );
 CREATE INDEX IF NOT EXISTS likes_state ON likes (state);
+
 
 CREATE TABLE IF NOT EXISTS training (
     `id` INT NOT NULL,
