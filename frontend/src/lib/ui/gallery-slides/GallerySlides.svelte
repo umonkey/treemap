@@ -4,26 +4,26 @@
 	import LeftButtonIcon from '$lib/icons/LeftButton.svelte';
 	import RightButtonIcon from '$lib/icons/RightButton.svelte';
 	import type { IGalleryItem } from '$lib/types';
-	import { hooks } from './hooks';
+	import { galleryState } from './GallerySlides.svelte.ts';
 
 	const { slides, initialImageId } = $props<{
 		slides: IGalleryItem[];
 		initialImageId?: string;
 	}>();
 
-	const { handleExpand, handleLeft, handleRight, element, scrollToId } = hooks();
-
 	let contain = $state(false);
-	const toggleContain = () => (contain = !contain);
+	const toggleContain = () => {
+		contain = !contain;
+	};
 
 	$effect(() => {
 		if (initialImageId && slides.length > 0) {
-			scrollToId(initialImageId, slides);
+			galleryState.scrollToId(initialImageId, slides);
 		}
 	});
 </script>
 
-<div class="slides" class:contain bind:this={$element}>
+<div class="slides" class:contain bind:this={galleryState.element}>
 	{#each slides as item, idx}
 		<div>
 			<!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -33,7 +33,7 @@
 			{#if idx > 0}
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
-				<div class="nav left" onclick={handleLeft}>
+				<div class="nav left" onclick={galleryState.handleLeft}>
 					<LeftButtonIcon />
 				</div>
 			{/if}
@@ -41,7 +41,7 @@
 			{#if idx < slides.length - 1}
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
-				<div class="nav right" onclick={handleRight}>
+				<div class="nav right" onclick={galleryState.handleRight}>
 					<RightButtonIcon />
 				</div>
 			{/if}
@@ -50,7 +50,7 @@
 			{#if item.label}
 				<div class="label">{item.label}</div>
 			{/if}
-			<button class="expand" onclick={() => handleExpand(item.large)}>
+			<button class="expand" onclick={() => galleryState.handleExpand(item.large)}>
 				<ExpandIcon />
 			</button>
 		</div>
