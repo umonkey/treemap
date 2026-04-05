@@ -10,6 +10,7 @@
  * previously failed attempts.
  */
 
+import { showError } from '$lib/errors';
 import { addPhotos, uploadSingleFile as uploadSingleFileApi } from '$lib/api/uploads';
 import { uploadBus } from '$lib/buses/upload';
 import { uploadStore } from '$lib/stores/upload';
@@ -51,7 +52,12 @@ let isProcessing = false;
 /**
  * Add a photo to the upload queue.
  */
-export async function addPhotoToUploadQueue(tree_id: string | number, file: File) {
+export async function addPhotoToUploadQueue(tree_id: string, file: File) {
+	if (!tree_id) {
+		showError('Could not add the photo, please try again.');
+		return;
+	}
+
 	await db.uploads.add({
 		tree_id: tree_id.toString(),
 		status: 'pending',

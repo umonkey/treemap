@@ -20,30 +20,40 @@
 	<div class="label">{label}</div>
 {/if}
 
-<div class="uploader" class:small={!!small}>
-	<label>
-		<CameraIcon />
+{#if treeId}
+	<div class="uploader" class:small={!!small}>
+		<label>
+			<CameraIcon />
 
-		<input type="file" accept="image/jpeg" onchange={handleChange} capture="environment" multiple />
-	</label>
+			<input
+				type="file"
+				accept="image/jpeg"
+				onchange={handleChange}
+				capture="environment"
+				multiple
+			/>
+		</label>
 
-	<label class="gallery">
-		<GalleryIcon />
+		<label class="gallery">
+			<GalleryIcon />
 
-		<input type="file" accept="image/jpeg" onchange={handleChange} multiple />
-	</label>
+			<input type="file" accept="image/jpeg" onchange={handleChange} multiple />
+		</label>
 
-	<FileUploaderDisplay
-		items={$thumbnails.map((thumbnail) => ({
-			src: URL.createObjectURL(thumbnail.file),
-			busy: thumbnail.busy,
-			error: thumbnail.error
-		}))}
-		onRetry={restartUploadQueue}
-	/>
+		<FileUploaderDisplay
+			items={$thumbnails.map((thumbnail) => ({
+				src: URL.createObjectURL(thumbnail.file),
+				busy: thumbnail.busy,
+				error: thumbnail.error
+			}))}
+			onRetry={restartUploadQueue}
+		/>
 
-	<div class="filler"></div>
-</div>
+		<div class="filler"></div>
+	</div>
+{:else}
+	<p>Cannot upload files, try refreshing the page.</p>
+{/if}
 
 <style>
 	.label {
