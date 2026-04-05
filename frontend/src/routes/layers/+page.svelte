@@ -1,10 +1,9 @@
 <script lang="ts">
-	import { selectorState } from './LayerSelector.svelte.ts';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
+	import { selectorState } from './LayerSelector.svelte.ts';
 	import BASIC from './basic.png';
 	import DRONE from './drone.png';
 	import LIGHT from './light.png';
-	import DARK from './dark.png';
 </script>
 
 <Dialog title="Select map base layer">
@@ -30,17 +29,6 @@
 			</button>
 			<div class="label">Light</div>
 		</div>
-
-		<div class="item" class:active={selectorState.base == 'dark'}>
-			<button
-				type="button"
-				aria-label="Select Dark base layer"
-				onclick={() => selectorState.setBase('dark')}
-			>
-				<img src={DARK} alt="Dark layer preview" />
-			</button>
-			<div class="label">Dark</div>
-		</div>
 	</div>
 
 	<h3>Select additional layers</h3>
@@ -58,7 +46,7 @@
 <style>
 	.items {
 		display: grid;
-		grid-template-columns: repeat(3, 1fr);
+		grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
 		gap: 1rem;
 		width: 100%;
 	}

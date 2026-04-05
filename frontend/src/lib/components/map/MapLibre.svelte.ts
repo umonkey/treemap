@@ -17,7 +17,6 @@ import { MapBouncer } from './MapBouncer';
 
 const BASIC_LAYER = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${config.mapTilerKey}`;
 const LIGHT_LAYER = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json';
-const DARK_LAYER = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json';
 const DRONE_LAYER = 'https://treemap-tiles.fra1.cdn.digitaloceanspaces.com/{z}/{x}/{y}.png';
 
 class MapLibre {
@@ -146,8 +145,6 @@ class MapLibre {
 
 		if (base === 'light') {
 			this.layer = LIGHT_LAYER;
-		} else if (base === 'dark') {
-			this.layer = DARK_LAYER;
 		} else {
 			this.layer = BASIC_LAYER;
 		}
