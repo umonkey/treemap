@@ -1,7 +1,7 @@
 import { locationStore } from '$lib/stores/locationStore';
 import type { IMyPosition } from '$lib/types';
 
-export class LocationState {
+export class LocationTracker {
 	public position = $state<IMyPosition | null>(null);
 
 	private watchId: number | null = null;
@@ -71,9 +71,9 @@ export class LocationState {
 			window.removeEventListener('focus', this.start);
 			window.removeEventListener('visibilitychange', this.start);
 			this.stop();
-			console.debug('[GEO] LocationState destroyed.');
+			console.debug('[GEO] LocationTracker destroyed.');
 		};
 	};
 }
 
-export const locationState = new LocationState();
+export const locationTracker = new LocationTracker();

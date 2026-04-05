@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { Marker } from 'svelte-maplibre';
-	import { locationState } from './LocationControl.svelte.ts';
+	import { locationTracker } from './LocationTracker.svelte.ts';
 
-	onMount(locationState.onMount);
+	onMount(locationTracker.onMount);
 </script>
 
-{#if locationState.position}
-	<Marker lngLat={[locationState.position.lng, locationState.position.lat]} offset={[0, 0]}>
+{#if locationTracker.position}
+	<Marker lngLat={[locationTracker.position.lng, locationTracker.position.lat]} offset={[0, 0]}>
 		<div class="user-location-dot"></div>
 	</Marker>
 {/if}

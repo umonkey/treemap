@@ -7,7 +7,7 @@
 	import { type Snippet, onMount } from 'svelte';
 	import LayerButton from './LayerButton.svelte';
 	import LocateButton from './LocateButton.svelte';
-	import LocationControl from './LocationControl.svelte';
+	import LocationTracker from './LocationTracker.svelte';
 	import { mapState } from './MapLibre.svelte.ts';
 	import Marker from './Marker.svelte';
 	import SearchControl from './SearchControl.svelte';
@@ -40,7 +40,7 @@
 	>
 		<NavigationControl position="top-left" />
 		<LocateButton />
-		<LocationControl />
+		<LocationTracker />
 
 		{#if children}
 			{@render children()}
