@@ -1,5 +1,4 @@
 use crate::infra::database::{Attributes, Value};
-use std::collections::HashMap;
 
 pub fn format_where(conditions: &Attributes) -> (String, Vec<Value>) {
     let mut where_parts: Vec<String> = Vec::new();
@@ -18,7 +17,7 @@ pub fn format_where(conditions: &Attributes) -> (String, Vec<Value>) {
     (query, params)
 }
 
-pub fn format_order(order: &HashMap<String, String>) -> String {
+pub fn format_order(order: &[(String, String)]) -> String {
     let mut order_parts: Vec<String> = Vec::new();
 
     for (key, value) in order {

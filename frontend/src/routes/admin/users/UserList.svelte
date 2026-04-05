@@ -16,10 +16,10 @@
 				<tr>
 					<td>
 						{#if user.picture}
-							<img src={user.picture} alt={user.name} class="user-pic" />
+							<img src={user.picture} alt="" referrerpolicy="no-referrer" class="user-pic" />
 						{/if}
 					</td>
-					<td>
+					<td with="100%">
 						<a href="/admin/users/{user.id}">{user.name}</a>
 					</td>
 				</tr>
@@ -45,6 +45,8 @@
 		width: 32px;
 		height: 32px;
 		border-radius: 50%;
+		object-position: center;
 		object-fit: cover;
+		overflow: hidden;
 	}
 </style>

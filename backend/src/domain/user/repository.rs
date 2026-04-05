@@ -16,7 +16,10 @@ pub struct UserRepository {
 
 impl UserRepository {
     pub async fn all(&self) -> Result<Vec<User>> {
-        self.query_multiple(SelectQuery::new(TABLE)).await
+        let query = SelectQuery::new(TABLE)
+            .with_order_desc("last_active_at")
+            .with_order_desc("id");
+        self.query_multiple(query).await
     }
 
     pub async fn get(&self, id: u64) -> Result<Option<User>> {

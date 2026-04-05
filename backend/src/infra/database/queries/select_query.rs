@@ -1,12 +1,11 @@
 use super::formatters::*;
 use crate::infra::database::{Attributes, Value};
-use std::collections::HashMap;
 
 #[derive(Debug, Default)]
 pub struct SelectQuery {
     table_name: String,
     conditions: Attributes,
-    order: HashMap<String, String>,
+    order: Vec<(String, String)>,
     limit: Option<i64>,
     offset: Option<i64>,
 }
@@ -31,12 +30,12 @@ impl SelectQuery {
 
     #[allow(unused)]
     pub fn with_order(mut self, column: &str) -> Self {
-        self.order.insert(column.to_string(), "ASC".to_string());
+        self.order.push((column.to_string(), "ASC".to_string()));
         self
     }
 
     pub fn with_order_desc(mut self, column: &str) -> Self {
-        self.order.insert(column.to_string(), "DESC".to_string());
+        self.order.push((column.to_string(), "DESC".to_string()));
         self
     }
 
@@ -86,7 +85,7 @@ mod tests {
     fn test_select_order() -> Result<()> {
         let query = SelectQuery {
             table_name: "trees".to_string(),
-            order: HashMap::from([("id".to_string(), "DESC".to_string())]),
+            order: vec![("id".to_string(), "DESC".to_string())],
             ..Default::default()
         };
 
@@ -119,7 +118,7 @@ mod tests {
         let query = SelectQuery {
             table_name: "trees".to_string(),
             conditions: Attributes::from(&[("state".to_string(), Value::from("dead".to_string()))]),
-            order: HashMap::from([("added_at".to_string(), "DESC".to_string())]),
+            order: vec![("added_at".to_string(), "DESC".to_string())],
             limit: Some(10),
             ..Default::default()
         };
