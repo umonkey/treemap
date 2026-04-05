@@ -5,24 +5,23 @@
 	import Form from '$lib/ui/form/Form.svelte';
 	import StreetInput from '$lib/ui/street-input/StreetInput.svelte';
 	import StreetReport from './StreetReport.svelte';
-	import { hooks } from './hooks';
+	import { pageState } from './page.svelte';
 
 	const address = $derived($page.url.searchParams.get('address'));
-	const { report, handleStreetChange, reload } = hooks();
 
 	$effect(() => {
-		reload(address ?? null);
+		pageState.reload(address ?? null);
 	});
 </script>
 
 <Dialog title={locale.reportTitle()}>
 	<div class="report">
 		<Form>
-			<StreetInput value={address} onChange={handleStreetChange} />
+			<StreetInput value={address} onChange={pageState.handleStreetChange} />
 		</Form>
 	</div>
 
-	{#if $report}
-		<StreetReport data={$report} />
+	{#if pageState.report}
+		<StreetReport data={pageState.report} />
 	{/if}
 </Dialog>
