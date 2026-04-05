@@ -13,7 +13,7 @@
 	import { routes } from '$lib/routes';
 	import type { ITreeFile } from '$lib/types';
 	import LazyImage from '$lib/ui/lazy-image/LazyImage.svelte';
-	import { galleryState } from './GalleryPreview.svelte.ts';
+	import { galleryPreviewState } from './GalleryPreview.svelte.ts';
 
 	const {
 		id,
@@ -30,12 +30,12 @@
 	}>();
 
 	$effect(() => {
-		galleryState.reload(id);
+		galleryPreviewState.reload(id);
 	});
 
-	const actualLoading = $derived(loading !== undefined ? loading : galleryState.loading);
-	const actualError = $derived(error !== undefined ? error : galleryState.error);
-	const actualFiles = $derived(files !== undefined ? files : galleryState.files);
+	const actualLoading = $derived(loading !== undefined ? loading : galleryPreviewState.loading);
+	const actualError = $derived(error !== undefined ? error : galleryPreviewState.error);
+	const actualFiles = $derived(files !== undefined ? files : galleryPreviewState.files);
 </script>
 
 <div class="gallery" class:loading={actualLoading} class:error={!!actualError} class:mapper>

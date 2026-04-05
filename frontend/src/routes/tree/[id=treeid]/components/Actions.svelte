@@ -11,7 +11,7 @@
 	import { isLiked } from '$lib/stores/likeStore';
 	import type { ITree } from '$lib/types';
 	import { onMount } from 'svelte';
-	import { hooks } from './Actions';
+	import { actionsState } from './Actions.svelte.ts';
 	import ShareButton from './ShareButton.svelte';
 
 	const { tree } = $props<{
@@ -19,11 +19,10 @@
 	}>();
 
 	const isTreeLiked = $derived($isLiked(tree.id));
-	const { actors, reload } = hooks();
 
 	onMount(() => {
 		preloadMeLikes();
-		reload(tree.id);
+		actionsState.reload(tree.id);
 	});
 
 	const onLike = async (e: Event) => {
@@ -70,9 +69,9 @@
 
 	<div class="sep"></div>
 
-	{#if $actors.length > 0}
+	{#if actionsState.actors.length > 0}
 		<a class="actors" href={routes.treeHistory(tree.id)}>
-			{#each $actors as user}
+			{#each actionsState.actors as user}
 				<img src={user.picture} alt={user.name} referrerpolicy="no-referrer" />
 			{/each}
 		</a>

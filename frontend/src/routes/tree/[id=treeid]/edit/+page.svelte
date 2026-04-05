@@ -9,53 +9,42 @@
 	import StateInput from '$lib/ui/state-input/StateInput.svelte';
 	import StreetInput from '$lib/ui/street-input/StreetInput.svelte';
 	import YearInput from '$lib/ui/year-input/YearInput.svelte';
-	import { hooks } from './hooks';
+	import { pageState } from './page.svelte';
 
 	const { data } = $props();
 
-	const {
-		loading,
-		saving,
-		tree,
-		updated,
-		reload,
-		handleSpeciesChange,
-		handleHeightChange,
-		handleCircumferenceChange,
-		handleStateChange,
-		handleDiameterChange,
-		handleNotesChange,
-		handleLocationChange,
-		handleConfirm,
-		handleCancel,
-		handleYearChange,
-		handleAddressChange
-	} = hooks();
-
-	$effect(() => reload(data.id));
+	$effect(() => {
+		pageState.reload(data.id);
+	});
 </script>
 
-{#if $loading}
+{#if pageState.loading}
 	<!-- Loading... -->
-{:else if $tree}
+{:else if pageState.tree}
 	<TreeForm
 		title="Edit Tree"
 		id={data.id}
-		onSubmit={handleConfirm}
-		onCancel={handleCancel}
-		saving={$saving}
+		onSubmit={pageState.handleConfirm}
+		onCancel={pageState.handleCancel}
+		saving={pageState.saving}
 	>
-		<SpeciesInput value={$updated.species} onChange={handleSpeciesChange} />
-		<StateInput value={$updated.state} onChange={handleStateChange} />
+		<SpeciesInput value={pageState.updated.species} onChange={pageState.handleSpeciesChange} />
+		<StateInput value={pageState.updated.state} onChange={pageState.handleStateChange} />
 
-		<HeightInput value={$updated.height} onChange={handleHeightChange} />
-		<CanopyInput value={$updated.diameter} onChange={handleDiameterChange} />
-		<CircumferenceInput value={$updated.circumference} onChange={handleCircumferenceChange} />
-		<YearInput value={$updated.year} onChange={handleYearChange} />
-		<LocationInput value={{ lat: $tree.lat, lng: $tree.lon }} onChange={handleLocationChange} />
+		<HeightInput value={pageState.updated.height} onChange={pageState.handleHeightChange} />
+		<CanopyInput value={pageState.updated.diameter} onChange={pageState.handleDiameterChange} />
+		<CircumferenceInput
+			value={pageState.updated.circumference}
+			onChange={pageState.handleCircumferenceChange}
+		/>
+		<YearInput value={pageState.updated.year} onChange={pageState.handleYearChange} />
+		<LocationInput
+			value={{ lat: pageState.tree.lat, lng: pageState.tree.lon }}
+			onChange={pageState.handleLocationChange}
+		/>
 
-		<StreetInput value={$tree.address} onChange={handleAddressChange} />
+		<StreetInput value={pageState.tree.address} onChange={pageState.handleAddressChange} />
 
-		<NotesInput value={$updated.notes} onChange={handleNotesChange} />
+		<NotesInput value={pageState.updated.notes} onChange={pageState.handleNotesChange} />
 	</TreeForm>
 {/if}

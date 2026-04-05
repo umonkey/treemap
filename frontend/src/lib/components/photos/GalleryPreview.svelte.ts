@@ -29,4 +29,4 @@ class ComponentState {
 	}
 }
 
-export const galleryState = new ComponentState();
+export const galleryPreviewState = new ComponentState();

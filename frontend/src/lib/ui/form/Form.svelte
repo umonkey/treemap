@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { hooks } from './hooks';
 
 	type Props = {
 		children: Snippet;
@@ -10,7 +9,20 @@
 
 	const { children, onSubmit, sticky = false }: Props = $props();
 
-	const { handleSubmit, handleKeyDown } = hooks({ onSubmit });
+	const handleSubmit = (event: Event) => {
+		event.preventDefault();
+		if (onSubmit) {
+			onSubmit();
+		}
+	};
+
+	const handleKeyDown = (event: KeyboardEvent) => {
+		if (event.key === 'Enter' && event.ctrlKey) {
+			if (onSubmit) {
+				onSubmit();
+			}
+		}
+	};
 </script>
 
 <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
