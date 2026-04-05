@@ -10,9 +10,9 @@
  * previously failed attempts.
  */
 
-import { showError } from '$lib/errors';
 import { addPhotos, uploadSingleFile as uploadSingleFileApi } from '$lib/api/uploads';
 import { uploadBus } from '$lib/buses/upload';
+import { showError } from '$lib/errors';
 import { uploadStore } from '$lib/stores/upload';
 import {
 	decrementUploadCount,
@@ -75,6 +75,9 @@ export async function addPhotoToUploadQueue(tree_id: string, file: File) {
 // Trigger processing if auto-upload is enabled.
 export const autoStartUpload = async () => {
 	await db.uploads.where('status').equals('completed').delete();
+
+	// Remove invalid entries.
+	await db.uploads.filter((u) => !u.tree_id).delete();
 
 	if (get(uploadStore).autoupload) {
 		if (isDataSaving()) {
