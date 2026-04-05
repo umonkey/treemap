@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Dialog from '$lib/components/layout/Dialog.svelte';
-	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
 	import { pageState } from './page.svelte';
 

@@ -92,6 +92,13 @@ class TreeLayerState {
 
 		const feature = e.features[0];
 		const treeId = feature.properties.id;
+
+		// Move the map immediately.  This makes us not wait until the tree
+		// preview loads the data and displays it, but perform an animated move,
+		// which makes the UI look more responsive.
+		const [lng, lat] = feature.geometry.coordinates;
+		mapBus.emit('move', { lat, lng });
+
 		console.debug(`[TreeLayer] Tree ${treeId} clicked.`);
 
 		mapBus.emit('select', treeId);
