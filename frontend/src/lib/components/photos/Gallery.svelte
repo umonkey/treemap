@@ -1,23 +1,24 @@
 <script lang="ts">
 	import GallerySlides from '$lib/ui/gallery-slides/GallerySlides.svelte';
-	import { hooks } from './Gallery';
+	import { galleryState } from './Gallery.svelte.ts';
 
 	const { id, initialImageId } = $props<{
 		id: string;
 		initialImageId?: string;
 	}>();
-	const { loading, error, slides, reload } = hooks();
 
-	$effect(() => reload(id));
+	$effect(() => {
+		galleryState.reload(id);
+	});
 </script>
 
 <div class="gallery">
-	{#if $loading}
+	{#if galleryState.loading && galleryState.slides.length === 0}
 		<!-- Loading files -->
-	{:else if $error}
-		<p>{$error}</p>
+	{:else if galleryState.error}
+		<p>{galleryState.error}</p>
 	{:else}
-		<GallerySlides slides={$slides} {initialImageId} />
+		<GallerySlides slides={galleryState.slides} {initialImageId} />
 	{/if}
 </div>
 
