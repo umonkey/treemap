@@ -10,7 +10,8 @@ import {
 	LngLat as LngLat2,
 	type LngLatBounds,
 	LngLatBounds as LngLatBounds2,
-	type Map
+	type Map,
+	type StyleSpecification
 } from 'maplibre-gl';
 import { get } from 'svelte/store';
 import { MapBouncer } from './MapBouncer';
@@ -19,9 +20,40 @@ const BASIC_LAYER = `https://api.maptiler.com/maps/openstreetmap/style.json?key=
 const LIGHT_LAYER = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json';
 const DRONE_LAYER = 'https://treemap-tiles.fra1.cdn.digitaloceanspaces.com/{z}/{x}/{y}.png';
 
+const BING_LAYER: StyleSpecification = {
+	version: 8,
+	sources: {
+		'bing-satellite': {
+			type: 'raster',
+			tiles: [
+				'https://ecn.t0.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=1',
+				'https://ecn.t1.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=1',
+				'https://ecn.t2.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=1',
+				'https://ecn.t3.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=1'
+			],
+			tileSize: 256,
+			attribution: '© Microsoft Bing'
+		}
+	},
+	layers: [{ id: 'bing-satellite', type: 'raster', source: 'bing-satellite' }]
+};
+
+const GOOGLE_LAYER: StyleSpecification = {
+	version: 8,
+	sources: {
+		'google-satellite': {
+			type: 'raster',
+			tiles: ['https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}'],
+			tileSize: 256,
+			attribution: '© Google'
+		}
+	},
+	layers: [{ id: 'google-satellite', type: 'raster', source: 'google-satellite' }]
+};
+
 class MapLibre {
 	map = $state.raw<Map>();
-	layer = $state<string>(BASIC_LAYER);
+	layer = $state<string | StyleSpecification>(BASIC_LAYER);
 	droneLayer = $state<string | undefined>(undefined);
 
 	zoom = $state<number>(13);
@@ -145,6 +177,10 @@ class MapLibre {
 
 		if (base === 'light') {
 			this.layer = LIGHT_LAYER;
+		} else if (base === 'bing') {
+			this.layer = BING_LAYER;
+		} else if (base === 'google') {
+			this.layer = GOOGLE_LAYER;
 		} else {
 			this.layer = BASIC_LAYER;
 		}
