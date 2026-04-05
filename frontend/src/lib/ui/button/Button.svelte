@@ -48,9 +48,9 @@
 
 <style>
 	.button {
-		background-color: var(--form-border);
-		border: 1px solid var(--form-border);
-		color: var(--form-background);
+		background-color: var(--map-primary-background);
+		border: none;
+		color: white;
 		outline: none;
 		cursor: pointer;
 		border-radius: 6px;
@@ -67,19 +67,18 @@
 		height: 34px;
 
 		&.cancel {
-			background-color: transparent;
-			color: var(--form-border);
+			background-color: var(--map-secondary-background);
+			color: white;
 		}
 
 		&.secondary {
-			background-color: transparent;
-			color: var(--form-border);
+			background-color: var(--map-secondary-background);
+			color: white;
 		}
 
 		&.tretiary {
-			border-color: rgba(16, 131, 254, 0.2);
-			background-color: transparent;
-			color: var(--form-border);
+			background-color: var(--map-secondary-background);
+			color: white;
 			text-decoration: underline;
 		}
 

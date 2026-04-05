@@ -36,6 +36,8 @@
 	--color-dialog-background: light-dark(var(--pico-color-grey-50), black);
 	--color-dialog-border: var(--pico-color-grey-100);
 	--color-dialog-text: light-dark(var(--pico-color-grey-900), var(--pico-color-grey-100));
+	--map-primary-background: #0172ad;
+	--map-secondary-background: #525f7a;
 }
 
 @media (prefers-color-scheme: dark) {
