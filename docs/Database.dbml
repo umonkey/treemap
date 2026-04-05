@@ -1,0 +1,164 @@
+// Database schema for the tree map application.
+// Generated from backend/dev/schema-sqlite.sql
+
+Table trees {
+  id int [pk]
+  osm_id int [unique, note: 'OpenStreetMap ID']
+  lat real [not null]
+  lon real [not null]
+  species text [not null, note: 'Latin name']
+  notes text
+  height real
+  circumference real
+  diameter real
+  state text [not null, default: 'healthy']
+  added_at int [not null]
+  updated_at int [not null]
+  updated_by int [not null]
+  added_by int [not null]
+  thumbnail_id int
+  year int
+  address text
+  like_count int [not null, default: 0]
+  comment_count int [not null, default: 0]
+  replaces int
+  replaced_by int
+}
+
+Table trees_images {
+  id int [pk]
+  tree_id int [not null]
+  added_at int [not null]
+  added_by int [not null]
+  deleted_at int
+  deleted_by int
+  small_id int [not null]
+  large_id int [not null]
+  source_id int [not null]
+}
+
+Table trees_props {
+  id int [pk]
+  tree_id int [not null]
+  added_at int [not null]
+  added_by int [not null]
+  name text [not null]
+  value text [not null]
+}
+
+Table uploads {
+  id int [pk]
+  added_at int [not null]
+  added_by int [not null]
+  size int [not null]
+  uploaded_at int
+}
+
+Table users {
+  id int [pk]
+  email text [unique, not null]
+  name text [not null]
+  picture text [not null]
+  role text [not null, default: 'user']
+  trees_count int [not null, default: 0]
+  comments_count int [not null, default: 0]
+  updates_count int [not null, default: 0]
+  files_count int [not null, default: 0]
+}
+
+Table comments {
+  id int [pk]
+  tree_id int [not null]
+  added_at int [not null]
+  added_by int [not null]
+  message text [not null]
+}
+
+Table queue_messages {
+  id int [pk]
+  added_at int [not null]
+  available_at int [not null]
+  payload text [not null]
+  attempts int [not null, default: 0]
+}
+
+Table species {
+  name text [pk]
+  local text [not null]
+  keywords text [not null]
+  wikidata_id text [not null]
+}
+
+Table osm_trees {
+  id int [pk]
+  lat real [not null]
+  lon real [not null]
+  genus text
+  species text
+  species_wikidata text
+  height real
+  circumference real
+  diameter_crown real
+  image text
+}
+
+Table likes {
+  tree_id int [not null]
+  user_id int [not null]
+  state int [not null, default: 0]
+  updated_at int [not null]
+  
+  Indexes {
+    (tree_id, user_id) [pk]
+  }
+}
+
+Table training {
+  id int [pk]
+  user_id int [not null]
+  added_at int [not null]
+  result real [not null]
+}
+
+Table observations {
+  id int [pk]
+  tree_id int [not null]
+  created_by int [not null]
+  created_at int [not null]
+  bark_damage int [not null, default: 0]
+  dry_branches int [not null, default: 0]
+  leaking int [not null, default: 0]
+  root_damage int [not null, default: 0]
+  open_roots int [not null, default: 0]
+  topping int [not null, default: 0]
+  fungal_bodies int [not null, default: 0]
+  vfork int [not null, default: 0]
+  cavities int [not null, default: 0]
+  vines int [not null, default: 0]
+  nests int [not null, default: 0]
+  nesting_boxes int [not null, default: 0]
+  bug_holes int [not null, default: 0]
+  inclined int [not null, default: 0]
+}
+
+// Relationships
+Ref: trees_images.tree_id > trees.id
+Ref: trees_props.tree_id > trees.id
+Ref: comments.tree_id > trees.id
+Ref: likes.tree_id > trees.id
+Ref: observations.tree_id > trees.id
+Ref: trees.replaces > trees.id
+Ref: trees.replaced_by > trees.id
+
+Ref: trees.added_by > users.id
+Ref: trees.updated_by > users.id
+Ref: trees_images.added_by > users.id
+Ref: trees_images.deleted_by > users.id
+Ref: trees_props.added_by > users.id
+Ref: uploads.added_by > users.id
+Ref: comments.added_by > users.id
+Ref: likes.user_id > users.id
+Ref: training.user_id > users.id
+Ref: observations.created_by > users.id
+
+Ref: trees.species > species.name
