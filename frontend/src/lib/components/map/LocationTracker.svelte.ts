@@ -1,7 +1,7 @@
 import { locationStore } from '$lib/stores/locationStore';
 import type { IMyPosition } from '$lib/types';
 
-export class LocationTracker {
+class LocationTracker {
 	public position = $state<IMyPosition | null>(null);
 
 	private watchId: number | null = null;

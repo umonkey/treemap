@@ -1,6 +1,6 @@
 import { locale } from '$lib/locale';
 
-export class ComponentState {
+class ComponentState {
 	distance = $state<number>(0);
 	value = $state<number>(0);
 	onChange = $state<(value: number) => void>(() => {});

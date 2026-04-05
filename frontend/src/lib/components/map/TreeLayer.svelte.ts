@@ -41,7 +41,7 @@ const extendBounds = ({ n, e, s, w }: { n: number; e: number; s: number; w: numb
 	};
 };
 
-export class TreeLayerState {
+class TreeLayerState {
 	markers = $state.raw<Collection | undefined>(undefined);
 	fetchDebouncer = new Debouncer(100);
 	moveBouncer = new MapBouncer();

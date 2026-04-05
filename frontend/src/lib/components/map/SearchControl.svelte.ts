@@ -2,7 +2,7 @@ import { searchStore } from '$lib/stores/searchStore';
 import { get } from 'svelte/store';
 import { goto, routes } from '$lib/routes';
 
-export class SearchState {
+class SearchState {
 	value = $state('');
 
 	constructor() {

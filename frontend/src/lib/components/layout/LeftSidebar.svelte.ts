@@ -1,7 +1,7 @@
 import { getStats } from '$lib/api/stats';
 import type { IStats } from '$lib/types';
 
-export class ComponentState {
+class ComponentState {
 	public stats = $state<IStats | null>(null);
 
 	public async fetchStats() {

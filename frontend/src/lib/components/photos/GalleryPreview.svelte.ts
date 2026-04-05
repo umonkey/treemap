@@ -2,7 +2,7 @@ import { getTree } from '$lib/api/trees';
 import { DEFAULT_TREE } from '$lib/constants';
 import type { ITree, ITreeFile } from '$lib/types';
 
-export class ComponentState {
+class ComponentState {
 	loading = $state<boolean>(true);
 	error = $state<string>('');
 	tree = $state<ITree>(DEFAULT_TREE);
