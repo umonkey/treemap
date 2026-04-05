@@ -34,11 +34,16 @@ class PreviewState {
 		}
 	};
 
-	private handleTreeSelect = (id: string) => {
-		if (!id) {
-			this.tree = undefined;
-			return;
-		}
+	// Handle tree selection.
+	// This is triggered via tree click on the map.
+	// We don't want to handle this directly, instead
+	// we just update the url and the rest happens on reload.
+	private handleTreeSelect = async (id: string) => {
+		await goto(routes.mapPreview(id));
+	};
+
+	public reload = (id: string) => {
+		console.debug(`Reloading preview for tree ${id}`);
 
 		getTree(id).then((res) => {
 			if (res.status === 200 && res.data) {

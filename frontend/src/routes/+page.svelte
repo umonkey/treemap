@@ -1,18 +1,12 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { searchStore } from '$lib/stores/searchStore';
-	import { rewriteHash } from '$lib/utils/rewrite';
+	import { pageState } from './page.svelte.ts';
 
-	// Redirect old urls from v1.
-	rewriteHash($page.url.hash);
+	const q = $derived($page.url.searchParams.get('q'));
+	const preview = $derived($page.url.searchParams.get('preview'));
 
-	$effect(() => {
-		const q = $page.url.searchParams.get('q');
-		if (q) {
-			console.debug(`[Home] Extracted q from URL: ${q}`);
-			searchStore.set(q);
-		}
-	});
+	$effect(() => pageState.updateSearch(q));
+	$effect(() => pageState.updatePreview(preview));
 </script>
 
 <svelte:head>
