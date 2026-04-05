@@ -5,11 +5,10 @@ import { addUsers } from '$lib/stores/userStore';
 import type { ITree } from '$lib/types';
 import { formatDate } from '$lib/utils/strings';
 import { formatSpecies } from '$lib/utils/trees';
-import { get, writable } from 'svelte/store';
 
 const PAGE_SIZE = 24;
 
-type Tile = {
+export type Tile = {
 	id: string;
 	link: string;
 	species: string;
@@ -29,41 +28,42 @@ const formatTile = (tree: ITree): Tile => {
 	};
 };
 
-export const hooks = () => {
-	const tiles = writable<Tile[]>([]);
-	const loading = writable<boolean>(true);
-	const error = writable<boolean>(false);
-	const skip = writable<number>(0);
+class PageState {
+	tiles = $state<Tile[]>([]);
+	loading = $state<boolean>(true);
+	error = $state<boolean>(false);
+	skip = $state<number>(0);
 
-	const reload = () => {
+	reload = async () => {
 		const params = {
 			count: PAGE_SIZE,
-			skip: get(skip)
+			skip: this.skip
 		};
 
-		getUpdatedTrees(params)
-			.then(({ status, data }) => {
-				if (status < 400 && data) {
-					addTrees(data.trees);
-					addUsers(data.users);
+		try {
+			const { status, data } = await getUpdatedTrees(params);
+			if (status < 400 && data) {
+				addTrees(data.trees);
+				addUsers(data.users);
 
-					const added = data.trees.map(formatTile);
-					tiles.update((items) => [...items, ...added]);
-				} else {
-					error.set(true);
-				}
-			})
-			.finally(() => {
-				loading.set(false);
-			});
+				const added = data.trees.map(formatTile);
+				this.tiles = [...this.tiles, ...added];
+				this.error = false;
+			} else {
+				this.error = true;
+			}
+		} catch (err) {
+			console.error('Failed to load updated trees:', err);
+			this.error = true;
+		} finally {
+			this.loading = false;
+		}
 	};
 
-	const handleLoadMore = () => {
-		skip.update((value) => value + PAGE_SIZE);
-		reload();
+	handleLoadMore = () => {
+		this.skip += PAGE_SIZE;
+		this.reload();
 	};
+}
 
-	reload();
-
-	return { loading, error, tiles, handleLoadMore };
-};
+export const pageState = new PageState();

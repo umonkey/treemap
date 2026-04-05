@@ -1,25 +1,27 @@
 <script lang="ts">
-	import Dialog from '$lib/components/layout/Dialog.svelte';
-	import Tabs from '$lib/components/updates/Tabs.svelte';
-	import InfiniteScroll from '$lib/components/layout/InfiniteScroll.svelte';
-	import { locale } from '$lib/locale';
-	import { hooks } from './hooks';
 	import FALLBACK from '$lib/assets/tree.jpg';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
+	import InfiniteScroll from '$lib/components/layout/InfiniteScroll.svelte';
+	import Tabs from '$lib/components/updates/Tabs.svelte';
+	import { locale } from '$lib/locale';
+	import { pageState } from './page.svelte';
 
-	const { loading, error, tiles, handleLoadMore } = hooks();
+	$effect(() => {
+		pageState.reload();
+	});
 </script>
 
 <Dialog title={locale.updatesNewTitle()}>
 	<Tabs active="trees" />
 
-	{#if $loading}
+	{#if pageState.loading && pageState.tiles.length === 0}
 		<p>Loading trees...</p>
-	{:else if $error}
+	{:else if pageState.error}
 		<p>Error loading trees.</p>
 	{:else}
 		<div class="tiles">
-			<InfiniteScroll onLoadMore={handleLoadMore}>
-				{#each $tiles as tile (tile.id)}
+			<InfiniteScroll onLoadMore={pageState.handleLoadMore}>
+				{#each pageState.tiles as tile (tile.id)}
 					<div class="tile">
 						<a href={tile.link}>
 							<img src={tile.image ?? FALLBACK} alt={tile.species} />
