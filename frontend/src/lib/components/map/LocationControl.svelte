@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { Marker } from 'svelte-maplibre';
-	import { LocationState } from './LocationControl.svelte.ts';
-
-	const locationState = new LocationState();
+	import { locationState } from './LocationControl.svelte.ts';
 
 	onMount(locationState.onMount);
 </script>

@@ -1,3 +1,4 @@
+import { locationStore } from '$lib/stores/locationStore';
 import type { IMyPosition } from '$lib/types';
 
 export class LocationState {
@@ -31,6 +32,7 @@ export class LocationState {
 					pos.accuracy !== this.position.accuracy
 				) {
 					this.position = pos;
+					locationStore.set(pos);
 					console.debug(`[GEO] My position updated: ${pos.lat},${pos.lng} ~ ${pos.accuracy}`);
 				}
 			},
@@ -73,3 +75,5 @@ export class LocationState {
 		};
 	};
 }
+
+export const locationState = new LocationState();

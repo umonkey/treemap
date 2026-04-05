@@ -6,6 +6,7 @@
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import { type Snippet, onMount } from 'svelte';
 	import LayerButton from './LayerButton.svelte';
+	import LocateButton from './LocateButton.svelte';
 	import LocationControl from './LocationControl.svelte';
 	import { mapState } from './MapLibre.svelte.ts';
 	import Marker from './Marker.svelte';
@@ -38,6 +39,7 @@
 		maxBounds={MAX_BOUNDS}
 	>
 		<NavigationControl position="top-left" />
+		<LocateButton />
 		<LocationControl />
 
 		{#if children}
