@@ -42,7 +42,7 @@
 {:else if $loadError}
 	<p>{$loadError}</p>
 {:else if $tree}
-	<TreeForm {id} title="Replace Tree" onSubmit={save} onCancel={close} disabled={$busy}>
+	<TreeForm {id} title="Replace Tree" onSubmit={save} onCancel={close} saving={$busy}>
 		<p>{locale.replaceHint()}</p>
 
 		<SpeciesInput value={$species} onChange={(value: string) => species.set(value)} />

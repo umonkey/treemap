@@ -8,6 +8,7 @@ class GirthState {
 	id = $state<string | undefined>(undefined);
 	value = $state<number>(0);
 	canSave = $state<boolean>(false);
+	saving = $state<boolean>(false);
 
 	handleChange = (value: number) => {
 		this.value = value;
@@ -18,6 +19,7 @@ class GirthState {
 		this.id = id;
 		this.value = 0;
 		this.canSave = false;
+		this.saving = false;
 	};
 
 	save = () => {
@@ -27,7 +29,7 @@ class GirthState {
 			return;
 		}
 
-		this.canSave = false;
+		this.saving = true;
 
 		updateTreeCircumference(id, this.value)
 			.then((res) => {
@@ -43,7 +45,7 @@ class GirthState {
 				}
 			})
 			.finally(() => {
-				this.canSave = true;
+				this.saving = false;
 			});
 	};
 

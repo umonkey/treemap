@@ -33,7 +33,7 @@
 		title="Add Tree"
 		onSubmit={pageState.handleConfirm}
 		onCancel={pageState.handleCancel}
-		disabled={pageState.saving}
+		saving={pageState.saving}
 	>
 		<LocationInput
 			value={pageState.location}

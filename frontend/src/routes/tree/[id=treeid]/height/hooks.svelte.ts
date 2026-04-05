@@ -8,6 +8,7 @@ class HeightState {
 	id = $state<string | undefined>(undefined);
 	value = $state<number>(0);
 	canSave = $state<boolean>(false);
+	saving = $state<boolean>(false);
 
 	save = () => {
 		const id = this.id;
@@ -16,7 +17,7 @@ class HeightState {
 			return;
 		}
 
-		this.canSave = false;
+		this.saving = true;
 
 		updateTreeHeight(id, this.value)
 			.then((res) => {
@@ -27,7 +28,7 @@ class HeightState {
 				}
 			})
 			.finally(() => {
-				this.canSave = true;
+				this.saving = false;
 			});
 	};
 

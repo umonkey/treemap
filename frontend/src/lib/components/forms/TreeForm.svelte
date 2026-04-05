@@ -9,7 +9,8 @@
 		id?: string;
 		children?: Snippet;
 		title: string;
-		disabled?: boolean;
+		canSave?: boolean;
+		saving?: boolean;
 		onSubmit: () => void;
 		onCancel: () => void;
 		tree?: unknown;
@@ -19,13 +20,14 @@
 		id = undefined,
 		children,
 		title = 'Edit Tree',
-		disabled = false,
+		canSave = true,
+		saving = false,
 		onSubmit,
 		onCancel
 	}: Props = $props();
 
 	const handleSubmit = (e?: Event) => {
-		if (disabled) {
+		if (!canSave || saving) {
 			return;
 		}
 		e?.preventDefault();
@@ -33,7 +35,7 @@
 	};
 
 	const handleCancel = (e?: Event) => {
-		if (disabled) {
+		if (saving) {
 			return;
 		}
 		e?.preventDefault();
@@ -59,9 +61,9 @@
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<form class="dialog" onsubmit={handleSubmit} onkeydown={handleKeyDown}>
 		<div class="title">
-			<button class="phone" type="button" onclick={handleCancel} {disabled}>Cancel</button>
+			<button class="phone" type="button" onclick={handleCancel} disabled={saving}>Cancel</button>
 			<h1 oncontextmenu={handleLongTap}>{title}</h1>
-			<button class="phone" type="submit" {disabled}>Save</button>
+			<button class="phone" type="submit" disabled={!canSave || saving}>Save</button>
 		</div>
 
 		<div class="body">
@@ -73,8 +75,8 @@
 		</div>
 
 		<div class="buttons desktop">
-			<Button onClick={handleSubmit} {disabled}>Save Changes</Button>
-			<Button onClick={handleCancel} type="cancel" {disabled}>Cancel</Button>
+			<Button onClick={handleSubmit} disabled={!canSave || saving}>Save Changes</Button>
+			<Button onClick={handleCancel} type="cancel" disabled={saving}>Cancel</Button>
 		</div>
 	</form>
 </Overlay>

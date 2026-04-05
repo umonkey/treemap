@@ -8,6 +8,7 @@ class CrownState {
 	id = $state<string | undefined>(undefined);
 	value = $state<number>(0);
 	canSave = $state<boolean>(false);
+	saving = $state<boolean>(false);
 
 	save = () => {
 		const id = this.id;
@@ -16,7 +17,7 @@ class CrownState {
 			return;
 		}
 
-		this.canSave = false;
+		this.saving = true;
 
 		updateTreeDiameter(id, this.value)
 			.then((res) => {
@@ -32,7 +33,7 @@ class CrownState {
 				}
 			})
 			.finally(() => {
-				this.canSave = true;
+				this.saving = false;
 			});
 	};
 

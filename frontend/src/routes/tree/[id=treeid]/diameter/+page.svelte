@@ -16,7 +16,8 @@
 	title="Crown Diameter"
 	onSubmit={crownState.save}
 	onCancel={crownState.close}
-	disabled={!crownState.canSave}
+	canSave={crownState.canSave}
+	saving={crownState.saving}
 >
 	<CanopyInput value={null} autofocus onChange={crownState.handleChange} />
 	<ChangeHistory id={data.id} name="diameter" />

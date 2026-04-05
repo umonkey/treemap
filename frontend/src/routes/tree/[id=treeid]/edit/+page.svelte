@@ -43,7 +43,7 @@
 		id={data.id}
 		onSubmit={handleConfirm}
 		onCancel={handleCancel}
-		disabled={$saving}
+		saving={$saving}
 	>
 		<SpeciesInput value={$updated.species} onChange={handleSpeciesChange} />
 		<StateInput value={$updated.state} onChange={handleStateChange} />

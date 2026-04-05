@@ -33,7 +33,7 @@
 	title="Add Row of Trees"
 	onSubmit={pageState.handleConfirm}
 	onCancel={pageState.handleCancel}
-	disabled={pageState.saving}
+	saving={pageState.saving}
 >
 	<MapRowPreview {start} {end} count={pageState.count} />
 

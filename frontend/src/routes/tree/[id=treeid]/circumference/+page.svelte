@@ -16,7 +16,8 @@
 	title="Tree Circumference"
 	onSubmit={girthState.save}
 	onCancel={girthState.close}
-	disabled={!girthState.canSave}
+	canSave={girthState.canSave}
+	saving={girthState.saving}
 >
 	<CircumferenceInput value={null} autofocus onChange={girthState.handleChange} />
 	<ChangeHistory id={data.id} name="circumference" />

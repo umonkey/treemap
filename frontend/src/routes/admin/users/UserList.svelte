@@ -19,7 +19,7 @@
 							<img src={user.picture} alt="" referrerpolicy="no-referrer" class="user-pic" />
 						{/if}
 					</td>
-					<td with="100%">
+					<td width="100%">
 						<a href="/admin/users/{user.id}">{user.name}</a>
 					</td>
 				</tr>
