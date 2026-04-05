@@ -80,7 +80,8 @@
 			overflow: hidden;
 			flex-shrink: 0;
 			flex-grow: 0;
-			background-color: #000;
+			background-color: light-dark(var(--pico-color-grey-500), var(--pico-color-grey-950));
+			color: white;
 
 			a {
 				display: block;

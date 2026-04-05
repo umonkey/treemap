@@ -19,6 +19,12 @@
 	--color-learn-wrong-fg: #000;
 	--color-learn-correct-bg: #92d333;
 	--color-learn-correct-fg: #000;
+
+	/** Use some PicoCSS colors:
+	 *  https://picocss.com/docs/colors
+	 **/
+	--pico-color-grey-500: #777777;
+	--pico-color-grey-950: #111111;
 }
 
 @media (prefers-color-scheme: dark) {

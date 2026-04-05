@@ -116,7 +116,7 @@
 
 				background-color: transparent;
 				border: none;
-				color: #fff;
+				color: light-dark(black, white);
 				opacity: 0.5;
 			}
 		}

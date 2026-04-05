@@ -83,7 +83,9 @@
 		margin: 0;
 		padding: 0;
 
-		background-color: #444;
+		background-color: light-dark(var(--pico-color-grey-500), var(--pico-color-grey-950));
+		color: white;
+
 		padding: 10px;
 		cursor: pointer;
 		border-radius: 8px;
