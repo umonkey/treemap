@@ -40,7 +40,6 @@
 		background: #fff;
 		border-radius: 4px;
 		box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
-		min-width: 250px;
 	}
 
 	.search-icon {
@@ -91,6 +90,12 @@
 	@media screen and (max-width: 600px) {
 		.search-container {
 			right: 50px;
+		}
+	}
+
+	@media screen and (min-width: 601px) {
+		.search-group {
+			min-width: 250px;
 		}
 	}
 </style>
