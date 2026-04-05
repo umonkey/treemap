@@ -103,7 +103,13 @@
 {#if loading}
 	<p>Loading...</p>
 {:else}
-	<TreeForm {id} title="Observations" onSubmit={handleSubmit} onCancel={handleCancel} {saving}>
+	<TreeForm
+		{id}
+		title="Observations"
+		onSubmit={handleSubmit}
+		onCancel={handleCancel}
+		disabled={saving}
+	>
 		<div class="observation-status">
 			{#if observation.created_at > 0 && observation.created_by}
 				<p>Last observation made on {date} by {user?.name ?? 'unknown user'}</p>

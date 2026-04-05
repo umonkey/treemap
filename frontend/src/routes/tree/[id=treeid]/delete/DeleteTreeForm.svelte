@@ -18,7 +18,7 @@
 {:else if $loading}
 	<p>Checking the tree...</p>
 {:else if $tree}
-	<TreeForm {id} title="Remove Tree" onSubmit={save} onCancel={close} saving={$busy}>
+	<TreeForm {id} title="Remove Tree" onSubmit={save} onCancel={close} disabled={$busy}>
 		<p>{locale.deleteHeader()}</p>
 
 		<TreeSheet tree={$tree} />

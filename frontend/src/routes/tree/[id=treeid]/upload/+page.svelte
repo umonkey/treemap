@@ -19,13 +19,7 @@
 	});
 </script>
 
-<TreeForm
-	tree={pageState.tree}
-	title="Add Tree Photos"
-	onSubmit={close}
-	onCancel={close}
-	canSave={true}
->
+<TreeForm tree={pageState.tree} title="Add Tree Photos" onSubmit={close} onCancel={close}>
 	<p>{locale.photoIntro()}</p>
 	<PhotoUploader treeId={pageState.treeId} onChange={pageState.handleChange} />
 	<AutoUploadCheckbox />

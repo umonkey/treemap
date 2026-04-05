@@ -16,7 +16,7 @@
 	title="Tree Height"
 	onSubmit={heightState.save}
 	onCancel={heightState.close}
-	canSave={heightState.canSave}
+	disabled={!heightState.canSave}
 >
 	<HeightInput value={null} autofocus onChange={heightState.handleChange} />
 	<ChangeHistory id={data.id} name="height" />

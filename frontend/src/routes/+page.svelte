@@ -5,8 +5,17 @@
 	const q = $derived($page.url.searchParams.get('q'));
 	const preview = $derived($page.url.searchParams.get('preview'));
 
-	$effect(() => pageState.updateSearch(q));
-	$effect(() => pageState.updatePreview(preview));
+	$effect(() => {
+		if (q) {
+			pageState.updateSearch(q);
+		}
+	});
+
+	$effect(() => {
+		if (preview) {
+			pageState.updatePreview(preview);
+		}
+	});
 </script>
 
 <svelte:head>
