@@ -23,8 +23,19 @@
 	/** Use some PicoCSS colors:
 	 *  https://picocss.com/docs/colors
 	 **/
+	--pico-color-grey-50: #f1f1f1;
+	--pico-color-grey-100: #e2e2e2;
+	--pico-color-grey-200: #c6c6c6;
 	--pico-color-grey-500: #777777;
+	--pico-color-grey-800: #303030;
+	--pico-color-grey-900: #1b1b1b;
 	--pico-color-grey-950: #111111;
+
+	/** Dialog Colors **/
+	--color-dialog-header: light-dark(var(--pico-color-grey-200), var(--pico-color-grey-800));
+	--color-dialog-background: light-dark(var(--pico-color-grey-50), black);
+	--color-dialog-border: var(--pico-color-grey-100);
+	--color-dialog-text: light-dark(var(--pico-color-grey-900), var(--pico-color-grey-100));
 }
 
 @media (prefers-color-scheme: dark) {

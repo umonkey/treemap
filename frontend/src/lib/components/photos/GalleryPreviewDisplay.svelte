@@ -80,8 +80,8 @@
 			overflow: hidden;
 			flex-shrink: 0;
 			flex-grow: 0;
-			background-color: light-dark(var(--pico-color-grey-500), var(--pico-color-grey-950));
-			color: white;
+			background-color: var(--color-dialog-header);
+			color: var(--color-dialog-text);
 
 			a {
 				display: block;
@@ -95,7 +95,6 @@
 				scroll-snap-stop: always;
 
 				&.upload {
-					background-color: rgba(0, 0, 0, 0.25);
 					padding: 20px;
 					box-sizing: border-box;
 				}

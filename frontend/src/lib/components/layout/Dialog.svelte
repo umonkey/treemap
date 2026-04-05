@@ -63,7 +63,7 @@
 		left: 50%;
 		transform: translate(-50%, -50%);
 
-		background-color: var(--background-color);
+		background-color: var(--color-dialog-background);
 		border-radius: 10px;
 		overflow: hidden;
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -98,7 +98,7 @@
 	}
 
 	h1 {
-		font-size: 1.25rem;
+		font-size: 1rem;
 		font-weight: 400;
 		line-height: 40px;
 		text-align: center;

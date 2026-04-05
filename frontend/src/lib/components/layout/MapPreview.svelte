@@ -95,9 +95,10 @@
 		width: 100%;
 		min-height: 132px;
 		box-sizing: border-box;
-		background-color: var(--form-background);
+		background-color: var(--color-dialog-background);
 		border-top-left-radius: 8px;
 		border-top-right-radius: 8px;
+		border-right: 1px solid var(--color-dialog-border);
 
 		padding: var(--gap);
 

@@ -83,8 +83,8 @@
 		margin: 0;
 		padding: 0;
 
-		background-color: light-dark(var(--pico-color-grey-500), var(--pico-color-grey-950));
-		color: white;
+		background-color: var(--color-dialog-header);
+		color: var(--color-dialog-text);
 
 		padding: 10px;
 		cursor: pointer;
