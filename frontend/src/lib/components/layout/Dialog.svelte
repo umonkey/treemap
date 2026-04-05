@@ -81,8 +81,7 @@
 		padding: 0.5rem 1rem;
 		box-sizing: border-box;
 
-		height: 40px;
-		background-color: rgba(0, 0, 0, 0.2);
+		background-color: var(--color-dialog-header);
 
 		display: flex;
 		flex-direction: row;
@@ -91,10 +90,11 @@
 
 	.title {
 		padding: 0.5rem 0;
+		height: var(--dialog-header-size);
 	}
 
 	.actions {
-		height: 60px;
+		height: var(--dialog-footer-size);
 	}
 
 	h1 {
@@ -160,7 +160,11 @@
 		}
 
 		.body {
+			min-height: none;
 			max-height: none;
+			height: calc(
+				100vh - var(--dialog-header-size) - var(--dialog-footer-size) - var(--bottom-nav-height)
+			);
 		}
 	}
 </style>

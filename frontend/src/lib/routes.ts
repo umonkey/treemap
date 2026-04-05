@@ -42,7 +42,7 @@ export const routes = {
 	settings: () => '/settings',
 	search: () => '/search',
 	searchAddress: (query: string) => `/?q=addr:"${query}"`,
-	searchQuery: (query: string) => query ? `/?q=${query}` : '/',
+	searchQuery: (query: string) => (query ? `/?q=${query}` : '/'),
 	searchSpecies: (query: string) => `/?q=species:"${query}"`,
 	searchState: (query: string) => `/?q=state:"${query}"`,
 	stats: () => '/stats',
