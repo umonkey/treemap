@@ -39,7 +39,8 @@ describe('ChangeHistory hooks', () => {
 				trees_count: 0,
 				comments_count: 0,
 				updates_count: 0,
-				files_count: 0
+				files_count: 0,
+				last_active_at: 0
 			}
 		]);
 

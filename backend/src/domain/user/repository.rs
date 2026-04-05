@@ -4,7 +4,7 @@ use crate::infra::database::{
 };
 use crate::services::*;
 use crate::types::*;
-use crate::utils::unique_ids;
+use crate::utils::{get_timestamp, unique_ids};
 use log::error;
 use std::sync::Arc;
 
@@ -116,6 +116,15 @@ impl UserRepository {
 
         self.db.increment(query).await.map_err(|e| {
             error!("Error incrementing {key} for user {user_id}: {e}");
+            e
+        })?;
+
+        let query = UpdateQuery::new(TABLE)
+            .with_condition("id", Value::from(user_id as i64))
+            .with_value("last_active_at", Value::from(get_timestamp() as i64));
+
+        self.db.update(query).await.map_err(|e| {
+            error!("Error updating last_active_at for user {user_id}: {e}");
             e
         })?;
 

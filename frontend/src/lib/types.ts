@@ -26,6 +26,7 @@ export interface IUser {
 	comments_count: number;
 	updates_count: number;
 	files_count: number;
+	last_active_at: number;
 }
 
 export interface IUserList {
@@ -94,6 +95,7 @@ export interface IMeResponse {
 	comments_count: number;
 	updates_count: number;
 	files_count: number;
+	last_active_at: number;
 }
 
 export interface ISpecies {

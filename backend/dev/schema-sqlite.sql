@@ -98,6 +98,7 @@ CREATE TABLE IF NOT EXISTS users (
     `comments_count` INT NOT NULL DEFAULT '0',
     `updates_count` INT NOT NULL DEFAULT '0',
     `files_count` INT NOT NULL DEFAULT '0',
+    `last_active_at` INT NOT NULL DEFAULT '0',
     PRIMARY KEY(`id`)
 );
 CREATE UNIQUE INDEX IF NOT EXISTS users_email ON users (email);

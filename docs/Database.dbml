@@ -64,6 +64,7 @@ Table users {
   comments_count int [not null, default: 0]
   updates_count int [not null, default: 0]
   files_count int [not null, default: 0]
+  last_active_at int [not null, default: 0]
 }
 
 Table comments {

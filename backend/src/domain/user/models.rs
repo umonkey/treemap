@@ -15,6 +15,7 @@ pub struct User {
     pub comments_count: i64,
     pub updates_count: i64,
     pub files_count: i64,
+    pub last_active_at: u64,
 }
 
 impl User {
@@ -29,6 +30,7 @@ impl User {
             comments_count: attributes.require_i64("comments_count")?,
             updates_count: attributes.require_i64("updates_count")?,
             files_count: attributes.require_i64("files_count")?,
+            last_active_at: attributes.get_u64("last_active_at")?.unwrap_or(0),
         })
     }
 
@@ -46,6 +48,10 @@ impl User {
             ),
             ("updates_count".to_string(), Value::from(self.updates_count)),
             ("files_count".to_string(), Value::from(self.files_count)),
+            (
+                "last_active_at".to_string(),
+                Value::from(self.last_active_at as i64),
+            ),
         ])
     }
 }
