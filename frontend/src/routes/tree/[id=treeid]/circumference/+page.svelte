@@ -1,18 +1,19 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import TreeForm from '$lib/components/forms/TreeForm.svelte';
 	import CircumferenceInput from '$lib/ui/circumference-input/CircumferenceInput.svelte';
 	import ChangeHistory from '../components/ChangeHistory.svelte';
 	import { girthState } from './hooks.svelte.ts';
 
-	const { data } = $props();
+	const id = $derived($page.params.id as string);
 
 	$effect(() => {
-		girthState.reload(data.id);
+		girthState.reload(id);
 	});
 </script>
 
 <TreeForm
-	id={data.id}
+	{id}
 	title="Tree Circumference"
 	onSubmit={girthState.save}
 	onCancel={girthState.close}
@@ -20,5 +21,5 @@
 	saving={girthState.saving}
 >
 	<CircumferenceInput value={null} autofocus onChange={girthState.handleChange} />
-	<ChangeHistory id={data.id} name="circumference" />
+	<ChangeHistory {id} name="circumference" />
 </TreeForm>

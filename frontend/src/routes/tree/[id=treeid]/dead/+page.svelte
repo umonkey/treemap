@@ -1,11 +1,8 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import TreeDeadForm from './TreeDeadForm.svelte';
 
-	const { data } = $props<{
-		data: {
-			id: string;
-		};
-	}>();
+	const id = $derived($page.params.id as string);
 </script>
 
-<TreeDeadForm id={data.id} />
+<TreeDeadForm {id} />

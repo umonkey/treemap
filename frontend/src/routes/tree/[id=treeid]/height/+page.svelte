@@ -1,18 +1,19 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import TreeForm from '$lib/components/forms/TreeForm.svelte';
 	import HeightInput from '$lib/ui/height-input/HeightInput.svelte';
 	import ChangeHistory from '../components/ChangeHistory.svelte';
 	import { heightState } from './hooks.svelte.ts';
 
-	const { data } = $props();
+	const id = $derived($page.params.id as string);
 
 	$effect(() => {
-		heightState.reload(data.id);
+		heightState.reload(id);
 	});
 </script>
 
 <TreeForm
-	id={data.id}
+	{id}
 	title="Tree Height"
 	onSubmit={heightState.save}
 	onCancel={heightState.close}
@@ -20,5 +21,5 @@
 	saving={heightState.saving}
 >
 	<HeightInput value={null} autofocus onChange={heightState.handleChange} />
-	<ChangeHistory id={data.id} name="height" />
+	<ChangeHistory {id} name="height" />
 </TreeForm>

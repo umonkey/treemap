@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import TreeForm from '$lib/components/forms/TreeForm.svelte';
 	import CanopyInput from '$lib/ui/canopy-input/CanopyInput.svelte';
 	import CircumferenceInput from '$lib/ui/circumference-input/CircumferenceInput.svelte';
@@ -11,10 +12,10 @@
 	import YearInput from '$lib/ui/year-input/YearInput.svelte';
 	import { pageState } from './page.svelte';
 
-	const { data } = $props();
+	const id = $derived($page.params.id as string);
 
 	$effect(() => {
-		pageState.reload(data.id);
+		pageState.reload(id);
 	});
 </script>
 
@@ -23,7 +24,7 @@
 {:else if pageState.tree}
 	<TreeForm
 		title="Edit Tree"
-		id={data.id}
+		{id}
 		onSubmit={pageState.handleConfirm}
 		onCancel={pageState.handleCancel}
 		saving={pageState.saving}

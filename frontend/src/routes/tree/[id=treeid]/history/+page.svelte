@@ -1,14 +1,15 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import Title from '../components/Title.svelte';
 	import TreeTabs from '../components/TreeTabs.svelte';
 	import ChangeList from './ChangeList.svelte';
 	import { pageState } from './page.svelte';
 
-	const { data } = $props();
+	const id = $derived($page.params.id as string);
 
 	$effect(() => {
-		pageState.reload(data.id);
+		pageState.reload(id);
 	});
 </script>
 

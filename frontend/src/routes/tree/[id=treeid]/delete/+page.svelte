@@ -1,11 +1,8 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import DeleteTreeForm from './DeleteTreeForm.svelte';
 
-	const { data } = $props<{
-		data: {
-			id: string;
-		};
-	}>();
+	const id = $derived($page.params.id as string);
 </script>
 
-<DeleteTreeForm id={data.id} />
+<DeleteTreeForm {id} />
