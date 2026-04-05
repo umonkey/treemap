@@ -109,7 +109,7 @@
 		left: 0;
 		box-sizing: border-box;
 
-		background-color: var(--form-background);
+		background-color: var(--map-menu-background);
 
 		display: flex;
 		flex-direction: column;

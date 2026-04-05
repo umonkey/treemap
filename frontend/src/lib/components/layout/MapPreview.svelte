@@ -95,7 +95,7 @@
 		width: 100%;
 		min-height: 132px;
 		box-sizing: border-box;
-		background-color: var(--color-dialog-background);
+		background-color: var(--map-menu-background);
 		border-top-left-radius: 8px;
 		border-top-right-radius: 8px;
 		border-right: 1px solid var(--color-dialog-border);

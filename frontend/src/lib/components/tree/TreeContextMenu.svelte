@@ -82,7 +82,7 @@
 		animation: fadeIn 0.1s ease-in-out;
 
 		.menu {
-			background-color: var(--form-background);
+			background-color: var(--map-menu-background);
 			border-radius: 8px;
 
 			position: fixed;
