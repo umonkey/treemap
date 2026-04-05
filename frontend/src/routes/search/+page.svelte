@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
@@ -8,35 +7,29 @@
 	import Form from '$lib/ui/form/Form.svelte';
 	import SpeciesInput from '$lib/ui/species-input/SpeciesInput.svelte';
 	import StreetInput from '$lib/ui/street-input/StreetInput.svelte';
-	import { hooks } from './hooks';
-
-	let query = $state<string>('');
-
-	const { handleStreetChange, handleSpeciesChange, handleSubmit } = hooks();
-
-	const handleSearch = (value: string) => {
-		goto(routes.searchQuery(value));
-	};
-
-	const handleInput = (value: string) => {
-		query = value;
-	};
+	import { pageState } from './page.svelte';
 
 	const buttons = [
 		{
 			title: 'Search',
-			onClick: handleSubmit
+			onClick: pageState.handleSubmit
 		}
 	];
 </script>
 
 <Dialog title={locale.searchTitle()} {buttons}>
-	<SearchBar value={query} onInput={handleInput} onSearch={handleSearch} />
+	<SearchBar
+		value={pageState.query}
+		onInput={pageState.handleInput}
+		onSearch={pageState.handleSearch}
+	/>
 
 	<div>
-		{#if query}
+		{#if pageState.query}
 			<p>
-				<a href={routes.searchQuery(query)} data-testid="search-link">{locale.searchLink(query)}</a>
+				<a href={routes.searchQuery(pageState.query)} data-testid="search-link"
+					>{locale.searchLink(pageState.query)}</a
+				>
 			</p>
 			<hr />
 		{/if}
@@ -100,9 +93,9 @@
 		{/if}
 	</div>
 
-	<Form onSubmit={handleSubmit}>
-		<SpeciesInput onChange={handleSpeciesChange} />
-		<StreetInput onChange={handleStreetChange} />
+	<Form onSubmit={pageState.handleSubmit}>
+		<SpeciesInput onChange={pageState.handleSpeciesChange} />
+		<StreetInput onChange={pageState.handleStreetChange} />
 	</Form>
 </Dialog>
 
