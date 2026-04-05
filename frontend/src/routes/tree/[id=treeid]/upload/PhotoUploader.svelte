@@ -3,8 +3,7 @@
 	import GalleryIcon from '$lib/icons/GalleryIcon.svelte';
 	import FileUploaderDisplay from '$lib/ui/file-uploader-display/FileUploaderDisplay.svelte';
 	import { restartUploadQueue } from '$lib/upload';
-	import { onMount } from 'svelte';
-	import { load } from './PhotoUploader';
+	import { componentState as state } from './PhotoUploader.svelte.ts';
 
 	const { label, treeId, onChange, small } = $props<{
 		label?: string;
@@ -13,7 +12,9 @@
 		small?: boolean;
 	}>();
 
-	const { thumbnails, handleChange } = load({ treeId, onChange, onMount });
+	$effect(() => {
+		return state.init(treeId, onChange);
+	});
 </script>
 
 {#if label}
@@ -28,7 +29,7 @@
 			<input
 				type="file"
 				accept="image/jpeg"
-				onchange={handleChange}
+				onchange={state.handleChange}
 				capture="environment"
 				multiple
 			/>
@@ -37,11 +38,11 @@
 		<label class="gallery">
 			<GalleryIcon />
 
-			<input type="file" accept="image/jpeg" onchange={handleChange} multiple />
+			<input type="file" accept="image/jpeg" onchange={state.handleChange} multiple />
 		</label>
 
 		<FileUploaderDisplay
-			items={$thumbnails.map((thumbnail) => ({
+			items={state.thumbnails.map((thumbnail) => ({
 				src: URL.createObjectURL(thumbnail.file),
 				busy: thumbnail.busy,
 				error: thumbnail.error
