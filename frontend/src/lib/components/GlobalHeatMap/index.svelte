@@ -1,21 +1,24 @@
 <script lang="ts">
-	import { hooks } from './hooks';
 	import { locale } from '$lib/locale';
+	import { onMount } from 'svelte';
 	import HeatMap from '../HeatMap/index.svelte';
+	import { globalHeatMapState } from './index.svelte.ts';
 
-	const { data, error, loading } = hooks();
+	onMount(() => {
+		globalHeatMapState.init();
+	});
 </script>
 
-{#if $loading}
+{#if globalHeatMapState.loading && globalHeatMapState.data.length === 0}
 	<!-- loading -->
-{:else if $data}
+{:else if globalHeatMapState.data.length > 0}
 	<HeatMap
 		title={locale.globalHeatmapHeader()}
-		data={$data}
+		data={globalHeatMapState.data}
 		docs="https://github.com/umonkey/treemap/wiki/Heat-maps"
 	/>
-{:else if $error}
-	<p>Error loading heat map: {error}</p>
+{:else if globalHeatMapState.error}
+	<p>Error loading heat map: {globalHeatMapState.error}</p>
 {:else}
 	<p>Error loading heat map.</p>
 {/if}
