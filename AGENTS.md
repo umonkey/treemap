@@ -33,6 +33,8 @@ The project uses a `Makefile` for high-level tasks:
 - `make build`: build the whole application using Docker.
 - `make start`: start the application using Docker Compose.
 
+When asked to "wrap up", provide a conventional commits styled message for the whole session.
+
 
 ## Documentation
 

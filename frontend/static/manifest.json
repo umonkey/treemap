@@ -60,7 +60,7 @@
 	],
 	"theme_color": "#14191f",
 	"background_color": "#14191f",
-	"display": "fullscreen",
+	"display": "standalone",
 	"orientation": "portrait-primary",
 	"start_url": "/",
 	"lang": "en",
