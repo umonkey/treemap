@@ -3,5 +3,10 @@ yerevan.treemaps.app, api.treemaps.app {
 		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
 	}
 
+	# Enable compression for faster loading.
+	encode zstd gzip
+
+	# The backend serves both the API and the static frontend.
+	# It has been updated to allow hidden files in .well-known for TWA verification.
 	reverse_proxy backend:8000
 }

@@ -78,7 +78,8 @@ pub async fn serve_command() {
             .service(
                 Files::new("/", "./static")
                     .prefer_utf8(true)
-                    .index_file("index.html"),
+                    .index_file("index.html")
+                    .use_hidden_files(),
             )
             .default_service(actix_web::web::to(default_action))
     })
