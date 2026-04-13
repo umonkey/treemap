@@ -22,12 +22,18 @@
 	const onClose = () => {
 		mobileSidebarStore.set(false);
 	};
+
+	const onOverlayClick = (e: MouseEvent) => {
+		if (e.target === e.currentTarget) {
+			onClose();
+		}
+	};
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <!-- svelte-ignore a11y_click_events_have_key_events -->
-<div class="overlay" class:visible={!!$isSidebarVisible} onclick={onClose}>
-	<div class="canvas" onclick={(e) => e.stopPropagation()}>
+<div class="overlay" class:visible={!!$isSidebarVisible} onclick={onOverlayClick}>
+	<div class="canvas">
 		<div class="mobile-header">
 			<button class="close-btn" onclick={onClose}>
 				<CloseIcon />
@@ -36,19 +42,19 @@
 
 		<ul>
 			<li>
-				<a href="/" onclick={onClose}>
+				<a href={routes.home()} onclick={onClose}>
 					<span class="icon"><HomeIcon /></span>
 					<span>{locale.sideHome()}</span>
 				</a>
 			</li>
 			<li>
-				<a href="/search" onclick={onClose}>
+				<a href={routes.search()} onclick={onClose}>
 					<span class="icon"><SearchIcon /></span>
 					<span>{locale.sideSearch()}</span>
 				</a>
 			</li>
 			<li>
-				<a href="/stats" onclick={onClose}>
+				<a href={routes.stats()} onclick={onClose}>
 					<span class="icon"><ChartIcon /></span>
 					<span>{locale.sideReports()}</span>
 				</a>
