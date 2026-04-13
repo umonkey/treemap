@@ -1,0 +1,51 @@
+{
+  "packageId": "app.treemaps.yerevan.twa",
+  "host": "yerevan.treemaps.app",
+  "name": "Trees of Yerevan",
+  "launcherName": "TreeMap",
+  "display": "standalone",
+  "themeColor": "#14191F",
+  "themeColorDark": "#000000",
+  "navigationColor": "#000000",
+  "navigationColorDark": "#000000",
+  "navigationDividerColor": "#000000",
+  "navigationDividerColorDark": "#000000",
+  "backgroundColor": "#14191F",
+  "enableNotifications": true,
+  "startUrl": "/",
+  "iconUrl": "https://yerevan.treemaps.app/icons/app-512x512.png",
+  "maskableIconUrl": "https://yerevan.treemaps.app/icons/app-512x512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "/home/hex/src/umonkey/treemap/frontend/release.keystore",
+    "alias": "android"
+  },
+  "appVersionName": "1",
+  "appVersionCode": 1,
+  "shortcuts": [],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://yerevan.treemaps.app/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {
+    "locationDelegation": {
+      "enabled": true
+    }
+  },
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://yerevan.treemaps.app/",
+  "minSdkVersion": 21,
+  "orientation": "portrait-primary",
+  "fingerprints": [],
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "protocolHandlers": [],
+  "fileHandlers": [],
+  "launchHandlerClientMode": "focus-existing",
+  "displayOverride": [],
+  "appVersion": "1"
+}
