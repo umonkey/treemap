@@ -312,23 +312,6 @@ impl DatabaseInterface for SqliteTransaction {
         Ok(0)
     }
 
-    async fn find_streets(&self, query: &str) -> Result<Vec<String>> {
-        let pattern = format!("%{}%", query.trim().to_lowercase());
-
-        let rows = self.fetch(
-            "SELECT DISTINCT address FROM trees WHERE state <> 'gone' AND address LIKE ?1 ORDER BY address LIMIT 10",
-            &[Value::from(pattern)],
-        ).await?;
-
-        let mut streets: Vec<String> = Vec::new();
-
-        for row in rows {
-            streets.push(row.require_string("address")?);
-        }
-
-        Ok(streets)
-    }
-
     async fn find_recent_species(&self, user_id: u64) -> Result<Vec<String>> {
         let since = get_timestamp() - SUGGEST_WINDOW;
 
@@ -533,10 +516,6 @@ impl DatabaseInterface for SqliteDatabase {
 
     async fn count(&self, query: CountQuery) -> Result<u64> {
         self.transact().await?.count(query).await
-    }
-
-    async fn find_streets(&self, query: &str) -> Result<Vec<String>> {
-        self.transact().await?.find_streets(query).await
     }
 
     async fn find_recent_species(&self, user_id: u64) -> Result<Vec<String>> {

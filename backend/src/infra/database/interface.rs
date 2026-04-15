@@ -76,12 +76,9 @@ impl Database {
         self.db.execute_sql(query, params).await
     }
 
+    #[allow(dead_code)]
     pub async fn execute(&self, query: &str) -> Result<()> {
         self.db.execute(query).await
-    }
-
-    pub async fn find_streets(&self, query: &str) -> Result<Vec<String>> {
-        self.db.find_streets(query).await
     }
 
     pub async fn find_recent_species(&self, user_id: u64) -> Result<Vec<String>> {
