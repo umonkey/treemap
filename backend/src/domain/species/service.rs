@@ -2,7 +2,7 @@ use super::models::Species;
 use super::report::{calculate_simpson_index, format_species_report};
 use super::schemas::{DiversityReport, SpeciesStats};
 use super::utils::{get_genus_name, get_species_name};
-use crate::infra::database::Database;
+use crate::infra::database::{Database, Value};
 use crate::services::{Context, Injectable};
 use crate::types::Result;
 use log::debug;
@@ -15,7 +15,28 @@ pub struct SpeciesService {
 
 impl SpeciesService {
     pub async fn search(&self, query: &str) -> Result<Vec<Species>> {
-        self.db.find_species(query).await
+        let pattern = format!("%{}%", query.trim().to_lowercase());
+
+        let rows = self
+            .db
+            .sql(
+                "SELECT name, local, keywords, wikidata_id FROM species WHERE name LIKE ?1 OR local LIKE ?1 OR keywords LIKE ?1 ORDER BY name LIMIT 10",
+                &[Value::from(pattern)],
+            )
+            .await?;
+
+        let mut species: Vec<Species> = Vec::new();
+
+        for row in rows {
+            species.push(Species {
+                name: row.require_string("name")?,
+                local: row.require_string("local")?,
+                keywords: row.require_string("keywords")?,
+                wikidata_id: row.require_string("wikidata_id")?,
+            });
+        }
+
+        Ok(species)
     }
 
     pub async fn suggest(&self, user_id: u64) -> Result<Vec<String>> {
@@ -126,5 +147,43 @@ impl SpeciesService {
 impl Injectable for SpeciesService {
     fn inject(ctx: &dyn Context) -> Result<Self> {
         Ok(Self { db: ctx.database() })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::services::AppState;
+    use crate::services::ContextExt;
+
+    async fn setup() -> SpeciesService {
+        if env_logger::try_init().is_err() {
+            debug!("env_logger already initialized.");
+        };
+
+        let state = AppState::new().await.expect("Error creating app state.");
+
+        state
+            .build::<SpeciesService>()
+            .expect("Error creating SpeciesService")
+    }
+
+    #[tokio::test]
+    async fn test_search() {
+        let service = setup().await;
+
+        service
+            .db
+            .execute(include_str!("../../infra/database/fixtures/species.sql"))
+            .await
+            .expect("Error adding species.");
+
+        let species = service
+            .search(" oak ")
+            .await
+            .expect("Error finding species.");
+
+        assert_eq!(species.len(), 1, "Could not find species for oak.");
+        assert_eq!("Quercus robur", species[0].name);
     }
 }

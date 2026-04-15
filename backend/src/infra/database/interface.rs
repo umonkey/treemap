@@ -8,7 +8,6 @@ use super::base::DatabaseInterface;
 use super::queries::*;
 use super::sqlite_database::SqliteDatabase;
 use super::value::Value;
-use crate::domain::species::Species;
 use crate::domain::tree::Tree;
 use crate::infra::config::Config;
 use crate::infra::secrets::Secrets;
@@ -77,8 +76,8 @@ impl Database {
         self.db.execute_sql(query, params).await
     }
 
-    pub async fn find_species(&self, query: &str) -> Result<Vec<Species>> {
-        self.db.find_species(query).await
+    pub async fn execute(&self, query: &str) -> Result<()> {
+        self.db.execute(query).await
     }
 
     pub async fn find_streets(&self, query: &str) -> Result<Vec<String>> {

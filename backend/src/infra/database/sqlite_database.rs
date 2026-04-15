@@ -4,7 +4,6 @@
 
 use super::base::DatabaseInterface;
 use super::queries::*;
-use crate::domain::species::Species;
 use crate::domain::tree::Tree;
 use crate::infra::database::{Attributes, Value};
 use crate::types::*;
@@ -130,9 +129,8 @@ impl SqliteDatabase {
         })
     }
 
-    #[allow(unused)]
-    pub async fn execute(&self, script: String) -> Result<()> {
-        Self::execute_pool(&self.pool, script).await
+    pub async fn execute_batch(&self, script: &str) -> Result<()> {
+        Self::execute_pool(&self.pool, script.to_string()).await
     }
 
     async fn execute_pool(pool: &Database, script: String) -> Result<()> {
@@ -229,6 +227,12 @@ impl DatabaseInterface for SqliteTransaction {
         Ok(())
     }
 
+    async fn execute(&self, _query: &str) -> Result<()> {
+        Err(Error::DatabaseQuery(
+            "Batch execution is not supported in transactions".to_string(),
+        ))
+    }
+
     async fn get_record(&self, query: SelectQuery) -> Result<Option<Attributes>> {
         let query = query.with_limit(1);
         let records = self.get_records(query).await?;
@@ -306,28 +310,6 @@ impl DatabaseInterface for SqliteTransaction {
         }
 
         Ok(0)
-    }
-
-    async fn find_species(&self, query: &str) -> Result<Vec<Species>> {
-        let pattern = format!("%{}%", query.trim().to_lowercase());
-
-        let rows = self.fetch(
-            "SELECT name, local, keywords, wikidata_id FROM species WHERE name LIKE ?1 OR local LIKE ?1 OR keywords LIKE ?1 ORDER BY name LIMIT 10",
-            &[Value::from(pattern)],
-        ).await?;
-
-        let mut species: Vec<Species> = Vec::new();
-
-        for row in rows {
-            species.push(Species {
-                name: row.require_string("name")?,
-                local: row.require_string("local")?,
-                keywords: row.require_string("keywords")?,
-                wikidata_id: row.require_string("wikidata_id")?,
-            });
-        }
-
-        Ok(species)
     }
 
     async fn find_streets(&self, query: &str) -> Result<Vec<String>> {
@@ -505,6 +487,10 @@ impl DatabaseInterface for SqliteDatabase {
         tx.commit().await
     }
 
+    async fn execute(&self, query: &str) -> Result<()> {
+        self.execute_batch(query).await
+    }
+
     async fn get_record(&self, query: SelectQuery) -> Result<Option<Attributes>> {
         self.transact().await?.get_record(query).await
     }
@@ -547,10 +533,6 @@ impl DatabaseInterface for SqliteDatabase {
 
     async fn count(&self, query: CountQuery) -> Result<u64> {
         self.transact().await?.count(query).await
-    }
-
-    async fn find_species(&self, query: &str) -> Result<Vec<Species>> {
-        self.transact().await?.find_species(query).await
     }
 
     async fn find_streets(&self, query: &str) -> Result<Vec<String>> {
@@ -619,7 +601,7 @@ mod tests {
             .await
             .expect("Error creating database.");
 
-        db.execute(include_str!("./fixtures/init.sql").to_string())
+        db.execute(include_str!("./fixtures/init.sql"))
             .await
             .expect("Error installing fixtures.");
 
@@ -629,27 +611,10 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_find_species() {
-        let db = setup().await;
-
-        db.execute(include_str!("./fixtures/species.sql").to_string())
-            .await
-            .expect("Error adding species.");
-
-        let species = db
-            .find_species(" oak ")
-            .await
-            .expect("Error finding species.");
-
-        assert_eq!(species.len(), 1, "Could not find species for oak.");
-        assert_eq!("Quercus robur", species[0].name);
-    }
-
-    #[tokio::test]
     async fn test_species_stats() {
         let db = setup().await;
 
-        db.execute(include_str!("./fixtures/test_species_stats.sql").to_string())
+        db.execute(include_str!("./fixtures/test_species_stats.sql"))
             .await
             .expect("Error adding species.");
 
@@ -664,7 +629,7 @@ mod tests {
     async fn test_heatmap() {
         let db = setup().await;
 
-        db.execute(include_str!("./fixtures/test_heatmap.sql").to_string())
+        db.execute(include_str!("./fixtures/test_heatmap.sql"))
             .await
             .expect("Error adding heatmap input.");
 
@@ -684,7 +649,7 @@ mod tests {
     async fn test_user_heatmap() {
         let db = setup().await;
 
-        db.execute(include_str!("./fixtures/test_heatmap.sql").to_string())
+        db.execute(include_str!("./fixtures/test_heatmap.sql"))
             .await
             .expect("Error adding heatmap input.");
 
