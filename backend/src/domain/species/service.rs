@@ -22,7 +22,7 @@ impl SpeciesService {
 
         let rows = self
             .db
-            .sql(
+            .fetch_sql(
                 "SELECT name, local, keywords, wikidata_id FROM species WHERE name LIKE ?1 OR local LIKE ?1 OR keywords LIKE ?1 ORDER BY name LIMIT 10",
                 &[Value::from(pattern)],
             )
@@ -47,7 +47,7 @@ impl SpeciesService {
 
         let rows = self
             .db
-            .sql(
+            .fetch_sql(
                 "SELECT species, COUNT(1) AS use_count FROM trees WHERE updated_by = ? AND updated_at >= ? AND LOWER(species) <> 'unknown' GROUP BY species ORDER BY use_count DESC LIMIT 10",
                 &[Value::from(user_id), Value::from(since)],
             )
@@ -93,7 +93,7 @@ impl SpeciesService {
     async fn get_raw_stats(&self) -> Result<Vec<(String, u64)>> {
         let rows = self
             .db
-            .sql(
+            .fetch_sql(
                 "SELECT species, COUNT(1) AS cnt FROM trees WHERE state <> 'gone' AND state <> 'stump' GROUP BY TRIM(LOWER(species)) ORDER BY cnt DESC, LOWER(species)",
                 &[],
             )

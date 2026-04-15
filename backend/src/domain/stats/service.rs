@@ -12,7 +12,7 @@ impl StatsService {
     pub async fn count_trees_by_state(&self) -> Result<Vec<StateStatsResponse>> {
         let rows = self
             .db
-            .sql(
+            .fetch_sql(
                 "SELECT state, COUNT(1) AS cnt FROM trees WHERE state IS NOT NULL GROUP BY state ORDER BY cnt DESC",
                 &[],
             )
@@ -32,7 +32,7 @@ impl StatsService {
     pub async fn get_top_streets(&self) -> Result<Vec<StreetStatsResponse>> {
         let rows = self
             .db
-            .sql(
+            .fetch_sql(
                 "SELECT address, COUNT(1) AS cnt FROM trees WHERE state <> 'gone' AND address IS NOT NULL GROUP BY LOWER(address) ORDER BY cnt DESC, LOWER(address) LIMIT ?1",
                 &[Value::from(1000u64)],
             )

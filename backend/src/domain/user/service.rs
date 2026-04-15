@@ -46,7 +46,7 @@ impl UserService {
         let query: &str = "SELECT `added_by`, COUNT(1) AS `cnt` FROM `trees` WHERE `added_at` >= ? ORDER BY `cnt` DESC LIMIT 10";
         let params = vec![Value::from(after as i64)];
 
-        let rows = self.db.sql(query, &params).await?;
+        let rows = self.db.fetch_sql(query, &params).await?;
         let ids: Result<Vec<u64>> = rows.iter().map(|row| row.require_u64("added_by")).collect();
 
         ids.map_err(|e| {
@@ -60,7 +60,7 @@ impl UserService {
             "SELECT `id` FROM `users` ORDER BY `trees_count` + `updates_count` DESC LIMIT 10";
         let params = vec![];
 
-        let rows = self.db.sql(query, &params).await?;
+        let rows = self.db.fetch_sql(query, &params).await?;
 
         let ids: Result<Vec<u64>> = rows.iter().map(|row| row.require_u64("id")).collect();
 

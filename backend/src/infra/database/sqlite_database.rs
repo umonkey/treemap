@@ -13,7 +13,7 @@ use libsql::{Builder, Database, Transaction};
 use log::{debug, error, info};
 use std::sync::Arc;
 use std::time::Instant;
-use tokio::sync::Mutex;
+use tokio::sync::{Mutex, MutexGuard};
 
 // This is where temporary database files are created to simulate
 // the in-memory database, which doesn't really work as we need with libsql.
@@ -34,12 +34,44 @@ impl SqliteTransaction {
         }
     }
 
-    async fn fetch(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>> {
+    async fn lock(&self) -> Result<MutexGuard<'_, Option<Transaction>>> {
+        let tx_lock = self.tx.lock().await;
+
+        if tx_lock.is_none() {
+            return Err(Error::DatabaseQuery(
+                "Transaction already closed".to_string(),
+            ));
+        }
+
+        Ok(tx_lock)
+    }
+
+    async fn take_tx(&self) -> Result<Transaction> {
+        self.tx
+            .lock()
+            .await
+            .take()
+            .ok_or_else(|| Error::DatabaseQuery("Transaction already closed".to_string()))
+    }
+
+    async fn execute_sql_internal(&self, query: &str, params: &[Value]) -> Result<u64> {
+        let mut tx_lock = self.lock().await?;
+        let tx = tx_lock.as_mut().expect("Transaction is open");
+
+        let rows = tx
+            .execute(query, params_from_iter(params.to_vec()))
+            .await
+            .inspect_err(|e| {
+                error!("Error executing SQL statement: {e}; query={query}");
+            })?;
+
+        Ok(rows)
+    }
+
+    async fn fetch_sql(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>> {
         let start = Instant::now();
-        let mut tx_lock = self.tx.lock().await;
-        let tx = tx_lock
-            .as_mut()
-            .ok_or_else(|| Error::DatabaseQuery("Transaction already closed".to_string()))?;
+        let mut tx_lock = self.lock().await?;
+        let tx = tx_lock.as_mut().expect("Transaction is open");
 
         let mut stmt = tx.prepare(query).await.inspect_err(|e| {
             error!("Error preparing SQL statement: {e}");
@@ -184,10 +216,7 @@ impl DatabaseInterface for SqliteTransaction {
     }
 
     async fn commit(&self) -> Result<()> {
-        let mut tx_lock = self.tx.lock().await;
-        let tx = tx_lock
-            .take()
-            .ok_or_else(|| Error::DatabaseQuery("Transaction already closed".to_string()))?;
+        let tx = self.take_tx().await?;
         tx.commit()
             .await
             .map_err(|e| Error::DatabaseQuery(e.to_string()))?;
@@ -195,30 +224,19 @@ impl DatabaseInterface for SqliteTransaction {
     }
 
     async fn rollback(&self) -> Result<()> {
-        let mut tx_lock = self.tx.lock().await;
-        let tx = tx_lock
-            .take()
-            .ok_or_else(|| Error::DatabaseQuery("Transaction already closed".to_string()))?;
+        let tx = self.take_tx().await?;
         tx.rollback()
             .await
             .map_err(|e| Error::DatabaseQuery(e.to_string()))?;
         Ok(())
     }
 
-    async fn sql(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>> {
-        self.fetch(query, params).await
+    async fn fetch_sql(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>> {
+        self.fetch_sql(query, params).await
     }
 
     async fn execute_sql(&self, query: &str, params: &[Value]) -> Result<()> {
-        let mut tx_lock = self.tx.lock().await;
-        let tx = tx_lock
-            .as_mut()
-            .ok_or_else(|| Error::DatabaseQuery("Transaction already closed".to_string()))?;
-        tx.execute(query, params_from_iter(params.to_vec()))
-            .await
-            .inspect_err(|e| {
-                error!("Error executing SQL statement: {e}");
-            })?;
+        self.execute_sql_internal(query, params).await?;
         Ok(())
     }
 
@@ -237,7 +255,7 @@ impl DatabaseInterface for SqliteTransaction {
     async fn get_records(&self, query: SelectQuery) -> Result<Vec<Attributes>> {
         let (sql, params) = query.build();
 
-        self.sql(sql.as_str(), params.as_slice())
+        self.fetch_sql(sql.as_str(), params.as_slice())
             .await
             .inspect_err(|e| {
                 debug!("SQL query failed: {e}; SQL={sql}");
@@ -255,39 +273,15 @@ impl DatabaseInterface for SqliteTransaction {
     }
 
     async fn update(&self, query: UpdateQuery) -> Result<u64> {
-        let mut tx_lock = self.tx.lock().await;
-        let tx = tx_lock
-            .as_mut()
-            .ok_or_else(|| Error::DatabaseQuery("Transaction already closed".to_string()))?;
-
         let (sql, params) = query.build();
-
-        let rows = tx
-            .execute(sql.as_str(), params_from_iter(params))
+        self.execute_sql_internal(sql.as_str(), params.as_slice())
             .await
-            .inspect_err(|e| {
-                error!("Error updating database: {e}");
-            })?;
-
-        Ok(rows)
     }
 
     async fn delete(&self, query: DeleteQuery) -> Result<u64> {
-        let mut tx_lock = self.tx.lock().await;
-        let tx = tx_lock
-            .as_mut()
-            .ok_or_else(|| Error::DatabaseQuery("Transaction already closed".to_string()))?;
-
         let (sql, params) = query.build();
-
-        let rows = tx
-            .execute(sql.as_str(), params_from_iter(params))
+        self.execute_sql_internal(sql.as_str(), params.as_slice())
             .await
-            .inspect_err(|e| {
-                error!("Error deleting record: {e}");
-            })?;
-
-        Ok(rows)
     }
 
     async fn increment(&self, query: IncrementQuery) -> Result<()> {
@@ -298,7 +292,7 @@ impl DatabaseInterface for SqliteTransaction {
     async fn count(&self, query: CountQuery) -> Result<u64> {
         let (sql, params) = query.build();
 
-        let rows = self.fetch(&sql, &params).await?;
+        let rows = self.fetch_sql(&sql, &params).await?;
 
         if let Some(value) = rows.first() {
             return value.require_u64("count");
@@ -320,15 +314,15 @@ impl DatabaseInterface for SqliteDatabase {
     }
 
     async fn commit(&self) -> Result<()> {
-        Ok(())
+        Err(Error::DatabaseQuery("No transaction started".to_string()))
     }
 
     async fn rollback(&self) -> Result<()> {
-        Ok(())
+        Err(Error::DatabaseQuery("No transaction started".to_string()))
     }
 
-    async fn sql(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>> {
-        self.transact().await?.sql(query, params).await
+    async fn fetch_sql(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>> {
+        self.transact().await?.fetch_sql(query, params).await
     }
 
     async fn execute_sql(&self, query: &str, params: &[Value]) -> Result<()> {

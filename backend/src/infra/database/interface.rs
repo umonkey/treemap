@@ -67,8 +67,8 @@ impl Database {
         self.db.count(query).await
     }
 
-    pub async fn sql(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>> {
-        self.db.sql(query, params).await
+    pub async fn fetch_sql(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>> {
+        self.db.fetch_sql(query, params).await
     }
 
     pub async fn execute_sql(&self, query: &str, params: &[Value]) -> Result<()> {

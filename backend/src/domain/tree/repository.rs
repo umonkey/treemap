@@ -437,7 +437,7 @@ impl TreeRepository {
     }
 
     async fn fetch(&self, sql: &str, params: &[Value]) -> Result<Vec<Tree>> {
-        let rows = self.db.sql(sql, params).await?;
+        let rows = self.db.fetch_sql(sql, params).await?;
 
         rows.iter()
             .map(|props| Tree::from_attributes(props).map_err(|_| Error::DatabaseStructure))

@@ -30,7 +30,7 @@ impl StreetService {
 
         let rows = self
             .db
-            .sql(
+            .fetch_sql(
                 "SELECT DISTINCT address FROM trees WHERE state <> 'gone' AND address LIKE ?1 ORDER BY address LIMIT 10",
                 &[Value::from(pattern)],
             )

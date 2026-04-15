@@ -44,7 +44,7 @@ impl BaseQueueInterface for DatabaseQueue {
     async fn pop(&self) -> Result<Option<QueueMessage>> {
         let now = get_timestamp();
 
-        let rows = self.db.sql(
+        let rows = self.db.fetch_sql(
             "SELECT * FROM queue_messages WHERE attempts < 10 AND available_at <= ? ORDER BY added_at LIMIT 1",
             &[Value::from(now)],
         ).await?;

@@ -19,7 +19,7 @@ impl HeatmapService {
 
         let rows = self
             .db
-            .sql(
+            .fetch_sql(
                 "SELECT DATE(added_at, 'unixepoch') AS date, COUNT(distinct tree_id) AS count FROM trees_props WHERE added_at >= ?1 AND added_at < ?2 GROUP BY date ORDER BY date",
                 &[Value::from(after), Value::from(before)],
             )
@@ -41,7 +41,7 @@ impl HeatmapService {
 
         let rows = self
             .db
-            .sql(
+            .fetch_sql(
                 "SELECT DATE(added_at, 'unixepoch') AS date, COUNT(distinct tree_id) AS count FROM trees_props WHERE added_at >= ?1 AND added_at < ?2 AND added_by = ?3 GROUP BY date ORDER BY date",
                 &[
                     Value::from(after),

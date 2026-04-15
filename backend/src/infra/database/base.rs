@@ -20,7 +20,7 @@ pub trait DatabaseInterface: Send + Sync {
     async fn delete(&self, query: DeleteQuery) -> Result<u64>;
     async fn increment(&self, query: IncrementQuery) -> Result<()>;
     async fn count(&self, query: CountQuery) -> Result<u64>;
-    async fn sql(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>>;
+    async fn fetch_sql(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>>;
     async fn execute_sql(&self, query: &str, params: &[Value]) -> Result<()>;
     #[allow(dead_code)]
     async fn execute(&self, query: &str) -> Result<()>;

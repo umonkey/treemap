@@ -524,7 +524,7 @@ impl TreeService {
     pub async fn get_mismatching_species(&self, count: u64, skip: u64) -> Result<Vec<Tree>> {
         let rows = self
             .db
-            .sql(
+            .fetch_sql(
                 "SELECT * FROM trees WHERE state <> 'gone' AND species <> 'Unknown species' AND species <> 'Unknown' AND species NOT IN (SELECT name FROM species) LIMIT ?1 OFFSET ?2",
                 &[Value::from(count), Value::from(skip)],
             )

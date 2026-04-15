@@ -142,7 +142,7 @@ impl UserRepository {
     }
 
     async fn query_multiple_sql(&self, sql: &str, params: &[Value]) -> Result<Vec<User>> {
-        let records = self.db.sql(sql, params).await?;
+        let records = self.db.fetch_sql(sql, params).await?;
 
         records
             .iter()
