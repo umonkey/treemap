@@ -5,7 +5,9 @@ pub async fn osm_pull_command() {
         .await
         .expect("Error initializing app state.");
 
-    let service = state
+    let session = state.session().await.expect("Error starting session.");
+
+    let service = session
         .build::<OsmReaderService>()
         .expect("Error creating OSM reader service.");
 
@@ -20,4 +22,10 @@ pub async fn osm_pull_command() {
         .update_local_trees()
         .await
         .expect("Error matching OSM trees to local.");
+
+    session
+        .database
+        .commit()
+        .await
+        .expect("Error committing changes.");
 }

@@ -73,6 +73,19 @@ impl AppState {
         })
     }
 
+    pub async fn session(&self) -> Result<Self> {
+        let database = Arc::new(self.database.transact().await?);
+
+        Ok(Self {
+            database,
+            config: self.config.clone(),
+            queue: self.queue.clone(),
+            secrets: self.secrets.clone(),
+            tokens: self.tokens.clone(),
+            storage: self.storage.clone(),
+        })
+    }
+
     pub fn get_user_id(&self, req: &HttpRequest) -> Result<u64> {
         let header = match req.headers().get("Authorization") {
             Some(h) => h,

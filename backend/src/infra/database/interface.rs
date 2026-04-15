@@ -19,13 +19,11 @@ pub struct Database {
 }
 
 impl Database {
-    #[allow(dead_code)]
     pub async fn transact(&self) -> Result<Self> {
         let db = self.db.transact().await?;
         Ok(Self { db: Arc::from(db) })
     }
 
-    #[allow(dead_code)]
     pub async fn commit(&self) -> Result<()> {
         self.db.commit().await
     }
