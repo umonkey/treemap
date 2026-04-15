@@ -1,28 +1,7 @@
-use crate::domain::comment::CommentService;
-use crate::domain::health::*;
-use crate::domain::heatmap::HeatmapService;
-use crate::domain::like::LikeService;
-use crate::domain::login::LoginService;
-use crate::domain::observation::ObservationService;
-use crate::domain::prop::PropService;
-use crate::domain::settings::SettingsService;
-use crate::domain::species::SpeciesService;
-use crate::domain::stats::StatsService;
-use crate::domain::street::StreetService;
-use crate::domain::training::TrainingService;
-use crate::domain::tree::TreeService;
-use crate::domain::tree_image::TreeImageService;
-use crate::domain::upload::UploadService;
-use crate::domain::user::UserService;
 use crate::infra::config::Config;
 use crate::infra::database::Database;
 use crate::infra::queue::Queue;
 use crate::infra::tokens::TokenService;
-use crate::services::comment_loader::CommentLoader;
-use crate::services::like_loader::LikeLoader;
-use crate::services::meta::MetaService;
-use crate::services::prop_loader::PropLoader;
-use crate::services::tree_loader::TreeLoader;
 use crate::services::Locator;
 use crate::types::*;
 use actix_web::HttpRequest;
@@ -32,7 +11,7 @@ pub trait Context {
     fn database(&self) -> Arc<Database>;
     fn config(&self) -> Arc<Config>;
     fn queue(&self) -> Arc<Queue>;
-    fn locator(&self) -> Arc<Locator>;
+    fn locator(&self) -> &Locator;
 }
 
 pub trait Injectable {
@@ -58,33 +37,30 @@ pub trait ContextExt: Context {
 
 impl<T: Context> ContextExt for T {}
 
+impl Context for Locator {
+    fn database(&self) -> Arc<Database> {
+        self.get::<Database>().expect("Database not found")
+    }
+
+    fn config(&self) -> Arc<Config> {
+        self.get::<Config>().expect("Config not found")
+    }
+
+    fn queue(&self) -> Arc<Queue> {
+        self.get::<Queue>().expect("Queue not found")
+    }
+
+    fn locator(&self) -> &Locator {
+        self
+    }
+}
+
 pub struct AppState {
     pub locator: Arc<Locator>,
     pub database: Arc<Database>,
     pub config: Arc<Config>,
     pub queue: Arc<Queue>,
-    pub tree_images: Arc<TreeImageService>,
-    tokens: Arc<TokenService>,
-    pub users: Arc<UserService>,
-    pub training: Arc<TrainingService>,
-    pub trees: Arc<TreeService>,
-    pub health: Arc<HealthService>,
-    pub heatmap: Arc<HeatmapService>,
-    pub likes: Arc<LikeService>,
-    pub observations: Arc<ObservationService>,
-    pub comments: Arc<CommentService>,
-    pub login: Arc<LoginService>,
-    pub species: Arc<SpeciesService>,
-    pub settings: Arc<SettingsService>,
-    pub uploads: Arc<UploadService>,
-    pub stats: Arc<StatsService>,
-    pub streets: Arc<StreetService>,
-    pub tree_loader: Arc<TreeLoader>,
-    pub comment_loader: Arc<CommentLoader>,
-    pub like_loader: Arc<LikeLoader>,
-    pub meta: Arc<MetaService>,
-    pub props: Arc<PropService>,
-    pub prop_loader: Arc<PropLoader>,
+    pub tokens: Arc<TokenService>,
 }
 
 impl AppState {
@@ -93,28 +69,7 @@ impl AppState {
             database: locator.get::<Database>()?,
             config: locator.get::<Config>()?,
             queue: locator.get::<Queue>()?,
-            tree_images: locator.get::<TreeImageService>()?,
             tokens: locator.get::<TokenService>()?,
-            users: locator.get::<UserService>()?,
-            training: locator.get::<TrainingService>()?,
-            trees: locator.get::<TreeService>()?,
-            health: locator.get::<HealthService>()?,
-            heatmap: locator.get::<HeatmapService>()?,
-            comments: locator.get::<CommentService>()?,
-            observations: locator.get::<ObservationService>()?,
-            login: locator.get::<LoginService>()?,
-            species: locator.get::<SpeciesService>()?,
-            settings: locator.get::<SettingsService>()?,
-            uploads: locator.get::<UploadService>()?,
-            stats: locator.get::<StatsService>()?,
-            streets: locator.get::<StreetService>()?,
-            likes: locator.get::<LikeService>()?,
-            tree_loader: locator.get::<TreeLoader>()?,
-            comment_loader: locator.get::<CommentLoader>()?,
-            like_loader: locator.get::<LikeLoader>()?,
-            meta: locator.get::<MetaService>()?,
-            props: locator.get::<PropService>()?,
-            prop_loader: locator.get::<PropLoader>()?,
             locator,
         })
     }
@@ -164,7 +119,7 @@ impl Context for AppState {
         self.queue.clone()
     }
 
-    fn locator(&self) -> Arc<Locator> {
-        self.locator.clone()
+    fn locator(&self) -> &Locator {
+        &self.locator
     }
 }

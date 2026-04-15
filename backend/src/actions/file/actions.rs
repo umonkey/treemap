@@ -5,7 +5,8 @@ use serde::Deserialize;
 use std::time::{Duration, SystemTime};
 
 use super::schemas::FileStatusResponse;
-use crate::services::AppState;
+use crate::domain::tree_image::TreeImageService;
+use crate::services::{AppState, ContextExt};
 use crate::types::Result;
 
 #[derive(Debug, Deserialize)]
@@ -14,7 +15,7 @@ pub struct PathInfo {
 }
 
 async fn get_file_real(state: Data<AppState>, id: u64) -> Result<HttpResponse> {
-    let file = state.tree_images.get_file(id).await?;
+    let file = state.build::<TreeImageService>()?.get_file(id).await?;
 
     let etag = ETag(EntityTag::new_strong(id.to_string()));
 
@@ -51,7 +52,10 @@ pub async fn get_file_status_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
 ) -> Result<Json<FileStatusResponse>> {
-    let status = state.tree_images.get_file_status(path.id).await?;
+    let status = state
+        .build::<TreeImageService>()?
+        .get_file_status(path.id)
+        .await?;
     Ok(Json(status.into()))
 }
 
@@ -63,7 +67,10 @@ pub async fn delete_file_action(
 ) -> Result<HttpResponse> {
     let user_id = state.get_user_id(&req)?;
 
-    state.tree_images.delete_file(user_id, path.id).await?;
+    state
+        .build::<TreeImageService>()?
+        .delete_file(user_id, path.id)
+        .await?;
 
     Ok(HttpResponse::Accepted().finish())
 }

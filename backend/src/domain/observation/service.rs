@@ -1,7 +1,7 @@
 use super::models::ObservationFlags;
 use super::repository::ObservationRepository;
 use crate::domain::observation::Observation;
-use crate::services::{Locatable, Locator};
+use crate::services::{Context, Injectable};
 use crate::types::Result;
 use crate::utils::{get_timestamp, get_unique_id};
 use std::sync::Arc;
@@ -82,8 +82,9 @@ impl ObservationService {
     }
 }
 
-impl Locatable for ObservationService {
-    fn create(locator: &Locator) -> Result<Self> {
+impl Injectable for ObservationService {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        let locator = ctx.locator();
         Ok(Self {
             repository: locator.get::<ObservationRepository>()?,
         })

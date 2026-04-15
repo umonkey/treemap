@@ -16,9 +16,8 @@
 use crate::domain::osm::{OsmTreeRecord, OsmTreeRepository};
 use crate::domain::tree::Tree;
 use crate::domain::tree::TreeRepository;
-use crate::infra::config::Config;
 use crate::infra::overpass::OverpassClient;
-use crate::services::{Locatable, Locator};
+use crate::services::{Context, Injectable};
 use crate::types::*;
 use crate::utils::{get_timestamp, get_unique_id};
 use log::{debug, info};
@@ -187,12 +186,13 @@ impl OsmReaderService {
     }
 }
 
-impl Locatable for OsmReaderService {
-    fn create(locator: &Locator) -> Result<Self> {
-        let config = locator.get::<Config>()?;
+impl Injectable for OsmReaderService {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        let locator = ctx.locator();
+        let config = ctx.config();
 
         Ok(Self {
-            trees: locator.get::<TreeRepository>()?,
+            trees: Arc::new(ctx.build::<TreeRepository>()?),
             overpass_client: locator.get::<OverpassClient>()?,
             user_id: config.bot_user_id,
             osm_trees: locator.get::<OsmTreeRepository>()?,

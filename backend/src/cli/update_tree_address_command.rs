@@ -23,7 +23,7 @@ pub async fn update_tree_address_command() {
     let locator = Locator::new();
 
     let trees = locator
-        .get::<TreeService>()
+        .build::<TreeService>()
         .expect("Error creating handler.");
 
     trees

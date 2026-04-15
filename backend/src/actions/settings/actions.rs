@@ -1,5 +1,5 @@
-use crate::domain::settings::UpdateSettingsRequest;
-use crate::services::AppState;
+use crate::domain::settings::{SettingsService, UpdateSettingsRequest};
+use crate::services::{AppState, ContextExt};
 use crate::types::Result;
 use actix_web::web::{Data, Json, ServiceConfig};
 use actix_web::{put, HttpRequest, HttpResponse};
@@ -20,7 +20,7 @@ pub async fn update_settings_action(
     let user_id = state.get_user_id(&req)?;
 
     state
-        .settings
+        .build::<SettingsService>()?
         .update(UpdateSettingsRequest {
             user_id,
             name: payload.name.clone(),

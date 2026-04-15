@@ -3,7 +3,7 @@ use super::report::{calculate_simpson_index, format_species_report};
 use super::schemas::{DiversityReport, SpeciesStats};
 use super::utils::{get_genus_name, get_species_name};
 use crate::infra::database::Database;
-use crate::services::{Locatable, Locator};
+use crate::services::{Context, Injectable};
 use crate::types::Result;
 use log::debug;
 use std::collections::HashMap;
@@ -123,9 +123,8 @@ impl SpeciesService {
     }
 }
 
-impl Locatable for SpeciesService {
-    fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<Database>()?;
-        Ok(Self { db })
+impl Injectable for SpeciesService {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        Ok(Self { db: ctx.database() })
     }
 }

@@ -3,7 +3,7 @@ use super::schemas::*;
 use crate::domain::prop::{PropRecord, PropRepository};
 use crate::infra::database::{CountQuery, IncrementQuery, InsertQuery, SelectQuery, UpdateQuery};
 use crate::infra::database::{Database, Value};
-use crate::services::{Context, Injectable, Locatable, Locator};
+use crate::services::{Context, Injectable};
 use crate::types::*;
 use crate::utils::get_timestamp;
 use log::{debug, error, info};
@@ -454,24 +454,20 @@ impl Injectable for TreeRepository {
     }
 }
 
-impl Locatable for TreeRepository {
-    fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<Database>()?;
-        let props = locator.get::<PropRepository>()?;
-        Ok(Self { db, props })
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::services::ContextExt;
+    use crate::services::Locator;
 
     fn setup() -> Arc<TreeRepository> {
         let locator = Locator::new();
 
-        locator
-            .get::<TreeRepository>()
-            .expect("Error creating tree repository.")
+        Arc::new(
+            locator
+                .build::<TreeRepository>()
+                .expect("Error creating tree repository."),
+        )
     }
 
     #[tokio::test]

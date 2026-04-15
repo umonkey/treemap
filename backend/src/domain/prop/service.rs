@@ -1,6 +1,6 @@
 use super::models::PropRecord;
 use super::repository::PropRepository;
-use crate::services::{Locatable, Locator};
+use crate::services::{Context, Injectable};
 use crate::types::Result;
 use std::sync::Arc;
 
@@ -14,10 +14,10 @@ impl PropService {
     }
 }
 
-impl Locatable for PropService {
-    fn create(locator: &Locator) -> Result<Self> {
+impl Injectable for PropService {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
         Ok(Self {
-            props: locator.get::<PropRepository>()?,
+            props: Arc::new(ctx.build::<PropRepository>()?),
         })
     }
 }

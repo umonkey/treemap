@@ -7,7 +7,7 @@ pub async fn osm_push_changes_command() {
     let locator = Locator::new();
 
     let service = locator
-        .get::<OsmWriterService>()
+        .build::<OsmWriterService>()
         .expect("Error creating the service.");
 
     service

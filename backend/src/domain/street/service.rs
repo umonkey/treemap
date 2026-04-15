@@ -9,7 +9,7 @@ use super::trees_by_species::TreesBySpeciesReporter;
 use super::trees_by_state::TreesByStateReporter;
 use crate::domain::tree::{Tree, TreeRepository};
 use crate::infra::database::Database;
-use crate::services::{Locatable, Locator};
+use crate::services::{Context, Injectable};
 use crate::types::Result;
 use std::sync::Arc;
 
@@ -96,11 +96,11 @@ impl StreetService {
     }
 }
 
-impl Locatable for StreetService {
-    fn create(locator: &Locator) -> Result<Self> {
+impl Injectable for StreetService {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
         Ok(Self {
-            db: locator.get::<Database>()?,
-            trees: locator.get::<TreeRepository>()?,
+            db: ctx.database(),
+            trees: Arc::new(ctx.build::<TreeRepository>()?),
             area: TreesAreaReporter::new(),
             by_state: TreesByStateReporter::new(),
             by_height: TreesByHeightReporter::new(),

@@ -1,4 +1,5 @@
-use crate::services::AppState;
+use crate::domain::training::TrainingService;
+use crate::services::{AppState, ContextExt};
 use crate::types::*;
 use actix_web::web::ServiceConfig;
 use actix_web::{post, web::Data, web::Json, HttpRequest, HttpResponse};
@@ -17,7 +18,10 @@ pub async fn add_training_action(
 ) -> Result<HttpResponse> {
     let user_id = state.get_user_id(&req)?;
 
-    state.training.add(user_id, payload.result).await?;
+    state
+        .build::<TrainingService>()?
+        .add(user_id, payload.result)
+        .await?;
 
     Ok(HttpResponse::Accepted().finish())
 }

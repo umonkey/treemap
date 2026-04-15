@@ -25,11 +25,12 @@ impl CommentLoader {
     }
 }
 
-impl Locatable for CommentLoader {
-    fn create(locator: &Locator) -> Result<Self> {
+impl Injectable for CommentLoader {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        let locator = ctx.locator();
         Ok(Self {
-            trees: locator.get::<TreeRepository>()?,
-            users: locator.get::<UserRepository>()?,
+            trees: Arc::new(ctx.build::<TreeRepository>()?),
+            users: Arc::new(locator.build::<UserRepository>()?),
         })
     }
 }

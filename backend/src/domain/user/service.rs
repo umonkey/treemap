@@ -158,11 +158,12 @@ impl UserService {
     }
 }
 
-impl Locatable for UserService {
-    fn create(locator: &Locator) -> Result<Self> {
+impl Injectable for UserService {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        let locator = ctx.locator();
         Ok(Self {
-            db: locator.get::<Database>()?,
-            users: locator.get::<UserRepository>()?,
+            db: ctx.database(),
+            users: Arc::new(locator.build::<UserRepository>()?),
             uploads: locator.get::<UploadRepository>()?,
             storage: locator.get::<FileStorage>()?,
             thumbnailer: locator.get::<ThumbnailerService>()?,

@@ -4,7 +4,7 @@ pub async fn osm_pull_command() {
     let locator = Locator::new();
 
     let service = locator
-        .get::<OsmReaderService>()
+        .build::<OsmReaderService>()
         .expect("Error creating OSM reader service.");
 
     // Pull new tree nodes, put them in the osm_trees table.

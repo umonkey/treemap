@@ -4,12 +4,11 @@ use crate::domain::prop::{PropRecord, PropRepository};
 use crate::domain::tree::{Tree, TreeRepository};
 use crate::domain::tree_image::TreeImageRepository;
 use crate::domain::user::UserRepository;
-use crate::infra::config::Config;
 use crate::infra::database::Database;
 use crate::infra::nominatim::NominatimClient;
 use crate::infra::queue::Queue;
 use crate::services::queue_consumer::{AddPhotoMessage, UpdateTreeAddressMessage};
-use crate::services::{Context, Injectable, Locatable, Locator};
+use crate::services::{Context, ContextExt, Injectable};
 use crate::types::*;
 use crate::utils::osm_round_coord;
 use crate::utils::{fix_circumference, get_timestamp, get_unique_id};
@@ -690,11 +689,12 @@ impl TreeService {
 impl Injectable for TreeService {
     fn inject(ctx: &dyn Context) -> Result<Self> {
         let locator = ctx.locator();
+
         Ok(Self {
             db: ctx.database(),
-            comments: locator.get::<CommentService>()?,
+            comments: Arc::new(locator.build::<CommentService>()?),
             trees: Arc::new(ctx.build::<TreeRepository>()?),
-            users: locator.get::<UserRepository>()?,
+            users: Arc::new(locator.build::<UserRepository>()?),
             queue: ctx.queue(),
             files: locator.get::<TreeImageRepository>()?,
             props: Arc::new(ctx.build::<PropRepository>()?),
@@ -704,27 +704,11 @@ impl Injectable for TreeService {
     }
 }
 
-impl Locatable for TreeService {
-    fn create(locator: &Locator) -> Result<Self> {
-        let config = locator.get::<Config>()?;
-
-        Ok(Self {
-            db: locator.get::<Database>()?,
-            trees: locator.get::<TreeRepository>()?,
-            users: locator.get::<UserRepository>()?,
-            queue: locator.get::<Queue>()?,
-            files: locator.get::<TreeImageRepository>()?,
-            props: locator.get::<PropRepository>()?,
-            comments: locator.get::<CommentService>()?,
-            nominatim: locator.get::<NominatimClient>()?,
-            bot_user_id: config.bot_user_id,
-        })
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::services::ContextExt;
+    use crate::services::Locator;
     use std::collections::HashMap;
 
     fn setup() -> Arc<TreeService> {
@@ -734,9 +718,11 @@ mod tests {
 
         let locator = Locator::new();
 
-        locator
-            .get::<TreeService>()
-            .expect("Error creating TreeService")
+        Arc::new(
+            locator
+                .build::<TreeService>()
+                .expect("Error creating TreeService"),
+        )
     }
 
     #[tokio::test]

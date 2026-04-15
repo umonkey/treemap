@@ -7,7 +7,7 @@ use crate::domain::tree_image::{TreeImage, TreeImageRepository};
 use crate::domain::upload::{Upload, UploadRepository};
 use crate::infra::storage::FileStorage;
 use crate::services::ThumbnailerService;
-use crate::services::{Locatable, Locator};
+use crate::services::{Context, Injectable};
 use crate::types::{Error, Result};
 use crate::utils::*;
 use log::{debug, error, info};
@@ -168,14 +168,15 @@ impl PhotoService {
     }
 }
 
-impl Locatable for PhotoService {
-    fn create(locator: &Locator) -> Result<Self> {
+impl Injectable for PhotoService {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        let locator = ctx.locator();
         Ok(Self {
             tree_images: locator.get::<TreeImageRepository>()?,
             uploads: locator.get::<UploadRepository>()?,
             storage: locator.get::<FileStorage>()?,
             thumbnailer: locator.get::<ThumbnailerService>()?,
-            trees: locator.get::<TreeRepository>()?,
+            trees: Arc::new(ctx.build::<TreeRepository>()?),
         })
     }
 }

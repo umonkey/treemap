@@ -1,7 +1,7 @@
 use super::schemas::{UserList, UserRead};
-use crate::domain::heatmap::HeatmapItem;
-use crate::domain::user::UserUpdate;
-use crate::services::AppState;
+use crate::domain::heatmap::{HeatmapItem, HeatmapService};
+use crate::domain::user::{UserService, UserUpdate};
+use crate::services::{AppState, ContextExt};
 use crate::types::*;
 use actix_web::web::ServiceConfig;
 use actix_web::{get, put, web::Data, web::Json, web::Path, HttpRequest, HttpResponse};
@@ -14,13 +14,13 @@ pub struct PathInfo {
 
 #[get("")]
 pub async fn get_users(state: Data<AppState>) -> Result<Json<UserList>> {
-    let res = state.users.list().await?;
+    let res = state.build::<UserService>()?.list().await?;
     Ok(Json(res.into()))
 }
 
 #[get("/{id}")]
 pub async fn get_user(state: Data<AppState>, path: Path<PathInfo>) -> Result<Json<UserRead>> {
-    let user = state.users.get_user(path.id).await?;
+    let user = state.build::<UserService>()?.get_user(path.id).await?;
     Ok(Json(user.into()))
 }
 
@@ -29,7 +29,7 @@ pub async fn get_user_heatmap(
     state: Data<AppState>,
     path: Path<PathInfo>,
 ) -> Result<Json<Vec<HeatmapItem>>> {
-    let stats = state.heatmap.get_user(path.id).await?;
+    let stats = state.build::<HeatmapService>()?.get_user(path.id).await?;
     Ok(Json(stats))
 }
 
@@ -42,7 +42,7 @@ pub async fn update_user_action(
 ) -> Result<HttpResponse> {
     let current_user_id = state.get_user_id(&req)?;
     state
-        .users
+        .build::<UserService>()?
         .update_user(current_user_id, path.id, body.into_inner())
         .await?;
 

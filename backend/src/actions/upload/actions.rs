@@ -2,7 +2,8 @@
 
 use super::schemas::*;
 use crate::actions::tree::FileUploadResponse;
-use crate::services::AppState;
+use crate::domain::upload::UploadService;
+use crate::services::{AppState, ContextExt};
 use crate::types::*;
 use crate::utils::*;
 use actix_web::web::{Data, Json, Path, ServiceConfig};
@@ -20,7 +21,7 @@ pub async fn upload_action(
     let user_agent = get_user_agent(&req).ok_or(Error::UserAgentNotSet)?;
 
     let rec = state
-        .uploads
+        .build::<UploadService>()?
         .create_upload_ticket(user_id, payload.size, remote_addr, user_agent)
         .await?;
 
@@ -30,7 +31,7 @@ pub async fn upload_action(
 #[post("/{id}/finish")]
 pub async fn finish_upload_action(state: Data<AppState>, path: Path<u64>) -> Result<Json<()>> {
     let id = path.into_inner();
-    state.uploads.finish_upload(id).await?;
+    state.build::<UploadService>()?.finish_upload(id).await?;
     Ok(Json(()))
 }
 

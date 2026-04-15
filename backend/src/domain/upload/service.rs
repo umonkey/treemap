@@ -58,8 +58,9 @@ impl UploadService {
     }
 }
 
-impl Locatable for UploadService {
-    fn create(locator: &Locator) -> Result<Self> {
+impl Injectable for UploadService {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        let locator = ctx.locator();
         Ok(Self {
             uploads: locator.get::<UploadRepository>()?,
             storage: locator.get::<FileStorage>()?,

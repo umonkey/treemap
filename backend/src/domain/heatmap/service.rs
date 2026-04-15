@@ -87,9 +87,8 @@ impl HeatmapService {
     }
 }
 
-impl Locatable for HeatmapService {
-    fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<Database>()?;
-        Ok(Self { db })
+impl Injectable for HeatmapService {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        Ok(Self { db: ctx.database() })
     }
 }

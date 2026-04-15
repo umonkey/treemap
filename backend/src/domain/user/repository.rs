@@ -2,7 +2,7 @@ use super::models::User;
 use crate::infra::database::{
     Database, IncrementQuery, InsertQuery, SelectQuery, UpdateQuery, Value,
 };
-use crate::services::*;
+use crate::services::{Context, Injectable};
 use crate::types::*;
 use crate::utils::{get_timestamp, unique_ids};
 use log::error;
@@ -171,10 +171,9 @@ impl UserRepository {
     }
 }
 
-impl Locatable for UserRepository {
-    fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<Database>()?;
-        Ok(Self { db })
+impl Injectable for UserRepository {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        Ok(Self { db: ctx.database() })
     }
 }
 
@@ -183,13 +182,17 @@ mod tests {
     use super::*;
     use crate::domain::prop::PropRecord;
     use crate::domain::tree_image::TreeImage;
+    use crate::services::ContextExt;
+    use crate::services::Locator;
 
     fn setup() -> Arc<UserRepository> {
         let locator = Locator::new();
 
-        locator
-            .get::<UserRepository>()
-            .expect("Error creating user repository.")
+        Arc::new(
+            locator
+                .build::<UserRepository>()
+                .expect("Error creating user repository."),
+        )
     }
 
     #[tokio::test]

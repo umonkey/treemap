@@ -5,7 +5,7 @@ use crate::domain::user::UserRepository;
 use crate::infra::queue::Queue;
 use crate::infra::storage::FileStorage;
 use crate::services::queue_consumer::ResizeImageMessage;
-use crate::services::{Locatable, Locator, ThumbnailerService};
+use crate::services::{Context, ContextExt, Injectable, ThumbnailerService};
 use crate::types::{Error, Result};
 use crate::utils::{get_timestamp, get_unique_id};
 use log::{debug, info};
@@ -106,13 +106,14 @@ impl TreeImageService {
     }
 }
 
-impl Locatable for TreeImageService {
-    fn create(locator: &Locator) -> Result<Self> {
+impl Injectable for TreeImageService {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        let locator = ctx.locator();
         Ok(Self {
             storage: locator.get::<FileStorage>()?,
-            queue: locator.get::<Queue>()?,
+            queue: ctx.queue(),
             files: locator.get::<TreeImageRepository>()?,
-            users: locator.get::<UserRepository>()?,
+            users: Arc::new(locator.build::<UserRepository>()?),
             thumbnailer: locator.get::<ThumbnailerService>()?,
         })
     }
