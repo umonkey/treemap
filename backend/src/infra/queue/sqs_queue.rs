@@ -4,7 +4,7 @@ use super::aws_config::AwsConfig;
 use super::base::BaseQueueInterface;
 use super::types::QueueMessage;
 use crate::infra::config::Config;
-use crate::services::{Context, Locatable, Locator};
+use crate::infra::secrets::Secrets;
 use crate::types::{Error, Result};
 use crate::utils::get_timestamp;
 use async_trait::async_trait;
@@ -134,11 +134,8 @@ impl BaseQueueInterface for SqsQueue {
     }
 }
 
-impl Locatable for SqsQueue {
-    fn create(locator: &Locator) -> Result<Self> {
-        let config = locator.get::<Config>()?;
-        let secrets = locator.secrets();
-
+impl SqsQueue {
+    pub fn new(config: &Config, secrets: &Secrets) -> Result<Self> {
         let sqs_url = config
             .sqs_url
             .clone()

@@ -8,7 +8,8 @@ use super::database_queue::DatabaseQueue;
 use super::sqs_queue::SqsQueue;
 use super::types::QueueMessage;
 use crate::infra::config::Config;
-use crate::services::{Locatable, Locator};
+use crate::infra::database::Database;
+use crate::infra::secrets::Secrets;
 use crate::types::Result;
 use std::sync::Arc;
 
@@ -16,21 +17,17 @@ pub struct Queue {
     queue: Arc<dyn BaseQueueInterface>,
 }
 
-impl Locatable for Queue {
-    fn create(locator: &Locator) -> Result<Self> {
-        let config = locator.get::<Config>()?;
-
+impl Queue {
+    pub fn new(config: &Config, secrets: &Secrets, database: &Arc<Database>) -> Result<Self> {
         let queue: Arc<dyn BaseQueueInterface> = if config.sqs_url.is_some() {
-            locator.get::<SqsQueue>()?
+            Arc::new(SqsQueue::new(config, secrets)?)
         } else {
-            locator.get::<DatabaseQueue>()?
+            Arc::new(DatabaseQueue::new(database.clone()))
         };
 
         Ok(Self { queue })
     }
-}
 
-impl Queue {
     pub async fn push(&self, payload: &str) -> Result<QueueMessage> {
         self.queue.push(payload).await
     }

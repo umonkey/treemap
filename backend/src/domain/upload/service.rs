@@ -60,10 +60,9 @@ impl UploadService {
 
 impl Injectable for UploadService {
     fn inject(ctx: &dyn Context) -> Result<Self> {
-        let locator = ctx.locator();
         Ok(Self {
-            uploads: locator.get::<UploadRepository>()?,
-            storage: locator.get::<FileStorage>()?,
+            uploads: Arc::new(ctx.build::<UploadRepository>()?),
+            storage: ctx.storage(),
         })
     }
 }

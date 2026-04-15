@@ -2,7 +2,7 @@ use super::repository::CommentRepository;
 use crate::domain::comment::Comment;
 use crate::domain::tree::TreeRepository;
 use crate::domain::user::UserRepository;
-use crate::services::{Context, ContextExt, Injectable};
+use crate::services::{Context, Injectable};
 use crate::types::Result;
 use crate::utils::{get_timestamp, get_unique_id};
 use log::info;
@@ -50,11 +50,10 @@ impl CommentService {
 
 impl Injectable for CommentService {
     fn inject(ctx: &dyn Context) -> Result<Self> {
-        let locator = ctx.locator();
         Ok(Self {
-            comments: locator.get::<CommentRepository>()?,
+            comments: Arc::new(ctx.build::<CommentRepository>()?),
             trees: Arc::new(ctx.build::<TreeRepository>()?),
-            users: Arc::new(locator.build::<UserRepository>()?),
+            users: Arc::new(ctx.build::<UserRepository>()?),
         })
     }
 }

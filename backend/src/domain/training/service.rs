@@ -29,9 +29,8 @@ impl TrainingService {
 
 impl Injectable for TrainingService {
     fn inject(ctx: &dyn Context) -> Result<Self> {
-        let locator = ctx.locator();
         Ok(Self {
-            repo: locator.get::<TrainingRepository>()?,
+            repo: Arc::new(ctx.build::<TrainingRepository>()?),
         })
     }
 }

@@ -3,7 +3,7 @@ use crate::domain::photo::PhotoService;
 use crate::domain::tree::TreeService;
 use crate::domain::user::*;
 use crate::infra::queue::{Queue, QueueMessage};
-use crate::services::{Context, ContextExt, Injectable};
+use crate::services::{Context, Injectable};
 use crate::types::*;
 use log::{debug, error, info};
 use std::sync::Arc;
@@ -99,12 +99,11 @@ impl QueueConsumer {
 
 impl Injectable for QueueConsumer {
     fn inject(ctx: &dyn Context) -> Result<Self> {
-        let locator = ctx.locator();
         Ok(Self {
             queue: ctx.queue(),
             trees: Arc::new(ctx.build::<TreeService>()?),
-            photos: Arc::new(locator.build::<PhotoService>()?),
-            users: Arc::new(locator.build::<UserService>()?),
+            photos: Arc::new(ctx.build::<PhotoService>()?),
+            users: Arc::new(ctx.build::<UserService>()?),
         })
     }
 }

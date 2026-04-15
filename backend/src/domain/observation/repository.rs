@@ -45,10 +45,8 @@ impl ObservationRepository {
     }
 }
 
-impl Locatable for ObservationRepository {
-    fn create(locator: &Locator) -> Result<Self> {
-        Ok(Self {
-            db: locator.get::<Database>()?,
-        })
+impl Injectable for ObservationRepository {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        Ok(Self { db: ctx.database() })
     }
 }

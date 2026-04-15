@@ -75,9 +75,8 @@ impl TreeImageRepository {
     }
 }
 
-impl Locatable for TreeImageRepository {
-    fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<Database>()?;
-        Ok(Self { db })
+impl Injectable for TreeImageRepository {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        Ok(Self { db: ctx.database() })
     }
 }

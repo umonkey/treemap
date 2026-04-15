@@ -2,8 +2,8 @@ use crate::infra::config::Config;
 use crate::infra::database::Database;
 use crate::infra::queue::Queue;
 use crate::infra::secrets::Secrets;
+use crate::infra::storage::FileStorage;
 use crate::infra::tokens::TokenService;
-use crate::services::Locator;
 use crate::types::*;
 use actix_web::HttpRequest;
 use std::sync::Arc;
@@ -14,7 +14,7 @@ pub trait Context {
     fn queue(&self) -> Arc<Queue>;
     fn secrets(&self) -> Arc<Secrets>;
     fn tokens(&self) -> Arc<TokenService>;
-    fn locator(&self) -> &Locator;
+    fn storage(&self) -> Arc<FileStorage>;
 }
 
 pub trait Injectable {
@@ -40,48 +40,28 @@ pub trait ContextExt: Context {
 
 impl<T: Context> ContextExt for T {}
 
-impl Context for Locator {
-    fn database(&self) -> Arc<Database> {
-        self.get::<Database>().expect("Database not found")
-    }
-
-    fn config(&self) -> Arc<Config> {
-        self.get::<Config>().expect("Config not found")
-    }
-
-    fn queue(&self) -> Arc<Queue> {
-        self.get::<Queue>().expect("Queue not found")
-    }
-
-    fn secrets(&self) -> Arc<Secrets> {
-        Arc::new(Secrets::inject(self).expect("Secrets not found"))
-    }
-
-    fn tokens(&self) -> Arc<TokenService> {
-        Arc::new(TokenService::inject(self).expect("TokenService not found"))
-    }
-
-    fn locator(&self) -> &Locator {
-        self
-    }
-}
-
 pub struct AppState {
-    pub locator: Arc<Locator>,
     pub database: Arc<Database>,
     pub config: Arc<Config>,
     pub queue: Arc<Queue>,
     pub secrets: Arc<Secrets>,
     pub tokens: Arc<TokenService>,
+    pub storage: Arc<FileStorage>,
 }
 
 impl AppState {
-    pub async fn new(locator: Arc<Locator>) -> Result<Self> {
-        let database = locator.get::<Database>()?;
-        let config = locator.get::<Config>()?;
-        let queue = locator.get::<Queue>()?;
-        let secrets = Arc::new(Secrets::inject(&*locator)?);
-        let tokens = Arc::new(TokenService::inject(&*locator)?);
+    pub async fn new() -> Result<Self> {
+        let config = Arc::new(Config::new()?);
+        let secrets = Arc::new(Secrets::new(config.clone())?);
+        let database = Arc::new(Database::new(&config, &secrets).await?);
+        let queue = Arc::new(Queue::new(&config, &secrets, &database)?);
+
+        let jwt_secret = secrets.jwt_secret.clone().ok_or(Error::Config(
+            "JWT_SECRET not set, cannot use tokens".to_string(),
+        ))?;
+        let tokens = Arc::new(TokenService::new(jwt_secret));
+
+        let storage = Arc::new(FileStorage::new(&config, &secrets)?);
 
         Ok(Self {
             database,
@@ -89,7 +69,7 @@ impl AppState {
             queue,
             secrets,
             tokens,
-            locator,
+            storage,
         })
     }
 
@@ -146,7 +126,7 @@ impl Context for AppState {
         self.tokens.clone()
     }
 
-    fn locator(&self) -> &Locator {
-        &self.locator
+    fn storage(&self) -> Arc<FileStorage> {
+        self.storage.clone()
     }
 }

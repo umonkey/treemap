@@ -3,7 +3,7 @@ use crate::domain::user::{User, UserRepository};
 use crate::infra::google_auth::{AuthResponse, GoogleAuthClient};
 use crate::infra::osm::OsmClient;
 use crate::infra::tokens::{TokenClaims, TokenService};
-use crate::services::{Context, ContextExt, Injectable};
+use crate::services::{Context, Injectable};
 use crate::types::*;
 use crate::utils::{get_timestamp, get_unique_id};
 use log::{debug, info};
@@ -87,12 +87,11 @@ impl LoginService {
 
 impl Injectable for LoginService {
     fn inject(ctx: &dyn Context) -> Result<Self> {
-        let locator = ctx.locator();
         Ok(Self {
             tokens: ctx.tokens(),
-            users: Arc::new(locator.build::<UserRepository>()?),
+            users: Arc::new(ctx.build::<UserRepository>()?),
             auth: GoogleAuthClient::new(),
-            osm: locator.get::<OsmClient>()?,
+            osm: Arc::new(ctx.build::<OsmClient>()?),
         })
     }
 }

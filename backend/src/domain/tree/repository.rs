@@ -457,14 +457,14 @@ impl Injectable for TreeRepository {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::services::AppState;
     use crate::services::ContextExt;
-    use crate::services::Locator;
 
-    fn setup() -> Arc<TreeRepository> {
-        let locator = Locator::new();
+    async fn setup() -> Arc<TreeRepository> {
+        let state = AppState::new().await.expect("Error creating app state.");
 
         Arc::new(
-            locator
+            state
                 .build::<TreeRepository>()
                 .expect("Error creating tree repository."),
         )
@@ -472,7 +472,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_get_by_bounds() {
-        let repo = setup();
+        let repo = setup().await;
 
         repo.add(&Tree {
             id: 1,

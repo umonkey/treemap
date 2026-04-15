@@ -84,9 +84,8 @@ impl ObservationService {
 
 impl Injectable for ObservationService {
     fn inject(ctx: &dyn Context) -> Result<Self> {
-        let locator = ctx.locator();
         Ok(Self {
-            repository: locator.get::<ObservationRepository>()?,
+            repository: Arc::new(ctx.build::<ObservationRepository>()?),
         })
     }
 }

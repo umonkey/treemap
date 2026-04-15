@@ -19,7 +19,6 @@ pub enum Error {
     DatabaseConnect,
     DatabaseQuery(String),
     DatabaseStructure,
-    DependencyLoad,
     DuplicateTree,
     EnvNotSet,
     FileDownload,
@@ -70,9 +69,6 @@ impl Error {
             }
             Error::DatabaseStructure => {
                 r#"{"error":{"code":"DatabaseStructure","description":"Database structure error."}}"#
-            }
-            Error::DependencyLoad => {
-                r#"{"error":{"code":"DependencyLoad","description":"Error loading a dependency."}}"#
             }
             Error::DuplicateTree => {
                 r#"{"error":{"code":"DuplicateTree","description":"A tree with these coordinates already exists."}}"#
@@ -179,7 +175,6 @@ impl fmt::Display for Error {
             Error::DatabaseConnect => write!(f, "DatabaseConnect"),
             Error::DatabaseQuery(s) => write!(f, "Database error: {s}"),
             Error::DatabaseStructure => write!(f, "DatabaseStructure"),
-            Error::DependencyLoad => write!(f, "DependencyLoad"),
             Error::DuplicateTree => write!(f, "DuplicateTree"),
             Error::EnvNotSet => write!(f, "EnvNotSet"),
             Error::FileDownload => write!(f, "FileDownload"),

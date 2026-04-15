@@ -182,14 +182,14 @@ mod tests {
     use super::*;
     use crate::domain::prop::PropRecord;
     use crate::domain::tree_image::TreeImage;
+    use crate::services::AppState;
     use crate::services::ContextExt;
-    use crate::services::Locator;
 
-    fn setup() -> Arc<UserRepository> {
-        let locator = Locator::new();
+    async fn setup() -> Arc<UserRepository> {
+        let state = AppState::new().await.expect("Error creating app state.");
 
         Arc::new(
-            locator
+            state
                 .build::<UserRepository>()
                 .expect("Error creating user repository."),
         )
@@ -197,7 +197,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_get_tree_actors() {
-        let repo = setup();
+        let repo = setup().await;
         let db = repo.db.clone();
 
         let user1 = User {

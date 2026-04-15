@@ -20,7 +20,6 @@ use crate::actions::training::training_router;
 use crate::actions::tree::tree_router;
 use crate::actions::upload::upload_router;
 use crate::actions::user::user_router;
-use crate::infra::config::Config;
 use crate::services::*;
 use actix_cors::Cors;
 use actix_files::Files;
@@ -30,10 +29,12 @@ use std::sync::Arc;
 use std::time::Duration;
 
 pub async fn serve_command() {
-    let locator = Arc::new(Locator::new());
-    let config = locator
-        .get::<Config>()
-        .expect("Error reading configuration.");
+    let state = Arc::new(
+        AppState::new()
+            .await
+            .expect("Error initializing application."),
+    );
+    let config = state.config.clone();
 
     let workers = config.workers;
     let host_addr = config.server_addr.clone();
@@ -41,22 +42,13 @@ pub async fn serve_command() {
 
     info!("Running {workers} worker(s) at {host_addr}:{host_port}.");
 
-    // Create the web server, passing it a closure that will initialize the shared
-    // data for each new thread.  When all threads are busy, Actix will create
-    // a new one, call this closure to set it up, and have a new worker thread
-    // in the pool.  So each thread has its own app state.
     HttpServer::new(move || {
         debug!("Initializing new thread.");
-
-        let locator = locator.clone();
 
         App::new()
             .wrap(DefaultHeaders::new().add(("Cache-Control", "no-store")))
             .wrap(Cors::permissive())
-            .data_factory(move || {
-                let locator = locator.clone();
-                async move { AppState::new(locator).await }
-            })
+            .app_data(web::Data::from(state.clone()))
             .app_data(PayloadConfig::new(config.payload_size))
             // Prioritize because of collisions with wildcards later.
             .service(web::scope("/health").configure(health_router))

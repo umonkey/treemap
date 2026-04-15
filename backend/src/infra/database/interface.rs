@@ -11,7 +11,7 @@ use super::value::Value;
 use crate::domain::species::Species;
 use crate::domain::tree::Tree;
 use crate::infra::config::Config;
-use crate::services::*;
+use crate::infra::secrets::Secrets;
 use crate::types::{Error, Result};
 use log::{debug, error};
 use std::sync::Arc;
@@ -119,13 +119,9 @@ impl Database {
     }
 }
 
-impl Locatable for Database {
-    fn create(locator: &Locator) -> Result<Self> {
-        let config = locator.get::<Config>()?;
-
+impl Database {
+    pub async fn new(config: &Config, secrets: &Secrets) -> Result<Self> {
         if config.database == "turso" {
-            let secrets = locator.secrets();
-
             debug!("Setting up a Turso database.");
 
             let url: String = config
@@ -138,16 +134,16 @@ impl Locatable for Database {
                 .clone()
                 .ok_or(Error::Config("turso_token not set".to_string()))?;
 
-            let db = futures::executor::block_on(SqliteDatabase::from_remote(&url, &token))?;
+            let db = SqliteDatabase::from_remote(&url, &token).await?;
 
             Ok(Self { db: Arc::new(db) })
         } else if config.database == "memory" {
-            let db = futures::executor::block_on(SqliteDatabase::from_memory())?;
+            let db = SqliteDatabase::from_memory().await?;
 
             Ok(Self { db: Arc::new(db) })
         } else if config.database == "sqlite" {
             let path = &config.sqlite_path;
-            let db = futures::executor::block_on(SqliteDatabase::from_local(path))?;
+            let db = SqliteDatabase::from_local(path).await?;
 
             Ok(Self { db: Arc::new(db) })
         } else {

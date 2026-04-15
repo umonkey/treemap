@@ -188,14 +188,13 @@ impl OsmReaderService {
 
 impl Injectable for OsmReaderService {
     fn inject(ctx: &dyn Context) -> Result<Self> {
-        let locator = ctx.locator();
         let config = ctx.config();
 
         Ok(Self {
             trees: Arc::new(ctx.build::<TreeRepository>()?),
-            overpass_client: locator.get::<OverpassClient>()?,
+            overpass_client: Arc::new(ctx.build::<OverpassClient>()?),
             user_id: config.bot_user_id,
-            osm_trees: locator.get::<OsmTreeRepository>()?,
+            osm_trees: Arc::new(ctx.build::<OsmTreeRepository>()?),
         })
     }
 }

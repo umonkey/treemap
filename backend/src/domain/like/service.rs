@@ -70,9 +70,8 @@ impl LikeService {
 
 impl Injectable for LikeService {
     fn inject(ctx: &dyn Context) -> Result<Self> {
-        let locator = ctx.locator();
         Ok(Self {
-            likes: locator.get::<LikeRepository>()?,
+            likes: Arc::new(ctx.build::<LikeRepository>()?),
             trees: Arc::new(ctx.build::<TreeRepository>()?),
         })
     }

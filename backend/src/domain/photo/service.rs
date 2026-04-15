@@ -170,12 +170,11 @@ impl PhotoService {
 
 impl Injectable for PhotoService {
     fn inject(ctx: &dyn Context) -> Result<Self> {
-        let locator = ctx.locator();
         Ok(Self {
-            tree_images: locator.get::<TreeImageRepository>()?,
-            uploads: locator.get::<UploadRepository>()?,
-            storage: locator.get::<FileStorage>()?,
-            thumbnailer: locator.get::<ThumbnailerService>()?,
+            tree_images: Arc::new(ctx.build::<TreeImageRepository>()?),
+            uploads: Arc::new(ctx.build::<UploadRepository>()?),
+            storage: ctx.storage(),
+            thumbnailer: Arc::new(ctx.build::<ThumbnailerService>()?),
             trees: Arc::new(ctx.build::<TreeRepository>()?),
         })
     }

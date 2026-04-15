@@ -8,7 +8,7 @@ use crate::infra::database::Database;
 use crate::infra::nominatim::NominatimClient;
 use crate::infra::queue::Queue;
 use crate::services::queue_consumer::{AddPhotoMessage, UpdateTreeAddressMessage};
-use crate::services::{Context, ContextExt, Injectable};
+use crate::services::{Context, Injectable};
 use crate::types::*;
 use crate::utils::osm_round_coord;
 use crate::utils::{fix_circumference, get_timestamp, get_unique_id};
@@ -688,17 +688,15 @@ impl TreeService {
 
 impl Injectable for TreeService {
     fn inject(ctx: &dyn Context) -> Result<Self> {
-        let locator = ctx.locator();
-
         Ok(Self {
             db: ctx.database(),
-            comments: Arc::new(locator.build::<CommentService>()?),
+            comments: Arc::new(ctx.build::<CommentService>()?),
             trees: Arc::new(ctx.build::<TreeRepository>()?),
-            users: Arc::new(locator.build::<UserRepository>()?),
+            users: Arc::new(ctx.build::<UserRepository>()?),
             queue: ctx.queue(),
-            files: locator.get::<TreeImageRepository>()?,
+            files: Arc::new(ctx.build::<TreeImageRepository>()?),
             props: Arc::new(ctx.build::<PropRepository>()?),
-            nominatim: locator.get::<NominatimClient>()?,
+            nominatim: Arc::new(ctx.build::<NominatimClient>()?),
             bot_user_id: ctx.config().bot_user_id,
         })
     }
@@ -707,19 +705,19 @@ impl Injectable for TreeService {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::services::AppState;
     use crate::services::ContextExt;
-    use crate::services::Locator;
     use std::collections::HashMap;
 
-    fn setup() -> Arc<TreeService> {
+    async fn setup() -> Arc<TreeService> {
         if env_logger::try_init().is_err() {
             debug!("env_logger already initialized.");
         };
 
-        let locator = Locator::new();
+        let state = AppState::new().await.expect("Error creating app state.");
 
         Arc::new(
-            locator
+            state
                 .build::<TreeService>()
                 .expect("Error creating TreeService"),
         )
@@ -727,7 +725,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_get_trees() {
-        let trees = setup();
+        let trees = setup().await;
 
         let request = GetTreesRequest {
             n: 0.0,

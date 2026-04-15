@@ -32,10 +32,9 @@ impl LikeLoader {
 
 impl Injectable for LikeLoader {
     fn inject(ctx: &dyn Context) -> Result<Self> {
-        let locator = ctx.locator();
         Ok(Self {
             trees: Arc::new(ctx.build::<TreeRepository>()?),
-            users: Arc::new(locator.build::<UserRepository>()?),
+            users: Arc::new(ctx.build::<UserRepository>()?),
         })
     }
 }

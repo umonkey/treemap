@@ -2,7 +2,7 @@ use super::schemas::*;
 use crate::domain::user::UserRepository;
 use crate::infra::queue::Queue;
 use crate::services::queue_consumer::UpdateUserpicMessage;
-use crate::services::{Context, ContextExt, Injectable};
+use crate::services::{Context, Injectable};
 use crate::types::{Error, Result};
 use log::info;
 use std::sync::Arc;
@@ -40,9 +40,8 @@ impl SettingsService {
 
 impl Injectable for SettingsService {
     fn inject(ctx: &dyn Context) -> Result<Self> {
-        let locator = ctx.locator();
         Ok(Self {
-            users: Arc::new(locator.build::<UserRepository>()?),
+            users: Arc::new(ctx.build::<UserRepository>()?),
             queue: ctx.queue(),
         })
     }

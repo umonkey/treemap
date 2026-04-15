@@ -22,7 +22,7 @@ The project uses an on-the-fly dependency injection system based on `Context` an
 1. Define your struct.
 2. Implement `Injectable` for it.
 3. Use `ctx.build::<OtherType>()?` to resolve dependencies that also implement `Injectable`.
-4. Use `ctx.locator().get::<LegacyType>()?` for dependencies that still use the old `Locatable` pattern.
+4. Use `ctx.some_client()` or similar for core infrastructure dependencies provided by `Context`.
 
 Example:
 
@@ -32,7 +32,7 @@ impl Injectable for MyService {
         Ok(Self {
             db: ctx.database(),
             repo: Arc::new(ctx.build::<MyRepository>()?),
-            legacy: ctx.locator().get::<OldService>()?,
+            osm: Arc::new(ctx.build::<OsmClient>()?),
         })
     }
 }

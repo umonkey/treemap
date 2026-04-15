@@ -1,6 +1,6 @@
 use super::models::OsmTreeRecord;
 use crate::infra::database::{Database, InsertQuery, SelectQuery, UpdateQuery, Value};
-use crate::services::{Locatable, Locator};
+use crate::services::{Context, Injectable};
 use crate::types::{Error, Result};
 use log::error;
 use std::sync::Arc;
@@ -82,9 +82,8 @@ impl OsmTreeRepository {
     }
 }
 
-impl Locatable for OsmTreeRepository {
-    fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<Database>()?;
-        Ok(Self { db })
+impl Injectable for OsmTreeRepository {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        Ok(Self { db: ctx.database() })
     }
 }

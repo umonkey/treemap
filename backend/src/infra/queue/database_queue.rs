@@ -5,7 +5,6 @@ use super::base::BaseQueueInterface;
 use super::types::QueueMessage;
 use crate::infra::database::{Database, Value};
 use crate::infra::database::{DeleteQuery, InsertQuery, UpdateQuery};
-use crate::services::{Locatable, Locator};
 use crate::types::Result;
 use crate::utils::{get_timestamp, get_unique_id};
 use async_trait::async_trait;
@@ -84,10 +83,8 @@ impl BaseQueueInterface for DatabaseQueue {
     }
 }
 
-impl Locatable for DatabaseQueue {
-    fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<Database>()?;
-        let queue = Self { db };
-        Ok(queue)
+impl DatabaseQueue {
+    pub fn new(db: Arc<Database>) -> Self {
+        Self { db }
     }
 }

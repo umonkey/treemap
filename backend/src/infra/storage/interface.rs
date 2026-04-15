@@ -2,7 +2,7 @@ use super::base::FileStorageInterface;
 use super::local_storage::LocalFileStorage;
 use super::s3_storage::S3FileStorage;
 use crate::infra::config::Config;
-use crate::services::{Locatable, Locator};
+use crate::infra::secrets::Secrets;
 use crate::types::*;
 use std::sync::Arc;
 
@@ -11,14 +11,23 @@ pub struct FileStorage {
 }
 
 impl FileStorage {
-    pub fn new(client: Arc<dyn FileStorageInterface>) -> Self {
-        Self {
-            client: client.clone(),
+    pub fn new(config: &Config, secrets: &Secrets) -> Result<Self> {
+        if config.file_storage == "s3" {
+            let client = Arc::new(S3FileStorage::new(config, secrets)?);
+            return Ok(Self { client });
         }
-    }
-}
 
-impl FileStorage {
+        if config.file_storage == "local" {
+            let client = Arc::new(LocalFileStorage::new(config));
+            return Ok(Self { client });
+        }
+
+        Err(Error::Config(format!(
+            "unsupported file storage type: {}",
+            config.file_storage
+        )))
+    }
+
     pub async fn write_file(&self, id: u64, data: &[u8]) -> Result<()> {
         self.client.write_file(id, data).await
     }
@@ -29,26 +38,5 @@ impl FileStorage {
 
     pub async fn create_upload_url(&self, id: u64) -> Result<String> {
         self.client.create_upload_url(id).await
-    }
-}
-
-impl Locatable for FileStorage {
-    fn create(locator: &Locator) -> Result<Self> {
-        let config = locator.get::<Config>()?;
-
-        if config.file_storage == "s3" {
-            let client = locator.get::<S3FileStorage>()?;
-            return Ok(Self::new(client));
-        }
-
-        if config.file_storage == "local" {
-            let client = locator.get::<LocalFileStorage>()?;
-            return Ok(Self::new(client));
-        }
-
-        Err(Error::Config(format!(
-            "unsupported file storage type: {}",
-            config.file_storage
-        )))
     }
 }

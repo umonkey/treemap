@@ -52,10 +52,8 @@ impl LikeRepository {
     }
 }
 
-impl Locatable for LikeRepository {
-    fn create(locator: &Locator) -> Result<Self> {
-        Ok(Self {
-            db: locator.get::<Database>()?,
-        })
+impl Injectable for LikeRepository {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        Ok(Self { db: ctx.database() })
     }
 }
