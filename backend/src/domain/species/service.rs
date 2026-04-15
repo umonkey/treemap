@@ -5,9 +5,12 @@ use super::utils::{get_genus_name, get_species_name};
 use crate::infra::database::{Database, Value};
 use crate::services::{Context, Injectable};
 use crate::types::Result;
+use crate::utils::get_timestamp;
 use log::debug;
 use std::collections::HashMap;
 use std::sync::Arc;
+
+const SUGGEST_WINDOW: u64 = 3600 * 24; // 24 hours
 
 pub struct SpeciesService {
     db: Arc<Database>,
@@ -40,7 +43,23 @@ impl SpeciesService {
     }
 
     pub async fn suggest(&self, user_id: u64) -> Result<Vec<String>> {
-        self.db.find_recent_species(user_id).await
+        let since = get_timestamp() - SUGGEST_WINDOW;
+
+        let rows = self
+            .db
+            .sql(
+                "SELECT species, COUNT(1) AS use_count FROM trees WHERE updated_by = ? AND updated_at >= ? AND LOWER(species) <> 'unknown' GROUP BY species ORDER BY use_count DESC LIMIT 10",
+                &[Value::from(user_id), Value::from(since)],
+            )
+            .await?;
+
+        let mut values: Vec<String> = Vec::new();
+
+        for row in rows {
+            values.push(row.require_string("species")?);
+        }
+
+        Ok(values)
     }
 
     pub async fn get_stats(&self) -> Result<Vec<SpeciesStats>> {
@@ -185,5 +204,32 @@ mod tests {
 
         assert_eq!(species.len(), 1, "Could not find species for oak.");
         assert_eq!("Quercus robur", species[0].name);
+    }
+
+    #[tokio::test]
+    async fn test_suggest() {
+        let service = setup().await;
+
+        service
+            .db
+            .execute("DELETE FROM trees")
+            .await
+            .expect("Error clearing trees.");
+
+        let now = get_timestamp();
+
+        service
+            .db
+            .execute(format!(
+                "INSERT INTO trees (id, lat, lon, species, added_at, updated_at, updated_by, added_by) VALUES (1, 40.1, 44.1, 'Birch', {}, {}, 1, 1)",
+                now, now
+            ).as_str())
+            .await
+            .expect("Error adding tree.");
+
+        let suggestion = service.suggest(1).await.expect("Error getting suggestion.");
+
+        assert_eq!(suggestion.len(), 1);
+        assert_eq!(suggestion[0], "Birch");
     }
 }

@@ -7,7 +7,6 @@ use super::queries::*;
 use crate::domain::tree::Tree;
 use crate::infra::database::{Attributes, Value};
 use crate::types::*;
-use crate::utils::get_timestamp;
 use crate::utils::get_unique_id;
 use async_trait::async_trait;
 use libsql::params_from_iter;
@@ -16,8 +15,6 @@ use log::{debug, error, info};
 use std::sync::Arc;
 use std::time::Instant;
 use tokio::sync::Mutex;
-
-const SUGGEST_WINDOW: u64 = 3600 * 24; // 24 hours
 
 // This is where temporary database files are created to simulate
 // the in-memory database, which doesn't really work as we need with libsql.
@@ -312,23 +309,6 @@ impl DatabaseInterface for SqliteTransaction {
         Ok(0)
     }
 
-    async fn find_recent_species(&self, user_id: u64) -> Result<Vec<String>> {
-        let since = get_timestamp() - SUGGEST_WINDOW;
-
-        let rows = self.fetch(
-            "SELECT species, COUNT(1) AS use_count FROM trees WHERE updated_by = ? AND updated_at >= ? AND LOWER(species) <> 'unknown' GROUP BY species ORDER BY use_count DESC LIMIT 10",
-            &[Value::from(user_id), Value::from(since)],
-        ).await?;
-
-        let mut values: Vec<String> = Vec::new();
-
-        for row in rows {
-            values.push(row.require_string("species")?);
-        }
-
-        Ok(values)
-    }
-
     async fn get_species_stats(&self) -> Result<Vec<(String, u64)>> {
         let rows = self.fetch(
             "SELECT species, COUNT(1) AS cnt FROM trees WHERE state <> 'gone' AND state <> 'stump' GROUP BY TRIM(LOWER(species)) ORDER BY cnt DESC, LOWER(species)",
@@ -516,10 +496,6 @@ impl DatabaseInterface for SqliteDatabase {
 
     async fn count(&self, query: CountQuery) -> Result<u64> {
         self.transact().await?.count(query).await
-    }
-
-    async fn find_recent_species(&self, user_id: u64) -> Result<Vec<String>> {
-        self.transact().await?.find_recent_species(user_id).await
     }
 
     async fn get_species_stats(&self) -> Result<Vec<(String, u64)>> {

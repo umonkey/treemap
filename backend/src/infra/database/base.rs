@@ -26,8 +26,6 @@ pub trait DatabaseInterface: Send + Sync {
     #[allow(dead_code)]
     async fn execute(&self, query: &str) -> Result<()>;
 
-    async fn find_recent_species(&self, user_id: u64) -> Result<Vec<String>>;
-
     async fn get_species_stats(&self) -> Result<Vec<(String, u64)>>;
     async fn get_top_streets(&self, count: u64) -> Result<Vec<(String, u64)>>;
     async fn get_state_stats(&self) -> Result<Vec<(String, u64)>>;

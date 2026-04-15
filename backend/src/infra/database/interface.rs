@@ -81,10 +81,6 @@ impl Database {
         self.db.execute(query).await
     }
 
-    pub async fn find_recent_species(&self, user_id: u64) -> Result<Vec<String>> {
-        self.db.find_recent_species(user_id).await
-    }
-
     pub async fn get_species_stats(&self) -> Result<Vec<(String, u64)>> {
         self.db.get_species_stats().await
     }
