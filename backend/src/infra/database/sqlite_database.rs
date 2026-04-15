@@ -239,10 +239,15 @@ impl DatabaseInterface for SqliteTransaction {
         self.execute_sql_internal(query, params).await
     }
 
-    async fn execute_batch(&self, _query: &str) -> Result<()> {
-        Err(Error::DatabaseQuery(
-            "Batch execution is not supported in transactions".to_string(),
-        ))
+    async fn execute_batch(&self, query: &str) -> Result<()> {
+        let mut tx_lock = self.lock().await?;
+        let tx = tx_lock.as_mut().expect("Transaction is open");
+
+        tx.execute_batch(query).await.inspect_err(|e| {
+            error!("Error executing SQL batch: {e}; query={query}");
+        })?;
+
+        Ok(())
     }
 
     async fn get_record(&self, query: SelectQuery) -> Result<Option<Attributes>> {

@@ -461,7 +461,9 @@ mod tests {
     use crate::services::ContextExt;
 
     async fn setup() -> Arc<TreeRepository> {
-        let state = AppState::new().await.expect("Error creating app state.");
+        let state = AppState::new().await.expect("Error creating app state.")
+            .session().await
+            .expect("Error creating session state.");
 
         Arc::new(
             state
