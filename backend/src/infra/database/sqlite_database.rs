@@ -10,7 +10,7 @@ use crate::utils::get_unique_id;
 use async_trait::async_trait;
 use libsql::params_from_iter;
 use libsql::{Builder, Database, Transaction};
-use log::{error, info};
+use log::{debug, error, info};
 use std::sync::Arc;
 use std::time::Instant;
 use tokio::sync::{Mutex, MutexGuard};
@@ -92,7 +92,7 @@ impl SqliteTransaction {
 
         let duration = start.elapsed();
 
-        info!(
+        debug!(
             "Read {} rows in {}ms for query: {query}",
             res.len(),
             duration.as_millis()
