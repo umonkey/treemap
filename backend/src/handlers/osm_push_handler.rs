@@ -11,8 +11,8 @@ use std::sync::Arc;
 
 const MAX_CHANGES: usize = 100;
 
-// Don't push trees younger than 10 minutes, let users finish their surveys.
-const MIN_AGE: u64 = 600;
+// Don't push trees younger than 60 minutes, let users finish their surveys.
+const MIN_AGE: u64 = 3600;
 
 pub struct OsmPushHandler {
     osm: Arc<OsmClient>,
