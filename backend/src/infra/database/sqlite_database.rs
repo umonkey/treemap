@@ -4,7 +4,6 @@
 
 use super::base::DatabaseInterface;
 use super::queries::*;
-use crate::domain::tree::Tree;
 use crate::infra::database::{Attributes, Value};
 use crate::types::*;
 use crate::utils::get_unique_id;
@@ -308,100 +307,6 @@ impl DatabaseInterface for SqliteTransaction {
 
         Ok(0)
     }
-
-    async fn get_species_mismatch(&self, count: u64, skip: u64) -> Result<Vec<Tree>> {
-        let rows = self.fetch(
-            "SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id, year, address FROM trees WHERE state <> 'gone' AND species <> 'Unknown species' AND species <> 'Unknown' AND species NOT IN (SELECT name FROM species) LIMIT ? OFFSET ?",
-            &[Value::from(count), Value::from(skip)],
-        ).await?;
-
-        let mut records = Vec::new();
-
-        for row in rows {
-            if let Ok(packed) = Tree::from_attributes(&row) {
-                records.push(packed);
-            }
-        }
-
-        Ok(records)
-    }
-
-    async fn get_top_streets(&self, count: u64) -> Result<Vec<(String, u64)>> {
-        let rows = self.fetch(
-            "SELECT address, COUNT(1) AS cnt FROM trees WHERE state <> 'gone' AND address IS NOT NULL GROUP BY LOWER(address) ORDER BY cnt DESC, LOWER(address) LIMIT ?",
-            &[Value::from(count)],
-        ).await?;
-
-        let mut res = Vec::new();
-
-        for row in rows {
-            let address = row.require_string("address")?;
-            let count = row.require_u64("cnt")?;
-            res.push((address, count));
-        }
-
-        Ok(res)
-    }
-
-    async fn get_state_stats(&self) -> Result<Vec<(String, u64)>> {
-        let rows = self.fetch(
-            "SELECT state, COUNT(1) AS cnt FROM trees WHERE state IS NOT NULL GROUP BY state ORDER BY cnt DESC",
-            &[],
-        ).await?;
-
-        let mut res = Vec::new();
-
-        for row in rows {
-            let state = row.require_string("state")?;
-            let count = row.require_u64("cnt")?;
-            res.push((state, count));
-        }
-
-        Ok(res)
-    }
-
-    async fn get_heatmap(&self, after: u64, before: u64) -> Result<Vec<(String, u64)>> {
-        let rows = self.fetch(
-            "SELECT DATE(added_at, 'unixepoch') AS date, COUNT(distinct tree_id) AS count FROM trees_props WHERE added_at >= ? AND added_at < ? GROUP BY date ORDER BY date",
-            &[Value::from(after), Value::from(before)],
-        ).await?;
-
-        let mut heatmap = Vec::new();
-
-        for row in rows {
-            let date = row.require_string("date")?;
-            let count = row.require_u64("count")?;
-            heatmap.push((date, count));
-        }
-
-        Ok(heatmap)
-    }
-
-    async fn get_user_heatmap(
-        &self,
-        after: u64,
-        before: u64,
-        user_id: u64,
-    ) -> Result<Vec<(String, u64)>> {
-        let rows = self.fetch(
-            "SELECT DATE(added_at, 'unixepoch') AS date, COUNT(distinct tree_id) AS count FROM trees_props WHERE added_at >= ? AND added_at < ? AND added_by = ? GROUP BY date ORDER BY date",
-            &[
-                Value::from(after),
-                Value::from(before),
-                Value::from(user_id),
-            ],
-        ).await?;
-
-        let mut heatmap = Vec::new();
-
-        for row in rows {
-            let date = row.require_string("date")?;
-            let count = row.require_u64("count")?;
-            heatmap.push((date, count));
-        }
-
-        Ok(heatmap)
-    }
 }
 
 #[async_trait]
@@ -480,37 +385,6 @@ impl DatabaseInterface for SqliteDatabase {
     async fn count(&self, query: CountQuery) -> Result<u64> {
         self.transact().await?.count(query).await
     }
-
-    async fn get_species_mismatch(&self, count: u64, skip: u64) -> Result<Vec<Tree>> {
-        self.transact()
-            .await?
-            .get_species_mismatch(count, skip)
-            .await
-    }
-
-    async fn get_top_streets(&self, count: u64) -> Result<Vec<(String, u64)>> {
-        self.transact().await?.get_top_streets(count).await
-    }
-
-    async fn get_state_stats(&self) -> Result<Vec<(String, u64)>> {
-        self.transact().await?.get_state_stats().await
-    }
-
-    async fn get_heatmap(&self, after: u64, before: u64) -> Result<Vec<(String, u64)>> {
-        self.transact().await?.get_heatmap(after, before).await
-    }
-
-    async fn get_user_heatmap(
-        &self,
-        after: u64,
-        before: u64,
-        user_id: u64,
-    ) -> Result<Vec<(String, u64)>> {
-        self.transact()
-            .await?
-            .get_user_heatmap(after, before, user_id)
-            .await
-    }
 }
 
 impl Clone for SqliteDatabase {
@@ -518,69 +392,5 @@ impl Clone for SqliteDatabase {
         Self {
             pool: self.pool.clone(),
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use log::debug;
-
-    async fn setup() -> SqliteDatabase {
-        if env_logger::try_init().is_err() {
-            debug!("env_logger already initialized.");
-        };
-
-        let db = SqliteDatabase::from_memory()
-            .await
-            .expect("Error creating database.");
-
-        db.execute(include_str!("./fixtures/init.sql"))
-            .await
-            .expect("Error installing fixtures.");
-
-        info!("SQLite database initialized.");
-
-        db
-    }
-
-    #[tokio::test]
-    async fn test_heatmap() {
-        let db = setup().await;
-
-        db.execute(include_str!("./fixtures/test_heatmap.sql"))
-            .await
-            .expect("Error adding heatmap input.");
-
-        let res = db
-            .get_heatmap(1754298465, 1754384866)
-            .await
-            .expect("Error getting heatmap.");
-
-        assert_eq!(res.len(), 2, "Wrong number of heatmap entries.");
-        assert_eq!("2025-08-04", res[0].0);
-        assert_eq!(1, res[0].1);
-        assert_eq!("2025-08-05", res[1].0);
-        assert_eq!(2, res[1].1);
-    }
-
-    #[tokio::test]
-    async fn test_user_heatmap() {
-        let db = setup().await;
-
-        db.execute(include_str!("./fixtures/test_heatmap.sql"))
-            .await
-            .expect("Error adding heatmap input.");
-
-        let res = db
-            .get_user_heatmap(1754298465, 1754384866, 1)
-            .await
-            .expect("Error getting heatmap.");
-
-        assert_eq!(res.len(), 2, "Wrong number of heatmap entries.");
-        assert_eq!("2025-08-04", res[0].0);
-        assert_eq!(1, res[0].1);
-        assert_eq!("2025-08-05", res[1].0);
-        assert_eq!(1, res[1].1);
     }
 }

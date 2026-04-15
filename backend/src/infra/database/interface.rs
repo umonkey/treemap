@@ -8,7 +8,6 @@ use super::base::DatabaseInterface;
 use super::queries::*;
 use super::sqlite_database::SqliteDatabase;
 use super::value::Value;
-use crate::domain::tree::Tree;
 use crate::infra::config::Config;
 use crate::infra::secrets::Secrets;
 use crate::types::{Error, Result};
@@ -79,31 +78,6 @@ impl Database {
     #[allow(dead_code)]
     pub async fn execute(&self, query: &str) -> Result<()> {
         self.db.execute(query).await
-    }
-
-    pub async fn get_top_streets(&self, count: u64) -> Result<Vec<(String, u64)>> {
-        self.db.get_top_streets(count).await
-    }
-
-    pub async fn get_state_stats(&self) -> Result<Vec<(String, u64)>> {
-        self.db.get_state_stats().await
-    }
-
-    pub async fn get_species_mismatch(&self, count: u64, skip: u64) -> Result<Vec<Tree>> {
-        self.db.get_species_mismatch(count, skip).await
-    }
-
-    pub async fn get_heatmap(&self, after: u64, before: u64) -> Result<Vec<(String, u64)>> {
-        self.db.get_heatmap(after, before).await
-    }
-
-    pub async fn get_user_heatmap(
-        &self,
-        after: u64,
-        before: u64,
-        user_id: u64,
-    ) -> Result<Vec<(String, u64)>> {
-        self.db.get_user_heatmap(after, before, user_id).await
     }
 }
 

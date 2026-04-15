@@ -4,7 +4,7 @@ use crate::domain::prop::{PropRecord, PropRepository};
 use crate::domain::tree::{Tree, TreeRepository};
 use crate::domain::tree_image::TreeImageRepository;
 use crate::domain::user::UserRepository;
-use crate::infra::database::Database;
+use crate::infra::database::{Database, Value};
 use crate::infra::nominatim::NominatimClient;
 use crate::infra::queue::Queue;
 use crate::services::queue_consumer::{AddPhotoMessage, UpdateTreeAddressMessage};
@@ -522,7 +522,23 @@ impl TreeService {
     }
 
     pub async fn get_mismatching_species(&self, count: u64, skip: u64) -> Result<Vec<Tree>> {
-        self.db.get_species_mismatch(count, skip).await
+        let rows = self
+            .db
+            .sql(
+                "SELECT * FROM trees WHERE state <> 'gone' AND species <> 'Unknown species' AND species <> 'Unknown' AND species NOT IN (SELECT name FROM species) LIMIT ?1 OFFSET ?2",
+                &[Value::from(count), Value::from(skip)],
+            )
+            .await?;
+
+        let mut records = Vec::new();
+
+        for row in rows {
+            if let Ok(packed) = Tree::from_attributes(&row) {
+                records.push(packed);
+            }
+        }
+
+        Ok(records)
     }
 
     // Update the street address of a tree based on its coordinates.
@@ -805,5 +821,36 @@ mod tests {
         assert_eq!(tree_ids2.len(), 2);
         assert!(tree_ids2.contains(&4));
         assert!(tree_ids2.contains(&5));
+    }
+
+    #[tokio::test]
+    async fn test_get_mismatching_species() {
+        let service = setup().await;
+
+        service
+            .db
+            .execute("DELETE FROM trees")
+            .await
+            .expect("Error clearing trees.");
+
+        service
+            .db
+            .execute("DELETE FROM species")
+            .await
+            .expect("Error clearing species.");
+
+        service
+            .db
+            .execute("INSERT INTO trees (id, lat, lon, species, state, added_at, updated_at, updated_by, added_by) VALUES (1, 40.1, 44.1, 'Fake Species', 'healthy', 0, 0, 1, 1)")
+            .await
+            .expect("Error adding tree.");
+
+        let res = service
+            .get_mismatching_species(10, 0)
+            .await
+            .expect("Error getting mismatch.");
+
+        assert_eq!(res.len(), 1);
+        assert_eq!(res[0].species, "Fake Species");
     }
 }
