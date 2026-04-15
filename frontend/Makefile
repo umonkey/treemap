@@ -6,7 +6,7 @@ build:
 	cp build/index.html build/404.html
 
 clean:
-	rm -rf node_modules
+	rm -rf node_modules .svelte-kit
 
 deploy:
 	npm run build
