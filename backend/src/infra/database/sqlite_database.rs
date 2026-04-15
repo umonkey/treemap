@@ -77,8 +77,9 @@ impl SqliteDatabase {
             .build()
             .await
             .map_err(|e| {
-                error!("Error connecting to a Turso database at {url}: {e}");
-                Error::DatabaseConnect
+                Error::DatabaseConnect(format!(
+                    "Error connecting to a Turso database at {url}: {e}"
+                ))
             })?;
 
         info!("Connected to a Turso database at {url}");
@@ -91,8 +92,7 @@ impl SqliteDatabase {
     // Creates a client for a local database.
     pub async fn from_local(path: &str) -> Result<Self> {
         let pool = Builder::new_local(path).build().await.map_err(|e| {
-            error!("Error opening an SQLite database in {path}: {e}");
-            Error::DatabaseConnect
+            Error::DatabaseConnect(format!("Error opening an SQLite database in {path}: {e}"))
         })?;
 
         info!("Using an SQLite database in {path}");
@@ -110,8 +110,7 @@ impl SqliteDatabase {
         let path = Self::get_temporary_path();
 
         let pool = Builder::new_local(&path).build().await.map_err(|e| {
-            error!("Error opening an in-memory SQLite database: {e}");
-            Error::DatabaseConnect
+            Error::DatabaseConnect(format!("Error opening an in-memory SQLite database: {e}"))
         })?;
 
         info!("Created a temporary SQLite database in {path}.");

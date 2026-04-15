@@ -16,7 +16,7 @@ pub enum Error {
     #[allow(unused)]
     BadRequest,
     Config(String),
-    DatabaseConnect,
+    DatabaseConnect(String),
     DatabaseQuery(String),
     DatabaseStructure,
     DuplicateTree,
@@ -61,7 +61,7 @@ impl Error {
             Error::Config(_) => {
                 r#"{"error":{"code":"Config","description":"Configuration error."}}"#
             }
-            Error::DatabaseConnect => {
+            Error::DatabaseConnect(_) => {
                 r#"{"error":{"code":"DatabaseConnect","description":"Error connecting to the database."}}"#
             }
             Error::DatabaseQuery(_) => {
@@ -172,7 +172,7 @@ impl fmt::Display for Error {
             Error::BadImage => write!(f, "BadImage"),
             Error::BadRequest => write!(f, "BadRequest"),
             Error::Config(s) => write!(f, "Config error: {s}"),
-            Error::DatabaseConnect => write!(f, "DatabaseConnect"),
+            Error::DatabaseConnect(s) => write!(f, "DatabaseConnect: {s}"),
             Error::DatabaseQuery(s) => write!(f, "Database error: {s}"),
             Error::DatabaseStructure => write!(f, "DatabaseStructure"),
             Error::DuplicateTree => write!(f, "DuplicateTree"),

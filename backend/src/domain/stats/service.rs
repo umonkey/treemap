@@ -91,7 +91,10 @@ mod tests {
             .await
             .expect("Error adding tree.");
 
-        let res = service.count_trees_by_state().await.expect("Error getting stats.");
+        let res = service
+            .count_trees_by_state()
+            .await
+            .expect("Error getting stats.");
 
         assert_eq!(res.len(), 1);
         assert_eq!(res[0].state, "healthy");
@@ -114,7 +117,10 @@ mod tests {
             .await
             .expect("Error adding tree.");
 
-        let res = service.get_top_streets().await.expect("Error getting stats.");
+        let res = service
+            .get_top_streets()
+            .await
+            .expect("Error getting stats.");
 
         assert_eq!(res.len(), 1);
         assert_eq!(res[0].address, "Main St");
