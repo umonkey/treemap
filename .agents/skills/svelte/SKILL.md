@@ -38,11 +38,9 @@ When generating or modifying a Svelte component or page, you MUST adhere strictl
     - Use `let` only for Binding: only switch to `let { ... }: { ... } = $props()` if the component requires at least one `$bindable()` prop.
 12. Verification Workflow: after implementing or modifying components/pages, you MUST verify the changes by running `make format` and `make lint check` within the `services/frontend` directory.
 
-
 ## Page Architecture
 
-1. All new pages must use a `RoleGuard` to wrap their contents.  Unless specified otherwise, roles should be set to `['Scientist']`.
-
+1. All new pages must use a `RoleGuard` to wrap their contents. Unless specified otherwise, roles should be set to `['Scientist']`.
 
 ## Implementation Template
 
@@ -52,18 +50,18 @@ You must use the following structure as your baseline.
 
 ```typescript
 class ComponentNameLogic {
-    // 1. Reactive state using runes
-    title = $state<string>("Default Title");
-    isActive = $state<boolean>(false);
+  // 1. Reactive state using runes
+  title = $state<string>("Default Title");
+  isActive = $state<boolean>(false);
 
-    constructor() {
-        // 2. Pure constructor: NO side effects allowed here.
-    }
+  constructor() {
+    // 2. Pure constructor: NO side effects allowed here.
+  }
 
-    // 3. Methods as arrow functions
-    toggleActive = () => {
-        this.isActive = !this.isActive;
-    };
+  // 3. Methods as arrow functions
+  toggleActive = () => {
+    this.isActive = !this.isActive;
+  };
 }
 
 export const componentState = new ComponentNameLogic();
@@ -73,21 +71,21 @@ export const componentState = new ComponentNameLogic();
 
 ```html
 <script lang="ts">
-    import { componentState } from './[ComponentName].svelte.ts';
+  import { componentState } from "./[ComponentName].svelte.ts";
 </script>
 
 <div>
-    <h1>{componentState.title}</h1>
-    <button onclick={componentState.toggleActive}>
-        {componentState.isActive ? 'Deactivate' : 'Activate'}
-    </button>
+  <h1>{componentState.title}</h1>
+  <button onclick="{componentState.toggleActive}">
+    {componentState.isActive ? 'Deactivate' : 'Activate'}
+  </button>
 </div>
 
 <style>
-    /* 4. Embedded styles only, rely on PicoCSS for basics */
-    div {
-        margin-top: var(--pico-spacing);
-    }
+  /* 4. Embedded styles only, rely on PicoCSS for basics */
+  div {
+    margin-top: var(--pico-spacing);
+  }
 </style>
 ```
 
@@ -95,11 +93,11 @@ export const componentState = new ComponentNameLogic();
 
 ```typescript
 class PageState {
-    data = $state<any>(null);
+  data = $state<any>(null);
 
-    reload = async (id: string) => {
-        // Data fetching logic here
-    };
+  reload = async (id: string) => {
+    // Data fetching logic here
+  };
 }
 
 export const pageState = new PageState();
@@ -109,24 +107,24 @@ export const pageState = new PageState();
 
 ```html
 <script lang="ts">
-    import { pageState } from './page.svelte.ts';
-    import { page } from '$app/state';
+  import { pageState } from "./page.svelte.ts";
+  import { page } from "$app/state";
 
-    // Reactive extraction of non-optional arguments
-    const id = $derived(page.params.id as string);
+  // Reactive extraction of non-optional arguments
+  const id = $derived(page.params.id as string);
 
-    $effect(() => {
-        // Trigger reload when ID changes
-        pageState.reload(id);
-    });
+  $effect(() => {
+    // Trigger reload when ID changes
+    pageState.reload(id);
+  });
 </script>
 
 <article>
-    <header>Page Title</header>
-    {#if pageState.data}
-        <pre>{JSON.stringify(pageState.data, null, 2)}</pre>
-    {:else}
-        <p aria-busy="true">Loading...</p>
-    {/if}
+  <header>Page Title</header>
+  {#if pageState.data}
+  <pre>{JSON.stringify(pageState.data, null, 2)}</pre>
+  {:else}
+  <p aria-busy="true">Loading...</p>
+  {/if}
 </article>
 ```

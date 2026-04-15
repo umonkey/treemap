@@ -5,12 +5,14 @@ use super::schemas::*;
 use crate::actions::user::UserList;
 use crate::domain::tree::NewTreeDefaultsResponse;
 use crate::domain::tree::ReplaceTreeRequest;
-use crate::domain::tree::{AddTreeRequest, GetTreesRequest, TreeStats, UpdateTreeRequest};
+use crate::domain::tree::{
+    AddTreeRequest, GetTreesRequest, TreeService, TreeStats, UpdateTreeRequest,
+};
 use crate::services::comment_loader::CommentList;
 use crate::services::prop_loader::PropList;
 use crate::services::tree_loader::SingleTreeResponse;
 use crate::services::tree_loader::TreeList;
-use crate::services::AppState;
+use crate::services::{AppState, ContextExt};
 use crate::types::{Error, Result};
 use crate::utils::{get_remote_addr, get_user_agent};
 use actix_web::web::{Bytes, Data, Json, Path, Query, ServiceConfig};
@@ -134,7 +136,8 @@ pub async fn get_tree_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
 ) -> Result<Json<SingleTreeResponse>> {
-    let tree = state.trees.get_tree(path.id).await?;
+    let trees = state.build::<TreeService>()?;
+    let tree = trees.get_tree(path.id).await?;
     let res = state.tree_loader.load_single(&tree).await?;
     Ok(Json(res))
 }

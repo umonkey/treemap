@@ -1,6 +1,6 @@
 use super::models::PropRecord;
 use crate::infra::database::{Database, InsertQuery, SelectQuery, Value};
-use crate::services::{Locatable, Locator};
+use crate::services::{Context, Injectable, Locatable, Locator};
 use crate::types::*;
 use crate::utils::{get_timestamp, get_unique_id};
 use std::sync::Arc;
@@ -61,6 +61,12 @@ impl PropRepository {
                 })
             })
             .collect()
+    }
+}
+
+impl Injectable for PropRepository {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        Ok(Self { db: ctx.database() })
     }
 }
 

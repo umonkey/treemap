@@ -26,3 +26,4 @@ When asked to "wrap up", provide a conventional commits styled message for the w
 
 - Check the `docs/` folder for architectural decisions and detailed documentation on specific features.
 - See `backend/AGENTS.md` and `frontend/AGENTS.md` for specific instructions on those subprojects.
+- When working on Rust code in the `backend` directory, you MUST load the `rust` skill.

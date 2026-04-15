@@ -14,6 +14,9 @@ use crate::domain::tree::TreeService;
 use crate::domain::tree_image::TreeImageService;
 use crate::domain::upload::UploadService;
 use crate::domain::user::UserService;
+use crate::infra::config::Config;
+use crate::infra::database::Database;
+use crate::infra::queue::Queue;
 use crate::infra::tokens::TokenService;
 use crate::services::comment_loader::CommentLoader;
 use crate::services::like_loader::LikeLoader;
@@ -25,7 +28,41 @@ use crate::types::*;
 use actix_web::HttpRequest;
 use std::sync::Arc;
 
+pub trait Context {
+    fn database(&self) -> Arc<Database>;
+    fn config(&self) -> Arc<Config>;
+    fn queue(&self) -> Arc<Queue>;
+    fn locator(&self) -> Arc<Locator>;
+}
+
+pub trait Injectable {
+    fn inject(ctx: &dyn Context) -> Result<Self>
+    where
+        Self: Sized;
+}
+
+impl dyn Context + '_ {
+    pub fn build<T: Injectable>(&self) -> Result<T> {
+        T::inject(self)
+    }
+}
+
+pub trait ContextExt: Context {
+    fn build<T: Injectable>(&self) -> Result<T>
+    where
+        Self: Sized,
+    {
+        T::inject(self)
+    }
+}
+
+impl<T: Context> ContextExt for T {}
+
 pub struct AppState {
+    pub locator: Arc<Locator>,
+    pub database: Arc<Database>,
+    pub config: Arc<Config>,
+    pub queue: Arc<Queue>,
     pub tree_images: Arc<TreeImageService>,
     tokens: Arc<TokenService>,
     pub users: Arc<UserService>,
@@ -53,6 +90,9 @@ pub struct AppState {
 impl AppState {
     pub async fn new(locator: Arc<Locator>) -> Result<Self> {
         Ok(Self {
+            database: locator.get::<Database>()?,
+            config: locator.get::<Config>()?,
+            queue: locator.get::<Queue>()?,
             tree_images: locator.get::<TreeImageService>()?,
             tokens: locator.get::<TokenService>()?,
             users: locator.get::<UserService>()?,
@@ -75,6 +115,7 @@ impl AppState {
             meta: locator.get::<MetaService>()?,
             props: locator.get::<PropService>()?,
             prop_loader: locator.get::<PropLoader>()?,
+            locator,
         })
     }
 
@@ -107,5 +148,23 @@ impl AppState {
         // TODO: check if user exists.
 
         Ok(user_id)
+    }
+}
+
+impl Context for AppState {
+    fn database(&self) -> Arc<Database> {
+        self.database.clone()
+    }
+
+    fn config(&self) -> Arc<Config> {
+        self.config.clone()
+    }
+
+    fn queue(&self) -> Arc<Queue> {
+        self.queue.clone()
+    }
+
+    fn locator(&self) -> Arc<Locator> {
+        self.locator.clone()
     }
 }

@@ -3,7 +3,7 @@ use super::schemas::*;
 use crate::domain::prop::{PropRecord, PropRepository};
 use crate::infra::database::{CountQuery, IncrementQuery, InsertQuery, SelectQuery, UpdateQuery};
 use crate::infra::database::{Database, Value};
-use crate::services::*;
+use crate::services::{Context, Injectable, Locatable, Locator};
 use crate::types::*;
 use crate::utils::get_timestamp;
 use log::{debug, error, info};
@@ -442,6 +442,15 @@ impl TreeRepository {
         rows.iter()
             .map(|props| Tree::from_attributes(props).map_err(|_| Error::DatabaseStructure))
             .collect()
+    }
+}
+
+impl Injectable for TreeRepository {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        Ok(Self {
+            db: ctx.database(),
+            props: Arc::new(ctx.build::<PropRepository>()?),
+        })
     }
 }
 

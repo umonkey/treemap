@@ -9,7 +9,7 @@ use crate::infra::database::Database;
 use crate::infra::nominatim::NominatimClient;
 use crate::infra::queue::Queue;
 use crate::services::queue_consumer::{AddPhotoMessage, UpdateTreeAddressMessage};
-use crate::services::*;
+use crate::services::{Context, Injectable, Locatable, Locator};
 use crate::types::*;
 use crate::utils::osm_round_coord;
 use crate::utils::{fix_circumference, get_timestamp, get_unique_id};
@@ -684,6 +684,23 @@ impl TreeService {
         }
 
         true
+    }
+}
+
+impl Injectable for TreeService {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        let locator = ctx.locator();
+        Ok(Self {
+            db: ctx.database(),
+            comments: locator.get::<CommentService>()?,
+            trees: Arc::new(ctx.build::<TreeRepository>()?),
+            users: locator.get::<UserRepository>()?,
+            queue: ctx.queue(),
+            files: locator.get::<TreeImageRepository>()?,
+            props: Arc::new(ctx.build::<PropRepository>()?),
+            nominatim: locator.get::<NominatimClient>()?,
+            bot_user_id: ctx.config().bot_user_id,
+        })
     }
 }
 
