@@ -213,7 +213,7 @@ mod tests {
 
         service
             .db
-            .execute(include_str!("../../infra/database/fixtures/species.sql"))
+            .execute_batch(include_str!("../../infra/database/fixtures/species.sql"))
             .await
             .expect("Error adding species.");
 
@@ -232,7 +232,7 @@ mod tests {
 
         service
             .db
-            .execute("DELETE FROM trees")
+            .execute_sql("DELETE FROM trees", &[])
             .await
             .expect("Error clearing trees.");
 
@@ -240,10 +240,10 @@ mod tests {
 
         service
             .db
-            .execute(format!(
+            .execute_sql(format!(
                 "INSERT INTO trees (id, lat, lon, species, added_at, updated_at, updated_by, added_by) VALUES (1, 40.1, 44.1, 'Birch', {}, {}, 1, 1)",
                 now, now
-            ).as_str())
+            ).as_str(), &[])
             .await
             .expect("Error adding tree.");
 
@@ -259,7 +259,7 @@ mod tests {
 
         service
             .db
-            .execute(include_str!(
+            .execute_batch(include_str!(
                 "../../infra/database/fixtures/test_species_stats.sql"
             ))
             .await

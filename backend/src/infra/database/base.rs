@@ -21,7 +21,7 @@ pub trait DatabaseInterface: Send + Sync {
     async fn increment(&self, query: IncrementQuery) -> Result<()>;
     async fn count(&self, query: CountQuery) -> Result<u64>;
     async fn fetch_sql(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>>;
-    async fn execute_sql(&self, query: &str, params: &[Value]) -> Result<()>;
+    async fn execute_sql(&self, query: &str, params: &[Value]) -> Result<u64>;
     #[allow(dead_code)]
-    async fn execute(&self, query: &str) -> Result<()>;
+    async fn execute_batch(&self, query: &str) -> Result<()>;
 }

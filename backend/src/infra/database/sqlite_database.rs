@@ -10,7 +10,7 @@ use crate::utils::get_unique_id;
 use async_trait::async_trait;
 use libsql::params_from_iter;
 use libsql::{Builder, Database, Transaction};
-use log::{debug, error, info};
+use log::{error, info};
 use std::sync::Arc;
 use std::time::Instant;
 use tokio::sync::{Mutex, MutexGuard};
@@ -232,15 +232,14 @@ impl DatabaseInterface for SqliteTransaction {
     }
 
     async fn fetch_sql(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>> {
-        self.fetch_sql(query, params).await
+        SqliteTransaction::fetch_sql(self, query, params).await
     }
 
-    async fn execute_sql(&self, query: &str, params: &[Value]) -> Result<()> {
-        self.execute_sql_internal(query, params).await?;
-        Ok(())
+    async fn execute_sql(&self, query: &str, params: &[Value]) -> Result<u64> {
+        self.execute_sql_internal(query, params).await
     }
 
-    async fn execute(&self, _query: &str) -> Result<()> {
+    async fn execute_batch(&self, _query: &str) -> Result<()> {
         Err(Error::DatabaseQuery(
             "Batch execution is not supported in transactions".to_string(),
         ))
@@ -257,36 +256,35 @@ impl DatabaseInterface for SqliteTransaction {
 
         self.fetch_sql(sql.as_str(), params.as_slice())
             .await
-            .inspect_err(|e| {
-                debug!("SQL query failed: {e}; SQL={sql}");
-            })
+            .map_err(|e| Error::DatabaseQuery(format!("SQL query failed: {e}; SQL={sql}")))
     }
 
     async fn add_record(&self, query: InsertQuery) -> Result<()> {
         let (sql, params) = query.build();
-        self.execute_sql(sql.as_str(), params.as_slice()).await
+        self.execute_sql(sql.as_str(), params.as_slice()).await?;
+        Ok(())
     }
 
     async fn replace(&self, query: ReplaceQuery) -> Result<()> {
         let (sql, params) = query.build();
-        self.execute_sql(sql.as_str(), params.as_slice()).await
+        self.execute_sql(sql.as_str(), params.as_slice()).await?;
+        Ok(())
     }
 
     async fn update(&self, query: UpdateQuery) -> Result<u64> {
         let (sql, params) = query.build();
-        self.execute_sql_internal(sql.as_str(), params.as_slice())
-            .await
+        self.execute_sql(sql.as_str(), params.as_slice()).await
     }
 
     async fn delete(&self, query: DeleteQuery) -> Result<u64> {
         let (sql, params) = query.build();
-        self.execute_sql_internal(sql.as_str(), params.as_slice())
-            .await
+        self.execute_sql(sql.as_str(), params.as_slice()).await
     }
 
     async fn increment(&self, query: IncrementQuery) -> Result<()> {
         let (sql, params) = query.build();
-        self.execute_sql(sql.as_str(), params.as_slice()).await
+        self.execute_sql(sql.as_str(), params.as_slice()).await?;
+        Ok(())
     }
 
     async fn count(&self, query: CountQuery) -> Result<u64> {
@@ -325,14 +323,15 @@ impl DatabaseInterface for SqliteDatabase {
         self.transact().await?.fetch_sql(query, params).await
     }
 
-    async fn execute_sql(&self, query: &str, params: &[Value]) -> Result<()> {
+    async fn execute_sql(&self, query: &str, params: &[Value]) -> Result<u64> {
         let tx = self.transact().await?;
-        tx.execute_sql(query, params).await?;
-        tx.commit().await
+        let res = tx.execute_sql(query, params).await?;
+        tx.commit().await?;
+        Ok(res)
     }
 
-    async fn execute(&self, query: &str) -> Result<()> {
-        self.execute_batch(query).await
+    async fn execute_batch(&self, query: &str) -> Result<()> {
+        SqliteDatabase::execute_batch(self, query).await
     }
 
     async fn get_record(&self, query: SelectQuery) -> Result<Option<Attributes>> {

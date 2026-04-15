@@ -154,7 +154,7 @@ mod tests {
 
         service
             .db
-            .execute(include_str!(
+            .execute_batch(include_str!(
                 "../../infra/database/fixtures/test_heatmap.sql"
             ))
             .await
@@ -175,7 +175,7 @@ mod tests {
 
         service
             .db
-            .execute(include_str!(
+            .execute_batch(include_str!(
                 "../../infra/database/fixtures/test_heatmap.sql"
             ))
             .await

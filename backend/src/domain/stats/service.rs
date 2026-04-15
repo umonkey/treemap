@@ -81,13 +81,13 @@ mod tests {
 
         service
             .db
-            .execute("DELETE FROM trees")
+            .execute_sql("DELETE FROM trees", &[])
             .await
             .expect("Error clearing trees.");
 
         service
             .db
-            .execute("INSERT INTO trees (id, lat, lon, species, state, added_at, updated_at, updated_by, added_by) VALUES (1, 40.1, 44.1, 'Birch', 'healthy', 0, 0, 1, 1)")
+            .execute_sql("INSERT INTO trees (id, lat, lon, species, state, added_at, updated_at, updated_by, added_by) VALUES (1, 40.1, 44.1, 'Birch', 'healthy', 0, 0, 1, 1)", &[])
             .await
             .expect("Error adding tree.");
 
@@ -107,13 +107,13 @@ mod tests {
 
         service
             .db
-            .execute("DELETE FROM trees")
+            .execute_sql("DELETE FROM trees", &[])
             .await
             .expect("Error clearing trees.");
 
         service
             .db
-            .execute("INSERT INTO trees (id, lat, lon, species, address, state, added_at, updated_at, updated_by, added_by) VALUES (1, 40.1, 44.1, 'Birch', 'Main St', 'healthy', 0, 0, 1, 1)")
+            .execute_sql("INSERT INTO trees (id, lat, lon, species, address, state, added_at, updated_at, updated_by, added_by) VALUES (1, 40.1, 44.1, 'Birch', 'Main St', 'healthy', 0, 0, 1, 1)", &[])
             .await
             .expect("Error adding tree.");
 

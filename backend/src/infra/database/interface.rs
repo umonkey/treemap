@@ -71,13 +71,13 @@ impl Database {
         self.db.fetch_sql(query, params).await
     }
 
-    pub async fn execute_sql(&self, query: &str, params: &[Value]) -> Result<()> {
+    pub async fn execute_sql(&self, query: &str, params: &[Value]) -> Result<u64> {
         self.db.execute_sql(query, params).await
     }
 
     #[allow(dead_code)]
-    pub async fn execute(&self, query: &str) -> Result<()> {
-        self.db.execute(query).await
+    pub async fn execute_batch(&self, query: &str) -> Result<()> {
+        self.db.execute_batch(query).await
     }
 }
 
