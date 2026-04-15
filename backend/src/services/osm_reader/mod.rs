@@ -47,17 +47,14 @@ impl OsmReaderService {
 
         let doc = self.overpass_client.query().await?;
 
-        let tx_osm_trees = self.osm_trees.transact().await?;
-
         for mut node in doc.iter().cloned() {
             node.last_seen_at = Some(sync_start);
             node.visible = true;
 
-            Self::update_cache_record(&tx_osm_trees, &node).await?;
+            Self::update_cache_record(&self.osm_trees, &node).await?;
         }
 
-        tx_osm_trees.mark_invisible_before(sync_start).await?;
-        tx_osm_trees.commit().await?;
+        self.osm_trees.mark_invisible_before(sync_start).await?;
 
         info!("Found {} OSM nodes.", doc.len());
 
@@ -65,8 +62,6 @@ impl OsmReaderService {
     }
 
     // Iterate through OSM data and apply changes to local trees.
-    //
-    // TODO: add transaction, this is very slow atm.
     pub async fn update_local_trees(&self) -> Result<()> {
         for node in self.osm_trees.all().await? {
             match self.trees.get_by_osm_id(node.id).await? {

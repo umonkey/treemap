@@ -12,22 +12,6 @@ pub struct OsmTreeRepository {
 }
 
 impl OsmTreeRepository {
-    #[allow(dead_code)]
-    pub async fn transact(&self) -> Result<Self> {
-        let db = self.db.transact().await?;
-        Ok(Self { db: Arc::new(db) })
-    }
-
-    #[allow(dead_code)]
-    pub async fn commit(&self) -> Result<()> {
-        self.db.commit().await
-    }
-
-    #[allow(dead_code)]
-    pub async fn rollback(&self) -> Result<()> {
-        self.db.rollback().await
-    }
-
     pub async fn get(&self, id: u64) -> Result<Option<OsmTreeRecord>> {
         let query = SelectQuery::new(TABLE).with_condition("id", Value::from(id as i64));
 
