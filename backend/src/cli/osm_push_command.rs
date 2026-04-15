@@ -1,12 +1,14 @@
-use crate::handlers::*;
 use crate::services::*;
 
 pub async fn osm_push_command() {
     let locator = Locator::new();
 
-    let handler = locator
-        .get::<OsmPushHandler>()
-        .expect("Error creating the handler.");
+    let service = locator
+        .get::<OsmWriterService>()
+        .expect("Error creating the service.");
 
-    handler.handle().await.expect("Error processing updates.");
+    service
+        .push_new_trees()
+        .await
+        .expect("Error processing updates.");
 }

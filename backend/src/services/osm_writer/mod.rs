@@ -1,38 +1,73 @@
-//! Push updates to existing trees on OSM.
+//! This module pushes local changes to OpenStreetMap.
 //!
-//! When we know that a tree exists in OSM, we have the osm_id,
-//! and we can see that the tree has been updated, we push them.
-//!
-//! The algorithm is the following.
-//!
-//! (1) Get all trees from the database which have an osm_id.
-//! (2) Convert them to OsmTreeRecord.
-//! (3) See if there is a corresponding record in table osm_trees.
-//! (4) See if that differs from the current tree.
-//! (5) If it does, push the changes to OSM.
+//! There are two types of changes:
+//! (1) New trees found during surveys that don't have an OSM ID yet.
+//! (2) Updates to existing trees that already have an OSM ID.
 
 use crate::domain::osm::{OsmTreeRecord, OsmTreeRepository};
-use crate::domain::tree::TreeRepository;
+use crate::domain::tree::{Tree, TreeRepository};
 use crate::infra::config::Config;
 use crate::infra::osm::{OsmClient, OsmElement};
-use crate::services::*;
+use crate::services::{Locatable, Locator};
 use crate::types::*;
+use crate::utils::get_timestamp;
 use log::{debug, info, warn};
 use std::sync::Arc;
 
-pub struct OsmPushChangesHandler {
+// Don't push trees younger than 60 minutes, let users finish their surveys.
+const MIN_AGE: u64 = 3600;
+
+pub struct OsmWriterService {
     osm: Arc<OsmClient>,
     osm_trees: Arc<OsmTreeRepository>,
     trees: Arc<TreeRepository>,
-    changeset_size: u64,
+    user_id: u64,
+    changeset_size: usize,
 }
 
-impl OsmPushChangesHandler {
-    pub async fn handle(&self, dry_run: bool) -> Result<()> {
-        self.push_updates(dry_run).await?;
+impl OsmWriterService {
+    /// Push new trees to OSM.
+    pub async fn push_new_trees(&self) -> Result<()> {
+        let trees = self.get_new_trees().await?;
+
+        if trees.is_empty() {
+            info!("No new trees to push to OSM.");
+            return Ok(());
+        }
+
+        let changeset = self
+            .osm
+            .create_changeset("Adding new trees found during surveys.")
+            .await?;
+
+        for tree in trees {
+            let osm_id = self.osm.create_tree(changeset, &tree).await?;
+
+            self.trees
+                .update_osm_id(tree.id, osm_id, self.user_id)
+                .await?;
+
+            self.osm_trees
+                .add(&OsmTreeRecord {
+                    id: osm_id,
+                    lat: tree.lat,
+                    lon: tree.lon,
+                    genus: None,
+                    species: Some(tree.species),
+                    height: tree.height,
+                    circumference: tree.circumference,
+                    diameter_crown: tree.diameter,
+                    ..Default::default()
+                })
+                .await?;
+        }
+
+        self.osm.close_changeset(changeset).await?;
+
         Ok(())
     }
 
+    /// Push updates to existing trees on OSM.
     pub async fn push_updates(&self, dry_run: bool) -> Result<()> {
         let trees = self.get_changed_trees().await?;
 
@@ -44,7 +79,7 @@ impl OsmPushChangesHandler {
         let total = trees.len();
         let trees = trees
             .into_iter()
-            .take(self.changeset_size as usize)
+            .take(self.changeset_size)
             .collect::<Vec<_>>();
 
         debug!(
@@ -86,6 +121,29 @@ impl OsmPushChangesHandler {
         Ok(())
     }
 
+    async fn get_new_trees(&self) -> Result<Vec<Tree>> {
+        let mut res = Vec::new();
+        let max_ts = get_timestamp() - MIN_AGE;
+
+        for tree in self.trees.all().await? {
+            if tree.osm_id.is_some() || !tree.is_existing() {
+                continue;
+            }
+
+            if tree.added_at > max_ts {
+                continue;
+            }
+
+            res.push(tree);
+
+            if res.len() == self.changeset_size {
+                break;
+            }
+        }
+
+        Ok(res)
+    }
+
     async fn get_changeset_id(&self, dry_run: bool) -> Result<u64> {
         if dry_run {
             return Ok(0);
@@ -99,10 +157,10 @@ impl OsmPushChangesHandler {
 
         for tree in self.trees.all().await? {
             if tree.osm_id.is_some() {
-                let tree: OsmTreeRecord = (&tree).into();
+                let tree_record: OsmTreeRecord = (&tree).into();
 
-                if self.has_changes(&tree).await? {
-                    res.push(tree);
+                if self.has_changes(&tree_record).await? {
+                    res.push(tree_record);
                 }
             }
         }
@@ -213,7 +271,7 @@ impl OsmPushChangesHandler {
     }
 }
 
-impl Locatable for OsmPushChangesHandler {
+impl Locatable for OsmWriterService {
     fn create(locator: &Locator) -> Result<Self> {
         let config = locator.get::<Config>()?;
 
@@ -221,7 +279,8 @@ impl Locatable for OsmPushChangesHandler {
             osm: locator.get::<OsmClient>()?,
             osm_trees: locator.get::<OsmTreeRepository>()?,
             trees: locator.get::<TreeRepository>()?,
-            changeset_size: config.osm_changeset_size,
+            user_id: config.bot_user_id,
+            changeset_size: config.osm_changeset_size as usize,
         })
     }
 }
