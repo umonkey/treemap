@@ -26,7 +26,6 @@ In the end, if all is good, you get files `odm_orthophoto.tif` with the desired 
 You don't need the PDF report, just for curiosity.
 The source JPEG files also will not be used anymore in this process.
 
-
 ## 3. Create map tiles
 
 When you have a bunch of GeoTIFF files, you can convert them into map tiles using `gdal2tiles.py`, which is part of the GDAL library.
@@ -35,13 +34,11 @@ See the provided script [tools/drone-stitch.sh][5] for details.
 In the end, you will get a folder named `tiles` full of small PNG files.
 That's what you need in the next steps.
 
-
 ## 4. Publish your tiles
 
 You can publish your tiles on a web server.
 Any web server capable of serving static files will do.
 Or you can use a premium service like [MapTiler Cloud][3] or Mapbox to host and serve your tiles.
-
 
 [1]: https://flylitchi.com/
 [2]: https://ancient.land/

@@ -12,6 +12,9 @@ build:
 build-combined:
 	docker build -t treemap:latest -f Dockerfile .
 
+format-docs:
+	npx -y prettier --write $(shell find ./docs -name "*.md")
+
 push:
 	echo $(CR_TOKEN) | docker login ghcr.io -u $(CR_USER) --password-stdin
 	docker tag treemap:latest ghcr.io/$(CR_USER)/treemap:latest

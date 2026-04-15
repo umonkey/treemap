@@ -49,7 +49,7 @@ database = "sqlite"
 # Default Overpass API query.
 # This query is used to pull new nodes from the OSM database.
 # Defaults to Yerevan, Armenia.
-#overpass_query = "[out:json];node[natural=tree](40.052848, 44.294472, 40.300476, 44.807396);out;"
+#overpass_query = "[out:json];node[natural=tree](40.052848, 44.294472, 40.300476, 44.807396);out meta;"
 
 # OSM client id.
 # This is needed for OSM Push.

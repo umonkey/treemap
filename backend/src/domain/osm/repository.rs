@@ -12,6 +12,22 @@ pub struct OsmTreeRepository {
 }
 
 impl OsmTreeRepository {
+    #[allow(dead_code)]
+    pub async fn transact(&self) -> Result<Self> {
+        let db = self.db.transact().await?;
+        Ok(Self { db: Arc::new(db) })
+    }
+
+    #[allow(dead_code)]
+    pub async fn commit(&self) -> Result<()> {
+        self.db.commit().await
+    }
+
+    #[allow(dead_code)]
+    pub async fn rollback(&self) -> Result<()> {
+        self.db.rollback().await
+    }
+
     pub async fn get(&self, id: u64) -> Result<Option<OsmTreeRecord>> {
         let query = SelectQuery::new(TABLE).with_condition("id", Value::from(id as i64));
 
@@ -33,7 +49,7 @@ impl OsmTreeRepository {
         Ok(())
     }
 
-    pub async fn update(&self, tree: &OsmTreeRecord) -> Result<()> {
+    pub async fn update(&self, tree: &OsmTreeRecord) -> Result<u64> {
         let query = UpdateQuery::new(TABLE)
             .with_condition("id", Value::from(tree.id as i64))
             .with_values(tree.to_attributes());
@@ -41,9 +57,7 @@ impl OsmTreeRepository {
         self.db.update(query).await.map_err(|e| {
             error!("Error updating an OSM tree: {e}");
             e
-        })?;
-
-        Ok(())
+        })
     }
 
     pub async fn all(&self) -> Result<Vec<OsmTreeRecord>> {
@@ -57,6 +71,14 @@ impl OsmTreeRepository {
                 OsmTreeRecord::from_attributes(props).map_err(|_| Error::DatabaseStructure)
             })
             .collect()
+    }
+
+    pub async fn mark_invisible_before(&self, timestamp: u64) -> Result<()> {
+        let sql = format!("UPDATE `{TABLE}` SET visible = 0 WHERE last_seen_at < ?");
+        self.db
+            .execute_sql(&sql, &[Value::from(timestamp as i64)])
+            .await?;
+        Ok(())
     }
 }
 

@@ -9,13 +9,13 @@ pub async fn osm_pull_command() {
 
     // Pull new tree nodes, put them in the osm_trees table.
     service
-        .pull_trees()
+        .update_osm_cache()
         .await
         .expect("Error pulling trees from OSM.");
 
     // Match new OSM nodes to local trees using coordinates.
     service
-        .match_trees()
+        .update_local_trees()
         .await
         .expect("Error matching OSM trees to local.");
 }

@@ -10,7 +10,7 @@ Those secrets are normally read from the `.secrets` directory, which can be chan
 
 A script to run the application with the config file and secrets mounted can look like this:
 
-``` sh
+```sh
 #!/bin/sh
 mkdir -p var
 docker run --detach -p 8002:8000 \
@@ -30,15 +30,14 @@ The database is read from an SQLite file `var/database.sqlite`.
 
 To initialize the file when creating a new server, run the following script:
 
-``` sh
+```sh
 sqlite3 var/database.sqlite < dev/schema-sqlite.sql
 ```
 
 This will create an empty database with the correct schema.
 
-
 ## Secrets
 
-API keys and tokens cannot be stored in the config file.  Instead, they are read from the environment variables or files under `/run/secrets` with the same name.  The following secrets are supported: FILES_KEY, FILES_SECRET, OSM_CLIENT_SECRET, OSM_TOKEN, TURSO_TOKEN, JWT_SECRET.
+API keys and tokens cannot be stored in the config file. Instead, they are read from the environment variables or files under `/run/secrets` with the same name. The following secrets are supported: FILES_KEY, FILES_SECRET, OSM_CLIENT_SECRET, OSM_TOKEN, TURSO_TOKEN, JWT_SECRET.
 
 When running the app in Fly.io, secrets must be set using the `fly secrets set K1=V K2=V` command.

@@ -48,10 +48,9 @@ impl OsmClient {
                 Ok(id)
             }
 
-            Err(e) => {
-                error!("Error parsing OSM changeset ID: {e:?}");
-                Err(Error::OsmExchange)
-            }
+            Err(e) => Err(Error::OsmExchange(format!(
+                "Error parsing OSM changeset ID: {e:?}"
+            ))),
         }
     }
 
@@ -76,10 +75,9 @@ impl OsmClient {
                 Ok(id)
             }
 
-            Err(e) => {
-                error!("Error parsing OSM node id: {e:?}");
-                Err(Error::OsmExchange)
-            }
+            Err(e) => Err(Error::OsmExchange(format!(
+                "Error parsing OSM node id: {e:?}"
+            ))),
         }
     }
 
@@ -123,10 +121,9 @@ impl OsmClient {
         match json["access_token"].as_str() {
             Some(token) => Ok(token.to_string()),
 
-            None => {
-                error!("OSM response does not contain access_token.");
-                Err(Error::OsmExchange)
-            }
+            None => Err(Error::OsmExchange(
+                "OSM response does not contain access_token".to_string(),
+            )),
         }
     }
 
@@ -146,8 +143,9 @@ impl OsmClient {
             Some(elements) => elements,
 
             None => {
-                error!("OSM response does not contain elements array.");
-                return Err(Error::OsmExchange);
+                return Err(Error::OsmExchange(
+                    "OSM response does not contain elements array".to_string(),
+                ));
             }
         };
 
@@ -173,8 +171,7 @@ impl OsmClient {
             Ok(response) => response,
 
             Err(e) => {
-                error!("Error querying OSM API: {e}; URL: {url}");
-                return Err(Error::OsmExchange);
+                return Err(Error::OsmExchange(format!("Error querying OSM API: {e}")));
             }
         };
 
@@ -189,20 +186,19 @@ impl OsmClient {
         }
 
         if response.status() != 200 {
-            error!(
-                "OSM API GET failed with status: {}; URL: {}",
-                response.status(),
-                url
-            );
-            return Err(Error::OsmExchange);
+            return Err(Error::OsmExchange(format!(
+                "OSM API GET failed with status: {}",
+                response.status()
+            )));
         }
 
         let json: Value = match response.json().await {
             Ok(json) => json,
 
             Err(e) => {
-                error!("Error parsing OSM API response JSON: {e:?}");
-                return Err(Error::OsmExchange);
+                return Err(Error::OsmExchange(format!(
+                    "Error parsing OSM API response JSON: {e:?}"
+                )));
             }
         };
 
@@ -210,8 +206,9 @@ impl OsmClient {
             Some(elements) => elements,
 
             None => {
-                error!("OSM response does not contain elements array.");
-                return Err(Error::OsmExchange);
+                return Err(Error::OsmExchange(
+                    "OSM response does not contain elements array".to_string(),
+                ));
             }
         };
 
@@ -242,25 +239,21 @@ impl OsmClient {
             Ok(response) => response,
 
             Err(e) => {
-                error!("Error querying OSM API: {e}");
-                return Err(Error::OsmExchange);
+                return Err(Error::OsmExchange(format!("Error querying OSM API: {e}")));
             }
         };
 
         if response.status() != 200 {
-            error!(
-                "OSM API PUT failed with status: {}; URL: {}; body: {}",
-                response.status(),
-                url,
-                body
-            );
-            return Err(Error::OsmExchange);
+            return Err(Error::OsmExchange(format!(
+                "OSM API PUT failed with status: {}",
+                response.status()
+            )));
         }
 
-        response.text().await.map_err(|e| {
-            error!("Error parsing OSM API response text: {e:?}");
-            Error::OsmExchange
-        })
+        response
+            .text()
+            .await
+            .map_err(|e| Error::OsmExchange(format!("Error parsing OSM API response text: {e:?}")))
     }
 
     async fn request_json(&self, url: &str) -> Result<Value> {
@@ -268,26 +261,24 @@ impl OsmClient {
             Ok(response) => response,
 
             Err(e) => {
-                error!("Error querying OSM API: {e}");
-                return Err(Error::OsmExchange);
+                return Err(Error::OsmExchange(format!("Error querying OSM API: {e}")));
             }
         };
 
         if response.status() != 200 {
-            error!(
-                "OSM API GET failed with status: {}; URL: {}",
-                response.status(),
-                url
-            );
-            return Err(Error::OsmExchange);
+            return Err(Error::OsmExchange(format!(
+                "OSM API GET failed with status: {}",
+                response.status()
+            )));
         }
 
         let json: Value = match response.json().await {
             Ok(json) => json,
 
             Err(e) => {
-                error!("Error parsing OSM API response JSON: {e:?}");
-                return Err(Error::OsmExchange);
+                return Err(Error::OsmExchange(format!(
+                    "Error parsing OSM API response JSON: {e:?}"
+                )));
             }
         };
 

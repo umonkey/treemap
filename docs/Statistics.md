@@ -2,7 +2,6 @@
 
 This document describes how to get statistics from the SQLite database.
 
-
 ## Monthly active users
 
 Historic data, e.g. number per month:
@@ -25,13 +24,11 @@ Historic data, e.g. number per day:
 SELECT strftime('%Y-%m-%d', added_at, 'unixepoch') AS date, COUNT(DISTINCT added_by) AS dau FROM trees_props GROUP BY date ORDER BY date DESC LIMIT 30;
 ```
 
-
 ## Last week active users
 
 ```sql
 SELECT COUNT(DISTINCT added_by) AS wau FROM trees_props WHERE added_at >= strftime('%s', 'now') - 86400 * 7;
 ```
-
 
 ## Trees added last week
 
@@ -39,13 +36,11 @@ SELECT COUNT(DISTINCT added_by) AS wau FROM trees_props WHERE added_at >= strfti
 SELECT COUNT(1) FROM trees WHERE added_at >= strftime('%s', 'now') - 86400 * 7;
 ```
 
-
 ## Trees updated last week
 
 ```sql
 SELECT COUNT(1) FROM trees WHERE updated_at >= strftime('%s', 'now') - 86400 * 7;
 ```
-
 
 ## Most active users last week
 

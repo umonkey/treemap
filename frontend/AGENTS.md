@@ -19,18 +19,6 @@ This directory contains the static frontend for the tree mapping application.
 - `src/routes`: SvelteKit pages and layouts, and page-local components.
 - `docs/Coding-Style.md`: detailed coding standards.
 
-## Development workflow
-
-- Strictly follow the coding style described in [docs/Coding-Style.md](docs/Coding-Style.md).
-- Use Svelte 5 Runes ($state, $derived, $effect, $props) for new components.
-- Note: Some existing components might still use legacy Svelte syntax (e.g., `export let`); update them to Runes when possible.
-- After changing code, run `make format lint check`.
-
-## Code Formatting
-
-- Use single quotes when possible.
-- Try to maintain the existing formatting style, avoid re-formatting the code unless explicitly asked to.
-
 ## Useful commands
 
 - `npm run dev`: start the development server.

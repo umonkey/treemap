@@ -26,6 +26,8 @@ CREATE TABLE IF NOT EXISTS trees (
     `comment_count` INT NOT NULL DEFAULT '0',
     `replaces` INT NULL,
     `replaced_by` INT NULL,
+    `osm_version` INT NULL,
+    `last_sync_at` INT NULL,
     PRIMARY KEY(`id`)
 );
 
@@ -149,8 +151,19 @@ CREATE TABLE IF NOT EXISTS osm_trees (
     `circumference` REAL NULL,
     `diameter_crown` REAL NULL,
     `image` TEXT NULL,
+    `version` INT NOT NULL,
+    `timestamp` TEXT NOT NULL,
+    `user_id` INT NOT NULL,
+    `user_name` TEXT NOT NULL,
+    `visible` INT NOT NULL DEFAULT '1',
+    `last_seen_at` INT NULL,
     PRIMARY KEY(`id`)
 );
+
+CREATE INDEX IF NOT EXISTS osm_trees_lat ON osm_trees (lat);
+CREATE INDEX IF NOT EXISTS osm_trees_lon ON osm_trees (lon);
+CREATE INDEX IF NOT EXISTS osm_trees_visible ON osm_trees (visible);
+CREATE INDEX IF NOT EXISTS osm_trees_last_seen_at ON osm_trees (last_seen_at);
 
 
 CREATE TABLE IF NOT EXISTS likes (

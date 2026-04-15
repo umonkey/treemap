@@ -8,11 +8,9 @@ This directory contains the API, queue consumers and other backend code.
 - The web framework is Actix-Web.
 - The database engine is SQLite.
 
-
 ## Architectural patterns
 
 The API follows the Action-Domain-Responder model.
-
 
 ## Directory Structure
 
@@ -23,14 +21,12 @@ The API follows the Action-Domain-Responder model.
 - src/services: additional application logic which orchestrates domains. Does not have any domain specific knowledge.
 - src/utils: common simple things with no dependencies.
 
-
 ## Development workflow
 
 - No automatic commits. Never execute git commit, git push or similar version control commands automatically.
 - When asked for a solution, suggest the best one for this project, but mention alternatives.
 - Before implementing any changes, provide the implementation plan and ask for the user's confirmation.
 - After changing any code, run "make format check" and fix any reported formatting and linter issues.
-
 
 ## Useful commands
 

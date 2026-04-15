@@ -54,7 +54,7 @@ impl TreeImageRepository {
     }
 
     #[allow(unused)]
-    pub async fn delete(&self, image: &TreeImage) -> Result<()> {
+    pub async fn delete(&self, image: &TreeImage) -> Result<u64> {
         let query = DeleteQuery::new(TABLE).with_condition("id", Value::from(image.id as i64));
 
         self.db.delete(query).await

@@ -12,10 +12,11 @@ use crate::utils::get_timestamp;
 use crate::utils::get_unique_id;
 use async_trait::async_trait;
 use libsql::params_from_iter;
-use libsql::{Builder, Database};
+use libsql::{Builder, Database, Transaction};
 use log::{debug, error, info};
 use std::sync::Arc;
 use std::time::Instant;
+use tokio::sync::Mutex;
 
 const SUGGEST_WINDOW: u64 = 3600 * 24; // 24 hours
 
@@ -25,6 +26,53 @@ const TEMP_DB_DIR: &str = "var/test-files";
 
 pub struct SqliteDatabase {
     pool: Arc<Database>,
+}
+
+pub struct SqliteTransaction {
+    tx: Arc<Mutex<Option<Transaction>>>,
+}
+
+impl SqliteTransaction {
+    pub fn new(tx: Transaction) -> Self {
+        Self {
+            tx: Arc::new(Mutex::new(Some(tx))),
+        }
+    }
+
+    async fn fetch(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>> {
+        let start = Instant::now();
+        let mut tx_lock = self.tx.lock().await;
+        let tx = tx_lock
+            .as_mut()
+            .ok_or_else(|| Error::DatabaseQuery("Transaction already closed".to_string()))?;
+
+        let mut stmt = tx.prepare(query).await.inspect_err(|e| {
+            error!("Error preparing SQL statement: {e}");
+        })?;
+
+        let mut rows = stmt
+            .query(params_from_iter(params))
+            .await
+            .inspect_err(|e| {
+                error!("Error executing SQL statement: {e}");
+            })?;
+
+        let mut res: Vec<Attributes> = Vec::new();
+
+        while let Some(row) = rows.next().await? {
+            res.push(row.into());
+        }
+
+        let duration = start.elapsed();
+
+        info!(
+            "Read {} rows in {}ms for query: {query}",
+            res.len(),
+            duration.as_millis()
+        );
+
+        Ok(res)
+    }
 }
 
 impl SqliteDatabase {
@@ -99,39 +147,6 @@ impl SqliteDatabase {
         Ok(())
     }
 
-    async fn fetch(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>> {
-        let start = Instant::now();
-        let conn = self.pool.connect()?;
-
-        let mut stmt = conn.prepare(query).await.inspect_err(|e| {
-            error!("Error preparing SQL statement: {e}");
-        })?;
-
-        let mut rows = stmt
-            .query(params_from_iter(params))
-            .await
-            .inspect_err(|e| {
-                error!("Error executing SQL statement: {e}");
-            })?;
-
-        let mut res: Vec<Attributes> = Vec::new();
-
-        while let Some(row) = rows.next().await? {
-            res.push(row.into());
-        }
-
-        let duration = start.elapsed();
-
-        // This is a temporary solution for debugging excessive Turso reads.
-        info!(
-            "Read {} rows in {}ms for query: {query}",
-            res.len(),
-            duration.as_millis()
-        );
-
-        Ok(res)
-    }
-
     fn get_temporary_path() -> String {
         if !std::path::Path::new(TEMP_DB_DIR).is_dir() {
             if let Err(e) = std::fs::create_dir_all(TEMP_DB_DIR) {
@@ -170,9 +185,48 @@ impl SqliteDatabase {
 }
 
 #[async_trait]
-impl DatabaseInterface for SqliteDatabase {
+impl DatabaseInterface for SqliteTransaction {
+    async fn transact(&self) -> Result<Box<dyn DatabaseInterface>> {
+        Err(Error::DatabaseQuery("Already in a transaction".to_string()))
+    }
+
+    async fn commit(&self) -> Result<()> {
+        let mut tx_lock = self.tx.lock().await;
+        let tx = tx_lock
+            .take()
+            .ok_or_else(|| Error::DatabaseQuery("Transaction already closed".to_string()))?;
+        tx.commit()
+            .await
+            .map_err(|e| Error::DatabaseQuery(e.to_string()))?;
+        Ok(())
+    }
+
+    async fn rollback(&self) -> Result<()> {
+        let mut tx_lock = self.tx.lock().await;
+        let tx = tx_lock
+            .take()
+            .ok_or_else(|| Error::DatabaseQuery("Transaction already closed".to_string()))?;
+        tx.rollback()
+            .await
+            .map_err(|e| Error::DatabaseQuery(e.to_string()))?;
+        Ok(())
+    }
+
     async fn sql(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>> {
         self.fetch(query, params).await
+    }
+
+    async fn execute_sql(&self, query: &str, params: &[Value]) -> Result<()> {
+        let mut tx_lock = self.tx.lock().await;
+        let tx = tx_lock
+            .as_mut()
+            .ok_or_else(|| Error::DatabaseQuery("Transaction already closed".to_string()))?;
+        tx.execute(query, params_from_iter(params.to_vec()))
+            .await
+            .inspect_err(|e| {
+                error!("Error executing SQL statement: {e}");
+            })?;
+        Ok(())
     }
 
     async fn get_record(&self, query: SelectQuery) -> Result<Option<Attributes>> {
@@ -192,78 +246,56 @@ impl DatabaseInterface for SqliteDatabase {
     }
 
     async fn add_record(&self, query: InsertQuery) -> Result<()> {
-        let conn = self.pool.connect()?;
-
         let (sql, params) = query.build();
-
-        conn.execute(sql.as_str(), params_from_iter(params))
-            .await
-            .inspect_err(|e| {
-                error!("Error adding a record to the database: {e}");
-            })?;
-
-        Ok(())
+        self.execute_sql(sql.as_str(), params.as_slice()).await
     }
 
     async fn replace(&self, query: ReplaceQuery) -> Result<()> {
-        let conn = self.pool.connect()?;
-
         let (sql, params) = query.build();
-
-        conn.execute(sql.as_str(), params_from_iter(params))
-            .await
-            .inspect_err(|e| {
-                error!("Error replacing a record to the database: {e}");
-            })?;
-
-        Ok(())
+        self.execute_sql(sql.as_str(), params.as_slice()).await
     }
 
-    async fn update(&self, query: UpdateQuery) -> Result<()> {
-        let conn = self.pool.connect()?;
+    async fn update(&self, query: UpdateQuery) -> Result<u64> {
+        let mut tx_lock = self.tx.lock().await;
+        let tx = tx_lock
+            .as_mut()
+            .ok_or_else(|| Error::DatabaseQuery("Transaction already closed".to_string()))?;
 
         let (sql, params) = query.build();
 
-        conn.execute(sql.as_str(), params_from_iter(params))
+        let rows = tx
+            .execute(sql.as_str(), params_from_iter(params))
             .await
             .inspect_err(|e| {
                 error!("Error updating database: {e}");
             })?;
 
-        Ok(())
+        Ok(rows)
     }
 
-    async fn delete(&self, query: DeleteQuery) -> Result<()> {
-        let conn = self.pool.connect()?;
+    async fn delete(&self, query: DeleteQuery) -> Result<u64> {
+        let mut tx_lock = self.tx.lock().await;
+        let tx = tx_lock
+            .as_mut()
+            .ok_or_else(|| Error::DatabaseQuery("Transaction already closed".to_string()))?;
 
         let (sql, params) = query.build();
 
-        conn.execute(sql.as_str(), params_from_iter(params))
+        let rows = tx
+            .execute(sql.as_str(), params_from_iter(params))
             .await
             .inspect_err(|e| {
                 error!("Error deleting record: {e}");
             })?;
 
-        Ok(())
+        Ok(rows)
     }
 
     async fn increment(&self, query: IncrementQuery) -> Result<()> {
-        let conn = self.pool.connect()?;
-
         let (sql, params) = query.build();
-
-        conn.execute(sql.as_str(), params_from_iter(params))
-            .await
-            .inspect_err(|e| {
-                error!("Error incrementing a value: {e}");
-            })?;
-
-        Ok(())
+        self.execute_sql(sql.as_str(), params.as_slice()).await
     }
 
-    /**
-     * Count all trees that still exist.
-     */
     async fn count(&self, query: CountQuery) -> Result<u64> {
         let (sql, params) = query.build();
 
@@ -315,9 +347,6 @@ impl DatabaseInterface for SqliteDatabase {
         Ok(streets)
     }
 
-    /**
-     * Find most recent species added by a specific user.
-     */
     async fn find_recent_species(&self, user_id: u64) -> Result<Vec<String>> {
         let since = get_timestamp() - SUGGEST_WINDOW;
 
@@ -444,6 +473,127 @@ impl DatabaseInterface for SqliteDatabase {
         }
 
         Ok(heatmap)
+    }
+}
+
+#[async_trait]
+impl DatabaseInterface for SqliteDatabase {
+    async fn transact(&self) -> Result<Box<dyn DatabaseInterface>> {
+        let conn = self.pool.connect()?;
+        let tx = conn
+            .transaction()
+            .await
+            .map_err(|e| Error::DatabaseQuery(e.to_string()))?;
+        Ok(Box::new(SqliteTransaction::new(tx)))
+    }
+
+    async fn commit(&self) -> Result<()> {
+        Ok(())
+    }
+
+    async fn rollback(&self) -> Result<()> {
+        Ok(())
+    }
+
+    async fn sql(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>> {
+        self.transact().await?.sql(query, params).await
+    }
+
+    async fn execute_sql(&self, query: &str, params: &[Value]) -> Result<()> {
+        let tx = self.transact().await?;
+        tx.execute_sql(query, params).await?;
+        tx.commit().await
+    }
+
+    async fn get_record(&self, query: SelectQuery) -> Result<Option<Attributes>> {
+        self.transact().await?.get_record(query).await
+    }
+
+    async fn get_records(&self, query: SelectQuery) -> Result<Vec<Attributes>> {
+        self.transact().await?.get_records(query).await
+    }
+
+    async fn add_record(&self, query: InsertQuery) -> Result<()> {
+        let tx = self.transact().await?;
+        tx.add_record(query).await?;
+        tx.commit().await
+    }
+
+    async fn replace(&self, query: ReplaceQuery) -> Result<()> {
+        let tx = self.transact().await?;
+        tx.replace(query).await?;
+        tx.commit().await
+    }
+
+    async fn update(&self, query: UpdateQuery) -> Result<u64> {
+        let tx = self.transact().await?;
+        let res = tx.update(query).await?;
+        tx.commit().await?;
+        Ok(res)
+    }
+
+    async fn delete(&self, query: DeleteQuery) -> Result<u64> {
+        let tx = self.transact().await?;
+        let res = tx.delete(query).await?;
+        tx.commit().await?;
+        Ok(res)
+    }
+
+    async fn increment(&self, query: IncrementQuery) -> Result<()> {
+        let tx = self.transact().await?;
+        tx.increment(query).await?;
+        tx.commit().await
+    }
+
+    async fn count(&self, query: CountQuery) -> Result<u64> {
+        self.transact().await?.count(query).await
+    }
+
+    async fn find_species(&self, query: &str) -> Result<Vec<Species>> {
+        self.transact().await?.find_species(query).await
+    }
+
+    async fn find_streets(&self, query: &str) -> Result<Vec<String>> {
+        self.transact().await?.find_streets(query).await
+    }
+
+    async fn find_recent_species(&self, user_id: u64) -> Result<Vec<String>> {
+        self.transact().await?.find_recent_species(user_id).await
+    }
+
+    async fn get_species_stats(&self) -> Result<Vec<(String, u64)>> {
+        self.transact().await?.get_species_stats().await
+    }
+
+    async fn get_species_mismatch(&self, count: u64, skip: u64) -> Result<Vec<Tree>> {
+        self.transact()
+            .await?
+            .get_species_mismatch(count, skip)
+            .await
+    }
+
+    async fn get_top_streets(&self, count: u64) -> Result<Vec<(String, u64)>> {
+        self.transact().await?.get_top_streets(count).await
+    }
+
+    async fn get_state_stats(&self) -> Result<Vec<(String, u64)>> {
+        self.transact().await?.get_state_stats().await
+    }
+
+    async fn get_heatmap(&self, after: u64, before: u64) -> Result<Vec<(String, u64)>> {
+        self.transact().await?.get_heatmap(after, before).await
+    }
+
+    async fn get_user_heatmap(
+        &self,
+        after: u64,
+        before: u64,
+        user_id: u64,
+    ) -> Result<Vec<(String, u64)>> {
+        self.transact()
+            .await?
+            .get_user_heatmap(after, before, user_id)
+            .await
     }
 }
 

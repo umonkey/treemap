@@ -52,6 +52,21 @@ impl Attributes {
         }
     }
 
+    pub fn get_bool(&self, key: &str) -> Result<Option<bool>> {
+        match self.props.get(key) {
+            Some(Value::Integer(value)) => Ok(Some(*value != 0)),
+            Some(Value::Null) => Ok(None),
+            None => {
+                debug!("Attribute {key} not found.");
+                Err(Error::DatabaseStructure)
+            }
+            value => {
+                debug!("Attribute {key} is of unexpected type: {value:?}");
+                Err(Error::DatabaseStructure)
+            }
+        }
+    }
+
     pub fn get_u64(&self, key: &str) -> Result<Option<u64>> {
         match self.props.get(key) {
             Some(Value::Integer(value)) => Ok(Some(*value as u64)),

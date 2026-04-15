@@ -2,11 +2,11 @@
 
 To automatically find street address for a tree, we use [Nominatim](https://nominatim.org/). We use zoom=16 to avoid address confusion introduced by building addresses, and only rely on closest streets.
 
-A tree's address is normally updated when (1) a tree is added, and (2) a tree is updated which had no address set previously.  If a tree already has an address set, it won't be auto-updated.  If you see a tree with a wrong address, you can manually edit that tree and the address won't be overwritten by any automation.
+A tree's address is normally updated when (1) a tree is added, and (2) a tree is updated which had no address set previously. If a tree already has an address set, it won't be auto-updated. If you see a tree with a wrong address, you can manually edit that tree and the address won't be overwritten by any automation.
 
 You can use `curl` to test manual geocoding:
 
-``` bash
+```bash
 curl -s "https://nominatim.openstreetmap.org/reverse?lat=40.1797541&lon=44.5106014&zoom=16&format=jsonv2&addressdetails=1&accept-language=en" | jq -s
 [
   {

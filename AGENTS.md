@@ -12,20 +12,6 @@ The application is API-first, with a static frontend and an API backend.
 - `tools`: contains some additional scripts used for non-regular manual tasks.
 
 
-## Documentation Style Guidelines
-
-When creating or updating documentation (like ADRs or READMEs), strictly follow these formatting rules:
-
-- List items: always use dashes (`-`) for list items. Do not use asterisks (`*`) or numbers unless explicitly requested.
-- Lists: always separate lists from other contents with blank lines.
-- Bold text: do not use bold text within sentences or for emphasis. Bold should only be used for structural headers if required by the format.
-- Capitalization after colons: do not use upper case letters immediately after a colon (`:`) in a sentence, unless the following word is a proper name or a technical acronym (e.g., "UI", "OSM").
-- Sentence starts: always use a capital letter at the beginning of a sentence, including the first word of a list item or a description following a colon-prefixed label.
-  - Good: "Database growth: storing full snapshots..."
-  - Bad: "Database growth: Storing full snapshots..."
-  - Bad: "database growth: storing full snapshots..."
-
-
 ## Development commands
 
 The project uses a `Makefile` for high-level tasks:

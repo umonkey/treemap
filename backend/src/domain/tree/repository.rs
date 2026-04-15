@@ -1,5 +1,6 @@
 use super::models::Tree;
 use super::schemas::*;
+use crate::domain::osm::OsmTreeRecord;
 use crate::domain::prop::{PropRecord, PropRepository};
 use crate::infra::database::{CountQuery, IncrementQuery, InsertQuery, SelectQuery, UpdateQuery};
 use crate::infra::database::{Database, Value};
@@ -233,12 +234,26 @@ impl TreeRepository {
             .await
     }
 
+    pub async fn mark_gone(&self, tree_id: u64, user_id: u64) -> Result<()> {
+        let query = UpdateQuery::new(TABLE)
+            .with_condition("id", Value::from(tree_id as i64))
+            .with_value("state", Value::from("gone".to_string()))
+            .with_value("updated_at", Value::from(get_timestamp() as i64))
+            .with_value("updated_by", Value::from(user_id as i64));
+
+        self.db.update(query).await?;
+        self.add_tree_prop(tree_id, "state", "gone", user_id)
+            .await?;
+        Ok(())
+    }
+
     pub async fn update_osm_id(&self, tree_id: u64, osm_id: u64, user_id: u64) -> Result<()> {
         let query = UpdateQuery::new(TABLE)
             .with_condition("id", Value::from(tree_id as i64))
             .with_value("osm_id", Value::from(osm_id as i64))
             .with_value("updated_at", Value::from(get_timestamp() as i64))
-            .with_value("updated_by", Value::from(user_id as i64));
+            .with_value("updated_by", Value::from(user_id as i64))
+            .with_value("last_sync_at", Value::from(get_timestamp() as i64));
 
         self.db.update(query).await.map_err(|e| {
             error!("Error updating a tree: {e}");
@@ -249,6 +264,41 @@ impl TreeRepository {
             .await?;
 
         info!("Tree {tree_id} linked to OSM node {osm_id} by user {user_id}.");
+
+        Ok(())
+    }
+
+    pub async fn sync_with_osm(
+        &self,
+        tree_id: u64,
+        osm: &OsmTreeRecord,
+        user_id: u64,
+    ) -> Result<()> {
+        let tree = self.get(tree_id).await?.ok_or(Error::TreeNotFound)?;
+        let now = get_timestamp();
+
+        let mut updated = tree.clone();
+        updated.osm_id = Some(osm.id);
+        updated.osm_version = Some(osm.version);
+        updated.last_sync_at = Some(now);
+
+        // Merge logic: if the tree was updated locally since the last sync,
+        // we only update coordinates from OSM.  Otherwise we update all tags.
+        let has_local_edits = tree.updated_at > tree.last_sync_at.unwrap_or(0);
+
+        if !has_local_edits {
+            updated.lat = osm.lat;
+            updated.lon = osm.lon;
+            updated.species = osm.get_species();
+            updated.height = osm.height;
+            updated.circumference = osm.circumference;
+            updated.diameter = osm.diameter_crown;
+        } else {
+            updated.lat = osm.lat;
+            updated.lon = osm.lon;
+        }
+
+        self.update(&updated, user_id).await?;
 
         Ok(())
     }

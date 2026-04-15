@@ -119,3 +119,9 @@ impl From<i32> for Value {
         Self::Integer(v as i64)
     }
 }
+
+impl From<bool> for Value {
+    fn from(v: bool) -> Self {
+        Self::Integer(if v { 1 } else { 0 })
+    }
+}

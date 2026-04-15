@@ -17,7 +17,7 @@ pub enum Error {
     BadRequest,
     Config(String),
     DatabaseConnect,
-    DatabaseQuery,
+    DatabaseQuery(String),
     DatabaseStructure,
     DependencyLoad,
     DuplicateTree,
@@ -28,7 +28,7 @@ pub enum Error {
     GoogleUserInfo,
     ImageResize,
     MissingAuthorizationHeader,
-    OsmExchange,
+    OsmExchange(String),
     Queue,
     RemoteAddrNotSet,
     TreeNotFound,
@@ -65,7 +65,7 @@ impl Error {
             Error::DatabaseConnect => {
                 r#"{"error":{"code":"DatabaseConnect","description":"Error connecting to the database."}}"#
             }
-            Error::DatabaseQuery => {
+            Error::DatabaseQuery(_) => {
                 r#"{"error":{"code":"DatabaseQuery","description":"There was a database error while processing your request."}}"#
             }
             Error::DatabaseStructure => {
@@ -98,7 +98,7 @@ impl Error {
             Error::MissingAuthorizationHeader => {
                 r#"{"error":{"code":"MissingAuthorizationHeader","description":"Authentication required for this call."}}"#
             }
-            Error::OsmExchange => {
+            Error::OsmExchange(_) => {
                 r#"{"error":{"code":"OsmExchange","description":"OSM exchange failed."}}"#
             }
             Error::Queue => {
@@ -124,8 +124,8 @@ impl Error {
 }
 
 impl From<LibSqlError> for Error {
-    fn from(_: LibSqlError) -> Self {
-        Error::DatabaseQuery
+    fn from(e: LibSqlError) -> Self {
+        Error::DatabaseQuery(e.to_string())
     }
 }
 
@@ -145,32 +145,22 @@ impl ResponseError for Error {
     fn status_code(&self) -> StatusCode {
         match self {
             Error::AccessDenied => StatusCode::FORBIDDEN,
-            Error::AddressNotFound => StatusCode::NOT_FOUND,
-            Error::BadAuthToken => StatusCode::UNAUTHORIZED,
-            Error::BadAuthorizationHeader => StatusCode::BAD_REQUEST,
-            Error::BadCallback => StatusCode::BAD_REQUEST,
-            Error::BadImage => StatusCode::BAD_REQUEST,
-            Error::BadRequest => StatusCode::BAD_REQUEST,
-            Error::Config(_) => StatusCode::INTERNAL_SERVER_ERROR,
-            Error::DatabaseConnect => StatusCode::INTERNAL_SERVER_ERROR,
-            Error::DatabaseQuery => StatusCode::INTERNAL_SERVER_ERROR,
-            Error::DatabaseStructure => StatusCode::INTERNAL_SERVER_ERROR,
-            Error::DependencyLoad => StatusCode::INTERNAL_SERVER_ERROR,
+            Error::AddressNotFound
+            | Error::FileDownload
+            | Error::FileNotFound
+            | Error::TreeNotFound => StatusCode::NOT_FOUND,
+            Error::BadAuthToken
+            | Error::GoogleUserInfo
+            | Error::MissingAuthorizationHeader
+            | Error::UserAgentNotSet
+            | Error::UserNotFound => StatusCode::UNAUTHORIZED,
+            Error::BadAuthorizationHeader
+            | Error::BadCallback
+            | Error::BadImage
+            | Error::BadRequest => StatusCode::BAD_REQUEST,
             Error::DuplicateTree => StatusCode::CONFLICT,
-            Error::EnvNotSet => StatusCode::INTERNAL_SERVER_ERROR,
-            Error::FileDownload => StatusCode::NOT_FOUND,
-            Error::FileNotFound => StatusCode::NOT_FOUND,
-            Error::FileUpload => StatusCode::INTERNAL_SERVER_ERROR,
-            Error::GoogleUserInfo => StatusCode::UNAUTHORIZED,
-            Error::ImageResize => StatusCode::INTERNAL_SERVER_ERROR,
-            Error::MissingAuthorizationHeader => StatusCode::UNAUTHORIZED,
-            Error::OsmExchange => StatusCode::INTERNAL_SERVER_ERROR,
-            Error::Queue => StatusCode::INTERNAL_SERVER_ERROR,
-            Error::RemoteAddrNotSet => StatusCode::INTERNAL_SERVER_ERROR,
-            Error::TreeNotFound => StatusCode::NOT_FOUND,
-            Error::UniqueId => StatusCode::INTERNAL_SERVER_ERROR,
-            Error::UserAgentNotSet => StatusCode::UNAUTHORIZED,
-            Error::UserNotFound => StatusCode::UNAUTHORIZED,
+            Error::DatabaseQuery(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            _ => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
 }
@@ -187,7 +177,7 @@ impl fmt::Display for Error {
             Error::BadRequest => write!(f, "BadRequest"),
             Error::Config(s) => write!(f, "Config error: {s}"),
             Error::DatabaseConnect => write!(f, "DatabaseConnect"),
-            Error::DatabaseQuery => write!(f, "DatabaseQuery"),
+            Error::DatabaseQuery(s) => write!(f, "Database error: {s}"),
             Error::DatabaseStructure => write!(f, "DatabaseStructure"),
             Error::DependencyLoad => write!(f, "DependencyLoad"),
             Error::DuplicateTree => write!(f, "DuplicateTree"),
@@ -198,7 +188,7 @@ impl fmt::Display for Error {
             Error::GoogleUserInfo => write!(f, "GoogleUserInfo"),
             Error::ImageResize => write!(f, "ImageResize"),
             Error::MissingAuthorizationHeader => write!(f, "MissingAuthorizationHeader"),
-            Error::OsmExchange => write!(f, "OsmExchange"),
+            Error::OsmExchange(s) => write!(f, "OsmExchange: {s}"),
             Error::Queue => write!(f, "Queue"),
             Error::RemoteAddrNotSet => write!(f, "RemoteAddrNotSet"),
             Error::TreeNotFound => write!(f, "TreeNotFound"),

@@ -3,7 +3,6 @@
 
 Table trees {
   id int [pk]
-  osm_id int [unique, note: 'OpenStreetMap ID']
   lat real [not null]
   lon real [not null]
   species text [not null, note: 'Latin name']
@@ -23,6 +22,9 @@ Table trees {
   comment_count int [not null, default: 0]
   replaces int
   replaced_by int
+  osm_id int [unique, note: 'OpenStreetMap ID']
+  osm_version int
+  last_sync_at int
 }
 
 Table trees_images {
@@ -101,6 +103,19 @@ Table osm_trees {
   circumference real
   diameter_crown real
   image text
+  version int [not null]
+  timestamp text [not null]
+  user_id int [not null]
+  user_name text [not null]
+  visible int [not null, default: 1]
+  last_seen_at int
+
+  Indexes {
+    lat
+    lon
+    visible
+    last_seen_at
+  }
 }
 
 Table likes {
@@ -108,7 +123,7 @@ Table likes {
   user_id int [not null]
   state int [not null, default: 0]
   updated_at int [not null]
-  
+
   Indexes {
     (tree_id, user_id) [pk]
   }

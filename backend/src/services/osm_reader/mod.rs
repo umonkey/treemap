@@ -1,30 +1,27 @@
-//! This module reads data from OSM and puts it into the database.
+//! This module reads data from OSM and pulls changes to our local trees.
 //!
-//! The workflow is the following:
+//! The process has two steps:
 //!
-//! 1. Query OSM for data.
-//! 2. Parse the data.
-//! 3. Filter out the data that is not trees.
-//! 4. Add the data to the database.
+//! (1) Create a mirror of the current state of trees in OSM.  Use Overpass
+//! to find all trees within configured boundaries, store their data in the
+//! osm_trees table, which serves as a cache.  Deleted nodes are marked as
+//! invisible.  The data includes node version and update timestamp to use
+//! in conflict resolution.
 //!
-//! When adding nodes to the database, the workflow is the following:
+//! (2) Use the osm_trees table data to add new trees to our database, or
+//! update existing trees that were changed on the OSM side.
 //!
-//! 1. Add the node to the osm_trees table.
-//! 2. Check if there is a local tree with that node id.
-//! 3. If not found, find a tree within 10 meters and link them.
-//! 4. If a local tree is found, update it.
+//! See details in docs/OSM-Integration.md
 
 use crate::domain::osm::{OsmTreeRecord, OsmTreeRepository};
 use crate::domain::tree::Tree;
 use crate::domain::tree::TreeRepository;
 use crate::infra::config::Config;
 use crate::infra::overpass::OverpassClient;
-use crate::infra::queue::Queue;
-use crate::services::queue_consumer::UpdateTreeAddressMessage;
 use crate::services::{Locatable, Locator};
 use crate::types::*;
 use crate::utils::{get_timestamp, get_unique_id};
-use log::{error, info};
+use log::{debug, info};
 use std::sync::Arc;
 
 const DEFAULT_STATE: &str = "healthy";
@@ -32,98 +29,86 @@ const DEFAULT_STATE: &str = "healthy";
 pub struct OsmReaderService {
     trees: Arc<TreeRepository>,
     overpass_client: Arc<OverpassClient>,
-    queue: Arc<Queue>,
     user_id: u64,
     osm_trees: Arc<OsmTreeRepository>,
 }
 
 impl OsmReaderService {
-    /**
-     * Pull new nodes from the OSM database and add them to the local database.
-     */
-    pub async fn pull_trees(&self) -> Result<()> {
+    // Synchronize the local mirror of OSM data.
+    //
+    // Uses the Overpass client to pull all tree nodes and put then in the osm_trees
+    // table for use in the following data merging steps.
+    //
+    // Nodes that were not in the response, but existed previously, are considered
+    // deleted and are marked as visible=0.
+    pub async fn update_osm_cache(&self) -> Result<()> {
         info!("Running OSM reader service.");
 
-        let doc = match self.overpass_client.query().await {
-            Ok(doc) => doc,
+        let sync_start = get_timestamp();
 
-            Err(e) => {
-                error!("Error querying OSM: {e:?}");
-                return Err(Error::OsmExchange);
-            }
-        };
+        let doc = self.overpass_client.query().await?;
 
-        let mut added: u64 = 0;
-        let mut updated: u64 = 0;
+        let tx_osm_trees = self.osm_trees.transact().await?;
 
-        for node in doc.iter() {
-            if let Some(old) = self.osm_trees.get(node.id).await? {
-                if old != *node {
-                    self.osm_trees.update(node).await?;
-                    info!("OSM node {} updated in the database.", node.id);
-                    updated += 1;
-                }
-            } else {
-                self.osm_trees.add(node).await?;
-                info!("OSM node {} added to the database.", node.id);
-                added += 1;
-            }
+        for mut node in doc.iter().cloned() {
+            node.last_seen_at = Some(sync_start);
+            node.visible = true;
+
+            Self::update_cache_record(&tx_osm_trees, &node).await?;
         }
 
-        info!(
-            "Found {} OSM nodes, {} added, {} updated.",
-            doc.len(),
-            added,
-            updated
-        );
+        tx_osm_trees.mark_invisible_before(sync_start).await?;
+        tx_osm_trees.commit().await?;
+
+        info!("Found {} OSM nodes.", doc.len());
 
         Ok(())
     }
 
-    /**
-     * Match known OSM trees to local trees.
-     */
-    pub async fn match_trees(&self) -> Result<()> {
-        let mut added: u64 = 0;
-        let mut updated: u64 = 0;
-
+    // Iterate through OSM data and apply changes to local trees.
+    //
+    // TODO: add transaction, this is very slow atm.
+    pub async fn update_local_trees(&self) -> Result<()> {
         for node in self.osm_trees.all().await? {
-            if self.tree_exists(&node).await? {
-                continue;
+            match self.trees.get_by_osm_id(node.id).await? {
+                Some(tree) => self.update_tree(tree, node).await?,
+                None => self.add_tree(node).await?,
             }
-
-            if self.tree_updated(&node).await? {
-                updated += 1;
-                continue;
-            }
-
-            self.add_local_tree(&node).await?;
-            added += 1;
         }
-
-        info!("Matched OSM trees: {added} added, {updated} updated.");
 
         Ok(())
     }
 
-    async fn tree_exists(&self, node: &OsmTreeRecord) -> Result<bool> {
-        Ok(self.trees.get_by_osm_id(node.id).await?.is_some())
+    // Pull changes to an existing tree.
+    async fn update_tree(&self, tree: Tree, node: OsmTreeRecord) -> Result<()> {
+        if !node.visible {
+            return self.delete_tree(tree).await;
+        }
+
+        // If OSM node is newer than local sync, update local tree.
+        if node.version > tree.osm_version.unwrap_or(0) {
+            self.trees
+                .sync_with_osm(tree.id, &node, self.user_id)
+                .await?;
+            info!(
+                "Tree {} updated from OSM node {} (version {} > {}).",
+                tree.id,
+                node.id,
+                node.version,
+                tree.osm_version.unwrap_or(0)
+            );
+        }
+
+        Ok(())
     }
 
-    async fn tree_updated(&self, node: &OsmTreeRecord) -> Result<bool> {
-        let closest = match self.find_closest_available_tree(node.lat, node.lon).await? {
-            Some(tree) => tree,
-            None => return Ok(false),
-        };
+    // Add a new tree, which is in the OSM data, but not on our side.
+    async fn add_tree(&self, node: OsmTreeRecord) -> Result<()> {
+        // This node was deleted in OSM, no need to add on our side.
+        if !node.visible {
+            return Ok(());
+        }
 
-        self.trees
-            .update_osm_id(closest.id, node.id, self.user_id)
-            .await?;
-
-        Ok(true)
-    }
-
-    async fn add_local_tree(&self, node: &OsmTreeRecord) -> Result<Tree> {
         let now = get_timestamp();
 
         let tree = Tree {
@@ -140,32 +125,42 @@ impl OsmReaderService {
             updated_at: now,
             updated_by: self.user_id,
             added_by: self.user_id,
+            osm_version: Some(node.version),
+            last_sync_at: Some(now),
             ..Default::default()
         };
 
         self.trees.add(&tree).await?;
-        self.schedule_address_update(tree.id).await?;
 
         info!("Tree {} added from OSM node {}.", tree.id, node.id);
 
-        Ok(tree)
+        Ok(())
     }
 
-    async fn find_closest_available_tree(&self, lat: f64, lon: f64) -> Result<Option<Tree>> {
-        for tree in self.trees.get_close(lat, lon, 5.0).await? {
-            if tree.state != "gone" && tree.osm_id.is_none() {
-                return Ok(Some(tree));
-            }
+    // Delete a tree that was removed from OSM.
+    async fn delete_tree(&self, tree: Tree) -> Result<()> {
+        if tree.state != "gone" {
+            self.trees.mark_gone(tree.id, self.user_id).await?;
+
+            info!(
+                "Tree {} marked as gone because OSM node {:?} was deleted.",
+                tree.id, tree.osm_id
+            );
         }
 
-        Ok(None)
+        Ok(())
     }
 
-    async fn schedule_address_update(&self, tree_id: u64) -> Result<()> {
-        let msg = UpdateTreeAddressMessage { id: tree_id };
-        self.queue.push(&msg.encode()).await?;
+    // Update a single node in the OSM cache.
+    async fn update_cache_record(repo: &OsmTreeRepository, node: &OsmTreeRecord) -> Result<()> {
+        let rows = repo.update(node).await?;
 
-        info!("Scheduled address update for tree {tree_id}");
+        if rows > 0 {
+            debug!("OSM node {} updated in the database.", node.id);
+        } else {
+            repo.add(node).await?;
+            debug!("OSM node {} added to the database.", node.id);
+        }
 
         Ok(())
     }
@@ -178,7 +173,6 @@ impl Locatable for OsmReaderService {
         Ok(Self {
             trees: locator.get::<TreeRepository>()?,
             overpass_client: locator.get::<OverpassClient>()?,
-            queue: locator.get::<Queue>()?,
             user_id: config.bot_user_id,
             osm_trees: locator.get::<OsmTreeRepository>()?,
         })

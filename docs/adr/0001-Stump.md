@@ -1,7 +1,7 @@
 # ADR-0001: Standardize Terminology for Felled Trees to 'Stump'
 
-* Date: 2025-07-07
-* Status: Accepted
+- Date: 2025-07-07
+- Status: Accepted
 
 ## Context
 
@@ -25,16 +25,16 @@ This change involves:
 
 Positive:
 
-* Improved Clarity: The application's domain language is now accurate and intuitive, reducing the risk of misunderstanding.
+- Improved Clarity: The application's domain language is now accurate and intuitive, reducing the risk of misunderstanding.
 
-* Enhanced Maintainability: Future developers will have a clearer understanding of the data model without historical ambiguity.
+- Enhanced Maintainability: Future developers will have a clearer understanding of the data model without historical ambiguity.
 
-* Data Consistency: The data is now clean and uses a standardized, correct term for this state.
+- Data Consistency: The data is now clean and uses a standardized, correct term for this state.
 
 Negative:
 
-* Effort: Required a development effort to refactor the code and create a reliable data migration script.
+- Effort: Required a development effort to refactor the code and create a reliable data migration script.
 
-* Deployment Coordination: The deployment required careful coordination to ensure the code changes and data migration were applied together to avoid inconsistencies.
+- Deployment Coordination: The deployment required careful coordination to ensure the code changes and data migration were applied together to avoid inconsistencies.
 
-* External Dependencies: Any external consumers of our API or data (if any) needed to be notified of the change in this value.
+- External Dependencies: Any external consumers of our API or data (if any) needed to be notified of the change in this value.

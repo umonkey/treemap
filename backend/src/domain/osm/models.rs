@@ -5,7 +5,7 @@ use crate::types::*;
 use crate::utils::*;
 use log::debug;
 
-const DEFAULT_SPECIES: &str = "Unknown tree";
+const DEFAULT_SPECIES: &str = "Unknown";
 
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct OsmTreeRecord {
@@ -19,6 +19,12 @@ pub struct OsmTreeRecord {
     pub circumference: Option<f64>,
     pub diameter_crown: Option<f64>,
     pub image: Option<String>,
+    pub version: u64,
+    pub timestamp: String,
+    pub user_id: u64,
+    pub user_name: String,
+    pub visible: bool,
+    pub last_seen_at: Option<u64>,
 }
 
 impl OsmTreeRecord {
@@ -46,6 +52,12 @@ impl OsmTreeRecord {
             circumference: attributes.get_f64("circumference")?,
             diameter_crown: attributes.get_f64("diameter_crown")?,
             image: attributes.get_string("image")?,
+            version: attributes.require_u64("version")?,
+            timestamp: attributes.require_string("timestamp")?,
+            user_id: attributes.require_u64("user_id")?,
+            user_name: attributes.require_string("user_name")?,
+            visible: attributes.get_bool("visible")?.unwrap_or(true),
+            last_seen_at: attributes.get_u64("last_seen_at")?,
         })
     }
 
@@ -67,6 +79,12 @@ impl OsmTreeRecord {
                 Value::from(self.diameter_crown),
             ),
             ("image".to_string(), Value::from(self.image.clone())),
+            ("version".to_string(), Value::from(self.version)),
+            ("timestamp".to_string(), Value::from(self.timestamp.clone())),
+            ("user_id".to_string(), Value::from(self.user_id)),
+            ("user_name".to_string(), Value::from(self.user_name.clone())),
+            ("visible".to_string(), Value::from(self.visible)),
+            ("last_seen_at".to_string(), Value::from(self.last_seen_at)),
         ])
     }
 
@@ -92,6 +110,12 @@ impl OsmTreeRecord {
             circumference: Self::get_size(tags, "circumference", id),
             diameter_crown: Self::get_size(tags, "diameter_crown", id),
             image: Self::get_string(tags, "image"),
+            version: node["version"].as_u64()?,
+            timestamp: node["timestamp"].as_str()?.to_string(),
+            user_id: node["uid"].as_u64()?,
+            user_name: node["user"].as_str()?.to_string(),
+            visible: true,
+            last_seen_at: None,
         })
     }
 
@@ -153,6 +177,12 @@ impl From<&Tree> for OsmTreeRecord {
             circumference: tree.circumference,
             diameter_crown: tree.diameter,
             image: None,
+            version: tree.osm_version.unwrap_or(0),
+            timestamp: "".to_string(),
+            user_id: 0,
+            user_name: "".to_string(),
+            visible: true,
+            last_seen_at: None,
         }
     }
 }
@@ -170,6 +200,12 @@ impl From<&OsmElement> for OsmTreeRecord {
             circumference: Self::parse_size(em.tags.get("circumference").cloned()),
             diameter_crown: Self::parse_size(em.tags.get("diameter_crown").cloned()),
             image: em.tags.get("image").cloned(),
+            version: em.version,
+            timestamp: em.timestamp.clone(),
+            user_id: em.uid,
+            user_name: em.user.clone(),
+            visible: true,
+            last_seen_at: None,
         }
     }
 }

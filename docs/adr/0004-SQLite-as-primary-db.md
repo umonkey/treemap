@@ -19,14 +19,14 @@ SQLite is an in-process library that implements a self-contained, serverless, ze
 
 ### Positive
 
-* Simplicity and Ease of Deployment: There is no separate database server to install, configure, or manage. The application remains a self-contained unit.
-* Portability: The entire database is a single file on disk, which is easy to back up, copy, and move between environments.
-* Reduced Dependencies: Eliminates the need for users to install and maintain a separate database system, significantly lowering the barrier to entry.
-* Sufficient Performance: For the intended use case of a single-instance application, SQLite's performance is more than adequate.
+- Simplicity and Ease of Deployment: There is no separate database server to install, configure, or manage. The application remains a self-contained unit.
+- Portability: The entire database is a single file on disk, which is easy to back up, copy, and move between environments.
+- Reduced Dependencies: Eliminates the need for users to install and maintain a separate database system, significantly lowering the barrier to entry.
+- Sufficient Performance: For the intended use case of a single-instance application, SQLite's performance is more than adequate.
 
 ### Negative
 
-* Limited Concurrency: SQLite is not well-suited for applications with high write concurrency, as it locks the entire database file during writes. This is considered an acceptable trade-off, as the application's primary workload is read-heavy, and write operations are infrequent.
-* No Network Access: Being an embedded library, SQLite does not natively support remote network access, which restricts the architecture to a single machine.
-* Scalability Constraints: This choice inherently limits the application's ability to scale out. It is not suitable for a distributed or clustered environment. If the application's requirements grow to need such a setup, a migration to a client-server database would be a significant undertaking.
-* Fewer Advanced Features: Lacks some of the advanced capabilities and specialized data types found in systems like PostgreSQL.
+- Limited Concurrency: SQLite is not well-suited for applications with high write concurrency, as it locks the entire database file during writes. This is considered an acceptable trade-off, as the application's primary workload is read-heavy, and write operations are infrequent.
+- No Network Access: Being an embedded library, SQLite does not natively support remote network access, which restricts the architecture to a single machine.
+- Scalability Constraints: This choice inherently limits the application's ability to scale out. It is not suitable for a distributed or clustered environment. If the application's requirements grow to need such a setup, a migration to a client-server database would be a significant undertaking.
+- Fewer Advanced Features: Lacks some of the advanced capabilities and specialized data types found in systems like PostgreSQL.

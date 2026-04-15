@@ -7,17 +7,17 @@
 
 The application backend is a Rust service that runs inside a Docker container. We require a robust, long-term solution for managing the application's logs. The specific requirements are:
 
-* Logs should be rotated on a daily basis.
-* Rotated log files must be compressed to save disk space.
-* Historical log files should be retained indefinitely for audit and analysis purposes.
-* The solution must be reliable and suitable for a production environment.
+- Logs should be rotated on a daily basis.
+- Rotated log files must be compressed to save disk space.
+- Historical log files should be retained indefinitely for audit and analysis purposes.
+- The solution must be reliable and suitable for a production environment.
 
 ## Decision Drivers
 
-* Flexibility: The ability to modify the log rotation and retention policy without needing to change, recompile, and redeploy the core application.
-* Separation of Concerns: Adherence to the [12-Factor App methodology](https://12factor.net/logs), which recommends that applications treat logs as event streams and not concern themselves with log routing or storage.
-* Robustness: The chosen solution should be battle-tested and reliable, minimizing the risk of log loss or application crashes due to logging failures.
-* Simplicity of Application Code: The core application logic should remain as simple as possible, focusing on its primary business domain rather than operational concerns.
+- Flexibility: The ability to modify the log rotation and retention policy without needing to change, recompile, and redeploy the core application.
+- Separation of Concerns: Adherence to the [12-Factor App methodology](https://12factor.net/logs), which recommends that applications treat logs as event streams and not concern themselves with log routing or storage.
+- Robustness: The chosen solution should be battle-tested and reliable, minimizing the risk of log loss or application crashes due to logging failures.
+- Simplicity of Application Code: The core application logic should remain as simple as possible, focusing on its primary business domain rather than operational concerns.
 
 ## Considered Options
 
@@ -27,15 +27,15 @@ This approach involves using a dedicated Rust logging crate (e.g., `log4rs`, `fl
 
 Pros:
 
-* The application is fully self-contained.
-* No external dependencies like `cron` or `logrotate` are needed in the Docker image.
+- The application is fully self-contained.
+- No external dependencies like `cron` or `logrotate` are needed in the Docker image.
 
 Cons:
 
-* Log policy is hardcoded. Any change requires a full application redeployment.
-* Adds complexity and potential bugs to the application's core code.
-* Log rotation and compression can cause performance spikes within the application process.
-* Violates the principle of separating application and operational concerns.
+- Log policy is hardcoded. Any change requires a full application redeployment.
+- Adds complexity and potential bugs to the application's core code.
+- Log rotation and compression can cause performance spikes within the application process.
+- Violates the principle of separating application and operational concerns.
 
 ### Option 2: External Management via `supervisor` + `logrotate`
 
@@ -50,15 +50,15 @@ Implementation:
 
 Pros:
 
-* Extremely flexible; log policy can be changed via configuration files without touching the application.
-* Follows the 12-Factor App standard.
-* Uses highly reliable, battle-tested system utilities.
-* Keeps the application code simple and focused.
+- Extremely flexible; log policy can be changed via configuration files without touching the application.
+- Follows the 12-Factor App standard.
+- Uses highly reliable, battle-tested system utilities.
+- Keeps the application code simple and focused.
 
 Cons:
 
-* The Docker image has a slightly larger footprint due to `cron` and `logrotate`.
-* The container's entrypoint is more complex, as it must manage starting both the application and the `crond` process.
+- The Docker image has a slightly larger footprint due to `cron` and `logrotate`.
+- The container's entrypoint is more complex, as it must manage starting both the application and the `crond` process.
 
 ## Decision
 
@@ -70,11 +70,11 @@ This approach provides the greatest flexibility and aligns with modern best prac
 
 Positive:
 
-* The application's logging code is minimal and robust.
-* The operations team can adjust log rotation, compression, and retention policies easily.
-* The architecture is clear and follows well-understood industry patterns.
+- The application's logging code is minimal and robust.
+- The operations team can adjust log rotation, compression, and retention policies easily.
+- The architecture is clear and follows well-understood industry patterns.
 
 Negative:
 
-* The final Docker image will be slightly larger.
-* An entrypoint script is required to run multiple processes (`crond` and the Rust app) within the container, which requires careful implementation to handle signals correctly.
+- The final Docker image will be slightly larger.
+- An entrypoint script is required to run multiple processes (`crond` and the Rust app) within the container, which requires careful implementation to handle signals correctly.

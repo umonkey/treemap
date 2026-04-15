@@ -33,6 +33,8 @@ pub struct Tree {
 
     // The tree that succeeded this one.
     pub replaced_by: Option<u64>,
+    pub osm_version: Option<u64>,
+    pub last_sync_at: Option<u64>,
 }
 
 impl Tree {
@@ -59,6 +61,8 @@ impl Tree {
             comment_count: attributes.get_u64("comment_count")?.unwrap_or(0),
             replaces: attributes.get_u64("replaces")?,
             replaced_by: attributes.get_u64("replaced_by")?,
+            osm_version: attributes.get_u64("osm_version")?,
+            last_sync_at: attributes.get_u64("last_sync_at")?,
         })
     }
 
@@ -112,6 +116,8 @@ impl Tree {
                     None => Value::Null,
                 },
             ),
+            ("osm_version".to_string(), Value::from(self.osm_version)),
+            ("last_sync_at".to_string(), Value::from(self.last_sync_at)),
         ])
     }
 

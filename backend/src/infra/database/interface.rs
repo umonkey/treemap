@@ -22,6 +22,22 @@ pub struct Database {
 }
 
 impl Database {
+    #[allow(dead_code)]
+    pub async fn transact(&self) -> Result<Self> {
+        let db = self.db.transact().await?;
+        Ok(Self { db: Arc::from(db) })
+    }
+
+    #[allow(dead_code)]
+    pub async fn commit(&self) -> Result<()> {
+        self.db.commit().await
+    }
+
+    #[allow(dead_code)]
+    pub async fn rollback(&self) -> Result<()> {
+        self.db.rollback().await
+    }
+
     pub async fn get_record(&self, query: SelectQuery) -> Result<Option<Attributes>> {
         self.db.get_record(query).await
     }
@@ -38,11 +54,11 @@ impl Database {
         self.db.replace(query).await
     }
 
-    pub async fn update(&self, query: UpdateQuery) -> Result<()> {
+    pub async fn update(&self, query: UpdateQuery) -> Result<u64> {
         self.db.update(query).await
     }
 
-    pub async fn delete(&self, query: DeleteQuery) -> Result<()> {
+    pub async fn delete(&self, query: DeleteQuery) -> Result<u64> {
         self.db.delete(query).await
     }
 
@@ -56,6 +72,10 @@ impl Database {
 
     pub async fn sql(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>> {
         self.db.sql(query, params).await
+    }
+
+    pub async fn execute_sql(&self, query: &str, params: &[Value]) -> Result<()> {
+        self.db.execute_sql(query, params).await
     }
 
     pub async fn find_species(&self, query: &str) -> Result<Vec<Species>> {
