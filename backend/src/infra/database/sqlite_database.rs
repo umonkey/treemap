@@ -309,23 +309,6 @@ impl DatabaseInterface for SqliteTransaction {
         Ok(0)
     }
 
-    async fn get_species_stats(&self) -> Result<Vec<(String, u64)>> {
-        let rows = self.fetch(
-            "SELECT species, COUNT(1) AS cnt FROM trees WHERE state <> 'gone' AND state <> 'stump' GROUP BY TRIM(LOWER(species)) ORDER BY cnt DESC, LOWER(species)",
-            &[],
-        ).await?;
-
-        let mut res = Vec::new();
-
-        for row in rows {
-            let species = row.require_string("species")?;
-            let count = row.require_u64("cnt")?;
-            res.push((species, count));
-        }
-
-        Ok(res)
-    }
-
     async fn get_species_mismatch(&self, count: u64, skip: u64) -> Result<Vec<Tree>> {
         let rows = self.fetch(
             "SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id, year, address FROM trees WHERE state <> 'gone' AND species <> 'Unknown species' AND species <> 'Unknown' AND species NOT IN (SELECT name FROM species) LIMIT ? OFFSET ?",
@@ -498,10 +481,6 @@ impl DatabaseInterface for SqliteDatabase {
         self.transact().await?.count(query).await
     }
 
-    async fn get_species_stats(&self) -> Result<Vec<(String, u64)>> {
-        self.transact().await?.get_species_stats().await
-    }
-
     async fn get_species_mismatch(&self, count: u64, skip: u64) -> Result<Vec<Tree>> {
         self.transact()
             .await?
@@ -563,21 +542,6 @@ mod tests {
         info!("SQLite database initialized.");
 
         db
-    }
-
-    #[tokio::test]
-    async fn test_species_stats() {
-        let db = setup().await;
-
-        db.execute(include_str!("./fixtures/test_species_stats.sql"))
-            .await
-            .expect("Error adding species.");
-
-        let res = db.get_species_stats().await.expect("Error getting report.");
-
-        assert_eq!(res.len(), 1, "Could not find species for oak.");
-        assert_eq!("Quercus robur", res[0].0);
-        assert_eq!(2, res[0].1);
     }
 
     #[tokio::test]

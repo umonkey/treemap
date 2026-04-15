@@ -81,10 +81,6 @@ impl Database {
         self.db.execute(query).await
     }
 
-    pub async fn get_species_stats(&self) -> Result<Vec<(String, u64)>> {
-        self.db.get_species_stats().await
-    }
-
     pub async fn get_top_streets(&self, count: u64) -> Result<Vec<(String, u64)>> {
         self.db.get_top_streets(count).await
     }

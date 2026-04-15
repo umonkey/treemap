@@ -63,13 +63,13 @@ impl SpeciesService {
     }
 
     pub async fn get_stats(&self) -> Result<Vec<SpeciesStats>> {
-        let items = self.db.get_species_stats().await?;
+        let items = self.get_raw_stats().await?;
         let report = format_species_report(items);
         Ok(report)
     }
 
     pub async fn get_diversity_index(&self) -> Result<DiversityReport> {
-        let species = self.db.get_species_stats().await?;
+        let species = self.get_raw_stats().await?;
 
         let counts: Vec<u64> = species
             .clone()
@@ -88,6 +88,26 @@ impl SpeciesService {
             excess_species,
             excess_genera,
         })
+    }
+
+    async fn get_raw_stats(&self) -> Result<Vec<(String, u64)>> {
+        let rows = self
+            .db
+            .sql(
+                "SELECT species, COUNT(1) AS cnt FROM trees WHERE state <> 'gone' AND state <> 'stump' GROUP BY TRIM(LOWER(species)) ORDER BY cnt DESC, LOWER(species)",
+                &[],
+            )
+            .await?;
+
+        let mut res = Vec::new();
+
+        for row in rows {
+            let species = row.require_string("species")?;
+            let count = row.require_u64("cnt")?;
+            res.push((species, count));
+        }
+
+        Ok(res)
     }
 
     // Find species above 10% threshold.
@@ -231,5 +251,24 @@ mod tests {
 
         assert_eq!(suggestion.len(), 1);
         assert_eq!(suggestion[0], "Birch");
+    }
+
+    #[tokio::test]
+    async fn test_get_stats() {
+        let service = setup().await;
+
+        service
+            .db
+            .execute(include_str!(
+                "../../infra/database/fixtures/test_species_stats.sql"
+            ))
+            .await
+            .expect("Error adding species.");
+
+        let res = service.get_stats().await.expect("Error getting report.");
+
+        assert_eq!(res.len(), 1);
+        assert_eq!("Quercus", res[0].name);
+        assert_eq!(2, res[0].count);
     }
 }
