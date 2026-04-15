@@ -6,9 +6,8 @@
 
 use crate::domain::osm::{OsmTreeRecord, OsmTreeRepository};
 use crate::domain::tree::{Tree, TreeRepository};
-use crate::infra::config::Config;
 use crate::infra::osm::{OsmClient, OsmElement};
-use crate::services::{Locatable, Locator};
+use crate::services::{Context, Injectable};
 use crate::types::*;
 use crate::utils::get_timestamp;
 use log::{debug, info, warn};
@@ -271,14 +270,14 @@ impl OsmWriterService {
     }
 }
 
-impl Locatable for OsmWriterService {
-    fn create(locator: &Locator) -> Result<Self> {
-        let config = locator.get::<Config>()?;
+impl Injectable for OsmWriterService {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        let config = ctx.config();
 
         Ok(Self {
-            osm: locator.get::<OsmClient>()?,
-            osm_trees: locator.get::<OsmTreeRepository>()?,
-            trees: locator.get::<TreeRepository>()?,
+            osm: Arc::new(ctx.build::<OsmClient>()?),
+            osm_trees: Arc::new(ctx.build::<OsmTreeRepository>()?),
+            trees: Arc::new(ctx.build::<TreeRepository>()?),
             user_id: config.bot_user_id,
             changeset_size: config.osm_changeset_size as usize,
         })

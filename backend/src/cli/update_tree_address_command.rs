@@ -20,10 +20,12 @@ pub async fn update_tree_address_command() {
         }
     };
 
-    let locator = Locator::new();
+    let state = AppState::new()
+        .await
+        .expect("Error initializing app state.");
 
-    let trees = locator
-        .get::<TreeService>()
+    let trees = state
+        .build::<TreeService>()
         .expect("Error creating handler.");
 
     trees

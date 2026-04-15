@@ -8,8 +8,8 @@ use super::trees_by_height::TreesByHeightReporter;
 use super::trees_by_species::TreesBySpeciesReporter;
 use super::trees_by_state::TreesByStateReporter;
 use crate::domain::tree::{Tree, TreeRepository};
-use crate::infra::database::Database;
-use crate::services::{Locatable, Locator};
+use crate::infra::database::{Database, Value};
+use crate::services::{Context, Injectable};
 use crate::types::Result;
 use std::sync::Arc;
 
@@ -26,7 +26,23 @@ pub struct StreetService {
 
 impl StreetService {
     pub async fn search(&self, query: &str) -> Result<Vec<String>> {
-        self.db.find_streets(query).await
+        let pattern = format!("%{}%", query.trim().to_lowercase());
+
+        let rows = self
+            .db
+            .fetch_sql(
+                "SELECT DISTINCT address FROM trees WHERE state <> 'gone' AND address LIKE ?1 ORDER BY address LIMIT 10",
+                &[Value::from(pattern)],
+            )
+            .await?;
+
+        let mut streets: Vec<String> = Vec::new();
+
+        for row in rows {
+            streets.push(row.require_string("address")?);
+        }
+
+        Ok(streets)
     }
 
     pub async fn get_report(&self, street: &str) -> Result<StreetReport> {
@@ -96,11 +112,11 @@ impl StreetService {
     }
 }
 
-impl Locatable for StreetService {
-    fn create(locator: &Locator) -> Result<Self> {
+impl Injectable for StreetService {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
         Ok(Self {
-            db: locator.get::<Database>()?,
-            trees: locator.get::<TreeRepository>()?,
+            db: ctx.database(),
+            trees: Arc::new(ctx.build::<TreeRepository>()?),
             area: TreesAreaReporter::new(),
             by_state: TreesByStateReporter::new(),
             by_height: TreesByHeightReporter::new(),
@@ -108,5 +124,55 @@ impl Locatable for StreetService {
             by_girth: TreesByGirthReporter::new(),
             by_species: TreesBySpeciesReporter::new(),
         })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::services::AppState;
+    use crate::services::ContextExt;
+    use log::debug;
+
+    async fn setup() -> StreetService {
+        if env_logger::try_init().is_err() {
+            debug!("env_logger already initialized.");
+        };
+
+        let state = AppState::new()
+            .await
+            .expect("Error creating app state.")
+            .session()
+            .await
+            .expect("Error creating session state.");
+
+        state
+            .build::<StreetService>()
+            .expect("Error creating StreetService")
+    }
+
+    #[tokio::test]
+    async fn test_search() {
+        let service = setup().await;
+
+        service
+            .db
+            .execute_sql("DELETE FROM trees", &[])
+            .await
+            .expect("Error clearing trees.");
+
+        service
+            .db
+            .execute_sql("INSERT INTO trees (id, lat, lon, species, address, added_at, updated_at, updated_by, added_by) VALUES (1, 40.1, 44.1, 'Birch', 'Northern Ave', 0, 0, 1, 1)", &[])
+            .await
+            .expect("Error adding tree.");
+
+        let streets = service
+            .search(" northern ")
+            .await
+            .expect("Error finding streets.");
+
+        assert_eq!(streets.len(), 1);
+        assert_eq!(streets[0], "Northern Ave");
     }
 }

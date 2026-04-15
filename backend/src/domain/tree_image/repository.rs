@@ -68,16 +68,12 @@ impl TreeImageRepository {
     async fn query_multiple(&self, query: SelectQuery) -> Result<Vec<TreeImage>> {
         let records = self.db.get_records(query).await?;
 
-        records
-            .iter()
-            .map(|props| TreeImage::from_attributes(props).map_err(|_| Error::DatabaseStructure))
-            .collect()
+        records.iter().map(TreeImage::from_attributes).collect()
     }
 }
 
-impl Locatable for TreeImageRepository {
-    fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<Database>()?;
-        Ok(Self { db })
+impl Injectable for TreeImageRepository {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        Ok(Self { db: ctx.database() })
     }
 }

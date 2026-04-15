@@ -1,7 +1,7 @@
 use super::schemas::PropList;
 use crate::domain::prop::PropRecord;
 use crate::domain::user::UserRepository;
-use crate::services::{Locatable, Locator};
+use crate::services::{Context, Injectable};
 use crate::types::Result;
 use std::sync::Arc;
 
@@ -18,10 +18,10 @@ impl PropLoader {
     }
 }
 
-impl Locatable for PropLoader {
-    fn create(locator: &Locator) -> Result<Self> {
+impl Injectable for PropLoader {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
         Ok(Self {
-            users: locator.get::<UserRepository>()?,
+            users: Arc::new(ctx.build::<UserRepository>()?),
         })
     }
 }

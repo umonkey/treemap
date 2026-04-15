@@ -1,7 +1,7 @@
 use super::models::OsmTreeRecord;
 use crate::infra::database::{Database, InsertQuery, SelectQuery, UpdateQuery, Value};
-use crate::services::{Locatable, Locator};
-use crate::types::{Error, Result};
+use crate::services::{Context, Injectable};
+use crate::types::Result;
 use log::error;
 use std::sync::Arc;
 
@@ -12,22 +12,6 @@ pub struct OsmTreeRepository {
 }
 
 impl OsmTreeRepository {
-    #[allow(dead_code)]
-    pub async fn transact(&self) -> Result<Self> {
-        let db = self.db.transact().await?;
-        Ok(Self { db: Arc::new(db) })
-    }
-
-    #[allow(dead_code)]
-    pub async fn commit(&self) -> Result<()> {
-        self.db.commit().await
-    }
-
-    #[allow(dead_code)]
-    pub async fn rollback(&self) -> Result<()> {
-        self.db.rollback().await
-    }
-
     pub async fn get(&self, id: u64) -> Result<Option<OsmTreeRecord>> {
         let query = SelectQuery::new(TABLE).with_condition("id", Value::from(id as i64));
 
@@ -65,12 +49,7 @@ impl OsmTreeRepository {
 
         let records = self.db.get_records(query).await?;
 
-        records
-            .iter()
-            .map(|props| {
-                OsmTreeRecord::from_attributes(props).map_err(|_| Error::DatabaseStructure)
-            })
-            .collect()
+        records.iter().map(OsmTreeRecord::from_attributes).collect()
     }
 
     pub async fn mark_invisible_before(&self, timestamp: u64) -> Result<()> {
@@ -82,9 +61,8 @@ impl OsmTreeRepository {
     }
 }
 
-impl Locatable for OsmTreeRepository {
-    fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<Database>()?;
-        Ok(Self { db })
+impl Injectable for OsmTreeRepository {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        Ok(Self { db: ctx.database() })
     }
 }

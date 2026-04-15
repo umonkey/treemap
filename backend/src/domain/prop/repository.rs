@@ -1,6 +1,6 @@
 use super::models::PropRecord;
 use crate::infra::database::{Database, InsertQuery, SelectQuery, Value};
-use crate::services::{Locatable, Locator};
+use crate::services::{Context, Injectable};
 use crate::types::*;
 use crate::utils::{get_timestamp, get_unique_id};
 use std::sync::Arc;
@@ -52,21 +52,12 @@ impl PropRepository {
     async fn query_multiple(&self, query: SelectQuery) -> Result<Vec<PropRecord>> {
         let records = self.db.get_records(query).await?;
 
-        records
-            .iter()
-            .map(|props| {
-                PropRecord::from_attributes(props).map_err(|e| {
-                    log::debug!("Error parsing prop record: {e:?}");
-                    Error::DatabaseStructure
-                })
-            })
-            .collect()
+        records.iter().map(PropRecord::from_attributes).collect()
     }
 }
 
-impl Locatable for PropRepository {
-    fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<Database>()?;
-        Ok(Self { db })
+impl Injectable for PropRepository {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        Ok(Self { db: ctx.database() })
     }
 }

@@ -1,11 +1,13 @@
 use crate::services::queue_consumer::QueueConsumer;
-use crate::services::Locator;
+use crate::services::{AppState, ContextExt};
 
 pub async fn queue_consumer_command() {
-    let locator = Locator::new();
+    let state = AppState::new()
+        .await
+        .expect("Error initializing app state.");
 
-    let consumer = locator
-        .get::<QueueConsumer>()
+    let consumer = state
+        .build::<QueueConsumer>()
         .expect("Error creating queue consumer.");
 
     consumer.run().await;

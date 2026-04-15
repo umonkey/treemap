@@ -1,6 +1,4 @@
 use super::queries::*;
-use crate::domain::species::Species;
-use crate::domain::tree::Tree;
 use crate::infra::database::{Attributes, Value};
 use crate::types::*;
 use async_trait::async_trait;
@@ -22,23 +20,8 @@ pub trait DatabaseInterface: Send + Sync {
     async fn delete(&self, query: DeleteQuery) -> Result<u64>;
     async fn increment(&self, query: IncrementQuery) -> Result<()>;
     async fn count(&self, query: CountQuery) -> Result<u64>;
-    async fn sql(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>>;
-    async fn execute_sql(&self, query: &str, params: &[Value]) -> Result<()>;
-
-    async fn find_species(&self, query: &str) -> Result<Vec<Species>>;
-    async fn find_streets(&self, query: &str) -> Result<Vec<String>>;
-
-    async fn find_recent_species(&self, user_id: u64) -> Result<Vec<String>>;
-
-    async fn get_species_stats(&self) -> Result<Vec<(String, u64)>>;
-    async fn get_top_streets(&self, count: u64) -> Result<Vec<(String, u64)>>;
-    async fn get_state_stats(&self) -> Result<Vec<(String, u64)>>;
-    async fn get_species_mismatch(&self, count: u64, skip: u64) -> Result<Vec<Tree>>;
-    async fn get_heatmap(&self, after: u64, before: u64) -> Result<Vec<(String, u64)>>;
-    async fn get_user_heatmap(
-        &self,
-        after: u64,
-        before: u64,
-        user_id: u64,
-    ) -> Result<Vec<(String, u64)>>;
+    async fn fetch_sql(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>>;
+    async fn execute_sql(&self, query: &str, params: &[Value]) -> Result<u64>;
+    #[allow(dead_code)]
+    async fn execute_batch(&self, query: &str) -> Result<()>;
 }

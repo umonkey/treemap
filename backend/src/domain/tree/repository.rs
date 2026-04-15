@@ -3,7 +3,7 @@ use super::schemas::*;
 use crate::domain::prop::{PropRecord, PropRepository};
 use crate::infra::database::{CountQuery, IncrementQuery, InsertQuery, SelectQuery, UpdateQuery};
 use crate::infra::database::{Database, Value};
-use crate::services::*;
+use crate::services::{Context, Injectable};
 use crate::types::*;
 use crate::utils::get_timestamp;
 use log::{debug, error, info};
@@ -314,10 +314,7 @@ impl TreeRepository {
     async fn query_multiple(&self, query: SelectQuery) -> Result<Vec<Tree>> {
         let records = self.db.get_records(query).await?;
 
-        records
-            .iter()
-            .map(|props| Tree::from_attributes(props).map_err(|_| Error::DatabaseStructure))
-            .collect()
+        records.iter().map(Tree::from_attributes).collect()
     }
 
     async fn log_changes(&self, old: &Tree, new: &Tree, user_id: u64) -> Result<()> {
@@ -437,37 +434,45 @@ impl TreeRepository {
     }
 
     async fn fetch(&self, sql: &str, params: &[Value]) -> Result<Vec<Tree>> {
-        let rows = self.db.sql(sql, params).await?;
+        let rows = self.db.fetch_sql(sql, params).await?;
 
-        rows.iter()
-            .map(|props| Tree::from_attributes(props).map_err(|_| Error::DatabaseStructure))
-            .collect()
+        rows.iter().map(Tree::from_attributes).collect()
     }
 }
 
-impl Locatable for TreeRepository {
-    fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<Database>()?;
-        let props = locator.get::<PropRepository>()?;
-        Ok(Self { db, props })
+impl Injectable for TreeRepository {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        Ok(Self {
+            db: ctx.database(),
+            props: Arc::new(ctx.build::<PropRepository>()?),
+        })
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::services::AppState;
+    use crate::services::ContextExt;
 
-    fn setup() -> Arc<TreeRepository> {
-        let locator = Locator::new();
+    async fn setup() -> Arc<TreeRepository> {
+        let state = AppState::new()
+            .await
+            .expect("Error creating app state.")
+            .session()
+            .await
+            .expect("Error creating session state.");
 
-        locator
-            .get::<TreeRepository>()
-            .expect("Error creating tree repository.")
+        Arc::new(
+            state
+                .build::<TreeRepository>()
+                .expect("Error creating tree repository."),
+        )
     }
 
     #[tokio::test]
     async fn test_get_by_bounds() {
-        let repo = setup();
+        let repo = setup().await;
 
         repo.add(&Tree {
             id: 1,

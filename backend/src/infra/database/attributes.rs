@@ -1,5 +1,4 @@
 use libsql::Row as LibSqlRow;
-use log::debug;
 use std::collections::HashMap;
 
 use super::value::Value;
@@ -26,14 +25,12 @@ impl Attributes {
         match self.props.get(key) {
             Some(Value::Real(value)) => Ok(Some(*value)),
             Some(Value::Null) => Ok(None),
-            None => {
-                debug!("Attribute {key} not found.");
-                Err(Error::DatabaseStructure)
-            }
-            value => {
-                debug!("Attribute {key} is of unexpected type: {value:?}");
-                Err(Error::DatabaseStructure)
-            }
+            None => Err(Error::DatabaseStructure(format!(
+                "Attribute {key} not found."
+            ))),
+            value => Err(Error::DatabaseStructure(format!(
+                "Attribute {key} is of unexpected type: {value:?}"
+            ))),
         }
     }
 
@@ -41,14 +38,12 @@ impl Attributes {
         match self.props.get(key) {
             Some(Value::Integer(value)) => Ok(Some(*value)),
             Some(Value::Null) => Ok(None),
-            None => {
-                debug!("Attribute {key} not found.");
-                Err(Error::DatabaseStructure)
-            }
-            value => {
-                debug!("Attribute {key} is of unexpected type: {value:?}");
-                Err(Error::DatabaseStructure)
-            }
+            None => Err(Error::DatabaseStructure(format!(
+                "Attribute {key} not found."
+            ))),
+            value => Err(Error::DatabaseStructure(format!(
+                "Attribute {key} is of unexpected type: {value:?}"
+            ))),
         }
     }
 
@@ -56,14 +51,12 @@ impl Attributes {
         match self.props.get(key) {
             Some(Value::Integer(value)) => Ok(Some(*value != 0)),
             Some(Value::Null) => Ok(None),
-            None => {
-                debug!("Attribute {key} not found.");
-                Err(Error::DatabaseStructure)
-            }
-            value => {
-                debug!("Attribute {key} is of unexpected type: {value:?}");
-                Err(Error::DatabaseStructure)
-            }
+            None => Err(Error::DatabaseStructure(format!(
+                "Attribute {key} not found."
+            ))),
+            value => Err(Error::DatabaseStructure(format!(
+                "Attribute {key} is of unexpected type: {value:?}"
+            ))),
         }
     }
 
@@ -71,14 +64,12 @@ impl Attributes {
         match self.props.get(key) {
             Some(Value::Integer(value)) => Ok(Some(*value as u64)),
             Some(Value::Null) => Ok(None),
-            None => {
-                debug!("Attribute {key} not found.");
-                Err(Error::DatabaseStructure)
-            }
-            value => {
-                debug!("Attribute {key} is of unexpected type: {value:?}");
-                Err(Error::DatabaseStructure)
-            }
+            None => Err(Error::DatabaseStructure(format!(
+                "Attribute {key} not found."
+            ))),
+            value => Err(Error::DatabaseStructure(format!(
+                "Attribute {key} is of unexpected type: {value:?}"
+            ))),
         }
     }
 
@@ -86,42 +77,48 @@ impl Attributes {
         match self.props.get(key) {
             Some(Value::Text(value)) => Ok(Some(value.to_string())),
             Some(Value::Null) => Ok(None),
-            None => {
-                debug!("Attribute {key} not found.");
-                Err(Error::DatabaseStructure)
-            }
-            value => {
-                debug!("Attribute {key} is of unexpected type: {value:?}.");
-                Err(Error::DatabaseStructure)
-            }
+            None => Err(Error::DatabaseStructure(format!(
+                "Attribute {key} not found."
+            ))),
+            value => Err(Error::DatabaseStructure(format!(
+                "Attribute {key} is of unexpected type: {value:?}"
+            ))),
         }
     }
 
     pub fn require_f64(&self, key: &str) -> Result<f64> {
         match self.props.get(key) {
             Some(Value::Real(value)) => Ok(*value),
-            _ => Err(Error::DatabaseStructure),
+            _ => Err(Error::DatabaseStructure(format!(
+                "Attribute {key} not found or is not a float."
+            ))),
         }
     }
 
     pub fn require_u64(&self, key: &str) -> Result<u64> {
         match self.props.get(key) {
             Some(Value::Integer(value)) => Ok(*value as u64),
-            _ => Err(Error::DatabaseStructure),
+            _ => Err(Error::DatabaseStructure(format!(
+                "Attribute {key} not found or is not an integer."
+            ))),
         }
     }
 
     pub fn require_i64(&self, key: &str) -> Result<i64> {
         match self.props.get(key) {
             Some(Value::Integer(value)) => Ok(*value),
-            _ => Err(Error::DatabaseStructure),
+            _ => Err(Error::DatabaseStructure(format!(
+                "Attribute {key} not found or is not an integer."
+            ))),
         }
     }
 
     pub fn require_string(&self, key: &str) -> Result<String> {
         match self.props.get(key) {
             Some(Value::Text(value)) => Ok(value.to_string()),
-            _ => Err(Error::DatabaseStructure),
+            _ => Err(Error::DatabaseStructure(format!(
+                "Attribute {key} not found or is not a string."
+            ))),
         }
     }
 }

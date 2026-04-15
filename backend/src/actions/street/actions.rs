@@ -1,7 +1,8 @@
 use super::schemas::StreetRead;
-use crate::domain::street::StreetReport;
+use crate::domain::street::{StreetReport, StreetService};
 use crate::responders::csv::trees_to_csv;
-use crate::services::AppState;
+use crate::services::{AppState, ContextExt};
+
 use crate::types::Result;
 use actix_web::web::{Data, Json, Query, ServiceConfig};
 use actix_web::{get, HttpResponse};
@@ -27,7 +28,7 @@ pub async fn search_streets_action(
     state: Data<AppState>,
     query: Query<SearchQuery>,
 ) -> Result<Json<Vec<StreetRead>>> {
-    let records = state.streets.search(&query.query).await?;
+    let records = state.build::<StreetService>()?.search(&query.query).await?;
     let res = records.iter().map(|f| f.into()).collect();
 
     Ok(Json(res))
@@ -38,7 +39,10 @@ pub async fn get_street_report_action(
     state: Data<AppState>,
     query: Query<ReportQuery>,
 ) -> Result<Json<StreetReport>> {
-    let report = state.streets.get_report(&query.address).await?;
+    let report = state
+        .build::<StreetService>()?
+        .get_report(&query.address)
+        .await?;
     Ok(Json(report))
 }
 
@@ -47,7 +51,10 @@ pub async fn get_street_csv_report_action(
     state: Data<AppState>,
     query: Query<CsvReportQuery>,
 ) -> Result<HttpResponse> {
-    let trees = state.streets.get_trees_on_street(&query.address).await?;
+    let trees = state
+        .build::<StreetService>()?
+        .get_trees_on_street(&query.address)
+        .await?;
     let filename = format!("report-{}", query.address);
     trees_to_csv(trees, &filename)
 }

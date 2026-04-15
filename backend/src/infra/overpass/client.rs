@@ -1,6 +1,5 @@
 use crate::domain::osm::OsmTreeRecord;
-use crate::infra::config::Config;
-use crate::services::{Locatable, Locator};
+use crate::services::{Context, Injectable};
 use crate::types::{Error, Result};
 use log::{debug, error, warn};
 use serde_json::Value;
@@ -122,9 +121,9 @@ impl OverpassClient {
     }
 }
 
-impl Locatable for OverpassClient {
-    fn create(locator: &Locator) -> Result<Self> {
-        let config = locator.get::<Config>()?;
+impl Injectable for OverpassClient {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        let config = ctx.config();
 
         Ok(Self::new(
             config.overpass_endpoint.clone(),

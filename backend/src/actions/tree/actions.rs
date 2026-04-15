@@ -2,15 +2,24 @@ use super::schemas::AddFileRequest;
 use super::schemas::AddTreePayload;
 use super::schemas::FileUploadResponse;
 use super::schemas::*;
+use crate::actions::tree::schemas::ObservationRead;
 use crate::actions::user::UserList;
+use crate::domain::comment::CommentService;
+use crate::domain::like::LikeService;
+use crate::domain::observation::ObservationService;
+use crate::domain::prop::PropService;
 use crate::domain::tree::NewTreeDefaultsResponse;
 use crate::domain::tree::ReplaceTreeRequest;
-use crate::domain::tree::{AddTreeRequest, GetTreesRequest, TreeStats, UpdateTreeRequest};
-use crate::services::comment_loader::CommentList;
-use crate::services::prop_loader::PropList;
+use crate::domain::tree::{
+    AddTreeRequest, GetTreesRequest, TreeService, TreeStats, UpdateTreeRequest,
+};
+use crate::domain::tree_image::TreeImageService;
+use crate::domain::user::UserService;
+use crate::services::comment_loader::{CommentList, CommentLoader};
+use crate::services::prop_loader::{PropList, PropLoader};
 use crate::services::tree_loader::SingleTreeResponse;
-use crate::services::tree_loader::TreeList;
-use crate::services::AppState;
+use crate::services::tree_loader::{TreeList, TreeLoader};
+use crate::services::{AppState, ContextExt};
 use crate::types::{Error, Result};
 use crate::utils::{get_remote_addr, get_user_agent};
 use actix_web::web::{Bytes, Data, Json, Path, Query, ServiceConfig};
@@ -42,7 +51,7 @@ pub async fn add_comment_action(
     let user_id = state.get_user_id(&req)?;
 
     state
-        .comments
+        .build::<CommentService>()?
         .add_comment(path.id, user_id, &payload.message)
         .await?;
 
@@ -59,7 +68,7 @@ pub async fn add_file_action(
     let user_id = state.get_user_id(&req)?;
 
     let file = state
-        .tree_images
+        .build::<TreeImageService>()?
         .add_file(AddFileRequest {
             user_id,
             tree_id: path.id,
@@ -82,7 +91,7 @@ pub async fn add_photos_action(
     let user_id = state.get_user_id(&req)?;
 
     state
-        .trees
+        .build::<TreeService>()?
         .add_tree_photos(path.id, user_id, payload.files.clone())
         .await?;
 
@@ -98,7 +107,7 @@ pub async fn add_trees_action(
     let user_id = state.get_user_id(&req)?;
 
     let trees = state
-        .trees
+        .build::<TreeService>()?
         .add_trees(AddTreeRequest {
             points: payload.points.clone(),
             species: payload.species.clone(),
@@ -124,8 +133,11 @@ pub async fn get_new_trees_action(
 ) -> Result<Json<TreeList>> {
     let count = query.get_count();
     let skip = query.get_skip();
-    let trees = state.trees.get_new_trees(count, skip).await?;
-    let trees = state.tree_loader.load_list(&trees).await?;
+    let trees = state
+        .build::<TreeService>()?
+        .get_new_trees(count, skip)
+        .await?;
+    let trees = state.build::<TreeLoader>()?.load_list(&trees).await?;
     Ok(Json(trees))
 }
 
@@ -134,8 +146,9 @@ pub async fn get_tree_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
 ) -> Result<Json<SingleTreeResponse>> {
-    let tree = state.trees.get_tree(path.id).await?;
-    let res = state.tree_loader.load_single(&tree).await?;
+    let trees = state.build::<TreeService>()?;
+    let tree = trees.get_tree(path.id).await?;
+    let res = state.build::<TreeLoader>()?.load_single(&tree).await?;
     Ok(Json(res))
 }
 
@@ -144,8 +157,11 @@ pub async fn get_tree_comments_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
 ) -> Result<Json<CommentList>> {
-    let comments = state.comments.get_tree_comments(path.id).await?;
-    let res = state.comment_loader.load(&comments).await?;
+    let comments = state
+        .build::<CommentService>()?
+        .get_tree_comments(path.id)
+        .await?;
+    let res = state.build::<CommentLoader>()?.load(&comments).await?;
     Ok(Json(res))
 }
 
@@ -155,7 +171,7 @@ pub async fn get_tree_defaults_action(
     req: HttpRequest,
 ) -> Result<Json<NewTreeDefaultsResponse>> {
     let user_id = state.get_user_id(&req)?;
-    let response = state.trees.get_defaults(user_id).await?;
+    let response = state.build::<TreeService>()?.get_defaults(user_id).await?;
     Ok(Json(response))
 }
 
@@ -164,8 +180,8 @@ pub async fn get_tree_history_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
 ) -> Result<Json<PropList>> {
-    let props = state.props.get_history(path.id).await?;
-    let res = state.prop_loader.load_list(&props).await?;
+    let props = state.build::<PropService>()?.get_history(path.id).await?;
+    let res = state.build::<PropLoader>()?.load_list(&props).await?;
     Ok(Json(res))
 }
 
@@ -174,7 +190,7 @@ pub async fn get_tree_observations_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
 ) -> Result<Json<ObservationRead>> {
-    let observation = state.observations.get(path.id).await?;
+    let observation = state.build::<ObservationService>()?.get(path.id).await?;
     Ok(Json(ObservationRead::from_domain(&observation)))
 }
 
@@ -187,7 +203,7 @@ pub async fn add_tree_observation_action(
 ) -> Result<Json<ObservationRead>> {
     let user_id = state.get_user_id(&req)?;
     let observation = state
-        .observations
+        .build::<ObservationService>()?
         .add(path.id, user_id, payload.to_flags())
         .await?;
 
@@ -196,7 +212,7 @@ pub async fn add_tree_observation_action(
 
 #[get("/stats")]
 pub async fn get_tree_stats_action(state: Data<AppState>) -> Result<Json<TreeStats>> {
-    let stats = state.trees.get_stats().await?;
+    let stats = state.build::<TreeService>()?.get_stats().await?;
     Ok(Json(stats))
 }
 
@@ -207,9 +223,12 @@ pub async fn get_trees_action(
     req: HttpRequest,
 ) -> Result<Json<TreeList>> {
     let user_id = state.get_user_id(&req).unwrap_or(0);
-    let trees = state.trees.get_trees(&query, user_id).await?;
+    let trees = state
+        .build::<TreeService>()?
+        .get_trees(&query, user_id)
+        .await?;
 
-    Ok(Json(state.tree_loader.load_list(&trees).await?))
+    Ok(Json(state.build::<TreeLoader>()?.load_list(&trees).await?))
 }
 
 #[get("/geo.json")]
@@ -219,7 +238,10 @@ pub async fn get_trees_json_action(
     req: HttpRequest,
 ) -> Result<HttpResponse> {
     let user_id = state.get_user_id(&req).unwrap_or(0);
-    let trees = state.trees.get_trees(&query, user_id).await?;
+    let trees = state
+        .build::<TreeService>()?
+        .get_trees(&query, user_id)
+        .await?;
 
     Ok(crate::responders::geo_json::respond_with_trees(&trees))
 }
@@ -231,8 +253,11 @@ pub async fn get_updated_trees_action(
 ) -> Result<Json<TreeList>> {
     let count = query.get_count();
     let skip = query.get_skip();
-    let trees = state.trees.get_recently_updated(count, skip).await?;
-    let res = state.tree_loader.load_list(&trees).await?;
+    let trees = state
+        .build::<TreeService>()?
+        .get_recently_updated(count, skip)
+        .await?;
+    let res = state.build::<TreeLoader>()?.load_list(&trees).await?;
     Ok(Json(res))
 }
 
@@ -243,7 +268,10 @@ pub async fn like_tree_action(
     req: HttpRequest,
 ) -> Result<HttpResponse> {
     let user_id = state.get_user_id(&req)?;
-    state.likes.like_tree(path.id, user_id).await?;
+    state
+        .build::<LikeService>()?
+        .like_tree(path.id, user_id)
+        .await?;
 
     Ok(HttpResponse::Accepted()
         .content_type("application/json")
@@ -260,7 +288,7 @@ pub async fn move_tree_action(
     let user_id = state.get_user_id(&req)?;
 
     state
-        .trees
+        .build::<TreeService>()?
         .move_tree(path.id, user_id, payload.lat, payload.lon)
         .await?;
 
@@ -277,7 +305,7 @@ pub async fn replace_tree_action(
     req: HttpRequest,
 ) -> Result<Json<TreeList>> {
     let trees = state
-        .trees
+        .build::<TreeService>()?
         .replace_tree(ReplaceTreeRequest {
             id: path.id,
             user_id: state.get_user_id(&req)?,
@@ -302,7 +330,10 @@ pub async fn unlike_tree_action(
     req: HttpRequest,
 ) -> Result<HttpResponse> {
     let user_id = state.get_user_id(&req)?;
-    state.likes.unlike_tree(path.id, user_id).await?;
+    state
+        .build::<LikeService>()?
+        .unlike_tree(path.id, user_id)
+        .await?;
 
     Ok(HttpResponse::Accepted()
         .content_type("application/json")
@@ -319,7 +350,7 @@ pub async fn update_tree_action(
     let user_id = state.get_user_id(&req)?;
 
     let tree = state
-        .trees
+        .build::<TreeService>()?
         .update_tree(UpdateTreeRequest {
             id: path.id,
             lat: payload.lat,
@@ -336,7 +367,7 @@ pub async fn update_tree_action(
         })
         .await?;
 
-    let res = state.tree_loader.load_single(&tree).await?;
+    let res = state.build::<TreeLoader>()?.load_single(&tree).await?;
 
     Ok(Json(res))
 }
@@ -351,11 +382,11 @@ pub async fn update_tree_circumference_action(
     let user_id = state.get_user_id(&req)?;
 
     let tree = state
-        .trees
+        .build::<TreeService>()?
         .update_circumference(path.id, payload.value, user_id)
         .await?;
 
-    let res = state.tree_loader.load_single(&tree).await?;
+    let res = state.build::<TreeLoader>()?.load_single(&tree).await?;
 
     Ok(Json(res))
 }
@@ -370,11 +401,11 @@ pub async fn update_tree_diameter_action(
     let user_id = state.get_user_id(&req)?;
 
     let tree = state
-        .trees
+        .build::<TreeService>()?
         .update_diameter(path.id, payload.value, user_id)
         .await?;
 
-    let res = state.tree_loader.load_single(&tree).await?;
+    let res = state.build::<TreeLoader>()?.load_single(&tree).await?;
 
     Ok(Json(res))
 }
@@ -389,11 +420,11 @@ pub async fn update_tree_height_action(
     let user_id = state.get_user_id(&req)?;
 
     let tree = state
-        .trees
+        .build::<TreeService>()?
         .update_height(path.id, payload.value, user_id)
         .await?;
 
-    let res = state.tree_loader.load_single(&tree).await?;
+    let res = state.build::<TreeLoader>()?.load_single(&tree).await?;
 
     Ok(Json(res))
 }
@@ -408,11 +439,11 @@ pub async fn update_tree_location_action(
     let user_id = state.get_user_id(&req)?;
 
     let tree = state
-        .trees
+        .build::<TreeService>()?
         .update_location(path.id, payload.lat, payload.lon, user_id)
         .await?;
 
-    let res = state.tree_loader.load_single(&tree).await?;
+    let res = state.build::<TreeLoader>()?.load_single(&tree).await?;
 
     Ok(Json(res))
 }
@@ -427,7 +458,7 @@ pub async fn update_tree_state_action(
     let user_id = state.get_user_id(&req)?;
 
     let tree = state
-        .trees
+        .build::<TreeService>()?
         .update_state(
             path.id,
             payload.value.clone(),
@@ -436,7 +467,7 @@ pub async fn update_tree_state_action(
         )
         .await?;
 
-    let res = state.tree_loader.load_single(&tree).await?;
+    let res = state.build::<TreeLoader>()?.load_single(&tree).await?;
 
     Ok(Json(res))
 }
@@ -452,7 +483,7 @@ pub async fn update_tree_thumbnail_action(
     let file_id = payload.file.parse().map_err(|_| Error::BadImage)?;
 
     state
-        .trees
+        .build::<TreeService>()?
         .update_thumbnail(path.id, file_id, user_id)
         .await?;
 
@@ -466,7 +497,10 @@ pub async fn get_tree_actors_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
 ) -> Result<Json<UserList>> {
-    let users = state.users.get_tree_actors(path.id).await?;
+    let users = state
+        .build::<UserService>()?
+        .get_tree_actors(path.id)
+        .await?;
     Ok(Json(UserList::from(users)))
 }
 

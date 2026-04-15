@@ -1,4 +1,4 @@
-use crate::services::{Locatable, Locator};
+use crate::services::{Context, Injectable};
 use crate::types::*;
 use image::{imageops, io::Reader, DynamicImage};
 use log::{debug, error, info};
@@ -129,8 +129,8 @@ impl ThumbnailerService {
     }
 }
 
-impl Locatable for ThumbnailerService {
-    fn create(_locator: &Locator) -> Result<Self> {
+impl Injectable for ThumbnailerService {
+    fn inject(_ctx: &dyn Context) -> Result<Self> {
         Ok(Self {})
     }
 }

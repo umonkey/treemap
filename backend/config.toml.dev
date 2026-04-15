@@ -6,6 +6,7 @@
 # Database configuration.
 # Values: sqlite, turso.
 database = "sqlite"
+server_port = 8000
 
 # SQLite database path.
 sqlite_path = "var/database.sqlite"

@@ -1,7 +1,7 @@
 use super::models::Like;
 use crate::infra::database::{Database, ReplaceQuery, SelectQuery, Value};
 use crate::services::*;
-use crate::types::{Error, Result};
+use crate::types::Result;
 use log::error;
 use std::sync::Arc;
 
@@ -45,17 +45,12 @@ impl LikeRepository {
     async fn query_multiple(&self, query: SelectQuery) -> Result<Vec<Like>> {
         let records = self.db.get_records(query).await?;
 
-        records
-            .iter()
-            .map(|props| Like::from_attributes(props).map_err(|_| Error::DatabaseStructure))
-            .collect()
+        records.iter().map(Like::from_attributes).collect()
     }
 }
 
-impl Locatable for LikeRepository {
-    fn create(locator: &Locator) -> Result<Self> {
-        Ok(Self {
-            db: locator.get::<Database>()?,
-        })
+impl Injectable for LikeRepository {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        Ok(Self { db: ctx.database() })
     }
 }

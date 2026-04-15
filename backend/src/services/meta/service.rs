@@ -1,5 +1,5 @@
 use crate::domain::tree::Tree;
-use crate::services::{Locatable, Locator};
+use crate::services::{Context, Injectable};
 use crate::types::{Error, Result};
 use html_escape::encode_double_quoted_attribute_to_string;
 use log::error;
@@ -129,8 +129,8 @@ impl MetaService {
     }
 }
 
-impl Locatable for MetaService {
-    fn create(_locator: &Locator) -> Result<Self> {
+impl Injectable for MetaService {
+    fn inject(_ctx: &dyn Context) -> Result<Self> {
         Ok(Self {})
     }
 }

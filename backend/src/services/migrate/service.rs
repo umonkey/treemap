@@ -79,12 +79,14 @@ impl MigrateService {
     }
 }
 
-impl Locatable for MigrateService {
-    fn create(locator: &Locator) -> Result<Self> {
+impl Injectable for MigrateService {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        let config = ctx.config();
+        let secrets = ctx.secrets();
         Ok(Self::new(
-            locator.get::<LocalFileStorage>()?,
-            locator.get::<S3FileStorage>()?,
-            locator.get::<Config>()?,
+            Arc::new(LocalFileStorage::new(&config)),
+            Arc::new(S3FileStorage::new(&config, &secrets)?),
+            config,
         ))
     }
 }

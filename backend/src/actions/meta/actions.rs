@@ -1,7 +1,9 @@
 //! This handles the tree page request by preparing some HTML metadata
 //! and injecting it into the default index.html file.
 
-use crate::services::AppState;
+use crate::domain::tree::TreeService;
+use crate::services::meta::MetaService;
+use crate::services::{AppState, ContextExt};
 use crate::types::*;
 use actix_web::http::header::{CacheControl, CacheDirective, Expires};
 use actix_web::web::{Data, Path, ServiceConfig};
@@ -16,9 +18,9 @@ pub struct PathInfo {
 
 #[get("/{id:\\d+}")]
 pub async fn tree_page_action(state: Data<AppState>, path: Path<PathInfo>) -> Result<HttpResponse> {
-    let tree = state.trees.get_tree(path.id).await?;
+    let tree = state.build::<TreeService>()?.get_tree(path.id).await?;
 
-    let html = state.meta.get_tree(&tree).await?;
+    let html = state.build::<MetaService>()?.get_tree(&tree).await?;
 
     let cache_control = CacheControl(vec![CacheDirective::Public, CacheDirective::MaxAge(60)]);
 

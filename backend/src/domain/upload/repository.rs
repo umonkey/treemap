@@ -4,7 +4,7 @@
 
 use super::models::Upload;
 use crate::infra::database::{Database, InsertQuery, SelectQuery, UpdateQuery, Value};
-use crate::services::{Locatable, Locator};
+use crate::services::{Context, Injectable};
 use crate::types::*;
 use std::sync::Arc;
 
@@ -41,9 +41,8 @@ impl UploadRepository {
     }
 }
 
-impl Locatable for UploadRepository {
-    fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<Database>()?;
-        Ok(Self { db })
+impl Injectable for UploadRepository {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        Ok(Self { db: ctx.database() })
     }
 }

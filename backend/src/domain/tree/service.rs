@@ -4,12 +4,11 @@ use crate::domain::prop::{PropRecord, PropRepository};
 use crate::domain::tree::{Tree, TreeRepository};
 use crate::domain::tree_image::TreeImageRepository;
 use crate::domain::user::UserRepository;
-use crate::infra::config::Config;
-use crate::infra::database::Database;
+use crate::infra::database::{Database, Value};
 use crate::infra::nominatim::NominatimClient;
 use crate::infra::queue::Queue;
 use crate::services::queue_consumer::{AddPhotoMessage, UpdateTreeAddressMessage};
-use crate::services::*;
+use crate::services::{Context, Injectable};
 use crate::types::*;
 use crate::utils::osm_round_coord;
 use crate::utils::{fix_circumference, get_timestamp, get_unique_id};
@@ -523,7 +522,23 @@ impl TreeService {
     }
 
     pub async fn get_mismatching_species(&self, count: u64, skip: u64) -> Result<Vec<Tree>> {
-        self.db.get_species_mismatch(count, skip).await
+        let rows = self
+            .db
+            .fetch_sql(
+                "SELECT * FROM trees WHERE state <> 'gone' AND species <> 'Unknown species' AND species <> 'Unknown' AND species NOT IN (SELECT name FROM species) LIMIT ?1 OFFSET ?2",
+                &[Value::from(count), Value::from(skip)],
+            )
+            .await?;
+
+        let mut records = Vec::new();
+
+        for row in rows {
+            if let Ok(packed) = Tree::from_attributes(&row) {
+                records.push(packed);
+            }
+        }
+
+        Ok(records)
     }
 
     // Update the street address of a tree based on its coordinates.
@@ -687,20 +702,18 @@ impl TreeService {
     }
 }
 
-impl Locatable for TreeService {
-    fn create(locator: &Locator) -> Result<Self> {
-        let config = locator.get::<Config>()?;
-
+impl Injectable for TreeService {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
         Ok(Self {
-            db: locator.get::<Database>()?,
-            trees: locator.get::<TreeRepository>()?,
-            users: locator.get::<UserRepository>()?,
-            queue: locator.get::<Queue>()?,
-            files: locator.get::<TreeImageRepository>()?,
-            props: locator.get::<PropRepository>()?,
-            comments: locator.get::<CommentService>()?,
-            nominatim: locator.get::<NominatimClient>()?,
-            bot_user_id: config.bot_user_id,
+            db: ctx.database(),
+            comments: Arc::new(ctx.build::<CommentService>()?),
+            trees: Arc::new(ctx.build::<TreeRepository>()?),
+            users: Arc::new(ctx.build::<UserRepository>()?),
+            queue: ctx.queue(),
+            files: Arc::new(ctx.build::<TreeImageRepository>()?),
+            props: Arc::new(ctx.build::<PropRepository>()?),
+            nominatim: Arc::new(ctx.build::<NominatimClient>()?),
+            bot_user_id: ctx.config().bot_user_id,
         })
     }
 }
@@ -708,23 +721,32 @@ impl Locatable for TreeService {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::services::AppState;
+    use crate::services::ContextExt;
     use std::collections::HashMap;
 
-    fn setup() -> Arc<TreeService> {
+    async fn setup() -> Arc<TreeService> {
         if env_logger::try_init().is_err() {
             debug!("env_logger already initialized.");
         };
 
-        let locator = Locator::new();
+        let state = AppState::new()
+            .await
+            .expect("Error creating app state.")
+            .session()
+            .await
+            .expect("Error creating session state.");
 
-        locator
-            .get::<TreeService>()
-            .expect("Error creating TreeService")
+        Arc::new(
+            state
+                .build::<TreeService>()
+                .expect("Error creating TreeService"),
+        )
     }
 
     #[tokio::test]
     async fn test_get_trees() {
-        let trees = setup();
+        let trees = setup().await;
 
         let request = GetTreesRequest {
             n: 0.0,
@@ -804,5 +826,36 @@ mod tests {
         assert_eq!(tree_ids2.len(), 2);
         assert!(tree_ids2.contains(&4));
         assert!(tree_ids2.contains(&5));
+    }
+
+    #[tokio::test]
+    async fn test_get_mismatching_species() {
+        let service = setup().await;
+
+        service
+            .db
+            .execute_sql("DELETE FROM trees", &[])
+            .await
+            .expect("Error clearing trees.");
+
+        service
+            .db
+            .execute_sql("DELETE FROM species", &[])
+            .await
+            .expect("Error clearing species.");
+
+        service
+            .db
+            .execute_sql("INSERT INTO trees (id, lat, lon, species, state, added_at, updated_at, updated_by, added_by) VALUES (1, 40.1, 44.1, 'Fake Species', 'healthy', 0, 0, 1, 1)", &[])
+            .await
+            .expect("Error adding tree.");
+
+        let res = service
+            .get_mismatching_species(10, 0)
+            .await
+            .expect("Error getting mismatch.");
+
+        assert_eq!(res.len(), 1);
+        assert_eq!(res[0].species, "Fake Species");
     }
 }

@@ -1,8 +1,6 @@
 use super::schemas::{OsmChangeset, OsmElement};
 use crate::domain::tree::Tree;
-use crate::infra::config::Config;
-use crate::infra::secrets::Secrets;
-use crate::services::*;
+use crate::services::{Context, Injectable};
 use crate::types::*;
 use crate::utils::*;
 use crate::utils::{get_app_name, get_app_version};
@@ -370,14 +368,10 @@ impl OsmClient {
     }
 }
 
-impl Locatable for OsmClient {
-    fn create(locator: &Locator) -> Result<Self> {
-        let config = locator.get::<Config>()?;
-        let secrets = locator.get::<Secrets>()?;
-
-        let osm_client_secret = secrets.osm_client_secret.clone();
-
-        let osm_token = secrets.osm_client_secret.clone();
+impl Injectable for OsmClient {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        let config = ctx.config();
+        let secrets = ctx.secrets();
 
         Ok(Self {
             client: reqwest::Client::new(),
@@ -385,8 +379,8 @@ impl Locatable for OsmClient {
             redirect_uri: config.osm_redirect_uri.clone(),
             hashtag: config.osm_hashtag.clone(),
             activity: config.osm_activity.clone(),
-            osm_client_secret,
-            osm_token,
+            osm_client_secret: secrets.osm_client_secret.clone(),
+            osm_token: secrets.osm_token.clone(),
         })
     }
 }

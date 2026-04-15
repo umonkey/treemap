@@ -1,7 +1,7 @@
 use super::models::Like;
 use super::repository::LikeRepository;
 use crate::domain::tree::TreeRepository;
-use crate::services::{Locatable, Locator};
+use crate::services::{Context, Injectable};
 use crate::types::Result;
 use crate::utils::get_timestamp;
 use log::debug;
@@ -68,11 +68,11 @@ impl LikeService {
     }
 }
 
-impl Locatable for LikeService {
-    fn create(locator: &Locator) -> Result<Self> {
+impl Injectable for LikeService {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
         Ok(Self {
-            likes: locator.get::<LikeRepository>()?,
-            trees: locator.get::<TreeRepository>()?,
+            likes: Arc::new(ctx.build::<LikeRepository>()?),
+            trees: Arc::new(ctx.build::<TreeRepository>()?),
         })
     }
 }

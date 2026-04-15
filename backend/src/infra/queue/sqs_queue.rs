@@ -5,7 +5,6 @@ use super::base::BaseQueueInterface;
 use super::types::QueueMessage;
 use crate::infra::config::Config;
 use crate::infra::secrets::Secrets;
-use crate::services::{Locatable, Locator};
 use crate::types::{Error, Result};
 use crate::utils::get_timestamp;
 use async_trait::async_trait;
@@ -135,11 +134,8 @@ impl BaseQueueInterface for SqsQueue {
     }
 }
 
-impl Locatable for SqsQueue {
-    fn create(locator: &Locator) -> Result<Self> {
-        let config = locator.get::<Config>()?;
-        let secrets = locator.get::<Secrets>()?;
-
+impl SqsQueue {
+    pub fn new(config: &Config, secrets: &Secrets) -> Result<Self> {
         let sqs_url = config
             .sqs_url
             .clone()

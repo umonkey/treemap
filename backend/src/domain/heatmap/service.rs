@@ -1,7 +1,7 @@
 //! Return the heatmap data for the updates.
 
 use super::schemas::*;
-use crate::infra::database::Database;
+use crate::infra::database::{Database, Value};
 use crate::services::*;
 use crate::types::*;
 use crate::utils::get_timestamp;
@@ -16,14 +16,50 @@ pub struct HeatmapService {
 impl HeatmapService {
     pub async fn get_total(&self) -> Result<Vec<HeatmapItem>> {
         let (after, before) = Self::get_dates();
-        let res = self.db.get_heatmap(after, before).await?;
-        Ok(Self::format_data(after, before, res))
+
+        let rows = self
+            .db
+            .fetch_sql(
+                "SELECT DATE(added_at, 'unixepoch') AS date, COUNT(distinct tree_id) AS count FROM trees_props WHERE added_at >= ?1 AND added_at < ?2 GROUP BY date ORDER BY date",
+                &[Value::from(after), Value::from(before)],
+            )
+            .await?;
+
+        let mut data = Vec::new();
+
+        for row in rows {
+            let date = row.require_string("date")?;
+            let count = row.require_u64("count")?;
+            data.push((date, count));
+        }
+
+        Ok(Self::format_data(after, before, data))
     }
 
     pub async fn get_user(&self, user_id: u64) -> Result<Vec<HeatmapItem>> {
         let (after, before) = Self::get_dates();
-        let res = self.db.get_user_heatmap(after, before, user_id).await?;
-        Ok(Self::format_data(after, before, res))
+
+        let rows = self
+            .db
+            .fetch_sql(
+                "SELECT DATE(added_at, 'unixepoch') AS date, COUNT(distinct tree_id) AS count FROM trees_props WHERE added_at >= ?1 AND added_at < ?2 AND added_by = ?3 GROUP BY date ORDER BY date",
+                &[
+                    Value::from(after),
+                    Value::from(before),
+                    Value::from(user_id),
+                ],
+            )
+            .await?;
+
+        let mut data = Vec::new();
+
+        for row in rows {
+            let date = row.require_string("date")?;
+            let count = row.require_u64("count")?;
+            data.push((date, count));
+        }
+
+        Ok(Self::format_data(after, before, data))
     }
 
     fn format_data(after: u64, before: u64, data: Vec<(String, u64)>) -> Vec<HeatmapItem> {
@@ -87,9 +123,75 @@ impl HeatmapService {
     }
 }
 
-impl Locatable for HeatmapService {
-    fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<Database>()?;
-        Ok(Self { db })
+impl Injectable for HeatmapService {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        Ok(Self { db: ctx.database() })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::services::AppState;
+    use crate::services::ContextExt;
+    use log::debug;
+
+    async fn setup() -> HeatmapService {
+        if env_logger::try_init().is_err() {
+            debug!("env_logger already initialized.");
+        };
+
+        let state = AppState::new()
+            .await
+            .expect("Error creating app state.")
+            .session()
+            .await
+            .expect("Error creating session state.");
+
+        state
+            .build::<HeatmapService>()
+            .expect("Error creating HeatmapService")
+    }
+
+    #[tokio::test]
+    async fn test_get_total() {
+        let service = setup().await;
+
+        service
+            .db
+            .execute_batch(include_str!(
+                "../../infra/database/fixtures/test_heatmap.sql"
+            ))
+            .await
+            .expect("Error adding heatmap input.");
+
+        let res = service.get_total().await.expect("Error getting heatmap.");
+
+        let day1 = res.iter().find(|i| i.date == "2025-08-04").unwrap();
+        assert_eq!(day1.value, 1);
+
+        let day2 = res.iter().find(|i| i.date == "2025-08-05").unwrap();
+        assert_eq!(day2.value, 2);
+    }
+
+    #[tokio::test]
+    async fn test_get_user() {
+        let service = setup().await;
+
+        service
+            .db
+            .execute_batch(include_str!(
+                "../../infra/database/fixtures/test_heatmap.sql"
+            ))
+            .await
+            .expect("Error adding heatmap input.");
+
+        let res = service.get_user(1).await.expect("Error getting heatmap.");
+
+        let day1 = res.iter().find(|i| i.date == "2025-08-04").unwrap();
+        assert_eq!(day1.value, 1);
+
+        let day2 = res.iter().find(|i| i.date == "2025-08-05").unwrap();
+        assert_eq!(day2.value, 1);
     }
 }

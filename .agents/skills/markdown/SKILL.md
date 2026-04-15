@@ -14,4 +14,3 @@ When creating or modifying markdown documents, you MUST adhere strictly to the f
    - Good: "- Foo: bar"
 4. List spacing: always leave a blank line above and below a list, except for nested lists.
 5. Post-processing: run `make format-docs` after any changes to files in the `docs/` folder.
-

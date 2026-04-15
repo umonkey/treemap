@@ -4,11 +4,8 @@
 
 use super::base::DatabaseInterface;
 use super::queries::*;
-use crate::domain::species::Species;
-use crate::domain::tree::Tree;
 use crate::infra::database::{Attributes, Value};
 use crate::types::*;
-use crate::utils::get_timestamp;
 use crate::utils::get_unique_id;
 use async_trait::async_trait;
 use libsql::params_from_iter;
@@ -16,9 +13,7 @@ use libsql::{Builder, Database, Transaction};
 use log::{debug, error, info};
 use std::sync::Arc;
 use std::time::Instant;
-use tokio::sync::Mutex;
-
-const SUGGEST_WINDOW: u64 = 3600 * 24; // 24 hours
+use tokio::sync::{Mutex, MutexGuard};
 
 // This is where temporary database files are created to simulate
 // the in-memory database, which doesn't really work as we need with libsql.
@@ -39,12 +34,44 @@ impl SqliteTransaction {
         }
     }
 
-    async fn fetch(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>> {
+    async fn lock(&self) -> Result<MutexGuard<'_, Option<Transaction>>> {
+        let tx_lock = self.tx.lock().await;
+
+        if tx_lock.is_none() {
+            return Err(Error::DatabaseQuery(
+                "Transaction already closed".to_string(),
+            ));
+        }
+
+        Ok(tx_lock)
+    }
+
+    async fn take_tx(&self) -> Result<Transaction> {
+        self.tx
+            .lock()
+            .await
+            .take()
+            .ok_or_else(|| Error::DatabaseQuery("Transaction already closed".to_string()))
+    }
+
+    async fn execute_sql_internal(&self, query: &str, params: &[Value]) -> Result<u64> {
+        let mut tx_lock = self.lock().await?;
+        let tx = tx_lock.as_mut().expect("Transaction is open");
+
+        let rows = tx
+            .execute(query, params_from_iter(params.to_vec()))
+            .await
+            .inspect_err(|e| {
+                error!("Error executing SQL statement: {e}; query={query}");
+            })?;
+
+        Ok(rows)
+    }
+
+    async fn fetch_sql(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>> {
         let start = Instant::now();
-        let mut tx_lock = self.tx.lock().await;
-        let tx = tx_lock
-            .as_mut()
-            .ok_or_else(|| Error::DatabaseQuery("Transaction already closed".to_string()))?;
+        let mut tx_lock = self.lock().await?;
+        let tx = tx_lock.as_mut().expect("Transaction is open");
 
         let mut stmt = tx.prepare(query).await.inspect_err(|e| {
             error!("Error preparing SQL statement: {e}");
@@ -65,7 +92,7 @@ impl SqliteTransaction {
 
         let duration = start.elapsed();
 
-        info!(
+        debug!(
             "Read {} rows in {}ms for query: {query}",
             res.len(),
             duration.as_millis()
@@ -82,8 +109,9 @@ impl SqliteDatabase {
             .build()
             .await
             .map_err(|e| {
-                error!("Error connecting to a Turso database at {url}: {e}");
-                Error::DatabaseConnect
+                Error::DatabaseConnect(format!(
+                    "Error connecting to a Turso database at {url}: {e}"
+                ))
             })?;
 
         info!("Connected to a Turso database at {url}");
@@ -96,8 +124,7 @@ impl SqliteDatabase {
     // Creates a client for a local database.
     pub async fn from_local(path: &str) -> Result<Self> {
         let pool = Builder::new_local(path).build().await.map_err(|e| {
-            error!("Error opening an SQLite database in {path}: {e}");
-            Error::DatabaseConnect
+            Error::DatabaseConnect(format!("Error opening an SQLite database in {path}: {e}"))
         })?;
 
         info!("Using an SQLite database in {path}");
@@ -115,8 +142,7 @@ impl SqliteDatabase {
         let path = Self::get_temporary_path();
 
         let pool = Builder::new_local(&path).build().await.map_err(|e| {
-            error!("Error opening an in-memory SQLite database: {e}");
-            Error::DatabaseConnect
+            Error::DatabaseConnect(format!("Error opening an in-memory SQLite database: {e}"))
         })?;
 
         info!("Created a temporary SQLite database in {path}.");
@@ -130,9 +156,8 @@ impl SqliteDatabase {
         })
     }
 
-    #[allow(unused)]
-    pub async fn execute(&self, script: String) -> Result<()> {
-        Self::execute_pool(&self.pool, script).await
+    pub async fn execute_batch(&self, script: &str) -> Result<()> {
+        Self::execute_pool(&self.pool, script.to_string()).await
     }
 
     async fn execute_pool(pool: &Database, script: String) -> Result<()> {
@@ -191,10 +216,7 @@ impl DatabaseInterface for SqliteTransaction {
     }
 
     async fn commit(&self) -> Result<()> {
-        let mut tx_lock = self.tx.lock().await;
-        let tx = tx_lock
-            .take()
-            .ok_or_else(|| Error::DatabaseQuery("Transaction already closed".to_string()))?;
+        let tx = self.take_tx().await?;
         tx.commit()
             .await
             .map_err(|e| Error::DatabaseQuery(e.to_string()))?;
@@ -202,30 +224,29 @@ impl DatabaseInterface for SqliteTransaction {
     }
 
     async fn rollback(&self) -> Result<()> {
-        let mut tx_lock = self.tx.lock().await;
-        let tx = tx_lock
-            .take()
-            .ok_or_else(|| Error::DatabaseQuery("Transaction already closed".to_string()))?;
+        let tx = self.take_tx().await?;
         tx.rollback()
             .await
             .map_err(|e| Error::DatabaseQuery(e.to_string()))?;
         Ok(())
     }
 
-    async fn sql(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>> {
-        self.fetch(query, params).await
+    async fn fetch_sql(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>> {
+        SqliteTransaction::fetch_sql(self, query, params).await
     }
 
-    async fn execute_sql(&self, query: &str, params: &[Value]) -> Result<()> {
-        let mut tx_lock = self.tx.lock().await;
-        let tx = tx_lock
-            .as_mut()
-            .ok_or_else(|| Error::DatabaseQuery("Transaction already closed".to_string()))?;
-        tx.execute(query, params_from_iter(params.to_vec()))
-            .await
-            .inspect_err(|e| {
-                error!("Error executing SQL statement: {e}");
-            })?;
+    async fn execute_sql(&self, query: &str, params: &[Value]) -> Result<u64> {
+        self.execute_sql_internal(query, params).await
+    }
+
+    async fn execute_batch(&self, query: &str) -> Result<()> {
+        let mut tx_lock = self.lock().await?;
+        let tx = tx_lock.as_mut().expect("Transaction is open");
+
+        tx.execute_batch(query).await.inspect_err(|e| {
+            error!("Error executing SQL batch: {e}; query={query}");
+        })?;
+
         Ok(())
     }
 
@@ -238,241 +259,49 @@ impl DatabaseInterface for SqliteTransaction {
     async fn get_records(&self, query: SelectQuery) -> Result<Vec<Attributes>> {
         let (sql, params) = query.build();
 
-        self.sql(sql.as_str(), params.as_slice())
+        self.fetch_sql(sql.as_str(), params.as_slice())
             .await
-            .inspect_err(|e| {
-                debug!("SQL query failed: {e}; SQL={sql}");
-            })
+            .map_err(|e| Error::DatabaseQuery(format!("SQL query failed: {e}; SQL={sql}")))
     }
 
     async fn add_record(&self, query: InsertQuery) -> Result<()> {
         let (sql, params) = query.build();
-        self.execute_sql(sql.as_str(), params.as_slice()).await
+        self.execute_sql(sql.as_str(), params.as_slice()).await?;
+        Ok(())
     }
 
     async fn replace(&self, query: ReplaceQuery) -> Result<()> {
         let (sql, params) = query.build();
-        self.execute_sql(sql.as_str(), params.as_slice()).await
+        self.execute_sql(sql.as_str(), params.as_slice()).await?;
+        Ok(())
     }
 
     async fn update(&self, query: UpdateQuery) -> Result<u64> {
-        let mut tx_lock = self.tx.lock().await;
-        let tx = tx_lock
-            .as_mut()
-            .ok_or_else(|| Error::DatabaseQuery("Transaction already closed".to_string()))?;
-
         let (sql, params) = query.build();
-
-        let rows = tx
-            .execute(sql.as_str(), params_from_iter(params))
-            .await
-            .inspect_err(|e| {
-                error!("Error updating database: {e}");
-            })?;
-
-        Ok(rows)
+        self.execute_sql(sql.as_str(), params.as_slice()).await
     }
 
     async fn delete(&self, query: DeleteQuery) -> Result<u64> {
-        let mut tx_lock = self.tx.lock().await;
-        let tx = tx_lock
-            .as_mut()
-            .ok_or_else(|| Error::DatabaseQuery("Transaction already closed".to_string()))?;
-
         let (sql, params) = query.build();
-
-        let rows = tx
-            .execute(sql.as_str(), params_from_iter(params))
-            .await
-            .inspect_err(|e| {
-                error!("Error deleting record: {e}");
-            })?;
-
-        Ok(rows)
+        self.execute_sql(sql.as_str(), params.as_slice()).await
     }
 
     async fn increment(&self, query: IncrementQuery) -> Result<()> {
         let (sql, params) = query.build();
-        self.execute_sql(sql.as_str(), params.as_slice()).await
+        self.execute_sql(sql.as_str(), params.as_slice()).await?;
+        Ok(())
     }
 
     async fn count(&self, query: CountQuery) -> Result<u64> {
         let (sql, params) = query.build();
 
-        let rows = self.fetch(&sql, &params).await?;
+        let rows = self.fetch_sql(&sql, &params).await?;
 
         if let Some(value) = rows.first() {
             return value.require_u64("count");
         }
 
         Ok(0)
-    }
-
-    async fn find_species(&self, query: &str) -> Result<Vec<Species>> {
-        let pattern = format!("%{}%", query.trim().to_lowercase());
-
-        let rows = self.fetch(
-            "SELECT name, local, keywords, wikidata_id FROM species WHERE name LIKE ?1 OR local LIKE ?1 OR keywords LIKE ?1 ORDER BY name LIMIT 10",
-            &[Value::from(pattern)],
-        ).await?;
-
-        let mut species: Vec<Species> = Vec::new();
-
-        for row in rows {
-            species.push(Species {
-                name: row.require_string("name")?,
-                local: row.require_string("local")?,
-                keywords: row.require_string("keywords")?,
-                wikidata_id: row.require_string("wikidata_id")?,
-            });
-        }
-
-        Ok(species)
-    }
-
-    async fn find_streets(&self, query: &str) -> Result<Vec<String>> {
-        let pattern = format!("%{}%", query.trim().to_lowercase());
-
-        let rows = self.fetch(
-            "SELECT DISTINCT address FROM trees WHERE state <> 'gone' AND address LIKE ?1 ORDER BY address LIMIT 10",
-            &[Value::from(pattern)],
-        ).await?;
-
-        let mut streets: Vec<String> = Vec::new();
-
-        for row in rows {
-            streets.push(row.require_string("address")?);
-        }
-
-        Ok(streets)
-    }
-
-    async fn find_recent_species(&self, user_id: u64) -> Result<Vec<String>> {
-        let since = get_timestamp() - SUGGEST_WINDOW;
-
-        let rows = self.fetch(
-            "SELECT species, COUNT(1) AS use_count FROM trees WHERE updated_by = ? AND updated_at >= ? AND LOWER(species) <> 'unknown' GROUP BY species ORDER BY use_count DESC LIMIT 10",
-            &[Value::from(user_id), Value::from(since)],
-        ).await?;
-
-        let mut values: Vec<String> = Vec::new();
-
-        for row in rows {
-            values.push(row.require_string("species")?);
-        }
-
-        Ok(values)
-    }
-
-    async fn get_species_stats(&self) -> Result<Vec<(String, u64)>> {
-        let rows = self.fetch(
-            "SELECT species, COUNT(1) AS cnt FROM trees WHERE state <> 'gone' AND state <> 'stump' GROUP BY TRIM(LOWER(species)) ORDER BY cnt DESC, LOWER(species)",
-            &[],
-        ).await?;
-
-        let mut res = Vec::new();
-
-        for row in rows {
-            let species = row.require_string("species")?;
-            let count = row.require_u64("cnt")?;
-            res.push((species, count));
-        }
-
-        Ok(res)
-    }
-
-    async fn get_species_mismatch(&self, count: u64, skip: u64) -> Result<Vec<Tree>> {
-        let rows = self.fetch(
-            "SELECT id, osm_id, lat, lon, species, notes, height, circumference, diameter, state, added_at, updated_at, added_by, thumbnail_id, year, address FROM trees WHERE state <> 'gone' AND species <> 'Unknown species' AND species <> 'Unknown' AND species NOT IN (SELECT name FROM species) LIMIT ? OFFSET ?",
-            &[Value::from(count), Value::from(skip)],
-        ).await?;
-
-        let mut records = Vec::new();
-
-        for row in rows {
-            if let Ok(packed) = Tree::from_attributes(&row) {
-                records.push(packed);
-            }
-        }
-
-        Ok(records)
-    }
-
-    async fn get_top_streets(&self, count: u64) -> Result<Vec<(String, u64)>> {
-        let rows = self.fetch(
-            "SELECT address, COUNT(1) AS cnt FROM trees WHERE state <> 'gone' AND address IS NOT NULL GROUP BY LOWER(address) ORDER BY cnt DESC, LOWER(address) LIMIT ?",
-            &[Value::from(count)],
-        ).await?;
-
-        let mut res = Vec::new();
-
-        for row in rows {
-            let address = row.require_string("address")?;
-            let count = row.require_u64("cnt")?;
-            res.push((address, count));
-        }
-
-        Ok(res)
-    }
-
-    async fn get_state_stats(&self) -> Result<Vec<(String, u64)>> {
-        let rows = self.fetch(
-            "SELECT state, COUNT(1) AS cnt FROM trees WHERE state IS NOT NULL GROUP BY state ORDER BY cnt DESC",
-            &[],
-        ).await?;
-
-        let mut res = Vec::new();
-
-        for row in rows {
-            let state = row.require_string("state")?;
-            let count = row.require_u64("cnt")?;
-            res.push((state, count));
-        }
-
-        Ok(res)
-    }
-
-    async fn get_heatmap(&self, after: u64, before: u64) -> Result<Vec<(String, u64)>> {
-        let rows = self.fetch(
-            "SELECT DATE(added_at, 'unixepoch') AS date, COUNT(distinct tree_id) AS count FROM trees_props WHERE added_at >= ? AND added_at < ? GROUP BY date ORDER BY date",
-            &[Value::from(after), Value::from(before)],
-        ).await?;
-
-        let mut heatmap = Vec::new();
-
-        for row in rows {
-            let date = row.require_string("date")?;
-            let count = row.require_u64("count")?;
-            heatmap.push((date, count));
-        }
-
-        Ok(heatmap)
-    }
-
-    async fn get_user_heatmap(
-        &self,
-        after: u64,
-        before: u64,
-        user_id: u64,
-    ) -> Result<Vec<(String, u64)>> {
-        let rows = self.fetch(
-            "SELECT DATE(added_at, 'unixepoch') AS date, COUNT(distinct tree_id) AS count FROM trees_props WHERE added_at >= ? AND added_at < ? AND added_by = ? GROUP BY date ORDER BY date",
-            &[
-                Value::from(after),
-                Value::from(before),
-                Value::from(user_id),
-            ],
-        ).await?;
-
-        let mut heatmap = Vec::new();
-
-        for row in rows {
-            let date = row.require_string("date")?;
-            let count = row.require_u64("count")?;
-            heatmap.push((date, count));
-        }
-
-        Ok(heatmap)
     }
 }
 
@@ -488,21 +317,26 @@ impl DatabaseInterface for SqliteDatabase {
     }
 
     async fn commit(&self) -> Result<()> {
-        Ok(())
+        Err(Error::DatabaseQuery("No transaction started".to_string()))
     }
 
     async fn rollback(&self) -> Result<()> {
-        Ok(())
+        Err(Error::DatabaseQuery("No transaction started".to_string()))
     }
 
-    async fn sql(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>> {
-        self.transact().await?.sql(query, params).await
+    async fn fetch_sql(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>> {
+        self.transact().await?.fetch_sql(query, params).await
     }
 
-    async fn execute_sql(&self, query: &str, params: &[Value]) -> Result<()> {
+    async fn execute_sql(&self, query: &str, params: &[Value]) -> Result<u64> {
         let tx = self.transact().await?;
-        tx.execute_sql(query, params).await?;
-        tx.commit().await
+        let res = tx.execute_sql(query, params).await?;
+        tx.commit().await?;
+        Ok(res)
+    }
+
+    async fn execute_batch(&self, query: &str) -> Result<()> {
+        SqliteDatabase::execute_batch(self, query).await
     }
 
     async fn get_record(&self, query: SelectQuery) -> Result<Option<Attributes>> {
@@ -548,53 +382,6 @@ impl DatabaseInterface for SqliteDatabase {
     async fn count(&self, query: CountQuery) -> Result<u64> {
         self.transact().await?.count(query).await
     }
-
-    async fn find_species(&self, query: &str) -> Result<Vec<Species>> {
-        self.transact().await?.find_species(query).await
-    }
-
-    async fn find_streets(&self, query: &str) -> Result<Vec<String>> {
-        self.transact().await?.find_streets(query).await
-    }
-
-    async fn find_recent_species(&self, user_id: u64) -> Result<Vec<String>> {
-        self.transact().await?.find_recent_species(user_id).await
-    }
-
-    async fn get_species_stats(&self) -> Result<Vec<(String, u64)>> {
-        self.transact().await?.get_species_stats().await
-    }
-
-    async fn get_species_mismatch(&self, count: u64, skip: u64) -> Result<Vec<Tree>> {
-        self.transact()
-            .await?
-            .get_species_mismatch(count, skip)
-            .await
-    }
-
-    async fn get_top_streets(&self, count: u64) -> Result<Vec<(String, u64)>> {
-        self.transact().await?.get_top_streets(count).await
-    }
-
-    async fn get_state_stats(&self) -> Result<Vec<(String, u64)>> {
-        self.transact().await?.get_state_stats().await
-    }
-
-    async fn get_heatmap(&self, after: u64, before: u64) -> Result<Vec<(String, u64)>> {
-        self.transact().await?.get_heatmap(after, before).await
-    }
-
-    async fn get_user_heatmap(
-        &self,
-        after: u64,
-        before: u64,
-        user_id: u64,
-    ) -> Result<Vec<(String, u64)>> {
-        self.transact()
-            .await?
-            .get_user_heatmap(after, before, user_id)
-            .await
-    }
 }
 
 impl Clone for SqliteDatabase {
@@ -602,101 +389,5 @@ impl Clone for SqliteDatabase {
         Self {
             pool: self.pool.clone(),
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use log::debug;
-
-    async fn setup() -> SqliteDatabase {
-        if env_logger::try_init().is_err() {
-            debug!("env_logger already initialized.");
-        };
-
-        let db = SqliteDatabase::from_memory()
-            .await
-            .expect("Error creating database.");
-
-        db.execute(include_str!("./fixtures/init.sql").to_string())
-            .await
-            .expect("Error installing fixtures.");
-
-        info!("SQLite database initialized.");
-
-        db
-    }
-
-    #[tokio::test]
-    async fn test_find_species() {
-        let db = setup().await;
-
-        db.execute(include_str!("./fixtures/species.sql").to_string())
-            .await
-            .expect("Error adding species.");
-
-        let species = db
-            .find_species(" oak ")
-            .await
-            .expect("Error finding species.");
-
-        assert_eq!(species.len(), 1, "Could not find species for oak.");
-        assert_eq!("Quercus robur", species[0].name);
-    }
-
-    #[tokio::test]
-    async fn test_species_stats() {
-        let db = setup().await;
-
-        db.execute(include_str!("./fixtures/test_species_stats.sql").to_string())
-            .await
-            .expect("Error adding species.");
-
-        let res = db.get_species_stats().await.expect("Error getting report.");
-
-        assert_eq!(res.len(), 1, "Could not find species for oak.");
-        assert_eq!("Quercus robur", res[0].0);
-        assert_eq!(2, res[0].1);
-    }
-
-    #[tokio::test]
-    async fn test_heatmap() {
-        let db = setup().await;
-
-        db.execute(include_str!("./fixtures/test_heatmap.sql").to_string())
-            .await
-            .expect("Error adding heatmap input.");
-
-        let res = db
-            .get_heatmap(1754298465, 1754384866)
-            .await
-            .expect("Error getting heatmap.");
-
-        assert_eq!(res.len(), 2, "Wrong number of heatmap entries.");
-        assert_eq!("2025-08-04", res[0].0);
-        assert_eq!(1, res[0].1);
-        assert_eq!("2025-08-05", res[1].0);
-        assert_eq!(2, res[1].1);
-    }
-
-    #[tokio::test]
-    async fn test_user_heatmap() {
-        let db = setup().await;
-
-        db.execute(include_str!("./fixtures/test_heatmap.sql").to_string())
-            .await
-            .expect("Error adding heatmap input.");
-
-        let res = db
-            .get_user_heatmap(1754298465, 1754384866, 1)
-            .await
-            .expect("Error getting heatmap.");
-
-        assert_eq!(res.len(), 2, "Wrong number of heatmap entries.");
-        assert_eq!("2025-08-04", res[0].0);
-        assert_eq!(1, res[0].1);
-        assert_eq!("2025-08-05", res[1].0);
-        assert_eq!(1, res[1].1);
     }
 }

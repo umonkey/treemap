@@ -1,11 +1,13 @@
 use crate::domain::tree::TreeService;
-use crate::services::Locator;
+use crate::services::{AppState, ContextExt};
 
 pub async fn update_tree_addresses_command() {
-    let locator = Locator::new();
+    let state = AppState::new()
+        .await
+        .expect("Error initializing app state.");
 
-    let trees = locator
-        .get::<TreeService>()
+    let trees = state
+        .build::<TreeService>()
         .expect("Error creating handler.");
 
     trees

@@ -8,11 +8,8 @@ use super::base::DatabaseInterface;
 use super::queries::*;
 use super::sqlite_database::SqliteDatabase;
 use super::value::Value;
-use crate::domain::species::Species;
-use crate::domain::tree::Tree;
 use crate::infra::config::Config;
 use crate::infra::secrets::Secrets;
-use crate::services::*;
 use crate::types::{Error, Result};
 use log::{debug, error};
 use std::sync::Arc;
@@ -22,13 +19,11 @@ pub struct Database {
 }
 
 impl Database {
-    #[allow(dead_code)]
     pub async fn transact(&self) -> Result<Self> {
         let db = self.db.transact().await?;
         Ok(Self { db: Arc::from(db) })
     }
 
-    #[allow(dead_code)]
     pub async fn commit(&self) -> Result<()> {
         self.db.commit().await
     }
@@ -70,63 +65,23 @@ impl Database {
         self.db.count(query).await
     }
 
-    pub async fn sql(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>> {
-        self.db.sql(query, params).await
+    pub async fn fetch_sql(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>> {
+        self.db.fetch_sql(query, params).await
     }
 
-    pub async fn execute_sql(&self, query: &str, params: &[Value]) -> Result<()> {
+    pub async fn execute_sql(&self, query: &str, params: &[Value]) -> Result<u64> {
         self.db.execute_sql(query, params).await
     }
 
-    pub async fn find_species(&self, query: &str) -> Result<Vec<Species>> {
-        self.db.find_species(query).await
-    }
-
-    pub async fn find_streets(&self, query: &str) -> Result<Vec<String>> {
-        self.db.find_streets(query).await
-    }
-
-    pub async fn find_recent_species(&self, user_id: u64) -> Result<Vec<String>> {
-        self.db.find_recent_species(user_id).await
-    }
-
-    pub async fn get_species_stats(&self) -> Result<Vec<(String, u64)>> {
-        self.db.get_species_stats().await
-    }
-
-    pub async fn get_top_streets(&self, count: u64) -> Result<Vec<(String, u64)>> {
-        self.db.get_top_streets(count).await
-    }
-
-    pub async fn get_state_stats(&self) -> Result<Vec<(String, u64)>> {
-        self.db.get_state_stats().await
-    }
-
-    pub async fn get_species_mismatch(&self, count: u64, skip: u64) -> Result<Vec<Tree>> {
-        self.db.get_species_mismatch(count, skip).await
-    }
-
-    pub async fn get_heatmap(&self, after: u64, before: u64) -> Result<Vec<(String, u64)>> {
-        self.db.get_heatmap(after, before).await
-    }
-
-    pub async fn get_user_heatmap(
-        &self,
-        after: u64,
-        before: u64,
-        user_id: u64,
-    ) -> Result<Vec<(String, u64)>> {
-        self.db.get_user_heatmap(after, before, user_id).await
+    #[allow(dead_code)]
+    pub async fn execute_batch(&self, query: &str) -> Result<()> {
+        self.db.execute_batch(query).await
     }
 }
 
-impl Locatable for Database {
-    fn create(locator: &Locator) -> Result<Self> {
-        let config = locator.get::<Config>()?;
-
+impl Database {
+    pub async fn new(config: &Config, secrets: &Secrets) -> Result<Self> {
         if config.database == "turso" {
-            let secrets = locator.get::<Secrets>()?;
-
             debug!("Setting up a Turso database.");
 
             let url: String = config
@@ -139,16 +94,16 @@ impl Locatable for Database {
                 .clone()
                 .ok_or(Error::Config("turso_token not set".to_string()))?;
 
-            let db = futures::executor::block_on(SqliteDatabase::from_remote(&url, &token))?;
+            let db = SqliteDatabase::from_remote(&url, &token).await?;
 
             Ok(Self { db: Arc::new(db) })
         } else if config.database == "memory" {
-            let db = futures::executor::block_on(SqliteDatabase::from_memory())?;
+            let db = SqliteDatabase::from_memory().await?;
 
             Ok(Self { db: Arc::new(db) })
         } else if config.database == "sqlite" {
             let path = &config.sqlite_path;
-            let db = futures::executor::block_on(SqliteDatabase::from_local(path))?;
+            let db = SqliteDatabase::from_local(path).await?;
 
             Ok(Self { db: Arc::new(db) })
         } else {

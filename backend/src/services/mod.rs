@@ -1,7 +1,6 @@
 mod app;
 pub mod comment_loader;
 pub mod like_loader;
-mod locator;
 pub mod meta;
 mod osm_reader;
 mod osm_writer;
@@ -11,7 +10,6 @@ mod queue_encoder;
 mod thumbnailer;
 pub mod tree_loader;
 pub use app::*;
-pub use locator::*;
 pub use osm_reader::*;
 pub use osm_writer::*;
 pub use thumbnailer::*;

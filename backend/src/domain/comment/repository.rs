@@ -41,17 +41,12 @@ impl CommentRepository {
     async fn query_multiple(&self, query: SelectQuery) -> Result<Vec<Comment>> {
         let records = self.db.get_records(query).await?;
 
-        records
-            .iter()
-            .map(|props| Comment::from_attributes(props).map_err(|_| Error::DatabaseStructure))
-            .collect()
+        records.iter().map(Comment::from_attributes).collect()
     }
 }
 
-impl Locatable for CommentRepository {
-    fn create(locator: &Locator) -> Result<Self> {
-        Ok(Self {
-            db: locator.get::<Database>()?,
-        })
+impl Injectable for CommentRepository {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        Ok(Self { db: ctx.database() })
     }
 }

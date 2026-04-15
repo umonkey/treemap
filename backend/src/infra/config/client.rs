@@ -3,7 +3,6 @@
 //! The default config file name is `config.toml`, but it can be overridden using the
 //! `TREEMAP_CONFIG` environment variable, which is normally only used by unit tests.
 
-use crate::services::{Locatable, Locator};
 use crate::types::{Error, Result};
 use log::{error, warn};
 use serde::Deserialize;
@@ -131,12 +130,6 @@ impl Config {
         })?;
 
         Ok(data)
-    }
-}
-
-impl Locatable for Config {
-    fn create(_locator: &Locator) -> Result<Self> {
-        Self::new()
     }
 }
 

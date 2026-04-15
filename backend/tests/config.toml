@@ -4,3 +4,6 @@ file_folder = "var/test-files"
 
 # Use the in-memory database.
 database = "memory"
+
+# Use local file storage.
+file_storage = "local"

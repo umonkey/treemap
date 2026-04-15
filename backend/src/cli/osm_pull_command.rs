@@ -1,10 +1,14 @@
 use crate::services::*;
 
 pub async fn osm_pull_command() {
-    let locator = Locator::new();
+    let state = AppState::new()
+        .await
+        .expect("Error initializing app state.");
 
-    let service = locator
-        .get::<OsmReaderService>()
+    let session = state.session().await.expect("Error starting session.");
+
+    let service = session
+        .build::<OsmReaderService>()
         .expect("Error creating OSM reader service.");
 
     // Pull new tree nodes, put them in the osm_trees table.
@@ -18,4 +22,10 @@ pub async fn osm_pull_command() {
         .update_local_trees()
         .await
         .expect("Error matching OSM trees to local.");
+
+    session
+        .database
+        .commit()
+        .await
+        .expect("Error committing changes.");
 }

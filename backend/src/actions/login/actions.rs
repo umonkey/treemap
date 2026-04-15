@@ -1,5 +1,5 @@
-use crate::domain::login::GoogleAuthCallbackPayload;
-use crate::services::AppState;
+use crate::domain::login::{GoogleAuthCallbackPayload, LoginService};
+use crate::services::{AppState, ContextExt};
 use crate::types::Result;
 use actix_web::web::{Data, Form, Redirect, ServiceConfig};
 use actix_web::{post, HttpResponse};
@@ -15,7 +15,10 @@ pub async fn osm_action(
     state: Data<AppState>,
     payload: Form<OsmLoginPayload>,
 ) -> Result<HttpResponse> {
-    state.login.login_osm(payload.code.clone()).await?;
+    state
+        .build::<LoginService>()?
+        .login_osm(payload.code.clone())
+        .await?;
 
     Ok(HttpResponse::Ok().finish())
 }
@@ -26,7 +29,7 @@ pub async fn google_action(
     payload: Form<GoogleAuthCallbackPayload>,
 ) -> Result<Redirect> {
     let redirect = state
-        .login
+        .build::<LoginService>()?
         .login_google(GoogleAuthCallbackPayload {
             access_token: payload.access_token.clone(),
             state: payload.state.clone(),

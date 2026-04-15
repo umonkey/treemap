@@ -62,11 +62,11 @@ impl TreeLoader {
     }
 }
 
-impl Locatable for TreeLoader {
-    fn create(locator: &Locator) -> Result<Self> {
+impl Injectable for TreeLoader {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
         Ok(Self {
-            users: locator.get::<UserRepository>()?,
-            files: locator.get::<TreeImageRepository>()?,
+            users: Arc::new(ctx.build::<UserRepository>()?),
+            files: Arc::new(ctx.build::<TreeImageRepository>()?),
         })
     }
 }

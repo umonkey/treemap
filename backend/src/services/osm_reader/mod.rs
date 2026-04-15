@@ -16,9 +16,8 @@
 use crate::domain::osm::{OsmTreeRecord, OsmTreeRepository};
 use crate::domain::tree::Tree;
 use crate::domain::tree::TreeRepository;
-use crate::infra::config::Config;
 use crate::infra::overpass::OverpassClient;
-use crate::services::{Locatable, Locator};
+use crate::services::{Context, Injectable};
 use crate::types::*;
 use crate::utils::{get_timestamp, get_unique_id};
 use log::{debug, info};
@@ -48,17 +47,14 @@ impl OsmReaderService {
 
         let doc = self.overpass_client.query().await?;
 
-        let tx_osm_trees = self.osm_trees.transact().await?;
-
         for mut node in doc.iter().cloned() {
             node.last_seen_at = Some(sync_start);
             node.visible = true;
 
-            Self::update_cache_record(&tx_osm_trees, &node).await?;
+            Self::update_cache_record(&self.osm_trees, &node).await?;
         }
 
-        tx_osm_trees.mark_invisible_before(sync_start).await?;
-        tx_osm_trees.commit().await?;
+        self.osm_trees.mark_invisible_before(sync_start).await?;
 
         info!("Found {} OSM nodes.", doc.len());
 
@@ -66,8 +62,6 @@ impl OsmReaderService {
     }
 
     // Iterate through OSM data and apply changes to local trees.
-    //
-    // TODO: add transaction, this is very slow atm.
     pub async fn update_local_trees(&self) -> Result<()> {
         for node in self.osm_trees.all().await? {
             match self.trees.get_by_osm_id(node.id).await? {
@@ -187,15 +181,15 @@ impl OsmReaderService {
     }
 }
 
-impl Locatable for OsmReaderService {
-    fn create(locator: &Locator) -> Result<Self> {
-        let config = locator.get::<Config>()?;
+impl Injectable for OsmReaderService {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        let config = ctx.config();
 
         Ok(Self {
-            trees: locator.get::<TreeRepository>()?,
-            overpass_client: locator.get::<OverpassClient>()?,
+            trees: Arc::new(ctx.build::<TreeRepository>()?),
+            overpass_client: Arc::new(ctx.build::<OverpassClient>()?),
             user_id: config.bot_user_id,
-            osm_trees: locator.get::<OsmTreeRepository>()?,
+            osm_trees: Arc::new(ctx.build::<OsmTreeRepository>()?),
         })
     }
 }

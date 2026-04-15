@@ -2,7 +2,6 @@ use super::aws_config::AwsConfig;
 use super::base::FileStorageInterface;
 use crate::infra::config::Config;
 use crate::infra::secrets::Secrets;
-use crate::services::{Locatable, Locator};
 use crate::types::*;
 use async_trait::async_trait;
 use aws_sdk_s3::presigning::PresigningConfig;
@@ -10,7 +9,6 @@ use aws_sdk_s3::primitives::ByteStream;
 use aws_sdk_s3::types::ObjectCannedAcl;
 use aws_sdk_s3::Client;
 use log::{debug, error, info};
-use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 pub struct S3FileStorage {
@@ -19,7 +17,7 @@ pub struct S3FileStorage {
 }
 
 impl S3FileStorage {
-    pub async fn new(config: Arc<Config>, secrets: Arc<Secrets>) -> Result<Self> {
+    pub fn new(config: &Config, secrets: &Secrets) -> Result<Self> {
         let s3_bucket = config.files_bucket.clone().ok_or(Error::Config(
             "FILES_BUCKET config option not set".to_string(),
         ))?;
@@ -52,15 +50,6 @@ impl S3FileStorage {
             client,
             bucket: s3_bucket.to_string(),
         })
-    }
-}
-
-impl Locatable for S3FileStorage {
-    fn create(locator: &Locator) -> Result<Self> {
-        let config = locator.get::<Config>()?;
-        let secrets = locator.get::<Secrets>()?;
-        let svc = futures::executor::block_on(Self::new(config, secrets))?;
-        Ok(svc)
     }
 }
 

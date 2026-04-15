@@ -1,5 +1,5 @@
 use crate::domain::tree::TreeRepository;
-use crate::services::{Locatable, Locator};
+use crate::services::{Context, Injectable};
 use crate::types::Result;
 use log::info;
 use std::sync::Arc;
@@ -20,10 +20,10 @@ impl HealthService {
     }
 }
 
-impl Locatable for HealthService {
-    fn create(locator: &Locator) -> Result<Self> {
+impl Injectable for HealthService {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
         Ok(Self {
-            trees: locator.get::<TreeRepository>()?,
+            trees: Arc::new(ctx.build::<TreeRepository>()?),
         })
     }
 }

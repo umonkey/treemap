@@ -49,8 +49,8 @@ impl TreesAreaReporter {
     }
 }
 
-impl Locatable for TreesAreaReporter {
-    fn create(_locator: &Locator) -> Result<Self> {
+impl Injectable for TreesAreaReporter {
+    fn inject(_ctx: &dyn Context) -> Result<Self> {
         Ok(Self {})
     }
 }

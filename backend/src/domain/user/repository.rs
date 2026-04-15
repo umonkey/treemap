@@ -2,7 +2,7 @@ use super::models::User;
 use crate::infra::database::{
     Database, IncrementQuery, InsertQuery, SelectQuery, UpdateQuery, Value,
 };
-use crate::services::*;
+use crate::services::{Context, Injectable};
 use crate::types::*;
 use crate::utils::{get_timestamp, unique_ids};
 use log::error;
@@ -142,12 +142,9 @@ impl UserRepository {
     }
 
     async fn query_multiple_sql(&self, sql: &str, params: &[Value]) -> Result<Vec<User>> {
-        let records = self.db.sql(sql, params).await?;
+        let records = self.db.fetch_sql(sql, params).await?;
 
-        records
-            .iter()
-            .map(|props| User::from_attributes(props).map_err(|_| Error::DatabaseStructure))
-            .collect()
+        records.iter().map(User::from_attributes).collect()
     }
 
     async fn query_single(&self, query: SelectQuery) -> Result<Option<User>> {
@@ -164,17 +161,13 @@ impl UserRepository {
     async fn query_multiple(&self, query: SelectQuery) -> Result<Vec<User>> {
         let records = self.db.get_records(query).await?;
 
-        records
-            .iter()
-            .map(|props| User::from_attributes(props).map_err(|_| Error::DatabaseStructure))
-            .collect()
+        records.iter().map(User::from_attributes).collect()
     }
 }
 
-impl Locatable for UserRepository {
-    fn create(locator: &Locator) -> Result<Self> {
-        let db = locator.get::<Database>()?;
-        Ok(Self { db })
+impl Injectable for UserRepository {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        Ok(Self { db: ctx.database() })
     }
 }
 
@@ -183,18 +176,27 @@ mod tests {
     use super::*;
     use crate::domain::prop::PropRecord;
     use crate::domain::tree_image::TreeImage;
+    use crate::services::AppState;
+    use crate::services::ContextExt;
 
-    fn setup() -> Arc<UserRepository> {
-        let locator = Locator::new();
+    async fn setup() -> Arc<UserRepository> {
+        let state = AppState::new()
+            .await
+            .expect("Error creating app state.")
+            .session()
+            .await
+            .expect("Error creating session state.");
 
-        locator
-            .get::<UserRepository>()
-            .expect("Error creating user repository.")
+        Arc::new(
+            state
+                .build::<UserRepository>()
+                .expect("Error creating user repository."),
+        )
     }
 
     #[tokio::test]
     async fn test_get_tree_actors() {
-        let repo = setup();
+        let repo = setup().await;
         let db = repo.db.clone();
 
         let user1 = User {

@@ -1,11 +1,12 @@
-use crate::services::AppState;
+use crate::domain::health::HealthService;
+use crate::services::{AppState, ContextExt};
 use crate::types::Result;
 use actix_web::web::{Data, ServiceConfig};
 use actix_web::{get, HttpResponse};
 
 #[get("/health")]
 pub async fn get_health_action(state: Data<AppState>) -> Result<HttpResponse> {
-    state.health.check().await?;
+    state.build::<HealthService>()?.check().await?;
     Ok(HttpResponse::NoContent().finish())
 }
 

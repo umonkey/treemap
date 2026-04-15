@@ -1,12 +1,12 @@
-use crate::domain::tree::DuplicatesResponse;
-use crate::services::AppState;
+use crate::domain::tree::{DuplicatesResponse, TreeService};
+use crate::services::{AppState, ContextExt};
 use crate::types::Result;
 use actix_web::get;
 use actix_web::web::{Data, Json, ServiceConfig};
 
 #[get("")]
 pub async fn get_duplicates_action(state: Data<AppState>) -> Result<Json<DuplicatesResponse>> {
-    let duplicates = state.trees.get_duplicates().await?;
+    let duplicates = state.build::<TreeService>()?.get_duplicates().await?;
     Ok(Json(duplicates))
 }
 

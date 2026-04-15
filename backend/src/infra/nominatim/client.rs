@@ -1,4 +1,4 @@
-use crate::services::{Locatable, Locator};
+use crate::services::{Context, Injectable};
 use crate::types::{Error, Result};
 use log::{debug, error, info};
 use reqwest::header::{HeaderMap, HeaderValue};
@@ -23,6 +23,11 @@ pub struct NominatimClient {
 }
 
 impl NominatimClient {
+    pub fn new() -> Self {
+        let http = reqwest::Client::new();
+        Self { http }
+    }
+
     pub async fn get_street_address(&self, lat: f64, lon: f64) -> Result<Option<String>> {
         // NB! Use zoom=16 to avoid street confusion.  With zoom=18 it often takes street
         // names from the closes bigger building which can have address from the adjacent
@@ -71,9 +76,14 @@ impl NominatimClient {
     }
 }
 
-impl Locatable for NominatimClient {
-    fn create(_locator: &Locator) -> Result<Self> {
-        let http = reqwest::Client::new();
-        Ok(Self { http })
+impl Default for NominatimClient {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl Injectable for NominatimClient {
+    fn inject(_ctx: &dyn Context) -> Result<Self> {
+        Ok(Self::new())
     }
 }

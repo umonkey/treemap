@@ -1,80 +1,88 @@
-use crate::domain::comment::CommentService;
-use crate::domain::health::*;
-use crate::domain::heatmap::HeatmapService;
-use crate::domain::like::LikeService;
-use crate::domain::login::LoginService;
-use crate::domain::observation::ObservationService;
-use crate::domain::prop::PropService;
-use crate::domain::settings::SettingsService;
-use crate::domain::species::SpeciesService;
-use crate::domain::stats::StatsService;
-use crate::domain::street::StreetService;
-use crate::domain::training::TrainingService;
-use crate::domain::tree::TreeService;
-use crate::domain::tree_image::TreeImageService;
-use crate::domain::upload::UploadService;
-use crate::domain::user::UserService;
+use crate::infra::config::Config;
+use crate::infra::database::Database;
+use crate::infra::queue::Queue;
+use crate::infra::secrets::Secrets;
+use crate::infra::storage::FileStorage;
 use crate::infra::tokens::TokenService;
-use crate::services::comment_loader::CommentLoader;
-use crate::services::like_loader::LikeLoader;
-use crate::services::meta::MetaService;
-use crate::services::prop_loader::PropLoader;
-use crate::services::tree_loader::TreeLoader;
-use crate::services::Locator;
 use crate::types::*;
 use actix_web::HttpRequest;
 use std::sync::Arc;
 
+pub trait Context {
+    fn database(&self) -> Arc<Database>;
+    fn config(&self) -> Arc<Config>;
+    fn queue(&self) -> Arc<Queue>;
+    fn secrets(&self) -> Arc<Secrets>;
+    fn tokens(&self) -> Arc<TokenService>;
+    fn storage(&self) -> Arc<FileStorage>;
+}
+
+pub trait Injectable {
+    fn inject(ctx: &dyn Context) -> Result<Self>
+    where
+        Self: Sized;
+}
+
+impl dyn Context + '_ {
+    pub fn build<T: Injectable>(&self) -> Result<T> {
+        T::inject(self)
+    }
+}
+
+pub trait ContextExt: Context {
+    fn build<T: Injectable>(&self) -> Result<T>
+    where
+        Self: Sized,
+    {
+        T::inject(self)
+    }
+}
+
+impl<T: Context> ContextExt for T {}
+
 pub struct AppState {
-    pub tree_images: Arc<TreeImageService>,
-    tokens: Arc<TokenService>,
-    pub users: Arc<UserService>,
-    pub training: Arc<TrainingService>,
-    pub trees: Arc<TreeService>,
-    pub health: Arc<HealthService>,
-    pub heatmap: Arc<HeatmapService>,
-    pub likes: Arc<LikeService>,
-    pub observations: Arc<ObservationService>,
-    pub comments: Arc<CommentService>,
-    pub login: Arc<LoginService>,
-    pub species: Arc<SpeciesService>,
-    pub settings: Arc<SettingsService>,
-    pub uploads: Arc<UploadService>,
-    pub stats: Arc<StatsService>,
-    pub streets: Arc<StreetService>,
-    pub tree_loader: Arc<TreeLoader>,
-    pub comment_loader: Arc<CommentLoader>,
-    pub like_loader: Arc<LikeLoader>,
-    pub meta: Arc<MetaService>,
-    pub props: Arc<PropService>,
-    pub prop_loader: Arc<PropLoader>,
+    pub database: Arc<Database>,
+    pub config: Arc<Config>,
+    pub queue: Arc<Queue>,
+    pub secrets: Arc<Secrets>,
+    pub tokens: Arc<TokenService>,
+    pub storage: Arc<FileStorage>,
 }
 
 impl AppState {
-    pub async fn new(locator: Arc<Locator>) -> Result<Self> {
+    pub async fn new() -> Result<Self> {
+        let config = Arc::new(Config::new()?);
+        let secrets = Arc::new(Secrets::new(config.clone())?);
+        let database = Arc::new(Database::new(&config, &secrets).await?);
+        let queue = Arc::new(Queue::new(&config, &secrets, &database)?);
+
+        let jwt_secret = secrets.jwt_secret.clone().ok_or(Error::Config(
+            "JWT_SECRET not set, cannot use tokens".to_string(),
+        ))?;
+        let tokens = Arc::new(TokenService::new(jwt_secret));
+
+        let storage = Arc::new(FileStorage::new(&config, &secrets)?);
+
         Ok(Self {
-            tree_images: locator.get::<TreeImageService>()?,
-            tokens: locator.get::<TokenService>()?,
-            users: locator.get::<UserService>()?,
-            training: locator.get::<TrainingService>()?,
-            trees: locator.get::<TreeService>()?,
-            health: locator.get::<HealthService>()?,
-            heatmap: locator.get::<HeatmapService>()?,
-            comments: locator.get::<CommentService>()?,
-            observations: locator.get::<ObservationService>()?,
-            login: locator.get::<LoginService>()?,
-            species: locator.get::<SpeciesService>()?,
-            settings: locator.get::<SettingsService>()?,
-            uploads: locator.get::<UploadService>()?,
-            stats: locator.get::<StatsService>()?,
-            streets: locator.get::<StreetService>()?,
-            likes: locator.get::<LikeService>()?,
-            tree_loader: locator.get::<TreeLoader>()?,
-            comment_loader: locator.get::<CommentLoader>()?,
-            like_loader: locator.get::<LikeLoader>()?,
-            meta: locator.get::<MetaService>()?,
-            props: locator.get::<PropService>()?,
-            prop_loader: locator.get::<PropLoader>()?,
+            database,
+            config,
+            queue,
+            secrets,
+            tokens,
+            storage,
+        })
+    }
+
+    pub async fn session(&self) -> Result<Self> {
+        let database = Arc::new(self.database.transact().await?);
+
+        Ok(Self {
+            database,
+            config: self.config.clone(),
+            queue: self.queue.clone(),
+            secrets: self.secrets.clone(),
+            tokens: self.tokens.clone(),
+            storage: self.storage.clone(),
         })
     }
 
@@ -107,5 +115,31 @@ impl AppState {
         // TODO: check if user exists.
 
         Ok(user_id)
+    }
+}
+
+impl Context for AppState {
+    fn database(&self) -> Arc<Database> {
+        self.database.clone()
+    }
+
+    fn config(&self) -> Arc<Config> {
+        self.config.clone()
+    }
+
+    fn queue(&self) -> Arc<Queue> {
+        self.queue.clone()
+    }
+
+    fn secrets(&self) -> Arc<Secrets> {
+        self.secrets.clone()
+    }
+
+    fn tokens(&self) -> Arc<TokenService> {
+        self.tokens.clone()
+    }
+
+    fn storage(&self) -> Arc<FileStorage> {
+        self.storage.clone()
     }
 }

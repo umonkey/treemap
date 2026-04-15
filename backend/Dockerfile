@@ -15,11 +15,8 @@
 #
 # This approach saves time drastically, which saves CI/CD resources.
 
-FROM docker.io/library/rust:1.88-alpine3.22 AS builder
-RUN apk add --no-cache musl-dev openssl-dev
-ENV RUSTFLAGS=-Ctarget-feature=-crt-static
-ENV OPENSSL_DIR=/usr
-RUN rustup component add clippy
+FROM docker.io/library/rust:1.88-bookworm AS builder
+RUN apt-get update && apt-get install -y libssl-dev pkg-config
 
 WORKDIR /app
 COPY Cargo.toml Cargo.lock ./
@@ -35,11 +32,18 @@ RUN touch src/main.rs
 RUN cargo build --release
 
 # STEP 2: Build the Final Image
-FROM docker.io/library/alpine:3.22
-RUN apk add --no-cache sqlite supervisor logrotate bash
+FROM docker.io/library/debian:bookworm-slim
+RUN apt-get update && \
+    apt-get install -y sqlite3 supervisor logrotate bash ca-certificates cron && \
+    ln -s /usr/bin/sqlite3 /usr/bin/sqlite && \
+    ln -s /usr/sbin/cron /usr/sbin/crond && \
+    mkdir -p /var/spool/cron/crontabs && \
+    rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 COPY --from=builder /app/target/release/treemap bin/treemap
 COPY docker/rootfs/ /
+RUN cp /etc/crontabs/root /var/spool/cron/crontabs/root && chmod 600 /var/spool/cron/crontabs/root
 COPY dev/schema-sqlite.sql /app
 COPY static /app/static
 COPY config.toml.dev /app
