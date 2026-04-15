@@ -49,9 +49,9 @@ pull-docker:
 
 test:
 ifneq (,$(FILTER))
-	RUST_LOG="debug" cargo test -- $(FILTER) --nocapture --test-threads=1 --color=always
+	RUST_LOG="debug" JWT_SECRET="dummy-secret-for-tests" cargo test -- $(FILTER) --nocapture --test-threads=1 --color=always
 else
-	RUST_LOG="warn" cargo test -- --color=always
+	RUST_LOG="warn" JWT_SECRET="dummy-secret-for-tests" cargo test -- --color=always
 	rm -f var/test-*.db
 endif
 	rm -f var/test-files/*
