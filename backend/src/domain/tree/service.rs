@@ -730,8 +730,11 @@ mod tests {
             debug!("env_logger already initialized.");
         };
 
-        let state = AppState::new().await.expect("Error creating app state.")
-            .session().await
+        let state = AppState::new()
+            .await
+            .expect("Error creating app state.")
+            .session()
+            .await
             .expect("Error creating session state.");
 
         Arc::new(

@@ -68,10 +68,7 @@ impl TreeImageRepository {
     async fn query_multiple(&self, query: SelectQuery) -> Result<Vec<TreeImage>> {
         let records = self.db.get_records(query).await?;
 
-        records
-            .iter()
-            .map(|props| TreeImage::from_attributes(props).map_err(|_| Error::DatabaseStructure))
-            .collect()
+        records.iter().map(TreeImage::from_attributes).collect()
     }
 }
 

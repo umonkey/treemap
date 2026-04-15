@@ -144,10 +144,7 @@ impl UserRepository {
     async fn query_multiple_sql(&self, sql: &str, params: &[Value]) -> Result<Vec<User>> {
         let records = self.db.fetch_sql(sql, params).await?;
 
-        records
-            .iter()
-            .map(|props| User::from_attributes(props).map_err(|_| Error::DatabaseStructure))
-            .collect()
+        records.iter().map(User::from_attributes).collect()
     }
 
     async fn query_single(&self, query: SelectQuery) -> Result<Option<User>> {
@@ -164,10 +161,7 @@ impl UserRepository {
     async fn query_multiple(&self, query: SelectQuery) -> Result<Vec<User>> {
         let records = self.db.get_records(query).await?;
 
-        records
-            .iter()
-            .map(|props| User::from_attributes(props).map_err(|_| Error::DatabaseStructure))
-            .collect()
+        records.iter().map(User::from_attributes).collect()
     }
 }
 
@@ -186,8 +180,11 @@ mod tests {
     use crate::services::ContextExt;
 
     async fn setup() -> Arc<UserRepository> {
-        let state = AppState::new().await.expect("Error creating app state.")
-            .session().await
+        let state = AppState::new()
+            .await
+            .expect("Error creating app state.")
+            .session()
+            .await
             .expect("Error creating session state.");
 
         Arc::new(

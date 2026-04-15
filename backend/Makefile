@@ -38,6 +38,15 @@ queue:
 serve:
 	cargo run -- serve
 
+build-docker:
+	docker build -t treemap-backend:latest .
+
+serve-docker:
+	docker run --rm -w /app -v ./var:/app/var -t treemap-backend:latest ./bin/treemap serve
+
+pull-docker:
+	docker run --rm -w /app -v ./var:/app/var -t treemap-backend:latest ./bin/treemap osm-pull
+
 test:
 ifneq (,$(FILTER))
 	RUST_LOG="debug" cargo test -- $(FILTER) --nocapture --test-threads=1 --color=always

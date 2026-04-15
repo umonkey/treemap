@@ -1,7 +1,7 @@
 use super::models::OsmTreeRecord;
 use crate::infra::database::{Database, InsertQuery, SelectQuery, UpdateQuery, Value};
 use crate::services::{Context, Injectable};
-use crate::types::{Error, Result};
+use crate::types::Result;
 use log::error;
 use std::sync::Arc;
 
@@ -49,12 +49,7 @@ impl OsmTreeRepository {
 
         let records = self.db.get_records(query).await?;
 
-        records
-            .iter()
-            .map(|props| {
-                OsmTreeRecord::from_attributes(props).map_err(|_| Error::DatabaseStructure)
-            })
-            .collect()
+        records.iter().map(OsmTreeRecord::from_attributes).collect()
     }
 
     pub async fn mark_invisible_before(&self, timestamp: u64) -> Result<()> {

@@ -314,10 +314,7 @@ impl TreeRepository {
     async fn query_multiple(&self, query: SelectQuery) -> Result<Vec<Tree>> {
         let records = self.db.get_records(query).await?;
 
-        records
-            .iter()
-            .map(|props| Tree::from_attributes(props).map_err(|_| Error::DatabaseStructure))
-            .collect()
+        records.iter().map(Tree::from_attributes).collect()
     }
 
     async fn log_changes(&self, old: &Tree, new: &Tree, user_id: u64) -> Result<()> {
@@ -439,9 +436,7 @@ impl TreeRepository {
     async fn fetch(&self, sql: &str, params: &[Value]) -> Result<Vec<Tree>> {
         let rows = self.db.fetch_sql(sql, params).await?;
 
-        rows.iter()
-            .map(|props| Tree::from_attributes(props).map_err(|_| Error::DatabaseStructure))
-            .collect()
+        rows.iter().map(Tree::from_attributes).collect()
     }
 }
 
@@ -461,8 +456,11 @@ mod tests {
     use crate::services::ContextExt;
 
     async fn setup() -> Arc<TreeRepository> {
-        let state = AppState::new().await.expect("Error creating app state.")
-            .session().await
+        let state = AppState::new()
+            .await
+            .expect("Error creating app state.")
+            .session()
+            .await
             .expect("Error creating session state.");
 
         Arc::new(

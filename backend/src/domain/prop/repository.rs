@@ -52,15 +52,7 @@ impl PropRepository {
     async fn query_multiple(&self, query: SelectQuery) -> Result<Vec<PropRecord>> {
         let records = self.db.get_records(query).await?;
 
-        records
-            .iter()
-            .map(|props| {
-                PropRecord::from_attributes(props).map_err(|e| {
-                    log::debug!("Error parsing prop record: {e:?}");
-                    Error::DatabaseStructure
-                })
-            })
-            .collect()
+        records.iter().map(PropRecord::from_attributes).collect()
     }
 }
 

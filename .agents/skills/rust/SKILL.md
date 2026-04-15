@@ -2,6 +2,7 @@
 name: rust
 description: Coding style and formatting rules for Rust code. Use this whenever modifying any Rust files.
 ---
+# Skill: rust
 
 ## Formatting rules
 
@@ -49,6 +50,12 @@ pub async fn my_action(state: Data<AppState>) -> Result<Json<...>> {
     Ok(Json(result))
 }
 ```
+
+## Error Handling
+
+- Don't log where you throw: avoid logging errors (e.g., `error!` or `warn!`) in services, repositories, or logic that simply detects or propagates the error.
+- Log at the boundary: errors should be logged once at the application boundary (e.g., in Actix-Web's `ResponseError` implementation).
+- Provide context: when creating errors, include enough information (e.g., field names, IDs) so the person reading the log can identify the cause without needing a stack trace.
 
 ## Development Workflow
 
