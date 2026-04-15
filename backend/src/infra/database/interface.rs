@@ -11,7 +11,6 @@ use super::value::Value;
 use crate::domain::species::Species;
 use crate::domain::tree::Tree;
 use crate::infra::config::Config;
-use crate::infra::secrets::Secrets;
 use crate::services::*;
 use crate::types::{Error, Result};
 use log::{debug, error};
@@ -125,7 +124,7 @@ impl Locatable for Database {
         let config = locator.get::<Config>()?;
 
         if config.database == "turso" {
-            let secrets = locator.get::<Secrets>()?;
+            let secrets = locator.secrets();
 
             debug!("Setting up a Turso database.");
 

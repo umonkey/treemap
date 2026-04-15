@@ -1,7 +1,6 @@
 use super::schemas::{OsmChangeset, OsmElement};
 use crate::domain::tree::Tree;
 use crate::infra::config::Config;
-use crate::infra::secrets::Secrets;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::*;
@@ -373,7 +372,7 @@ impl OsmClient {
 impl Locatable for OsmClient {
     fn create(locator: &Locator) -> Result<Self> {
         let config = locator.get::<Config>()?;
-        let secrets = locator.get::<Secrets>()?;
+        let secrets = locator.secrets();
 
         let osm_client_secret = secrets.osm_client_secret.clone();
 

@@ -2,7 +2,7 @@ use super::aws_config::AwsConfig;
 use super::base::FileStorageInterface;
 use crate::infra::config::Config;
 use crate::infra::secrets::Secrets;
-use crate::services::{Locatable, Locator};
+use crate::services::{Context, Locatable, Locator};
 use crate::types::*;
 use async_trait::async_trait;
 use aws_sdk_s3::presigning::PresigningConfig;
@@ -58,7 +58,7 @@ impl S3FileStorage {
 impl Locatable for S3FileStorage {
     fn create(locator: &Locator) -> Result<Self> {
         let config = locator.get::<Config>()?;
-        let secrets = locator.get::<Secrets>()?;
+        let secrets = locator.secrets();
         let svc = futures::executor::block_on(Self::new(config, secrets))?;
         Ok(svc)
     }

@@ -1,6 +1,7 @@
 use crate::infra::config::Config;
 use crate::infra::database::Database;
 use crate::infra::queue::Queue;
+use crate::infra::secrets::Secrets;
 use crate::infra::tokens::TokenService;
 use crate::services::Locator;
 use crate::types::*;
@@ -11,6 +12,8 @@ pub trait Context {
     fn database(&self) -> Arc<Database>;
     fn config(&self) -> Arc<Config>;
     fn queue(&self) -> Arc<Queue>;
+    fn secrets(&self) -> Arc<Secrets>;
+    fn tokens(&self) -> Arc<TokenService>;
     fn locator(&self) -> &Locator;
 }
 
@@ -50,6 +53,14 @@ impl Context for Locator {
         self.get::<Queue>().expect("Queue not found")
     }
 
+    fn secrets(&self) -> Arc<Secrets> {
+        Arc::new(Secrets::inject(self).expect("Secrets not found"))
+    }
+
+    fn tokens(&self) -> Arc<TokenService> {
+        Arc::new(TokenService::inject(self).expect("TokenService not found"))
+    }
+
     fn locator(&self) -> &Locator {
         self
     }
@@ -60,16 +71,24 @@ pub struct AppState {
     pub database: Arc<Database>,
     pub config: Arc<Config>,
     pub queue: Arc<Queue>,
+    pub secrets: Arc<Secrets>,
     pub tokens: Arc<TokenService>,
 }
 
 impl AppState {
     pub async fn new(locator: Arc<Locator>) -> Result<Self> {
+        let database = locator.get::<Database>()?;
+        let config = locator.get::<Config>()?;
+        let queue = locator.get::<Queue>()?;
+        let secrets = Arc::new(Secrets::inject(&*locator)?);
+        let tokens = Arc::new(TokenService::inject(&*locator)?);
+
         Ok(Self {
-            database: locator.get::<Database>()?,
-            config: locator.get::<Config>()?,
-            queue: locator.get::<Queue>()?,
-            tokens: locator.get::<TokenService>()?,
+            database,
+            config,
+            queue,
+            secrets,
+            tokens,
             locator,
         })
     }
@@ -117,6 +136,14 @@ impl Context for AppState {
 
     fn queue(&self) -> Arc<Queue> {
         self.queue.clone()
+    }
+
+    fn secrets(&self) -> Arc<Secrets> {
+        self.secrets.clone()
+    }
+
+    fn tokens(&self) -> Arc<TokenService> {
+        self.tokens.clone()
     }
 
     fn locator(&self) -> &Locator {

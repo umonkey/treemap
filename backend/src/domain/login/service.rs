@@ -89,7 +89,7 @@ impl Injectable for LoginService {
     fn inject(ctx: &dyn Context) -> Result<Self> {
         let locator = ctx.locator();
         Ok(Self {
-            tokens: locator.get::<TokenService>()?,
+            tokens: ctx.tokens(),
             users: Arc::new(locator.build::<UserRepository>()?),
             auth: GoogleAuthClient::new(),
             osm: locator.get::<OsmClient>()?,

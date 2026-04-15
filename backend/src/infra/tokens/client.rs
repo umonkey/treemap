@@ -1,6 +1,5 @@
 use super::types::TokenClaims;
-use crate::infra::secrets::Secrets;
-use crate::services::{Locatable, Locator};
+use crate::services::{Context, Injectable};
 use crate::types::{Error, Result};
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
 use log::{debug, error};
@@ -37,12 +36,13 @@ impl TokenService {
     }
 }
 
-impl Locatable for TokenService {
-    fn create(locator: &Locator) -> Result<Self> {
-        let secrets = locator.get::<Secrets>()?;
+impl Injectable for TokenService {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        let secrets = ctx.secrets();
         let jwt_secret = secrets.jwt_secret.clone().ok_or(Error::Config(
             "JWT_SECRET not set, cannot use tokens".to_string(),
         ))?;
+
         Ok(Self::new(jwt_secret))
     }
 }

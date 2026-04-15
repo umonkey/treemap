@@ -3,7 +3,7 @@
 //! When adding or removing secrets, please update `docs/Configuration.md`
 
 use crate::infra::config::Config;
-use crate::services::{Locatable, Locator};
+use crate::services::{Context, Injectable};
 use crate::types::Result;
 use log::{debug, warn};
 use std::fs;
@@ -80,9 +80,9 @@ impl Secrets {
     }
 }
 
-impl Locatable for Secrets {
-    fn create(locator: &Locator) -> Result<Self> {
-        let config = locator.get::<Config>()?;
+impl Injectable for Secrets {
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        let config = ctx.config();
         Self::new(config)
     }
 }
