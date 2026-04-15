@@ -87,9 +87,30 @@ impl OsmReaderService {
 
         // If OSM node is newer than local sync, update local tree.
         if node.version > tree.osm_version.unwrap_or(0) {
-            self.trees
-                .sync_with_osm(tree.id, &node, self.user_id)
-                .await?;
+            let now = get_timestamp();
+            let mut updated = tree.clone();
+            updated.osm_id = Some(node.id);
+            updated.osm_version = Some(node.version);
+            updated.last_sync_at = Some(now);
+
+            // Merge logic: if the tree was updated locally since the last sync,
+            // we only update coordinates from OSM.  Otherwise we update all tags.
+            let has_local_edits = tree.updated_at > tree.last_sync_at.unwrap_or(0);
+
+            if !has_local_edits {
+                updated.lat = node.lat;
+                updated.lon = node.lon;
+                updated.species = node.get_species();
+                updated.height = node.height;
+                updated.circumference = node.circumference;
+                updated.diameter = node.diameter_crown;
+            } else {
+                updated.lat = node.lat;
+                updated.lon = node.lon;
+            }
+
+            self.trees.update(&updated, self.user_id).await?;
+
             info!(
                 "Tree {} updated from OSM node {} (version {} > {}).",
                 tree.id,
