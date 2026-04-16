@@ -37,10 +37,16 @@ impl<T: Injectable + 'static> FromRequest for Injected<T> {
 
     fn from_request(req: &HttpRequest, _: &mut Payload) -> Self::Future {
         use actix_web::web::Data;
+        use actix_web::HttpMessage;
 
-        let result = match req.app_data::<Data<AppState>>() {
-            Some(state) => state.build::<T>().map(Injected),
-            None => Err(Error::Config("AppState not found in request data".into())),
+        let extensions = req.extensions();
+
+        let result = if let Some(state) = extensions.get::<AppState>() {
+            state.build::<T>().map(Injected)
+        } else if let Some(state) = req.app_data::<Data<AppState>>() {
+            state.build::<T>().map(Injected)
+        } else {
+            Err(Error::Config("AppState not found in request".into()))
         };
 
         ready(result)

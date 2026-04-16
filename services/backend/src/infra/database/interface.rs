@@ -14,6 +14,7 @@ use crate::types::{Error, Result};
 use log::{debug, error};
 use std::sync::Arc;
 
+#[derive(Clone)]
 pub struct Database {
     db: Arc<dyn DatabaseInterface>,
 }

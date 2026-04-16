@@ -43,6 +43,10 @@ impl<T: Context> ContextExt for T {}
 mod injected;
 pub use injected::Injected;
 
+mod middleware;
+pub use middleware::Transaction;
+
+#[derive(Clone)]
 pub struct AppState {
     pub database: Arc<Database>,
     pub config: Arc<Config>,
