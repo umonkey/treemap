@@ -15,12 +15,10 @@
 		"test:unit": "vitest",
 		"test": "npm run test:unit -- --run",
 		"storybook": "storybook dev -p 6006",
-		"build-storybook": "storybook build",
-		"chromatic": "npx chromatic"
+		"build-storybook": "storybook build"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
-		"@chromatic-com/storybook": "^3.2.6",
 		"@eslint/compat": "^1.2.3",
 		"@storybook/addon-essentials": "^8.6.12",
 		"@storybook/addon-svelte-csf": "^5.0.0",
@@ -35,7 +33,6 @@
 		"@testing-library/svelte": "^5.2.7",
 		"@testing-library/user-event": "^14.6.1",
 		"@zerodevx/svelte-toast": "^0.9.6",
-		"chromatic": "^11.28.2",
 		"eslint": "^9.7.0",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-storybook": "^0.12.0",

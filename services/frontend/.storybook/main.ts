@@ -9,8 +9,7 @@ const config: StorybookConfig = {
 				docs: false
 			}
 		},
-		'@storybook/addon-svelte-csf',
-		'@chromatic-com/storybook'
+		'@storybook/addon-svelte-csf'
 	],
 	framework: {
 		name: '@storybook/sveltekit',
