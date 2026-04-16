@@ -18,7 +18,7 @@ impl TreesByHeightReporter {
         let map = self.aggregate(&trees);
         let mut res = self.convert(map);
 
-        res.sort_by(|a, b| a.value.cmp(&b.value));
+        res.sort_by_key(|a| a.value);
 
         Ok(res)
     }

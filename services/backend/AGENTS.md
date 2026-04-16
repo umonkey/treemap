@@ -4,7 +4,7 @@
 
 This directory contains the API, queue consumers and other backend code.
 
-- The code is written in Rust.
+- The code is written in Rust 1.95.
 - The web framework is Actix-Web.
 - The database engine is SQLite.
 

@@ -17,7 +17,7 @@ impl TreesBySpeciesReporter {
         let species = self.get_species(&trees);
         let mut res = self.get_reports(&species, &trees);
 
-        res.sort_by(|a, b| a.species.cmp(&b.species));
+        res.sort_by_key(|a| a.species.clone());
 
         Ok(res)
     }

@@ -29,7 +29,7 @@ pub fn format_species_report(items: Vec<(String, u64)>) -> Vec<SpeciesStats> {
     }
 
     let mut report: Vec<SpeciesStats> = buckets.into_values().collect();
-    report.sort_by(|a, b| b.count.cmp(&a.count));
+    report.sort_by_key(|b| std::cmp::Reverse(b.count));
 
     report
 }

@@ -15,7 +15,7 @@
 #
 # This approach saves time drastically, which saves CI/CD resources.
 
-FROM docker.io/library/rust:1.88-bookworm AS builder
+FROM docker.io/library/rust:1.95-bookworm AS builder
 RUN apt-get update && apt-get install -y libssl-dev pkg-config
 
 WORKDIR /app

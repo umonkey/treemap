@@ -16,7 +16,7 @@ impl TreesByStateReporter {
         let map = self.aggregate(trees);
         let mut res = self.convert(map);
 
-        res.sort_by(|a, b| a.state.cmp(&b.state));
+        res.sort_by_key(|a| a.state.clone());
 
         Ok(res)
     }
