@@ -3,7 +3,7 @@
 
 use super::schemas::SpeciesRead;
 use crate::domain::species::SpeciesService;
-use crate::services::{AppState, ContextExt};
+use crate::services::{AppState, Injected};
 use crate::types::Result;
 use actix_web::web::ServiceConfig;
 use actix_web::{get, web::Data, web::Json, web::Query, HttpRequest};
@@ -17,23 +17,21 @@ struct QueryParams {
 #[get("/suggest")]
 pub async fn suggest_species_action(
     state: Data<AppState>,
+    species_service: Injected<SpeciesService>,
     req: HttpRequest,
 ) -> Result<Json<Vec<String>>> {
     let user_id = state.get_user_id(&req)?;
-    let species = state.build::<SpeciesService>()?.suggest(user_id).await?;
+    let species = species_service.suggest(user_id).await?;
 
     Ok(Json(species))
 }
 
 #[get("/search")]
 pub async fn search_species_action(
-    state: Data<AppState>,
+    species_service: Injected<SpeciesService>,
     query: Query<QueryParams>,
 ) -> Result<Json<Vec<SpeciesRead>>> {
-    let species = state
-        .build::<SpeciesService>()?
-        .search(&query.query)
-        .await?;
+    let species = species_service.search(&query.query).await?;
     let output = species.iter().map(|f| f.into()).collect();
     Ok(Json(output))
 }

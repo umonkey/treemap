@@ -1,10 +1,10 @@
 use super::schemas::StreetRead;
 use crate::domain::street::{StreetReport, StreetService};
 use crate::responders::csv::trees_to_csv;
-use crate::services::{AppState, ContextExt};
+use crate::services::Injected;
 
 use crate::types::Result;
-use actix_web::web::{Data, Json, Query, ServiceConfig};
+use actix_web::web::{Json, Query, ServiceConfig};
 use actix_web::{get, HttpResponse};
 use serde::Deserialize;
 
@@ -25,10 +25,10 @@ pub struct CsvReportQuery {
 
 #[get("/search")]
 pub async fn search_streets_action(
-    state: Data<AppState>,
+    street_service: Injected<StreetService>,
     query: Query<SearchQuery>,
 ) -> Result<Json<Vec<StreetRead>>> {
-    let records = state.build::<StreetService>()?.search(&query.query).await?;
+    let records = street_service.search(&query.query).await?;
     let res = records.iter().map(|f| f.into()).collect();
 
     Ok(Json(res))
@@ -36,25 +36,19 @@ pub async fn search_streets_action(
 
 #[get("/report")]
 pub async fn get_street_report_action(
-    state: Data<AppState>,
+    street_service: Injected<StreetService>,
     query: Query<ReportQuery>,
 ) -> Result<Json<StreetReport>> {
-    let report = state
-        .build::<StreetService>()?
-        .get_report(&query.address)
-        .await?;
+    let report = street_service.get_report(&query.address).await?;
     Ok(Json(report))
 }
 
 #[get("/report.csv")]
 pub async fn get_street_csv_report_action(
-    state: Data<AppState>,
+    street_service: Injected<StreetService>,
     query: Query<CsvReportQuery>,
 ) -> Result<HttpResponse> {
-    let trees = state
-        .build::<StreetService>()?
-        .get_trees_on_street(&query.address)
-        .await?;
+    let trees = street_service.get_trees_on_street(&query.address).await?;
     let filename = format!("report-{}", query.address);
     trees_to_csv(trees, &filename)
 }

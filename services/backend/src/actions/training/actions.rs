@@ -1,5 +1,5 @@
 use crate::domain::training::TrainingService;
-use crate::services::{AppState, ContextExt};
+use crate::services::{AppState, Injected};
 use crate::types::*;
 use actix_web::web::ServiceConfig;
 use actix_web::{post, web::Data, web::Json, HttpRequest, HttpResponse};
@@ -13,15 +13,13 @@ struct RequestPayload {
 #[post("")]
 pub async fn add_training_action(
     state: Data<AppState>,
+    training_service: Injected<TrainingService>,
     payload: Json<RequestPayload>,
     req: HttpRequest,
 ) -> Result<HttpResponse> {
     let user_id = state.get_user_id(&req)?;
 
-    state
-        .build::<TrainingService>()?
-        .add(user_id, payload.result)
-        .await?;
+    training_service.add(user_id, payload.result).await?;
 
     Ok(HttpResponse::Accepted().finish())
 }

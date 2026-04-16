@@ -3,10 +3,10 @@
 
 use crate::domain::tree::TreeService;
 use crate::services::meta::MetaService;
-use crate::services::{AppState, ContextExt};
+use crate::services::Injected;
 use crate::types::*;
 use actix_web::http::header::{CacheControl, CacheDirective, Expires};
-use actix_web::web::{Data, Path, ServiceConfig};
+use actix_web::web::{Path, ServiceConfig};
 use actix_web::{get, HttpResponse};
 use serde::Deserialize;
 use std::time::{Duration, SystemTime};
@@ -17,10 +17,14 @@ pub struct PathInfo {
 }
 
 #[get("/{id:\\d+}")]
-pub async fn tree_page_action(state: Data<AppState>, path: Path<PathInfo>) -> Result<HttpResponse> {
-    let tree = state.build::<TreeService>()?.get_tree(path.id).await?;
+pub async fn tree_page_action(
+    tree_service: Injected<TreeService>,
+    meta_service: Injected<MetaService>,
+    path: Path<PathInfo>,
+) -> Result<HttpResponse> {
+    let tree = tree_service.get_tree(path.id).await?;
 
-    let html = state.build::<MetaService>()?.get_tree(&tree).await?;
+    let html = meta_service.get_tree(&tree).await?;
 
     let cache_control = CacheControl(vec![CacheDirective::Public, CacheDirective::MaxAge(60)]);
 

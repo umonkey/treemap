@@ -40,6 +40,9 @@ pub trait ContextExt: Context {
 
 impl<T: Context> ContextExt for T {}
 
+mod injected;
+pub use injected::Injected;
+
 pub struct AppState {
     pub database: Arc<Database>,
     pub config: Arc<Config>,

@@ -4,10 +4,10 @@ use crate::domain::stats::{StateStatsResponse, StatsService, StreetStatsResponse
 use crate::domain::tree::TreeService;
 use crate::domain::user::UserService;
 use crate::services::tree_loader::{TreeList, TreeLoader};
-use crate::services::{AppState, ContextExt};
+use crate::services::Injected;
 use crate::types::*;
 use actix_web::web::ServiceConfig;
-use actix_web::{get, web::Data, web::Json, web::Query};
+use actix_web::{get, web::Json, web::Query};
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -17,84 +17,86 @@ pub struct QueryParams {
 }
 
 #[get("/height")]
-pub async fn get_top_height_action(state: Data<AppState>) -> Result<Json<TreeList>> {
-    let trees = state.build::<TreeService>()?.get_top_by_height().await?;
-    let list = state.build::<TreeLoader>()?.load_list(&trees).await?;
+pub async fn get_top_height_action(
+    tree_service: Injected<TreeService>,
+    tree_loader: Injected<TreeLoader>,
+) -> Result<Json<TreeList>> {
+    let trees = tree_service.get_top_by_height().await?;
+    let list = tree_loader.load_list(&trees).await?;
     Ok(Json(list))
 }
 
 #[get("/state")]
 pub async fn get_state_stats_action(
-    state: Data<AppState>,
+    stats_service: Injected<StatsService>,
 ) -> Result<Json<Vec<StateStatsResponse>>> {
-    let stats = state
-        .build::<StatsService>()?
-        .count_trees_by_state()
-        .await?;
+    let stats = stats_service.count_trees_by_state().await?;
     Ok(Json(stats))
 }
 
 #[get("/species")]
-pub async fn get_species_stats_action(state: Data<AppState>) -> Result<Json<Vec<SpeciesStats>>> {
-    let res = state.build::<SpeciesService>()?.get_stats().await?;
+pub async fn get_species_stats_action(
+    species_service: Injected<SpeciesService>,
+) -> Result<Json<Vec<SpeciesStats>>> {
+    let res = species_service.get_stats().await?;
     Ok(Json(res))
 }
 
 #[get("/top-users")]
-pub async fn get_top_users(state: Data<AppState>) -> Result<Json<UserList>> {
-    let res = state.build::<UserService>()?.get_top_users().await?;
+pub async fn get_top_users(user_service: Injected<UserService>) -> Result<Json<UserList>> {
+    let res = user_service.get_top_users().await?;
     Ok(Json(res.into()))
 }
 
 #[get("/diameter")]
-pub async fn get_top_diameter_action(state: Data<AppState>) -> Result<Json<TreeList>> {
-    let trees = state.build::<TreeService>()?.get_top_by_diameter().await?;
-    let list = state.build::<TreeLoader>()?.load_list(&trees).await?;
+pub async fn get_top_diameter_action(
+    tree_service: Injected<TreeService>,
+    tree_loader: Injected<TreeLoader>,
+) -> Result<Json<TreeList>> {
+    let trees = tree_service.get_top_by_diameter().await?;
+    let list = tree_loader.load_list(&trees).await?;
     Ok(Json(list))
 }
 
 #[get("/species/mismatch")]
 pub async fn get_species_mismatch_action(
-    state: Data<AppState>,
+    tree_service: Injected<TreeService>,
+    tree_loader: Injected<TreeLoader>,
     query: Query<QueryParams>,
 ) -> Result<Json<TreeList>> {
     let count = query.count.unwrap_or(100);
     let skip = query.skip.unwrap_or(0);
 
-    let trees = state
-        .build::<TreeService>()?
-        .get_mismatching_species(count, skip)
-        .await?;
+    let trees = tree_service.get_mismatching_species(count, skip).await?;
 
-    let list = state.build::<TreeLoader>()?.load_list(&trees).await?;
+    let list = tree_loader.load_list(&trees).await?;
 
     Ok(Json(list))
 }
 
 #[get("/streets")]
 pub async fn get_top_streets_action(
-    state: Data<AppState>,
+    stats_service: Injected<StatsService>,
 ) -> Result<Json<Vec<StreetStatsResponse>>> {
-    let res = state.build::<StatsService>()?.get_top_streets().await?;
+    let res = stats_service.get_top_streets().await?;
     Ok(Json(res))
 }
 
 #[get("/circumference")]
-pub async fn get_top_circumference_action(state: Data<AppState>) -> Result<Json<TreeList>> {
-    let trees = state
-        .build::<TreeService>()?
-        .get_top_by_circumference()
-        .await?;
-    let list = state.build::<TreeLoader>()?.load_list(&trees).await?;
+pub async fn get_top_circumference_action(
+    tree_service: Injected<TreeService>,
+    tree_loader: Injected<TreeLoader>,
+) -> Result<Json<TreeList>> {
+    let trees = tree_service.get_top_by_circumference().await?;
+    let list = tree_loader.load_list(&trees).await?;
     Ok(Json(list))
 }
 
 #[get("/diversity")]
-pub async fn get_diversity_index_action(state: Data<AppState>) -> Result<Json<DiversityReport>> {
-    let report = state
-        .build::<SpeciesService>()?
-        .get_diversity_index()
-        .await?;
+pub async fn get_diversity_index_action(
+    species_service: Injected<SpeciesService>,
+) -> Result<Json<DiversityReport>> {
+    let report = species_service.get_diversity_index().await?;
     Ok(Json(report))
 }
 

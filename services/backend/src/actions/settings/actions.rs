@@ -1,5 +1,5 @@
 use crate::domain::settings::{SettingsService, UpdateSettingsRequest};
-use crate::services::{AppState, ContextExt};
+use crate::services::{AppState, Injected};
 use crate::types::Result;
 use actix_web::web::{Data, Json, ServiceConfig};
 use actix_web::{put, HttpRequest, HttpResponse};
@@ -14,13 +14,13 @@ struct RequestPayload {
 #[put("")]
 pub async fn update_settings_action(
     state: Data<AppState>,
+    settings_service: Injected<SettingsService>,
     payload: Json<RequestPayload>,
     req: HttpRequest,
 ) -> Result<HttpResponse> {
     let user_id = state.get_user_id(&req)?;
 
-    state
-        .build::<SettingsService>()?
+    settings_service
         .update(UpdateSettingsRequest {
             user_id,
             name: payload.name.clone(),

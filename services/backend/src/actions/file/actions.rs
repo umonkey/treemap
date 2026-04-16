@@ -6,7 +6,7 @@ use std::time::{Duration, SystemTime};
 
 use super::schemas::FileStatusResponse;
 use crate::domain::tree_image::TreeImageService;
-use crate::services::{AppState, ContextExt};
+use crate::services::{AppState, Injected};
 use crate::types::Result;
 
 #[derive(Debug, Deserialize)]
@@ -14,8 +14,11 @@ pub struct PathInfo {
     pub id: u64,
 }
 
-async fn get_file_real(state: Data<AppState>, id: u64) -> Result<HttpResponse> {
-    let file = state.build::<TreeImageService>()?.get_file(id).await?;
+async fn get_file_real(
+    tree_image_service: Injected<TreeImageService>,
+    id: u64,
+) -> Result<HttpResponse> {
+    let file = tree_image_service.get_file(id).await?;
 
     let etag = ETag(EntityTag::new_strong(id.to_string()));
 
@@ -38,39 +41,40 @@ async fn get_file_real(state: Data<AppState>, id: u64) -> Result<HttpResponse> {
 }
 
 #[get("/{id:\\d+}.jpg")]
-pub async fn get_file_jpg(state: Data<AppState>, path: Path<PathInfo>) -> Result<HttpResponse> {
-    get_file_real(state, path.id).await
+pub async fn get_file_jpg(
+    tree_image_service: Injected<TreeImageService>,
+    path: Path<PathInfo>,
+) -> Result<HttpResponse> {
+    get_file_real(tree_image_service, path.id).await
 }
 
 #[get("/{id:\\d+}")]
-pub async fn get_file(state: Data<AppState>, path: Path<PathInfo>) -> Result<HttpResponse> {
-    get_file_real(state, path.id).await
+pub async fn get_file(
+    tree_image_service: Injected<TreeImageService>,
+    path: Path<PathInfo>,
+) -> Result<HttpResponse> {
+    get_file_real(tree_image_service, path.id).await
 }
 
 #[get("/{id:\\d+}/status")]
 pub async fn get_file_status_action(
-    state: Data<AppState>,
+    tree_image_service: Injected<TreeImageService>,
     path: Path<PathInfo>,
 ) -> Result<Json<FileStatusResponse>> {
-    let status = state
-        .build::<TreeImageService>()?
-        .get_file_status(path.id)
-        .await?;
+    let status = tree_image_service.get_file_status(path.id).await?;
     Ok(Json(status.into()))
 }
 
 #[delete("/{id:\\d+}")]
 pub async fn delete_file_action(
     state: Data<AppState>,
+    tree_image_service: Injected<TreeImageService>,
     path: Path<PathInfo>,
     req: HttpRequest,
 ) -> Result<HttpResponse> {
     let user_id = state.get_user_id(&req)?;
 
-    state
-        .build::<TreeImageService>()?
-        .delete_file(user_id, path.id)
-        .await?;
+    tree_image_service.delete_file(user_id, path.id).await?;
 
     Ok(HttpResponse::Accepted().finish())
 }

@@ -1,7 +1,7 @@
 use crate::domain::login::{GoogleAuthCallbackPayload, LoginService};
-use crate::services::{AppState, ContextExt};
+use crate::services::Injected;
 use crate::types::Result;
-use actix_web::web::{Data, Form, Redirect, ServiceConfig};
+use actix_web::web::{Form, Redirect, ServiceConfig};
 use actix_web::{post, HttpResponse};
 use serde::Deserialize;
 
@@ -12,24 +12,20 @@ pub struct OsmLoginPayload {
 
 #[post("/osm")]
 pub async fn osm_action(
-    state: Data<AppState>,
+    login_service: Injected<LoginService>,
     payload: Form<OsmLoginPayload>,
 ) -> Result<HttpResponse> {
-    state
-        .build::<LoginService>()?
-        .login_osm(payload.code.clone())
-        .await?;
+    login_service.login_osm(payload.code.clone()).await?;
 
     Ok(HttpResponse::Ok().finish())
 }
 
 #[post("/google")]
 pub async fn google_action(
-    state: Data<AppState>,
+    login_service: Injected<LoginService>,
     payload: Form<GoogleAuthCallbackPayload>,
 ) -> Result<Redirect> {
-    let redirect = state
-        .build::<LoginService>()?
+    let redirect = login_service
         .login_google(GoogleAuthCallbackPayload {
             access_token: payload.access_token.clone(),
             state: payload.state.clone(),
