@@ -2,7 +2,7 @@ name: "Frontend tests"
 
 on:
   pull_request:
-    paths: 'frontend/**'
+    paths: 'services/frontend/**'
   workflow_dispatch:
 
 env:
@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: frontend
+        working-directory: services/frontend
 
     steps:
     - uses: actions/checkout@v4
@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: frontend
+        working-directory: services/frontend
 
     steps:
     - uses: actions/checkout@v4

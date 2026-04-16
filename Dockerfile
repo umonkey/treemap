@@ -28,7 +28,7 @@ ENV RUSTFLAGS=-Ctarget-feature=-crt-static
 ENV OPENSSL_DIR=/usr
 
 WORKDIR /app
-COPY backend/Cargo.toml backend/Cargo.lock ./
+COPY services/backend/Cargo.toml services/backend/Cargo.lock ./
 
 # STEP 1: build the backend.
 # Create a dummy main.rs to build only dependencies.
@@ -39,8 +39,8 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry \
 RUN rm -rf src
 
 # Now build the main application.
-COPY backend/src src
-COPY backend/dev dev
+COPY services/backend/src src
+COPY services/backend/dev dev
 RUN touch src/main.rs
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
     --mount=type=cache,target=/app/target \
@@ -54,10 +54,10 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry \
 
 FROM docker.io/library/node:22-alpine AS frontend-builder
 WORKDIR /app
-COPY frontend/package*.json ./
+COPY services/frontend/package*.json ./
 RUN --mount=type=cache,target=/root/.npm \
     npm ci
-COPY frontend/. .
+COPY services/frontend/. .
 RUN npm run build
 
 
@@ -72,9 +72,9 @@ LABEL org.opencontainers.image.description="A simple self-contained backend and 
 RUN apk add --no-cache sqlite supervisor logrotate bash
 WORKDIR /app
 COPY --from=builder /app/treemap-bin bin/treemap
-COPY backend/docker/rootfs/ /
-COPY backend/dev/schema-sqlite.sql /app
-COPY backend/config.toml.dev /app
+COPY services/backend/docker/rootfs/ /
+COPY services/backend/dev/schema-sqlite.sql /app
+COPY services/backend/config.toml.dev /app
 COPY --from=frontend-builder /app/build /app/static
 
 ENV RUST_LOG=info,treemap=debug

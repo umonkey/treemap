@@ -62,5 +62,5 @@ To push new trees to OSM, the following additional options are required:
 
 ## Source Code Links
 
-- Pulling data from OSM is in `backend/src/services/osm_reader/mod.rs`
-- Pushing data to OSM is in `backend/src/services/osm_writer/mod.rs`
+- Pulling data from OSM is in `services/backend/src/services/osm_reader/mod.rs`
+- Pushing data to OSM is in `services/backend/src/services/osm_writer/mod.rs`

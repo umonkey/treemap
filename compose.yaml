@@ -11,7 +11,7 @@ services:
 
   backend:
     build:
-      context: backend
+      context: services/backend
     container_name: trees_backend
     command: /app/startup.sh
     restart: unless-stopped
@@ -28,16 +28,16 @@ services:
       - SQS_SECRET=${SQS_SECRET}
       - TREEMAP_CONFIG=/app/config.toml.dev
       - TURSO_TOKEN
-
+  
   frontend:
     build:
-      context: frontend
+      context: services/frontend
     container_name: trees_frontend
     restart: unless-stopped
     ports:
       - "5173:5173"
     volumes:
-      - ./frontend:/app
+      - ./services/frontend:/app
       - svelte_kit_data:/app/.svelte-kit
     depends_on:
       - backend

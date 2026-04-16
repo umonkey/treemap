@@ -1,9 +1,9 @@
 /.cache
 /.env
 /.envrc
-/backend/database.*
-/backend/target
-/frontend/node_modules
+/services/backend/database.*
+/services/backend/target
+/services/frontend/node_modules
 /var/
 /wiki
 /trees.json

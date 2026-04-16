@@ -6,7 +6,7 @@ on:
   push:
     branches-ignore:
       - master
-    paths: 'frontend/**'
+    paths: 'services/frontend/**'
 
 jobs:
   build:
@@ -27,11 +27,11 @@ jobs:
 
     - name: Install new dependencies
       run: |
-        cd frontend
+        cd services/frontend
         npm ci
 
     - name: Run Storybook + Chromatic
       uses: chromaui/action@latest
       with:
         projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-        workingDir: frontend
+        workingDir: services/frontend

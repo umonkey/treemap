@@ -1,5 +1,5 @@
 // Database schema for the tree map application.
-// Generated from backend/dev/schema-sqlite.sql
+// Generated from services/backend/dev/schema-sqlite.sql
 
 Table trees {
   id int [pk]

@@ -13,12 +13,12 @@ RUN apk add --no-cache sqlite supervisor logrotate
 WORKDIR /app
 
 # These files are made with: make build-frontend-docker
-COPY frontend/build /app/static
+COPY services/frontend/build /app/static
 
 # These files are made with: make build-backend-docker
-COPY backend/target/release/treemap /app/bin/treemap
-COPY backend/dev/schema-sqlite.sql /app/schema-sqlite.sql
-COPY backend/dev/species.sql /app/species.sql
+COPY services/backend/target/release/treemap /app/bin/treemap
+COPY services/backend/dev/schema-sqlite.sql /app/schema-sqlite.sql
+COPY services/backend/dev/species.sql /app/species.sql
 
 COPY container/rootfs/ /
 

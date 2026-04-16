@@ -11,13 +11,13 @@ on:
     branches:
       - master
     paths:
-      - 'backend/**'
-      - 'frontend/**'
+      - 'services/backend/**'
+      - 'services/frontend/**'
       - 'Dockerfile'
   pull_request:
     paths:
-      - 'backend/**'
-      - 'frontend/**'
+      - 'services/backend/**'
+      - 'services/frontend/**'
       - 'Dockerfile'
   workflow_dispatch:
 

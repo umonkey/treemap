@@ -2,7 +2,7 @@ name: "Backend tests"
 
 on:
   pull_request:
-    paths: 'backend/**'
+    paths: 'services/backend/**'
   workflow_dispatch:
 
 env:
@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: backend
+        working-directory: services/backend
 
     steps:
     - uses: actions/checkout@v4
@@ -25,8 +25,8 @@ jobs:
     - name: Cache target files
       uses: actions/cache@v4
       with:
-        path: 'backend/target'
-        key: ${{ runner.os }}-linter-${{ hashFiles('backend/Cargo.lock') }}
+        path: 'services/backend/target'
+        key: ${{ runner.os }}-linter-${{ hashFiles('services/backend/Cargo.lock') }}
 
     - name: Run sccache-cache
       uses: mozilla-actions/sccache-action@v0.0.9
@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: backend
+        working-directory: services/backend
 
     steps:
     - uses: actions/checkout@v4
@@ -52,8 +52,8 @@ jobs:
     - name: Cache target files
       uses: actions/cache@v4
       with:
-        path: 'backend/target'
-        key: ${{ runner.os }}-unit-${{ hashFiles('backend/Cargo.lock') }}
+        path: 'services/backend/target'
+        key: ${{ runner.os }}-unit-${{ hashFiles('services/backend/Cargo.lock') }}
 
     - name: Run sccache-cache
       uses: mozilla-actions/sccache-action@v0.0.9

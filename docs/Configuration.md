@@ -1,7 +1,7 @@
 # Configuration
 
 The application is configured using a configuration file named `config.toml` and file-based secrets to set access tokens.
-Please look in the example `backend/config.toml.dist` file for a list of available options and their meaning.
+Please look in the example `services/backend/config.toml.dist` file for a list of available options and their meaning.
 The application has built in sensible defaults and can run without a config file.
 But normally you rename the file as `config.toml`, make edits and run the backend.
 

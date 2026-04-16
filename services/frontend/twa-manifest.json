@@ -17,7 +17,7 @@
 	"maskableIconUrl": "https://yerevan.treemaps.app/icons/app-512x512.png",
 	"splashScreenFadeOutDuration": 300,
 	"signingKey": {
-		"path": "/home/hex/src/umonkey/treemap/frontend/release.keystore",
+		"path": "/home/hex/src/umonkey/treemap/services/frontend/release.keystore",
 		"alias": "android"
 	},
 	"appVersionName": "1",

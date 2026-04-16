@@ -2,6 +2,7 @@
 name: rust
 description: Coding style and formatting rules for Rust code. Use this whenever modifying any Rust files.
 ---
+
 # Skill: rust
 
 ## Formatting rules

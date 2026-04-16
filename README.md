@@ -29,7 +29,7 @@ The map is provided by [Leaflet](https://leafletjs.com/).
 The frontend is a [Progressive Web App](https://web.dev/progressive-web-apps/), which means it will be installable on a mobile device and used offline one day.
 
 The project uses the [monorepo](https://en.wikipedia.org/wiki/Monorepo) approach to keep all the code in one place, for simplicity.
-The backend and the frontend are in separate directories.
+The services (backend, frontend, proxy) are located in the `services/` directory.
 
 
 ## Getting started

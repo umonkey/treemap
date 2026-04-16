@@ -32,7 +32,7 @@ docker build --tag treemap_rust_builder:latest --file container/Dockerfile.rust-
 # (3) Build the backend.
 mkdir -p .cache/rust-registry
 docker run --rm \
-    -v $PWD/backend:/app \
+    -v $PWD/services/backend:/app \
     -v $PWD/.cache/rust-registry:/root/.cargo/registry \
     -w /app \
     treemap_rust_builder:latest \
@@ -41,7 +41,7 @@ docker run --rm \
 # (4) Test and build the frontend.
 mkdir -p .cache/npm
 docker run --rm \
-    -v $PWD/frontend:/app \
+    -v $PWD/services/frontend:/app \
     -v $PWD/.cache/npm:/root/.npm \
     -w /app \
     -e VITE_SENTRY_AUTH_TOKEN="$SENTRY_AUTH_TOKEN" \
