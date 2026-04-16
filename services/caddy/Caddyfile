@@ -1,4 +1,5 @@
 yerevan.treemaps.app, api.treemaps.app {
+	log
 	tls {
 		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
 	}
