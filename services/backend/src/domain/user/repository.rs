@@ -33,15 +33,21 @@ impl UserRepository {
     }
 
     pub async fn get_multiple(&self, ids: &[u64]) -> Result<Vec<User>> {
-        let mut users: Vec<User> = Vec::new();
+        let ids = unique_ids(ids);
 
-        for id in unique_ids(ids) {
-            if let Some(user) = self.get(id).await? {
-                users.push(user);
-            }
+        if ids.is_empty() {
+            return Ok(Vec::new());
         }
 
-        Ok(users)
+        let placeholders: Vec<String> = ids.iter().map(|_| "?".to_string()).collect();
+        let query = format!(
+            "SELECT * FROM {} WHERE id IN ({})",
+            TABLE,
+            placeholders.join(", ")
+        );
+        let params: Vec<Value> = ids.into_iter().map(|id| Value::from(id as i64)).collect();
+
+        self.query_multiple_sql(&query, &params).await
     }
 
     pub async fn add(&self, user: &User) -> Result<()> {

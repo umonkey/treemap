@@ -66,10 +66,11 @@ where
                 actix_web::error::ErrorInternalServerError("AppState missing in app_data")
             })?;
 
-            // Optimization: Skip transactions for OPTIONS requests.
+            // Optimization: Skip transactions for OPTIONS and GET requests.
             // This reduces connection churn and avoids unnecessary locks.
             let method = req.method().clone();
-            let skip_transaction = method == actix_web::http::Method::OPTIONS;
+            let skip_transaction = method == actix_web::http::Method::OPTIONS
+                || method == actix_web::http::Method::GET;
 
             if skip_transaction {
                 return service.call(req).await;

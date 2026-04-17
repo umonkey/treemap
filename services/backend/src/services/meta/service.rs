@@ -3,7 +3,10 @@ use crate::services::{Context, Injectable};
 use crate::types::{Error, Result};
 use html_escape::encode_double_quoted_attribute_to_string;
 use log::error;
+use std::sync::OnceLock;
 use tokio::fs;
+
+static INDEX_TEMPLATE: OnceLock<String> = OnceLock::new();
 
 pub struct MetaService {}
 
@@ -120,10 +123,17 @@ impl MetaService {
     async fn inject_meta(&self, html: &str) -> Result<String> {
         let path = "static/index.html";
 
-        let body = fs::read_to_string(path).await.map_err(|e| {
-            error!("Error reading file: {e:?}");
-            Error::FileNotFound
-        })?;
+        let body = if let Some(template) = INDEX_TEMPLATE.get() {
+            template.clone()
+        } else {
+            let content = fs::read_to_string(path).await.map_err(|e| {
+                error!("Error reading file: {e:?}");
+                Error::FileNotFound
+            })?;
+
+            let _ = INDEX_TEMPLATE.set(content.clone());
+            content
+        };
 
         Ok(body.replace("<!-- meta -->", html))
     }

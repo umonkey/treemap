@@ -5,7 +5,7 @@ use crate::infra::database::{CountQuery, IncrementQuery, InsertQuery, SelectQuer
 use crate::infra::database::{Database, Value};
 use crate::services::{Context, Injectable};
 use crate::types::*;
-use crate::utils::get_timestamp;
+use crate::utils::{get_timestamp, unique_ids};
 use log::{debug, info};
 use std::sync::Arc;
 
@@ -32,15 +32,21 @@ impl TreeRepository {
     }
 
     pub async fn get_multiple(&self, ids: &[u64]) -> Result<Vec<Tree>> {
-        let mut trees: Vec<Tree> = Vec::new();
+        let ids = unique_ids(ids);
 
-        for id in ids {
-            if let Some(tree) = self.get(*id).await? {
-                trees.push(tree);
-            }
+        if ids.is_empty() {
+            return Ok(Vec::new());
         }
 
-        Ok(trees)
+        let placeholders: Vec<String> = ids.iter().map(|_| "?".to_string()).collect();
+        let query = format!(
+            "SELECT * FROM `{}` WHERE id IN ({})",
+            TABLE,
+            placeholders.join(", ")
+        );
+        let params: Vec<Value> = ids.into_iter().map(|id| Value::from(id as i64)).collect();
+
+        self.fetch(&query, &params).await
     }
 
     pub async fn get_last_by_user(&self, user_id: u64) -> Result<Option<Tree>> {
