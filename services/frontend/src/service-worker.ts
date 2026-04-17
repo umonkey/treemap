@@ -30,32 +30,34 @@ self.addEventListener('fetch', (event) => {
 	const fetchEvent = event as FetchEvent;
 	if (fetchEvent.request.method !== 'GET') return;
 
+	const url = new URL(fetchEvent.request.url);
+
+	// Only handle requests to our own origin to avoid breaking API calls.
+	if (url.origin !== self.origin) return;
+
 	async function respond() {
-		const url = new URL(fetchEvent.request.url);
 		const cache = await caches.open(CACHE);
 
-		// Always try the cache first for assets
-		if (ASSETS.includes(url.pathname)) {
-			const response = await cache.match(url.pathname);
-			if (response) return response;
+		// Always try the cache first for assets and the index page.
+		// SvelteKit's ASSETS includes files from the static directory and the build output.
+		const isAsset = ASSETS.includes(url.pathname);
+		const isIndex = url.pathname === '/';
+
+		if (isAsset || isIndex) {
+			const cachedResponse = await cache.match(url.pathname);
+			if (cachedResponse) return cachedResponse;
 		}
 
-		// For everything else, try the network
+		// For everything else, or if the asset wasn't in cache, try the network.
 		try {
-			const response = await fetch(fetchEvent.request);
+			return await fetch(fetchEvent.request);
+		} catch (error) {
+			// Fallback to cache if network fails (e.g. for the index page).
+			const cachedResponse = await cache.match(fetchEvent.request);
+			if (cachedResponse) return cachedResponse;
 
-			// Cache successful responses
-			if (response.status === 200) {
-				cache.put(fetchEvent.request, response.clone());
-			}
-
-			return response;
-		} catch {
-			// Fallback to cache if network fails
-			const response = await cache.match(fetchEvent.request);
-			if (response) return response;
-
-			return new Response('Offline', { status: 408 });
+			// Return 503 Service Unavailable if truly offline and not in cache.
+			return new Response('Offline', { status: 503 });
 		}
 	}
 
