@@ -1,0 +1,20 @@
+GET https://api.treemaps.app/service-worker.js
+GET https://api.treemaps.app/tree/161513533249556480
+
+GET https://api.treemaps.app/v1/me/likes
+OPTIONS https://api.treemaps.app/v1/me/likes
+
+GET https://api.treemaps.app/v1/trees/161513533249556480
+OPTIONS https://api.treemaps.app/v1/trees/161513533249556480
+
+GET https://api.treemaps.app/v1/trees/161513533249556480/actors
+OPTIONS https://api.treemaps.app/v1/trees/161513533249556480/actors
+
+GET https://api.treemaps.app/v1/trees/161513533249556480/comments
+OPTIONS https://api.treemaps.app/v1/trees/161513533249556480/comments
+
+GET https://api.treemaps.app/v1/trees/161513533249556480/observations
+OPTIONS https://api.treemaps.app/v1/trees/161513533249556480/observations
+
+GET https://api.treemaps.app/v1/trees/stats
+OPTIONS https://api.treemaps.app/v1/trees/stats

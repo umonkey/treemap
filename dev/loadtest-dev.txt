@@ -1,0 +1,20 @@
+GET http://127.0.0.1:8000/service-worker.js
+GET http://127.0.0.1:8000/tree/161513533249556480
+
+GET http://127.0.0.1:8000/v1/me/likes
+OPTIONS http://127.0.0.1:8000/v1/me/likes
+
+GET http://127.0.0.1:8000/v1/trees/161513533249556480
+OPTIONS http://127.0.0.1:8000/v1/trees/161513533249556480
+
+GET http://127.0.0.1:8000/v1/trees/161513533249556480/actors
+OPTIONS http://127.0.0.1:8000/v1/trees/161513533249556480/actors
+
+GET http://127.0.0.1:8000/v1/trees/161513533249556480/comments
+OPTIONS http://127.0.0.1:8000/v1/trees/161513533249556480/comments
+
+GET http://127.0.0.1:8000/v1/trees/161513533249556480/observations
+OPTIONS http://127.0.0.1:8000/v1/trees/161513533249556480/observations
+
+GET http://127.0.0.1:8000/v1/trees/stats
+OPTIONS http://127.0.0.1:8000/v1/trees/stats
