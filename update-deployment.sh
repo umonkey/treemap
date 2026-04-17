@@ -23,3 +23,6 @@ echo $CR_TOKEN | docker login ghcr.io -u $CR_USER --password-stdin
 git pull
 docker compose -f compose.prod.yaml pull
 docker compose -f compose.prod.yaml up -d
+
+# Clean-up old images to reclaim disk space.
+docker image prune -f
