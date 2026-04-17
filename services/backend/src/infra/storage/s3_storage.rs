@@ -56,7 +56,7 @@ impl S3FileStorage {
 #[async_trait]
 impl FileStorageInterface for S3FileStorage {
     async fn read_file(&self, id: u64) -> Result<Vec<u8>> {
-        debug!("Reading file {id} from S3.");
+        debug!("Reading file {} from S3.", id);
         let start = Instant::now();
 
         let res = self
@@ -112,7 +112,7 @@ impl FileStorageInterface for S3FileStorage {
             .await;
 
         if let Err(e) = res {
-            error!("Error uploading file {id} to S3: {e:?}");
+            error!("Error uploading file {} to S3: {:?}", id, e);
             return Err(Error::FileUpload);
         }
 

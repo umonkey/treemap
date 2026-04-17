@@ -42,7 +42,7 @@ impl MigrateService {
                 .expect("Error writing files.");
         }
 
-        info!("Copied {count} files.");
+        info!("Copied {} files.", count);
 
         Ok(())
     }

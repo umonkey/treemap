@@ -9,7 +9,7 @@ use crate::types::*;
 use crate::utils::get_unique_id;
 use async_trait::async_trait;
 use libsql::params_from_iter;
-use libsql::{Builder, Database, Transaction};
+use libsql::{Builder, Connection, Database, Transaction};
 use log::{debug, info};
 use std::sync::Arc;
 use std::time::Instant;
@@ -25,12 +25,14 @@ pub struct SqliteDatabase {
 
 pub struct SqliteTransaction {
     tx: Arc<Mutex<Option<Transaction>>>,
+    _conn: Connection,
 }
 
 impl SqliteTransaction {
-    pub fn new(tx: Transaction) -> Self {
+    pub fn new(tx: Transaction, conn: Connection) -> Self {
         Self {
             tx: Arc::new(Mutex::new(Some(tx))),
+            _conn: conn,
         }
     }
 
@@ -111,7 +113,7 @@ impl SqliteDatabase {
                 ))
             })?;
 
-        info!("Connected to a Turso database at {url}");
+        info!("Connected to a Turso database at {}", url);
 
         Ok(Self {
             pool: Arc::new(pool),
@@ -124,7 +126,7 @@ impl SqliteDatabase {
             Error::DatabaseConnect(format!("Error opening an SQLite database in {path}: {e}"))
         })?;
 
-        info!("Using an SQLite database in {path}");
+        info!("Using an SQLite database in {}", path);
 
         Self::setup_pool(&pool).await?;
 
@@ -142,7 +144,7 @@ impl SqliteDatabase {
             Error::DatabaseConnect(format!("Error opening an in-memory SQLite database: {e}"))
         })?;
 
-        info!("Created a temporary SQLite database in {path}.");
+        info!("Created a temporary SQLite database in {}.", path);
 
         Self::setup_pool(&pool).await?;
 
@@ -151,22 +153,6 @@ impl SqliteDatabase {
         Ok(Self {
             pool: Arc::new(pool),
         })
-    }
-
-    pub async fn execute_batch(&self, script: &str) -> Result<()> {
-        Self::execute_pool(&self.pool, script.to_string()).await
-    }
-
-    async fn execute_pool(pool: &Database, script: String) -> Result<()> {
-        let conn = pool
-            .connect()
-            .map_err(|e| Error::DatabaseConnect(format!("Error connecting to SQLite: {e}")))?;
-
-        conn.execute_batch(&script)
-            .await
-            .map_err(|e| Error::DatabaseQuery(format!("Error executing SQL script: {e}")))?;
-
-        Ok(())
     }
 
     fn get_temporary_path() -> Result<String> {
@@ -185,15 +171,17 @@ impl SqliteDatabase {
     // Configure the SQLite engine.
     // Note that this does not work for remote connections.
     async fn setup_pool(pool: &Database) -> Result<()> {
-        let conn = pool.connect()?;
+        let conn = pool
+            .connect()
+            .map_err(|e| Error::DatabaseConnect(e.to_string()))?;
 
-        conn.execute_batch("PRAGMA journal_mode = WAL;")
-            .await
-            .map_err(|e| Error::DatabaseQuery(format!("Error setting journal_mode: {e}")))?;
-
-        conn.execute_batch("PRAGMA synchronous = NORMAL;")
-            .await
-            .map_err(|e| Error::DatabaseQuery(format!("Error setting synchronous: {e}")))?;
+        conn.execute_batch(
+            "PRAGMA journal_mode = WAL;
+             PRAGMA synchronous = NORMAL;
+             PRAGMA busy_timeout = 5000;",
+        )
+        .await
+        .map_err(|e| Error::DatabaseQuery(format!("Error setting database pragmas: {e}")))?;
 
         if cfg!(test) {
             let schema = include_str!("../../../dev/schema-sqlite.sql");
@@ -201,6 +189,19 @@ impl SqliteDatabase {
         }
 
         Ok(())
+    }
+
+    async fn connect(&self) -> Result<Connection> {
+        let conn = self
+            .pool
+            .connect()
+            .map_err(|e| Error::DatabaseConnect(e.to_string()))?;
+
+        conn.execute_batch("PRAGMA busy_timeout = 5000;")
+            .await
+            .map_err(|e| Error::DatabaseQuery(format!("Error setting busy_timeout: {e}")))?;
+
+        Ok(conn)
     }
 }
 
@@ -239,6 +240,132 @@ impl DatabaseInterface for SqliteTransaction {
         let tx = tx_lock.as_mut().expect("Transaction is open");
 
         tx.execute_batch(query).await.map_err(|e| {
+            Error::DatabaseQuery(format!("Error executing SQL batch: {e}; query={query}"))
+        })?;
+
+        Ok(())
+    }
+
+    async fn get_record(&self, query: SelectQuery) -> Result<Option<Attributes>> {
+        let query = query.with_limit(1);
+        let records = self.get_records(query).await?;
+        Ok(records.first().cloned())
+    }
+
+    async fn get_records(&self, query: SelectQuery) -> Result<Vec<Attributes>> {
+        let (sql, params) = query.build();
+
+        self.fetch_sql(sql.as_str(), params.as_slice()).await
+    }
+
+    async fn add_record(&self, query: InsertQuery) -> Result<()> {
+        let (sql, params) = query.build();
+        self.execute_sql(sql.as_str(), params.as_slice()).await?;
+        Ok(())
+    }
+
+    async fn replace(&self, query: ReplaceQuery) -> Result<()> {
+        let (sql, params) = query.build();
+        self.execute_sql(sql.as_str(), params.as_slice()).await?;
+        Ok(())
+    }
+
+    async fn update(&self, query: UpdateQuery) -> Result<u64> {
+        let (sql, params) = query.build();
+        self.execute_sql(sql.as_str(), params.as_slice()).await
+    }
+
+    async fn delete(&self, query: DeleteQuery) -> Result<u64> {
+        let (sql, params) = query.build();
+        self.execute_sql(sql.as_str(), params.as_slice()).await
+    }
+
+    async fn increment(&self, query: IncrementQuery) -> Result<()> {
+        let (sql, params) = query.build();
+        self.execute_sql(sql.as_str(), params.as_slice()).await?;
+        Ok(())
+    }
+
+    async fn count(&self, query: CountQuery) -> Result<u64> {
+        let (sql, params) = query.build();
+
+        let rows = self.fetch_sql(&sql, &params).await?;
+
+        if let Some(value) = rows.first() {
+            return value.require_u64("count");
+        }
+
+        Ok(0)
+    }
+}
+
+#[async_trait]
+impl DatabaseInterface for SqliteDatabase {
+    async fn transact(&self) -> Result<Box<dyn DatabaseInterface>> {
+        let conn = self.connect().await?;
+
+        let tx = conn
+            .transaction()
+            .await
+            .map_err(|e| Error::DatabaseQuery(e.to_string()))?;
+
+        Ok(Box::new(SqliteTransaction::new(tx, conn)))
+    }
+
+    async fn commit(&self) -> Result<()> {
+        Err(Error::DatabaseQuery("No transaction started".to_string()))
+    }
+
+    async fn rollback(&self) -> Result<()> {
+        Err(Error::DatabaseQuery("No transaction started".to_string()))
+    }
+
+    async fn fetch_sql(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>> {
+        let start = Instant::now();
+        let conn = self.connect().await?;
+
+        let mut stmt = conn.prepare(query).await.map_err(|e| {
+            Error::DatabaseQuery(format!("Error preparing SQL statement: {e}; query={query}"))
+        })?;
+
+        let mut rows = stmt.query(params_from_iter(params)).await.map_err(|e| {
+            Error::DatabaseQuery(format!("Error executing SQL statement: {e}; query={query}"))
+        })?;
+
+        let mut res: Vec<Attributes> = Vec::new();
+
+        while let Some(row) = rows.next().await? {
+            res.push(row.into());
+        }
+
+        let duration = start.elapsed();
+
+        debug!(
+            "Read {} rows in {}ms for query: {query}",
+            res.len(),
+            duration.as_millis()
+        );
+
+        Ok(res)
+    }
+
+    async fn execute_sql(&self, query: &str, params: &[Value]) -> Result<u64> {
+        let conn = self.connect().await?;
+
+        let rows = conn
+            .execute(query, params_from_iter(params.to_vec()))
+            .await
+            .map_err(|e| {
+                Error::DatabaseQuery(format!("Error executing SQL statement: {e}; query={query}"))
+            })?;
+
+        Ok(rows)
+    }
+
+    async fn execute_batch(&self, query: &str) -> Result<()> {
+        let conn = self.connect().await?;
+
+        conn.execute_batch(query).await.map_err(|e| {
             Error::DatabaseQuery(format!("Error executing SQL batch: {e}; query={query}"))
         })?;
 
@@ -297,85 +424,6 @@ impl DatabaseInterface for SqliteTransaction {
         }
 
         Ok(0)
-    }
-}
-
-#[async_trait]
-impl DatabaseInterface for SqliteDatabase {
-    async fn transact(&self) -> Result<Box<dyn DatabaseInterface>> {
-        let conn = self.pool.connect()?;
-        let tx = conn
-            .transaction()
-            .await
-            .map_err(|e| Error::DatabaseQuery(e.to_string()))?;
-        Ok(Box::new(SqliteTransaction::new(tx)))
-    }
-
-    async fn commit(&self) -> Result<()> {
-        Err(Error::DatabaseQuery("No transaction started".to_string()))
-    }
-
-    async fn rollback(&self) -> Result<()> {
-        Err(Error::DatabaseQuery("No transaction started".to_string()))
-    }
-
-    async fn fetch_sql(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>> {
-        self.transact().await?.fetch_sql(query, params).await
-    }
-
-    async fn execute_sql(&self, query: &str, params: &[Value]) -> Result<u64> {
-        let tx = self.transact().await?;
-        let res = tx.execute_sql(query, params).await?;
-        tx.commit().await?;
-        Ok(res)
-    }
-
-    async fn execute_batch(&self, query: &str) -> Result<()> {
-        SqliteDatabase::execute_batch(self, query).await
-    }
-
-    async fn get_record(&self, query: SelectQuery) -> Result<Option<Attributes>> {
-        self.transact().await?.get_record(query).await
-    }
-
-    async fn get_records(&self, query: SelectQuery) -> Result<Vec<Attributes>> {
-        self.transact().await?.get_records(query).await
-    }
-
-    async fn add_record(&self, query: InsertQuery) -> Result<()> {
-        let tx = self.transact().await?;
-        tx.add_record(query).await?;
-        tx.commit().await
-    }
-
-    async fn replace(&self, query: ReplaceQuery) -> Result<()> {
-        let tx = self.transact().await?;
-        tx.replace(query).await?;
-        tx.commit().await
-    }
-
-    async fn update(&self, query: UpdateQuery) -> Result<u64> {
-        let tx = self.transact().await?;
-        let res = tx.update(query).await?;
-        tx.commit().await?;
-        Ok(res)
-    }
-
-    async fn delete(&self, query: DeleteQuery) -> Result<u64> {
-        let tx = self.transact().await?;
-        let res = tx.delete(query).await?;
-        tx.commit().await?;
-        Ok(res)
-    }
-
-    async fn increment(&self, query: IncrementQuery) -> Result<()> {
-        let tx = self.transact().await?;
-        tx.increment(query).await?;
-        tx.commit().await
-    }
-
-    async fn count(&self, query: CountQuery) -> Result<u64> {
-        self.transact().await?.count(query).await
     }
 }
 

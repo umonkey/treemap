@@ -66,6 +66,16 @@ where
                 actix_web::error::ErrorInternalServerError("AppState missing in app_data")
             })?;
 
+            // Optimization: Skip transactions for OPTIONS and GET requests.
+            // This reduces connection churn and avoids unnecessary locks.
+            let method = req.method().clone();
+            let skip_transaction = method == actix_web::http::Method::OPTIONS
+                || method == actix_web::http::Method::GET;
+
+            if skip_transaction {
+                return service.call(req).await;
+            }
+
             // Start a new session (transaction).
             let session_state = state
                 .session()
@@ -85,9 +95,6 @@ where
                     .await
                     .map_err(actix_web::error::ErrorInternalServerError)?;
             }
-
-            // Note: If the status is an error, we don't commit.
-            // SQLite will automatically roll back when the transaction object is dropped.
 
             Ok(res)
         })

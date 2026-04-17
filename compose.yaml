@@ -23,12 +23,11 @@ services:
       - FILES_KEY=${FILES_KEY}
       - FILES_SECRET=${FILES_SECRET}
       - JWT_SECRET=foobar
-      - RUST_LOG=info,treemap=debug
+      - RUST_LOG=info,treemap=info
       - SQS_KEY=${SQS_KEY}
       - SQS_SECRET=${SQS_SECRET}
       - TREEMAP_CONFIG=/app/config.toml.dev
-      - TURSO_TOKEN
-  
+
   frontend:
     build:
       context: services/frontend

@@ -3,6 +3,7 @@
 # Database configuration.
 database = "sqlite"
 sqlite_path = "var/database.sqlite"
+workers = 10
 
 # Define the file storage backend.
 # The actual backend is configured below.

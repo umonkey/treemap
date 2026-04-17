@@ -9,7 +9,7 @@ pub struct ThumbnailerService;
 
 impl ThumbnailerService {
     pub fn resize(&self, data: &[u8], size: u32) -> Result<Vec<u8>> {
-        debug!("Reading an image to resize it to {size} px.");
+        debug!("Reading an image to resize it to {} px.", size);
 
         let img = self.decode(data)?;
 
@@ -19,9 +19,10 @@ impl ThumbnailerService {
         }
 
         info!(
-            "Resizing an {}x{} image to {size} px.",
+            "Resizing an {}x{} image to {} px.",
             img.width(),
-            img.height()
+            img.height(),
+            size
         );
 
         let rotated = self.autorotate(img, data)?;

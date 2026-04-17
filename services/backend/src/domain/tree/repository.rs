@@ -247,7 +247,10 @@ impl TreeRepository {
         self.add_tree_prop(tree_id, "osm_id", &osm_id.to_string(), user_id)
             .await?;
 
-        info!("Tree {tree_id} linked to OSM node {osm_id} by user {user_id}.");
+        info!(
+            "Tree {} linked to OSM node {} by user {}.",
+            tree_id, osm_id, user_id
+        );
 
         Ok(())
     }
@@ -263,7 +266,7 @@ impl TreeRepository {
 
         self.db.update(query).await?;
 
-        debug!("Comment count for tree {tree_id} set to {count}");
+        debug!("Comment count for tree {} set to {}", tree_id, count);
 
         Ok(())
     }
