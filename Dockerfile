@@ -54,7 +54,8 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry \
 FROM docker.io/library/node:22-bookworm AS frontend-builder
 WORKDIR /app
 COPY services/frontend/package*.json ./
-RUN --mount=type=cache,target=/root/.npm \
+RUN corepack enable && \
+    --mount=type=cache,target=/root/.npm \
     npm ci
 COPY services/frontend/. .
 RUN npm run build

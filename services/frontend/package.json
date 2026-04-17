@@ -1,6 +1,7 @@
 {
 	"name": "frontend-v2",
 	"version": "0.0.1",
+	"packageManager": "npm@10.9.2",
 	"type": "module",
 	"scripts": {
 		"autofix": "prettier --write .",

@@ -4,7 +4,7 @@
 FROM docker.io/library/node:22-bookworm
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci
+RUN corepack enable && npm ci
 COPY . .
 EXPOSE 5173
 CMD ["npm", "run", "dev", "--", "--host"]
