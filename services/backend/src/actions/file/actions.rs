@@ -25,6 +25,7 @@ async fn get_file_real(
     let cache_control = CacheControl(vec![
         CacheDirective::Public,
         CacheDirective::MaxAge(31536000),
+        CacheDirective::Extension("immutable".to_string(), None),
     ]);
 
     let expiration = SystemTime::now() + Duration::from_secs(31536000); // 1 year

@@ -49,16 +49,26 @@ pub async fn serve_command() {
         debug!("Initializing new thread.");
 
         App::new()
-            .wrap(DefaultHeaders::new().add(("Cache-Control", "no-store")))
-            .wrap(Cors::permissive())
+            .wrap(
+                Cors::default()
+                    .allow_any_origin()
+                    .allowed_methods(vec!["GET", "POST", "PUT", "DELETE"])
+                    .allowed_headers(vec![
+                        actix_web::http::header::AUTHORIZATION,
+                        actix_web::http::header::ACCEPT,
+                        actix_web::http::header::CONTENT_TYPE,
+                    ])
+                    .max_age(3600),
+            )
             .app_data(web::Data::from(state.clone()))
             .app_data(PayloadConfig::new(config.payload_size))
             // Prioritize because of collisions with wildcards later.
             .service(web::scope("/health").configure(health_router))
+            .service(web::scope("/tree").wrap(Transaction).configure(meta_router))
             .service(
                 web::scope("")
+                    .wrap(DefaultHeaders::new().add(("Cache-Control", "no-store")))
                     .wrap(Transaction)
-                    .service(web::scope("/tree").configure(meta_router))
                     .service(web::scope("/v1/comments").configure(comment_router))
                     .service(web::scope("/v1/upload").configure(upload_router))
                     .service(web::scope("/v1/settings").configure(settings_router))
@@ -73,6 +83,27 @@ pub async fn serve_command() {
                     .service(web::scope("/v1/trees").configure(tree_router))
                     .service(web::scope("/v1/users").configure(user_router))
                     .service(web::scope("/v3/login").configure(login_router)),
+            )
+            .service(
+                web::scope("/_app/immutable")
+                    .wrap(
+                        DefaultHeaders::new()
+                            .add(("Cache-Control", "public, max-age=31536000, immutable")),
+                    )
+                    .service(
+                        Files::new("", "./static/_app/immutable")
+                            .prefer_utf8(true)
+                            .use_hidden_files(),
+                    ),
+            )
+            .service(
+                web::scope("/_app")
+                    .wrap(DefaultHeaders::new().add(("Cache-Control", "public, max-age=3600")))
+                    .service(
+                        Files::new("", "./static/_app")
+                            .prefer_utf8(true)
+                            .use_hidden_files(),
+                    ),
             )
             .service(
                 Files::new("/", "./static")
