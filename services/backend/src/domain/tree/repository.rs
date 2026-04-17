@@ -6,7 +6,7 @@ use crate::infra::database::{Database, Value};
 use crate::services::{Context, Injectable};
 use crate::types::*;
 use crate::utils::get_timestamp;
-use log::{debug, error, info};
+use log::{debug, info};
 use std::sync::Arc;
 
 const TABLE: &str = "trees";
@@ -148,7 +148,7 @@ impl TreeRepository {
 
     pub async fn update(&self, tree: &Tree, user_id: u64) -> Result<Tree> {
         let old = self.get(tree.id).await?.ok_or_else(|| {
-            error!("Error updating a tree: tree not found");
+            debug!("Could not update tree {} as it doesn't exist.", tree.id);
             Error::TreeNotFound
         })?;
 
@@ -158,10 +158,7 @@ impl TreeRepository {
             .with_value("updated_at", Value::from(get_timestamp() as i64))
             .with_value("updated_by", Value::from(user_id as i64));
 
-        self.db.update(query).await.map_err(|e| {
-            error!("Error updating a tree: {e}");
-            e
-        })?;
+        self.db.update(query).await?;
 
         self.log_changes(&old, tree, user_id).await?;
 
@@ -176,10 +173,7 @@ impl TreeRepository {
             .with_value("updated_at", Value::from(get_timestamp() as i64))
             .with_value("updated_by", Value::from(user_id as i64));
 
-        self.db.update(query).await.map_err(|e| {
-            error!("Error updating a tree: {e}");
-            e
-        })?;
+        self.db.update(query).await?;
 
         self.add_tree_prop(old_id, "state", "gone", user_id).await?;
         self.add_tree_prop(old_id, "replaced_by", &new_id.to_string(), user_id)
@@ -198,10 +192,7 @@ impl TreeRepository {
             .with_value("lat", Value::from(lat))
             .with_value("lon", Value::from(lon));
 
-        self.db.update(query).await.map_err(|e| {
-            error!("Error updating a tree: {e}");
-            e
-        })?;
+        self.db.update(query).await?;
 
         let new = Tree {
             lat,
@@ -224,10 +215,7 @@ impl TreeRepository {
             .with_value("updated_by", Value::from(user_id as i64))
             .with_value("thumbnail_id", Value::from(thumbnail_id as i64));
 
-        self.db.update(query).await.map_err(|e| {
-            error!("Error updating a tree: {e}");
-            e
-        })?;
+        self.db.update(query).await?;
 
         self.add_tree_prop(tree_id, "thumbnail_id", &thumbnail_id.to_string(), user_id)
             .await
@@ -254,10 +242,7 @@ impl TreeRepository {
             .with_value("updated_by", Value::from(user_id as i64))
             .with_value("last_sync_at", Value::from(get_timestamp() as i64));
 
-        self.db.update(query).await.map_err(|e| {
-            error!("Error updating a tree: {e}");
-            e
-        })?;
+        self.db.update(query).await?;
 
         self.add_tree_prop(tree_id, "osm_id", &osm_id.to_string(), user_id)
             .await?;
@@ -276,10 +261,7 @@ impl TreeRepository {
             .with_condition("id", Value::from(tree_id as i64))
             .with_value("comment_count", Value::from(count as i64));
 
-        self.db.update(query).await.map_err(|e| {
-            error!("Error updating comment count for a tree: {e}");
-            e
-        })?;
+        self.db.update(query).await?;
 
         debug!("Comment count for tree {tree_id} set to {count}");
 
@@ -292,10 +274,7 @@ impl TreeRepository {
             .with_key(key)
             .with_value(value);
 
-        self.db.increment(query).await.map_err(|e| {
-            error!("Error incrementing {key} for tree {tree_id}: {e}");
-            e
-        })?;
+        self.db.increment(query).await?;
 
         Ok(())
     }
@@ -304,10 +283,7 @@ impl TreeRepository {
         match self.db.get_record(query).await {
             Ok(Some(props)) => Ok(Some(Tree::from_attributes(&props)?)),
             Ok(None) => Ok(None),
-            Err(err) => {
-                error!("Error reading a tree: {err}");
-                Err(err)
-            }
+            Err(err) => Err(err),
         }
     }
 
