@@ -42,6 +42,10 @@ services:
       - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
     depends_on:
       - backend
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
 
 volumes:
   var:
