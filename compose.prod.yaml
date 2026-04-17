@@ -22,6 +22,10 @@ services:
       - SQS_SECRET=${SQS_SECRET}
       - TREEMAP_CONFIG=/app/config.toml
       - TURSO_TOKEN=${TURSO_AUTH_TOKEN}
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
 
   caddy:
     image: ghcr.io/umonkey/treemap-caddy:latest
