@@ -24,7 +24,6 @@
 
 FROM docker.io/library/rust:1.95-bookworm AS builder
 RUN apt-get update && apt-get install -y libssl-dev pkg-config
-ENV OPENSSL_DIR=/usr
 
 WORKDIR /app
 COPY services/backend/Cargo.toml services/backend/Cargo.lock ./
@@ -54,8 +53,8 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry \
 FROM docker.io/library/node:22-bookworm AS frontend-builder
 WORKDIR /app
 COPY services/frontend/package*.json ./
-RUN corepack enable && \
-    --mount=type=cache,target=/root/.npm \
+RUN corepack enable
+RUN --mount=type=cache,target=/root/.npm \
     npm ci
 COPY services/frontend/. .
 RUN npm run build
