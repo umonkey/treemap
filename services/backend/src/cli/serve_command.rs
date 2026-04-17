@@ -54,12 +54,8 @@ pub async fn serve_command() {
             .wrap(
                 Cors::default()
                     .allow_any_origin()
-                    .allowed_methods(vec!["GET", "POST", "PUT", "DELETE"])
-                    .allowed_headers(vec![
-                        actix_web::http::header::AUTHORIZATION,
-                        actix_web::http::header::ACCEPT,
-                        actix_web::http::header::CONTENT_TYPE,
-                    ])
+                    .allowed_methods(vec!["GET", "POST", "PUT", "PATCH", "DELETE"])
+                    .allow_any_header()
                     .max_age(3600),
             )
             .app_data(web::Data::from(state.clone()))
