@@ -23,7 +23,9 @@ use crate::actions::user::user_router;
 use crate::services::*;
 use actix_cors::Cors;
 use actix_files::Files;
-use actix_web::{middleware::DefaultHeaders, web, web::PayloadConfig, App, HttpServer};
+use actix_web::{
+    middleware::DefaultHeaders, web, web::PayloadConfig, App, HttpResponse, HttpServer,
+};
 use log::{debug, info};
 use std::sync::Arc;
 use std::time::Duration;
@@ -66,6 +68,33 @@ pub async fn serve_command() {
             .service(web::scope("/health").configure(health_router))
             .service(web::scope("/tree").wrap(Transaction).configure(meta_router))
             .service(
+                web::scope("/_app/immutable")
+                    .wrap(
+                        DefaultHeaders::new()
+                            .add(("Cache-Control", "public, max-age=31536000, immutable")),
+                    )
+                    .default_service(
+                        Files::new("", "./static/_app/immutable")
+                            .prefer_utf8(true)
+                            .use_hidden_files()
+                            .default_handler(web::to(|| async {
+                                HttpResponse::NotFound().finish()
+                            })),
+                    ),
+            )
+            .service(
+                web::scope("/_app")
+                    .wrap(DefaultHeaders::new().add(("Cache-Control", "public, max-age=3600")))
+                    .default_service(
+                        Files::new("", "./static/_app")
+                            .prefer_utf8(true)
+                            .use_hidden_files()
+                            .default_handler(web::to(|| async {
+                                HttpResponse::NotFound().finish()
+                            })),
+                    ),
+            )
+            .service(
                 web::scope("")
                     .wrap(DefaultHeaders::new().add(("Cache-Control", "no-store")))
                     .wrap(Transaction)
@@ -83,27 +112,6 @@ pub async fn serve_command() {
                     .service(web::scope("/v1/trees").configure(tree_router))
                     .service(web::scope("/v1/users").configure(user_router))
                     .service(web::scope("/v3/login").configure(login_router)),
-            )
-            .service(
-                web::scope("/_app/immutable")
-                    .wrap(
-                        DefaultHeaders::new()
-                            .add(("Cache-Control", "public, max-age=31536000, immutable")),
-                    )
-                    .service(
-                        Files::new("", "./static/_app/immutable")
-                            .prefer_utf8(true)
-                            .use_hidden_files(),
-                    ),
-            )
-            .service(
-                web::scope("/_app")
-                    .wrap(DefaultHeaders::new().add(("Cache-Control", "public, max-age=3600")))
-                    .service(
-                        Files::new("", "./static/_app")
-                            .prefer_utf8(true)
-                            .use_hidden_files(),
-                    ),
             )
             .service(
                 Files::new("/", "./static")

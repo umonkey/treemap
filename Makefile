@@ -32,3 +32,7 @@ load-dev:
 
 load-prod:
 	vegeta attack -targets=dev/loadtest-prod.txt -rate=100 -duration=30s | vegeta report
+
+rebuild-backend:
+	docker compose build backend
+	docker compose up backend -d
