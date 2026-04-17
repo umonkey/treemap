@@ -3,12 +3,15 @@
 # Note that the image is compiled from pre-build binaries and static files.
 # There are separate build steps to produce those, se commends below.
 
-FROM docker.io/library/alpine:3.22
+FROM docker.io/library/debian:bookworm-slim
 LABEL maintainer="hex@umonkey.net"
 LABEL org.opencontainers.image.source=https://github.com/umonkey/treemap
 LABEL org.opencontainers.image.description="A simple self-contained backend and frontend image using an SQLite database."
 
-RUN apk add --no-cache sqlite supervisor logrotate
+RUN apt-get update && \
+    apt-get install -y sqlite3 supervisor logrotate ca-certificates && \
+    ln -s /usr/bin/sqlite3 /usr/bin/sqlite && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 

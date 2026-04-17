@@ -48,7 +48,7 @@ docker run --rm \
     -e PUBLIC_API_ROOT="https://yerevan.treemaps.app/" \
     --network=host \
     --ulimit nofile=5000:5000 \
-    docker.io/library/node:24-alpine3.22 \
+    docker.io/library/node:22-bookworm \
     sh -c "npm ci && npm run build"
 
 # (5) Build the final Docker image.

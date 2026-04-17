@@ -22,9 +22,8 @@
 # PHASE 1: build the backend.
 #############################
 
-FROM docker.io/library/rust:1.88-alpine3.22 AS builder
-RUN apk add --no-cache musl-dev openssl-dev
-ENV RUSTFLAGS=-Ctarget-feature=-crt-static
+FROM docker.io/library/rust:1.95-bookworm AS builder
+RUN apt-get update && apt-get install -y libssl-dev pkg-config
 ENV OPENSSL_DIR=/usr
 
 WORKDIR /app
@@ -52,7 +51,7 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry \
 # PHASE 2: build the frontend.
 ##############################
 
-FROM docker.io/library/node:22-alpine AS frontend-builder
+FROM docker.io/library/node:22-bookworm AS frontend-builder
 WORKDIR /app
 COPY services/frontend/package*.json ./
 RUN --mount=type=cache,target=/root/.npm \
@@ -65,14 +64,20 @@ RUN npm run build
 # PHASE 3: build the final image.
 #################################
 
-FROM docker.io/library/alpine:3.22
+FROM docker.io/library/debian:bookworm-slim
 LABEL maintainer="hex@umonkey.net"
 LABEL org.opencontainers.image.source=https://github.com/umonkey/treemap
 LABEL org.opencontainers.image.description="A simple self-contained backend and frontend image using an SQLite database."
-RUN apk add --no-cache sqlite supervisor logrotate bash
+RUN apt-get update && \
+    apt-get install -y sqlite3 supervisor logrotate bash ca-certificates cron && \
+    ln -s /usr/bin/sqlite3 /usr/bin/sqlite && \
+    ln -s /usr/sbin/cron /usr/sbin/crond && \
+    mkdir -p /var/spool/cron/crontabs && \
+    rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY --from=builder /app/treemap-bin bin/treemap
 COPY services/backend/docker/rootfs/ /
+RUN if [ -f /etc/crontabs/root ]; then mkdir -p /var/spool/cron/crontabs && cp /etc/crontabs/root /var/spool/cron/crontabs/root && chmod 600 /var/spool/cron/crontabs/root; fi
 COPY services/backend/dev/schema-sqlite.sql /app
 COPY services/backend/config.toml.dev /app
 COPY --from=frontend-builder /app/build /app/static
