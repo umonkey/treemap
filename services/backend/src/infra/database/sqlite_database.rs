@@ -10,7 +10,7 @@ use crate::utils::get_unique_id;
 use async_trait::async_trait;
 use libsql::params_from_iter;
 use libsql::{Builder, Database, Transaction};
-use log::{debug, error, info};
+use log::{debug, info};
 use std::sync::Arc;
 use std::time::Instant;
 use tokio::sync::{Mutex, MutexGuard};
@@ -61,8 +61,8 @@ impl SqliteTransaction {
         let rows = tx
             .execute(query, params_from_iter(params.to_vec()))
             .await
-            .inspect_err(|e| {
-                error!("Error executing SQL statement: {e}; query={query}");
+            .map_err(|e| {
+                Error::DatabaseQuery(format!("Error executing SQL statement: {e}; query={query}"))
             })?;
 
         Ok(rows)
@@ -73,16 +73,13 @@ impl SqliteTransaction {
         let mut tx_lock = self.lock().await?;
         let tx = tx_lock.as_mut().expect("Transaction is open");
 
-        let mut stmt = tx.prepare(query).await.inspect_err(|e| {
-            error!("Error preparing SQL statement: {e}");
+        let mut stmt = tx.prepare(query).await.map_err(|e| {
+            Error::DatabaseQuery(format!("Error preparing SQL statement: {e}; query={query}"))
         })?;
 
-        let mut rows = stmt
-            .query(params_from_iter(params))
-            .await
-            .inspect_err(|e| {
-                error!("Error executing SQL statement: {e}");
-            })?;
+        let mut rows = stmt.query(params_from_iter(params)).await.map_err(|e| {
+            Error::DatabaseQuery(format!("Error executing SQL statement: {e}; query={query}"))
+        })?;
 
         let mut res: Vec<Attributes> = Vec::new();
 
@@ -139,7 +136,7 @@ impl SqliteDatabase {
     // Creates a client for a local database.
     // NB: this creates a new database per connection.
     pub async fn from_memory() -> Result<Self> {
-        let path = Self::get_temporary_path();
+        let path = Self::get_temporary_path()?;
 
         let pool = Builder::new_local(&path).build().await.map_err(|e| {
             Error::DatabaseConnect(format!("Error opening an in-memory SQLite database: {e}"))
@@ -161,26 +158,28 @@ impl SqliteDatabase {
     }
 
     async fn execute_pool(pool: &Database, script: String) -> Result<()> {
-        let conn = pool.connect().inspect_err(|e| {
-            error!("Error connecting to SQLite: {e}");
-        })?;
+        let conn = pool
+            .connect()
+            .map_err(|e| Error::DatabaseConnect(format!("Error connecting to SQLite: {e}")))?;
 
-        conn.execute_batch(&script).await.inspect_err(|e| {
-            error!("Error executing SQL script: {e}");
-        })?;
+        conn.execute_batch(&script)
+            .await
+            .map_err(|e| Error::DatabaseQuery(format!("Error executing SQL script: {e}")))?;
 
         Ok(())
     }
 
-    fn get_temporary_path() -> String {
+    fn get_temporary_path() -> Result<String> {
         if !std::path::Path::new(TEMP_DB_DIR).is_dir() {
-            if let Err(e) = std::fs::create_dir_all(TEMP_DB_DIR) {
-                error!("Could not create temporary db location {TEMP_DB_DIR}: {e}");
-            }
+            std::fs::create_dir_all(TEMP_DB_DIR).map_err(|e| {
+                Error::DatabaseConnect(format!(
+                    "Could not create temporary db location {TEMP_DB_DIR}: {e}"
+                ))
+            })?;
         }
 
-        let id = get_unique_id().unwrap_or(0);
-        format!("{TEMP_DB_DIR}/db-{id}.db")
+        let id = get_unique_id()?;
+        Ok(format!("{TEMP_DB_DIR}/db-{id}.db"))
     }
 
     // Configure the SQLite engine.
@@ -190,15 +189,11 @@ impl SqliteDatabase {
 
         conn.execute_batch("PRAGMA journal_mode = WAL;")
             .await
-            .inspect_err(|e| {
-                error!("Error setting journal_mode: {e}");
-            })?;
+            .map_err(|e| Error::DatabaseQuery(format!("Error setting journal_mode: {e}")))?;
 
         conn.execute_batch("PRAGMA synchronous = NORMAL;")
             .await
-            .inspect_err(|e| {
-                error!("Error setting synchronous: {e}");
-            })?;
+            .map_err(|e| Error::DatabaseQuery(format!("Error setting synchronous: {e}")))?;
 
         if cfg!(test) {
             let schema = include_str!("../../../dev/schema-sqlite.sql");
@@ -243,8 +238,8 @@ impl DatabaseInterface for SqliteTransaction {
         let mut tx_lock = self.lock().await?;
         let tx = tx_lock.as_mut().expect("Transaction is open");
 
-        tx.execute_batch(query).await.inspect_err(|e| {
-            error!("Error executing SQL batch: {e}; query={query}");
+        tx.execute_batch(query).await.map_err(|e| {
+            Error::DatabaseQuery(format!("Error executing SQL batch: {e}; query={query}"))
         })?;
 
         Ok(())
