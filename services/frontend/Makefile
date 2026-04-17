@@ -28,6 +28,10 @@ lint:
 preview:
 	npm run preview
 
+preview-dev:
+	npm run build -- --mode development
+	npm run preview
+
 serve:
 	npm run dev -- --host
 
