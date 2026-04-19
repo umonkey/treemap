@@ -103,7 +103,7 @@ class PageState {
 				goto(routes.mapPreview(id));
 			} else if (e) {
 				console.error(`Error ${status} adding trees.`, e);
-				showError(`Error ${status} adding trees.`);
+				showError(e.description);
 			}
 		} finally {
 			this.saving = false;

@@ -15,7 +15,7 @@
 		if (res.status >= 200 && res.status < 300) {
 			goto('/admin/users');
 		} else {
-			showError(`Error ${res.status} updating user.`);
+			showError(res.error?.description || `Error ${res.status} updating user.`);
 		}
 	};
 </script>

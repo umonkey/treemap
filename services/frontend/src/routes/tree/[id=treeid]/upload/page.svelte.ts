@@ -50,7 +50,7 @@ class PageState {
 		const res = await changeTreeThumbnail(this.tree.id, file.id);
 
 		if (res.status >= 400) {
-			showError(`Error ${res.status} changing thumbnail.`);
+			showError(res.error?.description || `Error ${res.status} changing thumbnail.`);
 		}
 	};
 
@@ -58,7 +58,7 @@ class PageState {
 		const res = await deleteFile(id);
 
 		if (res.status >= 400) {
-			showError(`Error ${res.status} deleting file.`);
+			showError(res.error?.description || `Error ${res.status} deleting file.`);
 		}
 	};
 }

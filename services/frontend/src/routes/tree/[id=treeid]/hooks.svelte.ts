@@ -25,6 +25,8 @@ class PageState {
 					lat: res.data.lat,
 					lng: res.data.lon
 				});
+			} else if (res.error) {
+				showError(res.error.description);
 			}
 		});
 
@@ -55,7 +57,7 @@ class PageState {
 					// OK
 				} else {
 					console.error(`Error ${res.status} adding a comment.`, res);
-					showError(`Error ${res.status} adding a comment.`);
+					showError(res.error?.description || `Error ${res.status} adding a comment.`);
 				}
 			})
 			.catch((e) => {

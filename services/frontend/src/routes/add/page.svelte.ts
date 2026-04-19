@@ -112,8 +112,8 @@ class PageState {
 						goto(routes.mapPreview(id));
 					}
 				} else {
-					console.error(`Error ${res.status} updating tree.`, res);
-					showError(`Error ${res.status} adding tree.`);
+					console.error(`Error ${res.status} adding tree.`, res);
+					showError(res.error?.description || `Error ${res.status} adding tree.`);
 				}
 			})
 			.finally(() => {

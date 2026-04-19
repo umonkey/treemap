@@ -88,7 +88,7 @@ class PageState {
 				goto(routes.mapPreview(this.updated.id));
 			} else {
 				console.error(`Error ${res.status} updating tree.`, res);
-				showError(`Error ${res.status} updating tree.`);
+				showError(res.error?.description || `Error ${res.status} updating tree.`);
 			}
 		} catch (err) {
 			console.error('Failed to update tree:', err);
