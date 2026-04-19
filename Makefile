@@ -28,10 +28,10 @@ start-prod:
 	docker compose -f compose.prod.yaml up
 
 load-dev:
-	vegeta attack -targets=dev/loadtest-dev.txt -rate=100 -duration=30s | vegeta report
+	vegeta attack -targets=dev/loadtest-dev.txt -rate=30 -duration=30s | vegeta report
 
 load-prod:
-	vegeta attack -targets=dev/loadtest-prod.txt -rate=100 -duration=30s | vegeta report
+	vegeta attack -targets=dev/loadtest-prod.txt -rate=30 -duration=30s | vegeta report
 
 rebuild-backend:
 	docker compose build backend
