@@ -13,6 +13,8 @@ declare global {
 		onSignIn: (googleUser: { credentials: string }) => void;
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		dataLayer: any[];
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		gtag: (...args: any[]) => void;
 	}
 }
 

@@ -51,7 +51,7 @@ self.addEventListener('fetch', (event) => {
 		// For everything else, or if the asset wasn't in cache, try the network.
 		try {
 			return await fetch(fetchEvent.request);
-		} catch (error) {
+		} catch {
 			// Fallback to cache if network fails (e.g. for the index page).
 			const cachedResponse = await cache.match(fetchEvent.request);
 			if (cachedResponse) return cachedResponse;
