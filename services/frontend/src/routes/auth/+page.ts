@@ -29,6 +29,7 @@ export const load: Load = async ({
 	if (res.status === 200 && res.data) {
 		authStore.set({
 			token,
+			id: res.data.id,
 			name: res.data.name,
 			picture: res.data.picture
 		});

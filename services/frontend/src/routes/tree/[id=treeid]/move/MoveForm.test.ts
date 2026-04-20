@@ -50,6 +50,7 @@ describe('MoveForm', async () => {
 
 		authStore.set({
 			token: 'secret',
+			id: 'user1',
 			name: 'John Doe',
 			picture: 'https://example.com/picture.jpg'
 		});

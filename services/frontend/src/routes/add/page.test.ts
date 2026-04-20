@@ -102,6 +102,7 @@ describe('add page', async () => {
 	test('authorized', async () => {
 		authStore.set({
 			token: 'secret',
+			id: 'user1',
 			name: 'John Doe',
 			picture: 'https://example.com/picture.jpg'
 		});
@@ -119,6 +120,7 @@ describe('add page', async () => {
 		const user = userEvent.setup();
 		authStore.set({
 			token: 'secret',
+			id: 'user1',
 			name: 'John Doe',
 			picture: 'https://example.com/picture.jpg'
 		});
@@ -138,6 +140,7 @@ describe('add page', async () => {
 		const user = userEvent.setup();
 		authStore.set({
 			token: 'secret',
+			id: 'user1',
 			name: 'John Doe',
 			picture: 'https://example.com/picture.jpg'
 		});
@@ -179,6 +182,7 @@ describe('add page', async () => {
 		const user = userEvent.setup();
 		authStore.set({
 			token: 'secret',
+			id: 'user1',
 			name: 'John Doe',
 			picture: 'https://example.com/picture.jpg'
 		});

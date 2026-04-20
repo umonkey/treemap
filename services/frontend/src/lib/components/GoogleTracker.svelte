@@ -1,7 +1,16 @@
 <script lang="ts">
 	import { afterNavigate } from '$app/navigation';
 	import { config } from '$lib/env';
+	import { authStore } from '$lib/stores/authStore';
 	import { onMount } from 'svelte';
+
+	$effect(() => {
+		if (config.gaMeasurementId && typeof window.gtag === 'function') {
+			window.gtag('set', {
+				user_id: $authStore?.id || null
+			});
+		}
+	});
 
 	onMount(async () => {
 		if (!config.gaMeasurementId) {
@@ -12,8 +21,8 @@
 
 		// Define gtag as a global function if it doesn't exist yet.
 		if (typeof window.gtag !== 'function') {
-			window.gtag = function gtag() {
-				window.dataLayer.push(arguments);
+			window.gtag = function gtag(...args) {
+				window.dataLayer.push(args);
 			};
 		}
 
@@ -24,6 +33,10 @@
 		if (config.environment === 'development') {
 			gtagConfig.debug_mode = true;
 			gtagConfig.cookie_domain = 'none';
+		}
+
+		if ($authStore?.id) {
+			gtagConfig.user_id = $authStore.id;
 		}
 
 		window.gtag('config', config.gaMeasurementId, gtagConfig);

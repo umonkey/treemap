@@ -35,6 +35,7 @@ export interface IUserList {
 
 export interface ILoginResponse {
 	token: string;
+	id: string;
 	name: string;
 	picture: string;
 }
