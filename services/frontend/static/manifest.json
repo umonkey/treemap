@@ -23,39 +23,74 @@
 	],
 	"screenshots": [
 		{
-			"src": "/assets/screenshots/screenshot-phone-map.png",
+			"src": "/assets/screenshots/screenshot-narrow-home.png",
 			"form_factor": "narrow",
 			"type": "image/png",
-			"sizes": "375x667",
-			"label": "Search results on map"
-		},
-		{
-			"src": "/assets/screenshots/screenshot-phone-home.png",
-			"form_factor": "narrow",
-			"type": "image/png",
-			"sizes": "375x667",
+			"sizes": "1080x2400",
 			"label": "Home screen"
 		},
 		{
-			"src": "/assets/screenshots/screenshot-phone-sidebar.png",
+			"src": "/assets/screenshots/screenshot-narrow-preview.png",
 			"form_factor": "narrow",
 			"type": "image/png",
-			"sizes": "375x667",
-			"label": "Side menu"
+			"sizes": "1080x2400",
+			"label": "Tree preview on map"
 		},
 		{
-			"src": "/assets/screenshots/screenshot-phone-tree.png",
+			"src": "/assets/screenshots/screenshot-narrow-details.png",
 			"form_factor": "narrow",
 			"type": "image/png",
-			"sizes": "375x667",
-			"label": "Tree details screen"
+			"sizes": "1080x2400",
+			"label": "Tree details"
 		},
 		{
-			"src": "/assets/screenshots/screenshot-phone-edit.png",
+			"src": "/assets/screenshots/screenshot-narrow-report.png",
 			"form_factor": "narrow",
 			"type": "image/png",
-			"sizes": "375x667",
-			"label": "Tree edit screen"
+			"sizes": "1080x2400",
+			"label": "Report an issue"
+		},
+		{
+			"src": "/assets/screenshots/screenshot-narrow-add.png",
+			"form_factor": "narrow",
+			"type": "image/png",
+			"sizes": "1080x2400",
+			"label": "Add a new tree"
+		},
+		{
+			"src": "/assets/screenshots/screenshot-wide-home.png",
+			"form_factor": "wide",
+			"type": "image/png",
+			"sizes": "1920x1080",
+			"label": "Map overview"
+		},
+		{
+			"src": "/assets/screenshots/screenshot-wide-preview.png",
+			"form_factor": "wide",
+			"type": "image/png",
+			"sizes": "1920x1080",
+			"label": "Map selection"
+		},
+		{
+			"src": "/assets/screenshots/screenshot-wide-details.png",
+			"form_factor": "wide",
+			"type": "image/png",
+			"sizes": "1920x1080",
+			"label": "Tree information"
+		},
+		{
+			"src": "/assets/screenshots/screenshot-wide-report.png",
+			"form_factor": "wide",
+			"type": "image/png",
+			"sizes": "1920x1080",
+			"label": "Report a problem"
+		},
+		{
+			"src": "/assets/screenshots/screenshot-wide-add.png",
+			"form_factor": "wide",
+			"type": "image/png",
+			"sizes": "1920x1080",
+			"label": "Contributing data"
 		}
 	],
 	"theme_color": "#14191f",

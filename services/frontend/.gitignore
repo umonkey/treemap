@@ -44,3 +44,7 @@ vite.config.ts.timestamp-*
 
 *storybook.log
 *.keystore
+
+# Playwright
+auth.json
+/scripts/auth.json

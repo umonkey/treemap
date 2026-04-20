@@ -49,4 +49,14 @@ else
 	npm run test:unit -- run
 endif
 
+screenshots:
+	node scripts/generate-screenshots.js
+
+auth:
+	node scripts/generate-screenshots.js --auth
+
+screenshots-setup:
+	npm install
+	npx playwright install chromium
+
 .PHONY: build
