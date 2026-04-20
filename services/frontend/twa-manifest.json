@@ -15,12 +15,13 @@
 	"startUrl": "/",
 	"iconUrl": "https://yerevan.treemaps.app/icons/app-512x512.png",
 	"maskableIconUrl": "https://yerevan.treemaps.app/icons/app-512x512.png",
+	"splashScreenFadeOutDuration": 300,
 	"signingKey": {
 		"path": "./release.keystore",
 		"alias": "android"
 	},
-	"appVersionName": "3",
-	"appVersionCode": 3,
+	"appVersionName": "5",
+	"appVersionCode": 5,
 	"shortcuts": [],
 	"generatorApp": "bubblewrap-cli",
 	"webManifestUrl": "https://yerevan.treemaps.app/manifest.json",
@@ -50,5 +51,5 @@
 	"fileHandlers": [],
 	"launchHandlerClientMode": "focus-existing",
 	"displayOverride": [],
-	"appVersion": "3"
+	"appVersion": "5"
 }

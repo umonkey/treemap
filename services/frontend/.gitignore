@@ -10,6 +10,21 @@ node_modules
 /linter.log
 storybook-static
 
+# Android
+/.gradle/
+/app/
+/gradle/
+/gradlew
+/gradlew.bat
+/settings.gradle
+/build.gradle
+/gradle.properties
+/manifest-checksum.txt
+/store_icon.png
+/*.apk
+/*.aab
+/*.idsig
+
 # OS
 .DS_Store
 Thumbs.db

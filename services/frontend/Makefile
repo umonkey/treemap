@@ -5,8 +5,9 @@ build:
 	npm run build
 	cp build/index.html build/404.html
 
-build-twa: build
-	npx @bubblewrap/cli build
+build-twa:
+	npx @bubblewrap/cli update
+	npx @bubblewrap/cli build --skipPwaValidation
 
 clean:
 	rm -rf node_modules .svelte-kit
