@@ -91,23 +91,28 @@ pub async fn serve_command() {
                     ),
             )
             .service(
-                web::scope("")
+                web::scope("/v1")
                     .wrap(DefaultHeaders::new().add(("Cache-Control", "no-store")))
                     .wrap(Transaction)
-                    .service(web::scope("/v1/comments").configure(comment_router))
-                    .service(web::scope("/v1/upload").configure(upload_router))
-                    .service(web::scope("/v1/settings").configure(settings_router))
-                    .service(web::scope("/v1/duplicates").configure(duplicate_router))
-                    .service(web::scope("/v1/files").configure(file_router))
-                    .service(web::scope("/v1/heatmap").configure(heatmap_router))
-                    .service(web::scope("/v1/me").configure(me_router))
-                    .service(web::scope("/v1/species").configure(species_router))
-                    .service(web::scope("/v1/stats").configure(stats_router))
-                    .service(web::scope("/v1/streets").configure(street_router))
-                    .service(web::scope("/v1/training").configure(training_router))
-                    .service(web::scope("/v1/trees").configure(tree_router))
-                    .service(web::scope("/v1/users").configure(user_router))
-                    .service(web::scope("/v3/login").configure(login_router)),
+                    .service(web::scope("/comments").configure(comment_router))
+                    .service(web::scope("/upload").configure(upload_router))
+                    .service(web::scope("/settings").configure(settings_router))
+                    .service(web::scope("/duplicates").configure(duplicate_router))
+                    .service(web::scope("/files").configure(file_router))
+                    .service(web::scope("/heatmap").configure(heatmap_router))
+                    .service(web::scope("/me").configure(me_router))
+                    .service(web::scope("/species").configure(species_router))
+                    .service(web::scope("/stats").configure(stats_router))
+                    .service(web::scope("/streets").configure(street_router))
+                    .service(web::scope("/training").configure(training_router))
+                    .service(web::scope("/trees").configure(tree_router))
+                    .service(web::scope("/users").configure(user_router)),
+            )
+            .service(
+                web::scope("/v3")
+                    .wrap(DefaultHeaders::new().add(("Cache-Control", "no-store")))
+                    .wrap(Transaction)
+                    .service(web::scope("/login").configure(login_router)),
             )
             .service(
                 Files::new("/", "./static")
