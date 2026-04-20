@@ -2,7 +2,7 @@
 	"name": "Trees of Yerevan",
 	"short_name": "TreeMap",
 	"description": "Trees of Yerevan is a crowd-sourcing web application that allows users to search for trees in Yerevan, Armenia, and add new ones. The app provides information about the trees, such as their species, age, and location.",
-	"id": "app.treemaps.yerevan",
+	"id": "app.treemaps.yerevan.twa",
 	"launch_handler": {
 		"client_mode": "focus-existing"
 	},

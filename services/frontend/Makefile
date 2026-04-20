@@ -5,6 +5,9 @@ build:
 	npm run build
 	cp build/index.html build/404.html
 
+build-twa: build
+	npx @bubblewrap/cli build
+
 clean:
 	rm -rf node_modules .svelte-kit
 

@@ -15,12 +15,7 @@
 	"startUrl": "/",
 	"iconUrl": "https://yerevan.treemaps.app/icons/app-512x512.png",
 	"maskableIconUrl": "https://yerevan.treemaps.app/icons/app-512x512.png",
-	"splashScreenFadeOutDuration": 300,
-	"signingKey": {
-		"path": "/home/hex/src/umonkey/treemap/services/frontend/release.keystore",
-		"alias": "android"
-	},
-	"appVersionName": "1",
+	"appVersionName": "1.0.0",
 	"appVersionCode": 1,
 	"shortcuts": [],
 	"generatorApp": "bubblewrap-cli",
@@ -40,7 +35,11 @@
 	"fullScopeUrl": "https://yerevan.treemaps.app/",
 	"minSdkVersion": 21,
 	"orientation": "portrait-primary",
-	"fingerprints": [],
+	"fingerprints": [
+		{
+			"sha256": "FB:DA:42:30:AF:C4:8A:F1:82:BB:A3:9F:73:D8:7A:B0:67:35:4C:A7:41:6A:4C:2D:BD:F3:95:79:98:EF:DF:05"
+		}
+	],
 	"additionalTrustedOrigins": [],
 	"retainedBundles": [],
 	"protocolHandlers": [],
