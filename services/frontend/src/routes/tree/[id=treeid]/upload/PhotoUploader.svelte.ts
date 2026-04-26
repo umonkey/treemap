@@ -65,11 +65,15 @@ class ComponentState {
 
 		if (files && files.length > 0) {
 			const fileList = Array.from(files);
-			target.value = ''; // Reset to allow selecting the same file again.
 
 			for (const file of fileList) {
 				try {
-					await this.appendFile(file);
+					// On some mobile devices, the File object might be invalidated if the input is cleared
+					// or if we wait too long. Slicing it into a new Blob helps "solidify" the data.
+					const blob = file.slice(0, file.size, file.type);
+					const solidifiedFile = new File([blob], file.name, { type: file.type });
+
+					await this.appendFile(solidifiedFile);
 				} catch (e) {
 					console.error('Failed to append file:', e);
 					showError(
@@ -77,6 +81,8 @@ class ComponentState {
 					);
 				}
 			}
+
+			target.value = ''; // Reset to allow selecting the same file again.
 		}
 	};
 
@@ -89,7 +95,9 @@ class ComponentState {
 			if (item.kind === 'file') {
 				const file = item.getAsFile();
 				if (file && file.type.startsWith('image/')) {
-					await this.appendFile(file);
+					const blob = file.slice(0, file.size, file.type);
+					const solidifiedFile = new File([blob], file.name || 'pasted-image', { type: file.type });
+					await this.appendFile(solidifiedFile);
 				}
 			}
 		}

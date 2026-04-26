@@ -2,8 +2,29 @@
  * Create a thumbnail from a Blob or File.
  */
 export async function createThumbnail(blob: Blob, maxSize = 200): Promise<Blob> {
-	const imageBitmap = await createImageBitmap(blob);
-	const { width, height } = imageBitmap;
+	let image: ImageBitmap | HTMLImageElement;
+
+	try {
+		image = await createImageBitmap(blob);
+	} catch (e) {
+		console.warn('createImageBitmap failed, falling back to HTMLImageElement:', e);
+		image = await new Promise<HTMLImageElement>((resolve, reject) => {
+			const img = new Image();
+			const url = URL.createObjectURL(blob);
+			img.onload = () => {
+				URL.revokeObjectURL(url);
+				resolve(img);
+			};
+			img.onerror = (err) => {
+				URL.revokeObjectURL(url);
+				reject(new Error('Failed to load image for thumbnail fallback'));
+			};
+			img.src = url;
+		});
+	}
+
+	const { width, height } =
+		image instanceof ImageBitmap ? image : { width: image.naturalWidth, height: image.naturalHeight };
 
 	let newWidth: number;
 	let newHeight: number;
@@ -31,11 +52,15 @@ export async function createThumbnail(blob: Blob, maxSize = 200): Promise<Blob> 
 		| CanvasRenderingContext2D;
 
 	if (!ctx) {
+		if (image instanceof ImageBitmap) image.close();
 		throw new Error('Failed to get canvas context');
 	}
 
-	ctx.drawImage(imageBitmap, 0, 0, newWidth, newHeight);
-	imageBitmap.close();
+	ctx.drawImage(image, 0, 0, newWidth, newHeight);
+
+	if (image instanceof ImageBitmap) {
+		image.close();
+	}
 
 	const result = await (canvas instanceof OffscreenCanvas
 		? canvas.convertToBlob({ type: 'image/jpeg', quality: 0.8 })
