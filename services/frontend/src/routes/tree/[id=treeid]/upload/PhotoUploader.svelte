@@ -5,12 +5,17 @@
 	import { restartUploadQueue } from '$lib/upload';
 	import { componentState as state } from './PhotoUploader.svelte.ts';
 
-	const { label, treeId, onChange, small } = $props<{
+	const {
+		label,
+		treeId,
+		onChange,
+		small
+	}: {
 		label?: string;
 		treeId: string;
 		onChange: (files: number) => void;
 		small?: boolean;
-	}>();
+	} = $props();
 
 	$effect(() => {
 		return state.init(treeId, onChange);
@@ -23,27 +28,32 @@
 
 {#if treeId}
 	<div class="uploader" class:small={!!small}>
-		<label>
+		<label title="Take Photo">
 			<CameraIcon />
 
 			<input
 				type="file"
-				accept="image/jpeg"
+				accept="image/jpeg,image/png,image/heic,image/heif,image/webp"
 				onchange={state.handleChange}
 				capture="environment"
 				multiple
 			/>
 		</label>
 
-		<label class="gallery">
+		<label class="gallery" title="Pick from Gallery">
 			<GalleryIcon />
 
-			<input type="file" accept="image/jpeg" onchange={state.handleChange} multiple />
+			<input
+				type="file"
+				accept="image/jpeg,image/png,image/heic,image/heif,image/webp"
+				onchange={state.handleChange}
+				multiple
+			/>
 		</label>
 
 		<FileUploaderDisplay
 			items={state.thumbnails.map((thumbnail) => ({
-				src: URL.createObjectURL(thumbnail.file),
+				src: thumbnail.src,
 				busy: thumbnail.busy,
 				error: thumbnail.error
 			}))}

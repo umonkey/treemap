@@ -11,6 +11,7 @@
  */
 
 import { uploadSingleFile } from '$lib/api/uploads';
+import { showError } from '$lib/errors';
 import { get, writable } from 'svelte/store';
 
 type Item = {
@@ -53,12 +54,14 @@ export const load = ({
 	// We get a bunch of files, which we need to (1) store for thumbnails,
 	// and (2) send to the backend.
 	const handleChange = (event: Event) => {
-		const files = (event.target as HTMLInputElement).files;
+		const target = event.target as HTMLInputElement;
+		const files = target.files;
 
 		if (files && files.length > 0) {
-			for (let i = 0; i < files.length; i++) {
-				const file = files[i];
+			const fileList = Array.from(files);
+			target.value = '';
 
+			for (const file of fileList) {
 				// The index of the current file in the list.
 				// We'll use it to update the upload status.
 				const idx = get(items).length;
@@ -113,6 +116,9 @@ export const load = ({
 					});
 				} else {
 					console.error(`[FileUploader] Failed to upload file: ${file.name}`, res);
+					showError(
+						`Failed to upload file "${file.name}": ${res.error?.description || 'Unknown error'}`
+					);
 
 					// Update the UI status.
 					items.update((current) => {
@@ -125,6 +131,9 @@ export const load = ({
 			})
 			.catch((e) => {
 				console.error(`[FileUploader] Error uploading file: ${file.name}`, e);
+				showError(
+					`Error uploading file "${file.name}": ${e instanceof Error ? e.message : 'Unknown error'}`
+				);
 
 				// Update the UI status.
 				items.update((current) => {

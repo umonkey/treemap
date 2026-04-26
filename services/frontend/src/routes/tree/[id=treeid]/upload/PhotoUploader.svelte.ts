@@ -1,9 +1,11 @@
 import { db } from '$lib/db';
+import { showError } from '$lib/errors';
 import { addPhotoToUploadQueue } from '$lib/upload';
 import { liveQuery } from 'dexie';
 
 export type Thumbnail = {
 	file: Blob | File;
+	src: string;
 	busy: boolean;
 	error: boolean;
 };
@@ -21,11 +23,20 @@ class ComponentState {
 
 		const subscription = query.subscribe({
 			next: (data) => {
-				this.thumbnails = data.map((item) => ({
-					file: item.thumbnail || item.image,
-					busy: item.status === 'uploading',
-					error: item.status === 'failed'
-				}));
+				// Cleanup existing URLs to avoid memory leaks.
+				this.thumbnails.forEach((t) => {
+					if (t.src) URL.revokeObjectURL(t.src);
+				});
+
+				this.thumbnails = data.map((item) => {
+					const file = item.thumbnail || item.image;
+					return {
+						file,
+						src: URL.createObjectURL(file),
+						busy: item.status === 'uploading',
+						error: item.status === 'failed'
+					};
+				});
 				this.onChange(data.length);
 			},
 			error: (err) => console.error('Failed to load thumbnails:', err)
@@ -37,6 +48,10 @@ class ComponentState {
 		return () => {
 			subscription.unsubscribe();
 			document.removeEventListener('paste', onPaste);
+			// Final cleanup.
+			this.thumbnails.forEach((t) => {
+				if (t.src) URL.revokeObjectURL(t.src);
+			});
 		};
 	}
 
@@ -45,12 +60,22 @@ class ComponentState {
 	};
 
 	handleChange = async (event: Event) => {
-		const files = (event.target as HTMLInputElement).files;
+		const target = event.target as HTMLInputElement;
+		const files = target.files;
 
 		if (files && files.length > 0) {
-			for (let i = 0; i < files.length; i++) {
-				const file = files[i];
-				await this.appendFile(file);
+			const fileList = Array.from(files);
+			target.value = ''; // Reset to allow selecting the same file again.
+
+			for (const file of fileList) {
+				try {
+					await this.appendFile(file);
+				} catch (e) {
+					console.error('Failed to append file:', e);
+					showError(
+						`Failed to add photo "${file.name}": ${e instanceof Error ? e.message : 'Unknown error'}`
+					);
+				}
 			}
 		}
 	};

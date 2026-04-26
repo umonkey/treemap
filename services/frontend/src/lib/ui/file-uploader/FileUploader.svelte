@@ -23,22 +23,27 @@
 {/if}
 
 <div class="uploader" class:small={!!small}>
-	<label>
+	<label title="Take Photo">
 		<CameraIcon />
 
 		<input
 			type="file"
-			accept="image/jpeg"
+			accept="image/jpeg,image/png,image/heic,image/heif,image/webp"
 			onchange={handleChange}
 			capture="environment"
 			multiple={!single}
 		/>
 	</label>
 
-	<label class="gallery">
+	<label class="gallery" title="Pick from Gallery">
 		<GalleryIcon />
 
-		<input type="file" accept="image/jpeg" onchange={handleChange} multiple={!single} />
+		<input
+			type="file"
+			accept="image/jpeg,image/png,image/heic,image/heif,image/webp"
+			onchange={handleChange}
+			multiple={!single}
+		/>
 	</label>
 
 	<FileUploaderDisplay
