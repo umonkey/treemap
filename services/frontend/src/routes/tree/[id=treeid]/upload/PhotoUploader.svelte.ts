@@ -22,7 +22,7 @@ class ComponentState {
 		const subscription = query.subscribe({
 			next: (data) => {
 				this.thumbnails = data.map((item) => ({
-					file: item.image,
+					file: item.thumbnail || item.image,
 					busy: item.status === 'uploading',
 					error: item.status === 'failed'
 				}));
@@ -40,17 +40,17 @@ class ComponentState {
 		};
 	}
 
-	private appendFile = (file: File) => {
-		addPhotoToUploadQueue(this.treeId, file);
+	private appendFile = async (file: File) => {
+		await addPhotoToUploadQueue(this.treeId, file);
 	};
 
-	handleChange = (event: Event) => {
+	handleChange = async (event: Event) => {
 		const files = (event.target as HTMLInputElement).files;
 
 		if (files && files.length > 0) {
 			for (let i = 0; i < files.length; i++) {
 				const file = files[i];
-				this.appendFile(file);
+				await this.appendFile(file);
 			}
 		}
 	};
@@ -64,7 +64,7 @@ class ComponentState {
 			if (item.kind === 'file') {
 				const file = item.getAsFile();
 				if (file && file.type.startsWith('image/')) {
-					this.appendFile(file);
+					await this.appendFile(file);
 				}
 			}
 		}

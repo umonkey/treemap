@@ -5,6 +5,7 @@ export interface IUpload {
 	tree_id: string;
 	status: 'pending' | 'uploading' | 'completed' | 'failed';
 	image: Blob;
+	thumbnail?: Blob;
 	created_at: number;
 	retry_count: number;
 	file_id: string | null;
@@ -15,7 +16,7 @@ const db = new Dexie('TreeMapUploads') as Dexie & {
 	uploads: EntityTable<IUpload, 'id'>;
 };
 
-db.version(1).stores({
+db.version(2).stores({
 	uploads: '++id, tree_id, status, created_at'
 });
 

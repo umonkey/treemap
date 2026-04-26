@@ -21,6 +21,7 @@ import {
 	setUploading
 } from '$lib/stores/upload';
 import { isDataSaving, isLowPower } from '$lib/utils/device';
+import { createThumbnail } from '$lib/utils/images';
 import { get } from 'svelte/store';
 import { db } from './db';
 
@@ -58,10 +59,16 @@ export async function addPhotoToUploadQueue(tree_id: string, file: File) {
 		return;
 	}
 
+	const thumbnail = await createThumbnail(file, 200).catch((e) => {
+		console.error('Failed to create thumbnail:', e);
+		return undefined;
+	});
+
 	await db.uploads.add({
 		tree_id: tree_id.toString(),
 		status: 'pending',
 		image: file,
+		thumbnail,
 		created_at: Date.now(),
 		retry_count: 0,
 		file_id: null,

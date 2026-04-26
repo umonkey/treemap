@@ -10,7 +10,7 @@
 	let objectUrl = $state<string>('');
 
 	onMount(() => {
-		objectUrl = URL.createObjectURL(upload.image);
+		objectUrl = URL.createObjectURL(upload.thumbnail || upload.image);
 
 		return () => {
 			URL.revokeObjectURL(objectUrl);
