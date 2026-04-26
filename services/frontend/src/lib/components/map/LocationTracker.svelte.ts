@@ -1,8 +1,11 @@
+import { locale } from '$lib/locale';
 import { locationStore } from '$lib/stores/locationStore';
 import type { IMyPosition } from '$lib/types';
+import { showError } from '$lib/errors';
 
 class LocationTracker {
 	public position = $state<IMyPosition | null>(null);
+	public isTracking = $state<boolean>(false);
 
 	private watchId: number | null = null;
 
@@ -19,6 +22,7 @@ class LocationTracker {
 
 		this.watchId = navigator.geolocation.watchPosition(
 			(position) => {
+				this.isTracking = true;
 				const pos = {
 					lat: position.coords.latitude,
 					lng: position.coords.longitude,
@@ -40,6 +44,7 @@ class LocationTracker {
 				if (error.code === 1) {
 					this.stop(); // access denied, stop tracking
 					console.debug('[GEO] User denied access, stopping.');
+					showError(locale.toastLocationDenied());
 				} else {
 					console.error(`[GEO] Error ${error.code}: ${error.message}`, error);
 				}
@@ -57,22 +62,33 @@ class LocationTracker {
 		if (this.watchId !== null) {
 			navigator.geolocation.clearWatch(this.watchId);
 			this.watchId = null;
+			this.isTracking = false;
 			console.debug('[GEO] Tracking stopped.');
 		}
 	};
 
 	public onMount = () => {
-		window.addEventListener('focus', this.start);
-		window.addEventListener('visibilitychange', this.start);
+		window.addEventListener('focus', this.startIfGranted);
+		window.addEventListener('visibilitychange', this.startIfGranted);
 
-		this.start();
+		this.startIfGranted();
 
 		return () => {
-			window.removeEventListener('focus', this.start);
-			window.removeEventListener('visibilitychange', this.start);
+			window.removeEventListener('focus', this.startIfGranted);
+			window.removeEventListener('visibilitychange', this.startIfGranted);
 			this.stop();
 			console.debug('[GEO] LocationTracker destroyed.');
 		};
+	};
+
+	private startIfGranted = () => {
+		if (navigator.permissions && navigator.permissions.query) {
+			navigator.permissions.query({ name: 'geolocation' }).then((result) => {
+				if (result.state === 'granted') {
+					this.start();
+				}
+			});
+		}
 	};
 }
 

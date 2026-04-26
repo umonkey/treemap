@@ -629,6 +629,10 @@ class EnglishLocale {
 		return 'Error adding comment.';
 	}
 
+	public toastLocationDenied(): string {
+		return 'Location access denied. Please enable it in your browser settings to use this feature.';
+	}
+
 	public shortMonday(): string {
 		return 'Mon';
 	}
@@ -1261,6 +1265,10 @@ class RussianLocale extends EnglishLocale {
 		return 'Ошибка добавления комментария.';
 	}
 
+	public toastLocationDenied(): string {
+		return 'Доступ к местоположению запрещен. Пожалуйста, включите его в настройках браузера.';
+	}
+
 	public shortMonday(): string {
 		return 'Пн';
 	}
@@ -1791,6 +1799,10 @@ class ArmenianLocale extends EnglishLocale {
 
 	public toastErrorAddingComment(): string {
 		return 'Մեկնաբանություն ավելացնելու սխալ:';
+	}
+
+	public toastLocationDenied(): string {
+		return 'Տեղադրության հասանելիությունը մերժված է: Խնդրում ենք միացնել այն ձեր բրաուզերի կարգավորումներում:';
 	}
 }
 
