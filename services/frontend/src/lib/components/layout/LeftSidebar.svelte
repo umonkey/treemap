@@ -102,6 +102,8 @@
 			<a href="https://github.com/umonkey/treemap/issues" target="_blank" onclick={onClose}
 				>{locale.sideBugs()}</a
 			>
+			&middot;
+			<a href={routes.privacy()} onclick={onClose}>{locale.sidePrivacy()}</a>
 		</div>
 	</div>
 </div>

@@ -5,6 +5,10 @@ build:
 	npm run build
 	cp build/index.html build/404.html
 
+build-twa:
+	npx @bubblewrap/cli update
+	npx @bubblewrap/cli build --skipPwaValidation
+
 clean:
 	rm -rf node_modules .svelte-kit
 
@@ -44,5 +48,15 @@ ifneq (,$(FILTER))
 else
 	npm run test:unit -- run
 endif
+
+screenshots:
+	node scripts/generate-screenshots.js
+
+auth:
+	node scripts/generate-screenshots.js --auth
+
+screenshots-setup:
+	npm install
+	npx playwright install chromium
 
 .PHONY: build

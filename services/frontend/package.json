@@ -21,6 +21,7 @@
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
 		"@eslint/compat": "^1.2.3",
+		"@playwright/test": "^1.59.1",
 		"@storybook/addon-essentials": "^8.6.12",
 		"@storybook/addon-svelte-csf": "^5.0.0",
 		"@storybook/blocks": "^8.6.12",
