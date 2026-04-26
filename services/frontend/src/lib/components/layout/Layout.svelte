@@ -6,8 +6,18 @@
 	import AddTree from '$lib/components/map/AddTree.svelte';
 	import MapLibre from '$lib/components/map/MapLibre.svelte';
 	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
+	import { page } from '$app/stores';
+	import { searchStore } from '$lib/stores/searchStore';
 
 	const { children } = $props();
+
+	const q = $derived($page.url.searchParams.get('q'));
+
+	$effect(() => {
+		if (q !== undefined && q !== null) {
+			searchStore.set(q);
+		}
+	});
 </script>
 
 <div class="layout">

@@ -22,7 +22,24 @@ pub async fn tree_page_action(
     meta_service: Injected<MetaService>,
     path: Path<PathInfo>,
 ) -> Result<HttpResponse> {
-    let tree = tree_service.get_tree(path.id).await?;
+    serve_tree_meta(tree_service, meta_service, path.id).await
+}
+
+#[get("/{id:\\d+}/preview")]
+pub async fn tree_preview_action(
+    tree_service: Injected<TreeService>,
+    meta_service: Injected<MetaService>,
+    path: Path<PathInfo>,
+) -> Result<HttpResponse> {
+    serve_tree_meta(tree_service, meta_service, path.id).await
+}
+
+async fn serve_tree_meta(
+    tree_service: Injected<TreeService>,
+    meta_service: Injected<MetaService>,
+    id: u64,
+) -> Result<HttpResponse> {
+    let tree = tree_service.get_tree(id).await?;
 
     let html = meta_service.get_tree(&tree).await?;
 
@@ -43,4 +60,5 @@ pub async fn tree_page_action(
 // Configure the router.
 pub fn meta_router(cfg: &mut ServiceConfig) {
     cfg.service(tree_page_action);
+    cfg.service(tree_preview_action);
 }

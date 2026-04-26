@@ -31,11 +31,7 @@ export const routes = {
 	home: () => '/',
 	learn: () => '/learn',
 	map: () => '/',
-	mapPreview: (id: string, search?: string | undefined | null) =>
-		build('/', {
-			preview: id,
-			q: search
-		}),
+	mapPreview: (id: string) => `/tree/${id}/preview`,
 	modeMapper: () => '/mode/mapper',
 	profile: () => '/profile',
 	streetReport: (street?: string) => build('/report', { address: street }),

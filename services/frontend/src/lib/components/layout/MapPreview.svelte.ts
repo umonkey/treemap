@@ -18,14 +18,17 @@ class PreviewState {
 	};
 
 	public handleClose = async () => {
+		this.clear();
+		await goto(routes.map());
+	};
+
+	public clear = () => {
 		this.tree = undefined;
 		this.observations = null;
 		this.comments = [];
 		this.expand = false;
 
 		mapBus.emit('pin', undefined);
-
-		await goto(routes.map());
 	};
 
 	public handleContextMenu = () => {

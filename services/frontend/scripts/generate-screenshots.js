@@ -9,7 +9,7 @@ const OUTPUT_DIR = path.join(__dirname, '../static/assets/screenshots');
 
 const ROUTES = [
 	{ name: 'home', url: 'https://yerevan.treemaps.app/' },
-	{ name: 'preview', url: 'https://yerevan.treemaps.app/?preview=134346854707105792' },
+	{ name: 'preview', url: 'https://yerevan.treemaps.app/tree/134346854707105792/preview' },
 	{ name: 'details', url: 'https://yerevan.treemaps.app/tree/134346854707105792' },
 	{ name: 'report', url: 'https://yerevan.treemaps.app/report?address=Komitas+avenue' },
 	{
