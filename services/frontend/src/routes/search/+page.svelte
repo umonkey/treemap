@@ -4,7 +4,6 @@
 	import { routes } from '$lib/routes';
 	import SearchBar from './SearchBar.svelte';
 
-	import Form from '$lib/ui/form/Form.svelte';
 	import SpeciesInput from '$lib/ui/species-input/SpeciesInput.svelte';
 	import StreetInput from '$lib/ui/street-input/StreetInput.svelte';
 	import { pageState } from './page.svelte';
@@ -93,10 +92,10 @@
 		{/if}
 	</div>
 
-	<Form onSubmit={pageState.handleSubmit}>
+	<div class="form">
 		<SpeciesInput onChange={pageState.handleSpeciesChange} />
 		<StreetInput onChange={pageState.handleStreetChange} />
-	</Form>
+	</div>
 </Dialog>
 
 <style>
@@ -109,5 +108,11 @@
 		border-top: 1px solid var(--sep-color);
 		height: 0;
 		margin: var(--gap) 0;
+	}
+
+	.form {
+		display: flex;
+		flex-direction: column;
+		gap: calc(2 * var(--gap));
 	}
 </style>

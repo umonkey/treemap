@@ -16,6 +16,7 @@
 
 	const handleKeyDown = (event: KeyboardEvent) => {
 		if (event.key === 'Enter') {
+			event.preventDefault();
 			onSearch(value);
 		}
 	};

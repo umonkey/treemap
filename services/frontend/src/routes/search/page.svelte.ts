@@ -23,7 +23,8 @@ class PageState {
 		goto(routes.searchQuery(value));
 	};
 
-	handleSubmit = () => {
+	handleSubmit = async (e?: Event) => {
+		e?.preventDefault();
 		const parts = [];
 
 		if (this.street) {
@@ -35,7 +36,8 @@ class PageState {
 		}
 
 		const query = parts.join(' ');
-		goto(routes.searchQuery(query));
+
+		await goto(routes.searchQuery(query));
 	};
 }
 

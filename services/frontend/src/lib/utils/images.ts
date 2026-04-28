@@ -15,7 +15,7 @@ export async function createThumbnail(blob: Blob, maxSize = 200): Promise<Blob> 
 				URL.revokeObjectURL(url);
 				resolve(img);
 			};
-			img.onerror = (err) => {
+			img.onerror = () => {
 				URL.revokeObjectURL(url);
 				reject(new Error('Failed to load image for thumbnail fallback'));
 			};
@@ -24,7 +24,9 @@ export async function createThumbnail(blob: Blob, maxSize = 200): Promise<Blob> 
 	}
 
 	const { width, height } =
-		image instanceof ImageBitmap ? image : { width: image.naturalWidth, height: image.naturalHeight };
+		image instanceof ImageBitmap
+			? image
+			: { width: image.naturalWidth, height: image.naturalHeight };
 
 	let newWidth: number;
 	let newHeight: number;
