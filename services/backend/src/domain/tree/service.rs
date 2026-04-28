@@ -128,7 +128,6 @@ impl TreeService {
             for tree in trees.iter_mut() {
                 if !query.r#match(tree, user_id) {
                     tree.state = "placeholder".to_string();
-                    tree.diameter = Some(1.0);
                     tree.circumference = Some(0.0);
                 }
             }
