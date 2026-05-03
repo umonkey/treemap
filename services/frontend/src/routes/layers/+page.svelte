@@ -30,17 +30,6 @@
 			<div class="label">Light</div>
 		</div>
 
-		<div class="item" class:active={selectorState.base == 'bing'}>
-			<button
-				type="button"
-				aria-label="Select Bing Satellite base layer"
-				onclick={() => selectorState.setBase('bing')}
-			>
-				<img src={BASIC} alt="Bing Satellite layer preview" />
-			</button>
-			<div class="label">Bing</div>
-		</div>
-
 		<div class="item" class:active={selectorState.base == 'google'}>
 			<button
 				type="button"
