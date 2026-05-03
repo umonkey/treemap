@@ -1,6 +1,7 @@
 import { getGeoJSON } from '$lib/api/trees';
 import { mapBus } from '$lib/buses/mapBus';
 import { showError } from '$lib/errors';
+import { goto, routes } from '$lib/routes';
 import { searchStore } from '$lib/stores/searchStore';
 import { Debouncer } from '$lib/utils/debounce';
 import type { Map } from 'maplibre-gl';
@@ -85,7 +86,7 @@ class TreeLayerState {
 	};
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	public handleClick = (e: any) => {
+	public handleClick = async (e: any) => {
 		if (!e.features || e.features.length === 0) {
 			return;
 		}
@@ -101,7 +102,7 @@ class TreeLayerState {
 
 		console.debug(`[TreeLayer] Tree ${treeId} clicked.`);
 
-		mapBus.emit('select', treeId);
+		await goto(routes.mapPreview(treeId));
 
 		if (navigator.vibrate) {
 			navigator.vibrate(50);

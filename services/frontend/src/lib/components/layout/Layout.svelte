@@ -1,6 +1,5 @@
 <script lang="ts">
 	import LeftSidebar from '$lib/components/layout/LeftSidebar.svelte';
-	import MapPreview from '$lib/components/layout/MapPreview.svelte';
 	import MobileNav from '$lib/components/layout/MobileNav.svelte';
 	import AddRow from '$lib/components/map/AddRow.svelte';
 	import AddTree from '$lib/components/map/AddTree.svelte';
@@ -32,7 +31,6 @@
 </div>
 
 {@render children()}
-<MapPreview />
 <LeftSidebar />
 <MobileNav />
 <TreeContextMenu />

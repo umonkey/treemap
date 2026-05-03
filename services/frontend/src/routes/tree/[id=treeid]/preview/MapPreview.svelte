@@ -9,6 +9,7 @@
 	import SettingsIcon from '$lib/icons/SettingsIcon.svelte';
 	import ShareIcon from '$lib/icons/ShareIcon.svelte';
 	import TagIcon from '$lib/icons/TagIcon.svelte';
+	import SpinnerIcon from '$lib/icons/SpinnerIcon.svelte';
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
 	import Button from '$lib/ui/button/Button.svelte';
@@ -18,12 +19,18 @@
 	import { previewState } from './MapPreview.svelte.ts';
 	import '$lib/styles/variables.css';
 
+	let { id } = $props<{ id: string }>();
+
 	onMount(previewState.onMount);
+
+	$effect(() => {
+		previewState.reload(id);
+	});
 </script>
 
-{#if previewState.tree}
-	{@const tree = previewState.tree}
-	<div class="preview" class:expand={!!previewState.expand}>
+<div class="preview" class:expand={!!previewState.expand} class:loading={previewState.loading}>
+	{#if previewState.tree}
+		{@const tree = previewState.tree}
 		<div class="header">
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
 			<!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -74,8 +81,12 @@
 				<Comment {comment} />
 			{/each}
 		</div>
-	</div>
-{/if}
+	{:else if previewState.loading}
+		<div class="loading-state">
+			<SpinnerIcon />
+		</div>
+	{/if}
+</div>
 
 <style>
 	.preview {
@@ -101,6 +112,14 @@
 		border-right: 1px solid var(--color-dialog-border);
 
 		padding: var(--gap);
+
+		.loading-state {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			height: 100%;
+			min-height: 100px;
+		}
 
 		.header {
 			display: flex;
@@ -162,6 +181,7 @@
 		.preview {
 			width: 500px;
 			left: calc((100vw - 500px) / 2);
+			border-width: 0;
 		}
 	}
 
@@ -194,6 +214,7 @@
 			bottom: var(--bottom-nav-height);
 			height: 266px;
 			transition: height 0.2s ease-in-out;
+			border-width: 0;
 
 			.extras {
 				display: none;
