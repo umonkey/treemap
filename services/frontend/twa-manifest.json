@@ -20,8 +20,8 @@
     "path": "./release.keystore",
     "alias": "android"
   },
-  "appVersionName": "8",
-  "appVersionCode": 8,
+  "appVersionName": "9",
+  "appVersionCode": 9,
   "shortcuts": [],
   "generatorApp": "bubblewrap-cli",
   "webManifestUrl": "https://yerevan.treemaps.app/manifest.json",
@@ -54,5 +54,5 @@
   "fileHandlers": [],
   "launchHandlerClientMode": "focus-existing",
   "displayOverride": [],
-  "appVersion": "8"
+  "appVersion": "9"
 }
