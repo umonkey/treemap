@@ -5,7 +5,8 @@
 			"namespace": "android_app",
 			"package_name": "app.treemaps.yerevan.twa",
 			"sha256_cert_fingerprints": [
-				"FB:DA:42:30:AF:C4:8A:F1:82:BB:A3:9F:73:D8:7A:B0:67:35:4C:A7:41:6A:4C:2D:BD:F3:95:79:98:EF:DF:05"
+				"FB:DA:42:30:AF:C4:8A:F1:82:BB:A3:9F:73:D8:7A:B0:67:35:4C:A7:41:6A:4C:2D:BD:F3:95:79:98:EF:DF:05",
+				"18:DF:44:68:1B:77:A2:CA:12:C9:53:FB:B7:BA:7F:CD:B7:6B:99:FD:01:93:0C:EE:0A:93:73:B1:24:5F:48:B2"
 			]
 		}
 	}
