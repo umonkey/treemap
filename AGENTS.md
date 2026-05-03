@@ -1,7 +1,6 @@
 # Tree Mapping Application
 
-This folder contains a tree mapping application.
-The application is API-first, with a static frontend and an API backend.
+This folder contains a tree mapping application. The application is API-first, with a static frontend and an API backend.  The app can be installed as both a PWA, and a TWA via Google Play.
 
 
 ## Folder structure
