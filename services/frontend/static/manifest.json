@@ -97,6 +97,7 @@
 	"background_color": "#14191f",
 	"display": "standalone",
 	"orientation": "portrait-primary",
+	"scope": "/",
 	"start_url": "/",
 	"lang": "en",
 	"dir": "ltr"
