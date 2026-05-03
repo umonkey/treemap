@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { MAX_BOUNDS } from '$lib/constants';
 	import type { ILatLng } from '$lib/types';
-	import { MapLibre, NavigationControl } from 'svelte-maplibre';
+	import { AttributionControl, MapLibre, NavigationControl } from 'svelte-maplibre';
 	import { RasterLayer, RasterTileSource } from 'svelte-maplibre';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import { type Snippet, onMount } from 'svelte';
@@ -38,11 +38,13 @@
 		onzoom={mapState.handleZoom}
 		onload={mapState.handleLoad}
 		maxBounds={MAX_BOUNDS}
+		attributionControl={false}
 	>
 		<NavigationControl position="top-left" />
 		<LocateButton />
 		<BarsButton />
 		<LocationTracker />
+		<AttributionControl compact={true} />
 
 		{#if children}
 			{@render children()}
