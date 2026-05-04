@@ -119,6 +119,11 @@
 			justify-content: center;
 			height: 100%;
 			min-height: 100px;
+
+			:global(svg) {
+				width: 20px;
+				height: 20px;
+			}
 		}
 
 		.header {
