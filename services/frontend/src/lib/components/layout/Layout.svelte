@@ -42,11 +42,13 @@
 		flex-direction: row;
 		margin: 0 auto;
 		width: 100%;
+		height: 100dvh;
+		overflow: hidden;
 		box-sizing: border-box;
 
 		main {
 			width: 100%;
-			min-height: 100dvh;
+			height: 100%;
 		}
 	}
 

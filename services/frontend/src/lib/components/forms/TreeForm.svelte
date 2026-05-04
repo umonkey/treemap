@@ -167,17 +167,19 @@
 	@media screen and (max-width: 600px) {
 		.dialog {
 			width: 100vw;
-			height: calc(100vh - var(--bottom-nav-height));
+			height: calc(100dvh - var(--bottom-nav-height));
 			border-radius: 0;
 			max-width: 100vw;
 
 			transform: none;
 			top: 0;
 			left: 0;
-			bottom: 0;
+			bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom));
 		}
 
 		.body {
+			height: calc(100dvh - 100px - var(--bottom-nav-height) - env(safe-area-inset-bottom));
+			padding-bottom: calc(var(--gap) + env(safe-area-inset-bottom));
 			max-height: none;
 		}
 

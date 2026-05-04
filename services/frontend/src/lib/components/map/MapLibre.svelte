@@ -86,6 +86,23 @@
 		height: 100%;
 	}
 
+	:global(.maplibregl-ctrl-top-left) {
+		top: env(safe-area-inset-top);
+		left: env(safe-area-inset-left);
+	}
+	:global(.maplibregl-ctrl-top-right) {
+		top: env(safe-area-inset-top);
+		right: env(safe-area-inset-right);
+	}
+	:global(.maplibregl-ctrl-bottom-left) {
+		bottom: env(safe-area-inset-bottom);
+		left: env(safe-area-inset-left);
+	}
+	:global(.maplibregl-ctrl-bottom-right) {
+		bottom: env(safe-area-inset-bottom);
+		right: env(safe-area-inset-right);
+	}
+
 	@media screen and (max-width: 600px) {
 		.map-container {
 			height: 100%;

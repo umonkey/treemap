@@ -27,9 +27,15 @@
 <style>
 	.search-container {
 		position: absolute;
-		top: 10px;
-		left: 50px;
+		top: calc(10px + env(safe-area-inset-top));
+		left: calc(50px + env(safe-area-inset-left));
 		z-index: 10;
+	}
+
+	@media screen and (max-width: 600px) {
+		.search-container {
+			right: calc(50px + env(safe-area-inset-right));
+		}
 	}
 
 	.search-group {

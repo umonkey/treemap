@@ -110,7 +110,7 @@
 
 <style>
 	.canvas {
-		height: 100vh;
+		height: 100dvh;
 		width: 300px;
 		position: fixed;
 		top: 0;
@@ -124,6 +124,7 @@
 		gap: calc(var(--gap) * 2);
 
 		padding: calc(2 * var(--gap));
+		padding-bottom: calc(2 * var(--gap) + env(safe-area-inset-bottom));
 		border-right: 1px solid var(--sep-color);
 
 		text-align: left;

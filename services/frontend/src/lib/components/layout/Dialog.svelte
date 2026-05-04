@@ -149,7 +149,7 @@
 	@media screen and (max-width: 600px) {
 		.dialog {
 			width: 100vw;
-			height: calc(100vh - var(--bottom-nav-height));
+			height: calc(100dvh - var(--bottom-nav-height));
 			border-radius: 0;
 			max-width: 100vw;
 
@@ -163,8 +163,10 @@
 			min-height: none;
 			max-height: none;
 			height: calc(
-				100vh - var(--dialog-header-size) - var(--dialog-footer-size) - var(--bottom-nav-height)
+				100dvh - var(--dialog-header-size) - var(--dialog-footer-size) - var(--bottom-nav-height) -
+					env(safe-area-inset-bottom)
 			);
+			padding-bottom: calc(1rem + env(safe-area-inset-bottom));
 		}
 	}
 </style>
