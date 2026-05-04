@@ -39,7 +39,7 @@
 			</div>
 		{/if}
 
-		<div class="body" class:nopadding={!!nopadding}>
+		<div class="body" class:nopadding={!!nopadding} class:nobuttons={!buttons}>
 			{@render children()}
 		</div>
 

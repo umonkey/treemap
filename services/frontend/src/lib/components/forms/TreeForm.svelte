@@ -178,7 +178,7 @@
 		}
 
 		.body {
-			height: calc(100dvh - 100px - var(--bottom-nav-height) - env(safe-area-inset-bottom));
+			height: calc(100dvh - 40px - env(safe-area-inset-bottom));
 			padding-bottom: calc(var(--gap) + env(safe-area-inset-bottom));
 			max-height: none;
 		}
