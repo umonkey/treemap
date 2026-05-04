@@ -8,6 +8,7 @@
 
 	import GoogleTracker from '$lib/components/GoogleTracker.svelte';
 	import Layout from '$lib/components/layout/Layout.svelte';
+	import WakeGuard from '$lib/components/screen-lock/WakeGuard.svelte';
 
 	import '$lib/styles/variables.css';
 	import '$lib/styles/colors.css';
@@ -32,5 +33,6 @@
 	{@render children()}
 </Layout>
 
+<WakeGuard />
 <SvelteToast />
 <GoogleTracker />

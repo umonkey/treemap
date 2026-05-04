@@ -10,6 +10,7 @@ This guide describes how to build and publish the Trees of Yerevan application a
 ## Configuration
 
 The TWA configuration is stored in `services/frontend/twa-manifest.json`. This file contains:
+
 - `packageId`: `app.treemaps.yerevan.twa`
 - `host`: `yerevan.treemaps.app`
 - `signingKey`: Points to `./release.keystore`.
@@ -19,6 +20,7 @@ The TWA configuration is stored in `services/frontend/twa-manifest.json`. This f
 To build the Android App Bundle (AAB):
 
 1.  Navigate to the frontend directory:
+
     ```bash
     cd services/frontend
     ```
@@ -33,6 +35,7 @@ This command runs `bubblewrap update` and `bubblewrap build`. It will generate a
 ## Versioning
 
 When publishing a new version to Google Play, you **must** increment both `appVersion` and `appVersionCode` in `twa-manifest.json`.
+
 - `appVersion`: The user-visible version string.
 - `appVersionCode`: An integer that must be higher than the previous version.
 
@@ -42,6 +45,7 @@ For the TWA to work without a browser URL bar, the `assetlinks.json` file must b
 The SHA-256 fingerprint in `assetlinks.json` must match the one in `twa-manifest.json` and the one used to sign the APK/AAB.
 
 To view the fingerprint of the keystore:
+
 ```bash
 keytool -list -v -keystore release.keystore
 ```

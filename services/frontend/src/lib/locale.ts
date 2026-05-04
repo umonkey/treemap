@@ -625,6 +625,10 @@ class EnglishLocale {
 		return 'Auto-upload files';
 	}
 
+	public settingsKeepAwake(): string {
+		return 'Keep screen awake';
+	}
+
 	public toastErrorAddingComment(): string {
 		return 'Error adding comment.';
 	}
@@ -1261,6 +1265,10 @@ class RussianLocale extends EnglishLocale {
 		return 'Загружать файлы автоматически';
 	}
 
+	public settingsKeepAwake(): string {
+		return 'Не выключать экран';
+	}
+
 	public toastErrorAddingComment(): string {
 		return 'Ошибка добавления комментария.';
 	}
@@ -1795,6 +1803,10 @@ class ArmenianLocale extends EnglishLocale {
 
 	public uploadsAuto(): string {
 		return 'Ֆայլերը վերբեռնել ավտոմատ';
+	}
+
+	public settingsKeepAwake(): string {
+		return 'Էկրանը բաց պահել';
 	}
 
 	public toastErrorAddingComment(): string {

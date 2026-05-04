@@ -3,7 +3,15 @@
  */
 
 class LocalStorage {
+	private isAvailable(): boolean {
+		return typeof window !== 'undefined' && typeof localStorage !== 'undefined';
+	}
+
 	public read<T>(key: string): T | undefined {
+		if (!this.isAvailable()) {
+			return undefined;
+		}
+
 		try {
 			const value = localStorage.getItem(key);
 
@@ -19,6 +27,10 @@ class LocalStorage {
 	}
 
 	public write<T>(key: string, value: T | null): void {
+		if (!this.isAvailable()) {
+			return;
+		}
+
 		try {
 			if (value === undefined || value === null) {
 				localStorage.removeItem(key);
