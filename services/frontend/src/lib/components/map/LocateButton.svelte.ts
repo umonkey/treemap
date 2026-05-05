@@ -4,6 +4,10 @@ import { locationStore } from '$lib/stores/locationStore';
 import { get } from 'svelte/store';
 
 class ComponentState {
+	public get isTracking() {
+		return locationTracker.isTracking;
+	}
+
 	public handleLocate = () => {
 		const currentPos = get(locationStore);
 		if (currentPos) {

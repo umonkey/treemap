@@ -5,7 +5,7 @@
 </script>
 
 <Control position="top-left">
-	<div class="maplibregl-ctrl-group">
+	<div class="maplibregl-ctrl-group" class:active={componentState.isTracking}>
 		<button type="button" onclick={componentState.handleLocate} title="Locate me">
 			<Icon />
 		</button>
@@ -16,5 +16,9 @@
 	button {
 		padding: 4px;
 		color: #000;
+	}
+
+	.active {
+		background-color: rgba(0 128 0 / 0.5);
 	}
 </style>
