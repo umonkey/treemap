@@ -44,7 +44,7 @@
 		<LocateButton />
 		<BarsButton />
 		<LocationTracker />
-		<AttributionControl compact={true} />
+		<AttributionControl compact={true} position="bottom-left" />
 
 		{#if children}
 			{@render children()}

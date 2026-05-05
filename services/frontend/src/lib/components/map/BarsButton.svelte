@@ -4,7 +4,7 @@
 	import { componentState } from './BarsButton.svelte.ts';
 </script>
 
-<Control position="bottom-left">
+<Control position="bottom-right">
 	<div class="maplibregl-ctrl-group mobile-only">
 		<button type="button" onclick={componentState.openSidebar} title="Open Menu">
 			<BarsIcon />
