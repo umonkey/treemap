@@ -88,7 +88,7 @@
 			{/if}
 		</div>
 
-		<div class="bottom">
+		<div class="bottom logo">
 			<Logo />
 		</div>
 
@@ -257,7 +257,7 @@
 			}
 
 			.stats,
-			.bottom {
+			.logo {
 				display: none;
 			}
 
