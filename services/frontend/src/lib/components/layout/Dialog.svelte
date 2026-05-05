@@ -10,12 +10,20 @@
 		onClick: () => void;
 	};
 
-	const { title, children, buttons, header, nopadding } = $props<{
+	const {
+		title,
+		children,
+		buttons,
+		header,
+		nopadding,
+		variant = 'standard'
+	} = $props<{
 		title: string;
 		children: Snippet;
 		nopadding?: boolean;
 		buttons?: ButtonDef[];
 		header?: Snippet;
+		variant?: 'standard' | 'bottom';
 	}>();
 </script>
 
@@ -24,7 +32,7 @@
 </svelte:head>
 
 <Overlay onClick={handleClose}>
-	<form class="dialog">
+	<form class="dialog" class:variant-bottom={variant === 'bottom'}>
 		{#if header}
 			{@render header()}
 		{:else}
@@ -157,6 +165,58 @@
 			top: 0;
 			left: 0;
 			bottom: 0;
+
+			&.variant-bottom {
+				top: auto;
+				bottom: 0;
+				height: auto;
+				max-height: 80dvh;
+				border-top-left-radius: 8px;
+				border-top-right-radius: 8px;
+				background-color: var(--map-menu-background);
+				box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+
+				.title {
+					background-color: transparent;
+					border-bottom: none;
+					padding: 0 var(--gap);
+					height: auto;
+					min-height: 40px;
+
+					.button:first-child {
+						display: none;
+					}
+
+					.button:last-child {
+						flex-basis: 30px;
+						height: 30px;
+
+						button {
+							width: 30px;
+							height: 30px;
+						}
+					}
+
+					h1 {
+						text-align: left;
+						font-size: 120%;
+						line-height: 30px;
+						flex-shrink: 1;
+						white-space: nowrap;
+						overflow: hidden;
+						text-overflow: ellipsis;
+					}
+				}
+
+				.body {
+					height: auto;
+					max-height: 60dvh;
+					min-height: auto;
+					padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+				}
+
+				animation: slideUp 0.2s ease-out;
+			}
 		}
 
 		.body {
@@ -167,6 +227,15 @@
 					env(safe-area-inset-bottom)
 			);
 			padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+		}
+	}
+
+	@keyframes slideUp {
+		from {
+			transform: translateY(100%);
+		}
+		to {
+			transform: translateY(0);
 		}
 	}
 </style>

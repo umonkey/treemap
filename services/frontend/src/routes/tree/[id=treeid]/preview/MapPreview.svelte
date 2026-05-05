@@ -222,6 +222,8 @@
 			transition: height 0.2s ease-in-out;
 			border-width: 0;
 
+			animation: slideUp 0.2s ease-out;
+
 			.extras {
 				display: none;
 			}
@@ -238,6 +240,15 @@
 					gap: var(--gap);
 				}
 			}
+		}
+	}
+
+	@keyframes slideUp {
+		from {
+			transform: translateY(100%);
+		}
+		to {
+			transform: translateY(0);
 		}
 	}
 </style>

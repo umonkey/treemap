@@ -6,7 +6,7 @@
 	import LIGHT from './light.png';
 </script>
 
-<Dialog title="Select map base layer">
+<Dialog title="Select map base layer" variant="bottom">
 	<div class="items">
 		<div class="item" class:active={selectorState.base == 'basic'}>
 			<button
@@ -60,15 +60,31 @@
 		grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
 		gap: 1rem;
 		width: 100%;
+
+		@media screen and (max-width: 600px) {
+			grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+			gap: 0.5rem;
+		}
 	}
 
 	.item {
 		width: 100%;
 
 		img {
-			width: 100%;
+			width: 100px;
+			height: 100px;
+			aspect-ratio: 1;
 			display: block;
-			object-fit: none;
+			object-fit: cover;
+			margin: 0 auto;
+		}
+
+		@media screen and (max-width: 600px) {
+			img {
+				width: 20vw;
+				height: 20vw;
+				margin: 0 auto;
+			}
 		}
 
 		button {
@@ -85,8 +101,8 @@
 		}
 
 		.label {
-			text-align: center;
-			padding: 0.5rem 0;
+			text-align: left;
+			padding: 0.5rem 0 0 4px;
 		}
 	}
 

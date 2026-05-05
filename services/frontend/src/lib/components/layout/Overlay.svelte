@@ -28,6 +28,7 @@
 		background: rgba(0, 0, 0, 0.5);
 		backdrop-filter: blur(2px);
 		overflow: hidden;
+		animation: fadeIn 0.2s ease-out;
 	}
 
 	.backdrop {
