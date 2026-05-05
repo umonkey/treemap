@@ -5,7 +5,6 @@
 	import { RasterLayer, RasterTileSource } from 'svelte-maplibre';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import { type Snippet, onMount } from 'svelte';
-	import BarsButton from './BarsButton.svelte';
 	import LayerButton from './LayerButton.svelte';
 	import LocateButton from './LocateButton.svelte';
 	import LocationTracker from './LocationTracker.svelte';
@@ -42,7 +41,6 @@
 	>
 		<NavigationControl position="top-left" />
 		<LocateButton />
-		<BarsButton />
 		<LocationTracker />
 		<AttributionControl compact={true} position="bottom-left" />
 
@@ -105,7 +103,7 @@
 
 	@media screen and (max-width: 600px) {
 		.map-container {
-			height: 100%;
+			height: calc(100% - var(--bottom-nav-height));
 		}
 	}
 </style>
