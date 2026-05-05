@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { MAX_BOUNDS } from '$lib/constants';
 	import type { ILatLng } from '$lib/types';
-	import { AttributionControl, MapLibre, NavigationControl } from 'svelte-maplibre';
+	import { AttributionControl, MapLibre } from 'svelte-maplibre';
 	import { RasterLayer, RasterTileSource } from 'svelte-maplibre';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import { type Snippet, onMount } from 'svelte';
@@ -10,6 +10,7 @@
 	import LocationTracker from './LocationTracker.svelte';
 	import { mapState } from './MapLibre.svelte.ts';
 	import Marker from './Marker.svelte';
+	import Navigation from './Navigation.svelte';
 	import SearchControl from './SearchControl.svelte';
 	import TreeLayer from './TreeLayer.svelte';
 
@@ -39,7 +40,6 @@
 		maxBounds={MAX_BOUNDS}
 		attributionControl={false}
 	>
-		<NavigationControl position="top-left" />
 		<LocateButton />
 		<LocationTracker />
 		<AttributionControl compact={true} position="bottom-left" />
@@ -68,6 +68,7 @@
 		<TreeLayer />
 	</MapLibre>
 
+	<Navigation />
 	<SearchControl />
 </div>
 

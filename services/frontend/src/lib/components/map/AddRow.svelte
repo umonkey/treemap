@@ -12,7 +12,7 @@
 	onMount(addState.onMount);
 </script>
 
-<Control position="top-left">
+<Control position="bottom-right">
 	<div class="maplibregl-ctrl-group" class:active={addState.active}>
 		<button type="button" onclick={addState.toggle} title="Add a new tree">
 			<Icon />
