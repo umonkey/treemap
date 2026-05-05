@@ -211,8 +211,7 @@
 	/** Hide by default on small screens. **/
 	@media screen and (max-width: 1023px) {
 		.overlay {
-			animation: fadeIn 0.1s ease-in-out;
-
+			animation: fadeIn 0.2s ease-in-out;
 			display: none;
 			position: fixed;
 			top: 0;
@@ -229,24 +228,51 @@
 
 		.canvas {
 			width: 100vw;
-			height: 100dvh;
+			height: auto;
+			top: auto;
+			bottom: 0;
 			border-right: none;
+			border-radius: 16px 16px 0 0;
+			padding: var(--gap);
+			padding-bottom: calc(2 * var(--gap) + env(safe-area-inset-bottom));
+			animation: slideUp 0.2s ease-out;
 
 			.mobile-header {
-				display: flex;
-				justify-content: flex-end;
-				padding-bottom: var(--gap);
+				position: absolute;
+				top: var(--gap);
+				right: var(--gap);
+				z-index: 1;
+				display: block;
 
 				.close-btn {
-					background: none;
+					background-color: transparent;
 					border: none;
-					color: inherit;
-					width: 32px;
-					height: 32px;
-					padding: 0;
+					color: light-dark(black, white);
+					width: 30px;
+					height: 30px;
+					padding: 0 4px;
 					cursor: pointer;
+					opacity: 0.5;
 				}
 			}
+
+			.stats,
+			.bottom {
+				display: none;
+			}
+
+			ul {
+				padding-bottom: var(--gap);
+			}
+		}
+	}
+
+	@keyframes slideUp {
+		from {
+			transform: translateY(100%);
+		}
+		to {
+			transform: translateY(0);
 		}
 	}
 
