@@ -1,109 +1,54 @@
 <script lang="ts">
 	import Dialog from '$lib/components/layout/Dialog.svelte';
+	import CheckInput from '$lib/ui/check-input/CheckInput.svelte';
+	import SelectButton from '$lib/ui/SelectButton.svelte';
 	import { selectorState } from './LayerSelector.svelte.ts';
-	import BASIC from './basic.png';
-	import DRONE from './drone.png';
-	import LIGHT from './light.png';
 </script>
 
 <Dialog title="Select map base layer" variant="bottom">
-	<div class="items">
-		<div class="item" class:active={selectorState.base == 'basic'}>
-			<button
-				type="button"
-				aria-label="Select Basic base layer"
-				onclick={() => selectorState.setBase('basic')}
-			>
-				<img src={BASIC} alt="Basic layer preview" />
-			</button>
-			<div class="label">Basic OSM</div>
-		</div>
-
-		<div class="item" class:active={selectorState.base == 'light'}>
-			<button
-				type="button"
-				aria-label="Select Light base layer"
-				onclick={() => selectorState.setBase('light')}
-			>
-				<img src={LIGHT} alt="Light layer preview" />
-			</button>
-			<div class="label">Light</div>
-		</div>
-
-		<div class="item" class:active={selectorState.base == 'google'}>
-			<button
-				type="button"
-				aria-label="Select Google Satellite base layer"
-				onclick={() => selectorState.setBase('google')}
-			>
-				<img src={BASIC} alt="Google Satellite layer preview" />
-			</button>
-			<div class="label">Google</div>
-		</div>
+	<div class="base-layers">
+		<SelectButton
+			value="basic"
+			label="Details"
+			active={selectorState.base === 'basic'}
+			onClick={selectorState.setBase}
+		/>
+		<SelectButton
+			value="light"
+			label="Light"
+			active={selectorState.base === 'light'}
+			onClick={selectorState.setBase}
+		/>
+		<SelectButton
+			value="google"
+			label="Satellite"
+			active={selectorState.base === 'google'}
+			onClick={selectorState.setBase}
+		/>
 	</div>
 
 	<h3>Select additional layers</h3>
 
-	<div class="items">
-		<div class="item" class:active={!!selectorState.drone}>
-			<button type="button" aria-label="Toggle Drone layer" onclick={selectorState.toggleDrone}>
-				<img src={DRONE} alt="Drone layer preview" />
-			</button>
-			<div class="label">Drone</div>
-		</div>
+	<div class="additional-layers">
+		<CheckInput value={selectorState.drone} label="Drone" onChange={selectorState.toggleDrone} />
 	</div>
 </Dialog>
 
 <style>
-	.items {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-		gap: 1rem;
+	.base-layers {
+		display: flex;
+		gap: 0.5rem;
 		width: 100%;
 
-		@media screen and (max-width: 600px) {
-			grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-			gap: 0.5rem;
+		:global(button) {
+			flex: 1;
 		}
 	}
 
-	.item {
-		width: 100%;
-
-		img {
-			width: 100px;
-			height: 100px;
-			aspect-ratio: 1;
-			display: block;
-			object-fit: cover;
-			margin: 0 auto;
-		}
-
-		@media screen and (max-width: 600px) {
-			img {
-				width: 20vw;
-				height: 20vw;
-				margin: 0 auto;
-			}
-		}
-
-		button {
-			border: 4px solid transparent;
-			background-color: transparent;
-			padding: 2px;
-			cursor: pointer;
-			display: block;
-		}
-
-		&.active button,
-		&:hover button {
-			border-color: green;
-		}
-
-		.label {
-			text-align: left;
-			padding: 0.5rem 0 0 4px;
-		}
+	.additional-layers {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
 	}
 
 	h3 {
