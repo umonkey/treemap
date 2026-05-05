@@ -2,35 +2,40 @@
 	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import CheckInput from '$lib/ui/check-input/CheckInput.svelte';
 	import SelectButton from '$lib/ui/SelectButton.svelte';
+	import { locale } from './lang';
 	import { selectorState } from './LayerSelector.svelte.ts';
 </script>
 
-<Dialog title="Select map base layer" variant="bottom">
+<Dialog title={locale.title()} variant="bottom">
 	<div class="base-layers">
 		<SelectButton
 			value="basic"
-			label="Details"
+			label={locale.baseDetails()}
 			active={selectorState.base === 'basic'}
 			onClick={selectorState.setBase}
 		/>
 		<SelectButton
 			value="light"
-			label="Light"
+			label={locale.baseLight()}
 			active={selectorState.base === 'light'}
 			onClick={selectorState.setBase}
 		/>
 		<SelectButton
 			value="google"
-			label="Satellite"
+			label={locale.baseSatellite()}
 			active={selectorState.base === 'google'}
 			onClick={selectorState.setBase}
 		/>
 	</div>
 
-	<h3>Select additional layers</h3>
+	<h3>{locale.additionalTitle()}</h3>
 
 	<div class="additional-layers">
-		<CheckInput value={selectorState.drone} label="Drone" onChange={selectorState.toggleDrone} />
+		<CheckInput
+			value={selectorState.drone}
+			label={locale.layerDrone()}
+			onChange={selectorState.toggleDrone}
+		/>
 	</div>
 </Dialog>
 
