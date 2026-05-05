@@ -210,7 +210,7 @@
 
 				.body {
 					height: auto;
-					max-height: 60dvh;
+					max-height: none;
 					min-height: auto;
 					padding-bottom: calc(1rem + env(safe-area-inset-bottom));
 				}
@@ -220,12 +220,9 @@
 		}
 
 		.body {
-			min-height: none;
+			min-height: auto;
 			max-height: none;
-			height: calc(
-				100dvh - var(--dialog-header-size) - var(--dialog-footer-size) - var(--bottom-nav-height) -
-					env(safe-area-inset-bottom)
-			);
+			flex: 1;
 			padding-bottom: calc(1rem + env(safe-area-inset-bottom));
 		}
 	}
