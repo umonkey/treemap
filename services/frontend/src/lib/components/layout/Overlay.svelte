@@ -47,7 +47,7 @@
 	}
 
 	/** On mobile devices, reserve space for the nav bar **/
-	@media screen and (max-width: 600px) {
+	@media screen and (max-width: 1023px) {
 		.overlay {
 			bottom: var(--bottom-nav-height);
 		}

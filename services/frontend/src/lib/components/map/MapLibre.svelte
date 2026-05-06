@@ -102,7 +102,7 @@
 		right: env(safe-area-inset-right);
 	}
 
-	@media screen and (max-width: 600px) {
+	@media screen and (max-width: 1023px) {
 		.map-container {
 			height: calc(100% - var(--bottom-nav-height));
 		}

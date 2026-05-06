@@ -213,7 +213,7 @@
 	}
 
 	/** On mobile, extrass need expansion. **/
-	@media screen and (max-width: 600px) {
+	@media screen and (max-width: 1023px) {
 		.preview {
 			position: fixed;
 			bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom));
