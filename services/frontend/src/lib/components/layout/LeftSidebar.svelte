@@ -281,7 +281,6 @@
 				}
 			}
 
-			.stats,
 			.logo {
 				display: none;
 			}
