@@ -4,8 +4,6 @@ use log::{debug, error, info};
 use reqwest::header::{HeaderMap, HeaderValue};
 use serde::Deserialize;
 
-const USER_AGENT: &str = "TreeMap/1.0";
-const REFERRER: &str = "https://github.com/umonkey/treemap/";
 const ACCEPT_LANGUAGE: &str = "en-US,en;q=0.5";
 
 #[derive(Debug, Deserialize)]
@@ -20,12 +18,18 @@ pub struct ResponsePayload {
 
 pub struct NominatimClient {
     http: reqwest::Client,
+    user_agent: String,
+    referrer: String,
 }
 
 impl NominatimClient {
-    pub fn new() -> Self {
+    pub fn new(user_agent: String, referrer: String) -> Self {
         let http = reqwest::Client::new();
-        Self { http }
+        Self {
+            http,
+            user_agent,
+            referrer,
+        }
     }
 
     pub async fn get_street_address(&self, lat: f64, lon: f64) -> Result<Option<String>> {
@@ -39,8 +43,16 @@ impl NominatimClient {
         debug!("Requesting address from Nominatim: {url}");
 
         let mut headers = HeaderMap::new();
-        headers.insert("User-Agent", HeaderValue::from_static(USER_AGENT));
-        headers.insert("Referer", HeaderValue::from_static(REFERRER));
+        headers.insert(
+            "User-Agent",
+            HeaderValue::from_str(&self.user_agent).unwrap_or(HeaderValue::from_static("TreeMap")),
+        );
+        headers.insert(
+            "Referer",
+            HeaderValue::from_str(&self.referrer).unwrap_or(HeaderValue::from_static(
+                "https://github.com/umonkey/treemap",
+            )),
+        );
         headers.insert("Accept-Language", HeaderValue::from_static(ACCEPT_LANGUAGE));
 
         let response = match self.http.get(&url).headers(headers).send().await {
@@ -78,12 +90,23 @@ impl NominatimClient {
 
 impl Default for NominatimClient {
     fn default() -> Self {
-        Self::new()
+        Self::new(
+            "TreeMap".to_string(),
+            "https://github.com/umonkey/treemap/".to_string(),
+        )
     }
 }
 
 impl Injectable for NominatimClient {
-    fn inject(_ctx: &dyn Context) -> Result<Self> {
-        Ok(Self::new())
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        let config = ctx.config();
+        let user_agent = format!(
+            "TreeMap/{} ({})",
+            env!("CARGO_PKG_VERSION"),
+            config.app_contact
+        );
+        let referrer = config.app_contact.clone();
+
+        Ok(Self::new(user_agent, referrer))
     }
 }

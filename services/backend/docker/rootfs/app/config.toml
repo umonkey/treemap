@@ -23,6 +23,9 @@ sqs_url = "https://sqs.eu-west-1.amazonaws.com/047041075401/trees_updates"
 # If this is not set, OSM interaction will not work.
 bot_user_id = 1
 
+# Contact information for the app.
+app_contact = "https://github.com/umonkey/treemap; info@kanachyerevan.am"
+
 osm_changeset_size = 100
 
 # Where to store temporary files, before they are uploaded to the external S3 storage.

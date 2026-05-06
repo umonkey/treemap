@@ -15,6 +15,9 @@ pub struct Config {
     #[serde(default = "default_bot_user_id")]
     pub bot_user_id: u64,
 
+    #[serde(default = "default_app_contact")]
+    pub app_contact: String,
+
     #[serde(default = "default_file_folder")]
     pub file_folder: String,
 
@@ -155,6 +158,10 @@ fn default_file_folder() -> String {
 
 fn default_bot_user_id() -> u64 {
     0
+}
+
+fn default_app_contact() -> String {
+    "https://github.com/umonkey/treemap".to_string()
 }
 
 fn default_osm_changeset_size() -> u64 {

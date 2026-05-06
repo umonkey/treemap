@@ -27,6 +27,10 @@ database = "sqlite"
 # If this is not set, OSM interaction will not work.
 #bot_user_id = 12345678
 
+# Contact information for the app, used in User-Agent and Referer headers.
+# Defaults to the GitHub project page.
+#app_contact = "https://github.com/umonkey/treemap"
+
 # Path to the local folder where files are stored.
 # This is used when file_storage is set to "local".
 #file_folder = "var/files"

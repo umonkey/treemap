@@ -2,6 +2,7 @@ use crate::domain::osm::OsmTreeRecord;
 use crate::services::{Context, Injectable};
 use crate::types::{Error, Result};
 use log::{debug, error, warn};
+use reqwest::header::{HeaderMap, HeaderValue};
 use serde_json::Value;
 use std::time::Duration;
 use tokio::time::sleep;
@@ -11,16 +12,20 @@ pub struct OverpassClient {
     client: reqwest::Client,
     endpoint: String,
     query: String,
+    user_agent: String,
+    referrer: String,
 }
 
 impl OverpassClient {
-    pub fn new(endpoint: String, query: String) -> Self {
+    pub fn new(endpoint: String, query: String, user_agent: String, referrer: String) -> Self {
         let client = reqwest::Client::new();
 
         Self {
             client,
             endpoint,
             query,
+            user_agent,
+            referrer,
         }
     }
 
@@ -60,7 +65,20 @@ impl OverpassClient {
             attempt += 1;
             debug!("Sending Overpass query to: {url} (attempt {attempt})");
 
-            let response = match self.client.get(url).send().await {
+            let mut headers = HeaderMap::new();
+            headers.insert(
+                "User-Agent",
+                HeaderValue::from_str(&self.user_agent)
+                    .unwrap_or(HeaderValue::from_static("TreeMap")),
+            );
+            headers.insert(
+                "Referer",
+                HeaderValue::from_str(&self.referrer).unwrap_or(HeaderValue::from_static(
+                    "https://github.com/umonkey/treemap",
+                )),
+            );
+
+            let response = match self.client.get(url).headers(headers).send().await {
                 Ok(response) => response,
 
                 Err(e) => {
@@ -130,10 +148,18 @@ impl OverpassClient {
 impl Injectable for OverpassClient {
     fn inject(ctx: &dyn Context) -> Result<Self> {
         let config = ctx.config();
+        let user_agent = format!(
+            "TreeMap/{} ({})",
+            env!("CARGO_PKG_VERSION"),
+            config.app_contact
+        );
+        let referrer = config.app_contact.clone();
 
         Ok(Self::new(
             config.overpass_endpoint.clone(),
             config.overpass_query.clone(),
+            user_agent,
+            referrer,
         ))
     }
 }
