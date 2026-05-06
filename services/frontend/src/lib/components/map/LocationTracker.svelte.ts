@@ -1,7 +1,7 @@
 import { locale } from '$lib/locale';
 import { locationStore } from '$lib/stores/locationStore';
 import type { IMyPosition } from '$lib/types';
-import { showError } from '$lib/errors';
+import { showError, showInfo } from '$lib/errors';
 
 class LocationTracker {
 	public position = $state<IMyPosition | null>(null);
@@ -12,7 +12,7 @@ class LocationTracker {
 	public start = () => {
 		if (!('geolocation' in navigator)) {
 			console.warn('[GEO] Geolocation is not available, not tracking.');
-			showError(locale.toastLocationNotAvailable());
+			showInfo(locale.toastLocationNotAvailable());
 			return;
 		}
 
@@ -24,7 +24,7 @@ class LocationTracker {
 		this.watchId = navigator.geolocation.watchPosition(
 			(position) => {
 				if (!this.isTracking) {
-					showError(locale.toastLocationStarted());
+					showInfo(locale.toastLocationStarted());
 					this.isTracking = true;
 				}
 

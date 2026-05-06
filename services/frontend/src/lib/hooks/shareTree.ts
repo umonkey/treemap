@@ -1,9 +1,9 @@
 import { routes } from '$lib/routes';
-import { showError } from '$lib/errors';
+import { showError, showInfo } from '$lib/errors';
 
 export const handleShareTree = async (id: string) => {
 	if (!navigator.share) {
-		showError("Your browser doesn't support sharing.");
+		showInfo("Your browser doesn't support sharing.");
 		return;
 	}
 
