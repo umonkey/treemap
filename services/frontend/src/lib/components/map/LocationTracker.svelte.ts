@@ -23,7 +23,11 @@ class LocationTracker {
 
 		this.watchId = navigator.geolocation.watchPosition(
 			(position) => {
-				this.isTracking = true;
+				if (!this.isTracking) {
+					showError(locale.toastLocationStarted());
+					this.isTracking = true;
+				}
+
 				const pos = {
 					lat: position.coords.latitude,
 					lng: position.coords.longitude,
@@ -57,7 +61,6 @@ class LocationTracker {
 			}
 		);
 
-		showError(locale.toastLocationStarted());
 		console.debug(`[GEO] Tracking started, watch=${this.watchId}.`);
 	};
 
