@@ -1,5 +1,5 @@
-import { toast } from '@zerodevx/svelte-toast';
+import { toast } from 'svelte-sonner';
 
 export function showError(message: string) {
-	toast.push(message);
+	toast.error(message);
 }

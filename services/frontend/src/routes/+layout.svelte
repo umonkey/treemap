@@ -3,7 +3,7 @@
 	import { type BeforeInstallPromptEvent, pwaStore } from '$lib/stores/pwaStore';
 	import { autoStartUpload } from '$lib/upload';
 	import { validateStoredToken } from '$lib/utils/auth';
-	import { SvelteToast } from '@zerodevx/svelte-toast';
+	import { Toaster } from 'svelte-sonner';
 	import { onMount } from 'svelte';
 
 	import GoogleTracker from '$lib/components/GoogleTracker.svelte';
@@ -34,5 +34,5 @@
 </Layout>
 
 <WakeGuard />
-<SvelteToast />
+<Toaster position="bottom-left" richColors closeButton />
 <GoogleTracker />
