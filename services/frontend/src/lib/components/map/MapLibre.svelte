@@ -104,7 +104,7 @@
 
 	@media screen and (max-width: 1023px) {
 		.map-container {
-			height: calc(100% - var(--bottom-nav-height) - env(safe-area-inset-bottom, 0px));
+			height: calc(100% - var(--bottom-nav-height));
 		}
 	}
 </style>
