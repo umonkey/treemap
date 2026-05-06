@@ -57,10 +57,6 @@ class EnglishLocale {
 		return 'Install App';
 	}
 
-	public sideInstallManualInstructions(): string {
-		return 'To install this app, open your browser menu and select "Add to Home screen" or "Install".';
-	}
-
 	public sideStatsMessage(count: number): string {
 		return `There are ${count} trees in our database.`;
 	}
@@ -725,10 +721,6 @@ class RussianLocale extends EnglishLocale {
 		return 'Установить приложение';
 	}
 
-	public sideInstallManualInstructions(): string {
-		return 'Чтобы установить приложение, откройте меню браузера и выберите «На главный экран» или «Установить».';
-	}
-
 	public override sideStatsMessage(count: number): string {
 		return `В нашей базе ${count} деревьев.`;
 	}
@@ -1371,10 +1363,6 @@ class ArmenianLocale extends EnglishLocale {
 
 	public sideInstallApp(): string {
 		return 'Տեղադրել հավելվածը';
-	}
-
-	public sideInstallManualInstructions(): string {
-		return 'Հավելվածը տեղադրելու համար բացեք բրաուզերի մենյուն և ընտրեք «Ավելացնել հիմնական էկրանին» կամ «Տեղադրել»։';
 	}
 
 	public override sideStatsMessage(count: number): string {

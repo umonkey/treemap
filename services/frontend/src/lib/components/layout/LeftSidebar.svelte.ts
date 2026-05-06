@@ -1,9 +1,7 @@
 import { getStats } from '$lib/api/stats';
-import { locale } from '$lib/locale';
 import { mobileSidebarStore } from '$lib/stores/mobileSidebarStore';
 import { pwaStore } from '$lib/stores/pwaStore';
 import type { IStats } from '$lib/types';
-import { toast } from 'svelte-sonner';
 import { get } from 'svelte/store';
 
 class ComponentState {
@@ -24,11 +22,6 @@ class ComponentState {
 		const event = get(pwaStore);
 		if (event) {
 			event.prompt();
-			this.close();
-		} else {
-			toast.info(locale.sideInstallManualInstructions(), {
-				duration: 10000
-			});
 			this.close();
 		}
 	};
