@@ -92,6 +92,9 @@ impl OverpassClient {
 
             if status.is_server_error() {
                 if attempt >= max_attempts {
+                    let body = response.text().await.unwrap_or_default();
+                    debug!("Overpass error response: {body}");
+
                     return Err(Error::OsmExchange(format!(
                         "Overpass query failed with status {status}"
                     )));
@@ -103,6 +106,9 @@ impl OverpassClient {
                 sleep(Duration::from_secs(10 * attempt as u64)).await;
                 continue;
             }
+
+            let body = response.text().await.unwrap_or_default();
+            debug!("Overpass error response: {body}");
 
             return Err(Error::OsmExchange(format!(
                 "Overpass query failed with status {status}"
