@@ -17,7 +17,7 @@ class LocationTracker {
 		}
 
 		if (this.watchId !== null) {
-			// console.debug(`[GEO] Already tracking, watch=${this.watchId}.`);
+			console.debug(`[GEO] Already tracking, watch=${this.watchId}.`);
 			return;
 		}
 
@@ -88,9 +88,13 @@ class LocationTracker {
 			navigator.permissions.query({ name: 'geolocation' }).then((result) => {
 				if (result.state === 'granted') {
 					this.start();
-				}
+				} else {
+                    console.debug(`[GEO] Permissions are ${result.state}, not starting.`);
+                }
 			});
-		}
+		} else {
+            console.debug('[GEO] Could not query permissions.');
+        }
 	};
 }
 
