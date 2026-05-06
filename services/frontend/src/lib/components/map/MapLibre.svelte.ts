@@ -39,6 +39,7 @@ class MapLibre {
 	droneLayer = $state<string | undefined>(undefined);
 
 	zoom = $state<number>(13);
+	bearing = $state<number>(0);
 	center = $state<ILatLng>(DEFAULT_MAP_CENTER);
 	bounds = $state<LngLatBounds>();
 	marker = $state<LngLat>();
@@ -51,6 +52,7 @@ class MapLibre {
 
 	public constructor() {
 		this.zoom = get(mapStore)?.zoom ?? 13;
+		this.bearing = get(mapStore)?.bearing ?? 0;
 		this.center = get(mapStore)?.center ?? DEFAULT_MAP_CENTER;
 
 		console.debug(`Read map center from mapStore: ${this.center.lat},${this.center.lng}`);
@@ -76,7 +78,7 @@ class MapLibre {
 	private updateStore = (bounds?: LngLatBounds) => {
 		this.storeDebouncer.run(() => {
 			mapStore.update((s) => {
-				const newState = { ...s, zoom: this.zoom };
+				const newState = { ...s, zoom: this.zoom, bearing: this.bearing };
 
 				if (bounds) {
 					const center = bounds.getCenter();
@@ -89,6 +91,10 @@ class MapLibre {
 	};
 
 	public handleZoom = () => {
+		this.updateStore();
+	};
+
+	public handleRotate = () => {
 		this.updateStore();
 	};
 

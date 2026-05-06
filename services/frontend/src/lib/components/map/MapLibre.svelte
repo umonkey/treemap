@@ -32,10 +32,14 @@
 		bind:map={mapState.map}
 		bind:center={mapState.center}
 		bind:zoom={mapState.zoom}
+		bind:bearing={mapState.bearing}
+		pitch={0}
+		maxPitch={0}
 		class="map"
 		bind:bounds={mapState.bounds}
 		onmoveend={mapState.handleMoveEnd}
 		onzoom={mapState.handleZoom}
+		onrotate={mapState.handleRotate}
 		onload={mapState.handleLoad}
 		maxBounds={MAX_BOUNDS}
 		attributionControl={false}
