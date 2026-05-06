@@ -44,7 +44,8 @@ self.addEventListener('fetch', (event) => {
 		const isIndex = url.pathname === '/';
 
 		if (isAsset || isIndex) {
-			const cachedResponse = await cache.match(url.pathname);
+			const cacheKey = isIndex ? '/index.html' : url.pathname;
+			const cachedResponse = await cache.match(cacheKey);
 			if (cachedResponse) return cachedResponse;
 		}
 

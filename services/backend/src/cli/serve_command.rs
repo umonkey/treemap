@@ -22,13 +22,22 @@ use crate::actions::upload::upload_router;
 use crate::actions::user::user_router;
 use crate::services::*;
 use actix_cors::Cors;
-use actix_files::Files;
+use actix_files::{Files, NamedFile};
 use actix_web::{
-    middleware::DefaultHeaders, web, web::PayloadConfig, App, HttpResponse, HttpServer,
+    get, middleware::DefaultHeaders, web, web::PayloadConfig, App, HttpResponse, HttpServer,
 };
 use log::{debug, info};
 use std::sync::Arc;
 use std::time::Duration;
+
+#[get("/manifest.json")]
+async fn manifest_action() -> actix_web::Result<NamedFile> {
+    Ok(NamedFile::open("./static/manifest.json")?.set_content_type(
+        "application/manifest+json"
+            .parse()
+            .expect("Invalid MIME type"),
+    ))
+}
 
 pub async fn serve_command() {
     let state = Arc::new(
@@ -114,6 +123,7 @@ pub async fn serve_command() {
                     .wrap(Transaction)
                     .service(web::scope("/login").configure(login_router)),
             )
+            .service(manifest_action)
             .service(
                 Files::new("/", "./static")
                     .prefer_utf8(true)

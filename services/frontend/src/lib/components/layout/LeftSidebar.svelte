@@ -12,7 +12,7 @@
 	import { routes } from '$lib/routes';
 	import { authStore } from '$lib/stores/authStore';
 	import { isSidebarVisible } from '$lib/stores/mobileSidebarStore';
-	import { isInstallable } from '$lib/stores/pwaStore';
+	import { isInstallable, isManualInstallAvailable } from '$lib/stores/pwaStore';
 	import { uploadStore } from '$lib/stores/upload';
 	import { onMount } from 'svelte';
 	import { componentState } from './LeftSidebar.svelte.ts';
@@ -61,7 +61,7 @@
 					<span>{locale.sideUpdates()}</span>
 				</a>
 			</li>
-			{#if $isInstallable}
+			{#if $isInstallable || $isManualInstallAvailable}
 				<li>
 					<button class="menu-item" onclick={componentState.install}>
 						<span class="icon"><InstallIcon /></span>
