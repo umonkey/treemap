@@ -67,9 +67,12 @@
 		display: flex;
 		flex-direction: column;
 
+		width: 600px;
+		max-width: 600px;
+		margin-left: calc((100vw - 600px) / 2);
+
 		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
+		transform: translateY(-50%);
 
 		background-color: var(--color-dialog-background);
 		border-radius: 10px;
@@ -146,20 +149,18 @@
 		opacity: 0.5;
 	}
 
-	@media screen and (min-width: 1024px) {
+	@media screen and (max-width: 600px) {
 		.dialog {
-			width: 600px;
-			max-width: 600px;
+			margin-left: 0;
 		}
 	}
 
 	/** Make the dialog full-screen on mobile devices. **/
-	@media screen and (max-width: 600px) {
+	@media screen and (max-width: 1023px) {
 		.dialog {
 			width: 100vw;
 			height: calc(100dvh - var(--bottom-nav-height));
 			border-radius: 0;
-			max-width: 100vw;
 
 			transform: none;
 			top: 0;
