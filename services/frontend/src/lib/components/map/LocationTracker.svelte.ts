@@ -52,7 +52,8 @@ class LocationTracker {
 			},
 			{
 				enableHighAccuracy: true,
-				maximumAge: 0
+				maximumAge: 0,
+				timeout: 10000
 			}
 		);
 
@@ -89,12 +90,12 @@ class LocationTracker {
 				if (result.state === 'granted') {
 					this.start();
 				} else {
-                    console.debug(`[GEO] Permissions are ${result.state}, not starting.`);
-                }
+					console.debug(`[GEO] Permissions are ${result.state}, not starting.`);
+				}
 			});
 		} else {
-            console.debug('[GEO] Could not query permissions.');
-        }
+			console.debug('[GEO] Could not query permissions.');
+		}
 	};
 }
 
