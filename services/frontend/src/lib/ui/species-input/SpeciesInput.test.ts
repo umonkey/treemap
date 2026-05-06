@@ -88,4 +88,20 @@ describe('SpeciesInput', async () => {
 		const names = items.map((item) => item.textContent);
 		expect(names).toStrictEqual(['Ulmus ~ Elm']);
 	});
+
+	test('hide "Unknown" and "Unknown tree" values', async () => {
+		const { rerender } = render(SpeciesInput, {
+			value: 'Unknown',
+			onChange: () => {}
+		});
+
+		const input = screen.getByRole('textbox') as HTMLInputElement;
+		expect(input.value).toBe('');
+
+		await rerender({ value: 'Unknown tree' });
+		expect(input.value).toBe('');
+
+		await rerender({ value: 'Ulmus' });
+		expect(input.value).toBe('Ulmus');
+	});
 });

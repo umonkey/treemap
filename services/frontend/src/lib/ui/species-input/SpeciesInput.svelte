@@ -18,9 +18,12 @@
 		onChange: (value: string) => void;
 	}>();
 
+	const formatValue = (v: string | null | undefined) =>
+		v === 'Unknown' || v === 'Unknown tree' ? '' : (v ?? '');
+
 	// This is the editable input value.
 	// We change it on autocomplete clicks, etc.
-	let currentValue = $state<string>(value ?? '');
+	let currentValue = $state<string>(formatValue(value));
 
 	const { data: suggested, reload } = loadSuggestedSpecies();
 
@@ -46,13 +49,13 @@
 		}
 
 		showOptions = false;
-		currentValue = v;
+		currentValue = formatValue(v);
 		onChange(v);
 	};
 
 	const handleSuggestionClick = (v: string) => {
 		showOptions = false;
-		currentValue = v;
+		currentValue = formatValue(v);
 		onChange(v);
 	};
 
@@ -72,7 +75,7 @@
 	onMount(() => reload());
 
 	$effect(() => {
-		currentValue = value;
+		currentValue = formatValue(value);
 	});
 </script>
 
