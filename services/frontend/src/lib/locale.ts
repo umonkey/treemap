@@ -646,11 +646,7 @@ class EnglishLocale {
 	}
 
 	public toastLocationNotAvailable(): string {
-		return 'Geolocation is not available on this device.';
-	}
-
-	public toastLocationStarted(): string {
-		return 'Location tracking started.';
+		return 'Այս սարքում տեղորոշումը հասանելի չէ:';
 	}
 
 	public shortMonday(): string {
@@ -1303,10 +1299,6 @@ class RussianLocale extends EnglishLocale {
 
 	public toastLocationNotAvailable(): string {
 		return 'Геолокация недоступна на этом устройстве.';
-	}
-
-	public toastLocationStarted(): string {
-		return 'Отслеживание местоположения запущено.';
 	}
 
 	public shortMonday(): string {

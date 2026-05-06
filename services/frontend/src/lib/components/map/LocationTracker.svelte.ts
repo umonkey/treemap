@@ -24,7 +24,6 @@ class LocationTracker {
 		this.watchId = navigator.geolocation.watchPosition(
 			(position) => {
 				if (!this.isTracking) {
-					showInfo(locale.toastLocationStarted());
 					this.isTracking = true;
 				}
 
