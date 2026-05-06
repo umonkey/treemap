@@ -94,17 +94,17 @@
 		right: env(safe-area-inset-right);
 	}
 	:global(.maplibregl-ctrl-bottom-left) {
-		bottom: env(safe-area-inset-bottom);
+		bottom: 0;
 		left: env(safe-area-inset-left);
 	}
 	:global(.maplibregl-ctrl-bottom-right) {
-		bottom: env(safe-area-inset-bottom);
+		bottom: 0;
 		right: env(safe-area-inset-right);
 	}
 
 	@media screen and (max-width: 1023px) {
 		.map-container {
-			height: calc(100% - var(--bottom-nav-height));
+			height: calc(100% - var(--bottom-nav-height) - env(safe-area-inset-bottom, 0px));
 		}
 	}
 </style>

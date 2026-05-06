@@ -37,7 +37,7 @@
 
 	.panel {
 		position: absolute;
-		bottom: calc(10px + env(safe-area-inset-bottom));
+		bottom: 10px;
 		left: 50%;
 		transform: translate(-50%, 0);
 

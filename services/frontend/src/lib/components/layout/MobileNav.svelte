@@ -42,7 +42,8 @@
 		position: fixed;
 		bottom: 0;
 		width: 100%;
-		height: var(--bottom-nav-height);
+		height: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px));
+		padding-bottom: env(safe-area-inset-bottom, 0px);
 		line-height: var(--bottom-nav-height);
 		text-align: center;
 

@@ -216,9 +216,9 @@
 	@media screen and (max-width: 1023px) {
 		.preview {
 			position: fixed;
-			bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom));
-			height: calc(266px + env(safe-area-inset-bottom));
-			padding-bottom: calc(var(--gap) + env(safe-area-inset-bottom));
+			bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px));
+			height: calc(266px + env(safe-area-inset-bottom, 0px));
+			padding-bottom: calc(var(--gap) + env(safe-area-inset-bottom, 0px));
 			transition: height 0.2s ease-in-out;
 			border-width: 0;
 
@@ -229,7 +229,7 @@
 			}
 
 			&.expand {
-				height: calc(80dvh + env(safe-area-inset-bottom));
+				height: calc(80dvh + env(safe-area-inset-bottom, 0px));
 
 				.extras {
 					margin-top: var(--gap);

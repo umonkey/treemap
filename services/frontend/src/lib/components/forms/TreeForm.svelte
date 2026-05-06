@@ -167,19 +167,19 @@
 	@media screen and (max-width: 600px) {
 		.dialog {
 			width: 100vw;
-			height: calc(100dvh - var(--bottom-nav-height));
+			height: calc(100dvh - var(--bottom-nav-height) - env(safe-area-inset-bottom, 0px));
 			border-radius: 0;
 			max-width: 100vw;
 
 			transform: none;
 			top: 0;
 			left: 0;
-			bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom));
+			bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px));
 		}
 
 		.body {
-			height: calc(100dvh - 40px - env(safe-area-inset-bottom));
-			padding-bottom: calc(var(--gap) + env(safe-area-inset-bottom));
+			height: calc(100dvh - 40px - var(--bottom-nav-height) - env(safe-area-inset-bottom, 0px));
+			padding-bottom: calc(var(--gap) + env(safe-area-inset-bottom, 0px));
 			max-height: none;
 		}
 
