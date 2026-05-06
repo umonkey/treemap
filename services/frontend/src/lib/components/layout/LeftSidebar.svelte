@@ -259,7 +259,7 @@
 			border-right: none;
 			border-radius: 16px 16px 0 0;
 			padding: var(--gap);
-			padding-bottom: calc(2 * var(--gap) + env(safe-area-inset-bottom));
+			padding-bottom: calc(2 * var(--gap));
 			animation: slideUp 0.2s ease-out;
 
 			.mobile-header {
