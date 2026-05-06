@@ -94,9 +94,7 @@
 				<Logo />
 			</div>
 
-			<div class="install-button">
-				<AppInstallButton />
-			</div>
+			<AppInstallButton />
 
 			<div class="links">
 				<a
@@ -190,9 +188,6 @@
 			flex-grow: 0;
 			flex-shrink: 0;
 			opacity: 0.5;
-		}
-
-		.install-button {
 			text-align: center;
 		}
 
@@ -268,8 +263,7 @@
 			}
 
 			.stats,
-			.logo,
-			.install-button {
+			.logo {
 				display: none;
 			}
 
