@@ -24,7 +24,11 @@
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <!-- svelte-ignore a11y_click_events_have_key_events -->
-<div class="overlay" class:visible={!!$isSidebarVisible} onclick={componentState.handleOverlayClick}>
+<div
+	class="overlay"
+	class:visible={!!$isSidebarVisible}
+	onclick={componentState.handleOverlayClick}
+>
 	<div class="canvas">
 		<div class="mobile-header">
 			<button class="close-btn" onclick={componentState.close}>
