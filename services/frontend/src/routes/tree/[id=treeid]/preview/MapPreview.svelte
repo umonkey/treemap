@@ -216,9 +216,9 @@
 	@media screen and (max-width: 1023px) {
 		.preview {
 			position: fixed;
-			bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px));
-			height: calc(266px + env(safe-area-inset-bottom, 0px));
-			padding-bottom: calc(var(--gap) + env(safe-area-inset-bottom, 0px));
+			bottom: var(--bottom-nav-height);
+			height: calc(266px);
+			padding-bottom: var(--gap);
 			transition: height 0.2s ease-in-out;
 			border-width: 0;
 
@@ -229,7 +229,7 @@
 			}
 
 			&.expand {
-				height: calc(80dvh + env(safe-area-inset-bottom, 0px));
+				height: 80dvh;
 
 				.extras {
 					margin-top: var(--gap);

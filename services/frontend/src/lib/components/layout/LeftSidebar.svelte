@@ -132,7 +132,7 @@
 		gap: calc(var(--gap) * 2);
 
 		padding: calc(2 * var(--gap));
-		padding-bottom: calc(2 * var(--gap) + env(safe-area-inset-bottom));
+		padding-bottom: calc(2 * var(--gap));
 		border-right: 1px solid var(--sep-color);
 
 		text-align: left;
