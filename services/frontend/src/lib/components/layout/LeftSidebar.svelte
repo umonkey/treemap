@@ -189,6 +189,11 @@
 			flex-shrink: 0;
 			opacity: 0.5;
 			text-align: center;
+
+			display: flex;
+			flex-direction: column;
+			gap: 1rem;
+			align-items: center;
 		}
 
 		.links {
