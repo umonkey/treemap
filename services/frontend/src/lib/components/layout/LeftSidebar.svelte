@@ -1,17 +1,18 @@
 <script lang="ts">
 	import Logo from '$lib/assets/trees-of-yerevan.svelte';
-	import AppInstallButton from '$lib/components/AppInstallButton.svelte';
 	import UserPic from '$lib/components/layout/UserPic.svelte';
 	import BellIcon from '$lib/icons/BellIcon.svelte';
 	import ChartIcon from '$lib/icons/ChartIcon.svelte';
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
 	import HomeIcon from '$lib/icons/HomeIcon.svelte';
+	import InstallIcon from '$lib/icons/InstallIcon.svelte';
 	import SearchIcon from '$lib/icons/SearchIcon.svelte';
 	import SpinnerIcon from '$lib/icons/SpinnerIcon.svelte';
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
 	import { authStore } from '$lib/stores/authStore';
-	import { isSidebarVisible, mobileSidebarStore } from '$lib/stores/mobileSidebarStore';
+	import { isSidebarVisible } from '$lib/stores/mobileSidebarStore';
+	import { isInstallable } from '$lib/stores/pwaStore';
 	import { uploadStore } from '$lib/stores/upload';
 	import { onMount } from 'svelte';
 	import { componentState } from './LeftSidebar.svelte.ts';
@@ -19,55 +20,53 @@
 	onMount(() => {
 		componentState.fetchStats();
 	});
-
-	const onClose = () => {
-		mobileSidebarStore.set(false);
-	};
-
-	const onOverlayClick = (e: MouseEvent) => {
-		if (e.target === e.currentTarget) {
-			onClose();
-		}
-	};
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <!-- svelte-ignore a11y_click_events_have_key_events -->
-<div class="overlay" class:visible={!!$isSidebarVisible} onclick={onOverlayClick}>
+<div class="overlay" class:visible={!!$isSidebarVisible} onclick={componentState.handleOverlayClick}>
 	<div class="canvas">
 		<div class="mobile-header">
-			<button class="close-btn" onclick={onClose}>
+			<button class="close-btn" onclick={componentState.close}>
 				<CloseIcon />
 			</button>
 		</div>
 
 		<ul>
 			<li>
-				<a href={routes.home()} onclick={onClose}>
+				<a href={routes.home()} onclick={componentState.close}>
 					<span class="icon"><HomeIcon /></span>
 					<span>{locale.sideHome()}</span>
 				</a>
 			</li>
 			<li>
-				<a href={routes.search()} onclick={onClose}>
+				<a href={routes.search()} onclick={componentState.close}>
 					<span class="icon"><SearchIcon /></span>
 					<span>{locale.sideSearch()}</span>
 				</a>
 			</li>
 			<li>
-				<a href={routes.stats()} onclick={onClose}>
+				<a href={routes.stats()} onclick={componentState.close}>
 					<span class="icon"><ChartIcon /></span>
 					<span>{locale.sideReports()}</span>
 				</a>
 			</li>
 			<li>
-				<a href={routes.treeUpdates()} onclick={onClose}>
+				<a href={routes.treeUpdates()} onclick={componentState.close}>
 					<span class="icon"><BellIcon /></span>
 					<span>{locale.sideUpdates()}</span>
 				</a>
 			</li>
+			{#if $isInstallable}
+				<li>
+					<button class="menu-item" onclick={componentState.install}>
+						<span class="icon"><InstallIcon /></span>
+						<span>{locale.sideInstallApp()}</span>
+					</button>
+				</li>
+			{/if}
 			<li>
-				<a href={routes.profile()} onclick={onClose}>
+				<a href={routes.profile()} onclick={componentState.close}>
 					<span class="icon">
 						{#if $uploadStore.uploading}
 							<SpinnerIcon />
@@ -94,20 +93,20 @@
 				<Logo />
 			</div>
 
-			<AppInstallButton />
-
 			<div class="links">
 				<a
 					href="https://github.com/KanachYerevan/kb/wiki/Mobile-Application"
 					target="_blank"
-					onclick={onClose}>{locale.sideAbout()}</a
+					onclick={componentState.close}>{locale.sideAbout()}</a
 				>
 				&middot;
-				<a href="https://github.com/umonkey/treemap/issues" target="_blank" onclick={onClose}
-					>{locale.sideBugs()}</a
+				<a
+					href="https://github.com/umonkey/treemap/issues"
+					target="_blank"
+					onclick={componentState.close}>{locale.sideBugs()}</a
 				>
 				&middot;
-				<a href={routes.privacy()} onclick={onClose}>{locale.sidePrivacy()}</a>
+				<a href={routes.privacy()} onclick={componentState.close}>{locale.sidePrivacy()}</a>
 			</div>
 		</div>
 	</div>
@@ -147,7 +146,8 @@
 			list-style-type: none;
 			flex: 0 0;
 
-			a {
+			a,
+			button.menu-item {
 				display: flex;
 				flex-direction: row;
 				gap: var(--gap);
@@ -156,6 +156,16 @@
 				text-decoration: none;
 				padding: 10px 0;
 				margin-bottom: 10px;
+				background: none;
+				border: none;
+				width: 100%;
+				text-align: left;
+				font: inherit;
+				cursor: pointer;
+			}
+
+			a {
+				cursor: pointer;
 			}
 
 			.icon {
