@@ -29,11 +29,18 @@ async fn main() -> std::io::Result<()> {
     // Read environment overrides from the .env file.
     dotenv::dotenv().ok();
 
-    // Enable logging to stderr.
-    env_logger::init();
+    let command_arg = std::env::args().nth(1);
+    let command_str = command_arg.as_deref().unwrap_or("");
 
-    let command = match std::env::args().nth(1).as_deref() {
-        Some(value) => value.to_string(),
+    let _sentry_guard = if !command_str.is_empty() && command_str != "serve" {
+        crate::utils::sentry::init()
+    } else {
+        env_logger::init();
+        None
+    };
+
+    let command = match command_arg {
+        Some(value) => value,
 
         None => {
             println!("Command not specified.");

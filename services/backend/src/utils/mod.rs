@@ -3,6 +3,7 @@ mod env;
 mod id;
 mod osm;
 mod requests;
+pub mod sentry;
 mod strings;
 pub use dates::*;
 pub use env::*;

@@ -37,6 +37,8 @@ log = "0.4.21"
 reqwest = { version = "0.12.3", features = ["json"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0", features = ["raw_value"] }
+sentry = { version = "0.34", features = ["log", "backtrace", "contexts", "panic"] }
+sentry-log = "0.34"
 snowflaker = "0.3.5"
 tempfile = "3.24.0"
 tokio = { version = "1", features = ["full"] }
