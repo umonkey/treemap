@@ -637,6 +637,14 @@ class EnglishLocale {
 		return 'Location access denied. Please enable it in your browser settings to use this feature.';
 	}
 
+	public toastLocationNotAvailable(): string {
+		return 'Geolocation is not available on this device.';
+	}
+
+	public toastLocationStarted(): string {
+		return 'Location tracking started.';
+	}
+
 	public shortMonday(): string {
 		return 'Mon';
 	}
@@ -1277,6 +1285,14 @@ class RussianLocale extends EnglishLocale {
 		return 'Доступ к местоположению запрещен. Пожалуйста, включите его в настройках браузера.';
 	}
 
+	public toastLocationNotAvailable(): string {
+		return 'Геолокация недоступна на этом устройстве.';
+	}
+
+	public toastLocationStarted(): string {
+		return 'Отслеживание местоположения запущено.';
+	}
+
 	public shortMonday(): string {
 		return 'Пн';
 	}
@@ -1815,6 +1831,14 @@ class ArmenianLocale extends EnglishLocale {
 
 	public toastLocationDenied(): string {
 		return 'Տեղադրության հասանելիությունը մերժված է: Խնդրում ենք միացնել այն ձեր բրաուզերի կարգավորումներում:';
+	}
+
+	public toastLocationNotAvailable(): string {
+		return 'Այս սարքում տեղորոշումը հասանելի չէ:';
+	}
+
+	public toastLocationStarted(): string {
+		return 'Տեղադրության հետևումը սկսված է:';
 	}
 }
 

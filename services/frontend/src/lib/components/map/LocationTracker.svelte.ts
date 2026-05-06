@@ -12,6 +12,7 @@ class LocationTracker {
 	public start = () => {
 		if (!('geolocation' in navigator)) {
 			console.warn('[GEO] Geolocation is not available, not tracking.');
+			showError(locale.toastLocationNotAvailable());
 			return;
 		}
 
@@ -55,6 +56,7 @@ class LocationTracker {
 			}
 		);
 
+		showError(locale.toastLocationStarted());
 		console.debug(`[GEO] Tracking started, watch=${this.watchId}.`);
 	};
 
