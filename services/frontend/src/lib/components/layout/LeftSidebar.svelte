@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Logo from '$lib/assets/trees-of-yerevan.svelte';
+	import AppInstallButton from '$lib/components/AppInstallButton.svelte';
 	import UserPic from '$lib/components/layout/UserPic.svelte';
 	import BellIcon from '$lib/icons/BellIcon.svelte';
 	import ChartIcon from '$lib/icons/ChartIcon.svelte';
@@ -88,22 +89,28 @@
 			{/if}
 		</div>
 
-		<div class="bottom logo">
-			<Logo />
-		</div>
+		<div class="bottom">
+			<div class="logo">
+				<Logo />
+			</div>
 
-		<div class="bottom links">
-			<a
-				href="https://github.com/KanachYerevan/kb/wiki/Mobile-Application"
-				target="_blank"
-				onclick={onClose}>{locale.sideAbout()}</a
-			>
-			&middot;
-			<a href="https://github.com/umonkey/treemap/issues" target="_blank" onclick={onClose}
-				>{locale.sideBugs()}</a
-			>
-			&middot;
-			<a href={routes.privacy()} onclick={onClose}>{locale.sidePrivacy()}</a>
+			<div class="install-button">
+				<AppInstallButton />
+			</div>
+
+			<div class="links">
+				<a
+					href="https://github.com/KanachYerevan/kb/wiki/Mobile-Application"
+					target="_blank"
+					onclick={onClose}>{locale.sideAbout()}</a
+				>
+				&middot;
+				<a href="https://github.com/umonkey/treemap/issues" target="_blank" onclick={onClose}
+					>{locale.sideBugs()}</a
+				>
+				&middot;
+				<a href={routes.privacy()} onclick={onClose}>{locale.sidePrivacy()}</a>
+			</div>
 		</div>
 	</div>
 </div>
@@ -185,6 +192,10 @@
 			opacity: 0.5;
 		}
 
+		.install-button {
+			text-align: center;
+		}
+
 		.links {
 			font-size: 14px;
 			text-align: center;
@@ -257,7 +268,8 @@
 			}
 
 			.stats,
-			.logo {
+			.logo,
+			.install-button {
 				display: none;
 			}
 

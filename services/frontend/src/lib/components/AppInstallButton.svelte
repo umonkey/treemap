@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { isInstallable, pwaStore } from '$lib/stores/pwaStore';
+	import { locale } from '$lib/locale';
 	import Button from '$lib/ui/button/Button.svelte';
 
 	const onClick = () => {
@@ -11,5 +12,5 @@
 </script>
 
 {#if $isInstallable}
-	<Button {onClick} type="button">Install Application</Button>
+	<Button {onClick} type="button">{locale.sideInstallApp()}</Button>
 {/if}

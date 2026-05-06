@@ -53,6 +53,10 @@ class EnglishLocale {
 		return 'Privacy';
 	}
 
+	public sideInstallApp(): string {
+		return 'Install App';
+	}
+
 	public sideStatsMessage(count: number): string {
 		return `There are ${count} trees in our database.`;
 	}
@@ -717,6 +721,10 @@ class RussianLocale extends EnglishLocale {
 		return 'Конфиденциальность';
 	}
 
+	public sideInstallApp(): string {
+		return 'Установить приложение';
+	}
+
 	public override sideStatsMessage(count: number): string {
 		return `В нашей базе ${count} деревьев.`;
 	}
@@ -1359,6 +1367,10 @@ class ArmenianLocale extends EnglishLocale {
 
 	public sidePrivacy(): string {
 		return 'Գաղտնիություն';
+	}
+
+	public sideInstallApp(): string {
+		return 'Տեղադրել հավելվածը';
 	}
 
 	public override sideStatsMessage(count: number): string {
