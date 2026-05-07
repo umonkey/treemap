@@ -1,7 +1,6 @@
 <script lang="ts">
 	import Overlay from '$lib/components/layout/Overlay.svelte';
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
-	import { locale } from '$lib/locale';
 	import Button from '$lib/ui/button/Button.svelte';
 	import type { Snippet } from 'svelte';
 	import { handleClose } from './Dialog.svelte.ts';
@@ -48,13 +47,7 @@
 			{@render header()}
 		{:else}
 			<div class="title">
-				<div class="button cancel">
-					{#if onCancel}
-						<button type="button" onclick={close} class="text">
-							{locale.editCancel()}
-						</button>
-					{/if}
-				</div>
+				<div class="button"></div>
 				<h1>{title}</h1>
 				<div class="button">
 					<button type="button" onclick={close}>
@@ -102,10 +95,6 @@
 		min-width: 40px;
 		display: block;
 		height: 40px;
-
-		&.cancel {
-			padding-left: 1rem;
-		}
 
 		:global(svg) {
 			width: 22px;
@@ -174,13 +163,6 @@
 		width: 40px;
 		cursor: pointer;
 		opacity: 0.5;
-
-		&.text {
-			width: auto;
-			opacity: 1;
-			color: var(--link-color);
-			font-size: 0.9rem;
-		}
 	}
 
 	@media screen and (max-width: 600px) {
