@@ -3,11 +3,16 @@
 	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import InfiniteScroll from '$lib/components/layout/InfiniteScroll.svelte';
 	import Tabs from '$lib/components/updates/Tabs.svelte';
+	import LazyImage from '$lib/ui/lazy-image/LazyImage.svelte';
 	import { locale } from '$lib/locale';
 	import { pageState } from './page.svelte';
 
 	$effect(() => {
-		pageState.reload();
+		pageState.load();
+
+		return () => {
+			pageState.reset();
+		};
 	});
 </script>
 
@@ -24,7 +29,7 @@
 				{#each pageState.tiles as tile (tile.id)}
 					<div class="tile">
 						<a href={tile.link}>
-							<img src={tile.image ?? FALLBACK} alt={tile.species} />
+							<LazyImage src={tile.image ?? FALLBACK} fallback={FALLBACK} alt={tile.species} />
 
 							<div class="meta">
 								<div>{tile.updated_at} &middot; {tile.species}</div>
@@ -41,13 +46,13 @@
 <style>
 	.tiles {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+		grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
 		grid-gap: var(--gap);
 
 		.tile {
 			aspect-ratio: 1/1;
 
-			img {
+			:global(img) {
 				width: 100%;
 				aspect-ratio: 1/1;
 				object-position: center;

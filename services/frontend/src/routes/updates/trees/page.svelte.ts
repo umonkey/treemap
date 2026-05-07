@@ -34,7 +34,7 @@ class PageState {
 	error = $state<boolean>(false);
 	skip = $state<number>(0);
 
-	reload = async () => {
+	load = async () => {
 		const params = {
 			count: PAGE_SIZE,
 			skip: this.skip
@@ -60,9 +60,14 @@ class PageState {
 		}
 	};
 
+	reset = () => {
+		this.skip = 0;
+		this.tiles = [];
+	};
+
 	handleLoadMore = () => {
 		this.skip += PAGE_SIZE;
-		this.reload();
+		this.load();
 	};
 }
 
