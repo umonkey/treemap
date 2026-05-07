@@ -7,6 +7,7 @@
 	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import Observations from '$lib/components/observation/Observations.svelte';
 	import Gallery from '$lib/components/photos/Gallery.svelte';
+	import { goto, routes } from '$lib/routes';
 	import Comment from '$lib/components/tree/Comment.svelte';
 	import Actions from './components/Actions.svelte';
 	import CommentForm from './components/CommentForm.svelte';
@@ -22,7 +23,11 @@
 	});
 </script>
 
-<Dialog title={formatSpecies(pageState.tree?.species || null)} nopadding>
+<Dialog
+	title={formatSpecies(pageState.tree?.species || null)}
+	onCancel={() => goto(routes.mapPreview(id))}
+	nopadding
+>
 	{#if pageState.tree}
 		<div>
 			<Title
