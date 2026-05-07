@@ -84,6 +84,11 @@
 		flex: 0 0 40px;
 		display: block;
 		height: 40px;
+
+		:global(svg) {
+			width: 22px;
+			height: 22px;
+		}
 	}
 
 	.title,
