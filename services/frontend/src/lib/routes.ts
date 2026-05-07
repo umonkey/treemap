@@ -25,7 +25,7 @@ const build = (path: string, params: Params) => {
 };
 
 export const routes = {
-	treeUpdates: () => '/updates/trees',
+	treeUpdates: () => '/updates',
 	comments: () => '/updates/comments',
 	file: (id: string) => `${config.fileBaseUrl}${id}.jpg`,
 	home: () => '/',

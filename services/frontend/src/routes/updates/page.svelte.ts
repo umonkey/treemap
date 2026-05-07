@@ -41,7 +41,9 @@ class PageState {
 		};
 
 		try {
+			this.loading = true;
 			const { status, data } = await getUpdatedTrees(params);
+
 			if (status < 400 && data) {
 				addTrees(data.trees);
 				addUsers(data.users);
