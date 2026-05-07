@@ -47,6 +47,9 @@
 		padding: 0;
 		gap: var(--gap);
 
+		/* hot-fix the extra padding on the tree details page */
+		margin-top: -1rem;
+
 		h1 {
 			flex-grow: 1;
 
