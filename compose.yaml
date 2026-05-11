@@ -13,6 +13,8 @@ services:
     build:
       context: services/backend
     container_name: trees_backend
+    dns:
+      - 8.8.8.8
     command: /app/startup.sh
     restart: unless-stopped
     ports:
