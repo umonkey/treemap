@@ -1,7 +1,7 @@
 /**
  * Create a thumbnail from a Blob or File.
  */
-export async function createThumbnail(blob: Blob, maxSize = 200): Promise<Blob> {
+export async function createThumbnail(blob: Blob, minSize = 200): Promise<Blob> {
 	let image: ImageBitmap | HTMLImageElement;
 
 	try {
@@ -32,11 +32,11 @@ export async function createThumbnail(blob: Blob, maxSize = 200): Promise<Blob> 
 	let newHeight: number;
 
 	if (width > height) {
-		newWidth = maxSize;
-		newHeight = (height / width) * maxSize;
+		newHeight = minSize;
+		newWidth = (width / height) * minSize;
 	} else {
-		newHeight = maxSize;
-		newWidth = (width / height) * maxSize;
+		newWidth = minSize;
+		newHeight = (height / width) * minSize;
 	}
 
 	const canvas =
