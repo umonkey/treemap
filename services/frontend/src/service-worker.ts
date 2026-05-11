@@ -64,3 +64,102 @@ self.addEventListener('fetch', (event) => {
 
 	fetchEvent.respondWith(respond());
 });
+
+/**
+ * Check if there are any pending uploads in IndexedDB.
+ * We use the native IndexedDB API to keep the service worker lightweight.
+ */
+async function hasPendingUploads(): Promise<boolean> {
+	return new Promise((resolve) => {
+		const request = indexedDB.open('TreeMapUploads');
+		request.onerror = () => resolve(false);
+		request.onsuccess = () => {
+			const db = request.result;
+			if (!db.objectStoreNames.contains('uploads')) {
+				resolve(false);
+				return;
+			}
+			const transaction = db.transaction('uploads', 'readonly');
+			const store = transaction.objectStore('uploads');
+			const statusIndex = store.index('status');
+
+			// Check for 'pending' or 'failed' status
+			let found = false;
+			const cursorRequest = statusIndex.openCursor();
+			cursorRequest.onsuccess = (event: any) => {
+				const cursor = event.target.result;
+				if (cursor) {
+					const item = cursor.value;
+					if ((item.status === 'pending' || item.status === 'failed') && item.retry_count < 5) {
+						found = true;
+						resolve(true);
+						return;
+					}
+					cursor.continue();
+				} else {
+					resolve(found);
+				}
+			};
+			cursorRequest.onerror = () => resolve(false);
+		};
+	});
+}
+
+/**
+ * Show a notification if conditions are met.
+ */
+async function checkAndNotify() {
+	// 1. Check connectivity.
+	// In Chrome, we can check for wifi specifically.
+	const conn = (navigator as any).connection;
+	const isWifi = conn ? conn.type === 'wifi' || conn.type === 'ethernet' : navigator.onLine;
+
+	if (!isWifi) {
+		return;
+	}
+
+	// 2. Check if we have anything to upload.
+	if (await hasPendingUploads()) {
+		const registration = (self as any).registration as ServiceWorkerRegistration;
+		await registration.showNotification('Trees of Yerevan', {
+			body: 'You have photos ready to upload. Connect to WiFi to finish.',
+			icon: '/favicon.png', // Fallback icon
+			badge: '/favicon.png',
+			tag: 'upload-reminder',
+			renotify: true,
+			data: {
+				url: '/uploads'
+			}
+		});
+	}
+}
+
+self.addEventListener('sync', (event: any) => {
+	if (event.tag === 'upload-check') {
+		event.waitUntil(checkAndNotify());
+	}
+});
+
+self.addEventListener('periodicsync', (event: any) => {
+	if (event.tag === 'upload-reminder') {
+		event.waitUntil(checkAndNotify());
+	}
+});
+
+self.addEventListener('notificationclick', (event: any) => {
+	event.notification.close();
+
+	event.waitUntil(
+		(self as any).clients.matchAll({ type: 'window' }).then((clientList: any[]) => {
+			const url = event.notification.data?.url || '/';
+			for (const client of clientList) {
+				if (client.url.endsWith(url) && 'focus' in client) {
+					return client.focus();
+				}
+			}
+			if ((self as any).clients.openWindow) {
+				return (self as any).clients.openWindow(url);
+			}
+		})
+	);
+});

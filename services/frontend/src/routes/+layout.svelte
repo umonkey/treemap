@@ -3,6 +3,7 @@
 	import { type BeforeInstallPromptEvent, pwaStore } from '$lib/stores/pwaStore';
 	import { autoStartUpload } from '$lib/upload';
 	import { validateStoredToken } from '$lib/utils/auth';
+	import { initBackgroundReminders } from '$lib/utils/notifications';
 	import { Toaster } from 'svelte-sonner';
 	import { onMount } from 'svelte';
 
@@ -20,6 +21,7 @@
 	onMount(() => {
 		validateStoredToken();
 		autoStartUpload();
+		initBackgroundReminders();
 
 		window.addEventListener('beforeinstallprompt', (e) => {
 			e.preventDefault();
