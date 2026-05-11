@@ -136,12 +136,6 @@ async function checkAndNotify() {
 	}
 }
 
-self.addEventListener('sync', (event: any) => {
-	if (event.tag === 'upload-check') {
-		event.waitUntil(checkAndNotify());
-	}
-});
-
 self.addEventListener('periodicsync', (event: any) => {
 	if (event.tag === 'upload-reminder') {
 		event.waitUntil(checkAndNotify());

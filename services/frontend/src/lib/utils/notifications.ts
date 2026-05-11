@@ -1,6 +1,5 @@
 import { browser } from '$app/environment';
 
-const SYNC_TAG = 'upload-check';
 const PERIODIC_SYNC_TAG = 'upload-reminder';
 const PERIODIC_SYNC_INTERVAL = 60 * 60 * 1000; // 1 hour
 
@@ -26,16 +25,6 @@ export async function initBackgroundReminders() {
 
 	if (Notification.permission !== 'granted') {
 		return;
-	}
-
-	// Register background sync (triggered when online)
-	if ('sync' in registration) {
-		try {
-			await (registration as any).sync.register(SYNC_TAG);
-			console.debug('[notifications] Background sync registered.');
-		} catch (e) {
-			console.error('[notifications] Failed to register background sync:', e);
-		}
 	}
 
 	// Register periodic background sync (triggered periodically by the system)
