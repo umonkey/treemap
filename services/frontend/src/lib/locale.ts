@@ -21,6 +21,10 @@ class EnglishLocale {
 		return 'Recent updates';
 	}
 
+	public sideSaved(): string {
+		return 'Saved trees';
+	}
+
 	public sideReports(): string {
 		return 'Data reports';
 	}
@@ -79,6 +83,10 @@ class EnglishLocale {
 
 	public updatesNewTitle(): string {
 		return 'New Trees';
+	}
+
+	public savedTitle(): string {
+		return 'Saved Trees';
 	}
 
 	public updatesAdded(): string {
@@ -689,6 +697,10 @@ class RussianLocale extends EnglishLocale {
 		return 'Обновления';
 	}
 
+	public sideSaved(): string {
+		return 'Сохранённые';
+	}
+
 	public sideReports(): string {
 		return 'Анализ данных';
 	}
@@ -743,6 +755,10 @@ class RussianLocale extends EnglishLocale {
 
 	public updatesNewTitle(): string {
 		return 'Новые деревья';
+	}
+
+	public savedTitle(): string {
+		return 'Сохранённые деревья';
 	}
 
 	public updatesAdded(): string {
@@ -1337,6 +1353,10 @@ class ArmenianLocale extends EnglishLocale {
 		return 'Վերջին թարմացումներ';
 	}
 
+	public sideSaved(): string {
+		return 'Պահպանված';
+	}
+
 	public sideReports(): string {
 		return 'Տվյալների զեկույցներ';
 	}
@@ -1383,6 +1403,10 @@ class ArmenianLocale extends EnglishLocale {
 
 	public updatesNewTitle(): string {
 		return 'Նոր ծառեր';
+	}
+
+	public savedTitle(): string {
+		return 'Պահպանված ծառեր';
 	}
 
 	public updatesAdded(): string {

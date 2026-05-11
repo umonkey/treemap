@@ -278,6 +278,23 @@ export async function getUpdatedTrees({
 	return await request('GET', `v1/trees/updated?${params.toString()}`);
 }
 
+export async function getLikedTrees({
+	count = 10,
+	skip = 0
+}: {
+	count: number;
+	skip: number;
+}): Promise<IResponse<ITreeList>> {
+	const params = new URLSearchParams({
+		count: count.toString(),
+		skip: skip.toString()
+	});
+
+	return await request('GET', `v1/trees/liked?${params.toString()}`, {
+		headers: getAuthHeaders()
+	});
+}
+
 export async function changeTreeThumbnail(tree: string, file: string): Promise<IResponse<void>> {
 	return await request('PUT', `v1/trees/${tree}/thumbnail`, {
 		body: JSON.stringify({ file }),

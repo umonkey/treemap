@@ -1,8 +1,11 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import FALLBACK from '$lib/assets/tree.jpg';
+	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import InfiniteScroll from '$lib/components/layout/InfiniteScroll.svelte';
+	import { locale } from '$lib/locale';
 	import LazyImage from '$lib/ui/lazy-image/LazyImage.svelte';
+	import SignInButton from '$lib/ui/sign-in-button/SignInButton.svelte';
 	import { pageState } from './page.svelte';
 
 	$effect(() => {
@@ -14,30 +17,44 @@
 	});
 </script>
 
-{#if pageState.loading && pageState.tiles.length === 0}
-	<p>Loading trees...</p>
-{:else if pageState.error}
-	<p>Error loading trees.</p>
-{:else}
-	<div class="tiles">
-		<InfiniteScroll onLoadMore={pageState.handleLoadMore} enabled={!pageState.loading && pageState.hasMore}>
-			{#each pageState.tiles as tile (tile.id)}
-				<div class="tile">
-					<a href={tile.link}>
-						<LazyImage src={tile.image ?? FALLBACK} fallback={FALLBACK} alt={tile.species} />
+<Dialog title={locale.savedTitle()}>
+	{#if pageState.loading && pageState.tiles.length === 0}
+		<p>Loading saved trees...</p>
+	{:else if pageState.statusCode === 401}
+		<div class="signed-out">
+			<p>{locale.profileSignInPrompt()}</p>
+			<SignInButton />
+		</div>
+	{:else if pageState.error}
+		<p>Error loading saved trees.</p>
+	{:else if pageState.tiles.length === 0}
+		<p>You haven't saved any trees yet.</p>
+	{:else}
+		<div class="tiles">
+			<InfiniteScroll onLoadMore={pageState.handleLoadMore} enabled={!pageState.loading && pageState.hasMore}>
+				{#each pageState.tiles as tile (tile.id)}
+					<div class="tile">
+						<a href={tile.link}>
+							<LazyImage src={tile.image ?? FALLBACK} fallback={FALLBACK} alt={tile.species} />
 
-						<div class="meta">
-							<div>{tile.updated_at} &middot; {tile.species}</div>
-							<div>{tile.address}</div>
-						</div>
-					</a>
-				</div>
-			{/each}
-		</InfiniteScroll>
-	</div>
-{/if}
+							<div class="meta">
+								<div>{tile.updated_at} &middot; {tile.species}</div>
+								<div>{tile.address}</div>
+							</div>
+						</a>
+					</div>
+				{/each}
+			</InfiniteScroll>
+		</div>
+	{/if}
+</Dialog>
 
 <style>
+	.signed-out {
+		text-align: center;
+		padding: 2rem;
+	}
+
 	.tiles {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));

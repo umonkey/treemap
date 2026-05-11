@@ -2,6 +2,7 @@
 	import UserPic from '$lib/components/layout/UserPic.svelte';
 	import BellIcon from '$lib/icons/BellIcon.svelte';
 	import HomeIcon from '$lib/icons/HomeIcon.svelte';
+	import SaveIcon from '$lib/icons/SaveIcon.svelte';
 	import SearchIcon from '$lib/icons/SearchIcon.svelte';
 	import SpinnerIcon from '$lib/icons/SpinnerIcon.svelte';
 	import UserIcon from '$lib/icons/UserIcon.svelte';
@@ -19,6 +20,7 @@
 	<a href="/"><div><HomeIcon /></div></a>
 	<a href="/search"><div><SearchIcon /></div></a>
 	<a href={routes.treeUpdates()}><div><BellIcon /></div></a>
+	<a href={routes.treeSaved()}><div><SaveIcon /></div></a>
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div class="nav-item" onclick={toggleSidebar}>
@@ -64,7 +66,7 @@
 
 			line-height: 24px;
 
-			flex-basis: 25%;
+			flex-basis: 20%;
 			flex-shrink: 0;
 			flex-grow: 0;
 

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import UserHeatMap from '$lib/components/UserHeatMap/index.svelte';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import Tabs from '$lib/components/profile/Tabs.svelte';
@@ -8,7 +9,7 @@
 	import { pageState } from './page.svelte';
 
 	$effect(() => {
-		pageState.reload();
+		untrack(() => pageState.reload());
 	});
 </script>
 

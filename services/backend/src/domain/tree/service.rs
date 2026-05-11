@@ -150,6 +150,10 @@ impl TreeService {
         self.trees.get_recently_updated(count, skip).await
     }
 
+    pub async fn get_liked_trees(&self, user_id: u64, count: u64, skip: u64) -> Result<Vec<Tree>> {
+        self.trees.get_liked_by_user(user_id, count, skip).await
+    }
+
     pub async fn move_tree(&self, tree_id: u64, user_id: u64, lat: f64, lon: f64) -> Result<()> {
         let tree = self.trees.get(tree_id).await?.ok_or(Error::TreeNotFound)?;
 

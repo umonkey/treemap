@@ -95,6 +95,25 @@ impl TreeRepository {
         self.query_multiple(query).await
     }
 
+    pub async fn get_liked_by_user(
+        &self,
+        user_id: u64,
+        count: u64,
+        skip: u64,
+    ) -> Result<Vec<Tree>> {
+        let sql = format!(
+            "SELECT t.* FROM `{}` t JOIN likes l ON t.id = l.tree_id WHERE l.user_id = ? AND l.state = 1 ORDER BY l.updated_at DESC LIMIT ? OFFSET ?",
+            TABLE
+        );
+        let params = &[
+            Value::from(user_id as i64),
+            Value::from(count as i64),
+            Value::from(skip as i64),
+        ];
+
+        self.fetch(&sql, params).await
+    }
+
     pub async fn get_close(&self, lat: f64, lon: f64, distance: f64) -> Result<Vec<Tree>> {
         let delta = distance / 111_111.0; // meters per degree
 

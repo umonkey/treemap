@@ -6,6 +6,7 @@
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
 	import HomeIcon from '$lib/icons/HomeIcon.svelte';
 	import InstallIcon from '$lib/icons/InstallIcon.svelte';
+	import SaveIcon from '$lib/icons/SaveIcon.svelte';
 	import SearchIcon from '$lib/icons/SearchIcon.svelte';
 	import SpinnerIcon from '$lib/icons/SpinnerIcon.svelte';
 	import { locale } from '$lib/locale';
@@ -59,6 +60,12 @@
 				<a href={routes.treeUpdates()} onclick={componentState.close}>
 					<span class="icon"><BellIcon /></span>
 					<span>{locale.sideUpdates()}</span>
+				</a>
+			</li>
+			<li>
+				<a href={routes.treeSaved()} onclick={componentState.close}>
+					<span class="icon"><SaveIcon /></span>
+					<span>{locale.sideSaved()}</span>
 				</a>
 			</li>
 			{#if $isInstallable}

@@ -1,4 +1,4 @@
-import { getUpdatedTrees } from '$lib/api/trees';
+import { getLikedTrees } from '$lib/api/trees';
 import { routes } from '$lib/routes';
 import { addTrees } from '$lib/stores/treeStore';
 import { addUsers } from '$lib/stores/userStore';
@@ -34,6 +34,7 @@ class PageState {
 	error = $state<boolean>(false);
 	skip = $state<number>(0);
 	hasMore = $state<boolean>(true);
+	statusCode = $state<number>(200);
 
 	load = async () => {
 		if (this.loading || !this.hasMore) {
@@ -47,7 +48,8 @@ class PageState {
 
 		try {
 			this.loading = true;
-			const { status, data } = await getUpdatedTrees(params);
+			const { status, data } = await getLikedTrees(params);
+			this.statusCode = status;
 
 			if (status < 400 && data) {
 				addTrees(data.trees);
@@ -61,7 +63,7 @@ class PageState {
 				this.error = true;
 			}
 		} catch (err) {
-			console.error('Failed to load updated trees:', err);
+			console.error('Failed to load saved trees:', err);
 			this.error = true;
 		} finally {
 			this.loading = false;
@@ -72,12 +74,14 @@ class PageState {
 		this.skip = 0;
 		this.tiles = [];
 		this.hasMore = true;
+		this.statusCode = 200;
 	};
 
 	handleLoadMore = () => {
 		if (this.loading || !this.hasMore) {
 			return;
 		}
+
 		this.skip += PAGE_SIZE;
 		this.load();
 	};

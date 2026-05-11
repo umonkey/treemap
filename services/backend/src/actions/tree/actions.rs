@@ -139,6 +139,22 @@ pub async fn get_new_trees_action(
     Ok(Json(trees))
 }
 
+#[get("/liked")]
+pub async fn get_liked_trees_action(
+    state: Data<AppState>,
+    query: Query<AddedTreesRequest>,
+    req: HttpRequest,
+    service: Injected<TreeService>,
+    loader: Injected<TreeLoader>,
+) -> Result<Json<TreeList>> {
+    let user_id = state.get_user_id(&req)?;
+    let count = query.get_count();
+    let skip = query.get_skip();
+    let trees = service.get_liked_trees(user_id, count, skip).await?;
+    let res = loader.load_list(&trees).await?;
+    Ok(Json(res))
+}
+
 #[get("/{id:\\d+}")]
 pub async fn get_tree_action(
     path: Path<PathInfo>,
@@ -498,6 +514,7 @@ pub fn tree_router(cfg: &mut ServiceConfig) {
         .service(add_file_action)
         .service(add_photos_action)
         .service(add_trees_action)
+        .service(get_liked_trees_action)
         .service(get_new_trees_action)
         .service(get_tree_action)
         .service(get_tree_actors_action)
