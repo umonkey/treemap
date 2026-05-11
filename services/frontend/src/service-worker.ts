@@ -66,41 +66,37 @@ self.addEventListener('fetch', (event) => {
 });
 
 /**
- * Check if there are any pending uploads in IndexedDB.
- * We use the native IndexedDB API to keep the service worker lightweight.
+ * Get the number of pending uploads in IndexedDB.
  */
-async function hasPendingUploads(): Promise<boolean> {
+async function getPendingUploadsCount(): Promise<number> {
 	return new Promise((resolve) => {
 		const request = indexedDB.open('TreeMapUploads');
-		request.onerror = () => resolve(false);
+		request.onerror = () => resolve(0);
 		request.onsuccess = () => {
 			const db = request.result;
 			if (!db.objectStoreNames.contains('uploads')) {
-				resolve(false);
+				resolve(0);
 				return;
 			}
 			const transaction = db.transaction('uploads', 'readonly');
 			const store = transaction.objectStore('uploads');
 			const statusIndex = store.index('status');
 
-			// Check for 'pending' or 'failed' status
-			let found = false;
+			let count = 0;
 			const cursorRequest = statusIndex.openCursor();
 			cursorRequest.onsuccess = (event: any) => {
 				const cursor = event.target.result;
 				if (cursor) {
 					const item = cursor.value;
 					if ((item.status === 'pending' || item.status === 'failed') && item.retry_count < 5) {
-						found = true;
-						resolve(true);
-						return;
+						count++;
 					}
 					cursor.continue();
 				} else {
-					resolve(found);
+					resolve(count);
 				}
 			};
-			cursorRequest.onerror = () => resolve(false);
+			cursorRequest.onerror = () => resolve(0);
 		};
 	});
 }
@@ -109,6 +105,17 @@ async function hasPendingUploads(): Promise<boolean> {
  * Show a notification if conditions are met.
  */
 async function checkAndNotify() {
+	const count = await getPendingUploadsCount();
+
+	// Update app badge if supported.
+	if ('setAppBadge' in navigator) {
+		if (count > 0) {
+			await (navigator as any).setAppBadge(count);
+		} else {
+			await (navigator as any).clearAppBadge();
+		}
+	}
+
 	// 1. Check connectivity.
 	// In Chrome, we can check for wifi specifically.
 	const conn = (navigator as any).connection;
@@ -119,7 +126,7 @@ async function checkAndNotify() {
 	}
 
 	// 2. Check if we have anything to upload.
-	if (await hasPendingUploads()) {
+	if (count > 0) {
 		const registration = (self as any).registration as ServiceWorkerRegistration;
 		await registration.showNotification('Trees of Yerevan', {
 			body: 'You have photos ready to upload. Connect to WiFi to finish.',

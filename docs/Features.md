@@ -27,3 +27,12 @@ The application can notify the user when they have pending photo uploads and a s
 - Requirements: requires a browser with support for these APIs (e.g., Chrome on Android) and user permission for notifications.
 - Logic: the system checks the upload queue when connectivity changes or at regular intervals (approximately hourly). If the device is on WiFi and there are pending uploads, a system notification is shown.
 - Interaction: tapping the notification opens the application's upload management page.
+
+## App icon badging
+
+The application displays the number of pending photo uploads as a badge (or "bubble") on the app icon when installed as a PWA. This provides a quick visual indicator of how much work is still pending without needing to open the app or check notifications.
+
+- Implementation: uses the App Badging API (`navigator.setAppBadge`).
+- Logic: the badge count is updated whenever the local upload queue changes. It is also updated in the background during sync events to remain accurate.
+- Requirements: requires a supported browser (e.g., Chrome on Android/Desktop, Safari on iOS 16.4+).
+- Reset: the badge is automatically cleared when the upload queue is empty.
