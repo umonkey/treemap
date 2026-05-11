@@ -130,7 +130,7 @@ async function checkAndNotify() {
 			tag: 'upload-reminder',
 			renotify: true,
 			data: {
-				url: '/uploads'
+				url: '/profile/uploads'
 			}
 		});
 	}

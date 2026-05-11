@@ -35,7 +35,7 @@ export const routes = {
 	modeMapper: () => '/mode/mapper',
 	profile: () => '/profile',
 	streetReport: (street?: string) => build('/report', { address: street }),
-	settings: () => '/settings',
+	settings: () => '/profile/settings',
 	search: () => '/search',
 	searchAddress: (query: string) => `/?q=addr:"${query}"`,
 	searchQuery: (query: string) => (query ? `/?q=${query}` : '/'),
@@ -50,7 +50,7 @@ export const routes = {
 	statsState: () => '/stats/state',
 	statsStreets: () => '/stats/streets',
 	treeAdd: (lat: number, lng: number) => `/add?lat=${lat}&lng=${lng}`,
-	uploads: () => '/uploads',
+	uploads: () => '/profile/uploads',
 	addRow: (start: ILatLng, end: ILatLng) =>
 		build('/add/row', {
 			alat: start.lat.toString(),

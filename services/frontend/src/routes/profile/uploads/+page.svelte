@@ -14,40 +14,36 @@
 	onMount(pageState.onMount);
 </script>
 
-<Dialog title={locale.uploadsTitle()}>
-	<AuthWrapper>
-		<Tabs active="uploads" />
+<AuthWrapper>
+	<AutoUploadCheckbox />
 
-		<AutoUploadCheckbox />
-
-		<p class="hint">
-			{#if $uploadStore.autoupload}
-				{locale.uploadsEnabledHint()}
-			{:else}
-				{locale.uploadsDisabledHint()}
-			{/if}
-		</p>
-
-		{#if pageState.uploads.length > 0}
-			<Buttons>
-				<Button type="button" onClick={pageState.processQueue} nowrap>
-					{locale.uploadsStart()}
-				</Button>
-				<Button type="secondary" onClick={pageState.restartQueue} nowrap>
-					{locale.uploadsRestart()}
-				</Button>
-			</Buttons>
-
-			<div class="uploads-grid">
-				{#each pageState.uploads as upload (upload.id)}
-					<UploadRow {upload} />
-				{/each}
-			</div>
+	<p class="hint">
+		{#if $uploadStore.autoupload}
+			{locale.uploadsEnabledHint()}
 		{:else}
-			<p>{locale.uploadsEmpty()}</p>
+			{locale.uploadsDisabledHint()}
 		{/if}
-	</AuthWrapper>
-</Dialog>
+	</p>
+
+	{#if pageState.uploads.length > 0}
+		<Buttons>
+			<Button type="button" onClick={pageState.processQueue} nowrap>
+				{locale.uploadsStart()}
+			</Button>
+			<Button type="secondary" onClick={pageState.restartQueue} nowrap>
+				{locale.uploadsRestart()}
+			</Button>
+		</Buttons>
+
+		<div class="uploads-grid">
+			{#each pageState.uploads as upload (upload.id)}
+				<UploadRow {upload} />
+			{/each}
+		</div>
+	{:else}
+		<p>{locale.uploadsEmpty()}</p>
+	{/if}
+</AuthWrapper>
 
 <style>
 	.uploads-grid {
