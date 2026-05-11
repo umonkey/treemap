@@ -1,6 +1,7 @@
 import { writable } from 'svelte/store';
 import { ls } from '$lib/utils/localStorage';
 import { getPendingCount } from '$lib/db';
+import { updateBadge } from '$lib/utils/badges';
 
 const AUTOUPLOAD_KEY = 'autoUpload';
 
@@ -18,18 +19,7 @@ export const uploadStore = writable<UploadStore>({
 
 uploadStore.subscribe((value: UploadStore) => {
 	ls.write(AUTOUPLOAD_KEY, value.autoupload);
-
-	if (typeof navigator !== 'undefined' && 'setAppBadge' in navigator) {
-		if (value.pending > 0) {
-			(navigator as any).setAppBadge(value.pending).catch((error: any) => {
-				console.error('Failed to set app badge:', error);
-			});
-		} else {
-			(navigator as any).clearAppBadge().catch((error: any) => {
-				console.error('Failed to clear app badge:', error);
-			});
-		}
-	}
+	updateBadge(value.pending);
 });
 
 // Initialize the store from the database.

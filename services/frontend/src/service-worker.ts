@@ -1,6 +1,7 @@
 /// <reference types="@sveltejs/kit" />
 /// <reference lib="webworker" />
 import { build, files, version } from '$service-worker';
+import { updateBadge } from '$lib/utils/badges';
 
 const CACHE = `cache-${version}`;
 const ASSETS = [...build, ...files];
@@ -108,13 +109,7 @@ async function checkAndNotify() {
 	const count = await getPendingUploadsCount();
 
 	// Update app badge if supported.
-	if ('setAppBadge' in navigator) {
-		if (count > 0) {
-			await (navigator as any).setAppBadge(count);
-		} else {
-			await (navigator as any).clearAppBadge();
-		}
-	}
+	await updateBadge(count);
 
 	// 1. Check connectivity.
 	// In Chrome, we can check for wifi specifically.
