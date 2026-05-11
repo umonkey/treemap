@@ -39,10 +39,7 @@
 			onChange={pageState.handleCircumferenceChange}
 		/>
 		<YearInput value={pageState.updated.year} onChange={pageState.handleYearChange} />
-		<LocationInput
-			value={{ lat: pageState.tree.lat, lng: pageState.tree.lon }}
-			onChange={pageState.handleLocationChange}
-		/>
+		<LocationInput value={{ lat: pageState.tree.lat, lng: pageState.tree.lon }} />
 
 		<StreetInput value={pageState.tree.address} onChange={pageState.handleAddressChange} />
 

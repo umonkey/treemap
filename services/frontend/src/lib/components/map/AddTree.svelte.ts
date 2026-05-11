@@ -28,6 +28,7 @@ class AddState {
 
 	private handleCenter = (ll: ILatLng) => {
 		this.center = ll;
+		console.debug(`[add] center = ${this.center.lat},${this.center.lng}`);
 	};
 
 	public onMount = () => {

@@ -35,11 +35,7 @@
 		onCancel={pageState.handleCancel}
 		saving={pageState.saving}
 	>
-		<LocationInput
-			value={pageState.location}
-			label={locale.addConfirmLocation()}
-			onChange={pageState.handleLocationChange}
-		/>
+		<LocationInput value={pageState.location} label={locale.addConfirmLocation()} />
 		<SpeciesInput value={pageState.tree.species} onChange={pageState.handleSpeciesChange} />
 		<StateInput value={pageState.tree.state} onChange={pageState.handleStateChange} />
 		<HeightInput value={pageState.tree.height} onChange={pageState.handleHeightChange} />

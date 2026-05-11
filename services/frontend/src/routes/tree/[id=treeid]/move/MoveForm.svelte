@@ -8,8 +8,7 @@
 		id: string;
 	}>();
 
-	const { loading, busy, loadError, saveError, tree, value, save, close, handleChange } =
-		editor(id);
+	const { loading, busy, loadError, saveError, tree, value, save, close } = editor(id);
 </script>
 
 {#if $loading}
@@ -18,7 +17,7 @@
 	<p>{$loadError}</p>
 {:else if $tree}
 	<TreeForm {id} title="Move Tree" onSubmit={save} onCancel={close} saving={$busy}>
-		<LocationInput value={$value} onChange={handleChange} open />
+		<LocationInput value={$value} />
 
 		{#if $saveError}
 			<p>{$saveError}</p>
