@@ -15,12 +15,7 @@
 	import { isSidebarVisible } from '$lib/stores/mobileSidebarStore';
 	import { isInstallable } from '$lib/stores/pwaStore';
 	import { uploadStore } from '$lib/stores/upload';
-	import { onMount } from 'svelte';
 	import { componentState } from './LeftSidebar.svelte.ts';
-
-	onMount(() => {
-		componentState.fetchStats();
-	});
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -93,11 +88,7 @@
 			</li>
 		</ul>
 
-		<div class="stats">
-			{#if componentState.stats}
-				{locale.sideStatsMessage(componentState.stats.count)}
-			{/if}
-		</div>
+		<div class="sep"></div>
 
 		<div class="bottom">
 			<div class="logo">
@@ -196,15 +187,6 @@
 			}
 		}
 
-		.stats {
-			flex: 1 1;
-			border-top: 1px solid rgba(128, 128, 128, 0.2);
-			padding: 1rem 0 0;
-
-			font-size: 1rem;
-			opacity: 0.8;
-		}
-
 		.bottom {
 			flex-grow: 0;
 			flex-shrink: 0;
@@ -238,6 +220,10 @@
 		background-color: #080;
 		padding: 0 0.5rem;
 		border-radius: 5px;
+	}
+
+	.sep {
+		flex: 1 1;
 	}
 
 	/** Hide by default on small screens. **/
@@ -295,6 +281,10 @@
 			ul {
 				padding-bottom: var(--gap);
 			}
+		}
+
+		.sep {
+			display: none;
 		}
 	}
 

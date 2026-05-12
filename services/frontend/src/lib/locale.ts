@@ -73,8 +73,8 @@ class EnglishLocale {
 		return 'Street Report';
 	}
 
-	public searchPrompt(): string {
-		return 'Search trees...';
+	public searchPrompt(count?: number): string {
+		return count ? `Search ${count.toLocaleString()} trees...` : 'Search trees...';
 	}
 
 	public searchLink(query: string): string {
@@ -745,8 +745,8 @@ class RussianLocale extends EnglishLocale {
 		return 'Отчёт по улице';
 	}
 
-	public searchPrompt(): string {
-		return 'Искать деревья...';
+	public override searchPrompt(count?: number): string {
+		return count ? `Искать среди ${count.toLocaleString()} деревьев...` : 'Искать деревья...';
 	}
 
 	public searchLink(query: string): string {
@@ -1393,8 +1393,8 @@ class ArmenianLocale extends EnglishLocale {
 		return 'Որոնել';
 	}
 
-	public searchPrompt(): string {
-		return 'Գտնել ծառեր...';
+	public override searchPrompt(count?: number): string {
+		return count ? `Որոնել ${count.toLocaleString()} ծառերի մեջ...` : 'Գտնել ծառեր...';
 	}
 
 	public searchLink(query: string): string {

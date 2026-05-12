@@ -31,7 +31,10 @@
 		<p>You haven't saved any trees yet.</p>
 	{:else}
 		<div class="tiles">
-			<InfiniteScroll onLoadMore={pageState.handleLoadMore} enabled={!pageState.loading && pageState.hasMore}>
+			<InfiniteScroll
+				onLoadMore={pageState.handleLoadMore}
+				enabled={!pageState.loading && pageState.hasMore}
+			>
 				{#each pageState.tiles as tile (tile.id)}
 					<div class="tile">
 						<a href={tile.link}>

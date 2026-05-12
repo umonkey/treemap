@@ -1,6 +1,8 @@
 <script lang="ts">
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
 	import SearchIcon from '$lib/icons/SearchIcon.svelte';
+	import { locale } from '$lib/locale';
+	import { statsStore } from '$lib/stores/statsStore';
 	import { searchState } from './SearchControl.svelte.ts';
 </script>
 
@@ -11,7 +13,7 @@
 		</div>
 		<input
 			type="text"
-			placeholder="Search trees..."
+			placeholder={locale.searchPrompt($statsStore?.count)}
 			bind:value={searchState.value}
 			onkeydown={(e) => e.key === 'Enter' && searchState.commit()}
 			class="search-input"
