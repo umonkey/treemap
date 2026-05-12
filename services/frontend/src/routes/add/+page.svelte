@@ -1,50 +1,158 @@
 <script lang="ts">
-	import { page } from '$app/stores';
-	import TreeForm from '$lib/components/forms/TreeForm.svelte';
-	import { DEFAULT_MAP_CENTER } from '$lib/constants';
 	import { locale } from '$lib/locale';
 	import { pageState } from './page.svelte';
-
-	import CanopyInput from '$lib/ui/canopy-input/CanopyInput.svelte';
-	import CircumferenceInput from '$lib/ui/circumference-input/CircumferenceInput.svelte';
-	import HeightInput from '$lib/ui/height-input/HeightInput.svelte';
-	import LocationInput from '$lib/ui/location-input/LocationInput.svelte';
-	import NotesInput from '$lib/ui/notes-input/NotesInput.svelte';
-	import SpeciesInput from '$lib/ui/species-input/SpeciesInput.svelte';
-	import StateInput from '$lib/ui/state-input/StateInput.svelte';
-	import YearInput from '$lib/ui/year-input/YearInput.svelte';
-
-	const lat = $derived(
-		Number.parseFloat($page.url.searchParams.get('lat') || DEFAULT_MAP_CENTER.lat.toString())
-	);
-	const lng = $derived(
-		Number.parseFloat($page.url.searchParams.get('lng') || DEFAULT_MAP_CENTER.lng.toString())
-	);
-
-	$effect(() => {
-		pageState.reload(lat, lng);
-	});
+	import Button from '$lib/ui/button/Button.svelte';
+	import Buttons from '$lib/ui/buttons/Buttons.svelte';
+	import MapCenter from '$lib/components/map/MapCenter.svelte';
+	import LocationIcon from '$lib/icons/LocationIcon.svelte';
+	import CloseIcon from '$lib/icons/CloseIcon.svelte';
+	import { mapState } from '$lib/components/map/MapLibre.svelte.ts';
+	import '$lib/styles/variables.css';
 </script>
 
-{#if pageState.loading}
-	<!-- loading ... -->
-{:else}
-	<TreeForm
-		title="Add Tree"
-		onSubmit={pageState.handleConfirm}
-		onCancel={pageState.handleCancel}
-		saving={pageState.saving}
-	>
-		<LocationInput value={pageState.location} label={locale.addConfirmLocation()} />
-		<SpeciesInput value={pageState.tree.species} onChange={pageState.handleSpeciesChange} />
-		<StateInput value={pageState.tree.state} onChange={pageState.handleStateChange} />
-		<HeightInput value={pageState.tree.height} onChange={pageState.handleHeightChange} />
-		<CanopyInput value={pageState.tree.diameter} onChange={pageState.handleDiameterChange} />
-		<CircumferenceInput
-			value={pageState.tree.circumference}
-			onChange={pageState.handleCircumferenceChange}
-		/>
-		<YearInput value={pageState.tree.year} onChange={pageState.handleYearChange} />
-		<NotesInput value={pageState.tree.notes} onChange={pageState.handleNotesChange} />
-	</TreeForm>
-{/if}
+<svelte:head>
+	<title>{locale.addTitle()} — {locale.appTitle()}</title>
+</svelte:head>
+
+<MapCenter />
+
+<div class="panel">
+	<div class="header">
+		<div class="title">
+			{locale.addTitle()}
+		</div>
+		<button class="close" onclick={pageState.handleCancel}><CloseIcon /></button>
+	</div>
+
+	<div class="props">
+		<div class="line">
+			<div class="icon">
+				<LocationIcon />
+			</div>
+			<div class="value">
+				{mapState.center.lat.toFixed(6)}, {mapState.center.lng.toFixed(6)}
+			</div>
+		</div>
+	</div>
+
+	<Buttons>
+		<Button onClick={pageState.handleConfirm} disabled={pageState.saving} nowrap>
+			{locale.confirm()}
+		</Button>
+		<Button type="secondary" onClick={pageState.handleCancel} nowrap>
+			{locale.editCancel()}
+		</Button>
+	</Buttons>
+</div>
+
+<style>
+	.panel {
+		z-index: 2;
+
+		display: flex;
+		flex-direction: column;
+		gap: var(--gap);
+
+		padding: var(--gap);
+		line-height: 1.5em;
+
+		position: fixed;
+		bottom: 0px;
+
+		width: 100%;
+		min-height: 132px;
+		box-sizing: border-box;
+		background-color: var(--map-menu-background);
+		border-top-left-radius: 8px;
+		border-top-right-radius: 8px;
+		border-right: 1px solid var(--color-dialog-border);
+
+		.header {
+			display: flex;
+			flex-direction: row;
+
+			.close {
+				flex-basis: 30px;
+				flex-grow: 0;
+				flex-shrink: 0;
+
+				width: 30px;
+				height: 30px;
+				cursor: pointer;
+
+				background-color: transparent;
+				border: none;
+				color: light-dark(black, white);
+				opacity: 0.5;
+			}
+		}
+
+		.title {
+			flex-grow: 1;
+			flex-shrink: 1;
+			font-size: 120%;
+			line-height: 30px;
+
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		.props {
+			opacity: 0.7;
+			display: flex;
+			flex-direction: column;
+			gap: 5px;
+
+			.line {
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				gap: var(--gap);
+
+				.icon {
+					width: 20px;
+					height: 20px;
+				}
+			}
+		}
+	}
+
+	/* Desktop */
+	@media (min-width: 1024px) {
+		.panel {
+			top: 0;
+			left: 0;
+			width: 300px;
+			height: 100vh;
+			border-radius: 0px;
+			border-right: 1px solid var(--sep-color);
+
+			.header {
+				margin-bottom: var(--gap);
+			}
+		}
+	}
+
+	/* Mobile */
+	@media screen and (max-width: 1023px) {
+		.panel {
+			bottom: var(--bottom-nav-height);
+			border-width: 0;
+			animation: slideUp 0.2s ease-out;
+		}
+	}
+
+	@keyframes slideUp {
+		from {
+			transform: translateY(100%);
+		}
+		to {
+			transform: translateY(0);
+		}
+	}
+</style>

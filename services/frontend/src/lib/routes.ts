@@ -50,7 +50,7 @@ export const routes = {
 	statsSpecies: () => '/stats/species',
 	statsState: () => '/stats/state',
 	statsStreets: () => '/stats/streets',
-	treeAdd: (lat: number, lng: number) => `/add?lat=${lat}&lng=${lng}`,
+	treeAdd: () => `/add`,
 	uploads: () => '/profile/uploads',
 	addRow: (start: ILatLng, end: ILatLng) =>
 		build('/add/row', {
