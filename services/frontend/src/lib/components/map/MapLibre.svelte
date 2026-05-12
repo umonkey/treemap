@@ -15,6 +15,7 @@
 	import TreeLayer from './TreeLayer.svelte';
 	import MapCenter from './MapCenter.svelte';
 	import MoveLine from './MoveLine.svelte';
+	import NearestTree from './NearestTree.svelte';
 	import { mapMode } from '$lib/stores/mapMode';
 
 	const { children = undefined, onMove } = $props<{
@@ -74,9 +75,13 @@
 
 		<TreeLayer />
 
-		{#if $mapMode === 'move'}
-			<MoveLine />
+		{#if $mapMode === 'move' || $mapMode === 'add'}
 			<MapCenter />
+			{#if $mapMode === 'move'}
+				<MoveLine />
+			{:else}
+				<NearestTree />
+			{/if}
 		{/if}
 	</MapLibre>
 

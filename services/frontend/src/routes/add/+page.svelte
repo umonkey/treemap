@@ -3,18 +3,27 @@
 	import { pageState } from './page.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
-	import MapCenter from '$lib/components/map/MapCenter.svelte';
 	import LocationIcon from '$lib/icons/LocationIcon.svelte';
+	import Ruler from '$lib/icons/Ruler.svelte';
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
 	import { mapState } from '$lib/components/map/MapLibre.svelte.ts';
+	import { componentState } from '$lib/components/map/NearestTree.svelte.ts';
+	import { formatMeters } from '$lib/utils/trees';
+	import { mapMode } from '$lib/stores/mapMode';
+	import { onMount } from 'svelte';
 	import '$lib/styles/variables.css';
+
+	onMount(() => {
+		$mapMode = 'add';
+		return () => {
+			$mapMode = undefined;
+		};
+	});
 </script>
 
 <svelte:head>
 	<title>{locale.addTitle()} — {locale.appTitle()}</title>
 </svelte:head>
-
-<MapCenter />
 
 <div class="panel">
 	<div class="header">
@@ -33,6 +42,17 @@
 				{mapState.center.lat.toFixed(6)}, {mapState.center.lng.toFixed(6)}
 			</div>
 		</div>
+
+		{#if componentState.nearest}
+			<div class="line">
+				<div class="icon">
+					<Ruler />
+				</div>
+				<div class="value">
+					{locale.distanceLabel(formatMeters(componentState.nearest.distance))}
+				</div>
+			</div>
+		{/if}
 	</div>
 
 	<Buttons>
