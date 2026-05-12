@@ -1,5 +1,6 @@
 import { getGeoJSON } from '$lib/api/trees';
 import { mapBus } from '$lib/buses/mapBus';
+import { menuBus } from '$lib/buses/menuBus';
 import { showError } from '$lib/errors';
 import { goto, routes } from '$lib/routes';
 import { searchStore } from '$lib/stores/searchStore';
@@ -107,6 +108,24 @@ class TreeLayerState {
 		if (navigator.vibrate) {
 			navigator.vibrate(50);
 		}
+	};
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	public handleContextMenu = (e: any) => {
+		if (!e.features || e.features.length === 0) {
+			return;
+		}
+
+		const feature = e.features[0];
+		const treeId = feature.properties.id;
+
+		console.debug(`[TreeLayer] Tree ${treeId} context menu.`);
+
+		if (navigator.vibrate) {
+			navigator.vibrate(50);
+		}
+
+		menuBus.emit('show', treeId);
 	};
 
 	public onMount = () => {

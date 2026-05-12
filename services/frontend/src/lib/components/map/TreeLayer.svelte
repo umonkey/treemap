@@ -38,6 +38,7 @@
 				'circle-pitch-scale': 'map'
 			}}
 			onclick={treeLayerState.handleClick}
+			oncontextmenu={treeLayerState.handleContextMenu}
 		/>
 
 		<CircleLayer
