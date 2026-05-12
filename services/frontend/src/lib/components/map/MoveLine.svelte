@@ -8,7 +8,7 @@
 		<LineLayer
 			layout={{ 'line-cap': 'round', 'line-join': 'round' }}
 			paint={{
-				'line-color': '#007cbf',
+				'line-color': '#888888',
 				'line-width': 2,
 				'line-dasharray': [2, 2]
 			}}

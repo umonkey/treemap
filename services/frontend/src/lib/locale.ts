@@ -389,6 +389,14 @@ class EnglishLocale {
 		return 'Move tree';
 	}
 
+	public confirm(): string {
+		return 'Confirm';
+	}
+
+	public distanceLabel(value: string): string {
+		return `Distance: ${value}`;
+	}
+
 	public contextHeight(): string {
 		return 'Update height';
 	}
@@ -1221,6 +1229,14 @@ class RussianLocale extends EnglishLocale {
 		return 'Переместить дерево';
 	}
 
+	public override confirm(): string {
+		return 'Подтвердить';
+	}
+
+	public override distanceLabel(value: string): string {
+		return `Расстояние: ${value}`;
+	}
+
 	public replaceHint(): string {
 		return 'Вы собираетесь заменить дерево на новое. Старое дерево будет помечено как удалённое, новое будет добавлено в том же месте. Деревья будут связаны, чтобы отслеживать историю посадки.';
 	}
@@ -1671,6 +1687,18 @@ class ArmenianLocale extends EnglishLocale {
 
 	public contextMeasure(): string {
 		return 'Չափումներ';
+	}
+
+	public contextMove(): string {
+		return 'Տեղափոխել ծառը';
+	}
+
+	public override confirm(): string {
+		return 'Հաստատել';
+	}
+
+	public override distanceLabel(value: string): string {
+		return `Հեռավորությունը: ${value}`;
 	}
 
 	public locationLabel(): string {

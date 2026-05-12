@@ -5,10 +5,10 @@
 	import { pageState } from './page.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
-	import { formatSpecies, formatState, shortDetails } from '$lib/utils/trees';
+	import { formatSpecies } from '$lib/utils/trees';
 	import LocationIcon from '$lib/icons/LocationIcon.svelte';
 	import TagIcon from '$lib/icons/TagIcon.svelte';
-	import BatteryIcon from '$lib/icons/BatteryIcon.svelte';
+	import Ruler from '$lib/icons/Ruler.svelte';
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
 	import '$lib/styles/variables.css';
 
@@ -20,16 +20,26 @@
 	});
 </script>
 
+<svelte:head>
+	<title>{locale.contextMove()} — {locale.appTitle()}</title>
+</svelte:head>
+
 <div class="panel">
 	{#if pageState.tree}
 		<div class="header">
 			<div class="title">
-				{formatSpecies(pageState.tree.species)}
+				{locale.contextMove()}
 			</div>
 			<button class="close" onclick={() => pageState.handleCancel(id)}><CloseIcon /></button>
 		</div>
 
 		<div class="props">
+			<div class="line">
+				<div class="icon">
+					<TagIcon />
+				</div>
+				<div class="value">{formatSpecies(pageState.tree.species)}</div>
+			</div>
 			{#if pageState.tree.address}
 				<div class="line">
 					<div class="icon">
@@ -40,15 +50,11 @@
 			{/if}
 			<div class="line">
 				<div class="icon">
-					<TagIcon />
+					<Ruler />
 				</div>
-				<div class="value">{shortDetails(pageState.tree)}</div>
-			</div>
-			<div class="line">
-				<div class="icon">
-					<BatteryIcon />
+				<div class="value">
+					{locale.distanceLabel(locale.meters(pageState.distance.toFixed(1)))}
 				</div>
-				<div class="value">{formatState(pageState.tree.state)}</div>
 			</div>
 		</div>
 
@@ -58,12 +64,11 @@
 
 		<Buttons>
 			<Button onClick={() => pageState.handleConfirm(id)} disabled={pageState.busy} nowrap
-				>{locale.contextMove()}</Button
+				>{locale.confirm()}</Button
 			>
 			<Button
 				type="secondary"
 				onClick={() => pageState.handleCancel(id)}
-				disabled={pageState.busy}
 				nowrap>{locale.editCancel()}</Button
 			>
 		</Buttons>

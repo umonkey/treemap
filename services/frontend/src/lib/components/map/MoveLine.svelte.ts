@@ -1,10 +1,14 @@
+import { mapBus } from '$lib/buses/mapBus';
 import { mapState } from './MapLibre.svelte.ts';
 import { moveOriginState } from '$lib/stores/moveOriginState.svelte.ts';
+import type { ILatLng } from '$lib/types';
 
 class MoveLineLogic {
+	center = $state<ILatLng>();
+
 	line = $derived.by(() => {
 		const origin = moveOriginState.origin;
-		const center = mapState.center;
+		const center = this.center || mapState.center;
 
 		if (!origin || !center) {
 			return undefined;
@@ -22,6 +26,14 @@ class MoveLineLogic {
 			}
 		};
 	});
+
+	private handleCenter = (ll: ILatLng) => {
+		this.center = ll;
+	};
+
+	public constructor() {
+		mapBus.on('center', this.handleCenter);
+	}
 }
 
 export const componentState = new MoveLineLogic();
