@@ -38,10 +38,7 @@ class ComponentState {
 				type: 'Feature' as const,
 				geometry: {
 					type: 'LineString' as const,
-					coordinates: [
-						[center.lng, center.lat],
-						nearestFeature.geometry.coordinates
-					]
+					coordinates: [[center.lng, center.lat], nearestFeature.geometry.coordinates]
 				},
 				properties: {}
 			}

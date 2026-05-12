@@ -2,7 +2,7 @@ import { getTree, updateTree } from '$lib/api/trees';
 import { DEFAULT_TREE } from '$lib/constants';
 import { showError } from '$lib/errors';
 import { goto, routes } from '$lib/routes';
-import type { ILatLng, ITree } from '$lib/types';
+import type { ITree } from '$lib/types';
 
 class PageState {
 	tree = $state<ITree>(DEFAULT_TREE);
@@ -55,11 +55,6 @@ class PageState {
 
 	handleYearChange = (value: number) => {
 		this.updated.year = value;
-	};
-
-	handleLocationChange = (value: ILatLng) => {
-		this.updated.lat = value.lat;
-		this.updated.lon = value.lng;
 	};
 
 	handleAddressChange = (value: string) => {

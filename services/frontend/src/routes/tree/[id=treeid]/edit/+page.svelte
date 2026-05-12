@@ -4,7 +4,6 @@
 	import CanopyInput from '$lib/ui/canopy-input/CanopyInput.svelte';
 	import CircumferenceInput from '$lib/ui/circumference-input/CircumferenceInput.svelte';
 	import HeightInput from '$lib/ui/height-input/HeightInput.svelte';
-	import LocationInput from '$lib/ui/location-input/LocationInput.svelte';
 	import NotesInput from '$lib/ui/notes-input/NotesInput.svelte';
 	import SpeciesInput from '$lib/ui/species-input/SpeciesInput.svelte';
 	import StateInput from '$lib/ui/state-input/StateInput.svelte';
@@ -39,8 +38,6 @@
 			onChange={pageState.handleCircumferenceChange}
 		/>
 		<YearInput value={pageState.updated.year} onChange={pageState.handleYearChange} />
-		<LocationInput value={{ lat: pageState.tree.lat, lng: pageState.tree.lon }} />
-
 		<StreetInput value={pageState.tree.address} onChange={pageState.handleAddressChange} />
 
 		<NotesInput value={pageState.updated.notes} onChange={pageState.handleNotesChange} />
