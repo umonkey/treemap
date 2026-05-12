@@ -27,38 +27,42 @@
 {/if}
 
 {#if treeId}
-	<div class="uploader" class:small={!!small}>
-		<label title="Take Photo">
-			<CameraIcon />
+	<div class="uploader" class:small={!!small} class:has-items={state.thumbnails.length > 0}>
+		<div class="actions">
+			<label class="camera" title="Take Photo">
+				<CameraIcon />
 
-			<input
-				type="file"
-				accept="image/jpeg,image/png,image/heic,image/heif,image/webp"
-				onchange={state.handleChange}
-				capture="environment"
-				multiple
+				<input
+					type="file"
+					accept="image/jpeg,image/png,image/heic,image/heif,image/webp"
+					onchange={state.handleChange}
+					capture="environment"
+					multiple
+				/>
+			</label>
+
+			<label class="gallery" title="Pick from Gallery">
+				<GalleryIcon />
+
+				<input
+					type="file"
+					accept="image/jpeg,image/png,image/heic,image/heif,image/webp"
+					onchange={state.handleChange}
+					multiple
+				/>
+			</label>
+		</div>
+
+		{#if state.thumbnails.length > 0}
+			<FileUploaderDisplay
+				items={state.thumbnails.map((thumbnail) => ({
+					src: thumbnail.src,
+					busy: thumbnail.busy,
+					error: thumbnail.error
+				}))}
+				onRetry={restartUploadQueue}
 			/>
-		</label>
-
-		<label class="gallery" title="Pick from Gallery">
-			<GalleryIcon />
-
-			<input
-				type="file"
-				accept="image/jpeg,image/png,image/heic,image/heif,image/webp"
-				onchange={state.handleChange}
-				multiple
-			/>
-		</label>
-
-		<FileUploaderDisplay
-			items={state.thumbnails.map((thumbnail) => ({
-				src: thumbnail.src,
-				busy: thumbnail.busy,
-				error: thumbnail.error
-			}))}
-			onRetry={restartUploadQueue}
-		/>
+		{/if}
 
 		<div class="filler"></div>
 	</div>
@@ -68,7 +72,7 @@
 
 <style>
 	.label {
-		margin: 0 0 var(--gap) 0;
+		margin: 0 0 1rem 0;
 		opacity: 0.75;
 	}
 
@@ -79,11 +83,18 @@
 		justify-content: normal;
 
 		height: 100px;
+		margin-bottom: 1rem;
 
 		/* Testing mobile UI in Storybook */
 		&.small {
 			height: 50px;
 		}
+	}
+
+	.actions {
+		display: flex;
+		flex-direction: row;
+		gap: 10px;
 	}
 
 	label {
@@ -116,6 +127,39 @@
 	@media (max-width: 1023px) {
 		.uploader {
 			height: 50px;
+
+			&:not(.has-items) {
+				height: 0;
+				margin-bottom: 0;
+			}
+		}
+
+		.actions {
+			position: fixed;
+			bottom: 1rem;
+			right: 1rem;
+			z-index: var(--z-add-button);
+
+			flex-direction: column-reverse;
+			gap: 1rem;
+			padding: 0;
+			background-color: transparent;
+			border-radius: 0;
+
+			label {
+				width: 50px;
+				height: 50px;
+				border-radius: 50%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+			}
+		}
+
+		.camera {
+			background-color: var(--map-primary-background);
+			color: white;
 		}
 	}
 

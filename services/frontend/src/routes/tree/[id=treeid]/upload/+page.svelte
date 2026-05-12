@@ -19,7 +19,11 @@
 	});
 </script>
 
-<TreeForm tree={pageState.tree} title="Add Tree Photos" onSubmit={close} onCancel={close}>
+<svelte:head>
+	<title>{locale.photoTitle()} — {locale.appTitle()}</title>
+</svelte:head>
+
+<TreeForm tree={pageState.tree} title={locale.photoTitle()} onSubmit={close} onCancel={close}>
 	<p>{locale.photoIntro()}</p>
 	<PhotoUploader treeId={pageState.treeId} onChange={pageState.handleChange} />
 	<AutoUploadCheckbox />
