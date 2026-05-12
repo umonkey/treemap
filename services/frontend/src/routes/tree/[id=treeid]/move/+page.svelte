@@ -66,10 +66,8 @@
 			<Button onClick={() => pageState.handleConfirm(id)} disabled={pageState.busy} nowrap
 				>{locale.confirm()}</Button
 			>
-			<Button
-				type="secondary"
-				onClick={() => pageState.handleCancel(id)}
-				nowrap>{locale.editCancel()}</Button
+			<Button type="secondary" onClick={() => pageState.handleCancel(id)} nowrap
+				>{locale.editCancel()}</Button
 			>
 		</Buttons>
 	{/if}
