@@ -2,15 +2,9 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { locale } from '$lib/locale';
-	import { mapMode } from '$lib/stores/mapMode';
-	import { getTree, updateTreeLocation } from '$lib/api/trees';
-	import { mapBus } from '$lib/buses/mapBus';
-	import { mapState } from '$lib/components/map/MapLibre.svelte.ts';
+	import { pageState } from './page.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
-	import { goto, routes } from '$lib/routes';
-	import { roundCoord } from '$lib/utils/strings';
-	import type { ITree } from '$lib/types';
 	import { formatSpecies, formatState, shortDetails } from '$lib/utils/trees';
 	import LocationIcon from '$lib/icons/LocationIcon.svelte';
 	import TagIcon from '$lib/icons/TagIcon.svelte';
@@ -19,86 +13,58 @@
 	import '$lib/styles/variables.css';
 
 	const id = $derived($page.params.id as string);
-	let tree = $state<ITree | undefined>(undefined);
-	let busy = $state(false);
-	let error = $state<string | undefined>(undefined);
 
 	onMount(() => {
-		mapMode.set('move');
-
-		getTree(id).then((res) => {
-			if (res.data) {
-				tree = res.data;
-				mapBus.emit('move', { lat: res.data.lat, lng: res.data.lon });
-			}
-		});
-
-		return () => {
-			mapMode.set(undefined);
-		};
+		pageState.init(id);
+		return pageState.destroy;
 	});
-
-	async function handleConfirm() {
-		busy = true;
-		error = undefined;
-
-		const lat = roundCoord(mapState.center.lat);
-		const lng = roundCoord(mapState.center.lng);
-
-		const res = await updateTreeLocation(id, lat, lng);
-		if (res.status >= 200 && res.status < 300) {
-			goto(routes.mapPreview(id));
-		} else {
-			error = res.error?.description || 'Failed to move tree';
-			busy = false;
-		}
-	}
-
-	function handleCancel() {
-		goto(routes.home());
-	}
 </script>
 
 <div class="panel">
-	{#if tree}
+	{#if pageState.tree}
 		<div class="header">
 			<div class="title">
-				{formatSpecies(tree.species)}
+				{formatSpecies(pageState.tree.species)}
 			</div>
-			<button class="close" onclick={handleCancel}><CloseIcon /></button>
+			<button class="close" onclick={() => pageState.handleCancel(id)}><CloseIcon /></button>
 		</div>
 
 		<div class="props">
-			{#if tree.address}
+			{#if pageState.tree.address}
 				<div class="line">
 					<div class="icon">
 						<LocationIcon />
 					</div>
-					<div class="value">{tree.address}</div>
+					<div class="value">{pageState.tree.address}</div>
 				</div>
 			{/if}
 			<div class="line">
 				<div class="icon">
 					<TagIcon />
 				</div>
-				<div class="value">{shortDetails(tree)}</div>
+				<div class="value">{shortDetails(pageState.tree)}</div>
 			</div>
 			<div class="line">
 				<div class="icon">
 					<BatteryIcon />
 				</div>
-				<div class="value">{formatState(tree.state)}</div>
+				<div class="value">{formatState(pageState.tree.state)}</div>
 			</div>
 		</div>
 
-		{#if error}
-			<p class="error">{error}</p>
+		{#if pageState.error}
+			<p class="error">{pageState.error}</p>
 		{/if}
 
 		<Buttons>
-			<Button onClick={handleConfirm} disabled={busy} nowrap>{locale.contextMove()}</Button>
-			<Button type="secondary" onClick={handleCancel} disabled={busy} nowrap
-				>{locale.editCancel()}</Button
+			<Button onClick={() => pageState.handleConfirm(id)} disabled={pageState.busy} nowrap
+				>{locale.contextMove()}</Button
+			>
+			<Button
+				type="secondary"
+				onClick={() => pageState.handleCancel(id)}
+				disabled={pageState.busy}
+				nowrap>{locale.editCancel()}</Button
 			>
 		</Buttons>
 	{/if}
