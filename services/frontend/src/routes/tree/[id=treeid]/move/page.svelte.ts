@@ -2,6 +2,7 @@ import { mapMode } from '$lib/stores/mapMode';
 import { getTree, updateTreeLocation } from '$lib/api/trees';
 import { mapBus } from '$lib/buses/mapBus';
 import { mapState } from '$lib/components/map/MapLibre.svelte.ts';
+import { moveOriginState } from '$lib/stores/moveOriginState.svelte.ts';
 import { goto, routes } from '$lib/routes';
 import { roundCoord } from '$lib/utils/strings';
 import type { ITree } from '$lib/types';
@@ -17,6 +18,7 @@ class PageState {
 		getTree(id).then((res) => {
 			if (res.data) {
 				this.tree = res.data;
+				moveOriginState.origin = { lat: res.data.lat, lng: res.data.lon };
 				mapBus.emit('move', { lat: res.data.lat, lng: res.data.lon });
 			}
 		});
@@ -24,6 +26,7 @@ class PageState {
 
 	destroy = () => {
 		mapMode.set(undefined);
+		moveOriginState.origin = undefined;
 	};
 
 	handleConfirm = async (id: string) => {

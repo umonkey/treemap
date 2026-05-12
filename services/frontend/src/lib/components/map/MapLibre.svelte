@@ -14,6 +14,7 @@
 	import SearchControl from './SearchControl.svelte';
 	import TreeLayer from './TreeLayer.svelte';
 	import MapCenter from './MapCenter.svelte';
+	import MoveLine from './MoveLine.svelte';
 	import { mapMode } from '$lib/stores/mapMode';
 
 	const { children = undefined, onMove } = $props<{
@@ -74,6 +75,7 @@
 		<TreeLayer />
 
 		{#if $mapMode === 'move'}
+			<MoveLine />
 			<MapCenter />
 		{/if}
 	</MapLibre>
