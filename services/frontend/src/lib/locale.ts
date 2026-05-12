@@ -386,7 +386,7 @@ class EnglishLocale {
 	}
 
 	public contextMove(): string {
-		return 'Update location';
+		return 'Move tree';
 	}
 
 	public contextHeight(): string {
@@ -1218,7 +1218,7 @@ class RussianLocale extends EnglishLocale {
 	}
 
 	public contextMove(): string {
-		return 'Уточнить координаты';
+		return 'Переместить дерево';
 	}
 
 	public replaceHint(): string {

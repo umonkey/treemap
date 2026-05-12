@@ -13,6 +13,8 @@
 	import Navigation from './Navigation.svelte';
 	import SearchControl from './SearchControl.svelte';
 	import TreeLayer from './TreeLayer.svelte';
+	import MapCenter from './MapCenter.svelte';
+	import { mapMode } from '$lib/stores/mapMode';
 
 	const { children = undefined, onMove } = $props<{
 		children?: Snippet;
@@ -70,6 +72,10 @@
 		{/if}
 
 		<TreeLayer />
+
+		{#if $mapMode === 'move'}
+			<MapCenter />
+		{/if}
 	</MapLibre>
 
 	<Navigation />
