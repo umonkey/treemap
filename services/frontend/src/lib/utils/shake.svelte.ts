@@ -7,7 +7,10 @@ import { goto, routes } from '$lib/routes';
 class ShakeDetector {
 	private threshold = 15; // Acceleration threshold in m/s^2
 	private cooldown = 1500; // Cooldown between shakes in ms
+	private hitWindow = 1000; // Max time between hits in ms
 	private lastShake = 0;
+	private lastHit = 0;
+	private hits = 0;
 	private isInitialized = false;
 
 	public isSupported = $state(false);
@@ -100,8 +103,22 @@ class ShakeDetector {
 		const totalAcc = Math.sqrt(x * x + y * y + z * z);
 
 		if (totalAcc > this.threshold) {
-			this.lastShake = now;
-			this.onShake();
+			// Reset counter if too much time passed since last hit
+			if (now - this.lastHit > this.hitWindow) {
+				this.hits = 0;
+			}
+
+			// Debounce hits to avoid counting a single long spike twice
+			if (now - this.lastHit < 150) return;
+
+			this.hits++;
+			this.lastHit = now;
+
+			if (this.hits >= 2) {
+				this.hits = 0;
+				this.lastShake = now;
+				this.onShake();
+			}
 		}
 	};
 
