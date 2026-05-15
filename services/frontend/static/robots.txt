@@ -1,2 +1,4 @@
 User-agent: *
 Allow: /
+
+Sitemap: https://yerevan.treemaps.app/sitemap.xml

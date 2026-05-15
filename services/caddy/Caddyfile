@@ -1,7 +1,13 @@
-yerevan.treemaps.app, api.treemaps.app {
+yerevan.treemaps.app, api.treemaps.app, treemaps.app, www.treemaps.app {
 	log
 	tls {
 		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+	}
+
+	# Redirect root and www domains to the Yerevan subdomain.
+	@redirects host treemaps.app www.treemaps.app
+	handle @redirects {
+		redir https://yerevan.treemaps.app{uri} permanent
 	}
 
 	# Enable compression for faster loading.
