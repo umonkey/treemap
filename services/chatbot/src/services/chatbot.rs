@@ -42,26 +42,41 @@ pub async fn run(token: String, i18n: Arc<I18n>) {
     teloxide::repl(bot, move |bot: Bot, msg: Message| {
         let i18n = i18n.clone();
         async move {
-            // 1. Log the user info as requested
-            let user_info = msg
-                .from
-                .as_ref()
-                .map(|u| format!("{:?}", u))
+            // 1. Log the user info and content
+            let user = msg.from.as_ref();
+            let user_name = user
+                .map(|u| u.full_name())
                 .unwrap_or_else(|| "Unknown".to_string());
+            let user_id = user
+                .map(|u| u.id.to_string())
+                .unwrap_or_else(|| "?".to_string());
+            let text_content = msg.text().or(msg.caption()).unwrap_or("");
 
-            log::info!("Received message from: {}", user_info);
+            log::info!(
+                "Received message from {} ({}): {}",
+                user_name,
+                user_id,
+                text_content
+            );
+
+            // Log location if present
+            if let Some(loc) = msg.location() {
+                log::info!(
+                    "Location received from {} ({}): lat={}, lon={}",
+                    user_name,
+                    user_id,
+                    loc.latitude,
+                    loc.longitude
+                );
+            }
 
             // Get user language
-            let lang = msg
-                .from
-                .as_ref()
+            let lang = user
                 .and_then(|u| u.language_code.as_deref())
                 .unwrap_or("en");
 
             // 2. Handle commands or echo text
             if let Some(text) = msg.text() {
-                log::info!("Message text: {}", text);
-
                 match Command::parse(text, "") {
                     Ok(Command::Start) => {
                         bot.send_message(msg.chat.id, i18n.tr("start-welcome", lang, None))
