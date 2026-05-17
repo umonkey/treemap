@@ -1,7 +1,8 @@
 use crate::services::i18n::I18n;
 use std::sync::Arc;
+use teloxide::payloads::SetMyCommandsSetters;
 use teloxide::prelude::*;
-use teloxide::types::ParseMode;
+use teloxide::types::{BotCommand, ParseMode};
 use teloxide::utils::command::BotCommands;
 
 #[derive(BotCommands, Clone)]
@@ -21,8 +22,20 @@ enum Command {
 pub async fn run(token: String, i18n: Arc<I18n>) {
     let bot = Bot::new(token);
 
-    // Register commands in the Telegram menu button
-    let _ = bot.set_my_commands(Command::bot_commands()).await;
+    // Register commands in the Telegram menu button for each language
+    for lang in ["en", "ru"] {
+        let commands = vec![
+            BotCommand::new("start", i18n.tr("menu-start-desc", lang, None)),
+            BotCommand::new("report", i18n.tr("menu-report-desc", lang, None)),
+            BotCommand::new("map", i18n.tr("menu-map-desc", lang, None)),
+        ];
+
+        let _ = bot
+            .set_my_commands(commands)
+            .language_code(lang)
+            .await
+            .map_err(|e| log::error!("Failed to set commands for {}: {:?}", lang, e));
+    }
 
     log::info!("Chatbot is running...");
 
