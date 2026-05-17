@@ -1,4 +1,6 @@
+use crate::infra::database::DatabaseClient;
 use crate::services::i18n::I18n;
+use fluent::FluentArgs;
 use std::sync::Arc;
 use teloxide::payloads::SetMyCommandsSetters;
 use teloxide::prelude::*;
@@ -22,13 +24,15 @@ enum Command {
 pub struct Chatbot {
     bot: Bot,
     i18n: Arc<I18n>,
+    db: Arc<DatabaseClient>,
 }
 
 impl Chatbot {
-    pub fn new(token: String, i18n: Arc<I18n>) -> Self {
+    pub fn new(token: String, i18n: Arc<I18n>, db: Arc<DatabaseClient>) -> Self {
         Self {
             bot: Bot::new(token),
             i18n,
+            db,
         }
     }
 
@@ -137,8 +141,12 @@ impl Chatbot {
         let keyboard =
             InlineKeyboardMarkup::new(vec![vec![InlineKeyboardButton::url(button_label, url)]]);
 
+        let mut args = FluentArgs::new();
+        let count = self.db.count_trees().await.unwrap_or(0);
+        args.set("count", count);
+
         self.bot
-            .send_message(msg.chat.id, self.i18n.tr("map-link", lang, None))
+            .send_message(msg.chat.id, self.i18n.tr("map-link", lang, Some(&args)))
             .parse_mode(ParseMode::Html)
             .reply_markup(keyboard)
             .await?;
@@ -152,7 +160,7 @@ impl Chatbot {
     }
 }
 
-pub async fn run(token: String, i18n: Arc<I18n>) {
-    let chatbot = Arc::new(Chatbot::new(token, i18n));
+pub async fn run(token: String, i18n: Arc<I18n>, db: Arc<DatabaseClient>) {
+    let chatbot = Arc::new(Chatbot::new(token, i18n, db));
     chatbot.run().await;
 }
