@@ -20,7 +20,7 @@ CREATE INDEX IF NOT EXISTS `idx_chatbot_reports_created_by` ON `chatbot_reports`
 CREATE TABLE IF NOT EXISTS `chatbot_report_photos` (
     `id` INTEGER PRIMARY KEY AUTOINCREMENT,
     `report_id` INTEGER NOT NULL,
-    `photo_id` TEXT NOT NULL,
+    `photo_path` TEXT NOT NULL,
     FOREIGN KEY (`report_id`) REFERENCES `chatbot_reports` (`id`) ON DELETE CASCADE
 );
 

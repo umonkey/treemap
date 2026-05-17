@@ -19,3 +19,4 @@ report-completed =
     Thank you! The situation is generally clear. You can add more photos, refine the coordinates, or use the /report command to start a new report for another tree.
     
     We will get back to you if we have an update.
+generic-error = Something went wrong. Please try again later.

@@ -1,9 +1,12 @@
 use crate::domains::photo::PhotoRepository;
 use crate::domains::report::{Report, ReportRepository};
 use crate::domains::tree::TreeRepository;
+use crate::infra::s3::S3FileStorage;
 use crate::services::i18n::I18n;
+use crate::utils::id::get_unique_id;
 use fluent::FluentArgs;
 use std::sync::Arc;
+use teloxide::net::Download;
 use teloxide::payloads::SetMyCommandsSetters;
 use teloxide::prelude::*;
 use teloxide::types::{
@@ -31,6 +34,7 @@ pub struct Chatbot {
     reports: Arc<ReportRepository>,
     photos: Arc<PhotoRepository>,
     trees: Arc<TreeRepository>,
+    storage: Arc<S3FileStorage>,
 }
 
 impl Chatbot {
@@ -40,6 +44,7 @@ impl Chatbot {
         reports: Arc<ReportRepository>,
         photos: Arc<PhotoRepository>,
         trees: Arc<TreeRepository>,
+        storage: Arc<S3FileStorage>,
     ) -> Self {
         Self {
             bot: Bot::new(token),
@@ -47,6 +52,7 @@ impl Chatbot {
             reports,
             photos,
             trees,
+            storage,
         }
     }
 
@@ -135,20 +141,16 @@ impl Chatbot {
                 report_id = Some(report.id);
 
                 if let Some(photo) = photos.last() {
-                    log::info!("file {} added to report {}", photo.file.id, report.id);
-
-                    let _ = self
-                        .bot
-                        .set_message_reaction(msg.chat.id, msg.id)
-                        .reaction(vec![ReactionType::Emoji {
-                            emoji: "👀".to_string(),
-                        }])
-                        .await;
-
-                    if let Ok(is_first) = self.photos.add_to_report(report.id, &photo.file.id).await
-                    {
-                        if is_first {
-                            should_respond = true;
+                    match self.process_photo(&msg, &report, photo).await {
+                        Ok(is_first) => {
+                            if is_first {
+                                should_respond = true;
+                            }
+                        }
+                        Err(e) => {
+                            log::error!("Error processing photo: {:?}", e);
+                            let error_text = self.i18n.tr("generic-error", lang, None);
+                            let _ = self.bot.send_message(msg.chat.id, error_text).await;
                         }
                     }
                 }
@@ -191,6 +193,39 @@ impl Chatbot {
         }
 
         Ok(())
+    }
+
+    async fn process_photo(
+        &self,
+        msg: &Message,
+        report: &Report,
+        photo: &teloxide::types::PhotoSize,
+    ) -> anyhow::Result<bool> {
+        let file = self.bot.get_file(&photo.file.id).await?;
+        let mut buffer = Vec::new();
+        self.bot.download_file(&file.path, &mut buffer).await?;
+
+        let id = get_unique_id()?;
+        let photo_path = format!("reports/{}.jpg", id);
+        self.storage.write_file(&photo_path, buffer).await?;
+
+        let _ = self
+            .bot
+            .set_message_reaction(msg.chat.id, msg.id)
+            .reaction(vec![ReactionType::Emoji {
+                emoji: "👀".to_string(),
+            }])
+            .await;
+
+        let is_first = self.photos.add_to_report(report.id, &photo_path).await?;
+
+        log::info!(
+            "File added to report: {} for report {}",
+            photo_path,
+            report.id
+        );
+
+        Ok(is_first)
     }
 
     async fn send_next_step(
@@ -306,7 +341,8 @@ pub async fn run(
     reports: Arc<ReportRepository>,
     photos: Arc<PhotoRepository>,
     trees: Arc<TreeRepository>,
+    storage: Arc<S3FileStorage>,
 ) {
-    let chatbot = Arc::new(Chatbot::new(token, i18n, reports, photos, trees));
+    let chatbot = Arc::new(Chatbot::new(token, i18n, reports, photos, trees, storage));
     chatbot.run().await;
 }

@@ -11,10 +11,13 @@ impl PhotoRepository {
         Self { db }
     }
 
-    pub async fn add_to_report(&self, report_id: i64, photo_id: &str) -> anyhow::Result<bool> {
+    pub async fn add_to_report(&self, report_id: i64, photo_path: &str) -> anyhow::Result<bool> {
         let conn = self.db.connect().await?;
-        let sql = "INSERT INTO chatbot_report_photos (report_id, photo_id) VALUES (?, ?)";
-        let params = vec![Value::Integer(report_id), Value::Text(photo_id.to_string())];
+        let sql = "INSERT INTO chatbot_report_photos (report_id, photo_path) VALUES (?, ?)";
+        let params = vec![
+            Value::Integer(report_id),
+            Value::Text(photo_path.to_string()),
+        ];
         conn.execute(sql, params_from_iter(params)).await?;
         let my_id = conn.last_insert_rowid();
 

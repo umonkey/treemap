@@ -1,6 +1,7 @@
 mod domains;
 mod infra;
 mod services;
+mod utils;
 
 use crate::domains::photo::PhotoRepository;
 use crate::domains::report::ReportRepository;
@@ -25,6 +26,9 @@ async fn main() {
     let reports = Arc::new(ReportRepository::new(Arc::clone(&db)));
     let photos = Arc::new(PhotoRepository::new(Arc::clone(&db)));
     let trees = Arc::new(TreeRepository::new(Arc::clone(&db)));
+    let storage = Arc::new(
+        crate::infra::s3::S3FileStorage::new(&config).expect("Failed to initialize S3 storage"),
+    );
 
-    services::chatbot::run(config.bot_token, i18n, reports, photos, trees).await;
+    services::chatbot::run(config.bot_token, i18n, reports, photos, trees, storage).await;
 }
