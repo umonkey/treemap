@@ -95,4 +95,37 @@ impl ReportRepository {
             .await?
             .ok_or_else(|| anyhow::anyhow!("Report not found after creation"))
     }
+
+    pub async fn update_location(&self, id: i64, lat: f64, lon: f64) -> anyhow::Result<()> {
+        let conn = self.db.connect().await?;
+        let sql = "UPDATE chatbot_reports SET lat = ?, lon = ? WHERE id = ?";
+        let params = vec![Value::Real(lat), Value::Real(lon), Value::Integer(id)];
+        conn.execute(sql, params_from_iter(params)).await?;
+        Ok(())
+    }
+
+    pub async fn update_description(&self, id: i64, description: &str) -> anyhow::Result<()> {
+        let conn = self.db.connect().await?;
+        let sql = "UPDATE chatbot_reports SET description = ? WHERE id = ?";
+        let params = vec![Value::Text(description.to_string()), Value::Integer(id)];
+        conn.execute(sql, params_from_iter(params)).await?;
+        Ok(())
+    }
+
+    pub async fn get_active_id_by_user_id(&self, user_id: i64) -> anyhow::Result<Option<i64>> {
+        let conn = self.db.connect().await?;
+        let sql = "SELECT id FROM chatbot_reports 
+                   WHERE created_by = ? AND created_at > (unixepoch() - 600) 
+                   ORDER BY created_at DESC LIMIT 1";
+        let mut stmt = conn.prepare(sql).await?;
+        let mut rows = stmt
+            .query(params_from_iter(vec![Value::Integer(user_id)]))
+            .await?;
+
+        if let Some(row) = rows.next().await? {
+            Ok(Some(row.get(0)?))
+        } else {
+            Ok(None)
+        }
+    }
 }

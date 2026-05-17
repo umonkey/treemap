@@ -32,4 +32,19 @@ impl PhotoRepository {
 
         Ok(false)
     }
+
+    pub async fn count_by_report_id(&self, report_id: i64) -> anyhow::Result<i64> {
+        let conn = self.db.connect().await?;
+        let sql = "SELECT COUNT(*) FROM chatbot_report_photos WHERE report_id = ?";
+        let mut stmt = conn.prepare(sql).await?;
+        let mut rows = stmt
+            .query(params_from_iter(vec![Value::Integer(report_id)]))
+            .await?;
+
+        if let Some(row) = rows.next().await? {
+            Ok(row.get(0)?)
+        } else {
+            Ok(0)
+        }
+    }
 }

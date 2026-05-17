@@ -94,9 +94,10 @@ impl Chatbot {
         let user_name = user
             .map(|u| u.full_name())
             .unwrap_or_else(|| "Unknown".to_string());
-        let user_id = user
+        let user_id_str = user
             .map(|u| u.id.to_string())
             .unwrap_or_else(|| "?".to_string());
+        let user_id = user.map(|u| u.id.0 as i64).unwrap_or(0);
         let user_alias = user
             .and_then(|u| u.username.as_ref())
             .map(|username| format!(" (t.me/{})", username))
@@ -110,57 +111,102 @@ impl Chatbot {
         log::info!(
             "Received message from {} ({}{}): language={}, text={}",
             user_name,
-            user_id,
+            user_id_str,
             user_alias,
             raw_lang,
             text_content
         );
 
+        // 1. Handle commands
         if let Some(text) = msg.text() {
-            match Command::parse(text, "") {
-                Ok(cmd) => self.handle_command(&msg, cmd, lang).await?,
-                Err(_) => self.handle_text(&msg, text).await?,
-            };
-        } else if let Some(photos) = msg.photo() {
-            let mut is_first = false;
-            match self.start_report(&msg, false, lang).await {
-                Ok(report) => {
-                    let report_id = report.id;
-                    if let Some(photo) = photos.last() {
-                        match self.photos.add_to_report(report_id, &photo.file.id).await {
-                            Ok(first) => {
-                                is_first = first;
-                                log::info!(
-                                    "Stored photo {} for report {}",
-                                    photo.file.id,
-                                    report_id
-                                );
-                            }
-                            Err(e) => log::error!("Failed to store photo: {:?}", e),
+            if let Ok(cmd) = Command::parse(text, "") {
+                return self.handle_command(&msg, cmd, lang).await;
+            }
+        }
+
+        let mut report_id = None;
+        let mut should_respond = false;
+
+        // 2. Process photos
+        if let Some(photos) = msg.photo() {
+            if let Ok(report) = self.start_report(&msg, false, lang).await {
+                report_id = Some(report.id);
+                if let Some(photo) = photos.last() {
+                    if let Ok(is_first) = self.photos.add_to_report(report.id, &photo.file.id).await
+                    {
+                        if is_first {
+                            should_respond = true;
                         }
                     }
                 }
-                Err(e) => {
-                    log::error!("Failed to start report for photo: {:?}", e);
-                }
             }
-
-            if is_first {
-                self.bot
-                    .send_message(
-                        msg.chat.id,
-                        self.i18n.tr("report-photo-received", lang, None),
-                    )
-                    .parse_mode(ParseMode::Html)
-                    .await?;
-            }
-
-            if let Some(caption) = msg.caption() {
-                self.handle_text(&msg, caption).await?;
-            }
-        } else if msg.location().is_some() {
-            let _ = self.start_report(&msg, false, lang).await;
         }
+
+        // 3. Process location
+        if let Some(location) = msg.location() {
+            if let Ok(report) = self.start_report(&msg, false, lang).await {
+                report_id = Some(report.id);
+                let _ = self
+                    .reports
+                    .update_location(report.id, location.latitude, location.longitude)
+                    .await;
+                should_respond = true;
+            }
+        }
+
+        // 4. Process text (description)
+        if !text_content.is_empty() {
+            if report_id.is_none() {
+                report_id = self
+                    .reports
+                    .get_active_id_by_user_id(user_id)
+                    .await
+                    .unwrap_or(None);
+            }
+
+            if let Some(rid) = report_id {
+                let _ = self.reports.update_description(rid, text_content).await;
+                should_respond = true;
+            }
+        }
+
+        // 5. Send response based on report status
+        if should_respond {
+            if let Some(rid) = report_id {
+                self.send_next_step(msg.chat.id, rid, lang).await?;
+            }
+        }
+
+        Ok(())
+    }
+
+    async fn send_next_step(
+        &self,
+        chat_id: ChatId,
+        report_id: i64,
+        lang: &str,
+    ) -> ResponseResult<()> {
+        let report = match self.reports.get_by_id(report_id).await {
+            Ok(Some(r)) => r,
+            _ => return Ok(()),
+        };
+
+        let photo_count = self.photos.count_by_report_id(report_id).await.unwrap_or(0);
+
+        let text = if photo_count == 0 {
+            self.i18n.tr("report-intro", lang, None)
+        } else if report.lat.is_none() {
+            self.i18n.tr("report-photo-received", lang, None)
+        } else if report.description.is_none() {
+            self.i18n.tr("report-location-received", lang, None)
+        } else {
+            self.i18n.tr("report-completed", lang, None)
+        };
+
+        self.bot
+            .send_message(chat_id, text)
+            .parse_mode(ParseMode::Html)
+            .await?;
 
         Ok(())
     }
@@ -237,11 +283,6 @@ impl Chatbot {
             .reply_markup(keyboard)
             .await?;
 
-        Ok(())
-    }
-
-    async fn handle_text(&self, msg: &Message, text: &str) -> ResponseResult<()> {
-        self.bot.send_message(msg.chat.id, text).await?;
         Ok(())
     }
 }

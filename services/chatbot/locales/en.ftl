@@ -13,4 +13,9 @@ menu-start-desc = start the bot
 menu-report-desc = report tree damage
 menu-map-desc = view the tree map
 map-button-label = Open Map
-report-photo-received = Thank you! Now please send a location where all this is happening.
+report-photo-received = Thank you! Now please send the location of where this tree is, as precise as possible.
+report-location-received = Great! Now please add a short text description of what's bothering you.
+report-completed =
+    Thank you! We have received your report.
+    
+    You can still send more photos to this report, update the location by sending a new one, or use /report to start a new report.
