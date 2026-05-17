@@ -1,5 +1,5 @@
 use crate::domains::photo::PhotoRepository;
-use crate::domains::report::ReportRepository;
+use crate::domains::report::{Report, ReportRepository};
 use crate::domains::tree::TreeRepository;
 use crate::services::i18n::I18n;
 use fluent::FluentArgs;
@@ -124,7 +124,8 @@ impl Chatbot {
         } else if let Some(photos) = msg.photo() {
             let mut is_first = false;
             match self.start_report(&msg, false, lang).await {
-                Ok(report_id) => {
+                Ok(report) => {
+                    let report_id = report.id;
                     if let Some(photo) = photos.last() {
                         match self.photos.add_to_report(report_id, &photo.file.id).await {
                             Ok(first) => {
@@ -177,7 +178,7 @@ impl Chatbot {
         msg: &Message,
         force_new: bool,
         lang: &str,
-    ) -> anyhow::Result<i64> {
+    ) -> anyhow::Result<Report> {
         let user = msg.from.as_ref();
         let user_id = user.map(|u| u.id.0 as i64).unwrap_or(0);
         let chat_id = msg.chat.id.0;

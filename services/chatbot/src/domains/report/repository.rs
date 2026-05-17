@@ -1,3 +1,4 @@
+use super::model::Report;
 use crate::infra::database::DatabaseClient;
 use libsql::{params_from_iter, Value};
 use std::sync::Arc;
@@ -11,6 +12,35 @@ impl ReportRepository {
         Self { db }
     }
 
+    pub async fn get_by_id(&self, id: i64) -> anyhow::Result<Option<Report>> {
+        let conn = self.db.connect().await?;
+        let sql = "SELECT id, created_at, created_by, chat_id, message_id, username, language_code, lat, lon, description, status, response_text, responded_at FROM chatbot_reports WHERE id = ?";
+        let mut stmt = conn.prepare(sql).await?;
+        let mut rows = stmt
+            .query(params_from_iter(vec![Value::Integer(id)]))
+            .await?;
+
+        if let Some(row) = rows.next().await? {
+            Ok(Some(Report {
+                id: row.get(0)?,
+                created_at: row.get(1)?,
+                created_by: row.get(2)?,
+                chat_id: row.get(3)?,
+                message_id: row.get(4)?,
+                username: row.get(5)?,
+                language_code: row.get(6)?,
+                lat: row.get(7)?,
+                lon: row.get(8)?,
+                description: row.get(9)?,
+                status: row.get(10)?,
+                response_text: row.get(11)?,
+                responded_at: row.get(12)?,
+            }))
+        } else {
+            Ok(None)
+        }
+    }
+
     #[allow(clippy::too_many_arguments)]
     pub async fn create(
         &self,
@@ -22,7 +52,7 @@ impl ReportRepository {
         lat: Option<f64>,
         lon: Option<f64>,
         force_new: bool,
-    ) -> anyhow::Result<i64> {
+    ) -> anyhow::Result<Report> {
         let conn = self.db.connect().await?;
 
         if !force_new {
@@ -36,7 +66,10 @@ impl ReportRepository {
 
             if let Some(row) = rows.next().await? {
                 let id: i64 = row.get(0)?;
-                return Ok(id);
+                return self
+                    .get_by_id(id)
+                    .await?
+                    .ok_or_else(|| anyhow::anyhow!("Report not found after discovery"));
             }
         }
 
@@ -56,6 +89,10 @@ impl ReportRepository {
         ];
 
         conn.execute(sql, params_from_iter(params)).await?;
-        Ok(conn.last_insert_rowid())
+        let id = conn.last_insert_rowid();
+
+        self.get_by_id(id)
+            .await?
+            .ok_or_else(|| anyhow::anyhow!("Report not found after creation"))
     }
 }
