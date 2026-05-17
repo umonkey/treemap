@@ -16,6 +16,6 @@ map-button-label = Open Map
 report-photo-received = Thank you! Now please send the location of where this tree is, as precise as possible.
 report-location-received = Great! Now please add a short text description of what's bothering you.
 report-completed =
-    Thank you! We have received your report.
+    Thank you! The situation is generally clear. You can add more photos, refine the coordinates, or use the /report command to start a new report for another tree.
     
-    You can still send more photos to this report, update the location by sending a new one, or use /report to start a new report.
+    We will get back to you if we have an update.
