@@ -9,6 +9,7 @@ pub struct DatabaseClient {
 #[allow(dead_code)]
 impl DatabaseClient {
     pub async fn new(path: &str) -> anyhow::Result<Self> {
+        log::info!("Using database: {}", path);
         let db = Builder::new_local(path).build().await?;
         Ok(Self { db })
     }

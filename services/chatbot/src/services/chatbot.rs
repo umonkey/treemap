@@ -85,6 +85,10 @@ impl Chatbot {
         let user_id = user
             .map(|u| u.id.to_string())
             .unwrap_or_else(|| "?".to_string());
+        let user_alias = user
+            .and_then(|u| u.username.as_ref())
+            .map(|username| format!(" (t.me/{})", username))
+            .unwrap_or_default();
         let text_content = msg.text().or(msg.caption()).unwrap_or("");
         let raw_lang = user
             .and_then(|u| u.language_code.as_deref())
@@ -92,9 +96,10 @@ impl Chatbot {
         let lang = &raw_lang[..2.min(raw_lang.len())];
 
         log::info!(
-            "Received message from {} ({}): language={}, text={}",
+            "Received message from {} ({}{}): language={}, text={}",
             user_name,
             user_id,
+            user_alias,
             raw_lang,
             text_content
         );
