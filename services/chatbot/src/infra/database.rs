@@ -55,6 +55,7 @@ impl DatabaseClient {
         Ok(rows_affected as i64)
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub async fn create_report(
         &self,
         user_id: i64,
