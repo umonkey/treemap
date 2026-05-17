@@ -155,6 +155,10 @@ impl Chatbot {
                     }
                 }
             }
+        } else if msg.video().is_some() || msg.document().is_some() {
+            let error_text = self.i18n.tr("report-unsupported-file-type", lang, None);
+            let _ = self.bot.send_message(msg.chat.id, error_text).await;
+            return Ok(());
         }
 
         // 3. Process location
