@@ -2,7 +2,7 @@ use crate::services::i18n::I18n;
 use std::sync::Arc;
 use teloxide::payloads::SetMyCommandsSetters;
 use teloxide::prelude::*;
-use teloxide::types::{BotCommand, ParseMode};
+use teloxide::types::{BotCommand, InlineKeyboardButton, InlineKeyboardMarkup, ParseMode};
 use teloxide::utils::command::BotCommands;
 
 #[derive(BotCommands, Clone)]
@@ -134,9 +134,15 @@ impl Chatbot {
     }
 
     async fn handle_map(&self, msg: &Message, lang: &str) -> ResponseResult<()> {
+        let url = "https://yerevan.treemaps.app/".parse().unwrap();
+        let button_label = format!("🌐 {}", self.i18n.tr("map-button-label", lang, None));
+        let keyboard =
+            InlineKeyboardMarkup::new(vec![vec![InlineKeyboardButton::url(button_label, url)]]);
+
         self.bot
             .send_message(msg.chat.id, self.i18n.tr("map-link", lang, None))
             .parse_mode(ParseMode::Html)
+            .reply_markup(keyboard)
             .await?;
 
         Ok(())
