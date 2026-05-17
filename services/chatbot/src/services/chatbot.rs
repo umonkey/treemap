@@ -6,7 +6,9 @@ use fluent::FluentArgs;
 use std::sync::Arc;
 use teloxide::payloads::SetMyCommandsSetters;
 use teloxide::prelude::*;
-use teloxide::types::{BotCommand, InlineKeyboardButton, InlineKeyboardMarkup, ParseMode};
+use teloxide::types::{
+    BotCommand, InlineKeyboardButton, InlineKeyboardMarkup, ParseMode, ReactionType,
+};
 use teloxide::utils::command::BotCommands;
 
 #[derive(BotCommands, Clone)]
@@ -131,7 +133,18 @@ impl Chatbot {
         if let Some(photos) = msg.photo() {
             if let Ok(report) = self.start_report(&msg, false, lang).await {
                 report_id = Some(report.id);
+
                 if let Some(photo) = photos.last() {
+                    log::info!("file {} added to report {}", photo.file.id, report.id);
+
+                    let _ = self
+                        .bot
+                        .set_message_reaction(msg.chat.id, msg.id)
+                        .reaction(vec![ReactionType::Emoji {
+                            emoji: "👀".to_string(),
+                        }])
+                        .await;
+
                     if let Ok(is_first) = self.photos.add_to_report(report.id, &photo.file.id).await
                     {
                         if is_first {
