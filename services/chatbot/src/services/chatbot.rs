@@ -109,6 +109,12 @@ impl Chatbot {
                 Ok(cmd) => self.handle_command(&msg, cmd, lang).await?,
                 Err(_) => self.handle_text(&msg, text).await?,
             };
+        } else if msg.photo().is_some() || msg.location().is_some() {
+            let _ = self.start_report(&msg, false, lang).await;
+
+            if let Some(caption) = msg.caption() {
+                self.handle_text(&msg, caption).await?;
+            }
         }
 
         Ok(())
@@ -122,6 +128,34 @@ impl Chatbot {
         }
     }
 
+    async fn start_report(
+        &self,
+        msg: &Message,
+        force_new: bool,
+        lang: &str,
+    ) -> anyhow::Result<i64> {
+        let user = msg.from.as_ref();
+        let user_id = user.map(|u| u.id.0 as i64).unwrap_or(0);
+        let chat_id = msg.chat.id.0;
+        let username = user.and_then(|u| u.username.clone());
+        let location = msg.location();
+        let lat = location.map(|l| l.latitude);
+        let lon = location.map(|l| l.longitude);
+
+        self.db
+            .create_report(
+                user_id,
+                chat_id,
+                Some(msg.id.0),
+                username,
+                Some(lang.to_string()),
+                lat,
+                lon,
+                force_new,
+            )
+            .await
+    }
+
     async fn handle_start(&self, msg: &Message, lang: &str) -> ResponseResult<()> {
         self.bot
             .send_message(msg.chat.id, self.i18n.tr("start-welcome", lang, None))
@@ -132,6 +166,8 @@ impl Chatbot {
     }
 
     async fn handle_report(&self, msg: &Message, lang: &str) -> ResponseResult<()> {
+        let _ = self.start_report(msg, true, lang).await;
+
         self.bot
             .send_message(msg.chat.id, self.i18n.tr("report-intro", lang, None))
             .parse_mode(ParseMode::Html)
