@@ -36,6 +36,7 @@ impl I18n {
     }
 
     pub fn tr(&self, key: &str, lang: &str, args: Option<&FluentArgs>) -> String {
+        let lang = &lang[..2.min(lang.len())];
         let lang = if self.bundles.contains_key(lang) {
             lang
         } else {

@@ -50,6 +50,16 @@ impl Chatbot {
     }
 
     async fn register_commands(&self) -> ResponseResult<()> {
+        // 1. Set default commands (English)
+        let default_commands = vec![
+            BotCommand::new("start", self.i18n.tr("menu-start-desc", "en", None)),
+            BotCommand::new("report", self.i18n.tr("menu-report-desc", "en", None)),
+            BotCommand::new("map", self.i18n.tr("menu-map-desc", "en", None)),
+        ];
+
+        let _ = self.bot.set_my_commands(default_commands).await;
+
+        // 2. Set localized commands
         for lang in ["en", "ru"] {
             let commands = vec![
                 BotCommand::new("start", self.i18n.tr("menu-start-desc", lang, None)),
@@ -57,10 +67,7 @@ impl Chatbot {
                 BotCommand::new("map", self.i18n.tr("menu-map-desc", lang, None)),
             ];
 
-            self.bot
-                .set_my_commands(commands)
-                .language_code(lang)
-                .await?;
+            let _ = self.bot.set_my_commands(commands).language_code(lang).await;
         }
 
         Ok(())
@@ -75,27 +82,18 @@ impl Chatbot {
             .map(|u| u.id.to_string())
             .unwrap_or_else(|| "?".to_string());
         let text_content = msg.text().or(msg.caption()).unwrap_or("");
-
-        log::info!(
-            "Received message from {} ({}): {}",
-            user_name,
-            user_id,
-            text_content
-        );
-
-        if let Some(loc) = msg.location() {
-            log::info!(
-                "Location received from {} ({}): lat={}, lon={}",
-                user_name,
-                user_id,
-                loc.latitude,
-                loc.longitude
-            );
-        }
-
-        let lang = user
+        let raw_lang = user
             .and_then(|u| u.language_code.as_deref())
             .unwrap_or("en");
+        let lang = &raw_lang[..2.min(raw_lang.len())];
+
+        log::info!(
+            "Received message from {} ({}): language={}, text={}",
+            user_name,
+            user_id,
+            raw_lang,
+            text_content
+        );
 
         if let Some(text) = msg.text() {
             match Command::parse(text, "") {
