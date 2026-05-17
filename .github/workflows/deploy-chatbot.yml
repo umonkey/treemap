@@ -1,0 +1,63 @@
+# This workflow builds and deploys the chatbot.
+# It pushes the image as ghcr.io/umonkey/treemap-chatbot:latest
+
+name: Deploy Chatbot
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'services/chatbot/**'
+  pull_request:
+    paths:
+      - 'services/chatbot/**'
+  workflow_dispatch:
+
+env:
+  SSH_KEY: ${{ secrets.SSH_KEY }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: services/chatbot/Dockerfile
+          push: ${{ github.ref == 'refs/heads/master' }}
+          tags: ghcr.io/umonkey/treemap-chatbot:latest
+          cache-from: |
+            type=gha,scope=chatbot
+            ghcr.io/umonkey/treemap-chatbot:latest
+          cache-to: type=gha,mode=max,scope=chatbot
+
+      - name: Deploy to cloud.treemaps.app
+        if: github.ref == 'refs/heads/master'
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H cloud.treemaps.app >> ~/.ssh/known_hosts
+          eval $(ssh-agent -s)
+          echo "$SSH_KEY" | tr -d '\r' | ssh-add -
+          ssh app@cloud.treemaps.app "CR_USER='${{ github.actor }}' CR_TOKEN='${{ secrets.GITHUB_TOKEN }}' ./treemap/update-deployment.sh"
