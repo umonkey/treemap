@@ -27,6 +27,24 @@ services:
         soft: 65535
         hard: 65535
 
+  chatbot:
+    image: ghcr.io/umonkey/treemap-chatbot:latest
+    container_name: chatbot
+    restart: unless-stopped
+    volumes:
+      - var:/app/var
+    environment:
+      - CHATBOT_TOKEN=${CHATBOT_TOKEN}
+      - CHATBOT_DATABASE=/app/var/database.sqlite
+      - FILES_BUCKET=${FILES_BUCKET}
+      - FILES_REGION=${FILES_REGION}
+      - FILES_ENDPOINT=${FILES_ENDPOINT}
+      - FILES_KEY=${FILES_KEY}
+      - FILES_SECRET=${FILES_SECRET}
+      - RUST_LOG=info
+    depends_on:
+      - backend
+
   caddy:
     image: ghcr.io/umonkey/treemap-caddy:latest
     container_name: caddy
