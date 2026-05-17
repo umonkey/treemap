@@ -19,89 +19,136 @@ enum Command {
     Map,
 }
 
-pub async fn run(token: String, i18n: Arc<I18n>) {
-    let bot = Bot::new(token);
+pub struct Chatbot {
+    bot: Bot,
+    i18n: Arc<I18n>,
+}
 
-    // Register commands in the Telegram menu button for each language
-    for lang in ["en", "ru"] {
-        let commands = vec![
-            BotCommand::new("start", i18n.tr("menu-start-desc", lang, None)),
-            BotCommand::new("report", i18n.tr("menu-report-desc", lang, None)),
-            BotCommand::new("map", i18n.tr("menu-map-desc", lang, None)),
-        ];
-
-        let _ = bot
-            .set_my_commands(commands)
-            .language_code(lang)
-            .await
-            .map_err(|e| log::error!("Failed to set commands for {}: {:?}", lang, e));
+impl Chatbot {
+    pub fn new(token: String, i18n: Arc<I18n>) -> Self {
+        Self {
+            bot: Bot::new(token),
+            i18n,
+        }
     }
 
-    log::info!("Chatbot is running...");
+    pub async fn run(self: Arc<Self>) {
+        if let Err(e) = self.register_commands().await {
+            log::error!("Failed to register commands: {:?}", e);
+        }
 
-    teloxide::repl(bot, move |bot: Bot, msg: Message| {
-        let i18n = i18n.clone();
-        async move {
-            // 1. Log the user info and content
-            let user = msg.from.as_ref();
-            let user_name = user
-                .map(|u| u.full_name())
-                .unwrap_or_else(|| "Unknown".to_string());
-            let user_id = user
-                .map(|u| u.id.to_string())
-                .unwrap_or_else(|| "?".to_string());
-            let text_content = msg.text().or(msg.caption()).unwrap_or("");
+        log::info!("Chatbot is running...");
 
+        let bot = self.bot.clone();
+        let chatbot = Arc::clone(&self);
+
+        teloxide::repl(bot, move |_bot: Bot, msg: Message| {
+            let chatbot = Arc::clone(&chatbot);
+            async move { chatbot.handle_message(msg).await }
+        })
+        .await;
+    }
+
+    async fn register_commands(&self) -> ResponseResult<()> {
+        for lang in ["en", "ru"] {
+            let commands = vec![
+                BotCommand::new("start", self.i18n.tr("menu-start-desc", lang, None)),
+                BotCommand::new("report", self.i18n.tr("menu-report-desc", lang, None)),
+                BotCommand::new("map", self.i18n.tr("menu-map-desc", lang, None)),
+            ];
+
+            self.bot
+                .set_my_commands(commands)
+                .language_code(lang)
+                .await?;
+        }
+
+        Ok(())
+    }
+
+    async fn handle_message(&self, msg: Message) -> ResponseResult<()> {
+        let user = msg.from.as_ref();
+        let user_name = user
+            .map(|u| u.full_name())
+            .unwrap_or_else(|| "Unknown".to_string());
+        let user_id = user
+            .map(|u| u.id.to_string())
+            .unwrap_or_else(|| "?".to_string());
+        let text_content = msg.text().or(msg.caption()).unwrap_or("");
+
+        log::info!(
+            "Received message from {} ({}): {}",
+            user_name,
+            user_id,
+            text_content
+        );
+
+        if let Some(loc) = msg.location() {
             log::info!(
-                "Received message from {} ({}): {}",
+                "Location received from {} ({}): lat={}, lon={}",
                 user_name,
                 user_id,
-                text_content
+                loc.latitude,
+                loc.longitude
             );
-
-            // Log location if present
-            if let Some(loc) = msg.location() {
-                log::info!(
-                    "Location received from {} ({}): lat={}, lon={}",
-                    user_name,
-                    user_id,
-                    loc.latitude,
-                    loc.longitude
-                );
-            }
-
-            // Get user language
-            let lang = user
-                .and_then(|u| u.language_code.as_deref())
-                .unwrap_or("en");
-
-            // 2. Handle commands or echo text
-            if let Some(text) = msg.text() {
-                match Command::parse(text, "") {
-                    Ok(Command::Start) => {
-                        bot.send_message(msg.chat.id, i18n.tr("start-welcome", lang, None))
-                            .parse_mode(ParseMode::Html)
-                            .await?;
-                    }
-                    Ok(Command::Report) => {
-                        bot.send_message(msg.chat.id, i18n.tr("report-intro", lang, None))
-                            .parse_mode(ParseMode::Html)
-                            .await?;
-                    }
-                    Ok(Command::Map) => {
-                        bot.send_message(msg.chat.id, i18n.tr("map-link", lang, None))
-                            .parse_mode(ParseMode::Html)
-                            .await?;
-                    }
-                    Err(_) => {
-                        // Not a command, just echo
-                        bot.send_message(msg.chat.id, text).await?;
-                    }
-                }
-            }
-
-            Ok(())
         }
-    })
-    .await;
+
+        let lang = user
+            .and_then(|u| u.language_code.as_deref())
+            .unwrap_or("en");
+
+        if let Some(text) = msg.text() {
+            match Command::parse(text, "") {
+                Ok(cmd) => self.handle_command(&msg, cmd, lang).await?,
+                Err(_) => self.handle_text(&msg, text).await?,
+            };
+        }
+
+        Ok(())
+    }
+
+    async fn handle_command(&self, msg: &Message, cmd: Command, lang: &str) -> ResponseResult<()> {
+        match cmd {
+            Command::Start => self.handle_start(msg, lang).await,
+            Command::Report => self.handle_report(msg, lang).await,
+            Command::Map => self.handle_map(msg, lang).await,
+        }
+    }
+
+    async fn handle_start(&self, msg: &Message, lang: &str) -> ResponseResult<()> {
+        self.bot
+            .send_message(msg.chat.id, self.i18n.tr("start-welcome", lang, None))
+            .parse_mode(ParseMode::Html)
+            .await?;
+
+        Ok(())
+    }
+
+    async fn handle_report(&self, msg: &Message, lang: &str) -> ResponseResult<()> {
+        self.bot
+            .send_message(msg.chat.id, self.i18n.tr("report-intro", lang, None))
+            .parse_mode(ParseMode::Html)
+            .await?;
+
+        Ok(())
+    }
+
+    async fn handle_map(&self, msg: &Message, lang: &str) -> ResponseResult<()> {
+        self.bot
+            .send_message(msg.chat.id, self.i18n.tr("map-link", lang, None))
+            .parse_mode(ParseMode::Html)
+            .await?;
+
+        Ok(())
+    }
+
+    async fn handle_text(&self, msg: &Message, text: &str) -> ResponseResult<()> {
+        self.bot.send_message(msg.chat.id, text).await?;
+        Ok(())
+    }
+}
+
+pub async fn run(token: String, i18n: Arc<I18n>) {
+    let chatbot = Arc::new(Chatbot::new(token, i18n));
+    chatbot.run().await;
 }
