@@ -13,3 +13,4 @@ menu-start-desc = start the bot
 menu-report-desc = report tree damage
 menu-map-desc = view the tree map
 map-button-label = Open Map
+report-photo-received = Thank you! Now please send a location where all this is happening.

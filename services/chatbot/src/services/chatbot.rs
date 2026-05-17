@@ -1,4 +1,6 @@
-use crate::infra::database::DatabaseClient;
+use crate::domains::photo::PhotoRepository;
+use crate::domains::report::ReportRepository;
+use crate::domains::tree::TreeRepository;
 use crate::services::i18n::I18n;
 use fluent::FluentArgs;
 use std::sync::Arc;
@@ -24,15 +26,25 @@ enum Command {
 pub struct Chatbot {
     bot: Bot,
     i18n: Arc<I18n>,
-    db: Arc<DatabaseClient>,
+    reports: Arc<ReportRepository>,
+    photos: Arc<PhotoRepository>,
+    trees: Arc<TreeRepository>,
 }
 
 impl Chatbot {
-    pub fn new(token: String, i18n: Arc<I18n>, db: Arc<DatabaseClient>) -> Self {
+    pub fn new(
+        token: String,
+        i18n: Arc<I18n>,
+        reports: Arc<ReportRepository>,
+        photos: Arc<PhotoRepository>,
+        trees: Arc<TreeRepository>,
+    ) -> Self {
         Self {
             bot: Bot::new(token),
             i18n,
-            db,
+            reports,
+            photos,
+            trees,
         }
     }
 
@@ -109,12 +121,44 @@ impl Chatbot {
                 Ok(cmd) => self.handle_command(&msg, cmd, lang).await?,
                 Err(_) => self.handle_text(&msg, text).await?,
             };
-        } else if msg.photo().is_some() || msg.location().is_some() {
-            let _ = self.start_report(&msg, false, lang).await;
+        } else if let Some(photos) = msg.photo() {
+            let mut is_first = false;
+            match self.start_report(&msg, false, lang).await {
+                Ok(report_id) => {
+                    if let Some(photo) = photos.last() {
+                        match self.photos.add_to_report(report_id, &photo.file.id).await {
+                            Ok(first) => {
+                                is_first = first;
+                                log::info!(
+                                    "Stored photo {} for report {}",
+                                    photo.file.id,
+                                    report_id
+                                );
+                            }
+                            Err(e) => log::error!("Failed to store photo: {:?}", e),
+                        }
+                    }
+                }
+                Err(e) => {
+                    log::error!("Failed to start report for photo: {:?}", e);
+                }
+            }
+
+            if is_first {
+                self.bot
+                    .send_message(
+                        msg.chat.id,
+                        self.i18n.tr("report-photo-received", lang, None),
+                    )
+                    .parse_mode(ParseMode::Html)
+                    .await?;
+            }
 
             if let Some(caption) = msg.caption() {
                 self.handle_text(&msg, caption).await?;
             }
+        } else if msg.location().is_some() {
+            let _ = self.start_report(&msg, false, lang).await;
         }
 
         Ok(())
@@ -142,8 +186,8 @@ impl Chatbot {
         let lat = location.map(|l| l.latitude);
         let lon = location.map(|l| l.longitude);
 
-        self.db
-            .create_report(
+        self.reports
+            .create(
                 user_id,
                 chat_id,
                 Some(msg.id.0),
@@ -183,7 +227,7 @@ impl Chatbot {
             InlineKeyboardMarkup::new(vec![vec![InlineKeyboardButton::url(button_label, url)]]);
 
         let mut args = FluentArgs::new();
-        let count = self.db.count_trees().await.unwrap_or(0);
+        let count = self.trees.count().await.unwrap_or(0);
         args.set("count", count);
 
         self.bot
@@ -201,7 +245,13 @@ impl Chatbot {
     }
 }
 
-pub async fn run(token: String, i18n: Arc<I18n>, db: Arc<DatabaseClient>) {
-    let chatbot = Arc::new(Chatbot::new(token, i18n, db));
+pub async fn run(
+    token: String,
+    i18n: Arc<I18n>,
+    reports: Arc<ReportRepository>,
+    photos: Arc<PhotoRepository>,
+    trees: Arc<TreeRepository>,
+) {
+    let chatbot = Arc::new(Chatbot::new(token, i18n, reports, photos, trees));
     chatbot.run().await;
 }

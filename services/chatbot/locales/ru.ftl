@@ -13,3 +13,4 @@ menu-start-desc = запустить бота
 menu-report-desc = сообщить о повреждении
 menu-map-desc = открыть карту
 map-button-label = Открыть карту
+report-photo-received = Спасибо! Теперь, пожалуйста, пришлите местоположение, где все это происходит.
