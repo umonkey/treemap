@@ -1,0 +1,14 @@
+[package]
+name = "chatbot"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+teloxide = { version = "0.13", features = ["macros"] }
+tokio = { version = "1", features = ["full"] }
+dotenv = "0.15.0"
+log = "0.4"
+env_logger = "0.10"
+fluent = "0.16"
+intl-memoizer = "0.5"
+unic-langid = "0.9"
