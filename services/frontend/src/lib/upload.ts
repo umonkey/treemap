@@ -59,16 +59,12 @@ export async function addPhotoToUploadQueue(tree_id: string, file: File) {
 		return;
 	}
 
-	const thumbnail = await createThumbnail(file, 200).catch((e) => {
-		console.error('Failed to create thumbnail:', e);
-		return undefined;
-	});
-
-	await db.uploads.add({
+	// 1. Save the original image as soon as possible to avoid InvalidBlob errors.
+	const id = await db.uploads.add({
 		tree_id: tree_id.toString(),
 		status: 'pending',
 		image: file,
-		thumbnail,
+		thumbnail: undefined,
 		created_at: Date.now(),
 		retry_count: 0,
 		file_id: null,
@@ -77,6 +73,16 @@ export async function addPhotoToUploadQueue(tree_id: string, file: File) {
 
 	incrementUploadCount();
 	autoStartUpload();
+
+	// 2. Generate thumbnail in the background.
+	// We don't await this because we want to return to the UI immediately.
+	createThumbnail(file, 200)
+		.then((thumbnail) => {
+			db.uploads.update(id, { thumbnail });
+		})
+		.catch((e) => {
+			console.error('Failed to create thumbnail for upload', id, e);
+		});
 }
 
 // Trigger processing if auto-upload is enabled.

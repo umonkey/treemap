@@ -70,6 +70,7 @@ class ComponentState {
 				try {
 					// On some mobile devices, the File object might be invalidated if the input is cleared
 					// or if we wait too long. Slicing it into a new Blob helps "solidify" the data.
+					// We do this immediately in the loop to minimize the chance of revocation.
 					const blob = file.slice(0, file.size, file.type);
 					const solidifiedFile = new File([blob], file.name, { type: file.type });
 

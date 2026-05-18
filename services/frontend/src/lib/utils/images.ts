@@ -2,12 +2,19 @@
  * Create a thumbnail from a Blob or File.
  */
 export async function createThumbnail(blob: Blob, minSize = 200): Promise<Blob> {
+	if (!blob || blob.size === 0) {
+		throw new Error('Cannot create thumbnail: Blob is empty');
+	}
+
 	let image: ImageBitmap | HTMLImageElement;
 
 	try {
 		image = await createImageBitmap(blob);
 	} catch (e) {
-		console.warn('createImageBitmap failed, falling back to HTMLImageElement:', e);
+		console.warn(
+			`createImageBitmap failed for ${blob.type} (${blob.size} bytes), falling back to HTMLImageElement:`,
+			e
+		);
 		image = await new Promise<HTMLImageElement>((resolve, reject) => {
 			const img = new Image();
 			const url = URL.createObjectURL(blob);
@@ -15,9 +22,10 @@ export async function createThumbnail(blob: Blob, minSize = 200): Promise<Blob> 
 				URL.revokeObjectURL(url);
 				resolve(img);
 			};
-			img.onerror = () => {
+			img.onerror = (err) => {
 				URL.revokeObjectURL(url);
-				reject(new Error('Failed to load image for thumbnail fallback'));
+				console.error(`HTMLImageElement failed to load ${blob.type}:`, err);
+				reject(new Error(`Failed to load image for thumbnail fallback: ${blob.type}`));
 			};
 			img.src = url;
 		});
