@@ -1,6 +1,6 @@
 #[allow(dead_code)]
 #[derive(Debug, Clone)]
-pub struct Report {
+pub struct Alert {
     pub id: i64,
     pub created_at: i64,
     pub created_by: i64,

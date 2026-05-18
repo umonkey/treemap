@@ -1,6 +1,8 @@
 //! This module contains the code split by the business domain.
 //! Each included module has its own actions, responders and domain code.
 
+pub mod alert;
+pub mod alert_photo;
 pub mod comment;
 pub mod health;
 pub mod heatmap;
@@ -10,8 +12,6 @@ pub mod observation;
 pub mod osm;
 pub mod photo;
 pub mod prop;
-pub mod report;
-pub mod report_photo;
 pub mod settings;
 pub mod species;
 pub mod stats;

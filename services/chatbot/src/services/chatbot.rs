@@ -1,5 +1,5 @@
-use crate::domains::photo::PhotoRepository;
-use crate::domains::report::{Report, ReportRepository};
+use crate::domains::alert::{Alert, AlertRepository};
+use crate::domains::alert_photo::AlertPhotoRepository;
 use crate::domains::tree::TreeRepository;
 use crate::infra::s3::S3FileStorage;
 use crate::services::i18n::I18n;
@@ -22,8 +22,8 @@ use teloxide::utils::command::BotCommands;
 enum Command {
     #[command(description = "start the bot")]
     Start,
-    #[command(description = "report tree damage")]
-    Report,
+    #[command(description = "alert tree damage")]
+    Alert,
     #[command(description = "view the tree map")]
     Map,
 }
@@ -31,8 +31,8 @@ enum Command {
 pub struct Chatbot {
     bot: Bot,
     i18n: Arc<I18n>,
-    reports: Arc<ReportRepository>,
-    photos: Arc<PhotoRepository>,
+    alerts: Arc<AlertRepository>,
+    photos: Arc<AlertPhotoRepository>,
     trees: Arc<TreeRepository>,
     storage: Arc<S3FileStorage>,
 }
@@ -41,15 +41,15 @@ impl Chatbot {
     pub fn new(
         token: String,
         i18n: Arc<I18n>,
-        reports: Arc<ReportRepository>,
-        photos: Arc<PhotoRepository>,
+        alerts: Arc<AlertRepository>,
+        photos: Arc<AlertPhotoRepository>,
         trees: Arc<TreeRepository>,
         storage: Arc<S3FileStorage>,
     ) -> Self {
         Self {
             bot: Bot::new(token),
             i18n,
-            reports,
+            alerts,
             photos,
             trees,
             storage,
@@ -77,7 +77,7 @@ impl Chatbot {
         // 1. Set default commands (English)
         let default_commands = vec![
             BotCommand::new("start", self.i18n.tr("menu-start-desc", "en", None)),
-            BotCommand::new("report", self.i18n.tr("menu-report-desc", "en", None)),
+            BotCommand::new("alert", self.i18n.tr("menu-alert-desc", "en", None)),
             BotCommand::new("map", self.i18n.tr("menu-map-desc", "en", None)),
         ];
 
@@ -87,7 +87,7 @@ impl Chatbot {
         for lang in ["en", "ru"] {
             let commands = vec![
                 BotCommand::new("start", self.i18n.tr("menu-start-desc", lang, None)),
-                BotCommand::new("report", self.i18n.tr("menu-report-desc", lang, None)),
+                BotCommand::new("alert", self.i18n.tr("menu-alert-desc", lang, None)),
                 BotCommand::new("map", self.i18n.tr("menu-map-desc", lang, None)),
             ];
 
@@ -132,16 +132,16 @@ impl Chatbot {
             }
         }
 
-        let mut report_id = None;
+        let mut alert_id = None;
         let mut should_respond = false;
 
         // 2. Process photos
         if let Some(photos) = msg.photo() {
-            if let Ok(report) = self.start_report(&msg, false, lang).await {
-                report_id = Some(report.id);
+            if let Ok(alert) = self.start_alert(&msg, false, lang).await {
+                alert_id = Some(alert.id);
 
                 if let Some(photo) = photos.last() {
-                    match self.process_photo(&msg, &report, photo).await {
+                    match self.process_photo(&msg, &alert, photo).await {
                         Ok(is_first) => {
                             if is_first {
                                 should_respond = true;
@@ -156,18 +156,18 @@ impl Chatbot {
                 }
             }
         } else if msg.video().is_some() || msg.document().is_some() {
-            let error_text = self.i18n.tr("report-unsupported-file-type", lang, None);
+            let error_text = self.i18n.tr("alert-unsupported-file-type", lang, None);
             let _ = self.bot.send_message(msg.chat.id, error_text).await;
             return Ok(());
         }
 
         // 3. Process location
         if let Some(location) = msg.location() {
-            if let Ok(report) = self.start_report(&msg, false, lang).await {
-                report_id = Some(report.id);
+            if let Ok(alert) = self.start_alert(&msg, false, lang).await {
+                alert_id = Some(alert.id);
                 let _ = self
-                    .reports
-                    .update_location(report.id, location.latitude, location.longitude)
+                    .alerts
+                    .update_location(alert.id, location.latitude, location.longitude)
                     .await;
                 should_respond = true;
             }
@@ -175,23 +175,23 @@ impl Chatbot {
 
         // 4. Process text (description)
         if !text_content.is_empty() {
-            if report_id.is_none() {
-                report_id = self
-                    .reports
+            if alert_id.is_none() {
+                alert_id = self
+                    .alerts
                     .get_active_id_by_user_id(user_id)
                     .await
                     .unwrap_or(None);
             }
 
-            if let Some(rid) = report_id {
-                let _ = self.reports.update_description(rid, text_content).await;
+            if let Some(rid) = alert_id {
+                let _ = self.alerts.update_description(rid, text_content).await;
                 should_respond = true;
             }
         }
 
-        // 5. Send response based on report status
+        // 5. Send response based on alert status
         if should_respond {
-            if let Some(rid) = report_id {
+            if let Some(rid) = alert_id {
                 self.send_next_step(msg.chat.id, rid, lang).await?;
             }
         }
@@ -202,7 +202,7 @@ impl Chatbot {
     async fn process_photo(
         &self,
         msg: &Message,
-        report: &Report,
+        alert: &Alert,
         photo: &teloxide::types::PhotoSize,
     ) -> anyhow::Result<bool> {
         let file = self.bot.get_file(&photo.file.id).await?;
@@ -210,7 +210,7 @@ impl Chatbot {
         self.bot.download_file(&file.path, &mut buffer).await?;
 
         let id = get_unique_id()?;
-        let photo_path = format!("reports/{}.jpg", id);
+        let photo_path = format!("alerts/{}.jpg", id);
         self.storage.write_file(&photo_path, buffer).await?;
 
         let _ = self
@@ -221,13 +221,9 @@ impl Chatbot {
             }])
             .await;
 
-        let is_first = self.photos.add_to_report(report.id, &photo_path).await?;
+        let is_first = self.photos.add_to_alert(alert.id, &photo_path).await?;
 
-        log::info!(
-            "File added to report: {} for report {}",
-            photo_path,
-            report.id
-        );
+        log::info!("File added to alert: {} for alert {}", photo_path, alert.id);
 
         Ok(is_first)
     }
@@ -235,24 +231,24 @@ impl Chatbot {
     async fn send_next_step(
         &self,
         chat_id: ChatId,
-        report_id: i64,
+        alert_id: i64,
         lang: &str,
     ) -> ResponseResult<()> {
-        let report = match self.reports.get_by_id(report_id).await {
+        let alert = match self.alerts.get_by_id(alert_id).await {
             Ok(Some(r)) => r,
             _ => return Ok(()),
         };
 
-        let photo_count = self.photos.count_by_report_id(report_id).await.unwrap_or(0);
+        let photo_count = self.photos.count_by_alert_id(alert_id).await.unwrap_or(0);
 
         let text = if photo_count == 0 {
-            self.i18n.tr("report-intro", lang, None)
-        } else if report.lat.is_none() {
-            self.i18n.tr("report-photo-received", lang, None)
-        } else if report.description.is_none() {
-            self.i18n.tr("report-location-received", lang, None)
+            self.i18n.tr("alert-intro", lang, None)
+        } else if alert.lat.is_none() {
+            self.i18n.tr("alert-photo-received", lang, None)
+        } else if alert.description.is_none() {
+            self.i18n.tr("alert-location-received", lang, None)
         } else {
-            self.i18n.tr("report-completed", lang, None)
+            self.i18n.tr("alert-completed", lang, None)
         };
 
         self.bot
@@ -266,17 +262,17 @@ impl Chatbot {
     async fn handle_command(&self, msg: &Message, cmd: Command, lang: &str) -> ResponseResult<()> {
         match cmd {
             Command::Start => self.handle_start(msg, lang).await,
-            Command::Report => self.handle_report(msg, lang).await,
+            Command::Alert => self.handle_alert(msg, lang).await,
             Command::Map => self.handle_map(msg, lang).await,
         }
     }
 
-    async fn start_report(
+    async fn start_alert(
         &self,
         msg: &Message,
         force_new: bool,
         lang: &str,
-    ) -> anyhow::Result<Report> {
+    ) -> anyhow::Result<Alert> {
         let user = msg.from.as_ref();
         let user_id = user.map(|u| u.id.0 as i64).unwrap_or(0);
         let chat_id = msg.chat.id.0;
@@ -285,7 +281,7 @@ impl Chatbot {
         let lat = location.map(|l| l.latitude);
         let lon = location.map(|l| l.longitude);
 
-        self.reports
+        self.alerts
             .create(
                 user_id,
                 chat_id,
@@ -308,11 +304,11 @@ impl Chatbot {
         Ok(())
     }
 
-    async fn handle_report(&self, msg: &Message, lang: &str) -> ResponseResult<()> {
-        let _ = self.start_report(msg, true, lang).await;
+    async fn handle_alert(&self, msg: &Message, lang: &str) -> ResponseResult<()> {
+        let _ = self.start_alert(msg, true, lang).await;
 
         self.bot
-            .send_message(msg.chat.id, self.i18n.tr("report-intro", lang, None))
+            .send_message(msg.chat.id, self.i18n.tr("alert-intro", lang, None))
             .parse_mode(ParseMode::Html)
             .await?;
 
@@ -342,11 +338,11 @@ impl Chatbot {
 pub async fn run(
     token: String,
     i18n: Arc<I18n>,
-    reports: Arc<ReportRepository>,
-    photos: Arc<PhotoRepository>,
+    alerts: Arc<AlertRepository>,
+    photos: Arc<AlertPhotoRepository>,
     trees: Arc<TreeRepository>,
     storage: Arc<S3FileStorage>,
 ) {
-    let chatbot = Arc::new(Chatbot::new(token, i18n, reports, photos, trees, storage));
+    let chatbot = Arc::new(Chatbot::new(token, i18n, alerts, photos, trees, storage));
     chatbot.run().await;
 }

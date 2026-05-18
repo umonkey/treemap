@@ -1,3 +1,4 @@
+pub mod alert;
 pub mod comment;
 pub mod default;
 pub mod duplicate;
@@ -7,7 +8,6 @@ pub mod heatmap;
 pub mod login;
 pub mod me;
 pub mod meta;
-pub mod report;
 pub mod settings;
 pub mod species;
 pub mod stats;

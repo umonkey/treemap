@@ -1,5 +1,5 @@
 /**
- * Make sure urls only match report ids, not just random garbage.
+ * Make sure urls only match alert ids, not just random garbage.
  *
  * @param {string} param
  * @returns {boolean}

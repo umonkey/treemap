@@ -2,30 +2,30 @@ use crate::infra::database::DatabaseClient;
 use libsql::{params_from_iter, Value};
 use std::sync::Arc;
 
-pub struct PhotoRepository {
+pub struct AlertPhotoRepository {
     db: Arc<DatabaseClient>,
 }
 
-impl PhotoRepository {
+impl AlertPhotoRepository {
     pub fn new(db: Arc<DatabaseClient>) -> Self {
         Self { db }
     }
 
-    pub async fn add_to_report(&self, report_id: i64, photo_path: &str) -> anyhow::Result<bool> {
+    pub async fn add_to_alert(&self, alert_id: i64, photo_path: &str) -> anyhow::Result<bool> {
         let conn = self.db.connect().await?;
-        let sql = "INSERT INTO chatbot_report_photos (report_id, photo_path) VALUES (?, ?)";
+        let sql = "INSERT INTO chatbot_alerts_photos (alert_id, photo_path) VALUES (?, ?)";
         let params = vec![
-            Value::Integer(report_id),
+            Value::Integer(alert_id),
             Value::Text(photo_path.to_string()),
         ];
         conn.execute(sql, params_from_iter(params)).await?;
         let my_id = conn.last_insert_rowid();
 
         let first_id_sql =
-            "SELECT id FROM chatbot_report_photos WHERE report_id = ? ORDER BY id ASC LIMIT 1";
+            "SELECT id FROM chatbot_alerts_photos WHERE alert_id = ? ORDER BY id ASC LIMIT 1";
         let mut stmt = conn.prepare(first_id_sql).await?;
         let mut rows = stmt
-            .query(params_from_iter(vec![Value::Integer(report_id)]))
+            .query(params_from_iter(vec![Value::Integer(alert_id)]))
             .await?;
 
         if let Some(row) = rows.next().await? {
@@ -36,12 +36,12 @@ impl PhotoRepository {
         Ok(false)
     }
 
-    pub async fn count_by_report_id(&self, report_id: i64) -> anyhow::Result<i64> {
+    pub async fn count_by_alert_id(&self, alert_id: i64) -> anyhow::Result<i64> {
         let conn = self.db.connect().await?;
-        let sql = "SELECT COUNT(*) FROM chatbot_report_photos WHERE report_id = ?";
+        let sql = "SELECT COUNT(*) FROM chatbot_alerts_photos WHERE alert_id = ?";
         let mut stmt = conn.prepare(sql).await?;
         let mut rows = stmt
-            .query(params_from_iter(vec![Value::Integer(report_id)]))
+            .query(params_from_iter(vec![Value::Integer(alert_id)]))
             .await?;
 
         if let Some(row) = rows.next().await? {

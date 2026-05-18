@@ -37,11 +37,14 @@ The application displays the number of pending photo uploads as a badge (or "bub
 - Requirements: requires a supported browser (e.g., Chrome on Android/Desktop, Safari on iOS 16.4+).
 - Reset: the badge is automatically cleared when the upload queue is empty.
 
-## Tree damage reports via Telegram
+## Tree damage alerts via Telegram
 
-Users can report tree damage through a dedicated Telegram bot. These reports are integrated into the application's map, providing real-time awareness of tree health issues.
+Users can send tree damage alerts through a dedicated Telegram bot. These alerts are integrated into the application's map, providing real-time awareness of tree health issues.
 
-- Implementation: a Telegram bot receives reports and stores them in the central database.
-- Visualization: damage reports are rendered as red circles on the map.
-- Retention: all reports are stored permanently in the database for historical analysis.
-- Display logic: only reports submitted within the last 7 days are displayed on the active map to ensure current relevance.
+- Implementation: a Telegram bot receives alerts and stores them in the central database.
+
+- Visualization: damage alerts are rendered as red circles on the map.
+
+- Retention: all alerts are stored permanently in the database for historical analysis.
+
+- Display logic: only alerts submitted within the last 7 days are displayed on the active map to ensure current relevance.

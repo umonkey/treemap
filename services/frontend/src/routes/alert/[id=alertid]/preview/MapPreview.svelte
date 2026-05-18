@@ -22,13 +22,13 @@
 </script>
 
 <div class="preview" class:expand={!!previewState.expand} class:loading={previewState.loading}>
-	{#if previewState.report}
-		{@const report = previewState.report}
+	{#if previewState.alert}
+		{@const alert = previewState.alert}
 		<div class="header">
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
 			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<div class="title" onclick={previewState.toggleExpand}>
-				Report {report.id}
+				Alert {alert.id}
 			</div>
 			<button class="close" onclick={previewState.handleClose}><CloseIcon /></button>
 		</div>
@@ -38,10 +38,10 @@
 				<div class="icon">
 					<ChatIcon />
 				</div>
-				<div class="value">{report.description || 'No description provided'}</div>
+				<div class="value">{alert.description || 'No description provided'}</div>
 			</div>
 			<div class="line date">
-				{formatDate(report.created_at)}
+				{formatDate(alert.created_at)}
 			</div>
 		</div>
 
@@ -51,7 +51,7 @@
 					{#each previewState.photos as photo}
 						<div class="tile">
 							<a href={photo} target="_blank" rel="noopener noreferrer">
-								<LazyImage src={photo} alt="Report photo" fallback={DefaultImage} />
+								<LazyImage src={photo} alt="Alert photo" fallback={DefaultImage} />
 							</a>
 						</div>
 					{/each}

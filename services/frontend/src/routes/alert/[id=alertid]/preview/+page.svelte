@@ -6,7 +6,7 @@
 </script>
 
 <svelte:head>
-	<title>Report {id} - Trees of Yerevan</title>
+	<title>Alert {id} - Trees of Yerevan</title>
 </svelte:head>
 
 <MapPreview {id} />

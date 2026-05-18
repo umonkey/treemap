@@ -1,10 +1,10 @@
-import { getReport, getReportPhotos, type IReport } from '$lib/api/reports';
+import { getAlert, getAlertPhotos, type IAlert } from '$lib/api/alerts';
 import { mapBus } from '$lib/buses/mapBus';
 import { showError } from '$lib/errors';
 import { goto, routes } from '$lib/routes';
 
 class PreviewState {
-	report = $state<IReport>();
+	alert = $state<IAlert>();
 	photos = $state<string[]>([]);
 	expand = $state<boolean>(false);
 	loading = $state<boolean>(false);
@@ -19,7 +19,7 @@ class PreviewState {
 	};
 
 	public clear = () => {
-		this.report = undefined;
+		this.alert = undefined;
 		this.photos = [];
 		this.expand = false;
 
@@ -27,17 +27,17 @@ class PreviewState {
 	};
 
 	public reload = (id: string) => {
-		console.debug(`Reloading preview for report ${id}`);
+		console.debug(`Reloading preview for alert ${id}`);
 		this.loading = true;
 
-		getReport(id).then((res) => {
+		getAlert(id).then((res) => {
 			if (res.status === 200 && res.data) {
-				this.report = res.data;
+				this.alert = res.data;
 
-				if (this.report.lat !== null && this.report.lon !== null) {
+				if (this.alert.lat !== null && this.alert.lon !== null) {
 					mapBus.emit('pin', {
-						lat: this.report.lat,
-						lng: this.report.lon
+						lat: this.alert.lat,
+						lng: this.alert.lon
 					});
 				}
 			} else if (res.error) {
@@ -46,7 +46,7 @@ class PreviewState {
 			this.loading = false;
 		});
 
-		getReportPhotos(id).then((res) => {
+		getAlertPhotos(id).then((res) => {
 			if (res.status === 200 && res.data) {
 				this.photos = res.data;
 			} else {

@@ -13,7 +13,7 @@
 	import Navigation from './Navigation.svelte';
 	import SearchControl from './SearchControl.svelte';
 	import TreeLayer from './TreeLayer.svelte';
-	import ReportLayer from './ReportLayer.svelte';
+	import AlertLayer from './AlertLayer.svelte';
 	import MapCenter from './MapCenter.svelte';
 	import MoveLine from './MoveLine.svelte';
 	import NearestTree from './NearestTree.svelte';
@@ -75,7 +75,7 @@
 		{/if}
 
 		<TreeLayer />
-		<ReportLayer />
+		<AlertLayer />
 
 		{#if $mapMode === 'move' || $mapMode === 'add'}
 			<MapCenter />

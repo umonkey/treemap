@@ -1,26 +1,26 @@
-import { getActiveReportsGeoJSON, type IReportCollection } from '$lib/api/reports';
+import { getActiveAlertsGeoJSON, type IAlertCollection } from '$lib/api/alerts';
 import { mapBus } from '$lib/buses/mapBus';
 import { showError } from '$lib/errors';
 import { goto, routes } from '$lib/routes';
 import { Debouncer } from '$lib/utils/debounce';
 import { getMapContext } from 'svelte-maplibre';
 
-class ReportLayerState {
-	markers = $state.raw<IReportCollection | undefined>(undefined);
+class AlertLayerState {
+	markers = $state.raw<IAlertCollection | undefined>(undefined);
 	fetchDebouncer = new Debouncer(100);
 
 	private reload = () => {
 		this.fetchDebouncer.run(() => {
-			getActiveReportsGeoJSON()
+			getActiveAlertsGeoJSON()
 				.then(({ status, data }) => {
 					if (status === 200 && data) {
-						console.debug(`[ReportLayer] Received ${data.features.length} reports.`);
+						console.debug(`[AlertLayer] Received ${data.features.length} alerts.`);
 						this.markers = data;
 					}
 				})
 				.catch((e) => {
-					console.error('Error loading reports.', e);
-					showError('Error loading reports, please try again.');
+					console.error('Error loading alerts.', e);
+					showError('Error loading alerts, please try again.');
 				});
 		});
 	};
@@ -32,14 +32,14 @@ class ReportLayerState {
 		}
 
 		const feature = e.features[0];
-		const reportId = feature.properties.id;
+		const alertId = feature.properties.id;
 
 		const [lng, lat] = feature.geometry.coordinates;
 		mapBus.emit('move', { lat, lng });
 
-		console.debug(`[ReportLayer] Report ${reportId} clicked.`);
+		console.debug(`[AlertLayer] Alert ${alertId} clicked.`);
 
-		await goto(routes.reportPreview(reportId));
+		await goto(routes.alertPreview(alertId));
 
 		if (navigator.vibrate) {
 			navigator.vibrate(50);
@@ -50,7 +50,7 @@ class ReportLayerState {
 		const map = getMapContext()?.map;
 
 		if (!map) {
-			console.warn('Map not available, cannot display reports.');
+			console.warn('Map not available, cannot display alerts.');
 			return;
 		}
 
@@ -66,4 +66,4 @@ class ReportLayerState {
 	};
 }
 
-export const reportLayerState = new ReportLayerState();
+export const alertLayerState = new AlertLayerState();

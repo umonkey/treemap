@@ -1,17 +1,14 @@
 # Telegram Chatbot
 
-The application includes a Telegram chatbot that allows users to report tree damage directly from their mobile devices.
+The application includes a Telegram chatbot that allows users to send tree damage alerts directly from their mobile devices.
 
-## Overview
+- Tree damage alerting: users can send alerts including photos and location data.
 
-The chatbot serves as an intake mechanism for community-driven tree health monitoring. Reports submitted via the bot are automatically integrated into the main mapping application.
+- Map integration: alerts are visualized as red circles on the main map.
 
-## Features
+- Data retention: all alerts are stored permanently in the database for historical tracking.
 
-- Tree damage reporting: users can send reports including photos and location data.
-- Map integration: reports are visualized as red circles on the main map.
-- Data retention: all reports are stored permanently in the database for historical tracking.
-- Display logic: to maintain map clarity and relevance, only reports from the last 7 days are shown on the active map.
+- Display logic: to maintain map clarity and relevance, only alerts from the last 7 days are shown on the active map.
 
 ## Configuration
 

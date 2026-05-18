@@ -60,7 +60,7 @@
 			"form_factor": "narrow",
 			"type": "image/png",
 			"sizes": "1080x2400",
-			"label": "Report an issue"
+			"label": "Damage alerts"
 		},
 		{
 			"src": "/assets/screenshots/screenshot-narrow-add.png",
@@ -95,7 +95,7 @@
 			"form_factor": "wide",
 			"type": "image/png",
 			"sizes": "1920x1080",
-			"label": "Report a problem"
+			"label": "Damage alerts"
 		},
 		{
 			"src": "/assets/screenshots/screenshot-wide-add.png",

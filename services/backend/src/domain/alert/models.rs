@@ -3,7 +3,7 @@ use crate::types::Result;
 use serde::Serialize;
 
 #[derive(Clone, Debug, Default, Serialize)]
-pub struct Report {
+pub struct Alert {
     pub id: u64,
     pub created_at: u64,
     pub created_by: u64,
@@ -19,7 +19,7 @@ pub struct Report {
     pub responded_at: Option<u64>,
 }
 
-impl Report {
+impl Alert {
     pub fn from_attributes(attributes: &Attributes) -> Result<Self> {
         Ok(Self {
             id: attributes.require_u64("id")?,

@@ -1,4 +1,4 @@
-use crate::domain::report::Report;
+use crate::domain::alert::Alert;
 use crate::domain::tree::Tree;
 use actix_web::HttpResponse;
 use serde_json::json;
@@ -48,23 +48,23 @@ pub fn respond_with_trees(trees: &[Tree]) -> HttpResponse {
         .json(collection)
 }
 
-/// Convert a list of reports to a GeoJSON FeatureCollection response.
-pub fn respond_with_reports(reports: &[Report]) -> HttpResponse {
-    let features: Vec<_> = reports
+/// Convert a list of alerts to a GeoJSON FeatureCollection response.
+pub fn respond_with_alerts(alerts: &[Alert]) -> HttpResponse {
+    let features: Vec<_> = alerts
         .iter()
-        .map(|report| {
+        .map(|alert| {
             json!({
                 "type": "Feature",
-                "id": report.id.to_string(),
+                "id": alert.id.to_string(),
                 "geometry": {
                     "type": "Point",
-                    "coordinates": [report.lon.unwrap_or(0.0), report.lat.unwrap_or(0.0)]
+                    "coordinates": [alert.lon.unwrap_or(0.0), alert.lat.unwrap_or(0.0)]
                 },
                 "properties": {
-                    "id": report.id.to_string(),
-                    "created_at": report.created_at,
-                    "description": report.description,
-                    "status": report.status,
+                    "id": alert.id.to_string(),
+                    "created_at": alert.created_at,
+                    "description": alert.description,
+                    "status": alert.status,
                 }
             })
         })
