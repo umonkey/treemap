@@ -68,6 +68,8 @@ impl PhotoService {
             error!("Could not add file {file_id}: {e:?}");
         })?;
 
+        self.trees.update_images_timestamp(tree_id).await?;
+
         self.update_thumbnail(tree_id, small_id, source.added_by)
             .await?;
 

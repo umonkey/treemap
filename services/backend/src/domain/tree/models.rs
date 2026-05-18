@@ -25,6 +25,12 @@ pub struct Tree {
     pub address: Option<String>,
     pub like_count: i64,
 
+    pub height_updated_at: u64,
+    pub diameter_updated_at: u64,
+    pub circumference_updated_at: u64,
+    pub images_updated_at: u64,
+    pub observations_updated_at: u64,
+
     // The number of comments for this tree.
     pub comment_count: u64,
 
@@ -58,6 +64,13 @@ impl Tree {
             year: attributes.get_i64("year")?,
             address: attributes.get_string("address")?,
             like_count: attributes.get_i64("like_count")?.unwrap_or(0),
+
+            height_updated_at: attributes.get_u64("height_updated_at")?.unwrap_or(0),
+            diameter_updated_at: attributes.get_u64("diameter_updated_at")?.unwrap_or(0),
+            circumference_updated_at: attributes.get_u64("circumference_updated_at")?.unwrap_or(0),
+            images_updated_at: attributes.get_u64("images_updated_at")?.unwrap_or(0),
+            observations_updated_at: attributes.get_u64("observations_updated_at")?.unwrap_or(0),
+
             comment_count: attributes.get_u64("comment_count")?.unwrap_or(0),
             replaces: attributes.get_u64("replaces")?,
             replaced_by: attributes.get_u64("replaced_by")?,
@@ -98,6 +111,26 @@ impl Tree {
             ("year".to_string(), Value::from(self.year)),
             ("address".to_string(), Value::from(self.address.clone())),
             ("like_count".to_string(), Value::from(self.like_count)),
+            (
+                "height_updated_at".to_string(),
+                Value::from(self.height_updated_at as i64),
+            ),
+            (
+                "diameter_updated_at".to_string(),
+                Value::from(self.diameter_updated_at as i64),
+            ),
+            (
+                "circumference_updated_at".to_string(),
+                Value::from(self.circumference_updated_at as i64),
+            ),
+            (
+                "images_updated_at".to_string(),
+                Value::from(self.images_updated_at as i64),
+            ),
+            (
+                "observations_updated_at".to_string(),
+                Value::from(self.observations_updated_at as i64),
+            ),
             (
                 "comment_count".to_string(),
                 Value::from(self.comment_count as i64),

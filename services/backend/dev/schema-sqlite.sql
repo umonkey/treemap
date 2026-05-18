@@ -24,6 +24,11 @@ CREATE TABLE IF NOT EXISTS trees (
     `address` TEXT NULL,
     `like_count` INT NOT NULL DEFAULT '0',
     `comment_count` INT NOT NULL DEFAULT '0',
+    `height_updated_at` INT NOT NULL DEFAULT 0,
+    `diameter_updated_at` INT NOT NULL DEFAULT 0,
+    `circumference_updated_at` INT NOT NULL DEFAULT 0,
+    `images_updated_at` INT NOT NULL DEFAULT 0,
+    `observations_updated_at` INT NOT NULL DEFAULT 0,
     `replaces` INT NULL,
     `replaced_by` INT NULL,
     `osm_version` INT NULL,
@@ -35,6 +40,11 @@ CREATE INDEX IF NOT EXISTS trees_lat ON trees (lat);
 CREATE INDEX IF NOT EXISTS trees_lon ON trees (lon);
 CREATE UNIQUE INDEX IF NOT EXISTS trees_osm_id ON trees (osm_id);
 CREATE INDEX IF NOT EXISTS trees_state ON trees (state);
+CREATE INDEX IF NOT EXISTS trees_height_updated_at ON trees (height_updated_at);
+CREATE INDEX IF NOT EXISTS trees_diameter_updated_at ON trees (diameter_updated_at);
+CREATE INDEX IF NOT EXISTS trees_circumference_updated_at ON trees (circumference_updated_at);
+CREATE INDEX IF NOT EXISTS trees_images_updated_at ON trees (images_updated_at);
+CREATE INDEX IF NOT EXISTS trees_observations_updated_at ON trees (observations_updated_at);
 
 
 CREATE TABLE IF NOT EXISTS trees_images (

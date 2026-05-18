@@ -1,4 +1,5 @@
 use crate::domain::observation::Observation;
+use crate::domain::tree::TreeRepository;
 use crate::infra::database::{Database, InsertQuery, SelectQuery, Value};
 use crate::services::*;
 use crate::types::*;
@@ -8,6 +9,7 @@ const TABLE: &str = "observations";
 
 pub struct ObservationRepository {
     db: Arc<Database>,
+    trees: Arc<TreeRepository>,
 }
 
 impl ObservationRepository {
@@ -15,6 +17,10 @@ impl ObservationRepository {
         let query = InsertQuery::new(TABLE).with_values(observation.to_attributes());
 
         self.db.add_record(query).await?;
+
+        self.trees
+            .update_observations_timestamp(observation.tree_id)
+            .await?;
 
         Ok(())
     }
@@ -25,6 +31,10 @@ impl ObservationRepository {
             .with_condition("id", Value::from(observation.id as i64));
 
         self.db.update(query).await?;
+
+        self.trees
+            .update_observations_timestamp(observation.tree_id)
+            .await?;
 
         Ok(())
     }
@@ -47,6 +57,9 @@ impl ObservationRepository {
 
 impl Injectable for ObservationRepository {
     fn inject(ctx: &dyn Context) -> Result<Self> {
-        Ok(Self { db: ctx.database() })
+        Ok(Self {
+            db: ctx.database(),
+            trees: Arc::new(ctx.build::<TreeRepository>()?),
+        })
     }
 }

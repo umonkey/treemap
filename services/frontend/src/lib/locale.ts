@@ -237,6 +237,34 @@ class EnglishLocale {
 		return 'Add some notable details that could help visitors understand the importance of this tree.';
 	}
 
+	public ageLabel(): string {
+		return 'Data age';
+	}
+
+	public ageHint(): string {
+		return 'This value affects searches for missing metrics.';
+	}
+
+	public ageYear(): string {
+		return '1 year';
+	}
+
+	public ageMonth(): string {
+		return '1 month';
+	}
+
+	public ageWeek(): string {
+		return '1 week';
+	}
+
+	public age2Days(): string {
+		return '2 days';
+	}
+
+	public ageDay(): string {
+		return '1 day';
+	}
+
 	public detailsTitle(name: string): string {
 		return `${name} — Details`;
 	}
@@ -893,6 +921,34 @@ class RussianLocale extends EnglishLocale {
 		return 'Добавьте важные детали об этом дереве, которые помогут людям понять его важность.';
 	}
 
+	public ageLabel(): string {
+		return 'Возраст данных';
+	}
+
+	public ageHint(): string {
+		return 'Это значение используется при поиске по высоте, диаметру кроны и другим параметрам.';
+	}
+
+	public ageYear(): string {
+		return '1 год';
+	}
+
+	public ageMonth(): string {
+		return '1 месяц';
+	}
+
+	public ageWeek(): string {
+		return '1 неделя';
+	}
+
+	public age2Days(): string {
+		return '2 дня';
+	}
+
+	public ageDay(): string {
+		return '1 день';
+	}
+
 	public detailsTitle(name: string): string {
 		return `${name} — Подробности`;
 	}
@@ -1547,6 +1603,34 @@ class ArmenianLocale extends EnglishLocale {
 
 	public notesHint(): string {
 		return 'Ավելացրեք որոշ նշանակալի մանրամասներ, որոնք կարող են օգնել այցելուներին հասկանալ այս ծառի կարևորությունը:';
+	}
+
+	public ageLabel(): string {
+		return 'Տվյալների հնություն';
+	}
+
+	public ageHint(): string {
+		return 'Այս արժեքն ազդում է բացակայող չափումների որոնման վրա:';
+	}
+
+	public ageYear(): string {
+		return '1 տարի';
+	}
+
+	public ageMonth(): string {
+		return '1 ամիս';
+	}
+
+	public ageWeek(): string {
+		return '1 շաբաթ';
+	}
+
+	public age2Days(): string {
+		return '2 օր';
+	}
+
+	public ageDay(): string {
+		return '1 օր';
 	}
 
 	public detailsTitle(name: string): string {

@@ -24,6 +24,8 @@ pub struct SearchQuery {
     pub address: Option<String>,
     pub species: Option<String>,
 
+    pub age: u64,
+
     pub added_by_me: bool,
 
     pub added_after: Option<u64>,
@@ -135,6 +137,7 @@ impl From<&GetTreesRequest> for Bounds {
 impl SearchQuery {
     pub fn from_string(query: &str) -> SearchQuery {
         let mut res = SearchQuery {
+            age: 31_536_000, // 1 year
             ..Default::default()
         };
 
@@ -183,6 +186,10 @@ impl SearchQuery {
                 if let Ok(value) = value.parse::<u64>() {
                     res.updated_after = Some(get_timestamp() - value);
                 }
+            } else if let Some(value) = word.strip_prefix("age:") {
+                if let Ok(value) = value.parse::<u64>() {
+                    res.age = value;
+                }
             } else if word.contains("all") {
                 res.all = true;
             } else if let Some(value) = word.strip_prefix("addr:") {
@@ -218,31 +225,34 @@ impl SearchQuery {
             return false;
         }
 
-        if self.noimages && tree.thumbnail_id.is_some() {
+        let now = get_timestamp();
+        let cutoff = now.saturating_sub(self.age);
+
+        if self.noimages && tree.images_updated_at >= cutoff {
             return false;
         }
 
-        if self.hasimages && tree.thumbnail_id.is_none() {
+        if self.hasimages && tree.images_updated_at < cutoff {
             return false;
         }
 
         if self.nometrics
-            && tree.height.is_some()
-            && tree.circumference.is_some()
-            && tree.diameter.is_some()
+            && tree.height_updated_at >= cutoff
+            && tree.circumference_updated_at >= cutoff
+            && tree.diameter_updated_at >= cutoff
         {
             return false;
         }
 
-        if self.nocirc && tree.circumference.unwrap_or(0.0) > 0.0 {
+        if self.nocirc && tree.circumference_updated_at >= cutoff {
             return false;
         }
 
-        if self.nodiameter && tree.diameter.unwrap_or(0.0) > 0.0 {
+        if self.nodiameter && tree.diameter_updated_at >= cutoff {
             return false;
         }
 
-        if self.noheight && tree.height.unwrap_or(0.0) > 0.0 {
+        if self.noheight && tree.height_updated_at >= cutoff {
             return false;
         }
 
@@ -290,7 +300,7 @@ impl SearchQuery {
             return false;
         }
 
-        if self.incomplete && !Self::is_tree_incomplete(tree) {
+        if self.incomplete && !self.is_tree_incomplete(tree, cutoff) {
             return false;
         }
 
@@ -313,12 +323,13 @@ impl SearchQuery {
         true
     }
 
-    fn is_tree_incomplete(tree: &Tree) -> bool {
+    fn is_tree_incomplete(&self, tree: &Tree, cutoff: u64) -> bool {
         tree.state == "unknown"
-            || tree.height.is_none()
-            || tree.circumference.is_none()
-            || tree.diameter.is_none()
-            || tree.thumbnail_id.is_none()
+            || tree.height_updated_at < cutoff
+            || tree.circumference_updated_at < cutoff
+            || tree.diameter_updated_at < cutoff
+            || tree.images_updated_at < cutoff
+            || tree.observations_updated_at < cutoff
     }
 
     fn get_tree_text(tree: &Tree) -> String {
@@ -360,6 +371,11 @@ mod tests {
             thumbnail_id: None,
             year: None,
             address: None,
+            height_updated_at: 0,
+            diameter_updated_at: 0,
+            circumference_updated_at: 0,
+            images_updated_at: 0,
+            observations_updated_at: 0,
             ..Default::default()
         }
     }
@@ -420,7 +436,7 @@ mod tests {
 
         let tree1 = Tree {
             species: "Thuja plicata".to_string(),
-            thumbnail_id: None,
+            images_updated_at: 0,
             ..default_tree()
         };
 
@@ -428,7 +444,7 @@ mod tests {
 
         let tree2 = Tree {
             species: "Thuja plicata".to_string(),
-            thumbnail_id: Some(1),
+            images_updated_at: get_timestamp(),
             ..default_tree()
         };
 
@@ -444,9 +460,9 @@ mod tests {
 
         assert!(query.r#match(
             &Tree {
-                height: None,
-                circumference: Some(2.0),
-                diameter: Some(3.0),
+                height_updated_at: 0,
+                circumference_updated_at: get_timestamp(),
+                diameter_updated_at: get_timestamp(),
                 ..default_tree()
             },
             0
@@ -454,9 +470,9 @@ mod tests {
 
         assert!(query.r#match(
             &Tree {
-                height: Some(1.0),
-                circumference: None,
-                diameter: Some(3.0),
+                height_updated_at: get_timestamp(),
+                circumference_updated_at: 0,
+                diameter_updated_at: get_timestamp(),
                 ..default_tree()
             },
             0
@@ -464,9 +480,9 @@ mod tests {
 
         assert!(query.r#match(
             &Tree {
-                height: Some(1.0),
-                circumference: Some(2.0),
-                diameter: None,
+                height_updated_at: get_timestamp(),
+                circumference_updated_at: get_timestamp(),
+                diameter_updated_at: 0,
                 ..default_tree()
             },
             0
@@ -475,9 +491,9 @@ mod tests {
         assert!(
             !query.r#match(
                 &Tree {
-                    height: Some(1.0),
-                    circumference: Some(2.0),
-                    diameter: Some(3.0),
+                    height_updated_at: get_timestamp(),
+                    circumference_updated_at: get_timestamp(),
+                    diameter_updated_at: get_timestamp(),
                     ..default_tree()
                 },
                 0
@@ -719,7 +735,7 @@ mod tests {
         assert!(query.r#match(
             &Tree {
                 species: "Thuja plicata".to_string(),
-                circumference: None,
+                circumference_updated_at: 0,
                 ..default_tree()
             },
             0
@@ -728,7 +744,7 @@ mod tests {
         assert!(!query.r#match(
             &Tree {
                 species: "Thuja plicata".to_string(),
-                circumference: Some(2.0),
+                circumference_updated_at: get_timestamp(),
                 ..default_tree()
             },
             0
@@ -895,6 +911,33 @@ mod tests {
         assert!(!query.r#match(
             &Tree {
                 updated_at: get_timestamp() - 3601,
+                ..default_tree()
+            },
+            0
+        ));
+    }
+
+    #[test]
+    fn test_age() {
+        let query = SearchQuery::from_string("no:diameter age:3600");
+        let now = get_timestamp();
+
+        // 1. Updated 1 hour ago -> matches "no:diameter" because it is at the edge of age.
+        // Actually, no:diameter means "updated_at < now - age".
+        // If age is 3600, then cutoff is now - 3600.
+        // If updated_at is now - 3601, it matches.
+
+        assert!(query.r#match(
+            &Tree {
+                diameter_updated_at: now - 3601,
+                ..default_tree()
+            },
+            0
+        ));
+
+        assert!(!query.r#match(
+            &Tree {
+                diameter_updated_at: now - 3599,
                 ..default_tree()
             },
             0

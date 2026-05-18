@@ -220,17 +220,11 @@ impl TreeService {
         user_id: u64,
     ) -> Result<Tree> {
         let tree = self.trees.get(tree_id).await?.ok_or(Error::TreeNotFound)?;
+        let mut new_tree = tree.clone();
+        new_tree.circumference = Some(value);
+        new_tree.circumference_updated_at = get_timestamp();
 
-        let updated = self
-            .trees
-            .update(
-                &Tree {
-                    circumference: Some(value),
-                    ..tree.clone()
-                },
-                user_id,
-            )
-            .await?;
+        let updated = self.trees.update(&new_tree, user_id).await?;
 
         self.users.increment_update_count(user_id).await?;
 
@@ -256,16 +250,11 @@ impl TreeService {
                 .await?;
         }
 
-        let updated = self
-            .trees
-            .update(
-                &Tree {
-                    diameter: Some(value),
-                    ..tree.clone()
-                },
-                user_id,
-            )
-            .await?;
+        let mut new_tree = tree.clone();
+        new_tree.diameter = Some(value);
+        new_tree.diameter_updated_at = get_timestamp();
+
+        let updated = self.trees.update(&new_tree, user_id).await?;
 
         self.users.increment_update_count(user_id).await?;
 
@@ -291,16 +280,11 @@ impl TreeService {
                 .await?;
         }
 
-        let updated = self
-            .trees
-            .update(
-                &Tree {
-                    height: Some(value),
-                    ..tree.clone()
-                },
-                user_id,
-            )
-            .await?;
+        let mut new_tree = tree.clone();
+        new_tree.height = Some(value);
+        new_tree.height_updated_at = get_timestamp();
+
+        let updated = self.trees.update(&new_tree, user_id).await?;
 
         self.users.increment_update_count(user_id).await?;
 
@@ -424,13 +408,28 @@ impl TreeService {
                 Some(value) => Some(value),
                 None => old.height,
             },
+            height_updated_at: if req.height.is_some() {
+                now
+            } else {
+                old.height_updated_at
+            },
             circumference: match fix_circumference(req.circumference) {
                 Some(value) => Some(value),
                 None => old.circumference,
             },
+            circumference_updated_at: if req.circumference.is_some() {
+                now
+            } else {
+                old.circumference_updated_at
+            },
             diameter: match req.diameter {
                 Some(value) => Some(value),
                 None => old.diameter,
+            },
+            diameter_updated_at: if req.diameter.is_some() {
+                now
+            } else {
+                old.diameter_updated_at
             },
             state: match req.state {
                 Some(value) => value,

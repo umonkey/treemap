@@ -163,7 +163,22 @@ impl TreeRepository {
     ///
     /// Makes sure that there's no existing tree with the same coordinates.
     pub async fn add(&self, tree: &Tree) -> Result<()> {
-        let query = InsertQuery::new(TABLE).with_values(tree.to_attributes());
+        let mut values = tree.to_attributes();
+        let now = get_timestamp();
+
+        if tree.height.is_some() {
+            values.insert("height_updated_at", Value::from(now as i64));
+        }
+
+        if tree.diameter.is_some() {
+            values.insert("diameter_updated_at", Value::from(now as i64));
+        }
+
+        if tree.circumference.is_some() {
+            values.insert("circumference_updated_at", Value::from(now as i64));
+        }
+
+        let query = InsertQuery::new(TABLE).with_values(values);
 
         self.db.add_record(query).await?;
 
@@ -177,10 +192,27 @@ impl TreeRepository {
             Error::TreeNotFound
         })?;
 
+        let mut values = tree.to_attributes();
+        let now = get_timestamp();
+
+        if tree.height != old.height && tree.height_updated_at <= old.height_updated_at {
+            values.insert("height_updated_at", Value::from(now as i64));
+        }
+
+        if tree.diameter != old.diameter && tree.diameter_updated_at <= old.diameter_updated_at {
+            values.insert("diameter_updated_at", Value::from(now as i64));
+        }
+
+        if tree.circumference != old.circumference
+            && tree.circumference_updated_at <= old.circumference_updated_at
+        {
+            values.insert("circumference_updated_at", Value::from(now as i64));
+        }
+
         let query = UpdateQuery::new(TABLE)
             .with_condition("id", Value::from(tree.id as i64))
-            .with_values(tree.to_attributes())
-            .with_value("updated_at", Value::from(get_timestamp() as i64))
+            .with_values(values)
+            .with_value("updated_at", Value::from(now as i64))
             .with_value("updated_by", Value::from(user_id as i64));
 
         self.db.update(query).await?;
@@ -188,6 +220,29 @@ impl TreeRepository {
         self.log_changes(&old, tree, user_id).await?;
 
         Ok(tree.clone())
+    }
+
+    pub async fn update_images_timestamp(&self, tree_id: u64) -> Result<()> {
+        let query = UpdateQuery::new(TABLE)
+            .with_condition("id", Value::from(tree_id as i64))
+            .with_value("images_updated_at", Value::from(get_timestamp() as i64));
+
+        self.db.update(query).await?;
+
+        Ok(())
+    }
+
+    pub async fn update_observations_timestamp(&self, tree_id: u64) -> Result<()> {
+        let query = UpdateQuery::new(TABLE)
+            .with_condition("id", Value::from(tree_id as i64))
+            .with_value(
+                "observations_updated_at",
+                Value::from(get_timestamp() as i64),
+            );
+
+        self.db.update(query).await?;
+
+        Ok(())
     }
 
     pub async fn replace(&self, old_id: u64, new_id: u64, user_id: u64) -> Result<()> {
@@ -537,5 +592,33 @@ mod tests {
             .expect("Error getting trees.");
 
         assert_eq!(0, res.len());
+    }
+
+    #[tokio::test]
+    async fn test_update_timestamp_on_same_value() {
+        let repo = setup().await;
+
+        let tree = Tree {
+            id: 100,
+            height: Some(10.0),
+            height_updated_at: 1000,
+            ..Default::default()
+        };
+
+        repo.add(&tree).await.expect("Error adding tree.");
+
+        // Update with the same height but newer timestamp.
+        let mut updated_tree = tree.clone();
+        updated_tree.height_updated_at = 2000;
+
+        let result = repo
+            .update(&updated_tree, 1)
+            .await
+            .expect("Error updating tree.");
+
+        assert_eq!(result.height_updated_at, 2000);
+
+        let from_db = repo.get(100).await.expect("Error fetching").unwrap();
+        assert_eq!(from_db.height_updated_at, 2000);
     }
 }

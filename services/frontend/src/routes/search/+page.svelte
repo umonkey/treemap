@@ -6,6 +6,7 @@
 
 	import SpeciesInput from '$lib/ui/species-input/SpeciesInput.svelte';
 	import StreetInput from '$lib/ui/street-input/StreetInput.svelte';
+	import AgeInput from './AgeInput.svelte';
 	import { pageState } from './page.svelte';
 
 	const buttons = [
@@ -38,13 +39,22 @@
 
 			<ul>
 				<li>
-					Есть лазер? <a href={routes.searchQuery('no:diameter')}>Без диаметра</a> или
-					<a href={routes.searchQuery('no:height')}>высоты</a>.
+					Есть лазер? <a href={routes.searchQuery(pageState.getAgeQuery('no:diameter'))}
+						>Без диаметра</a
+					>
+					или
+					<a href={routes.searchQuery(pageState.getAgeQuery('no:height'))}>высоты</a>.
 				</li>
 				<li>
-					Есть сантиметр? <a href={routes.searchQuery('no:circumference')}>Без обхвата ствола</a>.
+					Есть сантиметр? <a href={routes.searchQuery(pageState.getAgeQuery('no:circumference'))}
+						>Без обхвата ствола</a
+					>.
 				</li>
-				<li>Есть камера? <a href={routes.searchQuery('noimage')}>Без фотографий</a>.</li>
+				<li>
+					Есть камера? <a href={routes.searchQuery(pageState.getAgeQuery('noimage'))}
+						>Без фотографий</a
+					>.
+				</li>
 				<li>
 					Есть саженец? <a href={routes.searchQuery('gone')}>Пустые места</a> или
 					<a href={routes.searchQuery('stump')}>пни</a>.
@@ -53,12 +63,8 @@
 					<a href={routes.searchQuery('unknown hasimage')}>Неопознанные деревья</a> с фотографиями
 				</li>
 				<li>
-					Без <a href={routes.searchQuery('no:height')}>высоты</a>,
-					<a href={routes.searchQuery('no:diameter')}>диаметра</a>,
-					<a href={routes.searchQuery('no:circumference')}>обхвата</a>
-				</li>
-				<li>
-					<a href={routes.searchQuery('incomplete')}>incomplete</a> — деревья без некоторых параметров
+					<a href={routes.searchQuery(pageState.getAgeQuery('incomplete'))}>incomplete</a> — деревья
+					без некоторых параметров
 				</li>
 			</ul>
 		{:else}
@@ -71,15 +77,22 @@
 					trees, or <a href={routes.searchQuery('stump')}>stumps</a>.
 				</li>
 				<li>
-					Have a laser? <a href={routes.searchQuery('no:diameter')}>No crown diameter</a> or
-					<a href={routes.searchQuery('no:height')}>no height</a>.
+					Have a laser? <a href={routes.searchQuery(pageState.getAgeQuery('no:diameter'))}
+						>No crown diameter</a
+					>
+					or
+					<a href={routes.searchQuery(pageState.getAgeQuery('no:height'))}>no height</a>.
 				</li>
 				<li>
-					Have a tape measure? <a href={routes.searchQuery('no:circumference')}
+					Have a tape measure? <a
+						href={routes.searchQuery(pageState.getAgeQuery('no:circumference'))}
 						>No trunk circumference</a
 					>.
 				</li>
-				<li>Have a camera? <a href={routes.searchQuery('noimage')}>No photos</a>.</li>
+				<li>
+					Have a camera? <a href={routes.searchQuery(pageState.getAgeQuery('noimage'))}>No photos</a
+					>.
+				</li>
 				<li>
 					Have a tree? <a href={routes.searchQuery('gone')}>Empty spots</a> or
 					<a href={routes.searchQuery('stump')}>stumps</a>.
@@ -87,7 +100,11 @@
 				<li>
 					With <a href={routes.searchQuery('unknown hasimage')}>unknown species</a> but has photos.
 				</li>
-				<li><a href={routes.searchQuery('incomplete')}>Missing some measurements</a>.</li>
+				<li>
+					<a href={routes.searchQuery(pageState.getAgeQuery('incomplete'))}
+						>Missing some measurements</a
+					>.
+				</li>
 			</ul>
 		{/if}
 	</div>
@@ -95,6 +112,7 @@
 	<div class="form">
 		<SpeciesInput onChange={pageState.handleSpeciesChange} />
 		<StreetInput onChange={pageState.handleStreetChange} />
+		<AgeInput value={pageState.age} onChange={pageState.handleAgeChange} />
 	</div>
 </Dialog>
 

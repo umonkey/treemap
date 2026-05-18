@@ -14,6 +14,7 @@ fn usage() {
     println!("Usage: treemap command");
     println!();
     println!("Commands:");
+    println!("  migrate-timestamps    -- backfill update timestamps");
     println!("  osm-pull              -- get new trees from OpenStreetMap");
     println!("  osm-push              -- send new trees to OSM");
     println!("  osm-push-changes      -- send tree updates to OSM");
@@ -52,6 +53,10 @@ async fn main() -> std::io::Result<()> {
     match command.as_str() {
         "serve" => {
             serve_command().await;
+            return Ok(());
+        }
+        "migrate-timestamps" => {
+            migrate_timestamps_command().await;
             return Ok(());
         }
         "osm-pull" => {
