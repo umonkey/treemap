@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import UserHeatMap from '$lib/components/UserHeatMap/index.svelte';
-	import Dialog from '$lib/components/layout/Dialog.svelte';
-	import Tabs from '$lib/components/profile/Tabs.svelte';
 	import { locale } from '$lib/locale';
 	import SignInButton from '$lib/ui/sign-in-button/SignInButton.svelte';
 	import ProfileHeader from './ProfileHeader.svelte';

@@ -6,6 +6,23 @@ import { updateBadge } from '$lib/utils/badges';
 const CACHE = `cache-${version}`;
 const ASSETS = [...build, ...files];
 
+interface PeriodicSyncEvent extends ExtendableEvent {
+	tag: string;
+}
+
+interface NotificationClickEvent extends ExtendableEvent {
+	notification: Notification;
+	action: string;
+}
+
+interface NetworkInformation extends EventTarget {
+	type?: 'bluetooth' | 'cellular' | 'ethernet' | 'none' | 'wifi' | 'wimax' | 'other' | 'unknown';
+}
+
+interface NavigatorWithConnection extends Navigator {
+	connection?: NetworkInformation;
+}
+
 self.addEventListener('install', (event) => {
 	const extendableEvent = event as ExtendableEvent;
 	async function addFilesToCache() {
@@ -85,8 +102,8 @@ async function getPendingUploadsCount(): Promise<number> {
 
 			let count = 0;
 			const cursorRequest = statusIndex.openCursor();
-			cursorRequest.onsuccess = (event: any) => {
-				const cursor = event.target.result;
+			cursorRequest.onsuccess = () => {
+				const cursor = cursorRequest.result;
 				if (cursor) {
 					const item = cursor.value;
 					if ((item.status === 'pending' || item.status === 'failed') && item.retry_count < 5) {
@@ -113,7 +130,7 @@ async function checkAndNotify() {
 
 	// 1. Check connectivity.
 	// In Chrome, we can check for wifi specifically.
-	const conn = (navigator as any).connection;
+	const conn = (navigator as NavigatorWithConnection).connection;
 	const isWifi = conn ? conn.type === 'wifi' || conn.type === 'ethernet' : navigator.onLine;
 
 	if (!isWifi) {
@@ -122,7 +139,8 @@ async function checkAndNotify() {
 
 	// 2. Check if we have anything to upload.
 	if (count > 0) {
-		const registration = (self as any).registration as ServiceWorkerRegistration;
+		const registration = (self as unknown as ServiceWorkerGlobalScope)
+			.registration as ServiceWorkerRegistration;
 		await registration.showNotification('Trees of Yerevan', {
 			body: 'You have photos ready to upload. Connect to WiFi to finish.',
 			icon: '/favicon.png', // Fallback icon
@@ -136,26 +154,31 @@ async function checkAndNotify() {
 	}
 }
 
-self.addEventListener('periodicsync', (event: any) => {
-	if (event.tag === 'upload-reminder') {
-		event.waitUntil(checkAndNotify());
+self.addEventListener('periodicsync', (event) => {
+	const periodicEvent = event as PeriodicSyncEvent;
+	if (periodicEvent.tag === 'upload-reminder') {
+		periodicEvent.waitUntil(checkAndNotify());
 	}
 });
 
-self.addEventListener('notificationclick', (event: any) => {
-	event.notification.close();
+self.addEventListener('notificationclick', (event) => {
+	const notificationEvent = event as NotificationClickEvent;
+	notificationEvent.notification.close();
 
-	event.waitUntil(
-		(self as any).clients.matchAll({ type: 'window' }).then((clientList: any[]) => {
-			const url = event.notification.data?.url || '/';
-			for (const client of clientList) {
-				if (client.url.endsWith(url) && 'focus' in client) {
-					return client.focus();
+	notificationEvent.waitUntil(
+		(self as unknown as ServiceWorkerGlobalScope).clients
+			.matchAll({ type: 'window' })
+			.then((clientList) => {
+				const url = notificationEvent.notification.data?.url || '/';
+				for (const client of clientList) {
+					const windowClient = client as WindowClient;
+					if (windowClient.url.endsWith(url) && 'focus' in windowClient) {
+						return windowClient.focus();
+					}
 				}
-			}
-			if ((self as any).clients.openWindow) {
-				return (self as any).clients.openWindow(url);
-			}
-		})
+				if ((self as unknown as ServiceWorkerGlobalScope).clients.openWindow) {
+					return (self as unknown as ServiceWorkerGlobalScope).clients.openWindow(url);
+				}
+			})
 	);
 });

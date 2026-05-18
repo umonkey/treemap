@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
 	import { uploadStore } from '$lib/stores/upload';
 	import TabList from '$lib/ui/tab-list/TabList.svelte';
+	import { locale } from './lang';
 
 	const { active } = $props<{
 		active: string;

@@ -1,6 +1,4 @@
 <script lang="ts">
-	import Dialog from '$lib/components/layout/Dialog.svelte';
-	import Tabs from '$lib/components/profile/Tabs.svelte';
 	import WakeCheck from '$lib/components/screen-lock/WakeCheck.svelte';
 	import { locale } from '$lib/locale';
 	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';

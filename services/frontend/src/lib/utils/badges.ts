@@ -1,13 +1,19 @@
+interface NavigatorWithBadge {
+	setAppBadge?: (count: number) => Promise<void>;
+	clearAppBadge?: () => Promise<void>;
+}
+
 /**
  * Update the application badge (PWA icon count).
  */
 export async function updateBadge(count: number) {
-	if (typeof navigator !== 'undefined' && 'setAppBadge' in navigator) {
+	const nav = navigator as unknown as NavigatorWithBadge;
+	if (nav && typeof nav.setAppBadge !== 'undefined') {
 		try {
-			if (count > 0) {
-				await (navigator as any).setAppBadge(count);
-			} else {
-				await (navigator as any).clearAppBadge();
+			if (count > 0 && nav.setAppBadge) {
+				await nav.setAppBadge(count);
+			} else if (nav.clearAppBadge) {
+				await nav.clearAppBadge();
 			}
 		} catch (error) {
 			console.error('[badges] Failed to update app badge:', error);

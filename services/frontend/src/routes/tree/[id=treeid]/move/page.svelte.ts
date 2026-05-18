@@ -1,7 +1,6 @@
 import { mapMode } from '$lib/stores/mapMode';
 import { getTree, updateTreeLocation } from '$lib/api/trees';
 import { mapBus } from '$lib/buses/mapBus';
-import { mapState } from '$lib/components/map/MapLibre.svelte.ts';
 import { moveOriginState } from '$lib/stores/moveOriginState.svelte.ts';
 import { goto, routes } from '$lib/routes';
 import { roundCoord } from '$lib/utils/strings';

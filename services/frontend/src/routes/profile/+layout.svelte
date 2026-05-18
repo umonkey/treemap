@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { locale } from '$lib/locale';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
-	import Tabs from '$lib/components/profile/Tabs.svelte';
+	import { locale } from './lang';
+	import Tabs from './Tabs.svelte';
 
 	const { children } = $props();
 

@@ -1,7 +1,5 @@
 <script lang="ts">
 	import AutoUploadCheckbox from '$lib/components/AutoUploadCheckbox.svelte';
-	import Dialog from '$lib/components/layout/Dialog.svelte';
-	import Tabs from '$lib/components/profile/Tabs.svelte';
 	import { uploadStore } from '$lib/stores/upload';
 	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
 	import Button from '$lib/ui/button/Button.svelte';

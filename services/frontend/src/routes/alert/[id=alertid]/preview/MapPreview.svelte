@@ -41,7 +41,7 @@
 			<div class="line date">
 				{formatDateTime(alert.created_at)}
 			</div>
-			<div class="line date">
+			<div class="line bot-report">
 				<a
 					href="https://t.me/kanach_yerevan_bot"
 					target="_blank"
