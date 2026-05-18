@@ -14,8 +14,7 @@
 				'circle-color': '#ff0000',
 				'circle-radius': 25,
 				'circle-opacity': 0.6,
-				'circle-stroke-width': 2,
-				'circle-stroke-color': '#ffffff'
+				'circle-stroke-width': 0
 			}}
 			onclick={alertLayerState.handleClick}
 		/>
