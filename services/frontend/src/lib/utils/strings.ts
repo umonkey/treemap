@@ -5,11 +5,24 @@ import { get } from 'svelte/store';
 export const formatDate = (timestamp: number): string => {
 	const date = new Date(timestamp * 1000);
 
-	const day = `00${date.getDate()}`.slice(-2);
-	const month = `00${date.getMonth() + 1}`.slice(-2);
+	const day = date.getDate().toString().padStart(2, '0');
+	const month = (date.getMonth() + 1).toString().padStart(2, '0');
 	const year = date.getFullYear();
 
 	return `${day}.${month}.${year}`;
+};
+
+export const formatDateTime = (timestamp: number): string => {
+	const date = new Date(timestamp * 1000);
+
+	const day = date.getDate().toString().padStart(2, '0');
+	const month = (date.getMonth() + 1).toString().padStart(2, '0');
+	const year = date.getFullYear();
+
+	const hours = date.getHours().toString().padStart(2, '0');
+	const minutes = date.getMinutes().toString().padStart(2, '0');
+
+	return `${day}.${month}.${year} ${hours}:${minutes}`;
 };
 
 export const fileAttribution = (file: ITreeFile): string => {

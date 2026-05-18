@@ -4,6 +4,7 @@
 	import SpinnerIcon from '$lib/icons/SpinnerIcon.svelte';
 	import { onMount } from 'svelte';
 	import { previewState } from './MapPreview.svelte.ts';
+	import { formatDateTime } from '$lib/utils/strings';
 	import LazyImage from '$lib/ui/lazy-image/LazyImage.svelte';
 	import DefaultImage from '$lib/assets/tree.jpg';
 	import '$lib/styles/variables.css';
@@ -15,10 +16,6 @@
 	$effect(() => {
 		previewState.reload(id);
 	});
-
-	const formatDate = (timestamp: number) => {
-		return new Date(timestamp * 1000).toLocaleString();
-	};
 </script>
 
 <div class="preview" class:expand={!!previewState.expand} class:loading={previewState.loading}>
@@ -41,7 +38,7 @@
 				<div class="value">{alert.description || 'No description provided'}</div>
 			</div>
 			<div class="line date">
-				{formatDate(alert.created_at)}
+				{formatDateTime(alert.created_at)}
 			</div>
 		</div>
 
