@@ -2,11 +2,12 @@
 	import { page } from '$app/stores';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import { locale } from '$lib/locale';
+	import { goto, routes } from '$lib/routes';
 	import StreetViewPage from './StreetViewPage.svelte';
 
 	const id = $derived($page.params.id as string);
 </script>
 
-<Dialog title={locale.treeShortTitle()} nopadding>
+<Dialog title={locale.treeShortTitle()} onCancel={() => goto(routes.mapPreview(id))} nopadding>
 	<StreetViewPage {id} />
 </Dialog>

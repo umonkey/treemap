@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
+	import { goto, routes } from '$lib/routes';
 	import Title from '../components/Title.svelte';
 	import TreeTabs from '../components/TreeTabs.svelte';
 	import ChangeList from './ChangeList.svelte';
@@ -13,7 +14,7 @@
 	});
 </script>
 
-<Dialog title="Tree History" nopadding>
+<Dialog title="Tree History" onCancel={() => goto(routes.mapPreview(id))} nopadding>
 	{#if pageState.loading}
 		<p>Loading...</p>
 	{:else if pageState.error}
