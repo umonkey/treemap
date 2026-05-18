@@ -98,6 +98,24 @@ impl Chatbot {
     }
 
     async fn handle_message(&self, msg: Message) -> ResponseResult<()> {
+        if let Err(e) = self.handle_message_impl(msg.clone()).await {
+            log::error!("Error handling message: {:?}", e);
+
+            let raw_lang = msg
+                .from
+                .as_ref()
+                .and_then(|u| u.language_code.as_deref())
+                .unwrap_or("en");
+            let lang = &raw_lang[..2.min(raw_lang.len())];
+
+            let error_text = self.i18n.tr("generic-error", lang, None);
+            let _ = self.bot.send_message(msg.chat.id, error_text).await;
+        }
+
+        Ok(())
+    }
+
+    async fn handle_message_impl(&self, msg: Message) -> anyhow::Result<()> {
         let user = msg.from.as_ref();
         let user_name = user
             .map(|u| u.full_name())
@@ -137,21 +155,20 @@ impl Chatbot {
 
         // 2. Process photos
         if let Some(photos) = msg.photo() {
-            if let Ok(alert) = self.start_alert(&msg, false, lang).await {
-                alert_id = Some(alert.id);
+            let alert = self.start_alert(&msg, false, lang).await?;
+            alert_id = Some(alert.id);
 
-                if let Some(photo) = photos.last() {
-                    match self.process_photo(&msg, &alert, photo).await {
-                        Ok(is_first) => {
-                            if is_first {
-                                should_respond = true;
-                            }
+            if let Some(photo) = photos.last() {
+                match self.process_photo(&msg, &alert, photo).await {
+                    Ok(is_first) => {
+                        if is_first {
+                            should_respond = true;
                         }
-                        Err(e) => {
-                            log::error!("Error processing photo: {:?}", e);
-                            let error_text = self.i18n.tr("generic-error", lang, None);
-                            let _ = self.bot.send_message(msg.chat.id, error_text).await;
-                        }
+                    }
+                    Err(e) => {
+                        log::error!("Error processing photo: {:?}", e);
+                        let error_text = self.i18n.tr("generic-error", lang, None);
+                        let _ = self.bot.send_message(msg.chat.id, error_text).await;
                     }
                 }
             }
@@ -163,28 +180,22 @@ impl Chatbot {
 
         // 3. Process location
         if let Some(location) = msg.location() {
-            if let Ok(alert) = self.start_alert(&msg, false, lang).await {
-                alert_id = Some(alert.id);
-                let _ = self
-                    .alerts
-                    .update_location(alert.id, location.latitude, location.longitude)
-                    .await;
-                should_respond = true;
-            }
+            let alert = self.start_alert(&msg, false, lang).await?;
+            alert_id = Some(alert.id);
+            self.alerts
+                .update_location(alert.id, location.latitude, location.longitude)
+                .await?;
+            should_respond = true;
         }
 
         // 4. Process text (description)
         if !text_content.is_empty() {
             if alert_id.is_none() {
-                alert_id = self
-                    .alerts
-                    .get_active_id_by_user_id(user_id)
-                    .await
-                    .unwrap_or(None);
+                alert_id = self.alerts.get_active_id_by_user_id(user_id).await?;
             }
 
             if let Some(rid) = alert_id {
-                let _ = self.alerts.update_description(rid, text_content).await;
+                self.alerts.update_description(rid, text_content).await?;
                 should_respond = true;
             }
         }
@@ -233,7 +244,7 @@ impl Chatbot {
         chat_id: ChatId,
         alert_id: i64,
         lang: &str,
-    ) -> ResponseResult<()> {
+    ) -> anyhow::Result<()> {
         let alert = match self.alerts.get_by_id(alert_id).await {
             Ok(Some(r)) => r,
             _ => return Ok(()),
@@ -259,7 +270,7 @@ impl Chatbot {
         Ok(())
     }
 
-    async fn handle_command(&self, msg: &Message, cmd: Command, lang: &str) -> ResponseResult<()> {
+    async fn handle_command(&self, msg: &Message, cmd: Command, lang: &str) -> anyhow::Result<()> {
         match cmd {
             Command::Start => self.handle_start(msg, lang).await,
             Command::Alert => self.handle_alert(msg, lang).await,
@@ -295,7 +306,7 @@ impl Chatbot {
             .await
     }
 
-    async fn handle_start(&self, msg: &Message, lang: &str) -> ResponseResult<()> {
+    async fn handle_start(&self, msg: &Message, lang: &str) -> anyhow::Result<()> {
         self.bot
             .send_message(msg.chat.id, self.i18n.tr("start-welcome", lang, None))
             .parse_mode(ParseMode::Html)
@@ -304,8 +315,8 @@ impl Chatbot {
         Ok(())
     }
 
-    async fn handle_alert(&self, msg: &Message, lang: &str) -> ResponseResult<()> {
-        let _ = self.start_alert(msg, true, lang).await;
+    async fn handle_alert(&self, msg: &Message, lang: &str) -> anyhow::Result<()> {
+        self.start_alert(msg, true, lang).await?;
 
         self.bot
             .send_message(msg.chat.id, self.i18n.tr("alert-intro", lang, None))
@@ -315,7 +326,7 @@ impl Chatbot {
         Ok(())
     }
 
-    async fn handle_map(&self, msg: &Message, lang: &str) -> ResponseResult<()> {
+    async fn handle_map(&self, msg: &Message, lang: &str) -> anyhow::Result<()> {
         let url = "https://yerevan.treemaps.app/".parse().unwrap();
         let button_label = format!("🌐 {}", self.i18n.tr("map-button-label", lang, None));
         let keyboard =
