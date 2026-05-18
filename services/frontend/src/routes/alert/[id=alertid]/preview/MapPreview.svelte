@@ -164,6 +164,9 @@
 				}
 
 				&.bot-report {
+					font-size: 85%;
+					margin-left: calc(20px + var(--gap));
+
 					a {
 						color: var(--color-link);
 						text-decoration: underline;

@@ -13,7 +13,7 @@ class English implements StringList {
 	tabTitle = (id: string) => `Alert ${id} - Trees of Yerevan`;
 	noDescription = () => 'No description provided';
 	photoAlt = () => 'Alert photo';
-	sendReport = () => 'Send your report';
+	sendReport = () => 'Sent via @kanach_yerevan_bot';
 }
 
 class Russian extends English {
@@ -21,7 +21,7 @@ class Russian extends English {
 	tabTitle = (id: string) => `Сигнал ${id} - Деревья Еревана`;
 	noDescription = () => 'Описание отсутствует';
 	photoAlt = () => 'Фото сигнала';
-	sendReport = () => 'Отправить свой сигнал';
+	sendReport = () => 'Отправлено через @kanach_yerevan_bot';
 }
 
 class Armenian extends English {
@@ -29,7 +29,7 @@ class Armenian extends English {
 	tabTitle = (id: string) => `Ահազանգ ${id} - Երևանի ծառերը`;
 	noDescription = () => 'Նկարագրությունը բացակայում է';
 	photoAlt = () => 'Ահազանգի լուսանկար';
-	sendReport = () => 'Ուղարկել ահազանգ';
+	sendReport = () => 'Ուղարկված է @kanach_yerevan_bot-ի միջոցով';
 }
 
 const getLocale = (): StringList => {
