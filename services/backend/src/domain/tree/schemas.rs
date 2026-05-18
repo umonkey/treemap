@@ -12,6 +12,7 @@ pub struct SearchQuery {
     pub words: Vec<String>,
     pub incomplete: bool,
     pub nometrics: bool,
+    pub noobservations: bool,
     pub nocirc: bool,
     pub noimages: bool,
     pub hasaddr: bool,
@@ -144,27 +145,29 @@ impl SearchQuery {
         for word in split_words(query.to_lowercase().as_str()) {
             if word.contains("nometric") {
                 res.nometrics = true;
+            } else if word.contains("no:observations") {
+                res.noobservations = true;
             } else if word.contains("no:circumference") {
                 res.nocirc = true;
             } else if word.contains("no:diameter") {
                 res.nodiameter = true;
-            } else if word.contains("noimage") || word.contains("nophoto") {
+            } else if word.contains("no:photo") || word.contains("noimage") || word.contains("nophoto") {
                 res.noimages = true;
-            } else if word.contains("hasimage") || word.contains("hasphoto") {
+            } else if word.contains("has:photo") || word.contains("hasimage") || word.contains("hasphoto") {
                 res.hasimages = true;
-            } else if word.contains("healthy") {
+            } else if word.contains("state:alive") || word.contains("healthy") {
                 res.statuses.push("healthy".to_string());
             } else if word.contains("deformed") {
                 res.statuses.push("deformed".to_string());
             } else if word.contains("sick") {
                 res.statuses.push("sick".to_string());
-            } else if word.contains("dead") {
+            } else if word.contains("state:dead") || word.contains("dead") {
                 res.statuses.push("dead".to_string());
-            } else if word.contains("stump") {
+            } else if word.contains("state:stump") || word.contains("stump") {
                 res.statuses.push("stump".to_string());
-            } else if word.contains("gone") {
+            } else if word.contains("state:gone") || word.contains("gone") {
                 res.statuses.push("gone".to_string());
-            } else if word.contains("replaced") {
+            } else if word.contains("state:replaced") || word.contains("replaced") {
                 res.statuses.push("replaced".to_string());
             } else if word.contains("state:unknown") {
                 res.statuses.push("unknown".to_string());
@@ -253,6 +256,10 @@ impl SearchQuery {
         }
 
         if self.noheight && tree.height_updated_at >= cutoff {
+            return false;
+        }
+
+        if self.noobservations && tree.observations_updated_at >= cutoff {
             return false;
         }
 
@@ -393,6 +400,39 @@ mod tests {
         let query = SearchQuery::from_string("hello world nophoto");
         assert_eq!(query.words, vec!["hello", "world"]);
         assert!(query.noimages);
+
+        let query = SearchQuery::from_string("no:photo");
+        assert!(query.noimages);
+    }
+
+    #[test]
+    fn test_healthy() {
+        let query = SearchQuery::from_string("healthy");
+
+        assert!(query.r#match(
+            &Tree {
+                state: "healthy".to_string(),
+                ..default_tree()
+            },
+            0
+        ));
+
+        assert!(!query.r#match(
+            &Tree {
+                state: "sick".to_string(),
+                ..default_tree()
+            },
+            0
+        ));
+
+        let query = SearchQuery::from_string("state:alive");
+        assert!(query.r#match(
+            &Tree {
+                state: "healthy".to_string(),
+                ..default_tree()
+            },
+            0
+        ));
     }
 
     #[test]
@@ -500,27 +540,6 @@ mod tests {
             ),
             "the tree has all metrics and must not match"
         );
-    }
-
-    #[test]
-    fn test_healthy() {
-        let query = SearchQuery::from_string("healthy");
-
-        assert!(query.r#match(
-            &Tree {
-                state: "healthy".to_string(),
-                ..default_tree()
-            },
-            0
-        ));
-
-        assert!(!query.r#match(
-            &Tree {
-                state: "sick".to_string(),
-                ..default_tree()
-            },
-            0
-        ));
     }
 
     #[test]

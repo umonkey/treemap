@@ -13,8 +13,13 @@
 	import { onMount } from 'svelte';
 	import { loadSuggestedSpecies } from './hooks';
 
-	const { value = '', onChange } = $props<{
+	const {
+		value = '',
+		nosuggestions = false,
+		onChange
+	} = $props<{
 		value?: string | null;
+		nosuggestions?: boolean;
 		onChange: (value: string) => void;
 	}>();
 
@@ -72,7 +77,11 @@
 		}
 	};
 
-	onMount(() => reload());
+	onMount(() => {
+		if (!nosuggestions) {
+			reload();
+		}
+	});
 
 	$effect(() => {
 		currentValue = formatValue(value);
@@ -104,7 +113,7 @@
 		</ul>
 	{/if}
 
-	{#if $suggested && $suggested.length > 0}
+	{#if !nosuggestions && $suggested && $suggested.length > 0}
 		<div class="suggested">
 			{#each $suggested as option}
 				{#if option}

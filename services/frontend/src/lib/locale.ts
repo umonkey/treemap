@@ -77,6 +77,26 @@ class EnglishLocale {
 		return `Search the map for "${query}"`;
 	}
 
+	public searchMissingHeight(): string {
+		return 'height missing';
+	}
+
+	public searchMissingCanopy(): string {
+		return 'crown diameter missing';
+	}
+
+	public searchMissingCircumference(): string {
+		return 'circumference missing';
+	}
+
+	public searchMissingObservations(): string {
+		return 'observations missing';
+	}
+
+	public searchMissingPhotos(): string {
+		return 'photos missing';
+	}
+
 	public updatesNewTitle(): string {
 		return 'New Trees';
 	}
@@ -781,6 +801,26 @@ class RussianLocale extends EnglishLocale {
 		return `Искать "${query}" на карте`;
 	}
 
+	public searchMissingHeight(): string {
+		return 'нет высоты';
+	}
+
+	public searchMissingCanopy(): string {
+		return 'нет диаметра кроны';
+	}
+
+	public searchMissingCircumference(): string {
+		return 'нет обхвата ствола';
+	}
+
+	public searchMissingObservations(): string {
+		return 'нет наблюдений';
+	}
+
+	public searchMissingPhotos(): string {
+		return 'нет фотографий';
+	}
+
 	public updatesNewTitle(): string {
 		return 'Новые деревья';
 	}
@@ -1459,6 +1499,26 @@ class ArmenianLocale extends EnglishLocale {
 
 	public searchLink(query: string): string {
 		return `Որոնել քարտեզում "${query}"`;
+	}
+
+	public searchMissingHeight(): string {
+		return 'բարձրությունը բացակայում է';
+	}
+
+	public searchMissingCanopy(): string {
+		return 'հովանու տրամագիծը բացակայում է';
+	}
+
+	public searchMissingCircumference(): string {
+		return 'բնի շրջագիծը բացակայում է';
+	}
+
+	public searchMissingObservations(): string {
+		return 'դիտարկումները բացակայում են';
+	}
+
+	public searchMissingPhotos(): string {
+		return 'լուսանկարները բացակայում են';
 	}
 
 	public updatesNewTitle(): string {

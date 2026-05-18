@@ -7,6 +7,8 @@
 	import SpeciesInput from '$lib/ui/species-input/SpeciesInput.svelte';
 	import StreetInput from '$lib/ui/street-input/StreetInput.svelte';
 	import AgeInput from './AgeInput.svelte';
+	import StateInput from '$lib/ui/state-input/StateInput.svelte';
+	import CheckInput from '$lib/ui/check-input/CheckInput.svelte';
 	import { pageState } from './page.svelte';
 
 	const buttons = [
@@ -33,94 +35,50 @@
 			</p>
 			<hr />
 		{/if}
-
-		{#if locale.lang === 'ru'}
-			<p>Некоторые запросы для примера:</p>
-
-			<ul>
-				<li>
-					Есть лазер? <a href={routes.searchQuery(pageState.getAgeQuery('no:diameter'))}
-						>Без диаметра</a
-					>
-					или
-					<a href={routes.searchQuery(pageState.getAgeQuery('no:height'))}>высоты</a>.
-				</li>
-				<li>
-					Есть сантиметр? <a href={routes.searchQuery(pageState.getAgeQuery('no:circumference'))}
-						>Без обхвата ствола</a
-					>.
-				</li>
-				<li>
-					Есть камера? <a href={routes.searchQuery(pageState.getAgeQuery('noimage'))}
-						>Без фотографий</a
-					>.
-				</li>
-				<li>
-					Есть саженец? <a href={routes.searchQuery('gone')}>Пустые места</a> или
-					<a href={routes.searchQuery('stump')}>пни</a>.
-				</li>
-				<li>
-					<a href={routes.searchQuery('unknown hasimage')}>Неопознанные деревья</a> с фотографиями
-				</li>
-				<li>
-					<a href={routes.searchQuery(pageState.getAgeQuery('incomplete'))}>incomplete</a> — деревья
-					без некоторых параметров
-				</li>
-			</ul>
-		{:else}
-			<p>Some interesting searches:</p>
-
-			<ul>
-				<li>
-					<a href={routes.searchQuery('dead')}>Dead</a>,
-					<a href={routes.searchQuery('gone')}>gone</a>
-					trees, or <a href={routes.searchQuery('stump')}>stumps</a>.
-				</li>
-				<li>
-					Have a laser? <a href={routes.searchQuery(pageState.getAgeQuery('no:diameter'))}
-						>No crown diameter</a
-					>
-					or
-					<a href={routes.searchQuery(pageState.getAgeQuery('no:height'))}>no height</a>.
-				</li>
-				<li>
-					Have a tape measure? <a
-						href={routes.searchQuery(pageState.getAgeQuery('no:circumference'))}
-						>No trunk circumference</a
-					>.
-				</li>
-				<li>
-					Have a camera? <a href={routes.searchQuery(pageState.getAgeQuery('noimage'))}>No photos</a
-					>.
-				</li>
-				<li>
-					Have a tree? <a href={routes.searchQuery('gone')}>Empty spots</a> or
-					<a href={routes.searchQuery('stump')}>stumps</a>.
-				</li>
-				<li>
-					With <a href={routes.searchQuery('unknown hasimage')}>unknown species</a> but has photos.
-				</li>
-				<li>
-					<a href={routes.searchQuery(pageState.getAgeQuery('incomplete'))}
-						>Missing some measurements</a
-					>.
-				</li>
-			</ul>
-		{/if}
 	</div>
 
 	<div class="form">
-		<SpeciesInput onChange={pageState.handleSpeciesChange} />
-		<StreetInput onChange={pageState.handleStreetChange} />
+		<div class="checks">
+			<CheckInput
+				label={locale.searchMissingHeight()}
+				value={pageState.noHeight}
+				onChange={pageState.handleNoHeightChange}
+			/>
+			<CheckInput
+				label={locale.searchMissingCanopy()}
+				value={pageState.noCanopy}
+				onChange={pageState.handleNoCanopyChange}
+			/>
+			<CheckInput
+				label={locale.searchMissingCircumference()}
+				value={pageState.noCircumference}
+				onChange={pageState.handleNoCircumferenceChange}
+			/>
+			<CheckInput
+				label={locale.searchMissingObservations()}
+				value={pageState.noObservations}
+				onChange={pageState.handleNoObservationsChange}
+			/>
+			<CheckInput
+				label={locale.searchMissingPhotos()}
+				value={pageState.noPhotos}
+				onChange={pageState.handleNoPhotosChange}
+			/>
+		</div>
+
+		<StateInput value={pageState.state} onChange={pageState.handleStateChange} />
+
+		<SpeciesInput
+			value={pageState.species}
+			onChange={pageState.handleSpeciesChange}
+			nosuggestions={true}
+		/>
+		<StreetInput value={pageState.street} onChange={pageState.handleStreetChange} />
 		<AgeInput value={pageState.age} onChange={pageState.handleAgeChange} />
 	</div>
 </Dialog>
 
 <style>
-	li {
-		margin: 0 0 var(--gap);
-	}
-
 	hr {
 		border: none;
 		border-top: 1px solid var(--sep-color);
@@ -132,5 +90,17 @@
 		display: flex;
 		flex-direction: column;
 		gap: calc(2 * var(--gap));
+	}
+
+	.checks {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: var(--gap);
+	}
+
+	@media (max-width: 600px) {
+		.checks {
+			grid-template-columns: 1fr;
+		}
 	}
 </style>
