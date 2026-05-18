@@ -12,6 +12,7 @@ use crate::actions::heatmap::heatmap_router;
 use crate::actions::login::login_router;
 use crate::actions::me::me_router;
 use crate::actions::meta::meta_router;
+use crate::actions::report::report_router;
 use crate::actions::settings::settings_router;
 use crate::actions::species::species_router;
 use crate::actions::stats::stats_router;
@@ -109,6 +110,7 @@ pub async fn serve_command() {
                     .service(web::scope("/duplicates").configure(duplicate_router))
                     .service(web::scope("/files").configure(file_router))
                     .service(web::scope("/heatmap").configure(heatmap_router))
+                    .service(web::scope("/reports").configure(report_router))
                     .service(web::scope("/me").configure(me_router))
                     .service(web::scope("/species").configure(species_router))
                     .service(web::scope("/stats").configure(stats_router))

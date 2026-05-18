@@ -33,6 +33,7 @@ export const routes = {
 	learn: () => '/learn',
 	map: () => '/',
 	mapPreview: (id: string) => `/tree/${id}/preview`,
+	reportPreview: (id: string) => `/report/${id}/preview`,
 	modeMapper: () => '/mode/mapper',
 	profile: () => '/profile',
 	streetReport: (street?: string) => build('/report', { address: street }),

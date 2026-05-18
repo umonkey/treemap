@@ -1,3 +1,4 @@
+use crate::domain::report::Report;
 use crate::domain::tree::Tree;
 use actix_web::HttpResponse;
 use serde_json::json;
@@ -32,6 +33,38 @@ pub fn respond_with_trees(trees: &[Tree]) -> HttpResponse {
                     "crown": crown,
                     "trunk": trunk,
                     "state": tree.state,
+                }
+            })
+        })
+        .collect();
+
+    let collection = json!({
+        "type": "FeatureCollection",
+        "features": features
+    });
+
+    HttpResponse::Ok()
+        .content_type("application/geo+json")
+        .json(collection)
+}
+
+/// Convert a list of reports to a GeoJSON FeatureCollection response.
+pub fn respond_with_reports(reports: &[Report]) -> HttpResponse {
+    let features: Vec<_> = reports
+        .iter()
+        .map(|report| {
+            json!({
+                "type": "Feature",
+                "id": report.id.to_string(),
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [report.lon.unwrap_or(0.0), report.lat.unwrap_or(0.0)]
+                },
+                "properties": {
+                    "id": report.id.to_string(),
+                    "created_at": report.created_at,
+                    "description": report.description,
+                    "status": report.status,
                 }
             })
         })

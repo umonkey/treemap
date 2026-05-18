@@ -10,6 +10,8 @@ pub mod observation;
 pub mod osm;
 pub mod photo;
 pub mod prop;
+pub mod report;
+pub mod report_photo;
 pub mod settings;
 pub mod species;
 pub mod stats;

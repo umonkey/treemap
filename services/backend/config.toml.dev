@@ -16,6 +16,7 @@ file_storage = "s3"
 files_bucket = "treemap"
 files_endpoint = "https://fra1.digitaloceanspaces.com"
 files_region = "fra1"
+files_base_url = "https://treemap.fra1.cdn.digitaloceanspaces.com/"
 
 # Turso database configuration.
 # Turso is essentially a cloud SQLite.

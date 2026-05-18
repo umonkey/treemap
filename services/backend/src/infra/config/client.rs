@@ -21,6 +21,9 @@ pub struct Config {
     #[serde(default = "default_file_folder")]
     pub file_folder: String,
 
+    #[serde(default = "default_files_base_url")]
+    pub files_base_url: String,
+
     pub jwt_secret: Option<String>,
 
     #[serde(default = "default_osm_changeset_size")]
@@ -134,6 +137,10 @@ impl Config {
 
         Ok(data)
     }
+}
+
+fn default_files_base_url() -> String {
+    "https://treemap.am/files/".to_string()
 }
 
 fn default_server_addr() -> String {
