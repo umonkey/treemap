@@ -246,6 +246,21 @@ impl TreeRepository {
             .await
     }
 
+    pub async fn update_address(&self, tree_id: u64, address: &str, user_id: u64) -> Result<()> {
+        let query = UpdateQuery::new(TABLE)
+            .with_condition("id", Value::from(tree_id as i64))
+            .with_value("address", Value::from(address.to_string()))
+            .with_value("updated_at", Value::from(get_timestamp() as i64))
+            .with_value("updated_by", Value::from(user_id as i64));
+
+        self.db.update(query).await?;
+
+        self.add_tree_prop(tree_id, "address", address, user_id)
+            .await?;
+
+        Ok(())
+    }
+
     pub async fn mark_gone(&self, tree_id: u64, user_id: u64) -> Result<()> {
         let query = UpdateQuery::new(TABLE)
             .with_condition("id", Value::from(tree_id as i64))
@@ -393,6 +408,16 @@ impl TreeRepository {
 
         if old.state != new.state {
             self.add_tree_prop(new.id, "state", &new.state, user_id)
+                .await?;
+        }
+
+        if old.address != new.address {
+            let value = match &new.address {
+                Some(value) => value.to_string(),
+                None => "".to_string(),
+            };
+
+            self.add_tree_prop(new.id, "address", &value, user_id)
                 .await?;
         }
 

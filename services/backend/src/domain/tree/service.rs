@@ -595,13 +595,7 @@ impl TreeService {
         info!("Updating tree {} address to: {}", tree.id, address);
 
         self.trees
-            .update(
-                &Tree {
-                    address: Some(address),
-                    ..tree.clone()
-                },
-                self.bot_user_id,
-            )
+            .update_address(tree.id, &address, self.bot_user_id)
             .await?;
 
         Ok(())
