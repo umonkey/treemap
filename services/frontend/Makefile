@@ -37,7 +37,7 @@ preview-dev:
 	npm run preview
 
 serve:
-	PUBLIC_API_ROOT=https://api.treemaps.app/ npm run dev -- --host
+	PUBLIC_API_ROOT="https://api.treemaps.app/" PUBLIC_FILE_BASE_URL="https://api.treemaps.app/v1/files/" npm run dev -- --host
 
 storybook:
 	npm run storybook
