@@ -3,6 +3,7 @@
 	import UserPic from '$lib/components/layout/UserPic.svelte';
 	import BellIcon from '$lib/icons/BellIcon.svelte';
 	import ChartIcon from '$lib/icons/ChartIcon.svelte';
+	import ChatIcon from '$lib/icons/ChatIcon.svelte';
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
 	import HomeIcon from '$lib/icons/HomeIcon.svelte';
 	import InstallIcon from '$lib/icons/InstallIcon.svelte';
@@ -71,6 +72,17 @@
 					</button>
 				</li>
 			{/if}
+			<li>
+				<a
+					href="https://t.me/kanach_yerevan_bot"
+					target="_blank"
+					rel="noopener noreferrer"
+					onclick={componentState.close}
+				>
+					<span class="icon"><ChatIcon /></span>
+					<span>{locale.sideReportDamage()}</span>
+				</a>
+			</li>
 			<li>
 				<a href={routes.profile()} onclick={componentState.close}>
 					<span class="icon">

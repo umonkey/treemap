@@ -41,6 +41,16 @@
 			<div class="line date">
 				{formatDateTime(alert.created_at)}
 			</div>
+			<div class="line date">
+				<a
+					href="https://t.me/kanach_yerevan_bot"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="value"
+				>
+					{locale.sendReport()}
+				</a>
+			</div>
 		</div>
 
 		{#if previewState.photos.length > 0}
@@ -103,6 +113,7 @@
 		.header {
 			display: flex;
 			flex-direction: row;
+			align-items: center;
 
 			.close {
 				flex-basis: 30px;
@@ -117,6 +128,10 @@
 				border: none;
 				color: light-dark(black, white);
 				opacity: 0.5;
+
+				&:hover {
+					opacity: 1;
+				}
 			}
 		}
 
@@ -146,6 +161,13 @@
 				&.date {
 					font-size: 85%;
 					margin-left: calc(20px + var(--gap));
+				}
+
+				&.bot-report {
+					a {
+						color: var(--color-link);
+						text-decoration: underline;
+					}
 				}
 
 				.icon {

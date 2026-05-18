@@ -37,12 +37,8 @@ class EnglishLocale {
 		return 'Profile';
 	}
 
-	public profileTitle(): string {
-		return 'Profile';
-	}
-
-	public sideAdd(): string {
-		return 'Add a tree';
+	public sideReportDamage(): string {
+		return 'Report damage';
 	}
 
 	public sideAbout(): string {
@@ -717,12 +713,8 @@ class RussianLocale extends EnglishLocale {
 		return 'Профиль';
 	}
 
-	public profileTitle(): string {
-		return 'Профиль';
-	}
-
-	public sideAdd(): string {
-		return 'Добавить дерево';
+	public sideReportDamage(): string {
+		return 'Сообщить о повреждении';
 	}
 
 	public sideAbout(): string {
@@ -1381,12 +1373,8 @@ class ArmenianLocale extends EnglishLocale {
 		return 'Պրոֆիլ';
 	}
 
-	public profileTitle(): string {
-		return 'Պրոֆիլ';
-	}
-
-	public sideAdd(): string {
-		return 'Ավելացնել ծառ';
+	public sideReportDamage(): string {
+		return 'Հայտնել վնասի մասին';
 	}
 
 	public sideAbout(): string {
