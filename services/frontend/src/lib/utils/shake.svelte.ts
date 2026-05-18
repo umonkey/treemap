@@ -114,7 +114,7 @@ class ShakeDetector {
 			this.hits++;
 			this.lastHit = now;
 
-			if (this.hits >= 2) {
+			if (this.hits >= 4) {
 				this.hits = 0;
 				this.lastShake = now;
 				this.onShake();
@@ -123,8 +123,16 @@ class ShakeDetector {
 	};
 
 	private onShake = () => {
+		const target = routes.home();
+		if (
+			typeof window !== 'undefined' &&
+			window.location.pathname === target &&
+			!window.location.search
+		) {
+			return;
+		}
 		console.debug('[shake] Shake detected! Going home...');
-		goto(routes.home());
+		goto(target);
 	};
 }
 
