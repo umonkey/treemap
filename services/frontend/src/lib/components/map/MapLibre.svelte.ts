@@ -37,6 +37,7 @@ class MapLibre {
 	map = $state.raw<Map>();
 	layer = $state<string | StyleSpecification>(BASIC_LAYER);
 	droneLayer = $state<string | undefined>(undefined);
+	alertsLayer = $state<boolean>(true);
 
 	zoom = $state<number>(13);
 	bearing = $state<number>(0);
@@ -176,6 +177,8 @@ class MapLibre {
 		} else {
 			this.droneLayer = undefined;
 		}
+
+		this.alertsLayer = get(mapLayerStore).alerts !== false;
 	};
 }
 

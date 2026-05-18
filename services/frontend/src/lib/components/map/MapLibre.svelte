@@ -75,7 +75,10 @@
 		{/if}
 
 		<TreeLayer />
-		<AlertLayer />
+
+		{#if mapState.alertsLayer}
+			<AlertLayer />
+		{/if}
 
 		{#if $mapMode === 'move' || $mapMode === 'add'}
 			<MapCenter />

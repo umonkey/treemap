@@ -7,6 +7,7 @@
 	import { formatDateTime } from '$lib/utils/strings';
 	import LazyImage from '$lib/ui/lazy-image/LazyImage.svelte';
 	import DefaultImage from '$lib/assets/tree.jpg';
+	import { locale } from './lang';
 	import '$lib/styles/variables.css';
 
 	let { id } = $props<{ id: string }>();
@@ -25,7 +26,7 @@
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
 			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<div class="title" onclick={previewState.toggleExpand}>
-				Alert {alert.id}
+				{locale.title(alert.id)}
 			</div>
 			<button class="close" onclick={previewState.handleClose}><CloseIcon /></button>
 		</div>
@@ -35,7 +36,7 @@
 				<div class="icon">
 					<ChatIcon />
 				</div>
-				<div class="value">{alert.description || 'No description provided'}</div>
+				<div class="value">{alert.description || locale.noDescription()}</div>
 			</div>
 			<div class="line date">
 				{formatDateTime(alert.created_at)}
@@ -48,7 +49,7 @@
 					{#each previewState.photos as photo}
 						<div class="tile">
 							<a href={photo} target="_blank" rel="noopener noreferrer">
-								<LazyImage src={photo} alt="Alert photo" fallback={DefaultImage} />
+								<LazyImage src={photo} alt={locale.photoAlt()} fallback={DefaultImage} />
 							</a>
 						</div>
 					{/each}

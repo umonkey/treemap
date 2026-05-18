@@ -36,6 +36,11 @@
 			label={locale.layerDrone()}
 			onChange={selectorState.toggleDrone}
 		/>
+		<CheckInput
+			value={selectorState.alerts}
+			label={locale.layerAlerts()}
+			onChange={selectorState.toggleAlerts}
+		/>
 	</div>
 </Dialog>
 

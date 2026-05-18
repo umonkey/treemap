@@ -4,12 +4,14 @@ import { derived, writable } from 'svelte/store';
 interface IMapLayers {
 	base: string | undefined;
 	drone: boolean;
+	alerts: boolean;
 }
 
 const getDefaultState = (): IMapLayers => {
 	return {
 		base: 'basic',
-		drone: false
+		drone: false,
+		alerts: true
 	};
 };
 
@@ -21,3 +23,4 @@ mapLayerStore.subscribe((value: IMapLayers) => {
 
 export const baseLayer = derived(mapLayerStore, ($mapStore) => $mapStore?.base);
 export const droneLayer = derived(mapLayerStore, ($mapStore) => $mapStore?.drone);
+export const alertsLayer = derived(mapLayerStore, ($mapStore) => $mapStore?.alerts);
