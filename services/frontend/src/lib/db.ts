@@ -21,11 +21,7 @@ db.version(2).stores({
 });
 
 export async function getPendingCount(): Promise<number> {
-	return await db.uploads
-		.where('status')
-		.anyOf('pending', 'failed')
-		.filter((u) => u.retry_count < 5)
-		.count();
+	return await db.uploads.count();
 }
 
 export { db };

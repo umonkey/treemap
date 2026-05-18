@@ -14,12 +14,7 @@ import { addPhotos, uploadSingleFile as uploadSingleFileApi } from '$lib/api/upl
 import { uploadBus } from '$lib/buses/upload';
 import { showError } from '$lib/errors';
 import { uploadStore } from '$lib/stores/upload';
-import {
-	decrementUploadCount,
-	incrementUploadCount,
-	resetUploadCount,
-	setUploading
-} from '$lib/stores/upload';
+import { setUploading } from '$lib/stores/upload';
 import { isDataSaving, isLowPower } from '$lib/utils/device';
 import { createThumbnail } from '$lib/utils/images';
 import { get } from 'svelte/store';
@@ -71,7 +66,6 @@ export async function addPhotoToUploadQueue(tree_id: string, file: File) {
 		progress: 0
 	});
 
-	incrementUploadCount();
 	autoStartUpload();
 
 	// 2. Generate thumbnail in the background.
@@ -164,7 +158,6 @@ export async function processUploadQueue() {
 			});
 
 			if (!pending?.id) {
-				resetUploadCount();
 				break;
 			}
 
@@ -172,8 +165,6 @@ export async function processUploadQueue() {
 				await uploadSingleFile(pending.tree_id, pending.image, pending.id);
 
 				await db.uploads.delete(pending.id);
-
-				decrementUploadCount();
 
 				uploadBus.emit('success', pending.tree_id);
 

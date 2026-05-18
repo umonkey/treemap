@@ -6,10 +6,32 @@
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import { onMount } from 'svelte';
 	import UploadRow from './UploadRow.svelte';
+	import UploadContextMenu from './UploadContextMenu.svelte';
 	import { locale } from './lang';
 	import { pageState } from './page.svelte';
+	import type { IUpload } from '$lib/db';
+
+	let selectedUpload = $state<IUpload | null>(null);
+	let menuVisible = $state(false);
 
 	onMount(pageState.onMount);
+
+	const openMenu = (upload: IUpload) => {
+		selectedUpload = upload;
+		menuVisible = true;
+	};
+
+	const closeMenu = () => {
+		menuVisible = false;
+		selectedUpload = null;
+	};
+
+	const onDelete = () => {
+		if (selectedUpload?.id !== undefined) {
+			pageState.deleteUpload(selectedUpload.id);
+		}
+		closeMenu();
+	};
 </script>
 
 <AuthWrapper>
@@ -35,12 +57,14 @@
 
 		<div class="uploads-grid">
 			{#each pageState.uploads as upload (upload.id)}
-				<UploadRow {upload} />
+				<UploadRow {upload} onMenu={openMenu} />
 			{/each}
 		</div>
 	{:else}
 		<p>{locale.uploadsEmpty()}</p>
 	{/if}
+
+	<UploadContextMenu visible={menuVisible} onClose={closeMenu} {onDelete} />
 </AuthWrapper>
 
 <style>

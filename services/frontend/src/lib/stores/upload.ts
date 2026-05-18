@@ -1,7 +1,8 @@
 import { writable } from 'svelte/store';
 import { ls } from '$lib/utils/localStorage';
-import { getPendingCount } from '$lib/db';
+import { db } from '$lib/db';
 import { updateBadge } from '$lib/utils/badges';
+import { liveQuery } from 'dexie';
 
 const AUTOUPLOAD_KEY = 'autoUpload';
 
@@ -22,8 +23,8 @@ uploadStore.subscribe((value: UploadStore) => {
 	updateBadge(value.pending);
 });
 
-// Initialize the store from the database.
-getPendingCount().then((count) => {
+// Automatically synchronize the pending count with the database.
+liveQuery(() => db.uploads.count()).subscribe((count) => {
 	uploadStore.update((store) => {
 		store.pending = count;
 		return store;
@@ -33,27 +34,6 @@ getPendingCount().then((count) => {
 export const setUploading = (value: boolean) => {
 	uploadStore.update((store) => {
 		store.uploading = value;
-		return store;
-	});
-};
-
-export const resetUploadCount = () => {
-	uploadStore.update((store) => {
-		store.pending = 0;
-		return store;
-	});
-};
-
-export const incrementUploadCount = () => {
-	uploadStore.update((store) => {
-		store.pending = store.pending + 1;
-		return store;
-	});
-};
-
-export const decrementUploadCount = () => {
-	uploadStore.update((store) => {
-		store.pending = Math.max(0, store.pending - 1);
 		return store;
 	});
 };
