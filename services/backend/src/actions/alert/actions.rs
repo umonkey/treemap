@@ -14,9 +14,10 @@ pub struct PathInfo {
 
 #[get("/active")]
 pub async fn get_active_alerts_action(alerts: Injected<AlertRepository>) -> Result<HttpResponse> {
-    let active_alerts = alerts.get_active().await?;
+    let active_alerts = alerts.get_active(7).await?;
     Ok(crate::responders::geo_json::respond_with_alerts(
         &active_alerts,
+        7,
     ))
 }
 

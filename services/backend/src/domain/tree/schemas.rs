@@ -151,9 +151,15 @@ impl SearchQuery {
                 res.nocirc = true;
             } else if word.contains("no:diameter") {
                 res.nodiameter = true;
-            } else if word.contains("no:photo") || word.contains("noimage") || word.contains("nophoto") {
+            } else if word.contains("no:photo")
+                || word.contains("noimage")
+                || word.contains("nophoto")
+            {
                 res.noimages = true;
-            } else if word.contains("has:photo") || word.contains("hasimage") || word.contains("hasphoto") {
+            } else if word.contains("has:photo")
+                || word.contains("hasimage")
+                || word.contains("hasphoto")
+            {
                 res.hasimages = true;
             } else if word.contains("state:alive") || word.contains("healthy") {
                 res.statuses.push("healthy".to_string());

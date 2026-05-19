@@ -1,5 +1,6 @@
 use crate::domain::alert::Alert;
 use crate::domain::tree::Tree;
+use crate::utils::get_timestamp;
 use actix_web::HttpResponse;
 use serde_json::json;
 use std::f64::consts::PI;
@@ -49,10 +50,16 @@ pub fn respond_with_trees(trees: &[Tree]) -> HttpResponse {
 }
 
 /// Convert a list of alerts to a GeoJSON FeatureCollection response.
-pub fn respond_with_alerts(alerts: &[Alert]) -> HttpResponse {
+pub fn respond_with_alerts(alerts: &[Alert], days: u64) -> HttpResponse {
+    let now = get_timestamp();
+    let max_age = (days * 24 * 60 * 60) as f64;
+
     let features: Vec<_> = alerts
         .iter()
         .map(|alert| {
+            let age = now.saturating_sub(alert.created_at) as f64;
+            let weight = (1.0 - (age / max_age)).clamp(0.0, 1.0);
+
             json!({
                 "type": "Feature",
                 "id": alert.id.to_string(),
@@ -65,6 +72,7 @@ pub fn respond_with_alerts(alerts: &[Alert]) -> HttpResponse {
                     "created_at": alert.created_at,
                     "description": alert.description,
                     "status": alert.status,
+                    "weight": weight,
                 }
             })
         })

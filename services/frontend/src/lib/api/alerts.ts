@@ -6,6 +6,7 @@ export interface IAlertProperties {
 	created_at: number;
 	description: string | null;
 	status: string;
+	weight: number;
 }
 
 export interface IAlertFeature {

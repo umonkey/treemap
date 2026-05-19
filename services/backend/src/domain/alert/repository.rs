@@ -6,7 +6,6 @@ use crate::utils::get_timestamp;
 use std::sync::Arc;
 
 const TABLE: &str = "chatbot_alerts";
-const ONE_WEEK: u64 = 7 * 24 * 60 * 60;
 
 pub struct AlertRepository {
     db: Arc<Database>,
@@ -18,9 +17,9 @@ impl AlertRepository {
         self.query_single(query).await
     }
 
-    pub async fn get_active(&self) -> Result<Vec<Alert>> {
+    pub async fn get_active(&self, days: u64) -> Result<Vec<Alert>> {
         let now = get_timestamp();
-        let since = now.saturating_sub(ONE_WEEK);
+        let since = now.saturating_sub(days * 24 * 60 * 60);
 
         let sql = format!(
             "SELECT * FROM `{}` WHERE created_at >= ? AND lat IS NOT NULL AND lon IS NOT NULL",

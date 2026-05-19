@@ -13,7 +13,7 @@
 			paint={{
 				'circle-color': '#ff0000',
 				'circle-radius': 25,
-				'circle-opacity': 0.6,
+				'circle-opacity': ['+', 0.1, ['*', ['get', 'weight'], 0.5]],
 				'circle-stroke-width': 0
 			}}
 			onclick={alertLayerState.handleClick}
