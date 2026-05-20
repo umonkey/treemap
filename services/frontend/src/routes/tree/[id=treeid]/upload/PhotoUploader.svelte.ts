@@ -68,11 +68,11 @@ class ComponentState {
 
 			for (const file of fileList) {
 				try {
-					// On some mobile devices, the File object might be invalidated if the input is cleared
-					// or if we wait too long. Slicing it into a new Blob helps "solidify" the data.
-					// We do this immediately in the loop to minimize the chance of revocation.
-					const blob = file.slice(0, file.size, file.type);
-					const solidifiedFile = new File([blob], file.name, { type: file.type });
+					// On some mobile devices (like Samsung S21+), the File object might be invalidated
+					// if the input is cleared or if we wait too long. Reading it into an ArrayBuffer
+					// ensures we have a stable copy of the data.
+					const buffer = await file.arrayBuffer();
+					const solidifiedFile = new File([buffer], file.name, { type: file.type });
 
 					await this.appendFile(solidifiedFile);
 				} catch (e) {
@@ -96,8 +96,10 @@ class ComponentState {
 			if (item.kind === 'file') {
 				const file = item.getAsFile();
 				if (file && file.type.startsWith('image/')) {
-					const blob = file.slice(0, file.size, file.type);
-					const solidifiedFile = new File([blob], file.name || 'pasted-image', { type: file.type });
+					const buffer = await file.arrayBuffer();
+					const solidifiedFile = new File([buffer], file.name || 'pasted-image', {
+						type: file.type
+					});
 					await this.appendFile(solidifiedFile);
 				}
 			}
