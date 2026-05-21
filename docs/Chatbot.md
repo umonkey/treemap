@@ -3,11 +3,8 @@
 The application includes a Telegram chatbot that allows users to send tree damage alerts directly from their mobile devices.
 
 - Tree damage alerting: users can send alerts including photos and location data.
-
 - Map integration: alerts are visualized as red circles on the main map.
-
 - Data retention: all alerts are stored permanently in the database for historical tracking.
-
 - Display logic: to maintain map clarity and relevance, only alerts from the last 7 days are shown on the active map.
 
 ## Configuration
