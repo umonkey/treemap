@@ -1,6 +1,5 @@
 export { goto } from '$app/navigation';
 import { config } from '$lib/env';
-import type { ILatLng } from '$lib/types';
 
 type Params = {
 	[key: string]: string | undefined | null;
@@ -53,13 +52,7 @@ export const routes = {
 	statsStreets: () => '/stats/streets',
 	treeAdd: () => `/add`,
 	uploads: () => '/profile/uploads',
-	addRow: (start: ILatLng, end: ILatLng) =>
-		build('/add/row', {
-			alat: start.lat.toString(),
-			alng: start.lng.toString(),
-			blat: end.lat.toString(),
-			blng: end.lng.toString()
-		}),
+	addRow: () => '/add-row',
 	treeDead: (id: string) => `/tree/${id}/dead`,
 	treeDelete: (id: string) => `/tree/${id}/delete`,
 	treeDetails: (id: string, imageId?: string) => build(`/tree/${id}`, { image: imageId }),

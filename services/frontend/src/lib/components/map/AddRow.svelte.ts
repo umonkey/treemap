@@ -1,85 +1,137 @@
-import { mapBus } from '$lib/buses/mapBus';
-import map, { type LngLat } from 'maplibre-gl';
-import { type ILatLng } from '$lib/types';
 import { goto, routes } from '$lib/routes';
-
-export type ClickFn = (start: LngLat, end: LngLat) => void;
+import { mapState } from './MapLibre.svelte.ts';
+import type { ILatLng, ILatLon, IAddTreesRequest } from '$lib/types';
+import { getDistance } from '$lib/utils';
+import { spreadDots } from '$lib/map';
+import { addTree } from '$lib/api/trees';
+import { showError } from '$lib/errors';
+import { mapBus } from '$lib/buses/mapBus';
 
 class AddState {
 	active = $state<boolean>(false);
-	center = $state<LngLat>();
-	start = $state<LngLat>();
-	end = $state<LngLat>();
+	saving = $state<boolean>(false);
+	count = $state<number>(2);
+	pointA = $state<ILatLng | null>(null);
+	pointB = $state<ILatLng | null>(null);
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	line = $state.raw<any>();
+	distance = $derived(this.pointA && this.pointB ? getDistance(this.pointA, this.pointB) : 0);
+	step = $derived(
+		this.distance > 0 && this.count > 1
+			? Math.round((this.distance / (this.count - 1)) * 10) / 10
+			: 0
+	);
 
-	public toggle = (e: Event) => {
-		e.preventDefault();
-		this.active = !this.active;
+	previewData = $derived.by(() => {
+		if (!this.pointA || !this.pointB) return undefined;
 
-		if (this.active) {
-			mapBus.emit('preview', undefined);
-		}
-	};
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const res: any = {
+			type: 'FeatureCollection',
+			features: []
+		};
 
-	public handleConfirm = async () => {
-		if (this.start && this.end) {
-			this.active = false;
-			this.line = undefined;
-			await goto(routes.addRow(this.start, this.end));
-		}
-	};
-
-	public handleCancel = () => {
-		this.active = false;
-		this.line = undefined;
-	};
-
-	public handleMove = (ll: LngLat) => {
-		this.center = ll;
-	};
-
-	public handleStart = () => {
-		this.start = this.center;
-		this.updateLine();
-	};
-
-	public handleEnd = () => {
-		this.end = this.center;
-		this.updateLine();
-	};
-
-	public updateLine = () => {
-		if (!this.start || !this.end) {
-			this.line = undefined;
-			return;
-		}
-
-		this.line = {
+		res.features.push({
 			type: 'Feature',
 			geometry: {
 				type: 'LineString',
 				coordinates: [
-					[this.start.lng, this.start.lat],
-					[this.end.lng, this.end.lat]
+					[this.pointA.lng, this.pointA.lat],
+					[this.pointB.lng, this.pointB.lat]
 				]
 			}
+		});
+
+		for (const dot of spreadDots(this.pointA, this.pointB, this.count)) {
+			res.features.push({
+				type: 'Feature',
+				geometry: {
+					type: 'Point',
+					coordinates: [dot.lng, dot.lat]
+				}
+			});
+		}
+
+		return res;
+	});
+
+	public toggle = (e: Event) => {
+		e.preventDefault();
+		goto(routes.addRow());
+	};
+
+	public setPointA = () => {
+		this.pointA = {
+			lat: mapState.center.lat,
+			lng: mapState.center.lng
 		};
 	};
 
-	private handleCenter = (ll: ILatLng) => {
-		this.center = new map.LngLat(ll.lng, ll.lat);
+	public setPointB = () => {
+		this.pointB = {
+			lat: mapState.center.lat,
+			lng: mapState.center.lng
+		};
+	};
+
+	public handleCountChange = (value: number) => {
+		this.count = value;
+	};
+
+	public handleConfirm = async () => {
+		if (!this.pointA || !this.pointB) {
+			return;
+		}
+
+		const points: ILatLon[] = spreadDots(this.pointA, this.pointB, this.count).map((point) => ({
+			lat: point.lat,
+			lon: point.lng
+		}));
+
+		const req = {
+			points,
+			species: '',
+			height: null,
+			diameter: null,
+			circumference: null,
+			state: 'unknown',
+			notes: null,
+			year: null,
+			files: []
+		} as IAddTreesRequest;
+
+		try {
+			this.saving = true;
+
+			const { status, data: d, error: e } = await addTree(req);
+
+			if (status >= 200 && status < 300 && d) {
+				const id = d.trees[0].id;
+				goto(routes.mapPreview(id));
+				this.reset();
+			} else if (e) {
+				console.error(`Error ${status} adding trees.`, e);
+				showError(e.description);
+			}
+		} finally {
+			this.saving = false;
+			mapBus.emit('reload');
+		}
+	};
+
+	public handleCancel = () => {
+		this.reset();
+		goto(routes.map());
+	};
+
+	public reset = () => {
+		this.pointA = null;
+		this.pointB = null;
+		this.count = 2;
+		this.saving = false;
 	};
 
 	public onMount = () => {
-		mapBus.on('center', this.handleCenter);
-		mapBus.on('select', this.handleCancel);
-
-		return () => {
-			mapBus.off('center', this.handleCenter);
-			mapBus.off('select', this.handleCancel);
-		};
+		return () => {};
 	};
 }
 

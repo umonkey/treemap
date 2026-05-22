@@ -162,7 +162,19 @@ class EnglishLocale {
 	}
 
 	public addRowConfirmButton(): string {
-		return 'Add trees';
+		return 'Continue';
+	}
+
+	public addRowStartPoint(): string {
+		return 'Set start point';
+	}
+
+	public addRowEndPoint(): string {
+		return 'Set end point';
+	}
+
+	public setPoint(): string {
+		return 'Set';
 	}
 
 	public addCancelButton(): string {
@@ -645,8 +657,8 @@ class EnglishLocale {
 		return 'Details';
 	}
 
-	public rowStepInfo(count: number, step: number): string {
-		return `You will add ${count} trees, spaced ${step.toFixed(1)} meters apart.`;
+	public rowStepInfo(count: number, step: number, distance: number): string {
+		return `You will add ${count} trees, spaced ${step.toFixed(1)} meters apart (total ${distance.toFixed(1)} m).`;
 	}
 
 	public rowLength(value: number): string {
@@ -875,6 +887,18 @@ class RussianLocale extends EnglishLocale {
 
 	public addRowTitle(): string {
 		return 'Добавить ряд деревьев';
+	}
+
+	public addRowStartPoint(): string {
+		return 'Укажите начало ряда';
+	}
+
+	public addRowEndPoint(): string {
+		return 'Укажите конец ряда';
+	}
+
+	public setPoint(): string {
+		return 'Ок';
 	}
 
 	public addConfirmButton(): string {
@@ -1349,12 +1373,12 @@ class RussianLocale extends EnglishLocale {
 		return 'Количество деревьев';
 	}
 
-	public rowStepInfo(count: number, step: number): string {
-		return `Добавим ${count} деревьев, с шагом ${step.toFixed(1)} метров.`;
+	public rowStepInfo(count: number, step: number, distance: number): string {
+		return `Добавим ${count} деревьев, с шагом ${step.toFixed(1)} метров (всего ${distance.toFixed(1)} м).`;
 	}
 
 	public addRowConfirmButton(): string {
-		return 'Добавить ряд';
+		return 'Продолжить';
 	}
 
 	public rowLength(value: number): string {
@@ -1574,7 +1598,19 @@ class ArmenianLocale extends EnglishLocale {
 	}
 
 	public addRowTitle(): string {
-		return 'Ավելացրե՛ք ծառերի մի շարք';
+		return 'Ավելացնել ծառերի շարք';
+	}
+
+	public addRowStartPoint(): string {
+		return 'Նշեք սկզբնակետը';
+	}
+
+	public addRowEndPoint(): string {
+		return 'Նշեք վերջնակետը';
+	}
+
+	public setPoint(): string {
+		return 'Նշել';
 	}
 
 	public addConfirmButton(): string {
@@ -1961,12 +1997,12 @@ class ArmenianLocale extends EnglishLocale {
 		return 'Ծառերի քանակը';
 	}
 
-	public rowStepInfo(count: number, step: number): string {
-		return `Դուք կտնկեք ${count} ծառ՝ ${step.toFixed(1)} մետր միջակայքով։`;
+	public rowStepInfo(count: number, step: number, distance: number): string {
+		return `Դուք կտնկեք ${count} ծառ՝ ${step.toFixed(1)} մետր միջակայքով (ընդհանուր ${distance.toFixed(1)} մ)։`;
 	}
 
 	public addRowConfirmButton(): string {
-		return 'Ավելացնել';
+		return 'Շարունակել';
 	}
 
 	public rowLength(value: number): string {

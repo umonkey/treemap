@@ -17,6 +17,7 @@
 	import MapCenter from './MapCenter.svelte';
 	import MoveLine from './MoveLine.svelte';
 	import NearestTree from './NearestTree.svelte';
+	import MapRowPreview from './MapRowPreview.svelte';
 	import { mapMode } from '$lib/stores/mapMode';
 
 	const { children = undefined, onMove } = $props<{
@@ -80,12 +81,14 @@
 			<AlertLayer />
 		{/if}
 
-		{#if $mapMode === 'move' || $mapMode === 'add'}
+		{#if $mapMode === 'move' || $mapMode === 'add' || $mapMode === 'add-row'}
 			<MapCenter />
 			{#if $mapMode === 'move'}
 				<MoveLine />
-			{:else}
+			{:else if $mapMode === 'add'}
 				<NearestTree />
+			{:else if $mapMode === 'add-row'}
+				<MapRowPreview />
 			{/if}
 		{/if}
 	</MapLibre>
