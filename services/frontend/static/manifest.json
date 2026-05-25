@@ -20,6 +20,18 @@
 			"sizes": "512x512",
 			"type": "image/png",
 			"purpose": "any"
+		},
+		{
+			"src": "/icons/tree-128x128.png",
+			"sizes": "128x128",
+			"type": "image/png",
+			"purpose": "maskable"
+		},
+		{
+			"src": "/icons/tree-64x64.png",
+			"sizes": "64x64",
+			"type": "image/png",
+			"purpose": "maskable"
 		}
 	],
 	"screenshots": [
