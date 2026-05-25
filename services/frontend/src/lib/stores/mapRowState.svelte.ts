@@ -53,8 +53,9 @@ class MapRowState {
 		return createPreviewGeoJSON(pointA, pointB, count);
 	});
 
-	reset = () => {
-		this.pointA = null;
+	init = (center?: ILatLng) => {
+		this.pointA =
+			center?.lat != null && center?.lng != null ? { lat: center.lat, lng: center.lng } : null;
 		this.pointB = null;
 		this.count = 2;
 	};

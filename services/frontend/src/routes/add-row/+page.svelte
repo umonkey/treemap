@@ -11,6 +11,8 @@
 	import RowSizeInput from '$lib/components/map/RowSizeInput.svelte';
 	import { mapRowState } from '$lib/stores/mapRowState.svelte';
 	import { getDistance } from '$lib/utils';
+	import { get } from 'svelte/store';
+	import { mapStore } from '$lib/stores/mapStore';
 	import '$lib/styles/variables.css';
 
 	const distance = $derived(
@@ -21,9 +23,10 @@
 
 	onMount(() => {
 		$mapMode = 'add-row';
+		mapRowState.init(get(mapStore)?.center);
 		return () => {
 			$mapMode = undefined;
-			mapRowState.reset();
+			mapRowState.init();
 		};
 	});
 </script>

@@ -64,7 +64,7 @@ class PageState {
 			if (status >= 200 && status < 300 && d) {
 				const id = d.trees[0].id;
 				goto(routes.mapPreview(id));
-				mapRowState.reset();
+				mapRowState.init();
 			} else if (e) {
 				console.error(`Error ${status} adding trees.`, e);
 				showError(e.description);
@@ -76,7 +76,7 @@ class PageState {
 	};
 
 	handleCancel = () => {
-		mapRowState.reset();
+		mapRowState.init();
 		goto(routes.map());
 	};
 }
