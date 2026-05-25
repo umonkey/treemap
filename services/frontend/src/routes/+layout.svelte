@@ -30,6 +30,14 @@
 			pwaStore.set(e as BeforeInstallPromptEvent);
 			console.debug('[pwa] Install event stored.');
 		});
+
+		// Reload when a new service worker takes over.
+		if ('serviceWorker' in navigator) {
+			navigator.serviceWorker.addEventListener('controllerchange', () => {
+				console.info('[pwa] New service worker took control, reloading...');
+				window.location.reload();
+			});
+		}
 	});
 </script>
 

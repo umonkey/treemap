@@ -17,7 +17,11 @@ const config = {
 			fallback: 'index.html',
 			precompress: false,
 			strict: true
-		})
+		}),
+		version: {
+			name: Date.now().toString(),
+			pollInterval: 60000
+		}
 	}
 };
 

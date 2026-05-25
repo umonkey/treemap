@@ -13,15 +13,15 @@ pub async fn default_action() -> Result<HttpResponse> {
         Error::FileNotFound
     })?;
 
-    let cache_control = CacheControl(vec![CacheDirective::Public, CacheDirective::MaxAge(60)]);
-
-    let expiration = SystemTime::now() + Duration::from_secs(60);
-    let expiration_header = Expires(expiration.into());
+    let cache_control = CacheControl(vec![
+        CacheDirective::NoCache,
+        CacheDirective::NoStore,
+        CacheDirective::MustRevalidate,
+    ]);
 
     let res = HttpResponse::Ok()
         .content_type("text/html")
         .insert_header(cache_control)
-        .insert_header(expiration_header)
         .body(body);
 
     Ok(res)
