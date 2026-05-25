@@ -77,12 +77,7 @@
 		</div>
 
 		{#if mapRowState.pointA && mapRowState.pointB}
-			<RowSizeInput
-				value={mapRowState.count}
-				{distance}
-				onChange={pageState.handleCountChange}
-				autofocus
-			/>
+			<RowSizeInput value={mapRowState.count} {distance} onChange={pageState.handleCountChange} />
 		{/if}
 	</div>
 
