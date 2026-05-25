@@ -37,7 +37,6 @@
 					accept="image/jpeg,image/png,image/heic,image/heif,image/webp"
 					onchange={state.handleChange}
 					capture="environment"
-					multiple
 				/>
 			</label>
 
