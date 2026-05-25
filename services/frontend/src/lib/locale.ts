@@ -161,8 +161,8 @@ class EnglishLocale {
 		return 'Add tree';
 	}
 
-	public addRowConfirmButton(): string {
-		return 'Continue';
+	public addRowConfirmButton(count: number): string {
+		return `Add ${count} trees`;
 	}
 
 	public addRowStartPoint(): string {
@@ -1377,8 +1377,8 @@ class RussianLocale extends EnglishLocale {
 		return `Добавим ${count} деревьев, с шагом ${step.toFixed(1)} метров (всего ${distance.toFixed(1)} м).`;
 	}
 
-	public addRowConfirmButton(): string {
-		return 'Продолжить';
+	public addRowConfirmButton(count: number): string {
+		return `Добавить ${count} деревьев`;
 	}
 
 	public rowLength(value: number): string {
@@ -2001,8 +2001,8 @@ class ArmenianLocale extends EnglishLocale {
 		return `Դուք կտնկեք ${count} ծառ՝ ${step.toFixed(1)} մետր միջակայքով (ընդհանուր ${distance.toFixed(1)} մ)։`;
 	}
 
-	public addRowConfirmButton(): string {
-		return 'Շարունակել';
+	public addRowConfirmButton(count: number): string {
+		return `Ավելացնել ${count} ծառ`;
 	}
 
 	public rowLength(value: number): string {

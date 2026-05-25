@@ -92,10 +92,7 @@
 			disabled={pageState.saving || !mapRowState.pointA || !mapRowState.pointB}
 			nowrap
 		>
-			{locale.addRowConfirmButton()}
-		</Button>
-		<Button type="secondary" onClick={pageState.handleCancel} nowrap>
-			{locale.editCancel()}
+			{locale.addRowConfirmButton(mapRowState.count)}
 		</Button>
 	</Buttons>
 </div>
