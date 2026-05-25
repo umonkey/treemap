@@ -16,7 +16,7 @@
 
 		<CircleLayer
 			paint={{
-				'circle-color': '#228B22',
+				'circle-color': '#ffd700',
 				'circle-radius': [
 					'interpolate',
 					['exponential', 2],
