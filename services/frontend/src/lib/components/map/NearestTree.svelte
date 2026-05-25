@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { GeoJSON, LineLayer } from 'svelte-maplibre';
+	import { GeoJSON, LineLayer, Marker } from 'svelte-maplibre';
 	import { componentState } from './NearestTree.svelte.ts';
 </script>
 
@@ -14,4 +14,23 @@
 			}}
 		/>
 	</GeoJSON>
+
+	<Marker lngLat={componentState.nearest.midpoint}>
+		<div class="distance-label">
+			{Math.round(componentState.nearest.distance)}m
+		</div>
+	</Marker>
 {/if}
+
+<style>
+	.distance-label {
+		background: white;
+		color: black;
+		padding: 2px 6px;
+		border-radius: 4px;
+		font-size: 12px;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+		pointer-events: none;
+		white-space: nowrap;
+	}
+</style>

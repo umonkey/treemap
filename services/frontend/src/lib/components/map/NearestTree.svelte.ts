@@ -34,6 +34,10 @@ class ComponentState {
 		return {
 			feature: nearestFeature,
 			distance: minDistance,
+			midpoint: [
+				(center.lng + nearestFeature.geometry.coordinates[0]) / 2,
+				(center.lat + nearestFeature.geometry.coordinates[1]) / 2
+			] as [number, number],
 			line: {
 				type: 'Feature' as const,
 				geometry: {
