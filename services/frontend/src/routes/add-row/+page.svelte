@@ -4,8 +4,6 @@
 	import Button from '$lib/ui/button/Button.svelte';
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
-	import LineStartIcon from '$lib/icons/LineStartIcon.svelte';
-	import LineEndIcon from '$lib/icons/LineEndIcon.svelte';
 	import { mapMode } from '$lib/stores/mapMode';
 	import { onMount } from 'svelte';
 	import RowSizeInput from '$lib/components/map/RowSizeInput.svelte';
@@ -45,34 +43,16 @@
 
 	<div class="props">
 		<div class="line">
-			<div class="icon">
-				<LineStartIcon />
-			</div>
-			<div class="value">
-				{#if mapRowState.pointA}
-					{mapRowState.pointA.lat.toFixed(6)}, {mapRowState.pointA.lng.toFixed(6)}
-				{:else}
-					{locale.addRowStartPoint()}
-				{/if}
-			</div>
 			<Button type="secondary" onClick={pageState.setPointA} nowrap>
-				{locale.setPoint()}
+				{locale.addRowStartPoint()}
 			</Button>
-		</div>
 
-		<div class="line">
-			<div class="icon">
-				<LineEndIcon />
+			<div class="value centered">
+				{locale.meters(distance.toFixed(1))}
 			</div>
-			<div class="value">
-				{#if mapRowState.pointB}
-					{mapRowState.pointB.lat.toFixed(6)}, {mapRowState.pointB.lng.toFixed(6)}
-				{:else}
-					{locale.addRowEndPoint()}
-				{/if}
-			</div>
+
 			<Button type="secondary" onClick={pageState.setPointB} nowrap>
-				{locale.setPoint()}
+				{locale.addRowEndPoint()}
 			</Button>
 		</div>
 
@@ -156,16 +136,14 @@
 				align-items: center;
 				gap: var(--gap);
 
-				.icon {
-					width: 24px;
-					height: 24px;
-					flex-shrink: 0;
-				}
-
 				.value {
 					flex-grow: 1;
 					font-size: 0.9rem;
 					opacity: 0.8;
+
+					&.centered {
+						text-align: center;
+					}
 				}
 			}
 		}

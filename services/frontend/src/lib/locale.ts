@@ -166,11 +166,11 @@ class EnglishLocale {
 	}
 
 	public addRowStartPoint(): string {
-		return 'Set start point';
+		return 'Set start';
 	}
 
 	public addRowEndPoint(): string {
-		return 'Set end point';
+		return 'Set end';
 	}
 
 	public setPoint(): string {
@@ -657,8 +657,8 @@ class EnglishLocale {
 		return 'Details';
 	}
 
-	public rowStepInfo(count: number, step: number, distance: number): string {
-		return `You will add ${count} trees, spaced ${step.toFixed(1)} meters apart (total ${distance.toFixed(1)} m).`;
+	public rowStepInfo(count: number, step: number): string {
+		return `You will add ${count} trees, spaced ${step.toFixed(1)} meters apart.`;
 	}
 
 	public rowLength(value: number): string {
@@ -890,11 +890,11 @@ class RussianLocale extends EnglishLocale {
 	}
 
 	public addRowStartPoint(): string {
-		return 'Укажите начало ряда';
+		return 'Начало';
 	}
 
 	public addRowEndPoint(): string {
-		return 'Укажите конец ряда';
+		return 'Конец';
 	}
 
 	public setPoint(): string {
@@ -1373,8 +1373,8 @@ class RussianLocale extends EnglishLocale {
 		return 'Количество деревьев';
 	}
 
-	public rowStepInfo(count: number, step: number, distance: number): string {
-		return `Добавим ${count} деревьев, с шагом ${step.toFixed(1)} метров (всего ${distance.toFixed(1)} м).`;
+	public rowStepInfo(count: number, step: number): string {
+		return `Добавим ${count} деревьев, с шагом ${step.toFixed(1)} метров.`;
 	}
 
 	public addRowConfirmButton(count: number): string {
@@ -1602,11 +1602,11 @@ class ArmenianLocale extends EnglishLocale {
 	}
 
 	public addRowStartPoint(): string {
-		return 'Նշեք սկզբնակետը';
+		return 'Սկիզբ';
 	}
 
 	public addRowEndPoint(): string {
-		return 'Նշեք վերջնակետը';
+		return 'Վերջ';
 	}
 
 	public setPoint(): string {
@@ -1997,8 +1997,8 @@ class ArmenianLocale extends EnglishLocale {
 		return 'Ծառերի քանակը';
 	}
 
-	public rowStepInfo(count: number, step: number, distance: number): string {
-		return `Դուք կտնկեք ${count} ծառ՝ ${step.toFixed(1)} մետր միջակայքով (ընդհանուր ${distance.toFixed(1)} մ)։`;
+	public rowStepInfo(count: number, step: number): string {
+		return `Դուք կտնկեք ${count} ծառ՝ ${step.toFixed(1)} մետր միջակայքով։`;
 	}
 
 	public addRowConfirmButton(count: number): string {

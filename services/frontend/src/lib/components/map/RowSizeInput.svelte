@@ -12,7 +12,7 @@
 	const step = $derived(
 		distance > 0 && value > 1 ? Math.round((distance / (value - 1)) * 10) / 10 : 0
 	);
-	const hint = $derived(locale.rowStepInfo(value, step, distance));
+	const hint = $derived(locale.rowStepInfo(value, step));
 </script>
 
 <div class="row-size-input">
