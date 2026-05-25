@@ -89,6 +89,7 @@
 				<NearestTree />
 			{:else if $mapMode === 'add-row'}
 				<MapRowPreview />
+				<NearestTree />
 			{/if}
 		{/if}
 	</MapLibre>
