@@ -48,6 +48,30 @@ class TreeLayerState {
 	fetchDebouncer = new Debouncer(100);
 	moveBouncer = new MapBouncer();
 
+	public readonly crownRadiusSmall = 4;
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	public readonly crownRadiusLarge: any = [
+		'interpolate',
+		['exponential', 2],
+		['zoom'],
+		10,
+		['*', ['get', 'crown'], 0.00428],
+		22,
+		['*', ['get', 'crown'], 17.534]
+	];
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	public readonly trunkRadiusLarge: any = [
+		'interpolate',
+		['exponential', 2],
+		['zoom'],
+		10,
+		['*', ['get', 'trunk'], 0.00428],
+		22,
+		['*', ['get', 'trunk'], 17.534]
+	];
+
 	private reload = (map: Map) => {
 		const bounds = map.getBounds();
 		const search = get(searchStore);
