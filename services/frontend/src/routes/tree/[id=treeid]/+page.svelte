@@ -21,7 +21,17 @@
 	$effect(() => {
 		pageState.reload(id);
 	});
+
+	const title = $derived(
+		pageState.tree
+			? `${formatSpecies(pageState.tree.species)} — ${pageState.tree.address} — ${locale.appTitle()}`
+			: `${locale.treeShortTitle()} — ${locale.appTitle()}`
+	);
 </script>
+
+<svelte:head>
+	<title>{title}</title>
+</svelte:head>
 
 <Dialog
 	title={formatSpecies(pageState.tree?.species || null)}

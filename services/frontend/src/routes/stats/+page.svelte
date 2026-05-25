@@ -1,7 +1,12 @@
 <script lang="ts">
 	import { routes } from '$lib/routes';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
+	import { locale } from '$lib/locale';
 </script>
+
+<svelte:head>
+	<title>{locale.sideReports()} — {locale.appTitle()}</title>
+</svelte:head>
 
 <Dialog title="Data Reports">
 	<ul>

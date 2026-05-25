@@ -6,6 +6,7 @@
 	import SearchIcon from '$lib/icons/SearchIcon.svelte';
 	import SpinnerIcon from '$lib/icons/SpinnerIcon.svelte';
 	import UserIcon from '$lib/icons/UserIcon.svelte';
+	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
 	import { authStore, isAuthenticated } from '$lib/stores/authStore';
 	import { mobileSidebarStore } from '$lib/stores/mobileSidebarStore';
@@ -17,10 +18,10 @@
 </script>
 
 <nav class="mobile">
-	<a href="/"><div><HomeIcon /></div></a>
-	<a href="/search"><div><SearchIcon /></div></a>
-	<a href={routes.treeSaved()}><div><SaveIcon /></div></a>
-	<a href={routes.treeUpdates()}><div><BellIcon /></div></a>
+	<a href="/" title={locale.sideHome()}><div><HomeIcon /></div></a>
+	<a href="/search" title={locale.sideSearch()}><div><SearchIcon /></div></a>
+	<a href={routes.treeSaved()} title={locale.sideSaved()}><div><SaveIcon /></div></a>
+	<a href={routes.treeUpdates()} title={locale.sideUpdates()}><div><BellIcon /></div></a>
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div class="nav-item" onclick={toggleSidebar}>

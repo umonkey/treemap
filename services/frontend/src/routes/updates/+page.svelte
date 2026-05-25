@@ -4,6 +4,7 @@
 	import InfiniteScroll from '$lib/components/layout/InfiniteScroll.svelte';
 	import LazyImage from '$lib/ui/lazy-image/LazyImage.svelte';
 	import { pageState } from './page.svelte';
+	import { locale } from '$lib/locale';
 
 	$effect(() => {
 		untrack(() => pageState.load());
@@ -13,6 +14,10 @@
 		};
 	});
 </script>
+
+<svelte:head>
+	<title>{locale.sideUpdates()} — {locale.appTitle()}</title>
+</svelte:head>
 
 {#if pageState.loading && pageState.tiles.length === 0}
 	<p>Loading trees...</p>

@@ -11,6 +11,10 @@
 	});
 </script>
 
+<svelte:head>
+	<title>{locale.sideProfile()} — {locale.appTitle()}</title>
+</svelte:head>
+
 {#if pageState.loading}
 	...
 {:else if pageState.statusCode === 401}

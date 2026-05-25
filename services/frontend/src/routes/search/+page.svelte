@@ -19,6 +19,10 @@
 	];
 </script>
 
+<svelte:head>
+	<title>{locale.sideSearch()} — {locale.appTitle()}</title>
+</svelte:head>
+
 <Dialog title={locale.searchTitle()} {buttons}>
 	<SearchBar
 		value={pageState.query}

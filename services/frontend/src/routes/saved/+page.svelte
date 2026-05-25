@@ -17,6 +17,10 @@
 	});
 </script>
 
+<svelte:head>
+	<title>{locale.sideSaved()} — {locale.appTitle()}</title>
+</svelte:head>
+
 <Dialog title={locale.savedTitle()}>
 	{#if pageState.loading && pageState.tiles.length === 0}
 		<p>Loading saved trees...</p>
