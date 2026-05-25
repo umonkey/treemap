@@ -99,7 +99,8 @@ export async function getGeoJSON(
 	e: number,
 	s: number,
 	w: number,
-	search?: string | null
+	search?: string | null,
+	zoom?: number
 ): Promise<IResponse<IMarkers>> {
 	const params = new URLSearchParams({
 		n: n.toString(),
@@ -110,6 +111,10 @@ export async function getGeoJSON(
 
 	if (search) {
 		params.set('search', search);
+	}
+
+	if (zoom !== undefined) {
+		params.set('zoom', zoom.toString());
 	}
 
 	return await request<IMarkers>('GET', `v1/trees/geo.json?${params.toString()}`);

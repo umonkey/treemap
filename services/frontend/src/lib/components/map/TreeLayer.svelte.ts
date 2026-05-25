@@ -51,6 +51,7 @@ class TreeLayerState {
 	private reload = (map: Map) => {
 		const bounds = map.getBounds();
 		const search = get(searchStore);
+		const zoom = map.getZoom();
 
 		const { n, e, s, w } = extendBounds({
 			n: bounds.getNorth(),
@@ -60,7 +61,7 @@ class TreeLayerState {
 		});
 
 		this.fetchDebouncer.run(() => {
-			getGeoJSON(n, e, s, w, search)
+			getGeoJSON(n, e, s, w, search, zoom)
 				.then(({ status, data }) => {
 					if (status === 200 && data) {
 						const collection = data as unknown as Collection;
