@@ -24,9 +24,9 @@
 	onMount(() => {
 		$mapMode = 'add-row';
 		mapRowState.init(get(mapStore)?.center);
+
 		return () => {
 			$mapMode = undefined;
-			mapRowState.init();
 		};
 	});
 </script>

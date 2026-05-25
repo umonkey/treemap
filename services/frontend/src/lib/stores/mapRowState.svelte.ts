@@ -56,7 +56,8 @@ class MapRowState {
 	init = (center?: ILatLng) => {
 		this.pointA =
 			center?.lat != null && center?.lng != null ? { lat: center.lat, lng: center.lng } : null;
-		this.pointB = null;
+		this.pointB =
+			center?.lat != null && center?.lng != null ? { lat: center.lat, lng: center.lng } : null;
 		this.count = 2;
 	};
 }
