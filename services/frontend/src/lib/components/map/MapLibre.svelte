@@ -84,7 +84,7 @@
 
 		{#if mapState.moving && ($mapMode === undefined || $mapMode === 'preview')}
 			<MapCenter />
-			<NearestTree distance={5} />
+			<NearestTree distance={5} label={false} />
 		{:else if $mapMode === 'move' || $mapMode === 'add' || $mapMode === 'add-row'}
 			<MapCenter />
 			{#if $mapMode === 'move'}

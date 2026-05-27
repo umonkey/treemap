@@ -2,7 +2,7 @@
 	import { GeoJSON, LineLayer, Marker } from 'svelte-maplibre';
 	import { componentState } from './NearestTree.svelte.ts';
 
-	const { distance = 100 }: { distance?: number } = $props();
+	const { distance = 100, label = true }: { distance?: number; label?: boolean } = $props();
 
 	$effect(() => {
 		componentState.maxDistance = distance;
@@ -21,11 +21,13 @@
 		/>
 	</GeoJSON>
 
-	<Marker lngLat={componentState.nearest.midpoint}>
-		<div class="distance-label">
-			{Math.round(componentState.nearest.distance)}m
-		</div>
-	</Marker>
+	{#if label}
+		<Marker lngLat={componentState.nearest.midpoint}>
+			<div class="distance-label">
+				{Math.round(componentState.nearest.distance)}m
+			</div>
+		</Marker>
+	{/if}
 {/if}
 
 <style>

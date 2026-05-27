@@ -138,18 +138,21 @@ class MapLibre {
 			const collection = treeLayerState.markers;
 			if (collection && collection.features.length) {
 				let minDistance = Infinity;
-				let nearestId = null;
+				let nearestFeature = null;
 
 				for (const feature of collection.features) {
 					const [lng, lat] = feature.geometry.coordinates;
 					const dist = getDistance(this.center, { lat, lng });
 					if (dist < minDistance) {
 						minDistance = dist;
-						nearestId = feature.properties.id;
+						nearestFeature = feature;
 					}
 				}
 
-				if (nearestId && minDistance <= 5) {
+				if (nearestFeature && minDistance <= 5) {
+					const nearestId = nearestFeature.properties.id;
+					const [lng, lat] = nearestFeature.geometry.coordinates;
+					mapBus.emit('move', { lat, lng });
 					console.debug(`Snapping to nearest tree ${nearestId} (${minDistance.toFixed(1)}m)`);
 					goto(routes.mapPreview(nearestId));
 				}
