@@ -1,8 +1,7 @@
 use crate::types::*;
-use actix_web::http::header::{CacheControl, CacheDirective, Expires};
+use actix_web::http::header::{CacheControl, CacheDirective};
 use actix_web::HttpResponse;
 use log::error;
-use std::time::{Duration, SystemTime};
 use tokio::fs;
 
 pub async fn default_action() -> Result<HttpResponse> {
