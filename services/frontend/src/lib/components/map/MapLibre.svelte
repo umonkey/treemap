@@ -82,7 +82,7 @@
 			<AlertLayer />
 		{/if}
 
-		{#if mapState.moving && ($mapMode === undefined || $mapMode === 'preview')}
+		{#if mapState.moving && mapState.zoom > 18 && ($mapMode === undefined || $mapMode === 'preview')}
 			<MapCenter />
 			<NearestTree distance={5} label={false} />
 		{:else if $mapMode === 'move' || $mapMode === 'add' || $mapMode === 'add-row'}

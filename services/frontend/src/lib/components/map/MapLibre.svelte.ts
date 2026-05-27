@@ -134,7 +134,7 @@ class MapLibre {
 		const mode = get(mapMode);
 		const isUserAction = !!e?.originalEvent;
 
-		if (isUserAction && (mode === undefined || mode === 'preview')) {
+		if (isUserAction && (mode === undefined || mode === 'preview') && this.zoom > 18) {
 			const collection = treeLayerState.markers;
 			if (collection && collection.features.length) {
 				let minDistance = Infinity;
