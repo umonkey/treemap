@@ -87,7 +87,7 @@ impl Secrets {
         match file.read_to_string(&mut contents) {
             Ok(_) => {
                 debug!("Read secret {filename} from {path}");
-                Some(contents)
+                Some(contents.trim().to_string())
             }
 
             Err(e) => {
@@ -129,7 +129,8 @@ mod tests {
 
         let file_path = dir.path().join(key);
         let mut file = fs::File::create(file_path).unwrap();
-        file.write_all(value.as_bytes()).unwrap();
+        file.write_all(format!("  {} \n\n", value).as_bytes())
+            .unwrap();
 
         assert_eq!(Secrets::get_file(path, key), Some(value.to_string()));
     }
@@ -167,7 +168,7 @@ mod tests {
         // 3. Found in file (exact)
         let key_file = "TEST_CHAIN_FILE";
         let file_path = dir.path().join(key_file);
-        fs::write(file_path, "file").unwrap();
+        fs::write(file_path, " file\n").unwrap();
         assert_eq!(Secrets::get(path, key_file), Some("file".to_string()));
 
         // 4. Found in file (lowercase)

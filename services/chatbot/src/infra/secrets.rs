@@ -69,3 +69,27 @@ impl Secrets {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::io::Write;
+
+    #[test]
+    fn test_read_file_trim() {
+        let dir = std::env::temp_dir().join("chatbot_test_secrets");
+        std::fs::create_dir_all(&dir).unwrap();
+        let path = dir.to_str().unwrap();
+        let key = "TEST_SECRET_TRIM";
+        let value = "secret_value";
+
+        let file_path = dir.join(key);
+        let mut file = fs::File::create(file_path).unwrap();
+        file.write_all(format!("  {} \n\n", value).as_bytes())
+            .unwrap();
+
+        assert_eq!(Secrets::read_file(path, key), Some(value.to_string()));
+
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+}

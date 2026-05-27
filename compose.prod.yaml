@@ -14,15 +14,15 @@ services:
     volumes:
       - var:/app/var
     environment:
-      - FILES_KEY=${FILES_KEY}
-      - FILES_SECRET=${FILES_SECRET}
-      - JWT_SECRET=${JWT_SECRET}
       - RUST_LOG=info
-      - SQS_KEY=${SQS_KEY}
-      - SQS_SECRET=${SQS_SECRET}
-      - OSM_TOKEN=${OSM_TOKEN}
       - TREEMAP_CONFIG=/app/config.toml
-      - TURSO_TOKEN=${TURSO_AUTH_TOKEN}
+    secrets:
+      - files_key
+      - files_secret
+      - jwt_secret
+      - sqs_key
+      - sqs_secret
+      - osm_token
     ulimits:
       nofile:
         soft: 65535
@@ -35,14 +35,15 @@ services:
     volumes:
       - var:/app/var
     environment:
-      - CHATBOT_TOKEN=${CHATBOT_TOKEN}
       - CHATBOT_DATABASE=/app/var/database.sqlite
       - FILES_BUCKET=${FILES_BUCKET}
       - FILES_REGION=${FILES_REGION}
       - FILES_ENDPOINT=${FILES_ENDPOINT}
-      - FILES_KEY=${FILES_KEY}
-      - FILES_SECRET=${FILES_SECRET}
       - RUST_LOG=info
+    secrets:
+      - files_key
+      - files_secret
+      - chatbot_token
     depends_on:
       - backend
 
@@ -70,3 +71,19 @@ volumes:
   var:
   caddy_data:
   caddy_config:
+
+secrets:
+  chatbot_token:
+    file: .secrets/chatbot_token.txt
+  files_key:
+    file: .secrets/files_key.txt
+  files_secret:
+    file: .secrets/files_secret.txt
+  jwt_secret:
+    file: .secrets/jwt_secret.txt
+  sqs_key:
+    file: .secrets/sqs_key.txt
+  sqs_secret:
+    file: .secrets/sqs_secret.txt
+  osm_token:
+    file: .secrets/osm_token.txt
