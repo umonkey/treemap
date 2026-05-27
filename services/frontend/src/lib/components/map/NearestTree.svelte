@@ -1,6 +1,12 @@
 <script lang="ts">
 	import { GeoJSON, LineLayer, Marker } from 'svelte-maplibre';
 	import { componentState } from './NearestTree.svelte.ts';
+
+	const { distance = 100 }: { distance?: number } = $props();
+
+	$effect(() => {
+		componentState.maxDistance = distance;
+	});
 </script>
 
 {#if componentState.nearest?.line}

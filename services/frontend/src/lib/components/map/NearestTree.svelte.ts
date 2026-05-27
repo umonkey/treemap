@@ -6,6 +6,7 @@ import type { ILatLng } from '$lib/types';
 
 class ComponentState {
 	center = $state<ILatLng>(mapState.center);
+	maxDistance = $state<number>(100);
 
 	nearest = $derived.by(() => {
 		const center = this.center;
@@ -26,8 +27,8 @@ class ComponentState {
 			}
 		}
 
-		// Only show the line if the distance is reasonable (e.g. within 100 meters).
-		if (!nearestFeature || minDistance > 100) {
+		// Only show the line if the distance is reasonable.
+		if (!nearestFeature || minDistance > this.maxDistance) {
 			return undefined;
 		}
 

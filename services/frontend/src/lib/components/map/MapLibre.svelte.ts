@@ -2,19 +2,24 @@ import { mapBus } from '$lib/buses/mapBus';
 import { DEFAULT_MAP_CENTER } from '$lib/constants';
 import { config } from '$lib/env';
 import { mapLayerStore } from '$lib/stores/mapLayerStore';
+import { mapMode } from '$lib/stores/mapMode';
 import { mapStore } from '$lib/stores/mapStore';
+import { goto, routes } from '$lib/routes';
 import type { ILatLng } from '$lib/types';
 import { Debouncer } from '$lib/utils/debounce';
+import { getDistance } from '$lib/utils/geo';
 import {
 	type LngLat,
 	LngLat as LngLat2,
 	type LngLatBounds,
 	LngLatBounds as LngLatBounds2,
 	type Map,
+	type MapLibreEvent,
 	type StyleSpecification
 } from 'maplibre-gl';
 import { get } from 'svelte/store';
 import { MapBouncer } from './MapBouncer';
+import { treeLayerState } from './TreeLayer.svelte.ts';
 
 const BASIC_LAYER = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${config.mapTilerKey}`;
 const LIGHT_LAYER = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json';
@@ -39,6 +44,7 @@ class MapLibre {
 	droneLayer = $state<string | undefined>(undefined);
 	alertsLayer = $state<boolean>(true);
 
+	moving = $state(false);
 	zoom = $state<number>(13);
 	bearing = $state<number>(0);
 	center = $state<ILatLng>(DEFAULT_MAP_CENTER);
@@ -64,6 +70,12 @@ class MapLibre {
 			this.bounds = this.map.getBounds();
 			console.debug('MapLibre load fired.');
 			this.handleMoveEnd();
+		}
+	};
+
+	public handleMoveStart = (e?: MapLibreEvent) => {
+		if (e?.originalEvent) {
+			this.moving = true;
 		}
 	};
 
@@ -99,7 +111,9 @@ class MapLibre {
 		this.updateStore();
 	};
 
-	public handleMoveEnd = () => {
+	public handleMoveEnd = (e?: MapLibreEvent) => {
+		this.moving = false;
+
 		if (!this.bounds) {
 			console.debug('Bounds not set, ignoring MapLibre move.');
 			return;
@@ -115,6 +129,31 @@ class MapLibre {
 
 		if (this.onMove) {
 			this.onMove(this.center);
+		}
+
+		const mode = get(mapMode);
+		const isUserAction = !!e?.originalEvent;
+
+		if (isUserAction && (mode === undefined || mode === 'preview')) {
+			const collection = treeLayerState.markers;
+			if (collection && collection.features.length) {
+				let minDistance = Infinity;
+				let nearestId = null;
+
+				for (const feature of collection.features) {
+					const [lng, lat] = feature.geometry.coordinates;
+					const dist = getDistance(this.center, { lat, lng });
+					if (dist < minDistance) {
+						minDistance = dist;
+						nearestId = feature.properties.id;
+					}
+				}
+
+				if (nearestId && minDistance <= 5) {
+					console.debug(`Snapping to nearest tree ${nearestId} (${minDistance.toFixed(1)}m)`);
+					goto(routes.mapPreview(nearestId));
+				}
+			}
 		}
 	};
 

@@ -43,6 +43,7 @@
 		maxPitch={0}
 		class="map"
 		bind:bounds={mapState.bounds}
+		onmovestart={mapState.handleMoveStart}
 		onmoveend={mapState.handleMoveEnd}
 		onzoom={mapState.handleZoom}
 		onrotate={mapState.handleRotate}
@@ -81,7 +82,10 @@
 			<AlertLayer />
 		{/if}
 
-		{#if $mapMode === 'move' || $mapMode === 'add' || $mapMode === 'add-row'}
+		{#if mapState.moving && ($mapMode === undefined || $mapMode === 'preview')}
+			<MapCenter />
+			<NearestTree distance={5} />
+		{:else if $mapMode === 'move' || $mapMode === 'add' || $mapMode === 'add-row'}
 			<MapCenter />
 			{#if $mapMode === 'move'}
 				<MoveLine />

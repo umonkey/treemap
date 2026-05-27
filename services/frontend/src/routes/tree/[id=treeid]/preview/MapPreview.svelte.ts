@@ -5,6 +5,7 @@ import { mapBus } from '$lib/buses/mapBus';
 import { menuBus } from '$lib/buses/menuBus';
 import { showError } from '$lib/errors';
 import { goto, routes } from '$lib/routes';
+import { mapMode } from '$lib/stores/mapMode';
 import type { IComment, IObservation, ITree } from '$lib/types';
 
 class PreviewState {
@@ -81,9 +82,11 @@ class PreviewState {
 
 	public onMount = () => {
 		mapBus.on('preview', this.handlePreviewSignal);
+		mapMode.set('preview');
 
 		return () => {
 			mapBus.off('preview', this.handlePreviewSignal);
+			mapMode.set(undefined);
 			this.clear();
 		};
 	};
