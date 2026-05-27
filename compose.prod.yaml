@@ -20,6 +20,7 @@ services:
       - RUST_LOG=info
       - SQS_KEY=${SQS_KEY}
       - SQS_SECRET=${SQS_SECRET}
+      - OSM_TOKEN=${OSM_TOKEN}
       - TREEMAP_CONFIG=/app/config.toml
       - TURSO_TOKEN=${TURSO_AUTH_TOKEN}
     ulimits:

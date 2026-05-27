@@ -25,6 +25,7 @@ services:
       - FILES_KEY=${FILES_KEY}
       - FILES_SECRET=${FILES_SECRET}
       - JWT_SECRET=foobar
+      - OSM_TOKEN=${OSM_TOKEN}
       - RUST_LOG=info,treemap=info
       - SQS_KEY=${SQS_KEY}
       - SQS_SECRET=${SQS_SECRET}
