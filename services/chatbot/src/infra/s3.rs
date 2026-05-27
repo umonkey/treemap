@@ -14,30 +14,11 @@ pub struct S3FileStorage {
 
 impl S3FileStorage {
     pub fn new(config: &Config) -> anyhow::Result<Self> {
-        let s3_bucket = config
-            .files_bucket
-            .clone()
-            .ok_or_else(|| anyhow::anyhow!("FILES_BUCKET config option not set"))?;
-
-        let s3_region = config
-            .files_region
-            .clone()
-            .ok_or_else(|| anyhow::anyhow!("FILES_REGION config option not set"))?;
-
-        let s3_endpoint = config
-            .files_endpoint
-            .clone()
-            .ok_or_else(|| anyhow::anyhow!("FILES_ENDPOINT config option not set"))?;
-
-        let s3_key = config
-            .files_key
-            .clone()
-            .ok_or_else(|| anyhow::anyhow!("FILES_KEY config option not set"))?;
-
-        let s3_secret = config
-            .files_secret
-            .clone()
-            .ok_or_else(|| anyhow::anyhow!("FILES_SECRET config option not set"))?;
+        let s3_bucket = config.files_bucket.clone();
+        let s3_region = config.files_region.clone();
+        let s3_endpoint = config.files_endpoint.clone();
+        let s3_key = config.files_key.clone();
+        let s3_secret = config.files_secret.clone();
 
         let credentials = Credentials::new(s3_key, s3_secret, None, None, "chatbot");
         let credentials = SharedCredentialsProvider::new(credentials);
