@@ -774,7 +774,7 @@ class RussianLocale extends EnglishLocale {
 	}
 
 	public sideReportDamage(): string {
-		return 'Сообщить о повреждении';
+		return 'Сообщить о проблеме';
 	}
 
 	public sideAbout(): string {
