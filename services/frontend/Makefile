@@ -22,6 +22,15 @@ format:
 check:
 	npm run check
 
+icons:
+	convert -resize 192x192 -strip -colorspace sRGB static/icons/tree-512x512.png static/icons/tree-192x192.png
+	convert -resize 180x180 -strip -colorspace sRGB static/icons/tree-512x512.png static/icons/tree-180x180.png
+	convert -resize 32x32 -strip -colorspace sRGB static/icons/tree-512x512.png static/icons/tree-32x32.png
+	convert -resize 16x16 -strip -colorspace sRGB static/icons/tree-512x512.png static/icons/tree-16x16.png
+	convert -resize 192x192 -strip -colorspace sRGB static/icons/app-512x512.png static/icons/app-192x192.png
+	convert -resize 180x180 -strip -colorspace sRGB static/icons/app-512x512.png static/icons/app-180x180.png
+	file static/icons/*.png
+
 install:
 	npm ci
 
