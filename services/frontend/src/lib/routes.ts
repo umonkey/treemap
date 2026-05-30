@@ -43,6 +43,7 @@ export const routes = {
 	searchSpecies: (query: string) => `/?q=species:"${query}"`,
 	searchState: (query: string) => `/?q=state:"${query}"`,
 	stats: () => '/stats',
+	panorama: (id: string) => `/panoramas/${id}`,
 	statsCircumference: () => '/stats/circumference',
 	statsDiameter: () => '/stats/diameter',
 	statsHeight: () => '/stats/height',

@@ -1,6 +1,7 @@
 import { getMapillaryGeoJSON } from '$lib/api/mapillary';
 import { mapBus } from '$lib/buses/mapBus';
 import { showError } from '$lib/errors';
+import { goto, routes } from '$lib/routes';
 import { Debouncer } from '$lib/utils/debounce';
 import type { Map } from 'maplibre-gl';
 import { getMapContext } from 'svelte-maplibre';
@@ -80,6 +81,24 @@ class PanoramicLayerState {
 		}
 
 		this.reload(map);
+	};
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	public handleClick = async (e: any) => {
+		if (!e.features || e.features.length === 0) {
+			return;
+		}
+
+		const feature = e.features[0];
+		const id = feature.properties.id;
+
+		console.debug(`[PanoramicLayer] Image ${id} clicked.`);
+
+		await goto(routes.panorama(id));
+
+		if (navigator.vibrate) {
+			navigator.vibrate(50);
+		}
 	};
 
 	public onMount = () => {

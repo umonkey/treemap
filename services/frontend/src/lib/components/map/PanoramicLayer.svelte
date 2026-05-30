@@ -29,6 +29,7 @@
 				'circle-stroke-width': 1,
 				'circle-stroke-color': '#ffffff'
 			}}
+			onclick={panoramicLayerState.handleClick}
 		/>
 	</GeoJSON>
 {/if}
