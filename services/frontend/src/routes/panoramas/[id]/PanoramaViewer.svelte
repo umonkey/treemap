@@ -19,6 +19,10 @@
 			componentState.destroy();
 		};
 	});
+
+	$effect(() => {
+		console.log('New angle:', componentState.yaw);
+	});
 </script>
 
 <div class="viewer" bind:this={container}>
