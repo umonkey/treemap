@@ -30,8 +30,6 @@
 			<div class="crosshair">
 				<CrossHair />
 			</div>
-		{:else}
-			<p>Image ID: {pageState.id}</p>
 		{/if}
 	</div>
 </div>
