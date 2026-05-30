@@ -16,6 +16,7 @@
 	import AlertLayer from './AlertLayer.svelte';
 	import PanoramicLayer from './PanoramicLayer.svelte';
 	import MapCenter from './MapCenter.svelte';
+	import MapRays from './MapRays.svelte';
 	import MoveLine from './MoveLine.svelte';
 	import NearestTree from './NearestTree.svelte';
 	import MapRowPreview from './MapRowPreview.svelte';
@@ -63,6 +64,8 @@
 		<LayerButton />
 
 		<Marker />
+
+		<MapRays />
 
 		{#if mapState.droneLayer}
 			<RasterTileSource id="drone-source" tiles={[mapState.droneLayer]} tileSize={128} scheme="tms">

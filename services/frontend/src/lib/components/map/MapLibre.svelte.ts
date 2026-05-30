@@ -1,4 +1,3 @@
-import { mapMarkerStore } from '$lib/stores/mapMarker.svelte';
 import { mapBus } from '$lib/buses/mapBus';
 import { DEFAULT_MAP_CENTER } from '$lib/constants';
 import { config } from '$lib/env';

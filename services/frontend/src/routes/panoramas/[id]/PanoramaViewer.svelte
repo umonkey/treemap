@@ -5,15 +5,16 @@
 
 	interface Props {
 		image: MapillaryImage;
+		onMove?: (angle: number) => void;
 	}
 
-	const { image }: Props = $props();
+	const { image, onMove }: Props = $props();
 
 	let container = $state<HTMLElement | null>(null);
 
 	$effect(() => {
 		if (container && image.url) {
-			componentState.init(container, image);
+			componentState.init(container, image, onMove);
 		}
 		return () => {
 			componentState.destroy();

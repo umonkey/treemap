@@ -6,6 +6,7 @@
 	import { mapMarkerStore } from '$lib/stores/mapMarker.svelte';
 	import { LngLat } from 'maplibre-gl';
 	import { mapBus } from '$lib/buses/mapBus';
+	import { mapRaysStore } from '$lib/stores/mapRays.svelte';
 
 	const id = $derived(page.params.id as string);
 
@@ -21,6 +22,7 @@
 		}
 		return () => {
 			mapMarkerStore.center = undefined;
+			mapRaysStore.rays = [];
 		};
 	});
 </script>
@@ -34,7 +36,7 @@
 
 	<div class="content">
 		{#if pageState.image}
-			<PanoramaViewer image={pageState.image} />
+			<PanoramaViewer image={pageState.image} onMove={pageState.handleMove} />
 		{:else}
 			<p>Image ID: {pageState.id}</p>
 		{/if}
