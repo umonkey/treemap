@@ -2,6 +2,7 @@
 	import { pageState } from './page.svelte.ts';
 	import { page } from '$app/state';
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
+	import PanoramaViewer from './PanoramaViewer.svelte';
 
 	const id = $derived(page.params.id as string);
 
@@ -21,7 +22,11 @@
 	</div>
 
 	<div class="content">
-		<p>Image ID: {pageState.id}</p>
+		{#if pageState.image}
+			<PanoramaViewer image={pageState.image} />
+		{:else}
+			<p>Image ID: {pageState.id}</p>
+		{/if}
 	</div>
 </div>
 
@@ -66,6 +71,11 @@
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
+	}
+
+	.content {
+		flex-grow: 1;
+		min-height: 0;
 	}
 
 	/* Mobile styles */

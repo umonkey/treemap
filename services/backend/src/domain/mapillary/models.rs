@@ -10,6 +10,8 @@ pub struct MapillaryImage {
     pub lon: f64,
     pub compass_angle: f64,
     pub quality_score: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub url: Option<String>,
 }
 
 impl MapillaryImage {
@@ -22,6 +24,7 @@ impl MapillaryImage {
             lon: attrs.require_f64("lon")?,
             compass_angle: attrs.require_f64("compass_angle")?,
             quality_score: attrs.get_f64("quality_score")?,
+            url: None,
         })
     }
 

@@ -30,6 +30,39 @@ impl MapillaryClient {
         self.fetch_url(&url).await
     }
 
+    pub async fn fetch_image(&self, id: &str) -> Result<super::schemas::MapillaryImage> {
+        let token = self
+            .token
+            .as_ref()
+            .ok_or_else(|| Error::Config("MAPILLARY_TOKEN not set".to_string()))?;
+
+        let url = format!(
+            "https://graph.mapillary.com/{}?access_token={}&fields=id,sequence,captured_at,is_pano,geometry,compass_angle,thumb_2048_url",
+            id, token
+        );
+
+        debug!("Fetching Mapillary Image: {}", id);
+
+        let response = self.client.get(&url).send().await.map_err(|e| {
+            Error::MapillaryExchange(format!("Error querying Mapillary API: {}", e))
+        })?;
+
+        if !response.status().is_success() {
+            let status = response.status();
+            let text = response.text().await.unwrap_or_default();
+            return Err(Error::MapillaryExchange(format!(
+                "Mapillary API returned {}: {}",
+                status, text
+            )));
+        }
+
+        let data: super::schemas::MapillaryImage = response.json().await.map_err(|e| {
+            Error::MapillaryExchange(format!("Error parsing Mapillary response: {}", e))
+        })?;
+
+        Ok(data)
+    }
+
     pub async fn fetch_url(&self, url: &str) -> Result<MapillaryResponse> {
         debug!("Fetching Mapillary URL: {}", url);
 

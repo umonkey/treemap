@@ -10,6 +10,7 @@ pub struct MapillaryImage {
     pub compass_angle: Option<f64>,
     pub is_pano: bool,
     pub quality_score: Option<f64>,
+    pub thumb_2048_url: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
