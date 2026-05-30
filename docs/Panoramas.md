@@ -67,8 +67,8 @@ For each ray, we define:
 
 The intersection point I of two rays (PA + t _ dA) and (PB + s _ dB) is solved by finding the scale factor t using the following system of linear equations:
 
-t _ sin(theta_A) - s _ sin(theta_B) = x_B - x_A
-t _ cos(theta_A) - s _ cos(theta_B) = y_B - y_A
+t _ sin(theta_A) - s _ sin(theta*B) = x_B - x_A
+t * cos(theta*A) - s * cos(theta_B) = y_B - y_A
 
 If the angle between the rays is too small, the triangulation may be imprecise, and the interface will warn the user. For three or more rays, a least-squares optimization is applied to find the point that minimizes the sum of squared perpendicular distances to all rays.
 
@@ -91,4 +91,5 @@ The integration requires configuring the public username and a client token for 
 - [ ] ray casting tool: add the visual ray line on MapLibre which updates dynamically with the active image coordinates and camera orientation.
 - [ ] triangulation engine: implement the 2D multi-ray vector intersection calculations on the frontend.
 - [ ] creation flow: add a button to pre-fill the tree creation form with the triangulated coordinates.
+- [ ] map-matching: research map-matching APIs, like Valhalla, OSRM or Mapbox Map Matching, to align the GPX track with the roads.
 - [ ] validation and testing: write tests for triangulation math and verify everything with build and formatting.
