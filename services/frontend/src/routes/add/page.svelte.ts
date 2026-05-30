@@ -8,7 +8,7 @@ import type { IAddTreesRequest } from '$lib/types';
 class PageState {
 	saving = $state<boolean>(false);
 
-	handleConfirm = () => {
+	private save = async (): Promise<string | null> => {
 		const req = {
 			points: [
 				{
@@ -28,20 +28,37 @@ class PageState {
 
 		this.saving = true;
 
-		addTree(req)
-			.then((res) => {
-				if (res.status >= 200 && res.status < 400 && res.data) {
-					const id = res.data.trees[0].id;
-					goto(routes.treeEdit(id));
-				} else {
-					console.error(`Error ${res.status} adding tree.`, res);
-					showError(res.error?.description || `Error ${res.status} adding tree.`);
+		try {
+			const res = await addTree(req);
+			if (res.status >= 200 && res.status < 400 && res.data) {
+				const id = res.data.trees[0].id;
+				if (typeof navigator !== 'undefined' && navigator.vibrate) {
+					navigator.vibrate(50);
 				}
-			})
-			.finally(() => {
-				this.saving = false;
-				mapBus.emit('reload');
-			});
+				return id;
+			} else {
+				console.error(`Error ${res.status} adding tree.`, res);
+				showError(res.error?.description || `Error ${res.status} adding tree.`);
+				return null;
+			}
+		} finally {
+			this.saving = false;
+			mapBus.emit('reload');
+		}
+	};
+
+	handleConfirm = async () => {
+		const id = await this.save();
+		if (id) {
+			goto(routes.treeEdit(id));
+		}
+	};
+
+	handleQuickAdd = async () => {
+		const id = await this.save();
+		if (id) {
+			goto(routes.treeAdd());
+		}
 	};
 
 	handleCancel = () => {

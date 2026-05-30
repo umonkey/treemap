@@ -161,6 +161,14 @@ class EnglishLocale {
 		return 'Add tree';
 	}
 
+	public addButton(): string {
+		return 'Add';
+	}
+
+	public addQuickAddButton(): string {
+		return 'Quick add';
+	}
+
 	public addRowConfirmButton(count: number): string {
 		return `Add ${count} trees`;
 	}
@@ -909,6 +917,14 @@ class RussianLocale extends EnglishLocale {
 		return 'Добавить дерево';
 	}
 
+	public addButton(): string {
+		return 'Добавить';
+	}
+
+	public addQuickAddButton(): string {
+		return 'Быстро добавить';
+	}
+
 	public addCancelButton(): string {
 		return 'Отмена';
 	}
@@ -1623,6 +1639,14 @@ class ArmenianLocale extends EnglishLocale {
 
 	public addConfirmButton(): string {
 		return 'Ավելացնել ծառ';
+	}
+
+	public addButton(): string {
+		return 'Ավելացնել';
+	}
+
+	public addQuickAddButton(): string {
+		return 'Արագ ավելացնել';
 	}
 
 	public addCancelButton(): string {

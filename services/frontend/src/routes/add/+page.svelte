@@ -57,10 +57,10 @@
 
 	<Buttons>
 		<Button onClick={pageState.handleConfirm} disabled={pageState.saving} nowrap>
-			{locale.confirm()}
+			{locale.addButton()}
 		</Button>
-		<Button type="secondary" onClick={pageState.handleCancel} nowrap>
-			{locale.editCancel()}
+		<Button type="secondary" onClick={pageState.handleQuickAdd} disabled={pageState.saving} nowrap>
+			{locale.addQuickAddButton()}
 		</Button>
 	</Buttons>
 </div>
