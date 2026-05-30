@@ -4,20 +4,21 @@ import { config } from '$lib/env';
 import { mapLayerStore } from '$lib/stores/mapLayerStore';
 import { mapMode } from '$lib/stores/mapMode';
 import { mapStore } from '$lib/stores/mapStore';
-import { goto, routes } from '$lib/routes';
+import { goto } from '$lib/routes';
 import type { ILatLng } from '$lib/types';
 import { Debouncer } from '$lib/utils/debounce';
-import { getDistance } from '$lib/utils/geo';
 import {
 	type LngLatBounds,
 	LngLatBounds as LngLatBounds2,
+	LngLat,
 	type Map,
 	type MapLibreEvent,
 	type StyleSpecification
 } from 'maplibre-gl';
 import { get } from 'svelte/store';
 import { MapBouncer } from './MapBouncer';
-import { treeLayerState } from './TreeLayer.svelte.ts';
+import { mapMarkerStore } from '$lib/stores/mapMarker.svelte';
+import { mapPoiStore } from '$lib/stores/mapPoi.svelte';
 
 const BASIC_LAYER = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${config.mapTilerKey}`;
 const LIGHT_LAYER = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json';
@@ -136,27 +137,13 @@ class MapLibre {
 		const isUserAction = !!e?.originalEvent;
 
 		if (isUserAction && (mode === undefined || mode === 'preview') && this.zoom > 18) {
-			const collection = treeLayerState.markers;
-			if (collection && collection.features.length) {
-				let minDistance = Infinity;
-				let nearestFeature = null;
-
-				for (const feature of collection.features) {
-					const [lng, lat] = feature.geometry.coordinates;
-					const dist = getDistance(this.center, { lat, lng });
-					if (dist < minDistance) {
-						minDistance = dist;
-						nearestFeature = feature;
-					}
-				}
-
-				if (nearestFeature && minDistance <= 5) {
-					const nearestId = nearestFeature.properties.id;
-					const [lng, lat] = nearestFeature.geometry.coordinates;
-					mapBus.emit('move', { lat, lng });
-					console.debug(`Snapping to nearest tree ${nearestId} (${minDistance.toFixed(1)}m)`);
-					goto(routes.mapPreview(nearestId));
-				}
+			const result = mapPoiStore.getNearest(this.center, 5);
+			if (result) {
+				const { poi: nearestPoi, distance: minDistance } = result;
+				mapMarkerStore.center = new LngLat(nearestPoi.lon, nearestPoi.lat);
+				mapBus.emit('move', { lat: nearestPoi.lat, lng: nearestPoi.lon });
+				console.debug(`Snapping to nearest POI (${minDistance.toFixed(1)}m)`);
+				goto(nearestPoi.url);
 			}
 		}
 	};

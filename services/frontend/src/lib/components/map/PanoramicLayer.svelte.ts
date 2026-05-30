@@ -2,6 +2,7 @@ import { getMapillaryGeoJSON } from '$lib/api/mapillary';
 import { mapBus } from '$lib/buses/mapBus';
 import { showError } from '$lib/errors';
 import { goto, routes } from '$lib/routes';
+import { mapPoiStore } from '$lib/stores/mapPoi.svelte';
 import { mapMarkerStore } from '$lib/stores/mapMarker.svelte';
 import { Debouncer } from '$lib/utils/debounce';
 import { LngLat, type Map } from 'maplibre-gl';
@@ -64,6 +65,11 @@ class PanoramicLayerState {
 						const collection = data as unknown as Collection;
 						console.debug(`[PanoramicLayer] Received ${collection.features.length} features.`);
 						this.data = collection;
+						mapPoiStore.panoramas = collection.features.map((f) => ({
+							lat: f.geometry.coordinates[1],
+							lon: f.geometry.coordinates[0],
+							url: routes.panorama(f.properties.id)
+						}));
 					}
 				})
 				.catch((e) => {

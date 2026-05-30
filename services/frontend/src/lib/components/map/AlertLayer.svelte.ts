@@ -2,6 +2,7 @@ import { getActiveAlertsGeoJSON, type IAlertCollection } from '$lib/api/alerts';
 import { mapBus } from '$lib/buses/mapBus';
 import { showError } from '$lib/errors';
 import { goto, routes } from '$lib/routes';
+import { mapPoiStore } from '$lib/stores/mapPoi.svelte';
 import { Debouncer } from '$lib/utils/debounce';
 import { getMapContext } from 'svelte-maplibre';
 
@@ -16,6 +17,11 @@ class AlertLayerState {
 					if (status === 200 && data) {
 						console.debug(`[AlertLayer] Received ${data.features.length} alerts.`);
 						this.markers = data;
+						mapPoiStore.alerts = data.features.map((f) => ({
+							lat: f.geometry.coordinates[1],
+							lon: f.geometry.coordinates[0],
+							url: routes.alertPreview(f.properties.id)
+						}));
 					}
 				})
 				.catch((e) => {
