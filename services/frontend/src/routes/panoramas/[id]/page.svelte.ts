@@ -28,16 +28,18 @@ class PageState {
 	public reload = async (id: string) => {
 		this.id = id;
 		const response = await getMapillaryImage(id);
+
 		if (response.status >= 200 && response.status < 300 && response.data) {
 			if (this.id !== id) {
 				return;
 			}
+
 			this.image = response.data;
 
 			const ll = { lat: this.image.lat, lng: this.image.lon };
-			if (!mapMarkerStore.center) {
-				mapMarkerStore.center = new LngLat(ll.lng, ll.lat);
-			}
+
+			mapMarkerStore.center = new LngLat(ll.lng, ll.lat);
+
 			mapBus.emit('map-once', ll);
 		}
 	};

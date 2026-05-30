@@ -2,7 +2,6 @@
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
 	import ChatIcon from '$lib/icons/ChatIcon.svelte';
 	import SpinnerIcon from '$lib/icons/SpinnerIcon.svelte';
-	import { onMount } from 'svelte';
 	import { previewState } from './MapPreview.svelte.ts';
 	import { formatDateTime } from '$lib/utils/strings';
 	import LazyImage from '$lib/ui/lazy-image/LazyImage.svelte';
@@ -12,7 +11,9 @@
 
 	let { id } = $props<{ id: string }>();
 
-	onMount(previewState.onMount);
+	$effect(() => {
+		return previewState.init();
+	});
 
 	$effect(() => {
 		previewState.reload(id);

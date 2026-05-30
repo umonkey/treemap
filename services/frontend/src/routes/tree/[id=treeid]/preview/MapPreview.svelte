@@ -15,13 +15,14 @@
 	import Button from '$lib/ui/button/Button.svelte';
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import { formatSpecies, formatState, shortDetails } from '$lib/utils/trees';
-	import { onMount } from 'svelte';
 	import { previewState } from './MapPreview.svelte.ts';
 	import '$lib/styles/variables.css';
 
 	let { id } = $props<{ id: string }>();
 
-	onMount(previewState.onMount);
+	$effect(() => {
+		return previewState.init();
+	});
 
 	$effect(() => {
 		previewState.reload(id);

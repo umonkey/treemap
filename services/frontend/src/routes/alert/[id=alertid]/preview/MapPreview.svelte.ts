@@ -62,7 +62,7 @@ class PreviewState {
 		}
 	};
 
-	public onMount = () => {
+	public init = () => {
 		mapBus.on('preview', this.handlePreviewSignal);
 
 		return () => {

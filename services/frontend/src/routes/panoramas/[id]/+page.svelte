@@ -9,6 +9,9 @@
 
 	$effect(() => {
 		pageState.reload(id);
+	});
+
+	$effect(() => {
 		return pageState.cleanup;
 	});
 </script>
