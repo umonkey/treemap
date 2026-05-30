@@ -2,6 +2,7 @@
 	import { pageState } from './page.svelte.ts';
 	import { page } from '$app/state';
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
+	import CrossHair from '$lib/icons/CrossHair.svelte';
 	import PanoramaViewer from './PanoramaViewer.svelte';
 
 	const id = $derived(page.params.id as string);
@@ -26,6 +27,9 @@
 	<div class="content">
 		{#if pageState.image}
 			<PanoramaViewer image={pageState.image} onMove={pageState.handleMove} />
+			<div class="crosshair">
+				<CrossHair />
+			</div>
 		{:else}
 			<p>Image ID: {pageState.id}</p>
 		{/if}
@@ -77,6 +81,30 @@
 		min-height: 0;
 		display: flex;
 		flex-direction: column;
+		position: relative;
+	}
+
+	.crosshair {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		z-index: 10;
+		transform: translate(-50%, -50%);
+		width: 50px;
+		height: 50px;
+		pointer-events: none;
+		color: white;
+		filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
+
+		:global(svg) {
+			width: 100%;
+			height: 100%;
+			fill: currentColor;
+		}
+
+		:global(.cls-1) {
+			fill: currentColor;
+		}
 	}
 
 	/* Mobile styles */
