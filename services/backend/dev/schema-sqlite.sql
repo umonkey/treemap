@@ -221,4 +221,19 @@ CREATE TABLE IF NOT EXISTS observations (
 CREATE INDEX IF NOT EXISTS observations_tree_id ON observations (tree_id);
 
 
+CREATE TABLE IF NOT EXISTS mapillary_images (
+    `id` TEXT NOT NULL,
+    `sequence_id` TEXT NOT NULL,
+    `captured_at` INT NOT NULL,
+    `lat` REAL NOT NULL,
+    `lon` REAL NOT NULL,
+    `compass_angle` REAL NOT NULL,
+    `quality_score` REAL NULL,
+    PRIMARY KEY(`id`)
+);
+
+CREATE INDEX IF NOT EXISTS mapillary_images_sequence_id ON mapillary_images (sequence_id);
+CREATE INDEX IF NOT EXISTS mapillary_images_captured_at ON mapillary_images (captured_at);
+
+
 COMMIT;

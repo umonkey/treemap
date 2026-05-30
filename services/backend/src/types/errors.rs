@@ -19,6 +19,7 @@ pub enum Error {
     DatabaseConnect(String),
     DatabaseQuery(String),
     DatabaseStructure(String),
+    DuplicateRecord,
     DuplicateTree,
     EnvNotSet,
     FileDownload,
@@ -26,6 +27,7 @@ pub enum Error {
     FileUpload,
     GoogleUserInfo,
     ImageResize,
+    MapillaryExchange(String),
     MissingAuthorizationHeader,
     OsmExchange(String),
     Queue,
@@ -72,6 +74,9 @@ impl Error {
                     r#"{{"error":{{"code":"DatabaseStructure","description":"Database structure error: {s}"}}}}"#
                 )
             }
+            Error::DuplicateRecord => {
+                r#"{"error":{"code":"DuplicateRecord","description":"This record already exists."}}"#.to_string()
+            }
             Error::DuplicateTree => {
                 r#"{"error":{"code":"DuplicateTree","description":"A tree with these coordinates already exists."}}"#.to_string()
             }
@@ -92,6 +97,9 @@ impl Error {
             }
             Error::ImageResize => {
                 r#"{"error":{"code":"ImageResize","description":"Image reading or resizing failed."}}"#.to_string()
+            }
+            Error::MapillaryExchange(_) => {
+                r#"{"error":{"code":"MapillaryExchange","description":"Mapillary exchange failed."}}"#.to_string()
             }
             Error::MissingAuthorizationHeader => {
                 r#"{"error":{"code":"MissingAuthorizationHeader","description":"Authentication required for this call."}}"#.to_string()
@@ -123,7 +131,11 @@ impl Error {
 
 impl From<LibSqlError> for Error {
     fn from(e: LibSqlError) -> Self {
-        Error::DatabaseQuery(e.to_string())
+        let message = e.to_string();
+        if message.contains("UNIQUE constraint failed") {
+            return Error::DuplicateRecord;
+        }
+        Error::DatabaseQuery(message)
     }
 }
 
@@ -162,7 +174,7 @@ impl ResponseError for Error {
             | Error::BadCallback
             | Error::BadImage
             | Error::BadRequest => StatusCode::BAD_REQUEST,
-            Error::DuplicateTree => StatusCode::CONFLICT,
+            Error::DuplicateRecord | Error::DuplicateTree => StatusCode::CONFLICT,
             Error::DatabaseQuery(_) => StatusCode::INTERNAL_SERVER_ERROR,
             _ => StatusCode::INTERNAL_SERVER_ERROR,
         }
@@ -183,6 +195,7 @@ impl fmt::Display for Error {
             Error::DatabaseConnect(s) => write!(f, "DatabaseConnect: {s}"),
             Error::DatabaseQuery(s) => write!(f, "Database error: {s}"),
             Error::DatabaseStructure(s) => write!(f, "DatabaseStructure: {s}"),
+            Error::DuplicateRecord => write!(f, "DuplicateRecord"),
             Error::DuplicateTree => write!(f, "DuplicateTree"),
             Error::EnvNotSet => write!(f, "EnvNotSet"),
             Error::FileDownload => write!(f, "FileDownload"),
@@ -190,6 +203,7 @@ impl fmt::Display for Error {
             Error::FileUpload => write!(f, "FileUpload"),
             Error::GoogleUserInfo => write!(f, "GoogleUserInfo"),
             Error::ImageResize => write!(f, "ImageResize"),
+            Error::MapillaryExchange(s) => write!(f, "MapillaryExchange: {s}"),
             Error::MissingAuthorizationHeader => write!(f, "MissingAuthorizationHeader"),
             Error::OsmExchange(s) => write!(f, "OsmExchange: {s}"),
             Error::Queue => write!(f, "Queue"),

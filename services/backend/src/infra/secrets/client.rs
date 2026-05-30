@@ -29,11 +29,17 @@ pub struct Secrets {
     // Background job queue.
     pub sqs_key: Option<String>,
     pub sqs_secret: Option<String>,
+
+    // Mapillary API.
+    pub mapillary_token: Option<String>,
+    pub mapillary_org_id: Option<String>,
 }
 
 impl Secrets {
     pub fn new(config: Arc<Config>) -> Result<Self> {
         let path = &config.secrets_path.clone();
+
+        debug!("Looking for secrets in {path}");
 
         Ok(Self {
             files_key: Self::get(path, "FILES_KEY"),
@@ -44,6 +50,8 @@ impl Secrets {
             jwt_secret: Self::get(path, "JWT_SECRET"),
             sqs_key: Self::get(path, "SQS_KEY"),
             sqs_secret: Self::get(path, "SQS_SECRET"),
+            mapillary_token: Self::get(path, "MAPILLARY_TOKEN"),
+            mapillary_org_id: Self::get(path, "MAPILLARY_ORG_ID"),
         })
     }
 
