@@ -1,20 +1,23 @@
 <script lang="ts">
 	import type { MapillaryImage } from '$lib/api/mapillary';
 	import { componentState } from './PanoramaViewer.svelte.ts';
+	import { untrack } from 'svelte';
 	import 'pannellum/build/pannellum.css';
 
 	interface Props {
 		image: MapillaryImage;
+		angle?: number;
 		onMove?: (angle: number) => void;
 	}
 
-	const { image, onMove }: Props = $props();
+	const { image, angle = 0, onMove }: Props = $props();
 
 	let container = $state<HTMLElement | null>(null);
 
 	$effect(() => {
 		if (container && image.url) {
-			componentState.init(container, image, onMove);
+			const initialYaw = untrack(() => angle);
+			componentState.init(container, image, initialYaw, onMove);
 		}
 		return () => {
 			componentState.destroy();

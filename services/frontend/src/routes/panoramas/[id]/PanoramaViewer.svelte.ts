@@ -6,13 +6,18 @@ class PanoramaViewerLogic {
 	yaw = $state(0);
 	onMove?: (angle: number) => void;
 
-	init = (container: HTMLElement, image: MapillaryImage, onMove?: (angle: number) => void) => {
+	init = (
+		container: HTMLElement,
+		image: MapillaryImage,
+		initialYaw: number = 0,
+		onMove?: (angle: number) => void
+	) => {
 		if (this.viewer) {
 			this.viewer.destroy();
 			this.viewer = null;
 		}
 
-		this.yaw = 0;
+		this.yaw = initialYaw;
 		this.onMove = onMove;
 
 		if (!image.url) return;
@@ -23,6 +28,7 @@ class PanoramaViewerLogic {
 			autoLoad: true,
 			compass: true,
 			northOffset: image.compass_angle,
+			yaw: initialYaw,
 			showControls: false,
 			mouseZoom: true,
 			keyboardZoom: true

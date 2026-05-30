@@ -29,7 +29,11 @@
 
 	<div class="content">
 		{#if pageState.image}
-			<PanoramaViewer image={pageState.image} onMove={pageState.handleMove} />
+			<PanoramaViewer
+				image={pageState.image}
+				angle={pageState.angle}
+				onMove={pageState.handleMove}
+			/>
 			<div class="crosshair">
 				<CrossHair />
 			</div>

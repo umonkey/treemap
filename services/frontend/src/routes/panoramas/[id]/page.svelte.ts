@@ -8,12 +8,14 @@ import { LngLat } from 'maplibre-gl';
 class PageState {
 	id = $state<string>('');
 	image = $state<MapillaryImage | null>(null);
+	angle = $state<number>(0);
 
 	public handleClose = async () => {
 		await goto(routes.home());
 	};
 
 	public handleMove = (angle: number) => {
+		this.angle = angle;
 		if (this.image) {
 			mapRaysStore.rays = [
 				{
