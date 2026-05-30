@@ -1,3 +1,5 @@
+import { mapMarkerStore } from '$lib/stores/mapMarker.svelte';
+import { LngLat } from 'maplibre-gl';
 import { getAlert, getAlertPhotos, type IAlert } from '$lib/api/alerts';
 import { mapBus } from '$lib/buses/mapBus';
 import { showError } from '$lib/errors';
@@ -23,7 +25,7 @@ class PreviewState {
 		this.photos = [];
 		this.expand = false;
 
-		mapBus.emit('pin', undefined);
+		mapMarkerStore.center = undefined;
 	};
 
 	public reload = (id: string) => {
@@ -35,10 +37,9 @@ class PreviewState {
 				this.alert = res.data;
 
 				if (this.alert.lat !== null && this.alert.lon !== null) {
-					mapBus.emit('pin', {
-						lat: this.alert.lat,
-						lng: this.alert.lon
-					});
+					const ll = { lat: this.alert.lat, lng: this.alert.lon };
+					mapMarkerStore.center = new LngLat(ll.lng, ll.lat);
+					mapBus.emit('move', ll);
 				}
 			} else if (res.error) {
 				showError(res.error.description);

@@ -3,11 +3,25 @@
 	import { page } from '$app/state';
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
 	import PanoramaViewer from './PanoramaViewer.svelte';
+	import { mapMarkerStore } from '$lib/stores/mapMarker.svelte';
+	import { LngLat } from 'maplibre-gl';
+	import { mapBus } from '$lib/buses/mapBus';
 
 	const id = $derived(page.params.id as string);
 
 	$effect(() => {
 		pageState.reload(id);
+	});
+
+	$effect(() => {
+		if (pageState.image) {
+			const ll = { lat: pageState.image.lat, lng: pageState.image.lon };
+			mapMarkerStore.center = new LngLat(ll.lng, ll.lat);
+			mapBus.emit('move', ll);
+		}
+		return () => {
+			mapMarkerStore.center = undefined;
+		};
 	});
 </script>
 

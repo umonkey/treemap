@@ -62,9 +62,7 @@
 
 		<LayerButton />
 
-		{#if mapState.marker}
-			<Marker center={mapState.marker} />
-		{/if}
+		<Marker />
 
 		{#if mapState.droneLayer}
 			<RasterTileSource id="drone-source" tiles={[mapState.droneLayer]} tileSize={128} scheme="tms">

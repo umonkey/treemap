@@ -1,3 +1,4 @@
+import { mapMarkerStore } from '$lib/stores/mapMarker.svelte';
 import { mapBus } from '$lib/buses/mapBus';
 import { DEFAULT_MAP_CENTER } from '$lib/constants';
 import { config } from '$lib/env';
@@ -9,8 +10,6 @@ import type { ILatLng } from '$lib/types';
 import { Debouncer } from '$lib/utils/debounce';
 import { getDistance } from '$lib/utils/geo';
 import {
-	type LngLat,
-	LngLat as LngLat2,
 	type LngLatBounds,
 	LngLatBounds as LngLatBounds2,
 	type Map,
@@ -50,7 +49,6 @@ class MapLibre {
 	bearing = $state<number>(0);
 	center = $state<ILatLng>(DEFAULT_MAP_CENTER);
 	bounds = $state<LngLatBounds>();
-	marker = $state<LngLat>();
 
 	mapBouncer = new MapBouncer();
 
@@ -161,24 +159,12 @@ class MapLibre {
 		}
 	};
 
-	// This is triggered by the MapPreview element via mapBus, to tell us
-	// that the user clicked another tree, or closed the preview.
-	public handlePinChange = (ll: ILatLng | undefined) => {
-		if (ll) {
-			this.marker = this.ll(ll);
-			this.center = ll;
-		} else {
-			this.marker = undefined;
-		}
-	};
-
 	private handleMoveRequest = (ll: ILatLng) => {
 		console.debug(`Handling request to move the map to ${ll.lat},${ll.lng}`);
 		this.center = ll;
 	};
 
 	public onMount = () => {
-		mapBus.on('pin', this.handlePinChange);
 		mapBus.on('fit', this.handleFit);
 		mapBus.on('move', this.handleMoveRequest);
 
@@ -191,15 +177,10 @@ class MapLibre {
 		this.updateLayers();
 
 		return () => {
-			mapBus.off('pin', this.handlePinChange);
 			mapBus.off('fit', this.handleFit);
 			mapBus.off('move', this.handleMoveRequest);
 			unsub();
 		};
-	};
-
-	private ll = (ll: ILatLng): LngLat => {
-		return new LngLat2(ll.lng, ll.lat);
 	};
 
 	private updateLayers = () => {
