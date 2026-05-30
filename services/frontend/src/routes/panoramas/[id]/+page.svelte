@@ -27,6 +27,10 @@
 	});
 </script>
 
+<svelte:head>
+	<title>360 Panorama</title>
+</svelte:head>
+
 <div class="preview">
 	<div class="header">
 		<button class="close" onclick={pageState.handleClose} aria-label="Close">
