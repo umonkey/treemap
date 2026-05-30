@@ -17,7 +17,9 @@
 	$effect(() => {
 		if (pageState.image) {
 			const ll = { lat: pageState.image.lat, lng: pageState.image.lon };
-			mapMarkerStore.center = new LngLat(ll.lng, ll.lat);
+			if (!mapMarkerStore.center) {
+				mapMarkerStore.center = new LngLat(ll.lng, ll.lat);
+			}
 			mapBus.emit('map-once', ll);
 		}
 		return () => {

@@ -2,8 +2,9 @@ import { getMapillaryGeoJSON } from '$lib/api/mapillary';
 import { mapBus } from '$lib/buses/mapBus';
 import { showError } from '$lib/errors';
 import { goto, routes } from '$lib/routes';
+import { mapMarkerStore } from '$lib/stores/mapMarker.svelte';
 import { Debouncer } from '$lib/utils/debounce';
-import type { Map } from 'maplibre-gl';
+import { LngLat, type Map } from 'maplibre-gl';
 import { getMapContext } from 'svelte-maplibre';
 import { MapBouncer } from './MapBouncer';
 
@@ -93,6 +94,7 @@ class PanoramicLayerState {
 		const id = feature.properties.id;
 
 		const [lng, lat] = feature.geometry.coordinates;
+		mapMarkerStore.center = new LngLat(lng, lat);
 		mapBus.emit('move', { lat, lng });
 
 		console.debug(`[PanoramicLayer] Image ${id} clicked.`);
