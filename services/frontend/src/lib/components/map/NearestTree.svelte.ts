@@ -20,10 +20,10 @@ class ComponentState {
 		return {
 			poi: nearestPoi,
 			distance: minDistance,
-			midpoint: [
-				(center.lng + nearestPoi.lon) / 2,
-				(center.lat + nearestPoi.lat) / 2
-			] as [number, number],
+			midpoint: [(center.lng + nearestPoi.lon) / 2, (center.lat + nearestPoi.lat) / 2] as [
+				number,
+				number
+			],
 			line: {
 				type: 'Feature' as const,
 				geometry: {

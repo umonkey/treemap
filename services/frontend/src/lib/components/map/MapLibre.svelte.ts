@@ -135,8 +135,14 @@ class MapLibre {
 
 		const mode = get(mapMode);
 		const isUserAction = !!e?.originalEvent;
+		const stickyPoints = get(mapLayerStore).stickyPoints !== false;
 
-		if (isUserAction && (mode === undefined || mode === 'preview') && this.zoom > 18) {
+		if (
+			isUserAction &&
+			stickyPoints &&
+			(mode === undefined || mode === 'preview') &&
+			this.zoom > 18
+		) {
 			const result = mapPoiStore.getNearest(this.center, 5);
 			if (result) {
 				const { poi: nearestPoi, distance: minDistance } = result;
