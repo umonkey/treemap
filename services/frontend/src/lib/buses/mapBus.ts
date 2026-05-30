@@ -9,6 +9,9 @@ type MapBusEvent = {
 	// Move the map to these coordinates.
 	move: ILatLng;
 
+	// Move the map to these coordinates, but only if it hasn't been moved yet.
+	'map-once': ILatLng;
+
 	pin: ILatLng | undefined;
 
 	// Triggered by the map when a tree is clicked.

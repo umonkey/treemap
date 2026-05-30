@@ -92,6 +92,9 @@ class PanoramicLayerState {
 		const feature = e.features[0];
 		const id = feature.properties.id;
 
+		const [lng, lat] = feature.geometry.coordinates;
+		mapBus.emit('move', { lat, lng });
+
 		console.debug(`[PanoramicLayer] Image ${id} clicked.`);
 
 		await goto(routes.panorama(id));

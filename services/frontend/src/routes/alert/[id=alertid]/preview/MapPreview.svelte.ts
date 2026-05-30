@@ -39,7 +39,7 @@ class PreviewState {
 				if (this.alert.lat !== null && this.alert.lon !== null) {
 					const ll = { lat: this.alert.lat, lng: this.alert.lon };
 					mapMarkerStore.center = new LngLat(ll.lng, ll.lat);
-					mapBus.emit('move', ll);
+					mapBus.emit('map-once', ll);
 				}
 			} else if (res.error) {
 				showError(res.error.description);
