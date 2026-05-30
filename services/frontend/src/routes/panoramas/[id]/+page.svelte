@@ -13,9 +13,6 @@
 
 <div class="preview">
 	<div class="header">
-		<div class="title">
-			Panorama {pageState.id}
-		</div>
 		<button class="close" onclick={pageState.handleClose} aria-label="Close">
 			<CloseIcon />
 		</button>
@@ -36,16 +33,21 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--gap);
-		padding: var(--gap);
+		padding: 0;
 		background-color: var(--map-menu-background);
 		box-sizing: border-box;
+		position: relative;
 	}
 
 	.header {
-		display: flex;
-		flex-direction: row;
+		position: absolute;
+		top: 0;
+		right: 0;
 		align-items: center;
 		justify-content: space-between;
+		background-color: rgba(0, 0, 0, 0.75);
+		border-bottom-left-radius: 25%;
+		z-index: 1;
 
 		.close {
 			width: 30px;
@@ -63,14 +65,6 @@
 				opacity: 1;
 			}
 		}
-	}
-
-	.title {
-		flex-grow: 1;
-		font-size: 120%;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
 	}
 
 	.content {
@@ -98,10 +92,10 @@
 	@media screen and (min-width: 1024px) {
 		.preview {
 			position: fixed;
-			top: 0;
-			left: 0;
-			width: 300px;
-			height: 100vh;
+			bottom: var(--gap);
+			left: var(--gap);
+			width: 400px;
+			height: 300px;
 			border-right: 1px solid var(--color-dialog-border);
 		}
 	}
