@@ -20,6 +20,8 @@ services:
       - files_key
       - files_secret
       - jwt_secret
+      - mapillary_org_id
+      - mapillary_token
       - sqs_key
       - sqs_secret
       - osm_token
@@ -81,6 +83,10 @@ secrets:
     file: .secrets/files_secret.txt
   jwt_secret:
     file: .secrets/jwt_secret.txt
+  mapillary_org_id:
+    file: .secrets/mapillary_org_id.txt
+  mapillary_token:
+    file: .secrets/mapillary_token.txt
   sqs_key:
     file: .secrets/sqs_key.txt
   sqs_secret:
