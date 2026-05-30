@@ -1,4 +1,3 @@
-import { untrack } from 'svelte';
 import { goto, routes } from '$lib/routes';
 import { getMapillaryImage, type MapillaryImage } from '$lib/api/mapillary';
 import { mapRaysStore } from '$lib/stores/mapRays.svelte';
@@ -27,21 +26,10 @@ class PageState {
 	};
 
 	public reload = async (id: string) => {
-		const shouldReload = untrack(() => {
-			if (this.id === id) {
-				return false;
-			}
-			this.id = id;
-			return true;
-		});
-
-		if (!shouldReload) {
-			return;
-		}
-
+		this.id = id;
 		const response = await getMapillaryImage(id);
 		if (response.status >= 200 && response.status < 300 && response.data) {
-			if (untrack(() => this.id) !== id) {
+			if (this.id !== id) {
 				return;
 			}
 			this.image = response.data;
@@ -55,12 +43,10 @@ class PageState {
 	};
 
 	public cleanup = () => {
-		untrack(() => {
-			this.id = '';
-			this.image = null;
-			mapMarkerStore.center = undefined;
-			mapRaysStore.rays = [];
-		});
+		this.id = '';
+		this.image = null;
+		mapMarkerStore.center = undefined;
+		mapRaysStore.rays = [];
 	};
 }
 
