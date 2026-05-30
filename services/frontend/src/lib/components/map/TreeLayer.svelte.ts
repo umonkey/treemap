@@ -3,6 +3,7 @@ import { mapBus } from '$lib/buses/mapBus';
 import { menuBus } from '$lib/buses/menuBus';
 import { showError } from '$lib/errors';
 import { goto, routes } from '$lib/routes';
+import { mapPoiStore } from '$lib/stores/mapPoi.svelte';
 import { searchStore } from '$lib/stores/searchStore';
 import { Debouncer } from '$lib/utils/debounce';
 import type { Map } from 'maplibre-gl';
@@ -91,6 +92,11 @@ class TreeLayerState {
 						const collection = data as unknown as Collection;
 						console.debug(`[TreeLayer] Received ${collection.features.length} features.`);
 						this.markers = collection;
+						mapPoiStore.trees = collection.features.map((f) => ({
+							lat: f.geometry.coordinates[1],
+							lon: f.geometry.coordinates[0],
+							url: routes.mapPreview(f.properties.id)
+						}));
 					}
 				})
 				.catch((e) => {

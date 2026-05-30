@@ -4,22 +4,21 @@ import { config } from '$lib/env';
 import { mapLayerStore } from '$lib/stores/mapLayerStore';
 import { mapMode } from '$lib/stores/mapMode';
 import { mapStore } from '$lib/stores/mapStore';
-import { goto, routes } from '$lib/routes';
+import { goto } from '$lib/routes';
 import type { ILatLng } from '$lib/types';
 import { Debouncer } from '$lib/utils/debounce';
-import { getDistance } from '$lib/utils/geo';
 import {
-	type LngLat,
-	LngLat as LngLat2,
 	type LngLatBounds,
 	LngLatBounds as LngLatBounds2,
+	LngLat,
 	type Map,
 	type MapLibreEvent,
 	type StyleSpecification
 } from 'maplibre-gl';
 import { get } from 'svelte/store';
 import { MapBouncer } from './MapBouncer';
-import { treeLayerState } from './TreeLayer.svelte.ts';
+import { mapMarkerStore } from '$lib/stores/mapMarker.svelte';
+import { mapPoiStore } from '$lib/stores/mapPoi.svelte';
 
 const BASIC_LAYER = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${config.mapTilerKey}`;
 const LIGHT_LAYER = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json';
@@ -43,13 +42,14 @@ class MapLibre {
 	layer = $state<string | StyleSpecification>(BASIC_LAYER);
 	droneLayer = $state<string | undefined>(undefined);
 	alertsLayer = $state<boolean>(true);
+	panoramasLayer = $state<boolean>(false);
 
+	hasMoved = false;
 	moving = $state(false);
 	zoom = $state<number>(13);
 	bearing = $state<number>(0);
 	center = $state<ILatLng>(DEFAULT_MAP_CENTER);
 	bounds = $state<LngLatBounds>();
-	marker = $state<LngLat>();
 
 	mapBouncer = new MapBouncer();
 
@@ -76,10 +76,12 @@ class MapLibre {
 	public handleMoveStart = (e?: MapLibreEvent) => {
 		if (e?.originalEvent) {
 			this.moving = true;
+			this.hasMoved = true;
 		}
 	};
 
 	public handleFit = ({ start, end }: { start: ILatLng; end: ILatLng }) => {
+		this.hasMoved = true;
 		if (this.map) {
 			const bounds = new LngLatBounds2();
 			bounds.extend([start.lng, start.lat]);
@@ -133,53 +135,46 @@ class MapLibre {
 
 		const mode = get(mapMode);
 		const isUserAction = !!e?.originalEvent;
+		const stickyPoints = get(mapLayerStore).stickyPoints !== false;
 
-		if (isUserAction && (mode === undefined || mode === 'preview') && this.zoom > 18) {
-			const collection = treeLayerState.markers;
-			if (collection && collection.features.length) {
-				let minDistance = Infinity;
-				let nearestFeature = null;
-
-				for (const feature of collection.features) {
-					const [lng, lat] = feature.geometry.coordinates;
-					const dist = getDistance(this.center, { lat, lng });
-					if (dist < minDistance) {
-						minDistance = dist;
-						nearestFeature = feature;
-					}
-				}
-
-				if (nearestFeature && minDistance <= 5) {
-					const nearestId = nearestFeature.properties.id;
-					const [lng, lat] = nearestFeature.geometry.coordinates;
-					mapBus.emit('move', { lat, lng });
-					console.debug(`Snapping to nearest tree ${nearestId} (${minDistance.toFixed(1)}m)`);
-					goto(routes.mapPreview(nearestId));
-				}
+		if (
+			isUserAction &&
+			stickyPoints &&
+			(mode === undefined || mode === 'preview') &&
+			this.zoom > 18
+		) {
+			const result = mapPoiStore.getNearest(this.center, 5);
+			if (result) {
+				const { poi: nearestPoi, distance: minDistance } = result;
+				mapMarkerStore.center = new LngLat(nearestPoi.lon, nearestPoi.lat);
+				mapBus.emit('move', { lat: nearestPoi.lat, lng: nearestPoi.lon });
+				console.debug(`Snapping to nearest POI (${minDistance.toFixed(1)}m)`);
+				goto(nearestPoi.url);
 			}
-		}
-	};
-
-	// This is triggered by the MapPreview element via mapBus, to tell us
-	// that the user clicked another tree, or closed the preview.
-	public handlePinChange = (ll: ILatLng | undefined) => {
-		if (ll) {
-			this.marker = this.ll(ll);
-			this.center = ll;
-		} else {
-			this.marker = undefined;
 		}
 	};
 
 	private handleMoveRequest = (ll: ILatLng) => {
 		console.debug(`Handling request to move the map to ${ll.lat},${ll.lng}`);
+		this.hasMoved = true;
 		this.center = ll;
 	};
 
+	private handleMapOnceRequest = (ll: ILatLng) => {
+		if (this.hasMoved) {
+			console.debug(
+				`Ignoring map-once request to ${ll.lat},${ll.lng} because the map has already moved.`
+			);
+			return;
+		}
+
+		this.handleMoveRequest(ll);
+	};
+
 	public onMount = () => {
-		mapBus.on('pin', this.handlePinChange);
 		mapBus.on('fit', this.handleFit);
 		mapBus.on('move', this.handleMoveRequest);
+		mapBus.on('map-once', this.handleMapOnceRequest);
 
 		const unsub = mapLayerStore.subscribe(() => {
 			this.updateLayers();
@@ -190,15 +185,11 @@ class MapLibre {
 		this.updateLayers();
 
 		return () => {
-			mapBus.off('pin', this.handlePinChange);
 			mapBus.off('fit', this.handleFit);
 			mapBus.off('move', this.handleMoveRequest);
+			mapBus.off('map-once', this.handleMapOnceRequest);
 			unsub();
 		};
-	};
-
-	private ll = (ll: ILatLng): LngLat => {
-		return new LngLat2(ll.lng, ll.lat);
 	};
 
 	private updateLayers = () => {
@@ -221,6 +212,7 @@ class MapLibre {
 		}
 
 		this.alertsLayer = get(mapLayerStore).alerts !== false;
+		this.panoramasLayer = get(mapLayerStore).panoramas === true;
 	};
 }
 

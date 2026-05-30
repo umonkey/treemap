@@ -15,6 +15,7 @@ fn usage() {
     println!();
     println!("Commands:");
     println!("  migrate-timestamps    -- backfill update timestamps");
+    println!("  mapillary-pull        -- get new images from Mapillary");
     println!("  osm-pull              -- get new trees from OpenStreetMap");
     println!("  osm-push              -- send new trees to OSM");
     println!("  osm-push-changes      -- send tree updates to OSM");
@@ -57,6 +58,10 @@ async fn main() -> std::io::Result<()> {
         }
         "migrate-timestamps" => {
             migrate_timestamps_command().await;
+            return Ok(());
+        }
+        "mapillary-pull" => {
+            mapillary_pull_command().await;
             return Ok(());
         }
         "osm-pull" => {

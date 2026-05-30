@@ -67,9 +67,9 @@ class PageState {
 	};
 
 	private moveMap = (ll: ILatLng) => {
-		console.debug(`Moving map center to ${ll.lat},${ll.lng}`);
+		console.debug(`Moving map center once to ${ll.lat},${ll.lng}`);
 
-		mapBus.emit('move', ll);
+		mapBus.emit('map-once', ll);
 	};
 }
 

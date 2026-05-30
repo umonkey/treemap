@@ -1,3 +1,5 @@
+import { showError } from '$lib/errors';
+import { locale } from '$lib/locale';
 import { writable } from 'svelte/store';
 import { ls } from '$lib/utils/localStorage';
 import { db } from '$lib/db';
@@ -19,7 +21,9 @@ export const uploadStore = writable<UploadStore>({
 });
 
 uploadStore.subscribe((value: UploadStore) => {
-	ls.write(AUTOUPLOAD_KEY, value.autoupload);
+	if (!ls.write(AUTOUPLOAD_KEY, value.autoupload)) {
+		showError(locale.toastStorageError());
+	}
 	updateBadge(value.pending);
 });
 

@@ -14,7 +14,9 @@
 	import SearchControl from './SearchControl.svelte';
 	import TreeLayer from './TreeLayer.svelte';
 	import AlertLayer from './AlertLayer.svelte';
+	import PanoramicLayer from './PanoramicLayer.svelte';
 	import MapCenter from './MapCenter.svelte';
+	import MapRays from './MapRays.svelte';
 	import MoveLine from './MoveLine.svelte';
 	import NearestTree from './NearestTree.svelte';
 	import MapRowPreview from './MapRowPreview.svelte';
@@ -61,9 +63,9 @@
 
 		<LayerButton />
 
-		{#if mapState.marker}
-			<Marker center={mapState.marker} />
-		{/if}
+		<Marker />
+
+		<MapRays />
 
 		{#if mapState.droneLayer}
 			<RasterTileSource id="drone-source" tiles={[mapState.droneLayer]} tileSize={128} scheme="tms">
@@ -80,6 +82,10 @@
 
 		{#if mapState.alertsLayer}
 			<AlertLayer />
+		{/if}
+
+		{#if mapState.panoramasLayer}
+			<PanoramicLayer />
 		{/if}
 
 		{#if mapState.moving && mapState.zoom > 18 && ($mapMode === undefined || $mapMode === 'preview')}

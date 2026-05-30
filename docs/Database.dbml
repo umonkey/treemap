@@ -157,6 +157,16 @@ Table observations {
   inclined int [not null, default: 0]
 }
 
+Table mapillary_images {
+  id text [pk]
+  sequence_id text [not null]
+  captured_at int [not null]
+  lat real [not null]
+  lon real [not null]
+  compass_angle real [not null]
+  quality_score real
+}
+
 // Relationships
 Ref: trees_images.tree_id > trees.id
 Ref: trees_props.tree_id > trees.id

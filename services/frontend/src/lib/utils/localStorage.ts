@@ -26,9 +26,9 @@ class LocalStorage {
 		}
 	}
 
-	public write<T>(key: string, value: T | null): void {
+	public write<T>(key: string, value: T | null): boolean {
 		if (!this.isAvailable()) {
-			return;
+			return false;
 		}
 
 		try {
@@ -40,8 +40,10 @@ class LocalStorage {
 				localStorage.setItem(key, data);
 				// console.debug(`[storage] Wrote ${key} = ${data}`);
 			}
+			return true;
 		} catch (e) {
 			console.error(`[storage] Error writing ${key}`, e);
+			return false;
 		}
 	}
 }

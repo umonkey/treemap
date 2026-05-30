@@ -1,6 +1,5 @@
-import { treeLayerState } from './TreeLayer.svelte.ts';
+import { mapPoiStore } from '$lib/stores/mapPoi.svelte';
 import { mapState } from './MapLibre.svelte.ts';
-import { getDistance } from '$lib/utils/geo';
 import { mapBus } from '$lib/buses/mapBus';
 import type { ILatLng } from '$lib/types';
 
@@ -10,40 +9,29 @@ class ComponentState {
 
 	nearest = $derived.by(() => {
 		const center = this.center;
-		const collection = treeLayerState.markers;
-		if (!collection || !collection.features.length) {
+		const result = mapPoiStore.getNearest(center, this.maxDistance);
+
+		if (!result) {
 			return undefined;
 		}
 
-		let minDistance = Infinity;
-		let nearestFeature = null;
-
-		for (const feature of collection.features) {
-			const [lng, lat] = feature.geometry.coordinates;
-			const dist = getDistance(center, { lat, lng });
-			if (dist < minDistance) {
-				minDistance = dist;
-				nearestFeature = feature;
-			}
-		}
-
-		// Only show the line if the distance is reasonable.
-		if (!nearestFeature || minDistance > this.maxDistance) {
-			return undefined;
-		}
+		const { poi: nearestPoi, distance: minDistance } = result;
 
 		return {
-			feature: nearestFeature,
+			poi: nearestPoi,
 			distance: minDistance,
-			midpoint: [
-				(center.lng + nearestFeature.geometry.coordinates[0]) / 2,
-				(center.lat + nearestFeature.geometry.coordinates[1]) / 2
-			] as [number, number],
+			midpoint: [(center.lng + nearestPoi.lon) / 2, (center.lat + nearestPoi.lat) / 2] as [
+				number,
+				number
+			],
 			line: {
 				type: 'Feature' as const,
 				geometry: {
 					type: 'LineString' as const,
-					coordinates: [[center.lng, center.lat], nearestFeature.geometry.coordinates]
+					coordinates: [
+						[center.lng, center.lat],
+						[nearestPoi.lon, nearestPoi.lat]
+					]
 				},
 				properties: {}
 			}

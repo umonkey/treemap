@@ -1,3 +1,5 @@
+import { mapMarkerStore } from '$lib/stores/mapMarker.svelte';
+import { LngLat } from 'maplibre-gl';
 import { getTreeComments } from '$lib/api/comments';
 import { getObservations } from '$lib/api/observations';
 import { getTree } from '$lib/api/trees';
@@ -30,7 +32,7 @@ class PreviewState {
 		this.comments = [];
 		this.expand = false;
 
-		mapBus.emit('pin', undefined);
+		mapMarkerStore.center = undefined;
 	};
 
 	public handleContextMenu = () => {
@@ -47,10 +49,9 @@ class PreviewState {
 			if (res.status === 200 && res.data) {
 				this.tree = res.data;
 
-				mapBus.emit('pin', {
-					lat: this.tree.lat,
-					lng: this.tree.lon
-				});
+				const ll = { lat: this.tree.lat, lng: this.tree.lon };
+				mapMarkerStore.center = new LngLat(ll.lng, ll.lat);
+				mapBus.emit('map-once', ll);
 			} else if (res.error) {
 				showError(res.error.description);
 			}
@@ -80,7 +81,7 @@ class PreviewState {
 		}
 	};
 
-	public onMount = () => {
+	public init = () => {
 		mapBus.on('preview', this.handlePreviewSignal);
 		mapMode.set('preview');
 

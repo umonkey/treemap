@@ -1,16 +1,14 @@
 <script lang="ts">
 	import ICON from '$lib/assets/marker-icon-2x.png';
-	import type { LngLatLike } from 'maplibre-gl';
 	import { Marker } from 'svelte-maplibre';
-
-	const { center } = $props<{
-		center: LngLatLike;
-	}>();
+	import { mapMarkerStore } from '$lib/stores/mapMarker.svelte';
 </script>
 
-<Marker lngLat={center} offset={[0, -16]}>
-	<img src={ICON} alt="You are here" />
-</Marker>
+{#if mapMarkerStore.center}
+	<Marker lngLat={mapMarkerStore.center} offset={[0, -16]}>
+		<img src={ICON} alt="You are here" />
+	</Marker>
+{/if}
 
 <style>
 	img {

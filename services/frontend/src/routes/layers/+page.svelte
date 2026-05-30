@@ -37,9 +37,24 @@
 			onChange={selectorState.toggleDrone}
 		/>
 		<CheckInput
+			value={selectorState.panoramas}
+			label={locale.layerPanoramas()}
+			onChange={selectorState.togglePanoramas}
+		/>
+		<CheckInput
 			value={selectorState.alerts}
 			label={locale.layerAlerts()}
 			onChange={selectorState.toggleAlerts}
+		/>
+	</div>
+
+	<h3>{locale.otherTitle()}</h3>
+
+	<div class="other-options">
+		<CheckInput
+			value={selectorState.stickyPoints}
+			label={locale.optionStickyPoints()}
+			onChange={selectorState.toggleStickyPoints}
 		/>
 	</div>
 </Dialog>
@@ -55,7 +70,8 @@
 		}
 	}
 
-	.additional-layers {
+	.additional-layers,
+	.other-options {
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;

@@ -12,8 +12,20 @@ build:
 build-combined:
 	docker build -t treemap:latest -f Dockerfile .
 
+check-backend:
+	make -C services/backend check
+
+check-frontend:
+	make -C services/frontend check
+
 format-docs:
 	npx -y prettier --write $(shell find ./docs ./.agents -name "*.md")
+
+format-backend:
+	make -C services/backend format
+
+format-frontend:
+	make -C services/frontend format
 
 push:
 	echo $(CR_TOKEN) | docker login ghcr.io -u $(CR_USER) --password-stdin
