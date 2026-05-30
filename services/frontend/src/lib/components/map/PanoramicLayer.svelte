@@ -24,7 +24,7 @@
 			filter={['==', ['get', 'kind'], 'image']}
 			paint={{
 				'circle-color': '#007aff',
-				'circle-radius': 4,
+				'circle-radius': ['step', ['zoom'], 4, 19, 10],
 				'circle-opacity': 0.8,
 				'circle-stroke-width': 1,
 				'circle-stroke-color': '#ffffff'
