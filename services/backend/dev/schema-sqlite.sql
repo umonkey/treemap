@@ -234,6 +234,23 @@ CREATE TABLE IF NOT EXISTS mapillary_images (
 
 CREATE INDEX IF NOT EXISTS mapillary_images_sequence_id ON mapillary_images (sequence_id);
 CREATE INDEX IF NOT EXISTS mapillary_images_captured_at ON mapillary_images (captured_at);
+CREATE INDEX IF NOT EXISTS mapillary_images_lat ON mapillary_images (lat);
+CREATE INDEX IF NOT EXISTS mapillary_images_lon ON mapillary_images (lon);
+
+
+CREATE TABLE IF NOT EXISTS mapillary_sequences (
+    `id` TEXT NOT NULL,
+    `captured_at` INT NOT NULL,
+    `image_count` INT NOT NULL,
+    `min_lat` REAL NOT NULL,
+    `max_lat` REAL NOT NULL,
+    `min_lon` REAL NOT NULL,
+    `max_lon` REAL NOT NULL,
+    `geom_json` TEXT NOT NULL,
+    PRIMARY KEY(`id`)
+);
+
+CREATE INDEX IF NOT EXISTS mapillary_sequences_captured_at ON mapillary_sequences (captured_at);
 
 
 COMMIT;

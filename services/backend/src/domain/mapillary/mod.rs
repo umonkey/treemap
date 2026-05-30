@@ -2,6 +2,6 @@ mod models;
 mod repository;
 mod service;
 
-pub use models::MapillaryImage;
+pub use models::{MapillaryImage, MapillarySequence};
 pub use repository::MapillaryRepository;
 pub use service::MapillaryService;

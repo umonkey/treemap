@@ -6,6 +6,7 @@ pub mod file;
 pub mod health;
 pub mod heatmap;
 pub mod login;
+pub mod mapillary;
 pub mod me;
 pub mod meta;
 pub mod settings;

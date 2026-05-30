@@ -1,8 +1,11 @@
-use crate::domain::mapillary::{MapillaryImage, MapillaryRepository};
+use crate::domain::mapillary::{MapillaryImage, MapillaryRepository, MapillarySequence};
+use crate::domain::tree::Bounds;
 use crate::infra::mapillary::MapillaryClient;
 use crate::services::*;
 use crate::types::*;
 use log::{debug, info};
+use serde_json::json;
+use std::collections::HashSet;
 use std::sync::Arc;
 
 pub struct MapillaryService {
@@ -14,14 +17,15 @@ impl MapillaryService {
     pub async fn pull(&self) -> Result<u32> {
         let mut added = 0;
         let mut stop = false;
-        let limit = 500; // Increased limit for efficiency.
+        let limit = 5000;
         let mut response = self.client.fetch_panoramas(limit).await?;
+        let mut affected_sequences = HashSet::new();
 
         loop {
             for img in response.data {
                 let model = MapillaryImage {
                     id: img.id.clone(),
-                    sequence_id: img.sequence,
+                    sequence_id: img.sequence.clone(),
                     captured_at: img.captured_at,
                     lat: img.geometry.coordinates[1],
                     lon: img.geometry.coordinates[0],
@@ -29,9 +33,10 @@ impl MapillaryService {
                     quality_score: img.quality_score,
                 };
 
-                match self.repo.add(&model).await {
+                match self.repo.add_image(&model).await {
                     Ok(_) => {
                         added += 1;
+                        affected_sequences.insert(img.sequence);
                     }
                     Err(Error::DuplicateRecord) => {
                         debug!("Mapillary image {} already exists, stopping pull.", img.id);
@@ -53,8 +58,64 @@ impl MapillaryService {
             }
         }
 
+        if !affected_sequences.is_empty() {
+            info!(
+                "Aggregating {} affected sequences...",
+                affected_sequences.len()
+            );
+            for sequence_id in affected_sequences {
+                self.aggregate_sequence(&sequence_id).await?;
+            }
+        }
+
         info!("Added {added} new Mapillary images.");
         Ok(added)
+    }
+
+    pub async fn get_images_by_bounds(&self, bounds: Bounds) -> Result<Vec<MapillaryImage>> {
+        self.repo.find_images_by_bounds(bounds).await
+    }
+
+    pub async fn get_sequences_by_bounds(&self, bounds: Bounds) -> Result<Vec<MapillarySequence>> {
+        self.repo.find_sequences_by_bounds(bounds).await
+    }
+
+    async fn aggregate_sequence(&self, sequence_id: &str) -> Result<()> {
+        let images = self.repo.find_images_by_sequence(sequence_id).await?;
+        if images.is_empty() {
+            return Ok(());
+        }
+
+        let mut min_lat = f64::MAX;
+        let mut max_lat = f64::MIN;
+        let mut min_lon = f64::MAX;
+        let mut max_lon = f64::MIN;
+        let mut coordinates = Vec::new();
+
+        for img in &images {
+            min_lat = min_lat.min(img.lat);
+            max_lat = max_lat.max(img.lat);
+            min_lon = min_lon.min(img.lon);
+            max_lon = max_lon.max(img.lon);
+            coordinates.push(vec![img.lon, img.lat]);
+        }
+
+        let geom_json = json!(coordinates).to_string();
+
+        let sequence = MapillarySequence {
+            id: sequence_id.to_string(),
+            captured_at: images[0].captured_at,
+            image_count: images.len() as u32,
+            min_lat,
+            max_lat,
+            min_lon,
+            max_lon,
+            geom_json,
+        };
+
+        self.repo.add_sequence(&sequence).await?;
+
+        Ok(())
     }
 }
 

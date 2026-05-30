@@ -13,7 +13,6 @@ pub struct MapillaryImage {
 }
 
 impl MapillaryImage {
-    #[allow(dead_code)]
     pub fn from_attributes(attrs: &Attributes) -> crate::types::Result<Self> {
         Ok(Self {
             id: attrs.require_string("id")?,
@@ -35,6 +34,46 @@ impl MapillaryImage {
         attrs.insert("lon", Value::from(self.lon));
         attrs.insert("compass_angle", Value::from(self.compass_angle));
         attrs.insert("quality_score", Value::from(self.quality_score));
+        attrs
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MapillarySequence {
+    pub id: String,
+    pub captured_at: i64,
+    pub image_count: u32,
+    pub min_lat: f64,
+    pub max_lat: f64,
+    pub min_lon: f64,
+    pub max_lon: f64,
+    pub geom_json: String,
+}
+
+impl MapillarySequence {
+    pub fn from_attributes(attrs: &Attributes) -> crate::types::Result<Self> {
+        Ok(Self {
+            id: attrs.require_string("id")?,
+            captured_at: attrs.require_i64("captured_at")?,
+            image_count: attrs.require_u64("image_count")? as u32,
+            min_lat: attrs.require_f64("min_lat")?,
+            max_lat: attrs.require_f64("max_lat")?,
+            min_lon: attrs.require_f64("min_lon")?,
+            max_lon: attrs.require_f64("max_lon")?,
+            geom_json: attrs.require_string("geom_json")?,
+        })
+    }
+
+    pub fn to_attributes(&self) -> Attributes {
+        let mut attrs = Attributes::default();
+        attrs.insert("id", Value::from(self.id.clone()));
+        attrs.insert("captured_at", Value::from(self.captured_at));
+        attrs.insert("image_count", Value::from(self.image_count as i64));
+        attrs.insert("min_lat", Value::from(self.min_lat));
+        attrs.insert("max_lat", Value::from(self.max_lat));
+        attrs.insert("min_lon", Value::from(self.min_lon));
+        attrs.insert("max_lon", Value::from(self.max_lon));
+        attrs.insert("geom_json", Value::from(self.geom_json.clone()));
         attrs
     }
 }

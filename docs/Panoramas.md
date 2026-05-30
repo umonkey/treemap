@@ -55,10 +55,10 @@ The integration requires configuring the public username and a client token for 
 
 ## Implementation Plan
 
-- [x] database schema update: create the `mapillary_images` table in SQLite schema.
+- [x] database schema update: create the `mapillary_images` table and `mapillary_sequences` table in SQLite schema.
 - [x] configuration registration: add `mapillary_username` to the config structures and `mapillary_client_token` to the `Secrets` struct in the backend.
 - [x] synchronization command: implement a `mapillary-pull` command in the Rust backend to fetch sequence metadata and cache it locally.
-- [ ] backend API endpoints: expose endpoints `/api/mapillary/images` and `/api/mapillary/tracks` to serve cached data as GeoJSON.
+- [x] backend API endpoints: expose endpoint `/v1/mapillary/geo.json` to serve cached data (images and tracks) as GeoJSON.
 - [ ] panoramic layer display: render Mapillary tracks and image points as layers on the MapLibre map on the client.
 - [ ] workspace page routing: set up a split-screen layout on a dedicated `/armchair` Svelte page.
 - [ ] MapillaryJS integration: embed the interactive panoramic viewer inside the `/armchair` page.
