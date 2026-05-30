@@ -1,3 +1,5 @@
+import { showError } from '$lib/errors';
+import { locale } from '$lib/locale';
 import { ls } from '$lib/utils/localStorage';
 import { writable } from 'svelte/store';
 
@@ -22,5 +24,7 @@ const getInitialSettings = (): ISettings => {
 export const settingsStore = writable<ISettings>(getInitialSettings());
 
 settingsStore.subscribe((value) => {
-	ls.write(STORAGE_KEY, value);
+	if (!ls.write(STORAGE_KEY, value)) {
+		showError(locale.toastStorageError());
+	}
 });

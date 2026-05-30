@@ -1,4 +1,6 @@
 import { DEFAULT_MAP_CENTER } from '$lib/constants';
+import { showError } from '$lib/errors';
+import { locale } from '$lib/locale';
 import type { ILatLng } from '$lib/types';
 import { ls } from '$lib/utils/localStorage';
 import { derived, writable } from 'svelte/store';
@@ -21,7 +23,9 @@ export const mapStore = writable<IMapStore>(
 
 mapStore.subscribe((value) => {
 	// console.debug('[map] Storing center and zoom.');
-	ls.write(STORE_ID, value);
+	if (!ls.write(STORE_ID, value)) {
+		showError(locale.toastStorageError());
+	}
 });
 
 export const mapCenter = derived(mapStore, ($mapStore) => $mapStore.center);

@@ -1,3 +1,5 @@
+import { showError } from '$lib/errors';
+import { locale } from '$lib/locale';
 import { ls } from '$lib/utils/localStorage';
 import { derived, writable } from 'svelte/store';
 
@@ -20,7 +22,9 @@ const getDefaultState = (): IMapLayers => {
 export const mapLayerStore = writable<IMapLayers>(ls.read('mapLayerStore') ?? getDefaultState());
 
 mapLayerStore.subscribe((value: IMapLayers) => {
-	ls.write('mapLayerStore', value);
+	if (!ls.write('mapLayerStore', value)) {
+		showError(locale.toastStorageError());
+	}
 });
 
 export const baseLayer = derived(mapLayerStore, ($mapStore) => $mapStore?.base);

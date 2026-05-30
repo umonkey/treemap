@@ -717,6 +717,10 @@ class EnglishLocale {
 		return 'Այս սարքում տեղորոշումը հասանելի չէ:';
 	}
 
+	public toastStorageError(): string {
+		return 'Error saving settings. Local storage might be full or disabled.';
+	}
+
 	public shortMonday(): string {
 		return 'Mon';
 	}
@@ -1437,6 +1441,10 @@ class RussianLocale extends EnglishLocale {
 		return 'Геолокация недоступна на этом устройстве.';
 	}
 
+	public override toastStorageError(): string {
+		return 'Ошибка сохранения настроек. Возможно, хранилище переполнено или отключено.';
+	}
+
 	public shortMonday(): string {
 		return 'Пн';
 	}
@@ -2063,6 +2071,10 @@ class ArmenianLocale extends EnglishLocale {
 
 	public toastLocationStarted(): string {
 		return 'Տեղադրության հետևումը սկսված է:';
+	}
+
+	public override toastStorageError(): string {
+		return 'Կարգավորումները պահպանելու սխալ: Տեղական պահեստը կարող է լիքը լինել կամ անջատված:';
 	}
 }
 
