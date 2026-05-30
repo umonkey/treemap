@@ -76,6 +76,8 @@
 	.content {
 		flex-grow: 1;
 		min-height: 0;
+		display: flex;
+		flex-direction: column;
 	}
 
 	/* Mobile styles */
@@ -85,6 +87,7 @@
 			bottom: var(--bottom-nav-height);
 			left: 0;
 			right: 0;
+			height: 300px;
 			border-top-left-radius: 8px;
 			border-top-right-radius: 8px;
 			animation: slideUp 0.2s ease-out;

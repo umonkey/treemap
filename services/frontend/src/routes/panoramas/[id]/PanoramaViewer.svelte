@@ -1,17 +1,28 @@
 <script lang="ts">
 	import type { MapillaryImage } from '$lib/api/mapillary';
+	import { componentState } from './PanoramaViewer.svelte.ts';
+	import 'pannellum/build/pannellum.css';
 
 	interface Props {
 		image: MapillaryImage;
 	}
 
-	let { image }: Props = $props();
+	const { image }: Props = $props();
+
+	let container = $state<HTMLElement | null>(null);
+
+	$effect(() => {
+		if (container && image.url) {
+			componentState.init(container, image);
+		}
+		return () => {
+			componentState.destroy();
+		};
+	});
 </script>
 
-<div class="viewer">
-	{#if image.url}
-		<img src={image.url} alt="Panorama {image.id}" />
-	{:else}
+<div class="viewer" bind:this={container}>
+	{#if !image.url}
 		<p>Loading image...</p>
 	{/if}
 </div>
@@ -20,16 +31,12 @@
 	.viewer {
 		width: 100%;
 		height: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
+		min-height: 200px;
 		background-color: #000;
 		overflow: hidden;
+	}
 
-		img {
-			max-width: 100%;
-			max-height: 100%;
-			object-fit: contain;
-		}
+	:global(.pnlm-container) {
+		background-color: #000;
 	}
 </style>
