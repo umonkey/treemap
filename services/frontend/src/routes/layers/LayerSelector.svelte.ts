@@ -5,12 +5,14 @@ class SelectorState {
 	base = $state<string>('basic');
 	drone = $state<boolean>(false);
 	alerts = $state<boolean>(true);
+	panoramas = $state<boolean>(false);
 
 	public constructor() {
 		const layers = get(mapLayerStore);
 		this.base = layers.base ?? 'basic';
 		this.drone = layers.drone ?? false;
 		this.alerts = layers.alerts ?? true;
+		this.panoramas = layers.panoramas ?? false;
 	}
 
 	public setBase = (value: string) => {
@@ -36,6 +38,15 @@ class SelectorState {
 
 		mapLayerStore.update((store) => {
 			store.alerts = this.alerts;
+			return store;
+		});
+	};
+
+	public togglePanoramas = () => {
+		this.panoramas = !this.panoramas;
+
+		mapLayerStore.update((store) => {
+			store.panoramas = this.panoramas;
 			return store;
 		});
 	};

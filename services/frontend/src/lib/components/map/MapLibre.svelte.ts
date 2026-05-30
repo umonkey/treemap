@@ -43,6 +43,7 @@ class MapLibre {
 	layer = $state<string | StyleSpecification>(BASIC_LAYER);
 	droneLayer = $state<string | undefined>(undefined);
 	alertsLayer = $state<boolean>(true);
+	panoramasLayer = $state<boolean>(false);
 
 	moving = $state(false);
 	zoom = $state<number>(13);
@@ -221,6 +222,7 @@ class MapLibre {
 		}
 
 		this.alertsLayer = get(mapLayerStore).alerts !== false;
+		this.panoramasLayer = get(mapLayerStore).panoramas === true;
 	};
 }
 

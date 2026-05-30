@@ -41,6 +41,11 @@
 			label={locale.layerAlerts()}
 			onChange={selectorState.toggleAlerts}
 		/>
+		<CheckInput
+			value={selectorState.panoramas}
+			label={locale.layerPanoramas()}
+			onChange={selectorState.togglePanoramas}
+		/>
 	</div>
 </Dialog>
 

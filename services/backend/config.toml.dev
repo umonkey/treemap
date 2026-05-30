@@ -25,7 +25,7 @@ files_base_url = "https://treemap.fra1.cdn.digitaloceanspaces.com/"
 #turso_url = "libsql://treemap-umonkey.aws-eu-west-1.turso.io"
 
 # Path to where the file based secrets are stored.
-secrets_path = "../../.secrets"
+secrets_path = "/run/secrets"
 
 # Queue configuration.  Will use SQS if sqs_url is defined, otherwise SQLite.
 # You'd also need to set secrets SQS_KEY and SQS_SECRET.

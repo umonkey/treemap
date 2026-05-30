@@ -8,6 +8,7 @@ interface StringList {
 	additionalTitle: () => string;
 	layerDrone: () => string;
 	layerAlerts: () => string;
+	layerPanoramas: () => string;
 }
 
 class English implements StringList {
@@ -18,6 +19,7 @@ class English implements StringList {
 	additionalTitle = () => 'Select additional layers';
 	layerDrone = () => 'Drone imagery';
 	layerAlerts = () => 'Alerts';
+	layerPanoramas = () => 'Panoramas';
 }
 
 class Russian extends English {
@@ -28,6 +30,7 @@ class Russian extends English {
 	additionalTitle = () => 'Дополнительные слои';
 	layerDrone = () => 'Снимки с дрона';
 	layerAlerts = () => 'Сигналы';
+	layerPanoramas = () => 'Панорамы';
 }
 
 class Armenian extends English {
@@ -38,6 +41,7 @@ class Armenian extends English {
 	additionalTitle = () => 'Ընտրել լրացուցիչ շերտեր';
 	layerDrone = () => 'Անօդաչուի լուսանկարներ';
 	layerAlerts = () => 'Ահազանգեր';
+	layerPanoramas = () => 'Պանորամաներ';
 }
 
 const getLocale = (): StringList => {

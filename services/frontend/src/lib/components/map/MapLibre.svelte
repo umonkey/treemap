@@ -14,6 +14,7 @@
 	import SearchControl from './SearchControl.svelte';
 	import TreeLayer from './TreeLayer.svelte';
 	import AlertLayer from './AlertLayer.svelte';
+	import PanoramicLayer from './PanoramicLayer.svelte';
 	import MapCenter from './MapCenter.svelte';
 	import MoveLine from './MoveLine.svelte';
 	import NearestTree from './NearestTree.svelte';
@@ -80,6 +81,10 @@
 
 		{#if mapState.alertsLayer}
 			<AlertLayer />
+		{/if}
+
+		{#if mapState.panoramasLayer}
+			<PanoramicLayer />
 		{/if}
 
 		{#if mapState.moving && mapState.zoom > 18 && ($mapMode === undefined || $mapMode === 'preview')}

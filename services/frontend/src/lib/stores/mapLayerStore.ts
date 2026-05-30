@@ -5,13 +5,15 @@ interface IMapLayers {
 	base: string | undefined;
 	drone: boolean;
 	alerts: boolean;
+	panoramas: boolean;
 }
 
 const getDefaultState = (): IMapLayers => {
 	return {
 		base: 'basic',
 		drone: false,
-		alerts: true
+		alerts: true,
+		panoramas: false
 	};
 };
 
@@ -24,3 +26,4 @@ mapLayerStore.subscribe((value: IMapLayers) => {
 export const baseLayer = derived(mapLayerStore, ($mapStore) => $mapStore?.base);
 export const droneLayer = derived(mapLayerStore, ($mapStore) => $mapStore?.drone);
 export const alertsLayer = derived(mapLayerStore, ($mapStore) => $mapStore?.alerts);
+export const panoramasLayer = derived(mapLayerStore, ($mapStore) => $mapStore?.panoramas);
