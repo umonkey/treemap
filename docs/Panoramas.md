@@ -28,6 +28,32 @@ The database schema includes a `mapillary_images` table with the following struc
 - compass_angle: heading direction of the camera.
 - captured_at: timestamp when the image was taken.
 
+## API Endpoints
+
+The backend provides a GeoJSON endpoint to fetch cached panorama data for display on the map.
+
+### Get Mapillary Data
+
+`GET /v1/mapillary/geo.json`
+
+Returns a `FeatureCollection` containing image locations (points) and/or sequence tracks (LineStrings) within the requested bounding box.
+
+### Query Parameters
+
+- n, s, e, w: (required) coordinates of the bounding box.
+- points: (optional) boolean, whether to include individual image points.
+- lines: (optional) boolean, whether to include sequence lines.
+
+### Response Structure
+
+The features in the GeoJSON response have a `kind` property to distinguish between images and sequences.
+
+- kind: "image" or "sequence".
+- id: Mapillary identifier.
+- captured_at: unix timestamp of the image or sequence start.
+- compass_angle: (images only) heading direction.
+- image_count: (sequences only) number of images in the sequence.
+
 ## Triangulation Mathematics
 
 Triangulation uses 2D vector geometry to find the intersection of two or more rays cast from different camera positions.
