@@ -22,6 +22,17 @@ The video file coming from the camera contains two video tracks with round video
 
 Load all your recorded .osv files into DJI Studio, enable "direction lock" and export as "panoramic video" in highest possible quality. Few hours later, you will have an MP4 file with an requirectangular video, stabilized.
 
+## Sync with the GPS
+
+Mobile phones normally have around 3 second lag so even with perfectly synchronized clocks the data will be wrong.  You need to find the delta using a ground control point.
+
+Find a moment in the video where you are driving your normal speed near a distinct landmark, like an intersection or a bridge.  Get the frame number.  Use this command line to do that:
+
+```
+mpv --hwdec=no --osd-msg1='Frame: ${estimated-frame-number} / ${estimated-frame-count}' --vf=lavfi=[drawgrid=w=iw/4:h=ih:c=red:t=2] ride-720p.MP4
+```
+
+
 ## Extracting the images
 
 Use the [tm-geotag](https://github.com/umonkey/mapping-tools) tool to extract geo-tagged images from the video at certain distances, e.g. 3 meters. This will convert your video to a folder full of geotagged JPEG images which could then be used with any 360-capable software or platform, e.g. Mapillary.
