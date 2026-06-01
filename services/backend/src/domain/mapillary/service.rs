@@ -16,7 +16,6 @@ pub struct MapillaryService {
 impl MapillaryService {
     pub async fn pull(&self) -> Result<u32> {
         let mut added = 0;
-        let mut stop = false;
         let limit = 5000;
         let mut response = self.client.fetch_panoramas(limit).await?;
         let mut affected_sequences = HashSet::new();
@@ -53,16 +52,10 @@ impl MapillaryService {
                         affected_sequences.insert(img.sequence);
                     }
                     Err(Error::DuplicateRecord) => {
-                        debug!("Mapillary image {} already exists, stopping pull.", img.id);
-                        stop = true;
-                        break;
+                        // Silently ignore existing images.
                     }
                     Err(e) => return Err(e),
                 }
-            }
-
-            if stop {
-                break;
             }
 
             if let Some(paging) = response.paging {
