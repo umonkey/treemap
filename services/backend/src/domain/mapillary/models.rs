@@ -51,6 +51,7 @@ pub struct MapillarySequence {
     pub min_lon: f64,
     pub max_lon: f64,
     pub geom_json: String,
+    pub hidden: bool,
 }
 
 impl MapillarySequence {
@@ -64,6 +65,7 @@ impl MapillarySequence {
             min_lon: attrs.require_f64("min_lon")?,
             max_lon: attrs.require_f64("max_lon")?,
             geom_json: attrs.require_string("geom_json")?,
+            hidden: attrs.get_bool("hidden")?.unwrap_or(false),
         })
     }
 
@@ -77,6 +79,7 @@ impl MapillarySequence {
         attrs.insert("min_lon", Value::from(self.min_lon));
         attrs.insert("max_lon", Value::from(self.max_lon));
         attrs.insert("geom_json", Value::from(self.geom_json.clone()));
+        attrs.insert("hidden", Value::from(self.hidden));
         attrs
     }
 }

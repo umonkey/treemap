@@ -21,8 +21,8 @@ impl MapillaryRepository {
 
     pub async fn find_images_by_bounds(&self, bounds: Bounds) -> Result<Vec<MapillaryImage>> {
         let sql = format!(
-            "SELECT * FROM `{}` WHERE `lat` <= ? AND lat >= ? AND lon <= ? AND lon >= ?",
-            IMAGES_TABLE
+            "SELECT i.* FROM `{}` i INNER JOIN `{}` s ON i.sequence_id = s.id WHERE i.`lat` <= ? AND i.lat >= ? AND i.lon <= ? AND i.lon >= ? AND s.hidden = 0",
+            IMAGES_TABLE, SEQUENCES_TABLE
         );
 
         let params = &[
@@ -57,10 +57,22 @@ impl MapillaryRepository {
         Ok(())
     }
 
+    pub async fn find_sequence(&self, id: &str) -> Result<Option<MapillarySequence>> {
+        let query =
+            SelectQuery::new(SEQUENCES_TABLE).with_condition("id", Value::from(id.to_string()));
+
+        let records = self.db.get_records(query).await?;
+        if let Some(record) = records.first() {
+            Ok(Some(MapillarySequence::from_attributes(record)?))
+        } else {
+            Ok(None)
+        }
+    }
+
     pub async fn find_sequences_by_bounds(&self, bounds: Bounds) -> Result<Vec<MapillarySequence>> {
         // Query sequences whose bounding box intersects with the requested bounds.
         let sql = format!(
-            "SELECT * FROM `{}` WHERE `min_lat` <= ? AND `max_lat` >= ? AND `min_lon` <= ? AND `max_lon` >= ?",
+            "SELECT * FROM `{}` WHERE `min_lat` <= ? AND `max_lat` >= ? AND `min_lon` <= ? AND `max_lon` >= ? AND `hidden` = 0",
             SEQUENCES_TABLE
         );
 

@@ -127,6 +127,7 @@ impl MapillaryService {
         }
 
         let geom_json = json!(coordinates).to_string();
+        let existing = self.repo.find_sequence(sequence_id).await?;
 
         let sequence = MapillarySequence {
             id: sequence_id.to_string(),
@@ -137,6 +138,7 @@ impl MapillaryService {
             min_lon,
             max_lon,
             geom_json,
+            hidden: existing.map(|s| s.hidden).unwrap_or(false),
         };
 
         self.repo.add_sequence(&sequence).await?;
