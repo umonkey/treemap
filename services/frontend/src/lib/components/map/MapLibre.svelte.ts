@@ -1,6 +1,7 @@
 import { mapBus } from '$lib/buses/mapBus';
 import { DEFAULT_MAP_CENTER } from '$lib/constants';
 import { config } from '$lib/env';
+import { locale } from '$lib/locale';
 import { mapLayerStore } from '$lib/stores/mapLayerStore';
 import { mapMode } from '$lib/stores/mapMode';
 import { mapStore } from '$lib/stores/mapStore';
@@ -20,8 +21,8 @@ import { MapBouncer } from './MapBouncer';
 import { mapMarkerStore } from '$lib/stores/mapMarker.svelte';
 import { mapPoiStore } from '$lib/stores/mapPoi.svelte';
 
-const BASIC_LAYER = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${config.mapTilerKey}`;
-const LIGHT_LAYER = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json';
+const BASIC_LAYER = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${config.mapTilerKey}&language=${locale.lang}`;
+const LIGHT_LAYER = `https://api.maptiler.com/maps/positron/style.json?key=${config.mapTilerKey}&language=${locale.lang}`;
 const DRONE_LAYER = 'https://treemap-tiles.fra1.cdn.digitaloceanspaces.com/{z}/{x}/{y}.png';
 
 const GOOGLE_LAYER: StyleSpecification = {
