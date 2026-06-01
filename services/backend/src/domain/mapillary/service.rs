@@ -23,13 +23,22 @@ impl MapillaryService {
 
         loop {
             for img in response.data {
+                let (lon, lat) = if let Some(ref computed) = img.computed_geometry {
+                    (computed.coordinates[0], computed.coordinates[1])
+                } else {
+                    (img.geometry.coordinates[0], img.geometry.coordinates[1])
+                };
+
                 let model = MapillaryImage {
                     id: img.id.clone(),
                     sequence_id: img.sequence.clone(),
                     captured_at: img.captured_at,
-                    lat: img.geometry.coordinates[1],
-                    lon: img.geometry.coordinates[0],
-                    compass_angle: img.compass_angle.unwrap_or(0.0),
+                    lat,
+                    lon,
+                    compass_angle: img
+                        .computed_compass_angle
+                        .or(img.compass_angle)
+                        .unwrap_or(0.0),
                     quality_score: img.quality_score,
                     url: None,
                 };
@@ -84,13 +93,22 @@ impl MapillaryService {
     pub async fn get_image_metadata(&self, id: &str) -> Result<MapillaryImage> {
         let img = self.client.fetch_image(id).await?;
 
+        let (lon, lat) = if let Some(ref computed) = img.computed_geometry {
+            (computed.coordinates[0], computed.coordinates[1])
+        } else {
+            (img.geometry.coordinates[0], img.geometry.coordinates[1])
+        };
+
         Ok(MapillaryImage {
             id: img.id,
             sequence_id: img.sequence,
             captured_at: img.captured_at,
-            lat: img.geometry.coordinates[1],
-            lon: img.geometry.coordinates[0],
-            compass_angle: img.compass_angle.unwrap_or(0.0),
+            lat,
+            lon,
+            compass_angle: img
+                .computed_compass_angle
+                .or(img.compass_angle)
+                .unwrap_or(0.0),
             quality_score: img.quality_score,
             url: img.thumb_2048_url,
         })

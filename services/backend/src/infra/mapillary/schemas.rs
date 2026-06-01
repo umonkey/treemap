@@ -8,6 +8,8 @@ pub struct MapillaryImage {
     pub captured_at: i64,
     pub geometry: MapillaryGeometry,
     pub compass_angle: Option<f64>,
+    pub computed_geometry: Option<MapillaryGeometry>,
+    pub computed_compass_angle: Option<f64>,
     pub is_pano: bool,
     pub quality_score: Option<f64>,
     pub thumb_2048_url: Option<String>,

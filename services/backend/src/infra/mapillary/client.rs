@@ -23,7 +23,7 @@ impl MapillaryClient {
             .ok_or_else(|| Error::Config("MAPILLARY_ORG_ID not set".to_string()))?;
 
         let url = format!(
-            "https://graph.mapillary.com/images?access_token={}&organization_id={}&is_pano=true&fields=id,sequence,captured_at,is_pano,quality_score,geometry,compass_angle&limit={}",
+            "https://graph.mapillary.com/images?access_token={}&organization_id={}&is_pano=true&fields=id,sequence,captured_at,is_pano,quality_score,geometry,compass_angle,computed_geometry,computed_compass_angle&limit={}",
             token, org_id, limit
         );
 
@@ -37,7 +37,7 @@ impl MapillaryClient {
             .ok_or_else(|| Error::Config("MAPILLARY_TOKEN not set".to_string()))?;
 
         let url = format!(
-            "https://graph.mapillary.com/{}?access_token={}&fields=id,sequence,captured_at,is_pano,geometry,compass_angle,thumb_2048_url",
+            "https://graph.mapillary.com/{}?access_token={}&fields=id,sequence,captured_at,is_pano,geometry,compass_angle,computed_geometry,computed_compass_angle,thumb_2048_url",
             id, token
         );
 
