@@ -23,11 +23,7 @@ impl MapillaryService {
 
         loop {
             for img in response.data {
-                let (lon, lat) = if let Some(ref computed) = img.computed_geometry {
-                    (computed.coordinates[0], computed.coordinates[1])
-                } else {
-                    (img.geometry.coordinates[0], img.geometry.coordinates[1])
-                };
+                let (lon, lat) = (img.geometry.coordinates[0], img.geometry.coordinates[1]);
 
                 let model = MapillaryImage {
                     id: img.id.clone(),
@@ -93,11 +89,7 @@ impl MapillaryService {
     pub async fn get_image_metadata(&self, id: &str) -> Result<MapillaryImage> {
         let img = self.client.fetch_image(id).await?;
 
-        let (lon, lat) = if let Some(ref computed) = img.computed_geometry {
-            (computed.coordinates[0], computed.coordinates[1])
-        } else {
-            (img.geometry.coordinates[0], img.geometry.coordinates[1])
-        };
+        let (lon, lat) = (img.geometry.coordinates[0], img.geometry.coordinates[1]);
 
         Ok(MapillaryImage {
             id: img.id,
