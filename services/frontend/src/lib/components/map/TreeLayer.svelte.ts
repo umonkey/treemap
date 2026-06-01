@@ -48,6 +48,7 @@ class TreeLayerState {
 	markers = $state.raw<Collection | undefined>(undefined);
 	fetchDebouncer = new Debouncer(100);
 	moveBouncer = new MapBouncer();
+	private map: Map | undefined = undefined;
 
 	public readonly crownRadiusSmall = 4;
 
@@ -119,6 +120,10 @@ class TreeLayerState {
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public handleClick = async (e: any) => {
+		if (this.map && this.map.getZoom() < 15) {
+			return;
+		}
+
 		if (!e.features || e.features.length === 0) {
 			return;
 		}
@@ -143,6 +148,10 @@ class TreeLayerState {
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public handleContextMenu = (e: any) => {
+		if (this.map && this.map.getZoom() < 15) {
+			return;
+		}
+
 		if (!e.features || e.features.length === 0) {
 			return;
 		}
@@ -167,6 +176,7 @@ class TreeLayerState {
 			return;
 		}
 
+		this.map = map;
 		const handleMove = () => this.handleMove(map);
 		const reload = () => this.reload(map);
 
@@ -179,6 +189,7 @@ class TreeLayerState {
 		}
 
 		return () => {
+			this.map = undefined;
 			mapBus.off('reload', reload);
 
 			if (map) {
