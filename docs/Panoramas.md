@@ -85,11 +85,11 @@ The integration requires configuring the public username and a client token for 
 - [x] configuration registration: add `mapillary_username` to the config structures and `mapillary_client_token` to the `Secrets` struct in the backend.
 - [x] synchronization command: implement a `mapillary-pull` command in the Rust backend to fetch sequence metadata and cache it locally.
 - [x] backend API endpoints: expose endpoint `/v1/mapillary/geo.json` to serve cached data (images and tracks) as GeoJSON.
-- [ ] panoramic layer display: render Mapillary tracks and image points as layers on the MapLibre map on the client.
+- [x] panoramic layer display: render Mapillary tracks and image points as layers on the MapLibre map on the client.
 - [ ] workspace page routing: set up a split-screen layout on a dedicated `/armchair` Svelte page.
-- [ ] MapillaryJS integration: embed the interactive panoramic viewer inside the `/armchair` page.
+- [ ] Panellum integration: embed the interactive panoramic viewer inside the `/armchair` page.
 - [ ] ray casting tool: add the visual ray line on MapLibre which updates dynamically with the active image coordinates and camera orientation.
 - [ ] triangulation engine: implement the 2D multi-ray vector intersection calculations on the frontend.
 - [ ] creation flow: add a button to pre-fill the tree creation form with the triangulated coordinates.
-- [ ] map-matching: research map-matching APIs, like Valhalla, OSRM or Mapbox Map Matching, to align the GPX track with the roads.
+- [x] map-matching: research map-matching APIs, like Valhalla, OSRM or Mapbox Map Matching, to align the GPX track with the roads.
 - [ ] validation and testing: write tests for triangulation math and verify everything with build and formatting.
