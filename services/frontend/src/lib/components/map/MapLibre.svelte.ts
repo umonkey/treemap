@@ -46,6 +46,7 @@ class MapLibre {
 
 	hasMoved = false;
 	moving = $state(false);
+	zoomChanged = false;
 	zoom = $state<number>(13);
 	bearing = $state<number>(0);
 	center = $state<ILatLng>(DEFAULT_MAP_CENTER);
@@ -74,6 +75,7 @@ class MapLibre {
 	};
 
 	public handleMoveStart = (e?: MapLibreEvent) => {
+		this.zoomChanged = false;
 		if (e?.originalEvent) {
 			this.moving = true;
 			this.hasMoved = true;
@@ -106,6 +108,7 @@ class MapLibre {
 	};
 
 	public handleZoom = () => {
+		this.zoomChanged = true;
 		this.updateStore();
 	};
 
@@ -140,6 +143,7 @@ class MapLibre {
 		if (
 			isUserAction &&
 			stickyPoints &&
+			!this.zoomChanged &&
 			(mode === undefined || mode === 'preview') &&
 			this.zoom > 18
 		) {
