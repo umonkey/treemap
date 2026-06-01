@@ -24,14 +24,13 @@ Load all your recorded .osv files into DJI Studio, enable "direction lock" and e
 
 ## Sync with the GPS
 
-Mobile phones normally have around 3 second lag so even with perfectly synchronized clocks the data will be wrong.  You need to find the delta using a ground control point.
+Mobile phones normally have around 3 second lag so even with perfectly synchronized clocks the data will be wrong. You need to find the delta using a ground control point.
 
-Find a moment in the video where you are driving your normal speed near a distinct landmark, like an intersection or a bridge.  Get the frame number.  Use this command line to do that:
+Find a moment in the video where you are driving your normal speed near a distinct landmark, like an intersection or a bridge. Get the frame number. Use this command line to do that:
 
 ```
 mpv --hwdec=no --osd-msg1='Frame: ${estimated-frame-number} / ${estimated-frame-count}' --vf=lavfi=[drawgrid=w=iw/4:h=ih:c=red:t=2] ride-720p.MP4
 ```
-
 
 ## Extracting the images
 
