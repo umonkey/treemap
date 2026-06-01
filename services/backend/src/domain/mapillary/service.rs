@@ -23,6 +23,14 @@ impl MapillaryService {
 
         loop {
             for img in response.data {
+                if img.computed_compass_angle.is_none() {
+                    debug!(
+                        "Mapillary image {} has no computed_compass_angle, skipping.",
+                        img.id
+                    );
+                    continue;
+                }
+
                 let (lon, lat) = (img.geometry.coordinates[0], img.geometry.coordinates[1]);
 
                 let model = MapillaryImage {
@@ -88,6 +96,14 @@ impl MapillaryService {
 
     pub async fn get_image_metadata(&self, id: &str) -> Result<MapillaryImage> {
         let img = self.client.fetch_image(id).await?;
+
+        if img.computed_compass_angle.is_none() {
+            debug!(
+                "Mapillary image {} has no computed_compass_angle, skipping.",
+                img.id
+            );
+            return Err(Error::FileNotFound);
+        }
 
         let (lon, lat) = (img.geometry.coordinates[0], img.geometry.coordinates[1]);
 
