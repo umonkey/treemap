@@ -30,6 +30,8 @@ enum Command {
 
 pub struct Chatbot {
     bot: Bot,
+    bot_id: UserId,
+    bot_username: String,
     i18n: Arc<I18n>,
     alerts: Arc<AlertRepository>,
     photos: Arc<AlertPhotoRepository>,
@@ -40,6 +42,8 @@ pub struct Chatbot {
 impl Chatbot {
     pub fn new(
         token: String,
+        bot_id: UserId,
+        bot_username: String,
         i18n: Arc<I18n>,
         alerts: Arc<AlertRepository>,
         photos: Arc<AlertPhotoRepository>,
@@ -48,6 +52,8 @@ impl Chatbot {
     ) -> Self {
         Self {
             bot: Bot::new(token),
+            bot_id,
+            bot_username,
             i18n,
             alerts,
             photos,
@@ -61,7 +67,11 @@ impl Chatbot {
             log::error!("Failed to register commands: {:?}", e);
         }
 
-        log::info!("Chatbot is running...");
+        log::info!(
+            "Chatbot is running as @{} ({})...",
+            self.bot_username,
+            self.bot_id
+        );
 
         let bot = self.bot.clone();
         let chatbot = Arc::clone(&self);
@@ -98,6 +108,26 @@ impl Chatbot {
     }
 
     async fn handle_message(&self, msg: Message) -> ResponseResult<()> {
+        if let Some(new_members) = msg.new_chat_members() {
+            if new_members.iter().any(|u| u.id == self.bot_id) {
+                log::info!(
+                    "Bot added to group chat '{}' ({})",
+                    msg.chat.title().unwrap_or("?"),
+                    msg.chat.id
+                );
+            }
+        }
+
+        if let Some(left_member) = msg.left_chat_member() {
+            if left_member.id == self.bot_id {
+                log::info!(
+                    "Bot removed from group chat '{}' ({})",
+                    msg.chat.title().unwrap_or("?"),
+                    msg.chat.id
+                );
+            }
+        }
+
         if !msg.chat.is_private() {
             let user_name = msg
                 .from
@@ -370,6 +400,24 @@ pub async fn run(
     trees: Arc<TreeRepository>,
     storage: Arc<S3FileStorage>,
 ) {
-    let chatbot = Arc::new(Chatbot::new(token, i18n, alerts, photos, trees, storage));
+    let bot = Bot::new(token.clone());
+    let me = match bot.get_me().await {
+        Ok(me) => me,
+        Err(e) => {
+            log::error!("Failed to get bot identity: {:?}", e);
+            return;
+        }
+    };
+
+    let chatbot = Arc::new(Chatbot::new(
+        token,
+        me.id,
+        me.username().to_string(),
+        i18n,
+        alerts,
+        photos,
+        trees,
+        storage,
+    ));
     chatbot.run().await;
 }
