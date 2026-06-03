@@ -12,7 +12,8 @@ pub async fn sse_handler(state: web::Data<AppState>, _req: HttpRequest) -> impl 
     info!("New MCP session started: {}", id);
 
     let post_url = format!(
-        "http://{}/mcp/message?session_id={}",
+        "{}://{}/mcp/message?session_id={}",
+        _req.connection_info().scheme(),
         _req.connection_info().host(),
         id
     );
