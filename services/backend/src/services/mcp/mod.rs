@@ -3,6 +3,11 @@ use tokio::sync::mpsc;
 use tokio::sync::Mutex;
 use uuid::Uuid;
 
+pub mod schemas;
+pub mod service;
+
+pub use service::McpService;
+
 pub type McpSender = mpsc::UnboundedSender<String>;
 
 pub struct McpSession {
