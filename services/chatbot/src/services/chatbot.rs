@@ -98,6 +98,22 @@ impl Chatbot {
     }
 
     async fn handle_message(&self, msg: Message) -> ResponseResult<()> {
+        if !msg.chat.is_private() {
+            let user_name = msg
+                .from
+                .as_ref()
+                .map(|u| u.full_name())
+                .unwrap_or_else(|| "Unknown".to_string());
+
+            log::debug!(
+                "Ignoring message to group chat {} from {}",
+                msg.chat.id,
+                user_name
+            );
+
+            return Ok(());
+        }
+
         if let Err(e) = self.handle_message_impl(msg.clone()).await {
             log::error!("Error handling message: {:?}", e);
 
