@@ -30,7 +30,7 @@ impl McpService {
                     "tools": {}
                 },
                 "serverInfo": {
-                    "name": "treemap-backend",
+                    "name": "Trees of Yerevan",
                     "version": env!("CARGO_PKG_VERSION")
                 }
             }),
@@ -40,8 +40,8 @@ impl McpService {
     fn handle_tools_list(&self, id: Value) -> JsonRpcResponse {
         let tools = vec![
             McpTool {
-                name: "treemap_list_tallest".to_string(),
-                description: "Returns a list of the tallest trees in the system, sorted by height descending.".to_string(),
+                name: "list_tallest".to_string(),
+                description: "Returns a list of the tallest trees in the database, sorted by height descending.".to_string(),
                 input_schema: json!({
                     "type": "object",
                     "properties": {
@@ -55,8 +55,8 @@ impl McpService {
                 }),
             },
             McpTool {
-                name: "treemap_list_widest".to_string(),
-                description: "Returns a list of the widest trees in the system, sorted by circumference descending.".to_string(),
+                name: "list_widest".to_string(),
+                description: "Returns a list of the widest trees in the database, sorted by circumference descending.".to_string(),
                 input_schema: json!({
                     "type": "object",
                     "properties": {
@@ -84,8 +84,8 @@ impl McpService {
         let arguments = params.get("arguments").cloned().unwrap_or(json!({}));
 
         match tool_name {
-            Some("treemap_list_tallest") => self.handle_list_tallest(id, arguments).await,
-            Some("treemap_list_widest") => self.handle_list_widest(id, arguments).await,
+            Some("list_tallest") => self.handle_list_tallest(id, arguments).await,
+            Some("list_widest") => self.handle_list_widest(id, arguments).await,
             _ => JsonRpcResponse::error(id, -32601, "Tool not found"),
         }
     }
