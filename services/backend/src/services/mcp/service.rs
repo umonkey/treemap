@@ -31,8 +31,6 @@ SELECT
 FROM trees 
 WHERE address <> '' AND address IS NOT NULL
 GROUP BY address_normalized
-ORDER BY total_count DESC 
-LIMIT ?;
 "#;
 
 pub struct McpService {
@@ -111,6 +109,11 @@ impl McpService {
                             "description": "Number of streets to return (default 10)",
                             "minimum": 1,
                             "maximum": 100
+                        },
+                        "sort": {
+                            "type": "string",
+                            "description": "Sort by: street, count, or completeness",
+                            "enum": ["street", "count", "completeness"]
                         }
                     }
                 }),
@@ -185,10 +188,18 @@ impl McpService {
 
     async fn handle_list_streets(&self, id: JsonValue, args: JsonValue) -> JsonRpcResponse {
         let limit = args.get("limit").and_then(|v| v.as_u64()).unwrap_or(10);
+        let sort = args.get("sort").and_then(|v| v.as_str()).unwrap_or("count");
 
+        let sort_clause = match sort {
+            "street" => "ORDER BY address_normalized ASC",
+            "completeness" => "ORDER BY incomplete_ratio DESC",
+            _ => "ORDER BY total_count DESC",
+        };
+
+        let sql = format!("{} {} LIMIT ?", STREETS_QUERY, sort_clause);
         let params = vec![DbValue::from(limit as i64)];
 
-        match self.db.fetch_sql(STREETS_QUERY, &params).await {
+        match self.db.fetch_sql(&sql, &params).await {
             Ok(rows) => {
                 let results: Vec<JsonValue> = rows
                     .iter()
