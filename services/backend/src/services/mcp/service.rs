@@ -86,7 +86,7 @@ impl McpService {
             },
             McpTool {
                 name: "list_widest".to_string(),
-                description: "Returns a list of the widest trees in Yerevan, sorted by circumference descending.".to_string(),
+                description: "Returns a list of the widest trees in Yerevan (widest canopy). Results are sorted by crown diameter descending. Note: 'diameter' is crown diameter in meters, 'circumference' is trunk circumference in meters.".to_string(),
                 input_schema: json!({
                     "type": "object",
                     "properties": {
@@ -182,7 +182,7 @@ impl McpService {
     async fn handle_list_widest(&self, id: JsonValue, args: JsonValue) -> JsonRpcResponse {
         let limit = args.get("limit").and_then(|v| v.as_u64()).unwrap_or(10);
 
-        match self.repo.get_top_circumference(limit).await {
+        match self.repo.get_top_diameter(limit).await {
             Ok(trees) => {
                 let mcp_trees: Vec<McpTree> = trees.into_iter().map(McpTree::from).collect();
                 JsonRpcResponse::success(
