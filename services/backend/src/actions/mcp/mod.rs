@@ -1,8 +1,8 @@
-pub mod router;
+pub mod actions;
 pub mod schemas;
 pub mod sse;
 
-pub use router::message_handler;
+pub use actions::message_handler;
 pub use sse::sse_handler;
 
 use actix_web::web;
