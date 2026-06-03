@@ -1,6 +1,6 @@
 use crate::actions::mcp::schemas::*;
 use crate::domain::tree::TreeRepository;
-use crate::services::{AppState, ContextExt};
+use crate::services::{AppState, Injected};
 use actix_web::{post, web, HttpResponse, Responder};
 use log::error;
 use serde_json::{json, Value};
@@ -16,6 +16,7 @@ pub async fn message_handler(
     state: web::Data<AppState>,
     query: web::Query<MessageQuery>,
     payload: web::Json<JsonRpcRequest>,
+    repo: Injected<TreeRepository>,
 ) -> impl Responder {
     let session_id = query.session_id;
     let sender = match state.mcp.get_sender(session_id).await {
@@ -29,7 +30,7 @@ pub async fn message_handler(
     let response = match request.method.as_str() {
         "initialize" => handle_initialize(id),
         "tools/list" => handle_tools_list(id),
-        "tools/call" => handle_tools_call(&state, id, request.params).await,
+        "tools/call" => handle_tools_call(&repo, id, request.params).await,
         _ => JsonRpcResponse::error(id, -32601, "Method not found"),
     };
 
@@ -105,7 +106,11 @@ fn handle_tools_list(id: Value) -> JsonRpcResponse {
     JsonRpcResponse::success(id, json!({ "tools": tools }))
 }
 
-async fn handle_tools_call(state: &AppState, id: Value, params: Option<Value>) -> JsonRpcResponse {
+async fn handle_tools_call(
+    repo: &TreeRepository,
+    id: Value,
+    params: Option<Value>,
+) -> JsonRpcResponse {
     let params = match params {
         Some(p) => p,
         None => return JsonRpcResponse::error(id, -32602, "Missing params"),
@@ -115,19 +120,14 @@ async fn handle_tools_call(state: &AppState, id: Value, params: Option<Value>) -
     let arguments = params.get("arguments").cloned().unwrap_or(json!({}));
 
     match tool_name {
-        Some("treemap_list_tallest") => handle_list_tallest(state, id, arguments).await,
-        Some("treemap_list_widest") => handle_list_widest(state, id, arguments).await,
+        Some("treemap_list_tallest") => handle_list_tallest(repo, id, arguments).await,
+        Some("treemap_list_widest") => handle_list_widest(repo, id, arguments).await,
         _ => JsonRpcResponse::error(id, -32601, "Tool not found"),
     }
 }
 
-async fn handle_list_tallest(state: &AppState, id: Value, args: Value) -> JsonRpcResponse {
+async fn handle_list_tallest(repo: &TreeRepository, id: Value, args: Value) -> JsonRpcResponse {
     let limit = args.get("limit").and_then(|v| v.as_u64()).unwrap_or(10);
-
-    let repo = match state.build::<TreeRepository>() {
-        Ok(r) => r,
-        Err(e) => return JsonRpcResponse::error(id, -32000, &format!("Internal error: {}", e)),
-    };
 
     match repo.get_top_height(limit).await {
         Ok(trees) => {
@@ -149,13 +149,8 @@ async fn handle_list_tallest(state: &AppState, id: Value, args: Value) -> JsonRp
     }
 }
 
-async fn handle_list_widest(state: &AppState, id: Value, args: Value) -> JsonRpcResponse {
+async fn handle_list_widest(repo: &TreeRepository, id: Value, args: Value) -> JsonRpcResponse {
     let limit = args.get("limit").and_then(|v| v.as_u64()).unwrap_or(10);
-
-    let repo = match state.build::<TreeRepository>() {
-        Ok(r) => r,
-        Err(e) => return JsonRpcResponse::error(id, -32000, &format!("Internal error: {}", e)),
-    };
 
     match repo.get_top_circumference(limit).await {
         Ok(trees) => {
