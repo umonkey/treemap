@@ -21,7 +21,7 @@ services:
     volumes:
       - var:/app/var
     environment:
-      - RUST_LOG=info,treemap=info
+      - RUST_LOG=info,treemap=debug
       - TREEMAP_CONFIG=/app/config.toml.dev
     secrets:
       - files_key

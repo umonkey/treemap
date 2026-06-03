@@ -42,9 +42,15 @@ The application displays the number of pending photo uploads as a badge (or "bub
 Users can send tree damage alerts through a dedicated Telegram bot. These alerts are integrated into the application's map, providing real-time awareness of tree health issues.
 
 - Implementation: a Telegram bot receives alerts and stores them in the central database.
-
 - Visualization: damage alerts are rendered as red circles on the map.
-
 - Retention: all alerts are stored permanently in the database for historical analysis.
-
 - Display logic: only alerts submitted within the last 7 days are displayed on the active map to ensure current relevance.
+
+## Model Context Protocol (MCP) server
+
+The application includes an integrated Model Context Protocol (MCP) server that exposes the tree database to AI agents through standardized tools.
+
+- Implementation: uses the MCP specification over JSON-RPC.
+- Tools: provides tools like `list_tallest`, `list_widest`, and `list_streets`.
+- Data analysis: enables AI agents to perform complex queries and generate statistics about the tree population.
+- Sorting: the `list_streets` tool supports custom sorting by name, count, or completeness.

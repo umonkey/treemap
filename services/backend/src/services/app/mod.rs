@@ -4,6 +4,7 @@ use crate::infra::queue::Queue;
 use crate::infra::secrets::Secrets;
 use crate::infra::storage::FileStorage;
 use crate::infra::tokens::TokenService;
+use crate::services::mcp::McpSessionManager;
 use crate::types::*;
 use actix_web::HttpRequest;
 use std::sync::Arc;
@@ -15,6 +16,8 @@ pub trait Context {
     fn secrets(&self) -> Arc<Secrets>;
     fn tokens(&self) -> Arc<TokenService>;
     fn storage(&self) -> Arc<FileStorage>;
+    #[allow(dead_code)]
+    fn mcp(&self) -> Arc<McpSessionManager>;
 }
 
 pub trait Injectable {
@@ -54,6 +57,7 @@ pub struct AppState {
     pub secrets: Arc<Secrets>,
     pub tokens: Arc<TokenService>,
     pub storage: Arc<FileStorage>,
+    pub mcp: Arc<McpSessionManager>,
 }
 
 impl AppState {
@@ -69,6 +73,7 @@ impl AppState {
         let tokens = Arc::new(TokenService::new(jwt_secret));
 
         let storage = Arc::new(FileStorage::new(&config, &secrets)?);
+        let mcp = Arc::new(McpSessionManager::default());
 
         Ok(Self {
             database,
@@ -77,6 +82,7 @@ impl AppState {
             secrets,
             tokens,
             storage,
+            mcp,
         })
     }
 
@@ -90,6 +96,7 @@ impl AppState {
             secrets: self.secrets.clone(),
             tokens: self.tokens.clone(),
             storage: self.storage.clone(),
+            mcp: self.mcp.clone(),
         })
     }
 
@@ -148,5 +155,9 @@ impl Context for AppState {
 
     fn storage(&self) -> Arc<FileStorage> {
         self.storage.clone()
+    }
+
+    fn mcp(&self) -> Arc<McpSessionManager> {
+        self.mcp.clone()
     }
 }
