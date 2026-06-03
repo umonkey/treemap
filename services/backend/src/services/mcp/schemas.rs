@@ -78,7 +78,7 @@ impl From<crate::domain::tree::Tree> for McpTree {
     fn from(tree: crate::domain::tree::Tree) -> Self {
         Self {
             id: tree.id,
-            url: format!("https://yerevan.treemaps.app/{}", tree.id),
+            url: format!("https://yerevan.treemaps.app/tree/{}/preview", tree.id),
             species: tree.species,
             height: tree.height,
             circumference: tree.circumference,
