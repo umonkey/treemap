@@ -3,32 +3,33 @@ use crate::infra::database::{Database, Value as DbValue};
 use crate::services::mcp::schemas::*;
 use crate::services::{Context, Injectable};
 use crate::types::*;
+use crate::utils::get_timestamp;
 use serde_json::{json, Value as JsonValue};
 use std::sync::Arc;
 
 const STREETS_QUERY: &str = r#"
-SELECT 
-    LOWER(address) AS address_normalized, 
+SELECT
+    LOWER(address) AS address_normalized,
     COUNT(*) AS total_count,
-    SUM(CASE 
-        WHEN height_updated_at = 0 
-          OR diameter_updated_at = 0 
-          OR circumference_updated_at = 0 
-          OR images_updated_at = 0 
-          OR observations_updated_at = 0 
-        THEN 1 
-        ELSE 0 
+    SUM(CASE
+        WHEN height_updated_at = 0
+          OR diameter_updated_at = 0
+          OR circumference_updated_at = 0
+          OR images_updated_at = 0
+          OR observations_updated_at = 0
+        THEN 1
+        ELSE 0
     END) AS incomplete_count,
-    AVG(CASE 
-        WHEN height_updated_at = 0 
-          OR diameter_updated_at = 0 
-          OR circumference_updated_at = 0 
-          OR images_updated_at = 0 
-          OR observations_updated_at = 0 
-        THEN 1.0 
-        ELSE 0.0 
+    AVG(CASE
+        WHEN height_updated_at = 0
+          OR diameter_updated_at = 0
+          OR circumference_updated_at = 0
+          OR images_updated_at = 0
+          OR observations_updated_at = 0
+        THEN 1.0
+        ELSE 0.0
     END) AS incomplete_ratio
-FROM trees 
+FROM trees
 WHERE address <> '' AND address IS NOT NULL
 GROUP BY address_normalized
 "#;
@@ -118,6 +119,20 @@ impl McpService {
                     }
                 }),
             },
+            McpTool {
+                name: "get_street_stats".to_string(),
+                description: "Returns tree statistics for a specific street.".to_string(),
+                input_schema: json!({
+                    "type": "object",
+                    "properties": {
+                        "street": {
+                            "type": "string",
+                            "description": "The name of the street to get statistics for"
+                        }
+                    },
+                    "required": ["street"]
+                }),
+            },
         ];
 
         JsonRpcResponse::success(id, json!({ "tools": tools }))
@@ -136,6 +151,7 @@ impl McpService {
             Some("list_tallest") => self.handle_list_tallest(id, arguments).await,
             Some("list_widest") => self.handle_list_widest(id, arguments).await,
             Some("list_streets") => self.handle_list_streets(id, arguments).await,
+            Some("get_street_stats") => self.handle_get_street_stats(id, arguments).await,
             _ => JsonRpcResponse::error(id, -32601, "Tool not found"),
         }
     }
@@ -225,6 +241,84 @@ impl McpService {
                         ]
                     }),
                 )
+            }
+            Err(e) => JsonRpcResponse::error(id, -32000, &format!("Database error: {}", e)),
+        }
+    }
+
+    async fn handle_get_street_stats(&self, id: JsonValue, args: JsonValue) -> JsonRpcResponse {
+        let street = match args.get("street").and_then(|v| v.as_str()) {
+            Some(s) => s.to_lowercase(),
+            None => return JsonRpcResponse::error(id, -32602, "Missing 'street' argument"),
+        };
+
+        let now = get_timestamp();
+        let cutoff = now.saturating_sub(31_536_000); // 1 year ago
+
+        let sql = r#"
+            SELECT
+                COUNT(*) AS total_count,
+                SUM(CASE WHEN state IN ('healthy', 'sick', 'deformed') THEN 1 ELSE 0 END) AS alive_count,
+                SUM(CASE WHEN state = 'dead' THEN 1 ELSE 0 END) AS dead_count,
+                SUM(CASE WHEN height_updated_at < ? THEN 1 ELSE 0 END) AS without_height_count,
+                SUM(CASE WHEN diameter_updated_at < ? THEN 1 ELSE 0 END) AS without_diameter_count,
+                SUM(CASE WHEN circumference_updated_at < ? THEN 1 ELSE 0 END) AS without_circumference_count,
+                SUM(CASE WHEN observations_updated_at < ? THEN 1 ELSE 0 END) AS without_observations_count,
+                SUM(CASE WHEN images_updated_at < ? THEN 1 ELSE 0 END) AS without_photos_count
+            FROM trees
+            WHERE LOWER(address) = ?
+        "#;
+
+        let params = vec![
+            DbValue::from(cutoff as i64),
+            DbValue::from(cutoff as i64),
+            DbValue::from(cutoff as i64),
+            DbValue::from(cutoff as i64),
+            DbValue::from(cutoff as i64),
+            DbValue::from(street),
+        ];
+
+        match self.db.fetch_sql(sql, &params).await {
+            Ok(rows) => {
+                if let Some(row) = rows.first() {
+                    let total_count = row
+                        .get_u64("total_count")
+                        .unwrap_or_default()
+                        .unwrap_or_default();
+                    if total_count == 0 {
+                        return JsonRpcResponse::error(
+                            id,
+                            -32001,
+                            "No trees found for this street",
+                        );
+                    }
+
+                    let result = json!({
+                        "total_count": total_count,
+                        "alive_count": row.get_u64("alive_count").unwrap_or_default().unwrap_or_default(),
+                        "dead_count": row.get_u64("dead_count").unwrap_or_default().unwrap_or_default(),
+                        "without_height_count": row.get_u64("without_height_count").unwrap_or_default().unwrap_or_default(),
+                        "without_diameter_count": row.get_u64("without_diameter_count").unwrap_or_default().unwrap_or_default(),
+                        "without_circumference_count": row.get_u64("without_circumference_count").unwrap_or_default().unwrap_or_default(),
+                        "without_observations_count": row.get_u64("without_observations_count").unwrap_or_default().unwrap_or_default(),
+                        "without_photos_count": row.get_u64("without_photos_count").unwrap_or_default().unwrap_or_default(),
+                    });
+
+                    JsonRpcResponse::success(
+                        id,
+                        json!({
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": serde_json::to_string_pretty(&result)
+                                        .unwrap_or_else(|_| "{}".to_string())
+                                }
+                            ]
+                        }),
+                    )
+                } else {
+                    JsonRpcResponse::error(id, -32001, "No trees found for this street")
+                }
             }
             Err(e) => JsonRpcResponse::error(id, -32000, &format!("Database error: {}", e)),
         }
