@@ -53,6 +53,7 @@ impl JsonRpcResponse {
 }
 
 #[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct McpTool {
     pub name: String,
     pub description: String,
@@ -60,6 +61,7 @@ pub struct McpTool {
 }
 
 #[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct McpTree {
     pub id: u64,
     pub species: String,
