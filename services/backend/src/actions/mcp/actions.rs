@@ -10,7 +10,7 @@ pub struct MessageQuery {
     pub session_id: Uuid,
 }
 
-#[post("/v1/mcp/message")]
+#[post("/message")]
 pub async fn message_handler(
     state: web::Data<AppState>,
     query: web::Query<MessageQuery>,

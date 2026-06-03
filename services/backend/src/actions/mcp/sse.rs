@@ -5,13 +5,13 @@ use futures::StreamExt;
 use log::info;
 use std::time::Duration;
 
-#[get("/v1/mcp/sse")]
+#[get("")]
 pub async fn sse_handler(state: web::Data<AppState>, _req: HttpRequest) -> impl Responder {
     let (id, rx) = state.mcp.create_session().await;
 
     info!("New MCP session started: {}", id);
 
-    let post_url = format!("/v1/mcp/message?session_id={}", id);
+    let post_url = format!("/mcp/message?session_id={}", id);
     let mut data = sse::Data::new(post_url);
     data.set_event("endpoint");
     let initial_event = sse::Event::Data(data);
