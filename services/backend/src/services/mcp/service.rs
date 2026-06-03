@@ -41,7 +41,7 @@ impl McpService {
         let tools = vec![
             McpTool {
                 name: "list_tallest".to_string(),
-                description: "Returns a list of the tallest trees in the database, sorted by height descending.".to_string(),
+                description: "Returns a list of the tallest trees in Yerevan, sorted by height descending.".to_string(),
                 input_schema: json!({
                     "type": "object",
                     "properties": {
@@ -56,7 +56,7 @@ impl McpService {
             },
             McpTool {
                 name: "list_widest".to_string(),
-                description: "Returns a list of the widest trees in the database, sorted by circumference descending.".to_string(),
+                description: "Returns a list of the widest trees in Yerevan, sorted by circumference descending.".to_string(),
                 input_schema: json!({
                     "type": "object",
                     "properties": {
