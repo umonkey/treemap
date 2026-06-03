@@ -64,6 +64,7 @@ pub struct McpTool {
 #[serde(rename_all = "camelCase")]
 pub struct McpTree {
     pub id: u64,
+    pub url: String,
     pub species: String,
     pub height: Option<f64>,
     pub circumference: Option<f64>,
@@ -77,6 +78,7 @@ impl From<crate::domain::tree::Tree> for McpTree {
     fn from(tree: crate::domain::tree::Tree) -> Self {
         Self {
             id: tree.id,
+            url: format!("https://yerevan.treemaps.app/{}", tree.id),
             species: tree.species,
             height: tree.height,
             circumference: tree.circumference,
