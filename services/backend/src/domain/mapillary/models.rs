@@ -83,3 +83,31 @@ impl MapillarySequence {
         attrs
     }
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MapillaryTree {
+    pub image_id: String,
+    pub angle: f64,
+    pub tree_id: Option<u64>,
+    pub user_id: u64,
+}
+
+impl MapillaryTree {
+    pub fn from_attributes(attrs: &Attributes) -> crate::types::Result<Self> {
+        Ok(Self {
+            image_id: attrs.require_string("image_id")?,
+            angle: attrs.require_f64("angle")?,
+            tree_id: attrs.get_u64("tree_id")?,
+            user_id: attrs.require_u64("user_id")?,
+        })
+    }
+
+    pub fn to_attributes(&self) -> Attributes {
+        let mut attrs = Attributes::default();
+        attrs.insert("image_id", Value::from(self.image_id.clone()));
+        attrs.insert("angle", Value::from(self.angle));
+        attrs.insert("tree_id", Value::from(self.tree_id));
+        attrs.insert("user_id", Value::from(self.user_id));
+        attrs
+    }
+}

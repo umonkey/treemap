@@ -20,9 +20,9 @@ export async function request<T>(
 
 		const response = await fetch(request);
 
-		if (response.status === 202) {
+		if (response.status === 204 || response.status === 202) {
 			return {
-				status: 202,
+				status: response.status,
 				data: undefined,
 				error: undefined
 			};

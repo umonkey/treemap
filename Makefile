@@ -1,4 +1,5 @@
 CR_USER = umonkey
+CHANGED_SERVICES = $(shell git status --porcelain | grep "^.. services/" | cut -c 4- | cut -d/ -f1,2 | sort -u | tr '\n' ' ')
 
 help:
 	@echo "Development steps:"
@@ -12,20 +13,14 @@ build:
 build-combined:
 	docker build -t treemap:latest -f Dockerfile .
 
-check-backend:
-	make -C services/backend check
-
-check-frontend:
-	make -C services/frontend check
+check:
+	for service in $(CHANGED_SERVICES); do make -C $$service check; done
 
 format-docs:
 	npx -y prettier --write $(shell find ./docs ./.agents -name "*.md")
 
-format-backend:
-	make -C services/backend format
-
-format-frontend:
-	make -C services/frontend format
+format:
+	for service in $(CHANGED_SERVICES); do make -C $$service format; done
 
 push:
 	echo $(CR_TOKEN) | docker login ghcr.io -u $(CR_USER) --password-stdin

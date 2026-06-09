@@ -254,4 +254,14 @@ CREATE TABLE IF NOT EXISTS mapillary_sequences (
 CREATE INDEX IF NOT EXISTS mapillary_sequences_captured_at ON mapillary_sequences (captured_at);
 
 
+CREATE TABLE IF NOT EXISTS mapillary_trees (
+    `image_id` TEXT NOT NULL,
+    `angle` REAL NOT NULL,
+    `tree_id` INT NULL,
+    `user_id` INT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS mapillary_trees_image_id ON mapillary_trees (image_id);
+
+
 COMMIT;

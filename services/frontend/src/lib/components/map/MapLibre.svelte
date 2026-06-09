@@ -15,6 +15,7 @@
 	import TreeLayer from './TreeLayer.svelte';
 	import AlertLayer from './AlertLayer.svelte';
 	import PanoramicLayer from './PanoramicLayer.svelte';
+	import TreeHintsLayer from './TreeHintsLayer.svelte';
 	import MapCenter from './MapCenter.svelte';
 	import MapRays from './MapRays.svelte';
 	import MoveLine from './MoveLine.svelte';
@@ -86,6 +87,10 @@
 
 		{#if mapState.panoramasLayer}
 			<PanoramicLayer />
+		{/if}
+
+		{#if mapState.treeHintsLayer}
+			<TreeHintsLayer />
 		{/if}
 
 		{#if mapState.moving && mapState.zoom > 18 && ($mapMode === undefined || $mapMode === 'preview')}

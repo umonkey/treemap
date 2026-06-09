@@ -19,7 +19,9 @@ The mapping workflow follows these steps:
 
 To ensure fast rendering of tracks on the map and avoid querying the Mapillary API during map interaction, the backend maintains a local cache of panorama metadata.
 
-The database schema includes a `mapillary_images` table with the following structure:
+The database schema includes the following tables:
+
+### mapillary_images
 
 - id: unique Mapillary image identifier.
 - sequence_id: identifier of the sequence/track.
@@ -27,6 +29,13 @@ The database schema includes a `mapillary_images` table with the following struc
 - lon: longitude of the camera.
 - compass_angle: heading direction of the camera.
 - captured_at: timestamp when the image was taken.
+
+### mapillary_trees
+
+- image_id: Mapillary image identifier.
+- angle: relative angle of the tree in the panorama.
+- tree_id: (optional) identifier of the tree on the map.
+- user_id: identifier of the user who marked the tree.
 
 ## API Endpoints
 
@@ -86,10 +95,10 @@ The integration requires configuring the public username and a client token for 
 - [x] synchronization command: implement a `mapillary-pull` command in the Rust backend to fetch sequence metadata and cache it locally.
 - [x] backend API endpoints: expose endpoint `/v1/mapillary/geo.json` to serve cached data (images and tracks) as GeoJSON.
 - [x] panoramic layer display: render Mapillary tracks and image points as layers on the MapLibre map on the client.
-- [ ] workspace page routing: set up a split-screen layout on a dedicated `/armchair` Svelte page.
-- [ ] Panellum integration: embed the interactive panoramic viewer inside the `/armchair` page.
-- [ ] ray casting tool: add the visual ray line on MapLibre which updates dynamically with the active image coordinates and camera orientation.
-- [ ] triangulation engine: implement the 2D multi-ray vector intersection calculations on the frontend.
+- [x] workspace page routing: set up a split-screen layout on a dedicated `/armchair` Svelte page.
+- [x] Panellum integration: embed the interactive panoramic viewer inside the `/armchair` page.
+- [x] ray casting tool: add the visual ray line on MapLibre which updates dynamically with the active image coordinates and camera orientation.
+- [x] triangulation engine: implement the 2D multi-ray vector intersection calculations on the frontend.
 - [ ] creation flow: add a button to pre-fill the tree creation form with the triangulated coordinates.
 - [x] map-matching: research map-matching APIs, like Valhalla, OSRM or Mapbox Map Matching, to align the GPX track with the roads.
 - [ ] validation and testing: write tests for triangulation math and verify everything with build and formatting.

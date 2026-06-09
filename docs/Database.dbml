@@ -167,6 +167,13 @@ Table mapillary_images {
   quality_score real
 }
 
+Table mapillary_trees {
+  image_id text [not null]
+  angle real [not null]
+  tree_id int
+  user_id int [not null]
+}
+
 // Relationships
 Ref: trees_images.tree_id > trees.id
 Ref: trees_props.tree_id > trees.id
@@ -188,3 +195,7 @@ Ref: training.user_id > users.id
 Ref: observations.created_by > users.id
 
 Ref: trees.species > species.name
+
+Ref: mapillary_trees.image_id > mapillary_images.id
+Ref: mapillary_trees.tree_id > trees.id
+Ref: mapillary_trees.user_id > users.id

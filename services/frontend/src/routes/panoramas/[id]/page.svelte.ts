@@ -14,6 +14,10 @@ class PageState {
 		await goto(routes.home());
 	};
 
+	public handleDetect = async () => {
+		await goto(routes.panoramaDetect(this.id));
+	};
+
 	public handleMove = (angle: number) => {
 		this.angle = angle;
 		if (this.image) {

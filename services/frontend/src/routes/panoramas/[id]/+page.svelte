@@ -2,6 +2,7 @@
 	import { pageState } from './page.svelte.ts';
 	import { page } from '$app/state';
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
+	import EditIcon from '$lib/icons/EditIcon.svelte';
 	import CrossHair from '$lib/icons/CrossHair.svelte';
 	import PanoramaViewer from './PanoramaViewer.svelte';
 
@@ -22,7 +23,10 @@
 
 <div class="preview">
 	<div class="header">
-		<button class="close" onclick={pageState.handleClose} aria-label="Close">
+		<button type="button" class="edit" onclick={pageState.handleDetect} aria-label="Edit">
+			<EditIcon />
+		</button>
+		<button type="button" class="close" onclick={pageState.handleClose} aria-label="Close">
 			<CloseIcon />
 		</button>
 	</div>
@@ -56,20 +60,21 @@
 	.header {
 		position: absolute;
 		top: 0;
+		left: 0;
 		right: 0;
+		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		background-color: rgba(0, 0, 0, 0.75);
-		border-bottom-left-radius: 25%;
+		background-color: transparent;
 		z-index: 1;
 
-		.close {
+		button {
 			width: 30px;
 			height: 30px;
 			cursor: pointer;
-			background-color: transparent;
+			background-color: rgba(0, 0, 0, 0.75);
 			border: none;
-			color: light-dark(black, white);
+			color: white;
 			opacity: 0.5;
 			display: flex;
 			align-items: center;
@@ -78,6 +83,14 @@
 			&:hover {
 				opacity: 1;
 			}
+		}
+
+		.edit {
+			border-bottom-right-radius: 25%;
+		}
+
+		.close {
+			border-bottom-left-radius: 25%;
 		}
 	}
 

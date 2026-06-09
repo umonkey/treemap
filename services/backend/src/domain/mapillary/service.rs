@@ -1,4 +1,6 @@
-use crate::domain::mapillary::{MapillaryImage, MapillaryRepository, MapillarySequence};
+use crate::domain::mapillary::{
+    MapillaryImage, MapillaryRepository, MapillarySequence, MapillaryTree,
+};
 use crate::domain::tree::Bounds;
 use crate::infra::mapillary::MapillaryClient;
 use crate::services::*;
@@ -14,6 +16,30 @@ pub struct MapillaryService {
 }
 
 impl MapillaryService {
+    pub async fn get_image_trees(&self, image_id: &str) -> Result<Vec<MapillaryTree>> {
+        self.repo.find_trees_by_image_id(image_id).await
+    }
+
+    pub async fn add_image_tree(&self, tree: MapillaryTree) -> Result<()> {
+        self.repo.add_tree(&tree).await
+    }
+
+    pub async fn delete_image_trees(&self, image_id: &str) -> Result<()> {
+        self.repo.delete_trees_by_image_id(image_id).await
+    }
+
+    pub async fn replace_image_trees(
+        &self,
+        image_id: &str,
+        trees: Vec<MapillaryTree>,
+    ) -> Result<()> {
+        self.repo.delete_trees_by_image_id(image_id).await?;
+        for tree in trees {
+            self.repo.add_tree(&tree).await?;
+        }
+        Ok(())
+    }
+
     pub async fn pull(&self) -> Result<u32> {
         let mut added = 0;
         let limit = 5000;
@@ -85,6 +111,56 @@ impl MapillaryService {
 
     pub async fn get_sequences_by_bounds(&self, bounds: Bounds) -> Result<Vec<MapillarySequence>> {
         self.repo.find_sequences_by_bounds(bounds).await
+    }
+
+    pub async fn get_tree_hints_geojson(&self, bounds: Bounds) -> Result<serde_json::Value> {
+        let hints = self.repo.find_trees_with_location_by_bounds(bounds).await?;
+        let mut features = Vec::new();
+
+        for (tree, lat, lon, compass_angle) in hints {
+            let absolute_bearing = (compass_angle + tree.angle + 360.0) % 360.0;
+            let bearing_rad = absolute_bearing.to_radians();
+
+            // 20 meters approximation
+            let dist_m: f64 = 20.0;
+            let earth_radius_m: f64 = 6_371_000.0;
+            let d_r: f64 = dist_m / earth_radius_m;
+
+            let lat_rad = lat.to_radians();
+            let lon_rad = lon.to_radians();
+
+            let end_lat_rad =
+                (lat_rad.sin() * d_r.cos() + lat_rad.cos() * d_r.sin() * bearing_rad.cos()).asin();
+
+            let end_lon_rad = lon_rad
+                + (bearing_rad.sin() * d_r.sin() * lat_rad.cos())
+                    .atan2(d_r.cos() - lat_rad.sin() * end_lat_rad.sin());
+
+            let end_lat = end_lat_rad.to_degrees();
+            let end_lon = end_lon_rad.to_degrees();
+
+            features.push(json!({
+                "type": "Feature",
+                "geometry": {
+                    "type": "LineString",
+                    "coordinates": [
+                        [lon, lat],
+                        [end_lon, end_lat]
+                    ]
+                },
+                "properties": {
+                    "image_id": tree.image_id,
+                    "tree_id": tree.tree_id,
+                    "user_id": tree.user_id,
+                    "kind": "hint"
+                }
+            }));
+        }
+
+        Ok(json!({
+            "type": "FeatureCollection",
+            "features": features
+        }))
     }
 
     pub async fn get_image_metadata(&self, id: &str) -> Result<MapillaryImage> {

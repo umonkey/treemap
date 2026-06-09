@@ -6,6 +6,7 @@ class SelectorState {
 	drone = $state<boolean>(false);
 	alerts = $state<boolean>(true);
 	panoramas = $state<boolean>(false);
+	treeHints = $state<boolean>(false);
 	stickyPoints = $state<boolean>(true);
 
 	public constructor() {
@@ -14,6 +15,7 @@ class SelectorState {
 		this.drone = layers.drone ?? false;
 		this.alerts = layers.alerts ?? true;
 		this.panoramas = layers.panoramas ?? false;
+		this.treeHints = layers.treeHints ?? false;
 		this.stickyPoints = layers.stickyPoints ?? true;
 	}
 
@@ -49,6 +51,15 @@ class SelectorState {
 
 		mapLayerStore.update((store) => {
 			store.panoramas = this.panoramas;
+			return store;
+		});
+	};
+
+	public toggleTreeHints = () => {
+		this.treeHints = !this.treeHints;
+
+		mapLayerStore.update((store) => {
+			store.treeHints = this.treeHints;
 			return store;
 		});
 	};

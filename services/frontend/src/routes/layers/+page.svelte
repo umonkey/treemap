@@ -42,6 +42,11 @@
 			onChange={selectorState.togglePanoramas}
 		/>
 		<CheckInput
+			value={selectorState.treeHints}
+			label={locale.layerTreeHints()}
+			onChange={selectorState.toggleTreeHints}
+		/>
+		<CheckInput
 			value={selectorState.alerts}
 			label={locale.layerAlerts()}
 			onChange={selectorState.toggleAlerts}

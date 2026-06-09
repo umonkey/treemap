@@ -44,6 +44,7 @@ export const routes = {
 	searchState: (query: string) => `/?q=state:"${query}"`,
 	stats: () => '/stats',
 	panorama: (id: string) => `/panoramas/${id}`,
+	panoramaDetect: (id: string) => `/panoramas/${id}/detect`,
 	statsCircumference: () => '/stats/circumference',
 	statsDiameter: () => '/stats/diameter',
 	statsHeight: () => '/stats/height',
