@@ -77,6 +77,7 @@ RUN apt-get update && \
 WORKDIR /app
 COPY --from=builder /app/treemap-bin bin/treemap
 COPY services/backend/docker/rootfs/ /
+COPY container/rootfs/ /
 RUN if [ -f /etc/crontabs/root ]; then mkdir -p /var/spool/cron/crontabs && cp /etc/crontabs/root /var/spool/cron/crontabs/root && chmod 600 /var/spool/cron/crontabs/root; fi
 COPY services/backend/dev/schema-sqlite.sql /app
 COPY services/backend/config.toml.dev /app
