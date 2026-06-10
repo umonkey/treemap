@@ -28,5 +28,8 @@ pub async fn sse_handler(state: web::Data<AppState>, _req: HttpRequest) -> impl 
         futures::stream::once(async move { Ok::<_, actix_web::Error>(initial_event) })
             .chain(stream);
 
-    sse::Sse::from_stream(full_stream).with_keep_alive(Duration::from_secs(15))
+    sse::Sse::from_stream(full_stream)
+        .with_keep_alive(Duration::from_secs(15))
+        .customize()
+        .insert_header(("content-type", "text/event-stream"))
 }
