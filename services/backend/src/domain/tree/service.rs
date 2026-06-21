@@ -133,6 +133,12 @@ impl TreeService {
             }
         }
 
+        if let Some(zoom) = request.zoom {
+            if zoom < 15.0 {
+                trees.retain(|t| t.state != "placeholder");
+            }
+        }
+
         debug!("Found {} visible trees.", trees.len());
 
         Ok(trees)
@@ -750,6 +756,7 @@ mod tests {
             s: 0.0,
             w: 0.0,
             search: None,
+            zoom: None,
         };
 
         trees

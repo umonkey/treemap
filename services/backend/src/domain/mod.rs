@@ -8,6 +8,7 @@ pub mod health;
 pub mod heatmap;
 pub mod like;
 pub mod login;
+pub mod mapillary;
 pub mod observation;
 pub mod osm;
 pub mod photo;

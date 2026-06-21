@@ -63,9 +63,7 @@ impl SqliteTransaction {
         let rows = tx
             .execute(query, params_from_iter(params.to_vec()))
             .await
-            .map_err(|e| {
-                Error::DatabaseQuery(format!("Error executing SQL statement: {e}; query={query}"))
-            })?;
+            .map_err(Error::from)?;
 
         Ok(rows)
     }
@@ -355,9 +353,7 @@ impl DatabaseInterface for SqliteDatabase {
         let rows = conn
             .execute(query, params_from_iter(params.to_vec()))
             .await
-            .map_err(|e| {
-                Error::DatabaseQuery(format!("Error executing SQL statement: {e}; query={query}"))
-            })?;
+            .map_err(Error::from)?;
 
         Ok(rows)
     }

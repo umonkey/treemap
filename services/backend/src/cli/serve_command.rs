@@ -11,6 +11,8 @@ use crate::actions::file::file_router;
 use crate::actions::health::health_router;
 use crate::actions::heatmap::heatmap_router;
 use crate::actions::login::login_router;
+use crate::actions::mapillary::mapillary_router;
+use crate::actions::mcp::mcp_router;
 use crate::actions::me::me_router;
 use crate::actions::meta::meta_router;
 use crate::actions::settings::settings_router;
@@ -72,6 +74,7 @@ pub async fn serve_command() {
             .app_data(PayloadConfig::new(config.payload_size))
             // Prioritize because of collisions with wildcards later.
             .service(web::scope("/health").configure(health_router))
+            .service(web::scope("/mcp").wrap(Transaction).configure(mcp_router))
             .service(web::scope("/tree").wrap(Transaction).configure(meta_router))
             .service(
                 web::scope("/_app/immutable")
@@ -111,6 +114,7 @@ pub async fn serve_command() {
                     .service(web::scope("/files").configure(file_router))
                     .service(web::scope("/heatmap").configure(heatmap_router))
                     .service(web::scope("/alerts").configure(alert_router))
+                    .service(web::scope("/mapillary").configure(mapillary_router))
                     .service(web::scope("/me").configure(me_router))
                     .service(web::scope("/species").configure(species_router))
                     .service(web::scope("/stats").configure(stats_router))

@@ -42,6 +42,7 @@ pub struct CommentPath {
     pub comment_id: u64,
 }
 
+
 #[derive(Debug, Deserialize)]
 pub struct UpdatePhotos {
     pub files: Vec<String>,
@@ -63,7 +64,6 @@ pub async fn add_comment_action(
 
     Ok(HttpResponse::Accepted().finish())
 }
-
 #[delete("/{id:\\d+}/comments/{comment_id:\\d+}")]
 pub async fn delete_comment_action(
     state: Data<AppState>,
@@ -77,6 +77,7 @@ pub async fn delete_comment_action(
 
     Ok(HttpResponse::Accepted().finish())
 }
+
 
 #[post("/{id:\\d+}/files")]
 pub async fn add_file_action(

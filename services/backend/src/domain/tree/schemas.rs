@@ -106,6 +106,7 @@ pub struct GetTreesRequest {
     pub s: f64,
     pub w: f64,
     pub search: Option<String>,
+    
 }
 
 #[derive(Debug, Deserialize, Serialize)]

@@ -721,6 +721,18 @@ class EnglishLocale {
 		return 'Comment added.';
 	}
 
+	public commentDelete(): string {
+		return 'Delete';
+	}
+
+	public commentDeleteConfirm(): string {
+		return 'Are you sure you want to delete this comment?';
+	}
+
+	public toastCommentDeleted(): string {
+		return 'Comment deleted.';
+	}
+
 	public toastLocationDenied(): string {
 		return 'Location access denied. Please enable it in your browser settings to use this feature.';
 	}
@@ -1457,6 +1469,18 @@ class RussianLocale extends EnglishLocale {
 		return 'Комментарий добавлен.';
 	}
 
+	public override commentDelete(): string {
+		return 'Удалить';
+	}
+
+	public override commentDeleteConfirm(): string {
+		return 'Вы действительно хотите удалить этот комментарий?';
+	}
+
+	public override toastCommentDeleted(): string {
+		return 'Комментарий удален.';
+	}
+
 	public toastLocationDenied(): string {
 		return 'Доступ к местоположению запрещен. Пожалуйста, включите его в настройках браузера.';
 	}
@@ -2095,6 +2119,18 @@ class ArmenianLocale extends EnglishLocale {
 
 	public toastCommentAdded(): string {
 		return 'Մեկնաբանությունը ավելացված է:';
+	}
+
+	public override commentDelete(): string {
+		return 'Ջնջել';
+	}
+
+	public override commentDeleteConfirm(): string {
+		return 'Համոզվա՞ծ եք, որ ցանկանում եք ջնջել այս մեկնաբանությունը:';
+	}
+
+	public override toastCommentDeleted(): string {
+		return 'Մեկնաբանությունը ջնջված է:';
 	}
 
 	public toastLocationDenied(): string {

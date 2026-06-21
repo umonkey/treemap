@@ -4,6 +4,7 @@
 pub mod config;
 pub mod database;
 pub mod google_auth;
+pub mod mapillary;
 pub mod nominatim;
 pub mod osm;
 pub mod overpass;
