@@ -71,7 +71,7 @@ pub struct AddTreeRequest {
     pub files: Vec<String>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct Bounds {
     pub n: f64,
     pub e: f64,
@@ -106,7 +106,6 @@ pub struct GetTreesRequest {
     pub s: f64,
     pub w: f64,
     pub search: Option<String>,
-    pub zoom: Option<f64>,
 }
 
 #[derive(Debug, Deserialize, Serialize)]

@@ -1,9 +1,8 @@
 use crate::domain::alert::Alert;
-use crate::domain::mapillary::{MapillaryImage, MapillarySequence};
 use crate::domain::tree::Tree;
 use crate::utils::get_timestamp;
 use actix_web::HttpResponse;
-use serde_json::{json, Value};
+use serde_json::json;
 use std::f64::consts::PI;
 
 /// Convert a list of trees to a GeoJSON FeatureCollection response.
@@ -78,58 +77,6 @@ pub fn respond_with_alerts(alerts: &[Alert], days: u64) -> HttpResponse {
             })
         })
         .collect();
-
-    let collection = json!({
-        "type": "FeatureCollection",
-        "features": features
-    });
-
-    HttpResponse::Ok()
-        .content_type("application/geo+json")
-        .json(collection)
-}
-
-pub fn respond_with_mapillary(
-    images: &[MapillaryImage],
-    sequences: &[MapillarySequence],
-) -> HttpResponse {
-    let mut features = Vec::new();
-
-    for img in images {
-        features.push(json!({
-            "type": "Feature",
-            "id": img.id.clone(),
-            "geometry": {
-                "type": "Point",
-                "coordinates": [img.lon, img.lat]
-            },
-            "properties": {
-                "id": img.id.clone(),
-                "sequence_id": img.sequence_id.clone(),
-                "captured_at": img.captured_at,
-                "compass_angle": img.compass_angle,
-                "kind": "image"
-            }
-        }));
-    }
-
-    for seq in sequences {
-        let coords: Value = serde_json::from_str(&seq.geom_json).unwrap_or(json!([]));
-        features.push(json!({
-            "type": "Feature",
-            "id": seq.id.clone(),
-            "geometry": {
-                "type": "LineString",
-                "coordinates": coords
-            },
-            "properties": {
-                "id": seq.id.clone(),
-                "captured_at": seq.captured_at,
-                "image_count": seq.image_count,
-                "kind": "sequence"
-            }
-        }));
-    }
 
     let collection = json!({
         "type": "FeatureCollection",

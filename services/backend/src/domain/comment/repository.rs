@@ -1,7 +1,7 @@
 //! Access to the comments table.
 
 use crate::domain::comment::Comment;
-use crate::infra::database::{CountQuery, Database, InsertQuery, SelectQuery, Value};
+use crate::infra::database::{CountQuery, Database, DeleteQuery, InsertQuery, SelectQuery, Value};
 use crate::services::*;
 use crate::types::*;
 use std::sync::Arc;
@@ -31,6 +31,22 @@ impl CommentRepository {
     pub async fn find_by_tree(&self, tree_id: u64) -> Result<Vec<Comment>> {
         let query = SelectQuery::new(TABLE).with_condition("tree_id", Value::from(tree_id as i64));
         self.query_multiple(query).await
+    }
+
+    pub async fn find_by_id(&self, id: u64) -> Result<Option<Comment>> {
+        let query = SelectQuery::new(TABLE).with_condition("id", Value::from(id as i64));
+
+        match self.db.get_record(query).await {
+            Ok(Some(attrs)) => Ok(Some(Comment::from_attributes(&attrs)?)),
+            Ok(None) => Ok(None),
+            Err(err) => Err(err),
+        }
+    }
+
+    pub async fn delete(&self, id: u64) -> Result<u64> {
+        let query = DeleteQuery::new(TABLE).with_condition("id", Value::from(id as i64));
+
+        self.db.delete(query).await
     }
 
     pub async fn count_by_tree(&self, tree_id: u64) -> Result<u64> {

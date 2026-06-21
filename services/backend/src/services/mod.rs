@@ -1,7 +1,6 @@
 mod app;
 pub mod comment_loader;
 pub mod like_loader;
-pub mod mcp;
 pub mod meta;
 mod osm_reader;
 mod osm_writer;

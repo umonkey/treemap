@@ -8,6 +8,20 @@
 name: trees_dev
 
 services:
+
+  postgres:
+    image: postgres:16
+    container_name: trees_postgres
+    environment:
+      POSTGRES_DB: treemap
+      POSTGRES_USER: treemap
+      POSTGRES_PASSWORD: treemap_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
   backend:
     build:
       context: services/backend
@@ -20,18 +34,16 @@ services:
       - "8000:8000"
     volumes:
       - var:/app/var
+    depends_on:
+      - postgres
     environment:
-      - RUST_LOG=info,treemap=debug
+      - FILES_KEY=${FILES_KEY}
+      - FILES_SECRET=${FILES_SECRET}
+      - JWT_SECRET=foobar
+      - RUST_LOG=info,treemap=info
+      - SQS_KEY=
+      - SQS_SECRET=
       - TREEMAP_CONFIG=/app/config.toml.dev
-    secrets:
-      - files_key
-      - files_secret
-      - jwt_secret
-      - mapillary_org_id
-      - mapillary_token
-      - sqs_key
-      - sqs_secret
-      - osm_token
 
   frontend:
     build:
@@ -42,6 +54,7 @@ services:
       - "5173:5173"
     volumes:
       - ./services/frontend:/app
+      - /app/node_modules
       - svelte_kit_data:/app/.svelte-kit
     depends_on:
       - backend
@@ -49,23 +62,4 @@ services:
 volumes:
   var:
   svelte_kit_data:
-
-secrets:
-  chatbot_token:
-    file: .secrets/chatbot_token.txt
-  files_key:
-    file: .secrets/files_key.txt
-  files_secret:
-    file: .secrets/files_secret.txt
-  jwt_secret:
-    file: .secrets/jwt_secret.txt
-  mapillary_org_id:
-    file: .secrets/mapillary_org_id.txt
-  mapillary_token:
-    file: .secrets/mapillary_token.txt
-  sqs_key:
-    file: .secrets/sqs_key.txt
-  sqs_secret:
-    file: .secrets/sqs_secret.txt
-  osm_token:
-    file: .secrets/osm_token.txt
+  postgres_data:

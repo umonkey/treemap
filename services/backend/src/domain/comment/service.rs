@@ -3,7 +3,7 @@ use crate::domain::comment::Comment;
 use crate::domain::tree::TreeRepository;
 use crate::domain::user::UserRepository;
 use crate::services::{Context, Injectable};
-use crate::types::Result;
+use crate::types::{Error, Result};
 use crate::utils::{get_timestamp, get_unique_id};
 use log::info;
 use std::sync::Arc;
@@ -41,6 +41,29 @@ impl CommentService {
         info!("Comment {id} added to tree {tree_id}");
 
         Ok(comment)
+    }
+
+    pub async fn delete_comment(&self, comment_id: u64, user_id: u64) -> Result<()> {
+        let comment = self
+            .comments
+            .find_by_id(comment_id)
+            .await?
+            .ok_or(Error::CommentNotFound)?;
+
+        if comment.added_by != user_id {
+            return Err(Error::AccessDenied);
+        }
+
+        self.comments.delete(comment_id).await?;
+
+        self.users.decrement_comment_count(comment.added_by).await?;
+
+        let comments = self.comments.count_by_tree(comment.tree_id).await?;
+        self.trees.update_comment_count(comment.tree_id, comments).await?;
+
+        info!("Comment {comment_id} deleted from tree {}", comment.tree_id);
+
+        Ok(())
     }
 
     pub async fn get_new(&self, limit: u64) -> Result<Vec<Comment>> {

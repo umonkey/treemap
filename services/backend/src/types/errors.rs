@@ -15,11 +15,11 @@ pub enum Error {
     BadImage,
     #[allow(unused)]
     BadRequest,
+    CommentNotFound,
     Config(String),
     DatabaseConnect(String),
     DatabaseQuery(String),
     DatabaseStructure(String),
-    DuplicateRecord,
     DuplicateTree,
     EnvNotSet,
     FileDownload,
@@ -27,7 +27,6 @@ pub enum Error {
     FileUpload,
     GoogleUserInfo,
     ImageResize,
-    MapillaryExchange(String),
     MissingAuthorizationHeader,
     OsmExchange(String),
     Queue,
@@ -60,6 +59,9 @@ impl Error {
                 r#"{"error":{"code":"BadImage","description":"Bad image file, cannot work with it."}}"#.to_string()
             }
             Error::BadRequest => r#"{"error":{"code":"BadRequest","description":"Bad request."}}"#.to_string(),
+            Error::CommentNotFound => {
+                r#"{"error":{"code":"CommentNotFound","description":"The specified comment does not exist."}}"#.to_string()
+            }
             Error::Config(_) => {
                 r#"{"error":{"code":"Config","description":"Configuration error."}}"#.to_string()
             }
@@ -73,9 +75,6 @@ impl Error {
                 format!(
                     r#"{{"error":{{"code":"DatabaseStructure","description":"Database structure error: {s}"}}}}"#
                 )
-            }
-            Error::DuplicateRecord => {
-                r#"{"error":{"code":"DuplicateRecord","description":"This record already exists."}}"#.to_string()
             }
             Error::DuplicateTree => {
                 r#"{"error":{"code":"DuplicateTree","description":"A tree with these coordinates already exists."}}"#.to_string()
@@ -97,9 +96,6 @@ impl Error {
             }
             Error::ImageResize => {
                 r#"{"error":{"code":"ImageResize","description":"Image reading or resizing failed."}}"#.to_string()
-            }
-            Error::MapillaryExchange(_) => {
-                r#"{"error":{"code":"MapillaryExchange","description":"Mapillary exchange failed."}}"#.to_string()
             }
             Error::MissingAuthorizationHeader => {
                 r#"{"error":{"code":"MissingAuthorizationHeader","description":"Authentication required for this call."}}"#.to_string()
@@ -131,11 +127,7 @@ impl Error {
 
 impl From<LibSqlError> for Error {
     fn from(e: LibSqlError) -> Self {
-        let message = e.to_string();
-        if message.contains("UNIQUE constraint failed") {
-            return Error::DuplicateRecord;
-        }
-        Error::DatabaseQuery(message)
+        Error::DatabaseQuery(e.to_string())
     }
 }
 
@@ -162,6 +154,7 @@ impl ResponseError for Error {
         match self {
             Error::AccessDenied => StatusCode::FORBIDDEN,
             Error::AddressNotFound
+            | Error::CommentNotFound
             | Error::FileDownload
             | Error::FileNotFound
             | Error::TreeNotFound => StatusCode::NOT_FOUND,
@@ -174,7 +167,7 @@ impl ResponseError for Error {
             | Error::BadCallback
             | Error::BadImage
             | Error::BadRequest => StatusCode::BAD_REQUEST,
-            Error::DuplicateRecord | Error::DuplicateTree => StatusCode::CONFLICT,
+            Error::DuplicateTree => StatusCode::CONFLICT,
             Error::DatabaseQuery(_) => StatusCode::INTERNAL_SERVER_ERROR,
             _ => StatusCode::INTERNAL_SERVER_ERROR,
         }
@@ -191,11 +184,11 @@ impl fmt::Display for Error {
             Error::BadCallback => write!(f, "BadCallback"),
             Error::BadImage => write!(f, "BadImage"),
             Error::BadRequest => write!(f, "BadRequest"),
+            Error::CommentNotFound => write!(f, "CommentNotFound"),
             Error::Config(s) => write!(f, "Config error: {s}"),
             Error::DatabaseConnect(s) => write!(f, "DatabaseConnect: {s}"),
             Error::DatabaseQuery(s) => write!(f, "Database error: {s}"),
             Error::DatabaseStructure(s) => write!(f, "DatabaseStructure: {s}"),
-            Error::DuplicateRecord => write!(f, "DuplicateRecord"),
             Error::DuplicateTree => write!(f, "DuplicateTree"),
             Error::EnvNotSet => write!(f, "EnvNotSet"),
             Error::FileDownload => write!(f, "FileDownload"),
@@ -203,7 +196,6 @@ impl fmt::Display for Error {
             Error::FileUpload => write!(f, "FileUpload"),
             Error::GoogleUserInfo => write!(f, "GoogleUserInfo"),
             Error::ImageResize => write!(f, "ImageResize"),
-            Error::MapillaryExchange(s) => write!(f, "MapillaryExchange: {s}"),
             Error::MissingAuthorizationHeader => write!(f, "MissingAuthorizationHeader"),
             Error::OsmExchange(s) => write!(f, "OsmExchange: {s}"),
             Error::Queue => write!(f, "Queue"),

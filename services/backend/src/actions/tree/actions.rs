@@ -37,6 +37,12 @@ struct RequestPayload {
 }
 
 #[derive(Debug, Deserialize)]
+pub struct CommentPath {
+    pub id: u64,
+    pub comment_id: u64,
+}
+
+#[derive(Debug, Deserialize)]
 pub struct UpdatePhotos {
     pub files: Vec<String>,
 }
@@ -54,6 +60,20 @@ pub async fn add_comment_action(
     service
         .add_comment(path.id, user_id, &payload.message)
         .await?;
+
+    Ok(HttpResponse::Accepted().finish())
+}
+
+#[delete("/{id:\\d+}/comments/{comment_id:\\d+}")]
+pub async fn delete_comment_action(
+    state: Data<AppState>,
+    path: Path<CommentPath>,
+    req: HttpRequest,
+    service: Injected<CommentService>,
+) -> Result<HttpResponse> {
+    let user_id = state.get_user_id(&req)?;
+
+    service.delete_comment(path.comment_id, user_id).await?;
 
     Ok(HttpResponse::Accepted().finish())
 }
@@ -511,6 +531,7 @@ pub async fn get_tree_actors_action(
 // Configure the router.
 pub fn tree_router(cfg: &mut ServiceConfig) {
     cfg.service(add_comment_action)
+        .service(delete_comment_action)
         .service(add_file_action)
         .service(add_photos_action)
         .service(add_trees_action)

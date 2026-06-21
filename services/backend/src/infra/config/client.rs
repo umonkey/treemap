@@ -4,7 +4,7 @@
 //! `TREEMAP_CONFIG` environment variable, which is normally only used by unit tests.
 
 use crate::types::{Error, Result};
-use log::{debug, error, warn};
+use log::{error, warn};
 use serde::Deserialize;
 use std::fs;
 use std::io::Read;
@@ -125,8 +125,6 @@ impl Config {
             error!("Error reading {path}: {e}");
             Error::Config("could not read config file".to_string())
         })?;
-
-        debug!("Reading config from {path}");
 
         Self::from_string(&contents)
     }

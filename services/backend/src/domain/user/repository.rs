@@ -117,6 +117,10 @@ impl UserRepository {
         self.increment(user_id, "comments_count", 1).await
     }
 
+    pub async fn decrement_comment_count(&self, user_id: u64) -> Result<()> {
+        self.increment(user_id, "comments_count", -1).await
+    }
+
     async fn increment(&self, user_id: u64, key: &str, value: i64) -> Result<()> {
         let query = IncrementQuery::new(TABLE)
             .with_condition("id", Value::from(user_id as i64))

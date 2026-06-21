@@ -55,7 +55,6 @@ impl OsmClient {
     pub async fn close_changeset(&self, id: u64) -> Result<()> {
         let url = format!("https://api.openstreetmap.org/api/0.6/changeset/{id}/close");
         self.put(url.as_str(), "").await?;
-        info!("Closed OSM changesed, see <https://www.openstreetmap.org/changeset/{id}>");
         Ok(())
     }
 
