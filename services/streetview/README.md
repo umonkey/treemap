@@ -30,3 +30,10 @@ uv run python3 -m app synchronize --frame 1024 --lat 40.2037352 --lon 44.5074044
 This command updates the video file `creation_time` meta with a timestamp that synchronzies it with the GPX track perfectly.
 
 ### Extract the geotagged images
+
+When you have your video synchronized with the GPX track, you can extract the frames:
+
+```
+mkdir -p frames
+bin/extract input/video.mp4 input/track.gpx ./frames --distance 3.0
+```
