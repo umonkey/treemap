@@ -8,14 +8,24 @@
 	import CommentInput from './CommentInput.svelte';
 
 	const { onSubmit, authenticated } = $props<{
-		onSubmit: (message: string) => void;
+		onSubmit: (message: string) => Promise<boolean>;
 		authenticated?: boolean;
 	}>();
 
 	let message = $state('');
+	let submitting = $state(false);
 
-	const onButtonClicked = () => {
-		onSubmit(message);
+	const onButtonClicked = async () => {
+		if (!message || submitting) {
+			return;
+		}
+
+		submitting = true;
+		const success = await onSubmit(message);
+		if (success) {
+			message = '';
+		}
+		submitting = false;
 	};
 
 	const handleChange = (value: string) => {
@@ -30,7 +40,10 @@
 		<CommentInput value={message} onChange={handleChange} />
 
 		<Buttons>
-			<Button type="submit" onClick={onButtonClicked} disabled={!message}
+			<Button
+				type="submit"
+				onClick={onButtonClicked}
+				disabled={!message || submitting}
 				>{locale.commentSubmit()}</Button
 			>
 		</Buttons>

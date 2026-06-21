@@ -68,7 +68,7 @@ class PreviewState {
 
 		getTreeComments(id).then((res) => {
 			if (res.status === 200 && res.data) {
-				this.comments = res.data.comments;
+				this.comments = res.data.comments.sort((a, b) => b.added_at - a.added_at);
 			} else {
 				this.comments = [];
 			}

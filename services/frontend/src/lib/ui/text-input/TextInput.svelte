@@ -31,8 +31,8 @@
 
 <FormElement {label} {hint} {help}>
 	{#if multiline}
-		<textarea {placeholder} onchange={handleChange}>{value}</textarea>
+		<textarea {placeholder} oninput={handleChange}>{value}</textarea>
 	{:else}
-		<input {type} {value} {placeholder} onchange={handleChange} />
+		<input {type} {value} {placeholder} oninput={handleChange} />
 	{/if}
 </FormElement>

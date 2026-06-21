@@ -2,7 +2,8 @@ import { addComment, getTreeComments } from '$lib/api/comments';
 import { getObservations } from '$lib/api/observations';
 import { getTree } from '$lib/api/trees';
 import { mapBus } from '$lib/buses/mapBus';
-import { showError } from '$lib/errors';
+import { showError, showInfo } from '$lib/errors';
+import { locale } from '$lib/locale';
 import { addUsers } from '$lib/stores/userStore';
 import type { IComment, ILatLng, IObservation, ITree } from '$lib/types';
 
@@ -13,6 +14,7 @@ class PageState {
 	observation = $state<IObservation>();
 
 	public reload = (id: string) => {
+		this.id = id;
 		this.tree = undefined;
 		this.comments = [];
 		this.observation = undefined;
@@ -30,12 +32,7 @@ class PageState {
 			}
 		});
 
-		getTreeComments(id).then((res) => {
-			if (res.status === 200 && res.data) {
-				addUsers(res.data.users);
-				this.comments = res.data.comments;
-			}
-		});
+		this.loadComments();
 
 		getObservations(id).then((res) => {
 			if (res.status === 200 && res.data) {
@@ -44,26 +41,42 @@ class PageState {
 		});
 	};
 
-	public handleSubmitComment = (message: string) => {
-		const treeId = this.tree?.id;
-
-		if (!treeId) {
+	public loadComments = () => {
+		if (!this.id) {
 			return;
 		}
 
-		addComment(treeId, message)
-			.then((res) => {
-				if (res.status >= 200 && res.status < 300) {
-					// OK
-				} else {
-					console.error(`Error ${res.status} adding a comment.`, res);
-					showError(res.error?.description || `Error ${res.status} adding a comment.`);
-				}
-			})
-			.catch((e) => {
-				console.error('Exception while adding a comment.', e);
-				showError('Exception adding a comment.');
-			});
+		getTreeComments(this.id).then((res) => {
+			if (res.status === 200 && res.data) {
+				addUsers(res.data.users);
+				this.comments = res.data.comments.sort((a, b) => b.added_at - a.added_at);
+			}
+		});
+	};
+
+	public handleSubmitComment = async (message: string): Promise<boolean> => {
+		const treeId = this.tree?.id;
+
+		if (!treeId) {
+			return false;
+		}
+
+		try {
+			const res = await addComment(treeId, message);
+			if (res.status >= 200 && res.status < 300) {
+				showInfo(locale.toastCommentAdded());
+				this.loadComments();
+				return true;
+			} else {
+				console.error(`Error ${res.status} adding a comment.`, res);
+				showError(res.error?.description || `Error ${res.status} adding a comment.`);
+				return false;
+			}
+		} catch (e) {
+			console.error('Exception while adding a comment.', e);
+			showError('Exception adding a comment.');
+			return false;
+		}
 	};
 
 	private moveMap = (ll: ILatLng) => {
