@@ -40,10 +40,7 @@
 		<CommentInput value={message} onChange={handleChange} />
 
 		<Buttons>
-			<Button
-				type="submit"
-				onClick={onButtonClicked}
-				disabled={!message || submitting}
+			<Button type="submit" onClick={onButtonClicked} disabled={!message || submitting}
 				>{locale.commentSubmit()}</Button
 			>
 		</Buttons>

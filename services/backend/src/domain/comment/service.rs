@@ -59,7 +59,9 @@ impl CommentService {
         self.users.decrement_comment_count(comment.added_by).await?;
 
         let comments = self.comments.count_by_tree(comment.tree_id).await?;
-        self.trees.update_comment_count(comment.tree_id, comments).await?;
+        self.trees
+            .update_comment_count(comment.tree_id, comments)
+            .await?;
 
         info!("Comment {comment_id} deleted from tree {}", comment.tree_id);
 
