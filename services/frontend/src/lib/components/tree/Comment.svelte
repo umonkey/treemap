@@ -3,11 +3,12 @@
 	import { locale } from '$lib/locale';
 	import type { IComment } from '$lib/types';
 	import { componentState } from './Comment.svelte.ts';
+	import { getUser } from '$lib/stores/userStore';
 
 	const { comment, onDelete }: { comment: IComment; onDelete?: (commentId: string) => void } =
 		$props();
 
-	const userName = $derived(componentState.getUserName(comment.added_by));
+	const userName = $derived($getUser(comment.added_by)?.name);
 	const dateStr = $derived(componentState.getFormattedDate(comment.added_at));
 	const showDelete = $derived(componentState.canDelete(comment.added_by));
 </script>

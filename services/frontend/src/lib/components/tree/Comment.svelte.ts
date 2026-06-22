@@ -2,7 +2,6 @@ import { deleteComment } from '$lib/api/comments';
 import { showError, showInfo } from '$lib/errors';
 import { locale } from '$lib/locale';
 import { authStore } from '$lib/stores/authStore';
-import { getUser } from '$lib/stores/userStore';
 import { formatDate } from '$lib/utils/strings';
 import { get } from 'svelte/store';
 
@@ -12,11 +11,6 @@ class CommentLogic {
 	constructor() {
 		// Pure constructor
 	}
-
-	getUserName = (addedBy: string) => {
-		const user = get(getUser)(addedBy);
-		return user ? user.name : undefined;
-	};
 
 	getFormattedDate = (addedAt: number) => {
 		return formatDate(addedAt);
