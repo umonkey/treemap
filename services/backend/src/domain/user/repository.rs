@@ -117,6 +117,10 @@ impl UserRepository {
         self.increment(user_id, "comments_count", 1).await
     }
 
+    pub async fn decrement_comment_count(&self, user_id: u64) -> Result<()> {
+        self.increment(user_id, "comments_count", -1).await
+    }
+
     pub async fn increment_file_count(&self, user_id: u64) -> Result<()> {
         self.increment(user_id, "files_count", 1).await
     }

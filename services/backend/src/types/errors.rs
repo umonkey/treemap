@@ -8,6 +8,7 @@ use actix_web::{error::ResponseError, http::header::ContentType, http::StatusCod
 #[derive(Debug)]
 pub enum Error {
     AddressNotFound,
+    CommentNotFound,
     AccessDenied,
     BadAuthToken,
     BadAuthorizationHeader,
@@ -43,6 +44,9 @@ impl Error {
         match self {
             Error::AddressNotFound => {
                 r#"{"error":{"code":"AddressNotFound","description":"Could not find an address for the given coordinates."}}"#.to_string()
+            }
+            Error::CommentNotFound => {
+                r#"{"error":{"code":"CommentNotFound","description":"Comment not found."}}"#.to_string()
             }
             Error::AccessDenied => {
                 r#"{"error":{"code":"AccessDenied","description":"Access denied."}}"#.to_string()
@@ -162,6 +166,7 @@ impl ResponseError for Error {
         match self {
             Error::AccessDenied => StatusCode::FORBIDDEN,
             Error::AddressNotFound
+            | Error::CommentNotFound
             | Error::FileDownload
             | Error::FileNotFound
             | Error::TreeNotFound => StatusCode::NOT_FOUND,
@@ -186,6 +191,7 @@ impl fmt::Display for Error {
         match self {
             Error::AccessDenied => write!(f, "AccessDenied"),
             Error::AddressNotFound => write!(f, "AddressNotFound"),
+            Error::CommentNotFound => write!(f, "CommentNotFound"),
             Error::BadAuthToken => write!(f, "BadAuthToken"),
             Error::BadAuthorizationHeader => write!(f, "BadAuthorizationHeader"),
             Error::BadCallback => write!(f, "BadCallback"),
