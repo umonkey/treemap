@@ -3,4 +3,4 @@
 #
 # Usage: bin/extract input.mp4 input.gpx ./output --distance 3.0
 
-exec uv run python3 -m app extract $@
+exec python3 -m app extract "$@"
