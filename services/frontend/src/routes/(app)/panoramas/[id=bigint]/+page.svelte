@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { pageState } from './page.svelte.ts';
 	import { page } from '$app/state';
+	import { formatDateTime } from '$lib/utils/strings';
 	import { mapLayerStore } from '$lib/stores/mapLayerStore';
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
 	import PlusIcon from '$lib/icons/PlusIcon.svelte';
@@ -12,17 +13,9 @@
 	const id = $derived(page.params.id as string);
 	let previewElement = $state<HTMLElement>();
 
-	const capturedAt = $derived.by(() => {
-		if (!pageState.image?.captured_at) return '';
-		const date = new Date(pageState.image.captured_at);
-		const Y = date.getFullYear();
-		const M = (date.getMonth() + 1).toString().padStart(2, '0');
-		const D = date.getDate().toString().padStart(2, '0');
-		const h = date.getHours().toString();
-		const i = date.getMinutes().toString().padStart(2, '0');
-		const s = date.getSeconds().toString().padStart(2, '0');
-		return `${Y}-${M}-${D}, ${h}:${i}:${s}`;
-	});
+	const capturedAt = $derived(
+		pageState.image?.captured_at ? formatDateTime(pageState.image.captured_at) : ''
+	);
 
 	$effect(() => {
 		pageState.reload(id);
