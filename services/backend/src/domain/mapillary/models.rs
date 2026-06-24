@@ -19,7 +19,7 @@ impl MapillaryImage {
         Ok(Self {
             id: attrs.require_string("id")?,
             sequence_id: attrs.require_string("sequence_id")?,
-            captured_at: attrs.require_i64("captured_at")?,
+            captured_at: attrs.require_i64("captured_at")? / 1000,
             lat: attrs.require_f64("lat")?,
             lon: attrs.require_f64("lon")?,
             compass_angle: attrs.require_f64("compass_angle")?,
@@ -32,7 +32,7 @@ impl MapillaryImage {
         let mut attrs = Attributes::default();
         attrs.insert("id", Value::from(self.id.clone()));
         attrs.insert("sequence_id", Value::from(self.sequence_id.clone()));
-        attrs.insert("captured_at", Value::from(self.captured_at));
+        attrs.insert("captured_at", Value::from(self.captured_at * 1000));
         attrs.insert("lat", Value::from(self.lat));
         attrs.insert("lon", Value::from(self.lon));
         attrs.insert("compass_angle", Value::from(self.compass_angle));
@@ -58,7 +58,7 @@ impl MapillarySequence {
     pub fn from_attributes(attrs: &Attributes) -> crate::types::Result<Self> {
         Ok(Self {
             id: attrs.require_string("id")?,
-            captured_at: attrs.require_i64("captured_at")?,
+            captured_at: attrs.require_i64("captured_at")? / 1000,
             image_count: attrs.require_u64("image_count")? as u32,
             min_lat: attrs.require_f64("min_lat")?,
             max_lat: attrs.require_f64("max_lat")?,
@@ -72,7 +72,7 @@ impl MapillarySequence {
     pub fn to_attributes(&self) -> Attributes {
         let mut attrs = Attributes::default();
         attrs.insert("id", Value::from(self.id.clone()));
-        attrs.insert("captured_at", Value::from(self.captured_at));
+        attrs.insert("captured_at", Value::from(self.captured_at * 1000));
         attrs.insert("image_count", Value::from(self.image_count as i64));
         attrs.insert("min_lat", Value::from(self.min_lat));
         attrs.insert("max_lat", Value::from(self.max_lat));
@@ -81,6 +81,25 @@ impl MapillarySequence {
         attrs.insert("geom_json", Value::from(self.geom_json.clone()));
         attrs.insert("hidden", Value::from(self.hidden));
         attrs
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MapillarySequenceSummary {
+    pub id: String,
+    pub captured_at: i64,
+    pub image_count: u32,
+    pub hidden: bool,
+}
+
+impl MapillarySequenceSummary {
+    pub fn from_attributes(attrs: &Attributes) -> crate::types::Result<Self> {
+        Ok(Self {
+            id: attrs.require_string("id")?,
+            captured_at: attrs.require_i64("captured_at")? / 1000,
+            image_count: attrs.require_u64("image_count")? as u32,
+            hidden: attrs.get_bool("hidden")?.unwrap_or(false),
+        })
     }
 }
 

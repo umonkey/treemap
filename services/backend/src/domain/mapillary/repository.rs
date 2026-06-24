@@ -1,4 +1,6 @@
-use crate::domain::mapillary::{MapillaryImage, MapillarySequence, MapillaryTree};
+use crate::domain::mapillary::{
+    MapillaryImage, MapillarySequence, MapillarySequenceSummary, MapillaryTree,
+};
 use crate::domain::tree::Bounds;
 use crate::infra::database::{
     Database, DeleteQuery, InsertQuery, ReplaceQuery, SelectQuery, Value,
@@ -142,6 +144,19 @@ impl MapillaryRepository {
         records
             .iter()
             .map(MapillarySequence::from_attributes)
+            .collect()
+    }
+
+    pub async fn find_all_sequences(&self) -> Result<Vec<MapillarySequenceSummary>> {
+        let sql = format!(
+            "SELECT id, captured_at, image_count, hidden FROM `{}` ORDER BY captured_at DESC",
+            SEQUENCES_TABLE
+        );
+
+        let records = self.db.fetch_sql(&sql, &[]).await?;
+        records
+            .iter()
+            .map(MapillarySequenceSummary::from_attributes)
             .collect()
     }
 }

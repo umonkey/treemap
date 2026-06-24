@@ -1,5 +1,5 @@
 use crate::domain::mapillary::{
-    MapillaryImage, MapillaryRepository, MapillarySequence, MapillaryTree,
+    MapillaryImage, MapillaryRepository, MapillarySequence, MapillarySequenceSummary, MapillaryTree,
 };
 use crate::domain::tree::Bounds;
 use crate::infra::mapillary::MapillaryClient;
@@ -61,7 +61,7 @@ impl MapillaryService {
                 let model = MapillaryImage {
                     id: img.id.clone(),
                     sequence_id: img.sequence.clone(),
-                    captured_at: img.captured_at,
+                    captured_at: img.captured_at / 1000,
                     lat,
                     lon,
                     compass_angle: img
@@ -111,6 +111,10 @@ impl MapillaryService {
 
     pub async fn get_sequences_by_bounds(&self, bounds: Bounds) -> Result<Vec<MapillarySequence>> {
         self.repo.find_sequences_by_bounds(bounds).await
+    }
+
+    pub async fn get_all_sequences(&self) -> Result<Vec<MapillarySequenceSummary>> {
+        self.repo.find_all_sequences().await
     }
 
     pub async fn get_tree_hints_geojson(&self, bounds: Bounds) -> Result<serde_json::Value> {
@@ -179,7 +183,7 @@ impl MapillaryService {
         Ok(MapillaryImage {
             id: img.id,
             sequence_id: img.sequence,
-            captured_at: img.captured_at,
+            captured_at: img.captured_at / 1000,
             lat,
             lon,
             compass_angle: img

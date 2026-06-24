@@ -8,6 +8,7 @@ use actix_web::web;
 pub fn mapillary_router(cfg: &mut web::ServiceConfig) {
     cfg.route("/geo.json", web::get().to(get_mapillary_geo_json_action));
     cfg.route("/hints.json", web::get().to(get_mapillary_hints_action));
+    cfg.route("/sequences", web::get().to(get_mapillary_sequences_action));
     cfg.route("/images/{id}", web::get().to(get_mapillary_image_action));
     cfg.route(
         "/images/{id}/trees",

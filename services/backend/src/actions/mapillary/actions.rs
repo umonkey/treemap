@@ -1,7 +1,7 @@
 use crate::actions::mapillary::schemas::{
     AddMapillaryTreeRequest, GetMapillaryRequest, ReplaceMapillaryTreesRequest,
 };
-use crate::domain::mapillary::{MapillaryService, MapillaryTree};
+use crate::domain::mapillary::{MapillarySequenceSummary, MapillaryService, MapillaryTree};
 use crate::domain::tree::Bounds;
 use crate::responders::geo_json::respond_with_mapillary;
 use crate::services::*;
@@ -73,6 +73,13 @@ pub async fn get_mapillary_image_trees_action(
     let trees = service.get_image_trees(&id).await?;
 
     Ok(HttpResponse::Ok().json(trees))
+}
+
+pub async fn get_mapillary_sequences_action(
+    service: Injected<MapillaryService>,
+) -> Result<Json<Vec<MapillarySequenceSummary>>> {
+    let sequences = service.get_all_sequences().await?;
+    Ok(Json(sequences))
 }
 
 pub async fn add_mapillary_image_tree_action(

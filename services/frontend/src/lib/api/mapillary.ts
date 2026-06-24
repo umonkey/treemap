@@ -85,3 +85,16 @@ export async function deleteMapillaryTrees(id: string): Promise<IResponse<void>>
 		headers: getAuthHeaders()
 	});
 }
+
+export interface MapillarySequenceSummary {
+	id: string;
+	captured_at: number;
+	image_count: number;
+	hidden: boolean;
+}
+
+export async function getMapillarySequences(): Promise<IResponse<MapillarySequenceSummary[]>> {
+	return await request<MapillarySequenceSummary[]>('GET', 'v1/mapillary/sequences', {
+		headers: getAuthHeaders()
+	});
+}
