@@ -1,0 +1,4 @@
+#!/bin/sh
+# Use the OpenSfM virtual environment's site-packages and the system Python
+export PYTHONPATH="/opt/opensfm/lib/python3.11/site-packages"
+exec python3 /opt/opensfm/bin/opensfm_main.py "$@"
