@@ -10,6 +10,7 @@ import {
 import { mapRaysStore } from '$lib/stores/mapRays.svelte';
 import { mapMarkerStore } from '$lib/stores/mapMarker.svelte';
 import { mapBus } from '$lib/buses/mapBus';
+import { panoBus } from '$lib/buses/panoBus';
 import { LngLat } from 'maplibre-gl';
 
 class PageState {
@@ -50,6 +51,7 @@ class PageState {
 			this.trees = treesRes.data;
 		}
 		this.isBusy = false;
+		panoBus.emit('reload');
 	};
 
 	public handleDeleteTrees = async () => {
@@ -67,6 +69,7 @@ class PageState {
 		}
 
 		this.isBusy = false;
+		panoBus.emit('reload');
 	};
 
 	public handleMove = (angle: number) => {

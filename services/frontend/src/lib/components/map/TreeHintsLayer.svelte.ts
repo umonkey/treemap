@@ -1,6 +1,7 @@
 import { getMapillaryHints } from '$lib/api/mapillary';
 import { showError } from '$lib/errors';
 import { Debouncer } from '$lib/utils/debounce';
+import { panoBus } from '$lib/buses/panoBus';
 import { type Map } from 'maplibre-gl';
 import { getMapContext } from 'svelte-maplibre';
 import { MapBouncer } from './MapBouncer';
@@ -78,11 +79,13 @@ class TreeHintsLayerState {
 
 		map.on('moveend', handleMove);
 		map.on('zoomend', handleMove);
+		panoBus.on('reload', reload);
 		reload();
 
 		return () => {
 			map.off('moveend', handleMove);
 			map.off('zoomend', handleMove);
+			panoBus.off('reload', reload);
 		};
 	};
 }
