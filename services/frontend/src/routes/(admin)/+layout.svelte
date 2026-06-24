@@ -7,13 +7,13 @@
 	const { children } = $props();
 </script>
 
-<AuthWrapper>
-	<div class="admin-layout">
-		<div class="content">
+<div class="admin-layout">
+	<div class="content">
+		<AuthWrapper>
 			{@render children()}
-		</div>
+		</AuthWrapper>
 	</div>
-</AuthWrapper>
+</div>
 
 <LeftSidebar />
 <MobileNav />
