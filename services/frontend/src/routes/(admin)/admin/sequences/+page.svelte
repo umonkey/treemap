@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import { pageState } from './page.svelte.ts';
-	import { formatDateTime } from '$lib/utils/strings';
+	import { formatDateTimeISO } from '$lib/utils/strings';
+	import Breadcrumbs from '$lib/components/admin/Breadcrumbs.svelte';
 
 	$effect(() => {
 		untrack(() => pageState.reload());
@@ -15,6 +16,8 @@
 <article>
 	<header>
 		<h1>StreetView Sequences</h1>
+
+		<Breadcrumbs items={[{ label: 'Admin', href: '/admin' }, { label: 'Sequences' }]} />
 	</header>
 	{#if pageState.error}
 		<p class="error">Error loading sequences: {pageState.error.description}</p>
@@ -27,15 +30,21 @@
 			<table>
 				<thead>
 					<tr>
-						<th>Captured At</th>
-						<th>Images</th>
+						<th class="col-date">Captured At</th>
+						<th class="col-title">Title</th>
+						<th class="col-images">Images</th>
+						<th class="col-status">Status</th>
 					</tr>
 				</thead>
 				<tbody>
 					{#each pageState.sequences as seq (seq.id)}
 						<tr>
-							<td>{formatDateTime(seq.captured_at)}</td>
-							<td>{seq.image_count}</td>
+							<td class="col-date">{formatDateTimeISO(seq.captured_at)}</td>
+							<td>
+								<a href="/admin/sequences/{seq.id}">{seq.title}</a>
+							</td>
+							<td class="col-images">{seq.image_count}</td>
+							<td class="col-status">{seq.hidden ? 'hidden' : ''}</td>
 						</tr>
 					{/each}
 				</tbody>
@@ -59,5 +68,18 @@
 		padding: 8px;
 		border-bottom: 1px solid light-dark(#ddd, #444);
 		text-align: left;
+	}
+
+	.col-date {
+		white-space: nowrap;
+	}
+
+	.col-title {
+		width: 100%;
+	}
+
+	.col-images,
+	.col-status {
+		white-space: nowrap;
 	}
 </style>

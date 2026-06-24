@@ -1,7 +1,10 @@
 use crate::actions::mapillary::schemas::{
     AddMapillaryTreeRequest, GetMapillaryRequest, ReplaceMapillaryTreesRequest,
 };
-use crate::domain::mapillary::{MapillarySequenceSummary, MapillaryService, MapillaryTree};
+use crate::domain::mapillary::{
+    MapillarySequenceDetail, MapillarySequenceSummary, MapillaryService, MapillaryTree,
+    UpdateMapillarySequence,
+};
 use crate::domain::tree::Bounds;
 use crate::responders::geo_json::respond_with_mapillary;
 use crate::services::*;
@@ -80,6 +83,25 @@ pub async fn get_mapillary_sequences_action(
 ) -> Result<Json<Vec<MapillarySequenceSummary>>> {
     let sequences = service.get_all_sequences().await?;
     Ok(Json(sequences))
+}
+
+pub async fn get_mapillary_sequence_action(
+    service: Injected<MapillaryService>,
+    path: Path<String>,
+) -> Result<Json<MapillarySequenceDetail>> {
+    let id = path.into_inner();
+    let sequence = service.get_sequence_detail(&id).await?;
+    Ok(Json(sequence))
+}
+
+pub async fn update_mapillary_sequence_action(
+    service: Injected<MapillaryService>,
+    path: Path<String>,
+    body: Json<UpdateMapillarySequence>,
+) -> Result<HttpResponse> {
+    let id = path.into_inner();
+    service.update_sequence(&id, body.into_inner()).await?;
+    Ok(HttpResponse::NoContent().finish())
 }
 
 pub async fn add_mapillary_image_tree_action(

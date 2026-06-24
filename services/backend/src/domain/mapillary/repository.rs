@@ -1,9 +1,10 @@
 use crate::domain::mapillary::{
-    MapillaryImage, MapillarySequence, MapillarySequenceSummary, MapillaryTree,
+    MapillaryImage, MapillarySequence, MapillarySequenceDetail, MapillarySequenceSummary,
+    MapillaryTree,
 };
 use crate::domain::tree::Bounds;
 use crate::infra::database::{
-    Database, DeleteQuery, InsertQuery, ReplaceQuery, SelectQuery, Value,
+    Database, DeleteQuery, InsertQuery, ReplaceQuery, SelectQuery, UpdateQuery, Value,
 };
 use crate::services::*;
 use crate::types::*;
@@ -126,6 +127,39 @@ impl MapillaryRepository {
         }
     }
 
+    pub async fn find_sequence_detail(&self, id: &str) -> Result<Option<MapillarySequenceDetail>> {
+        let query =
+            SelectQuery::new(SEQUENCES_TABLE).with_condition("id", Value::from(id.to_string()));
+
+        let records = self.db.get_records(query).await?;
+        if let Some(record) = records.first() {
+            Ok(Some(MapillarySequenceDetail::from_attributes(record)?))
+        } else {
+            Ok(None)
+        }
+    }
+
+    pub async fn update_sequence(
+        &self,
+        id: &str,
+        title: Option<String>,
+        hidden: Option<bool>,
+    ) -> Result<()> {
+        let mut query =
+            UpdateQuery::new(SEQUENCES_TABLE).with_condition("id", Value::from(id.to_string()));
+
+        if let Some(title) = title {
+            query = query.with_value("title", Value::from(title));
+        }
+
+        if let Some(hidden) = hidden {
+            query = query.with_value("hidden", Value::from(hidden));
+        }
+
+        self.db.update(query).await?;
+        Ok(())
+    }
+
     pub async fn find_sequences_by_bounds(&self, bounds: Bounds) -> Result<Vec<MapillarySequence>> {
         // Query sequences whose bounding box intersects with the requested bounds.
         let sql = format!(
@@ -149,7 +183,7 @@ impl MapillaryRepository {
 
     pub async fn find_all_sequences(&self) -> Result<Vec<MapillarySequenceSummary>> {
         let sql = format!(
-            "SELECT id, captured_at, image_count, hidden FROM `{}` ORDER BY captured_at DESC",
+            "SELECT id, captured_at, image_count, hidden, title FROM `{}` ORDER BY captured_at DESC",
             SEQUENCES_TABLE
         );
 

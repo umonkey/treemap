@@ -248,6 +248,7 @@ CREATE TABLE IF NOT EXISTS mapillary_sequences (
     `max_lon` REAL NOT NULL,
     `geom_json` TEXT NOT NULL,
     `hidden` INT NOT NULL DEFAULT '0',
+    `title` TEXT NOT NULL DEFAULT 'untitled',
     PRIMARY KEY(`id`)
 );
 

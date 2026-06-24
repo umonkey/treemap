@@ -1,5 +1,6 @@
 use crate::domain::mapillary::{
-    MapillaryImage, MapillaryRepository, MapillarySequence, MapillarySequenceSummary, MapillaryTree,
+    MapillaryImage, MapillaryRepository, MapillarySequence, MapillarySequenceDetail,
+    MapillarySequenceSummary, MapillaryTree, UpdateMapillarySequence,
 };
 use crate::domain::tree::Bounds;
 use crate::infra::mapillary::MapillaryClient;
@@ -117,6 +118,19 @@ impl MapillaryService {
         self.repo.find_all_sequences().await
     }
 
+    pub async fn get_sequence_detail(&self, id: &str) -> Result<MapillarySequenceDetail> {
+        self.repo
+            .find_sequence_detail(id)
+            .await?
+            .ok_or(Error::FileNotFound)
+    }
+
+    pub async fn update_sequence(&self, id: &str, update: UpdateMapillarySequence) -> Result<()> {
+        self.repo
+            .update_sequence(id, update.title, update.hidden)
+            .await
+    }
+
     pub async fn get_tree_hints_geojson(&self, bounds: Bounds) -> Result<serde_json::Value> {
         let hints = self.repo.find_trees_with_location_by_bounds(bounds).await?;
         let mut features = Vec::new();
@@ -227,7 +241,10 @@ impl MapillaryService {
             min_lon,
             max_lon,
             geom_json,
-            hidden: existing.map(|s| s.hidden).unwrap_or(false),
+            hidden: existing.as_ref().map(|s| s.hidden).unwrap_or(false),
+            title: existing
+                .map(|s| s.title)
+                .unwrap_or_else(|| "untitled".to_string()),
         };
 
         self.repo.add_sequence(&sequence).await?;

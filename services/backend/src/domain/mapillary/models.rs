@@ -52,6 +52,7 @@ pub struct MapillarySequence {
     pub max_lon: f64,
     pub geom_json: String,
     pub hidden: bool,
+    pub title: String,
 }
 
 impl MapillarySequence {
@@ -66,6 +67,7 @@ impl MapillarySequence {
             max_lon: attrs.require_f64("max_lon")?,
             geom_json: attrs.require_string("geom_json")?,
             hidden: attrs.get_bool("hidden")?.unwrap_or(false),
+            title: attrs.get_string("title")?.unwrap_or("untitled".to_string()),
         })
     }
 
@@ -80,6 +82,7 @@ impl MapillarySequence {
         attrs.insert("max_lon", Value::from(self.max_lon));
         attrs.insert("geom_json", Value::from(self.geom_json.clone()));
         attrs.insert("hidden", Value::from(self.hidden));
+        attrs.insert("title", Value::from(self.title.clone()));
         attrs
     }
 }
@@ -90,6 +93,7 @@ pub struct MapillarySequenceSummary {
     pub captured_at: i64,
     pub image_count: u32,
     pub hidden: bool,
+    pub title: String,
 }
 
 impl MapillarySequenceSummary {
@@ -99,8 +103,44 @@ impl MapillarySequenceSummary {
             captured_at: attrs.require_i64("captured_at")? / 1000,
             image_count: attrs.require_u64("image_count")? as u32,
             hidden: attrs.get_bool("hidden")?.unwrap_or(false),
+            title: attrs.get_string("title")?.unwrap_or("untitled".to_string()),
         })
     }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MapillarySequenceDetail {
+    pub id: String,
+    pub captured_at: i64,
+    pub image_count: u32,
+    pub min_lat: f64,
+    pub max_lat: f64,
+    pub min_lon: f64,
+    pub max_lon: f64,
+    pub hidden: bool,
+    pub title: String,
+}
+
+impl MapillarySequenceDetail {
+    pub fn from_attributes(attrs: &Attributes) -> crate::types::Result<Self> {
+        Ok(Self {
+            id: attrs.require_string("id")?,
+            captured_at: attrs.require_i64("captured_at")? / 1000,
+            image_count: attrs.require_u64("image_count")? as u32,
+            min_lat: attrs.require_f64("min_lat")?,
+            max_lat: attrs.require_f64("max_lat")?,
+            min_lon: attrs.require_f64("min_lon")?,
+            max_lon: attrs.require_f64("max_lon")?,
+            hidden: attrs.get_bool("hidden")?.unwrap_or(false),
+            title: attrs.get_string("title")?.unwrap_or("untitled".to_string()),
+        })
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct UpdateMapillarySequence {
+    pub title: Option<String>,
+    pub hidden: Option<bool>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

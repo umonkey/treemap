@@ -91,10 +91,44 @@ export interface MapillarySequenceSummary {
 	captured_at: number;
 	image_count: number;
 	hidden: boolean;
+	title: string;
+}
+
+export interface MapillarySequenceDetail {
+	id: string;
+	captured_at: number;
+	image_count: number;
+	min_lat: number;
+	max_lat: number;
+	min_lon: number;
+	max_lon: number;
+	hidden: boolean;
+	title: string;
 }
 
 export async function getMapillarySequences(): Promise<IResponse<MapillarySequenceSummary[]>> {
 	return await request<MapillarySequenceSummary[]>('GET', 'v1/mapillary/sequences', {
 		headers: getAuthHeaders()
+	});
+}
+
+export async function getMapillarySequence(
+	id: string
+): Promise<IResponse<MapillarySequenceDetail>> {
+	return await request<MapillarySequenceDetail>('GET', `v1/mapillary/sequences/${id}`, {
+		headers: getAuthHeaders()
+	});
+}
+
+export async function updateMapillarySequence(
+	id: string,
+	data: { title?: string; hidden?: boolean }
+): Promise<IResponse<void>> {
+	return await request<void>('PATCH', `v1/mapillary/sequences/${id}`, {
+		headers: {
+			...getAuthHeaders(),
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(data)
 	});
 }

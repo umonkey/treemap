@@ -34,6 +34,10 @@
 		:global(ul li) {
 			margin: 0.5rem 0;
 		}
+
+		:global(header) {
+			margin-bottom: 2rem;
+		}
 	}
 
 	.content {

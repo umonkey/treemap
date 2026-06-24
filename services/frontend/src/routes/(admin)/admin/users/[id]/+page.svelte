@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Breadcrumbs from '$lib/components/admin/Breadcrumbs.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import type { PageData } from './$types';
@@ -14,6 +15,14 @@
 <article>
 	<header>
 		<h1>User Properties</h1>
+
+		<Breadcrumbs
+			items={[
+				{ label: 'Admin', href: '/admin' },
+				{ label: 'Users', href: '/admin/users' },
+				{ label: user.name }
+			]}
+		/>
 	</header>
 	<div class="user-details">
 		<h2>{user.name}</h2>

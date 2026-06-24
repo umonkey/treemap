@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Breadcrumbs from '$lib/components/admin/Breadcrumbs.svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -11,6 +12,8 @@
 <article>
 	<header>
 		<h1>User List</h1>
+
+		<Breadcrumbs items={[{ label: 'Admin', href: '/admin' }, { label: 'Users' }]} />
 	</header>
 	{#if data.error}
 		<p class="error">Error loading users: {data.error.description}</p>

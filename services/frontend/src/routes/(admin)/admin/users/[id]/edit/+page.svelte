@@ -5,6 +5,7 @@
 	import type { IUser } from '$lib/types';
 	import type { PageData } from './$types';
 	import UserEditForm from './UserEditForm.svelte';
+	import Breadcrumbs from '$lib/components/admin/Breadcrumbs.svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -26,6 +27,15 @@
 <article>
 	<header>
 		<h1>User Editor</h1>
+
+		<Breadcrumbs
+			items={[
+				{ label: 'Admin', href: '/admin' },
+				{ label: 'Users', href: '/admin/users' },
+				{ label: data.user.name, href: `/admin/users/${data.user.id}` },
+				{ label: 'Edit' }
+			]}
+		/>
 	</header>
 	<UserEditForm user={data.user} {onSave} />
 </article>

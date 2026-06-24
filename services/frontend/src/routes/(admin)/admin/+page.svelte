@@ -1,14 +1,18 @@
 <script lang="ts">
-	import { routes } from '$lib/routes';
+	import Breadcrumbs from '$lib/components/admin/Breadcrumbs.svelte';
 </script>
 
 <svelte:head>
 	<title>Admin Dashboard</title>
 </svelte:head>
 
-<h1>Admin Dashboard</h1>
-
-<ul>
-	<li><a href="/admin/users">Manage Users</a></li>
-	<li><a href="/admin/sequences">StreetView Sequences</a></li>
-</ul>
+<article>
+	<header>
+		<h1>Admin Dashboard</h1>
+		<Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Admin' }]} />
+	</header>
+	<ul>
+		<li><a href="/admin/users">Manage Users</a></li>
+		<li><a href="/admin/sequences">StreetView Sequences</a></li>
+	</ul>
+</article>
