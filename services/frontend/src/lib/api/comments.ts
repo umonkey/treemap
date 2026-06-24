@@ -20,3 +20,13 @@ export async function getTreeComments(id: string): Promise<IResponse<ICommentLis
 export async function getRecentComments(): Promise<IResponse<ICommentList>> {
 	return await request('GET', 'v1/comments');
 }
+
+export async function deleteComment(treeId: number, commentId: string): Promise<IResponse<void>> {
+	const headers: HeadersInit = {
+		...getAuthHeaders()
+	};
+
+	return await request('DELETE', `v1/trees/${treeId}/comments/${commentId}`, {
+		headers
+	});
+}

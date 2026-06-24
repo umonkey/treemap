@@ -8,6 +8,7 @@ import { menuBus } from '$lib/buses/menuBus';
 import { showError } from '$lib/errors';
 import { goto, routes } from '$lib/routes';
 import { mapMode } from '$lib/stores/mapMode';
+import { addUsers } from '$lib/stores/userStore';
 import type { IComment, IObservation, ITree } from '$lib/types';
 
 class PreviewState {
@@ -68,6 +69,7 @@ class PreviewState {
 
 		getTreeComments(id).then((res) => {
 			if (res.status === 200 && res.data) {
+				addUsers(res.data.users);
 				this.comments = res.data.comments.sort((a, b) => b.added_at - a.added_at);
 			} else {
 				this.comments = [];

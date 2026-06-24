@@ -61,7 +61,7 @@
 			<div id="comments" class="comments">
 				{#if pageState.comments.length > 0}
 					{#each pageState.comments as comment}
-						<Comment {comment} />
+						<Comment {comment} onDelete={pageState.loadComments} />
 					{/each}
 				{:else}
 					<p class="empty">{locale.noComments()}</p>
