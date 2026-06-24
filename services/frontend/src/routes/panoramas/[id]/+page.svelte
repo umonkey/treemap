@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { pageState } from './page.svelte.ts';
 	import { page } from '$app/state';
+	import { mapLayerStore } from '$lib/stores/mapLayerStore';
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
 	import PlusIcon from '$lib/icons/PlusIcon.svelte';
 	import TrashIcon from '$lib/icons/TrashIcon.svelte';
@@ -68,32 +69,34 @@
 		</div>
 	</div>
 
-	<div class="middle-right">
-		<button
-			type="button"
-			class="control add"
-			onclick={pageState.handleAddTree}
-			disabled={pageState.isBusy}
-			aria-label="Add Tree"
-		>
-			<PlusIcon />
-		</button>
-		<button
-			type="button"
-			class="control delete"
-			onclick={pageState.handleDeleteTrees}
-			disabled={pageState.isBusy}
-			aria-label="Delete Trees"
-		>
-			<TrashIcon />
-		</button>
-	</div>
+	{#if $mapLayerStore.treeHints}
+		<div class="middle-right">
+			<button
+				type="button"
+				class="control add"
+				onclick={pageState.handleAddTree}
+				disabled={pageState.isBusy}
+				aria-label="Add Tree"
+			>
+				<PlusIcon />
+			</button>
+			<button
+				type="button"
+				class="control delete"
+				onclick={pageState.handleDeleteTrees}
+				disabled={pageState.isBusy}
+				aria-label="Delete Trees"
+			>
+				<TrashIcon />
+			</button>
+		</div>
+	{/if}
 
 	<div class="content">
 		{#if pageState.image}
 			<PanoramaViewer
 				image={pageState.image}
-				trees={pageState.trees}
+				trees={$mapLayerStore.treeHints ? pageState.trees : []}
 				angle={pageState.angle}
 				onMove={pageState.handleMove}
 			/>
