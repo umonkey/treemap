@@ -210,6 +210,10 @@
 		background-color: rgba(0, 0, 0, 0.75);
 		color: white;
 		border-radius: 0;
+
+		&:hover {
+			background-color: #000;
+		}
 	}
 
 	.content {
