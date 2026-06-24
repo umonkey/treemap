@@ -127,7 +127,13 @@ impl MapillaryService {
 
     pub async fn update_sequence(&self, id: &str, update: UpdateMapillarySequence) -> Result<()> {
         self.repo
-            .update_sequence(id, update.title, update.hidden)
+            .update_sequence(
+                id,
+                update.title,
+                update.hidden,
+                update.lat_offset,
+                update.lon_offset,
+            )
             .await
     }
 
@@ -135,7 +141,10 @@ impl MapillaryService {
         let hints = self.repo.find_trees_with_location_by_bounds(bounds).await?;
         let mut features = Vec::new();
 
-        for (tree, lat, lon, compass_angle) in hints {
+        for (tree, lat, lon, compass_angle, lat_offset, lon_offset) in hints {
+            let lat = lat + lat_offset;
+            let lon = lon + lon_offset;
+
             let absolute_bearing = (compass_angle + tree.angle + 360.0) % 360.0;
             let bearing_rad = absolute_bearing.to_radians();
 
@@ -192,7 +201,13 @@ impl MapillaryService {
             return Err(Error::FileNotFound);
         }
 
-        let (lon, lat) = (img.geometry.coordinates[0], img.geometry.coordinates[1]);
+        let mut lon = img.geometry.coordinates[0];
+        let mut lat = img.geometry.coordinates[1];
+
+        if let Ok(Some(sequence)) = self.repo.find_sequence(&img.sequence).await {
+            lat += sequence.lat_offset;
+            lon += sequence.lon_offset;
+        }
 
         Ok(MapillaryImage {
             id: img.id,
@@ -243,8 +258,11 @@ impl MapillaryService {
             geom_json,
             hidden: existing.as_ref().map(|s| s.hidden).unwrap_or(false),
             title: existing
-                .map(|s| s.title)
+                .as_ref()
+                .map(|s| s.title.clone())
                 .unwrap_or_else(|| "untitled".to_string()),
+            lat_offset: existing.as_ref().map(|s| s.lat_offset).unwrap_or(0.0),
+            lon_offset: existing.as_ref().map(|s| s.lon_offset).unwrap_or(0.0),
         };
 
         self.repo.add_sequence(&sequence).await?;

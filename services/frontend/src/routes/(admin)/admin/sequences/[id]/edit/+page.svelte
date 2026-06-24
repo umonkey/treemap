@@ -6,6 +6,7 @@
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import TextInput from '$lib/ui/text-input/TextInput.svelte';
 	import CheckInput from '$lib/ui/check-input/CheckInput.svelte';
+	import NumberInput from '$lib/ui/number-input/NumberInput.svelte';
 
 	const id = $derived(page.params.id as string);
 
@@ -17,6 +18,19 @@
 		e.preventDefault();
 		pageState.save(id);
 	};
+
+	const avgLat = $derived(
+		pageState.sequence ? (pageState.sequence.min_lat + pageState.sequence.max_lat) / 2 : 40.1811 // Default to Yerevan
+	);
+
+	const metersPerLat = 111132;
+	const latDistance = $derived(`~${(Math.abs(pageState.latOffset) * metersPerLat).toFixed(2)}m`);
+
+	const lonDistance = $derived(
+		`~${(Math.abs(pageState.lonOffset) * (111319 * Math.cos((avgLat * Math.PI) / 180))).toFixed(
+			2
+		)}m`
+	);
 </script>
 
 <svelte:head>
@@ -53,6 +67,26 @@
 			/>
 
 			<CheckInput label="Hidden" bind:value={pageState.hidden} />
+
+			<NumberInput
+				label="Latitude Offset"
+				value={pageState.latOffset}
+				onChange={(v) => (pageState.latOffset = v)}
+				hint={latDistance}
+				step="0.000001"
+				min="-1"
+				max="1"
+			/>
+
+			<NumberInput
+				label="Longitude Offset"
+				value={pageState.lonOffset}
+				onChange={(v) => (pageState.lonOffset = v)}
+				hint={lonDistance}
+				step="0.000001"
+				min="-1"
+				max="1"
+			/>
 
 			<Buttons>
 				<Button type="submit" disabled={pageState.isSaving}>

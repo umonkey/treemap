@@ -104,6 +104,8 @@ export interface MapillarySequenceDetail {
 	max_lon: number;
 	hidden: boolean;
 	title: string;
+	lat_offset: number;
+	lon_offset: number;
 }
 
 export async function getMapillarySequences(): Promise<IResponse<MapillarySequenceSummary[]>> {
@@ -122,7 +124,7 @@ export async function getMapillarySequence(
 
 export async function updateMapillarySequence(
 	id: string,
-	data: { title?: string; hidden?: boolean }
+	data: { title?: string; hidden?: boolean; lat_offset?: number; lon_offset?: number }
 ): Promise<IResponse<void>> {
 	return await request<void>('PATCH', `v1/mapillary/sequences/${id}`, {
 		headers: {

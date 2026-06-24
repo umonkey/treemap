@@ -52,6 +52,12 @@
 
 			<dt>Status</dt>
 			<dd>{pageState.sequence.hidden ? 'Hidden' : 'Visible'}</dd>
+
+			<dt>Latitude Offset</dt>
+			<dd>{pageState.sequence.lat_offset}</dd>
+
+			<dt>Longitude Offset</dt>
+			<dd>{pageState.sequence.lon_offset}</dd>
 		</dl>
 
 		<footer>

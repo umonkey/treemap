@@ -53,6 +53,8 @@ pub struct MapillarySequence {
     pub geom_json: String,
     pub hidden: bool,
     pub title: String,
+    pub lat_offset: f64,
+    pub lon_offset: f64,
 }
 
 impl MapillarySequence {
@@ -68,6 +70,8 @@ impl MapillarySequence {
             geom_json: attrs.require_string("geom_json")?,
             hidden: attrs.get_bool("hidden")?.unwrap_or(false),
             title: attrs.get_string("title")?.unwrap_or("untitled".to_string()),
+            lat_offset: attrs.get_f64("lat_offset")?.unwrap_or(0.0),
+            lon_offset: attrs.get_f64("lon_offset")?.unwrap_or(0.0),
         })
     }
 
@@ -83,6 +87,8 @@ impl MapillarySequence {
         attrs.insert("geom_json", Value::from(self.geom_json.clone()));
         attrs.insert("hidden", Value::from(self.hidden));
         attrs.insert("title", Value::from(self.title.clone()));
+        attrs.insert("lat_offset", Value::from(self.lat_offset));
+        attrs.insert("lon_offset", Value::from(self.lon_offset));
         attrs
     }
 }
@@ -119,6 +125,8 @@ pub struct MapillarySequenceDetail {
     pub max_lon: f64,
     pub hidden: bool,
     pub title: String,
+    pub lat_offset: f64,
+    pub lon_offset: f64,
 }
 
 impl MapillarySequenceDetail {
@@ -133,6 +141,8 @@ impl MapillarySequenceDetail {
             max_lon: attrs.require_f64("max_lon")?,
             hidden: attrs.get_bool("hidden")?.unwrap_or(false),
             title: attrs.get_string("title")?.unwrap_or("untitled".to_string()),
+            lat_offset: attrs.get_f64("lat_offset")?.unwrap_or(0.0),
+            lon_offset: attrs.get_f64("lon_offset")?.unwrap_or(0.0),
         })
     }
 }
@@ -141,6 +151,8 @@ impl MapillarySequenceDetail {
 pub struct UpdateMapillarySequence {
     pub title: Option<String>,
     pub hidden: Option<bool>,
+    pub lat_offset: Option<f64>,
+    pub lon_offset: Option<f64>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

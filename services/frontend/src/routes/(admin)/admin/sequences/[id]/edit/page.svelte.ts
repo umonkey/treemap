@@ -15,6 +15,8 @@ class PageState {
 	// Form fields
 	title = $state<string>('');
 	hidden = $state<boolean>(false);
+	latOffset = $state<number>(0);
+	lonOffset = $state<number>(0);
 
 	reload = async (id: string) => {
 		this.isLoading = true;
@@ -25,6 +27,8 @@ class PageState {
 			this.sequence = res.data;
 			this.title = res.data.title;
 			this.hidden = res.data.hidden;
+			this.latOffset = res.data.lat_offset;
+			this.lonOffset = res.data.lon_offset;
 		} else {
 			this.error = res.error;
 		}
@@ -35,7 +39,9 @@ class PageState {
 		this.error = undefined;
 		const res = await updateMapillarySequence(id, {
 			title: this.title,
-			hidden: this.hidden
+			hidden: this.hidden,
+			lat_offset: this.latOffset,
+			lon_offset: this.lonOffset
 		});
 		this.isSaving = false;
 		if (res.status === 204) {

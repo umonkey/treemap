@@ -49,7 +49,7 @@ impl MapillaryRepository {
 
     pub async fn find_images_by_bounds(&self, bounds: Bounds) -> Result<Vec<MapillaryImage>> {
         let sql = format!(
-            "SELECT i.* FROM `{}` i INNER JOIN `{}` s ON i.sequence_id = s.id WHERE i.`lat` <= ? AND i.lat >= ? AND i.lon <= ? AND i.lon >= ? AND s.hidden = 0",
+            "SELECT i.*, s.lat_offset, s.lon_offset FROM `{}` i INNER JOIN `{}` s ON i.sequence_id = s.id WHERE i.`lat` <= ? AND i.lat >= ? AND i.lon <= ? AND i.lon >= ? AND s.hidden = 0",
             IMAGES_TABLE, SEQUENCES_TABLE
         );
 
@@ -61,19 +61,25 @@ impl MapillaryRepository {
         ];
 
         let records = self.db.fetch_sql(&sql, params).await?;
-        records
-            .iter()
-            .map(MapillaryImage::from_attributes)
-            .collect()
+        let mut res = Vec::new();
+
+        for record in records {
+            let mut img = MapillaryImage::from_attributes(&record)?;
+            img.lat += record.get_f64("lat_offset")?.unwrap_or(0.0);
+            img.lon += record.get_f64("lon_offset")?.unwrap_or(0.0);
+            res.push(img);
+        }
+
+        Ok(res)
     }
 
     pub async fn find_trees_with_location_by_bounds(
         &self,
         bounds: Bounds,
-    ) -> Result<Vec<(MapillaryTree, f64, f64, f64)>> {
+    ) -> Result<Vec<(MapillaryTree, f64, f64, f64, f64, f64)>> {
         let sql = format!(
-            "SELECT t.*, i.lat, i.lon, i.compass_angle FROM `{}` t INNER JOIN `{}` i ON t.image_id = i.id WHERE i.`lat` <= ? AND i.lat >= ? AND i.lon <= ? AND i.lon >= ?",
-            TREES_TABLE, IMAGES_TABLE
+            "SELECT t.*, i.lat, i.lon, i.compass_angle, s.lat_offset, s.lon_offset FROM `{}` t INNER JOIN `{}` i ON t.image_id = i.id INNER JOIN `{}` s ON i.sequence_id = s.id WHERE i.`lat` <= ? AND i.lat >= ? AND i.lon <= ? AND i.lon >= ?",
+            TREES_TABLE, IMAGES_TABLE, SEQUENCES_TABLE
         );
 
         let params = &[
@@ -91,7 +97,9 @@ impl MapillaryRepository {
             let lat = record.require_f64("lat")?;
             let lon = record.require_f64("lon")?;
             let compass_angle = record.require_f64("compass_angle")?;
-            res.push((tree, lat, lon, compass_angle));
+            let lat_offset = record.get_f64("lat_offset")?.unwrap_or(0.0);
+            let lon_offset = record.get_f64("lon_offset")?.unwrap_or(0.0);
+            res.push((tree, lat, lon, compass_angle, lat_offset, lon_offset));
         }
 
         Ok(res)
@@ -144,6 +152,8 @@ impl MapillaryRepository {
         id: &str,
         title: Option<String>,
         hidden: Option<bool>,
+        lat_offset: Option<f64>,
+        lon_offset: Option<f64>,
     ) -> Result<()> {
         let mut query =
             UpdateQuery::new(SEQUENCES_TABLE).with_condition("id", Value::from(id.to_string()));
@@ -154,6 +164,14 @@ impl MapillaryRepository {
 
         if let Some(hidden) = hidden {
             query = query.with_value("hidden", Value::from(hidden));
+        }
+
+        if let Some(lat_offset) = lat_offset {
+            query = query.with_value("lat_offset", Value::from(lat_offset));
+        }
+
+        if let Some(lon_offset) = lon_offset {
+            query = query.with_value("lon_offset", Value::from(lon_offset));
         }
 
         self.db.update(query).await?;

@@ -249,6 +249,8 @@ CREATE TABLE IF NOT EXISTS mapillary_sequences (
     `geom_json` TEXT NOT NULL,
     `hidden` INT NOT NULL DEFAULT '0',
     `title` TEXT NOT NULL DEFAULT 'untitled',
+    `lat_offset` REAL NOT NULL DEFAULT 0,
+    `lon_offset` REAL NOT NULL DEFAULT 0,
     PRIMARY KEY(`id`)
 );
 
