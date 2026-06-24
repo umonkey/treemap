@@ -1,11 +1,17 @@
 <script lang="ts">
-	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
 </script>
 
-<Dialog title="User List">
+<svelte:head>
+	<title>User List</title>
+</svelte:head>
+
+<article>
+	<header>
+		<h1>User List</h1>
+	</header>
 	{#if data.error}
 		<p class="error">Error loading users: {data.error.description}</p>
 	{:else}
@@ -34,7 +40,7 @@
 			</table>
 		</div>
 	{/if}
-</Dialog>
+</article>
 
 <style>
 	.error {
@@ -49,7 +55,7 @@
 	.user-list th,
 	.user-list td {
 		padding: 8px;
-		border-bottom: 1px solid #ddd;
+		border-bottom: 1px solid light-dark(#ddd, #444);
 		text-align: left;
 	}
 

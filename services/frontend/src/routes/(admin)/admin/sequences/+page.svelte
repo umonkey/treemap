@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import { pageState } from './page.svelte.ts';
-	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import { formatDateTime } from '$lib/utils/strings';
 
 	$effect(() => {
@@ -9,7 +8,14 @@
 	});
 </script>
 
-<Dialog title="StreetView Sequences">
+<svelte:head>
+	<title>StreetView Sequences</title>
+</svelte:head>
+
+<article>
+	<header>
+		<h1>StreetView Sequences</h1>
+	</header>
 	{#if pageState.error}
 		<p class="error">Error loading sequences: {pageState.error.description}</p>
 	{/if}
@@ -36,7 +42,7 @@
 			</table>
 		</div>
 	{/if}
-</Dialog>
+</article>
 
 <style>
 	.error {
@@ -51,7 +57,7 @@
 	.sequence-list th,
 	.sequence-list td {
 		padding: 8px;
-		border-bottom: 1px solid #ddd;
+		border-bottom: 1px solid light-dark(#ddd, #444);
 		text-align: left;
 	}
 </style>

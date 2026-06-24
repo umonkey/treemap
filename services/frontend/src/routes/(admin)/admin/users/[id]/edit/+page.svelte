@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { updateUser } from '$lib/api/users';
-	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import { showError } from '$lib/errors';
 	import type { IUser } from '$lib/types';
 	import type { PageData } from './$types';
@@ -20,6 +19,13 @@
 	};
 </script>
 
-<Dialog title="User Editor">
+<svelte:head>
+	<title>User Editor: {data.user.name}</title>
+</svelte:head>
+
+<article>
+	<header>
+		<h1>User Editor</h1>
+	</header>
 	<UserEditForm user={data.user} {onSave} />
-</Dialog>
+</article>

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import type { PageData } from './$types';
@@ -8,9 +7,16 @@
 	const user = $derived(data.user);
 </script>
 
-<Dialog title="User Properties">
+<svelte:head>
+	<title>User Properties: {user.name}</title>
+</svelte:head>
+
+<article>
+	<header>
+		<h1>User Properties</h1>
+	</header>
 	<div class="user-details">
-		<h1>{user.name}</h1>
+		<h2>{user.name}</h2>
 		{#if user.picture}
 			<img src={user.picture} alt={user.name} class="user-pic-large" />
 		{/if}
@@ -40,7 +46,7 @@
 			<Button link="/admin/users" type="cancel">Back to List</Button>
 		</Buttons>
 	</div>
-</Dialog>
+</article>
 
 <style>
 	.user-details dl {

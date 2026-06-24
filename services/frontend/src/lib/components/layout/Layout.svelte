@@ -34,6 +34,7 @@
 {@render children()}
 <LeftSidebar />
 <MobileNav />
+<MobileNav />
 <TreeContextMenu />
 
 <style>
