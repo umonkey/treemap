@@ -2,7 +2,8 @@
 	import { pageState } from './page.svelte.ts';
 	import { page } from '$app/state';
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
-	import EditIcon from '$lib/icons/EditIcon.svelte';
+	import PlusIcon from '$lib/icons/PlusIcon.svelte';
+	import TrashIcon from '$lib/icons/TrashIcon.svelte';
 	import FullScreenIcon from '$lib/icons/FullScreenIcon.svelte';
 	import CrossHair from '$lib/icons/CrossHair.svelte';
 	import PanoramaViewer from './PanoramaViewer.svelte';
@@ -46,8 +47,13 @@
 <div class="preview" bind:this={previewElement}>
 	<div class="header">
 		<div class="top-left">
-			<button type="button" class="control edit" onclick={pageState.handleDetect} aria-label="Edit">
-				<EditIcon />
+			<button
+				type="button"
+				class="control fullscreen"
+				onclick={toggleFullscreen}
+				aria-label="Fullscreen"
+			>
+				<FullScreenIcon />
 			</button>
 		</div>
 		<div class="top-right">
@@ -59,21 +65,35 @@
 			>
 				<CloseIcon />
 			</button>
-			<button
-				type="button"
-				class="control fullscreen"
-				onclick={toggleFullscreen}
-				aria-label="Fullscreen"
-			>
-				<FullScreenIcon />
-			</button>
 		</div>
+	</div>
+
+	<div class="middle-right">
+		<button
+			type="button"
+			class="control add"
+			onclick={pageState.handleAddTree}
+			disabled={pageState.isBusy}
+			aria-label="Add Tree"
+		>
+			<PlusIcon />
+		</button>
+		<button
+			type="button"
+			class="control delete"
+			onclick={pageState.handleDeleteTrees}
+			disabled={pageState.isBusy}
+			aria-label="Delete Trees"
+		>
+			<TrashIcon />
+		</button>
 	</div>
 
 	<div class="content">
 		{#if pageState.image}
 			<PanoramaViewer
 				image={pageState.image}
+				trees={pageState.trees}
 				angle={pageState.angle}
 				onMove={pageState.handleMove}
 			/>
@@ -120,6 +140,25 @@
 		z-index: 1;
 	}
 
+	.middle-right {
+		position: absolute;
+		top: 50%;
+		right: 10px;
+		transform: translateY(-50%);
+		display: flex;
+		flex-direction: column;
+		background-color: white;
+		color: black;
+		border-radius: 4px;
+		overflow: hidden;
+		box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+		z-index: 1;
+
+		.control + .control {
+			border-top: 1px solid #ddd;
+		}
+	}
+
 	.top-left,
 	.top-right {
 		display: flex;
@@ -129,10 +168,6 @@
 		border-radius: 4px;
 		overflow: hidden;
 		box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
-
-		.control + .control {
-			border-top: 1px solid #ddd;
-		}
 	}
 
 	.control {
@@ -149,6 +184,11 @@
 
 		&:hover {
 			background-color: rgba(0, 0, 0, 0.05);
+		}
+
+		&:disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
 		}
 
 		:global(svg) {
