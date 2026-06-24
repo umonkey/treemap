@@ -7,6 +7,17 @@
 	import PanoramaViewer from './PanoramaViewer.svelte';
 
 	const id = $derived(page.params.id as string);
+	const capturedAt = $derived.by(() => {
+		if (!pageState.image?.captured_at) return '';
+		const date = new Date(pageState.image.captured_at);
+		const Y = date.getFullYear();
+		const M = (date.getMonth() + 1).toString().padStart(2, '0');
+		const D = date.getDate().toString().padStart(2, '0');
+		const h = date.getHours().toString();
+		const i = date.getMinutes().toString().padStart(2, '0');
+		const s = date.getSeconds().toString().padStart(2, '0');
+		return `${Y}-${M}-${D}, ${h}:${i}:${s}`;
+	});
 
 	$effect(() => {
 		pageState.reload(id);
@@ -23,10 +34,10 @@
 
 <div class="preview">
 	<div class="header">
-		<button type="button" class="edit" onclick={pageState.handleDetect} aria-label="Edit">
+		<button type="button" class="control edit" onclick={pageState.handleDetect} aria-label="Edit">
 			<EditIcon />
 		</button>
-		<button type="button" class="close" onclick={pageState.handleClose} aria-label="Close">
+		<button type="button" class="control close" onclick={pageState.handleClose} aria-label="Close">
 			<CloseIcon />
 		</button>
 	</div>
@@ -41,6 +52,11 @@
 			<div class="crosshair">
 				<CrossHair />
 			</div>
+			{#if capturedAt}
+				<div class="control timestamp">
+					{capturedAt}
+				</div>
+			{/if}
 		{/if}
 	</div>
 </div>
@@ -68,23 +84,6 @@
 		background-color: transparent;
 		z-index: 1;
 
-		button {
-			width: 30px;
-			height: 30px;
-			cursor: pointer;
-			background-color: rgba(0, 0, 0, 0.75);
-			border: none;
-			color: white;
-			opacity: 0.5;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-
-			&:hover {
-				opacity: 1;
-			}
-		}
-
 		.edit {
 			border-bottom-right-radius: 25%;
 		}
@@ -92,6 +91,34 @@
 		.close {
 			border-bottom-left-radius: 25%;
 		}
+	}
+
+	.control {
+		width: 30px;
+		height: 30px;
+		cursor: pointer;
+		background-color: rgba(0, 0, 0, 0.75);
+		border: none;
+		color: white;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		&:hover {
+			background-color: rgba(0, 0, 0, 1);
+		}
+	}
+
+	.timestamp {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		width: auto;
+		height: auto;
+		padding: 4px 8px;
+		font-size: 12px;
+		z-index: 1;
+		cursor: default;
 	}
 
 	.content {
