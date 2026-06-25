@@ -9,7 +9,7 @@
 </script>
 
 <svelte:head>
-	<title>User Properties: {user.name}</title>
+	<title>User Properties: {user.user.name}</title>
 </svelte:head>
 
 <article>
@@ -20,38 +20,50 @@
 			items={[
 				{ label: 'Admin', href: '/admin' },
 				{ label: 'Users', href: '/admin/users' },
-				{ label: user.name }
+				{ label: user.user.name }
 			]}
 		/>
 	</header>
 	<div class="user-details">
-		<h2>{user.name}</h2>
-		{#if user.picture}
-			<img src={user.picture} alt={user.name} class="user-pic-large" />
+		<h2>{user.user.name}</h2>
+		{#if user.user.picture}
+			<img src={user.user.picture} alt={user.user.name} class="user-pic-large" />
 		{/if}
 
 		<dl>
 			<dt>ID</dt>
-			<dd>{user.id}</dd>
+			<dd>{user.user.id}</dd>
 
 			<dt>Email</dt>
-			<dd>{user.email}</dd>
+			<dd>{user.user.email}</dd>
 
 			<dt>Trees Count</dt>
-			<dd>{user.trees_count}</dd>
+			<dd>{user.user.trees_count}</dd>
 
 			<dt>Comments Count</dt>
-			<dd>{user.comments_count}</dd>
+			<dd>{user.user.comments_count}</dd>
 
 			<dt>Updates Count</dt>
-			<dd>{user.updates_count}</dd>
+			<dd>{user.user.updates_count}</dd>
 
 			<dt>Files Count</dt>
-			<dd>{user.files_count}</dd>
+			<dd>{user.user.files_count}</dd>
+
+			<dt>Roles</dt>
+			<dd>{(user.roles || []).join(', ')}</dd>
+
+			<dt>Permissions</dt>
+			<dd>
+				<ul>
+					{#each user.permissions || [] as perm}
+						<li><code>{perm}</code></li>
+					{/each}
+				</ul>
+			</dd>
 		</dl>
 
 		<Buttons>
-			<Button link="/admin/users/{user.id}/edit">Edit</Button>
+			<Button link="/admin/users/{user.user.id}/edit">Edit</Button>
 			<Button link="/admin/users" type="cancel">Back to List</Button>
 		</Buttons>
 	</div>

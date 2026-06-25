@@ -1,11 +1,12 @@
-use super::schemas::{UserList, UserRead};
+use super::schemas::{UserList, UserReadWithRights};
 use crate::domain::heatmap::{HeatmapItem, HeatmapService};
+use crate::domain::iam::IamService;
 use crate::domain::user::{UserService, UserUpdate};
-use crate::services::AppState;
+use crate::services::app::{RequirePermission, UserManage};
 use crate::services::Injected;
 use crate::types::*;
 use actix_web::web::ServiceConfig;
-use actix_web::{get, put, web::Data, web::Json, web::Path, HttpRequest, HttpResponse};
+use actix_web::{get, put, web::Json, web::Path, HttpResponse};
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -14,18 +15,32 @@ pub struct PathInfo {
 }
 
 #[get("")]
-pub async fn get_users(user_service: Injected<UserService>) -> Result<Json<UserList>> {
-    let res = user_service.list().await?;
-    Ok(Json(res.into()))
+pub async fn get_users(
+    _user: RequirePermission<UserManage>,
+    user_service: Injected<UserService>,
+    iam_service: Injected<IamService>,
+) -> Result<Json<UserList>> {
+    let users = user_service.list().await?;
+    let mut records = Vec::new();
+
+    for user in users {
+        let rights = iam_service.get_user_rights(user.id).await?;
+        records.push(UserReadWithRights::from_domain(user, rights));
+    }
+
+    Ok(Json(UserList { users: records }))
 }
 
 #[get("/{id}")]
 pub async fn get_user(
     user_service: Injected<UserService>,
+    iam_service: Injected<IamService>,
     path: Path<PathInfo>,
-) -> Result<Json<UserRead>> {
+) -> Result<Json<UserReadWithRights>> {
     let user = user_service.get_user(path.id).await?;
-    Ok(Json(user.into()))
+    let rights = iam_service.get_user_rights(path.id).await?;
+
+    Ok(Json(UserReadWithRights::from_domain(user, rights)))
 }
 
 #[get("/{id}/heatmap")]
@@ -39,16 +54,12 @@ pub async fn get_user_heatmap(
 
 #[put("/{id}")]
 pub async fn update_user_action(
-    state: Data<AppState>,
+    _user: RequirePermission<UserManage>,
     user_service: Injected<UserService>,
     path: Path<PathInfo>,
     body: Json<UserUpdate>,
-    req: HttpRequest,
 ) -> Result<HttpResponse> {
-    let current_user_id = state.get_user_id(&req)?;
-    user_service
-        .update_user(current_user_id, path.id, body.into_inner())
-        .await?;
+    user_service.update_user(path.id, body.into_inner()).await?;
 
     Ok(HttpResponse::Accepted().finish())
 }

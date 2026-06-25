@@ -15,14 +15,15 @@ use crate::domain::tree::{
 };
 use crate::domain::tree_image::TreeImageService;
 use crate::domain::user::UserService;
+use crate::services::app::{OptionalUserId, UserId};
 use crate::services::comment_loader::{CommentList, CommentLoader};
 use crate::services::prop_loader::{PropList, PropLoader};
 use crate::services::tree_loader::SingleTreeResponse;
 use crate::services::tree_loader::{TreeList, TreeLoader};
-use crate::services::{AppState, Injected};
+use crate::services::Injected;
 use crate::types::{Error, Result};
 use crate::utils::{get_remote_addr, get_user_agent};
-use actix_web::web::{Bytes, Data, Json, Path, Query, ServiceConfig};
+use actix_web::web::{Bytes, Json, Path, Query, ServiceConfig};
 use actix_web::{delete, get, post, put, HttpRequest, HttpResponse};
 use serde::Deserialize;
 
@@ -43,16 +44,13 @@ pub struct UpdatePhotos {
 
 #[post("/{id:\\d+}/comments")]
 pub async fn add_comment_action(
-    state: Data<AppState>,
+    user_id: UserId,
     path: Path<PathInfo>,
     payload: Json<RequestPayload>,
-    req: HttpRequest,
     service: Injected<CommentService>,
 ) -> Result<HttpResponse> {
-    let user_id = state.get_user_id(&req)?;
-
     service
-        .add_comment(path.id, user_id, &payload.message)
+        .add_comment(path.id, *user_id, &payload.message)
         .await?;
 
     Ok(HttpResponse::Accepted().finish())
@@ -60,17 +58,15 @@ pub async fn add_comment_action(
 
 #[post("/{id:\\d+}/files")]
 pub async fn add_file_action(
-    state: Data<AppState>,
+    user_id: UserId,
     path: Path<PathInfo>,
     req: HttpRequest,
     body: Bytes,
     service: Injected<TreeImageService>,
 ) -> Result<Json<FileUploadResponse>> {
-    let user_id = state.get_user_id(&req)?;
-
     let file = service
         .add_file(AddFileRequest {
-            user_id,
+            user_id: *user_id,
             tree_id: path.id,
             remote_addr: get_remote_addr(&req).ok_or(Error::RemoteAddrNotSet)?,
             user_agent: get_user_agent(&req).ok_or(Error::UserAgentNotSet)?,
@@ -83,16 +79,13 @@ pub async fn add_file_action(
 
 #[post("/{id:\\d+}/photos")]
 pub async fn add_photos_action(
-    state: Data<AppState>,
+    user_id: UserId,
     path: Path<PathInfo>,
     payload: Json<UpdatePhotos>,
-    req: HttpRequest,
     service: Injected<TreeService>,
 ) -> Result<HttpResponse> {
-    let user_id = state.get_user_id(&req)?;
-
     service
-        .add_tree_photos(path.id, user_id, payload.files.clone())
+        .add_tree_photos(path.id, *user_id, payload.files.clone())
         .await?;
 
     Ok(HttpResponse::Accepted().finish())
@@ -100,13 +93,10 @@ pub async fn add_photos_action(
 
 #[post("")]
 pub async fn add_trees_action(
-    state: Data<AppState>,
+    user_id: UserId,
     payload: Json<AddTreePayload>,
-    req: HttpRequest,
     service: Injected<TreeService>,
 ) -> Result<Json<TreeList>> {
-    let user_id = state.get_user_id(&req)?;
-
     let trees = service
         .add_trees(AddTreeRequest {
             points: payload.points.clone(),
@@ -116,7 +106,7 @@ pub async fn add_trees_action(
             circumference: payload.circumference,
             diameter: payload.diameter,
             state: payload.state.clone(),
-            user_id,
+            user_id: *user_id,
             year: payload.year,
             files: payload.files.clone(),
             address: payload.address.clone(),
@@ -141,16 +131,14 @@ pub async fn get_new_trees_action(
 
 #[get("/liked")]
 pub async fn get_liked_trees_action(
-    state: Data<AppState>,
+    user_id: UserId,
     query: Query<AddedTreesRequest>,
-    req: HttpRequest,
     service: Injected<TreeService>,
     loader: Injected<TreeLoader>,
 ) -> Result<Json<TreeList>> {
-    let user_id = state.get_user_id(&req)?;
     let count = query.get_count();
     let skip = query.get_skip();
-    let trees = service.get_liked_trees(user_id, count, skip).await?;
+    let trees = service.get_liked_trees(*user_id, count, skip).await?;
     let res = loader.load_list(&trees).await?;
     Ok(Json(res))
 }
@@ -179,12 +167,10 @@ pub async fn get_tree_comments_action(
 
 #[get("/defaults")]
 pub async fn get_tree_defaults_action(
-    state: Data<AppState>,
-    req: HttpRequest,
+    user_id: UserId,
     service: Injected<TreeService>,
 ) -> Result<Json<NewTreeDefaultsResponse>> {
-    let user_id = state.get_user_id(&req)?;
-    let response = service.get_defaults(user_id).await?;
+    let response = service.get_defaults(*user_id).await?;
     Ok(Json(response))
 }
 
@@ -210,14 +196,12 @@ pub async fn get_tree_observations_action(
 
 #[post("/{id:\\d+}/observations")]
 pub async fn add_tree_observation_action(
-    state: Data<AppState>,
+    user_id: UserId,
     path: Path<PathInfo>,
     payload: Json<AddObservationRequest>,
-    req: HttpRequest,
     service: Injected<ObservationService>,
 ) -> Result<Json<ObservationRead>> {
-    let user_id = state.get_user_id(&req)?;
-    let observation = service.add(path.id, user_id, payload.to_flags()).await?;
+    let observation = service.add(path.id, *user_id, payload.to_flags()).await?;
 
     Ok(Json(ObservationRead::from_domain(&observation)))
 }
@@ -230,27 +214,23 @@ pub async fn get_tree_stats_action(service: Injected<TreeService>) -> Result<Jso
 
 #[get("")]
 pub async fn get_trees_action(
-    state: Data<AppState>,
     query: Query<GetTreesRequest>,
-    req: HttpRequest,
+    user_id: OptionalUserId,
     service: Injected<TreeService>,
     loader: Injected<TreeLoader>,
 ) -> Result<Json<TreeList>> {
-    let user_id = state.get_user_id(&req).unwrap_or(0);
-    let trees = service.get_trees(&query, user_id).await?;
+    let trees = service.get_trees(&query, *user_id).await?;
 
     Ok(Json(loader.load_list(&trees).await?))
 }
 
 #[get("/geo.json")]
 pub async fn get_trees_json_action(
-    state: Data<AppState>,
     query: Query<GetTreesRequest>,
-    req: HttpRequest,
+    user_id: OptionalUserId,
     service: Injected<TreeService>,
 ) -> Result<HttpResponse> {
-    let user_id = state.get_user_id(&req).unwrap_or(0);
-    let trees = service.get_trees(&query, user_id).await?;
+    let trees = service.get_trees(&query, *user_id).await?;
 
     Ok(crate::responders::geo_json::respond_with_trees(&trees))
 }
@@ -270,13 +250,11 @@ pub async fn get_updated_trees_action(
 
 #[post("/{id:\\d+}/likes")]
 pub async fn like_tree_action(
-    state: Data<AppState>,
+    user_id: UserId,
     path: Path<PathInfo>,
-    req: HttpRequest,
     service: Injected<LikeService>,
 ) -> Result<HttpResponse> {
-    let user_id = state.get_user_id(&req)?;
-    service.like_tree(path.id, user_id).await?;
+    service.like_tree(path.id, *user_id).await?;
 
     Ok(HttpResponse::Accepted()
         .content_type("application/json")
@@ -285,16 +263,13 @@ pub async fn like_tree_action(
 
 #[put("/{id:\\d+}/position")]
 pub async fn move_tree_action(
-    state: Data<AppState>,
+    user_id: UserId,
     path: Path<PathInfo>,
     payload: Json<MoveRequestPayload>,
-    req: HttpRequest,
     service: Injected<TreeService>,
 ) -> Result<HttpResponse> {
-    let user_id = state.get_user_id(&req)?;
-
     service
-        .move_tree(path.id, user_id, payload.lat, payload.lon)
+        .move_tree(path.id, *user_id, payload.lat, payload.lon)
         .await?;
 
     Ok(HttpResponse::Accepted()
@@ -304,16 +279,15 @@ pub async fn move_tree_action(
 
 #[put("/{id:\\d+}/replace")]
 pub async fn replace_tree_action(
-    state: Data<AppState>,
+    user_id: UserId,
     path: Path<PathInfo>,
     payload: Json<ReplaceTreeRequestPayload>,
-    req: HttpRequest,
     service: Injected<TreeService>,
 ) -> Result<Json<TreeList>> {
     let trees = service
         .replace_tree(ReplaceTreeRequest {
             id: path.id,
-            user_id: state.get_user_id(&req)?,
+            user_id: *user_id,
             species: payload.species.clone(),
             notes: payload.notes.clone(),
             height: payload.height,
@@ -330,13 +304,11 @@ pub async fn replace_tree_action(
 
 #[delete("/{id:\\d+}/likes")]
 pub async fn unlike_tree_action(
-    state: Data<AppState>,
+    user_id: UserId,
     path: Path<PathInfo>,
-    req: HttpRequest,
     service: Injected<LikeService>,
 ) -> Result<HttpResponse> {
-    let user_id = state.get_user_id(&req)?;
-    service.unlike_tree(path.id, user_id).await?;
+    service.unlike_tree(path.id, *user_id).await?;
 
     Ok(HttpResponse::Accepted()
         .content_type("application/json")
@@ -345,15 +317,12 @@ pub async fn unlike_tree_action(
 
 #[put("/{id:\\d+}")]
 pub async fn update_tree_action(
-    state: Data<AppState>,
+    user_id: UserId,
     path: Path<PathInfo>,
     payload: Json<UpdateTreeRequestPayload>,
-    req: HttpRequest,
     service: Injected<TreeService>,
     loader: Injected<TreeLoader>,
 ) -> Result<Json<SingleTreeResponse>> {
-    let user_id = state.get_user_id(&req)?;
-
     let tree = service
         .update_tree(UpdateTreeRequest {
             id: path.id,
@@ -365,7 +334,7 @@ pub async fn update_tree_action(
             circumference: payload.circumference,
             diameter: payload.diameter,
             state: payload.state.clone(),
-            user_id,
+            user_id: *user_id,
             year: payload.year,
             address: payload.address.clone(),
         })
@@ -378,17 +347,14 @@ pub async fn update_tree_action(
 
 #[put("/{id:\\d+}/circumference")]
 pub async fn update_tree_circumference_action(
-    state: Data<AppState>,
+    user_id: UserId,
     path: Path<PathInfo>,
     payload: Json<UpdateCircumferencePayload>,
-    req: HttpRequest,
     service: Injected<TreeService>,
     loader: Injected<TreeLoader>,
 ) -> Result<Json<SingleTreeResponse>> {
-    let user_id = state.get_user_id(&req)?;
-
     let tree = service
-        .update_circumference(path.id, payload.value, user_id)
+        .update_circumference(path.id, payload.value, *user_id)
         .await?;
 
     let res = loader.load_single(&tree).await?;
@@ -398,17 +364,14 @@ pub async fn update_tree_circumference_action(
 
 #[put("/{id:\\d+}/diameter")]
 pub async fn update_tree_diameter_action(
-    state: Data<AppState>,
+    user_id: UserId,
     path: Path<PathInfo>,
     payload: Json<UpdateDiameterPayload>,
-    req: HttpRequest,
     service: Injected<TreeService>,
     loader: Injected<TreeLoader>,
 ) -> Result<Json<SingleTreeResponse>> {
-    let user_id = state.get_user_id(&req)?;
-
     let tree = service
-        .update_diameter(path.id, payload.value, user_id)
+        .update_diameter(path.id, payload.value, *user_id)
         .await?;
 
     let res = loader.load_single(&tree).await?;
@@ -418,17 +381,14 @@ pub async fn update_tree_diameter_action(
 
 #[put("/{id:\\d+}/height")]
 pub async fn update_tree_height_action(
-    state: Data<AppState>,
+    user_id: UserId,
     path: Path<PathInfo>,
     payload: Json<UpdateHeightPayload>,
-    req: HttpRequest,
     service: Injected<TreeService>,
     loader: Injected<TreeLoader>,
 ) -> Result<Json<SingleTreeResponse>> {
-    let user_id = state.get_user_id(&req)?;
-
     let tree = service
-        .update_height(path.id, payload.value, user_id)
+        .update_height(path.id, payload.value, *user_id)
         .await?;
 
     let res = loader.load_single(&tree).await?;
@@ -438,17 +398,14 @@ pub async fn update_tree_height_action(
 
 #[put("/{id:\\d+}/location")]
 pub async fn update_tree_location_action(
-    state: Data<AppState>,
+    user_id: UserId,
     path: Path<PathInfo>,
     payload: Json<UpdateLocationPayload>,
-    req: HttpRequest,
     service: Injected<TreeService>,
     loader: Injected<TreeLoader>,
 ) -> Result<Json<SingleTreeResponse>> {
-    let user_id = state.get_user_id(&req)?;
-
     let tree = service
-        .update_location(path.id, payload.lat, payload.lon, user_id)
+        .update_location(path.id, payload.lat, payload.lon, *user_id)
         .await?;
 
     let res = loader.load_single(&tree).await?;
@@ -458,20 +415,17 @@ pub async fn update_tree_location_action(
 
 #[put("/{id:\\d+}/state")]
 pub async fn update_tree_state_action(
-    state: Data<AppState>,
+    user_id: UserId,
     path: Path<PathInfo>,
     payload: Json<UpdateStatePayload>,
-    req: HttpRequest,
     service: Injected<TreeService>,
     loader: Injected<TreeLoader>,
 ) -> Result<Json<SingleTreeResponse>> {
-    let user_id = state.get_user_id(&req)?;
-
     let tree = service
         .update_state(
             path.id,
             payload.value.clone(),
-            user_id,
+            *user_id,
             payload.comment.clone(),
         )
         .await?;
@@ -483,16 +437,14 @@ pub async fn update_tree_state_action(
 
 #[put("/{id:\\d+}/thumbnail")]
 pub async fn update_tree_thumbnail_action(
-    state: Data<AppState>,
+    user_id: UserId,
     path: Path<PathInfo>,
     payload: Json<ThumbnailPayload>,
-    req: HttpRequest,
     service: Injected<TreeService>,
 ) -> Result<HttpResponse> {
-    let user_id = state.get_user_id(&req)?;
     let file_id = payload.file.parse().map_err(|_| Error::BadImage)?;
 
-    service.update_thumbnail(path.id, file_id, user_id).await?;
+    service.update_thumbnail(path.id, file_id, *user_id).await?;
 
     Ok(HttpResponse::Accepted()
         .content_type("application/json")

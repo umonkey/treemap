@@ -116,6 +116,33 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE UNIQUE INDEX IF NOT EXISTS users_email ON users (email);
 
 
+CREATE TABLE IF NOT EXISTS roles (
+    `id` TEXT NOT NULL,
+    PRIMARY KEY(`id`)
+);
+
+CREATE TABLE IF NOT EXISTS permissions (
+    `id` TEXT NOT NULL,
+    PRIMARY KEY(`id`)
+);
+
+CREATE TABLE IF NOT EXISTS role_permissions (
+    `role_id` TEXT NOT NULL,
+    `permission_id` TEXT NOT NULL,
+    PRIMARY KEY(`role_id`, `permission_id`),
+    FOREIGN KEY(`role_id`) REFERENCES roles(`id`) ON DELETE CASCADE,
+    FOREIGN KEY(`permission_id`) REFERENCES permissions(`id`) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS user_roles (
+    `user_id` INT NOT NULL,
+    `role_id` TEXT NOT NULL,
+    PRIMARY KEY(`user_id`, `role_id`),
+    FOREIGN KEY(`user_id`) REFERENCES users(`id`) ON DELETE CASCADE,
+    FOREIGN KEY(`role_id`) REFERENCES roles(`id`) ON DELETE CASCADE
+);
+
+
 CREATE TABLE IF NOT EXISTS comments (
     `id` INT NOT NULL,
     `tree_id` INT NOT NULL,

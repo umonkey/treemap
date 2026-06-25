@@ -39,10 +39,17 @@ export const DEFAULT_TREE = {
 } as ITree;
 
 export const DEFAULT_ME = {
-	name: 'user1',
-	picture: 'https://example.com/foobar.jpg',
-	trees_count: 0,
-	comments_count: 0,
-	updates_count: 0,
-	files_count: 0
+	user: {
+		id: 'user1',
+		name: 'user1',
+		email: '',
+		picture: 'https://example.com/foobar.jpg',
+		trees_count: 0,
+		comments_count: 0,
+		updates_count: 0,
+		files_count: 0,
+		last_active_at: 0
+	},
+	roles: [],
+	permissions: []
 } as IMeResponse;

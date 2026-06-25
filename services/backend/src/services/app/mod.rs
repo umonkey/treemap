@@ -49,6 +49,12 @@ pub use injected::Injected;
 mod middleware;
 pub use middleware::Transaction;
 
+mod user_id;
+pub use user_id::{OptionalUserId, UserId};
+
+mod require_permission;
+pub use require_permission::*;
+
 #[derive(Clone)]
 pub struct AppState {
     pub database: Arc<Database>,

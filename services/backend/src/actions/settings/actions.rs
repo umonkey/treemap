@@ -1,8 +1,9 @@
 use crate::domain::settings::{SettingsService, UpdateSettingsRequest};
-use crate::services::{AppState, Injected};
+use crate::services::app::UserId;
+use crate::services::Injected;
 use crate::types::Result;
-use actix_web::web::{Data, Json, ServiceConfig};
-use actix_web::{put, HttpRequest, HttpResponse};
+use actix_web::web::{Json, ServiceConfig};
+use actix_web::{put, HttpResponse};
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -13,16 +14,13 @@ struct RequestPayload {
 
 #[put("")]
 pub async fn update_settings_action(
-    state: Data<AppState>,
+    user_id: UserId,
     settings_service: Injected<SettingsService>,
     payload: Json<RequestPayload>,
-    req: HttpRequest,
 ) -> Result<HttpResponse> {
-    let user_id = state.get_user_id(&req)?;
-
     settings_service
         .update(UpdateSettingsRequest {
-            user_id,
+            user_id: *user_id,
             name: payload.name.clone(),
             picture: payload.picture.clone(),
         })

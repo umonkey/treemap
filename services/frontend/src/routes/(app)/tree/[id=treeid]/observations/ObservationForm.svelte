@@ -57,7 +57,7 @@
 			) {
 				getUserApi(observation.created_by).then((res) => {
 					if (res.data) {
-						addUsers([res.data]);
+						addUsers([res.data.user]);
 					}
 				});
 			}

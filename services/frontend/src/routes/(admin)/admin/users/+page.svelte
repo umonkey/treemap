@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Breadcrumbs from '$lib/components/admin/Breadcrumbs.svelte';
 	import type { PageData } from './$types';
+	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
 
 	let { data }: { data: PageData } = $props();
 </script>
@@ -9,41 +10,56 @@
 	<title>User List</title>
 </svelte:head>
 
-<article>
-	<header>
-		<h1>User List</h1>
+<AuthWrapper permission="user:manage">
+	<article>
+		<header>
+			<h1>User List</h1>
 
-		<Breadcrumbs items={[{ label: 'Admin', href: '/admin' }, { label: 'Users' }]} />
-	</header>
-	{#if data.error}
-		<p class="error">Error loading users: {data.error.description}</p>
-	{:else}
-		<div class="user-list">
-			<table>
-				<thead>
-					<tr>
-						<th></th>
-						<th>Name</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each data.users as user (user.id)}
+			<Breadcrumbs items={[{ label: 'Admin', href: '/admin' }, { label: 'Users' }]} />
+		</header>
+		{#if data.error}
+			<p class="error">Error loading users: {data.error.description}</p>
+		{:else}
+			<div class="user-list">
+				<table>
+					<thead>
 						<tr>
-							<td>
-								{#if user.picture}
-									<img src={user.picture} alt="" referrerpolicy="no-referrer" class="user-pic" />
-								{/if}
-							</td>
-							<td width="100%">
-								<a href="/admin/users/{user.id}">{user.name}</a>
-							</td>
+							<th></th>
+							<th>Name</th>
+							<th>Roles</th>
 						</tr>
-					{/each}
-				</tbody>
-			</table>
-		</div>
-	{/if}
-</article>
+					</thead>
+					<tbody>
+						{#each data.users as user (user.user.id)}
+							<tr>
+								<td>
+									{#if user.user.picture}
+										<img
+											src={user.user.picture}
+											alt=""
+											referrerpolicy="no-referrer"
+											class="user-pic"
+										/>
+									{/if}
+								</td>
+								<td width="100%">
+									<a href="/admin/users/{user.user.id}">{user.user.name}</a>
+								</td>
+								<td>
+									<div class="roles">
+										{#each user.roles || [] as role}
+											<span class="role">{role}</span>
+										{/each}
+									</div>
+								</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+		{/if}
+	</article>
+</AuthWrapper>
 
 <style>
 	.error {
@@ -69,5 +85,19 @@
 		object-position: center;
 		object-fit: cover;
 		overflow: hidden;
+	}
+
+	.roles {
+		display: flex;
+		gap: 4px;
+	}
+
+	.role {
+		background-color: #eee;
+		padding: 2px 6px;
+		border-radius: 4px;
+		font-size: 12px;
+		white-space: nowrap;
+		color: #333;
 	}
 </style>

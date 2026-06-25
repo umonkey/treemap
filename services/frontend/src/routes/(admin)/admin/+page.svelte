@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Breadcrumbs from '$lib/components/admin/Breadcrumbs.svelte';
+	import { hasPermission } from '$lib/stores/authStore';
 </script>
 
 <svelte:head>
@@ -12,7 +13,11 @@
 		<Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Admin' }]} />
 	</header>
 	<ul>
-		<li><a href="/admin/users">Manage Users</a></li>
-		<li><a href="/admin/sequences">StreetView Sequences</a></li>
+		{#if $hasPermission('user:manage')}
+			<li><a href="/admin/users">Manage Users</a></li>
+		{/if}
+		{#if $hasPermission('pano:edit')}
+			<li><a href="/admin/sequences">StreetView Sequences</a></li>
+		{/if}
 	</ul>
 </article>

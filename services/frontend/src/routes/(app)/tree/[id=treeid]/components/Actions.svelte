@@ -72,7 +72,7 @@
 	{#if actionsState.actors.length > 0}
 		<a class="actors" href={routes.treeHistory(tree.id)}>
 			{#each actionsState.actors as user}
-				<img src={user.picture} alt={user.name} referrerpolicy="no-referrer" />
+				<img src={user.user.picture} alt={user.user.name} referrerpolicy="no-referrer" />
 			{/each}
 		</a>
 	{/if}

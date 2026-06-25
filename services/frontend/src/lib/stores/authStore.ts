@@ -15,3 +15,10 @@ authStore.subscribe((value: ILoginResponse | undefined) => {
 });
 
 export const isAuthenticated = derived(authStore, ($authStore) => !!$authStore);
+
+export const hasPermission = derived(authStore, ($authStore) => {
+	return (permission: string) => {
+		if (!$authStore || !Array.isArray($authStore.permissions)) return false;
+		return $authStore.permissions.includes(permission);
+	};
+});

@@ -20,7 +20,7 @@ class PageState {
 
 			if (status === 200 && d) {
 				this.data = d;
-				this.name = d.name;
+				this.name = d.user.name;
 			} else if (e) {
 				this.error = e.description;
 			}

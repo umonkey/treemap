@@ -1,12 +1,13 @@
 use actix_web::http::header::{CacheControl, CacheDirective, ETag, EntityTag, Expires};
 use actix_web::web::ServiceConfig;
-use actix_web::{delete, get, web::Data, web::Json, web::Path, HttpRequest, HttpResponse};
+use actix_web::{delete, get, web::Json, web::Path, HttpResponse};
 use serde::Deserialize;
 use std::time::{Duration, SystemTime};
 
 use super::schemas::FileStatusResponse;
 use crate::domain::tree_image::TreeImageService;
-use crate::services::{AppState, Injected};
+use crate::services::app::UserId;
+use crate::services::Injected;
 use crate::types::Result;
 
 #[derive(Debug, Deserialize)]
@@ -68,14 +69,11 @@ pub async fn get_file_status_action(
 
 #[delete("/{id:\\d+}")]
 pub async fn delete_file_action(
-    state: Data<AppState>,
+    user_id: UserId,
     tree_image_service: Injected<TreeImageService>,
     path: Path<PathInfo>,
-    req: HttpRequest,
 ) -> Result<HttpResponse> {
-    let user_id = state.get_user_id(&req)?;
-
-    tree_image_service.delete_file(user_id, path.id).await?;
+    tree_image_service.delete_file(*user_id, path.id).await?;
 
     Ok(HttpResponse::Accepted().finish())
 }

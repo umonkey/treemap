@@ -1,8 +1,8 @@
 import { getTreeActors } from '$lib/api/trees';
-import { type IUser } from '$lib/types';
+import { type IUserWithRights } from '$lib/types';
 
 class ActionsState {
-	actors = $state<IUser[]>([]);
+	actors = $state<IUserWithRights[]>([]);
 	currentId = $state<string>('');
 
 	public reload = async (id: string) => {

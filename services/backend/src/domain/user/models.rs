@@ -4,13 +4,12 @@ use crate::infra::database::{Attributes, Value};
 use crate::types::Result;
 use serde::Serialize;
 
-#[derive(Debug, Default, Serialize)]
+#[derive(Clone, Debug, Default, Serialize)]
 pub struct User {
     pub id: u64,
     pub email: String,
     pub name: String,
     pub picture: String,
-    pub role: String,
     pub trees_count: i64,
     pub comments_count: i64,
     pub updates_count: i64,
@@ -25,7 +24,6 @@ impl User {
             email: attributes.require_string("email")?,
             name: attributes.require_string("name")?,
             picture: attributes.require_string("picture")?,
-            role: attributes.get_string("role")?.unwrap_or("user".to_string()),
             trees_count: attributes.require_i64("trees_count")?,
             comments_count: attributes.require_i64("comments_count")?,
             updates_count: attributes.require_i64("updates_count")?,
@@ -40,7 +38,6 @@ impl User {
             ("email".to_string(), Value::from(self.email.clone())),
             ("name".to_string(), Value::from(self.name.clone())),
             ("picture".to_string(), Value::from(self.picture.clone())),
-            ("role".to_string(), Value::from(self.role.clone())),
             ("trees_count".to_string(), Value::from(self.trees_count)),
             (
                 "comments_count".to_string(),

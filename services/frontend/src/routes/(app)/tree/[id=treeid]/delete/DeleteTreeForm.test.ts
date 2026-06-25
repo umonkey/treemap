@@ -53,9 +53,19 @@ describe('DeleteTreeForm', async () => {
 
 		authStore.set({
 			token: 'secret',
-			id: 'user1',
-			name: 'John Doe',
-			picture: 'https://example.com/picture.jpg'
+			user: {
+				id: 'user1',
+				name: 'John Doe',
+				picture: 'https://example.com/picture.jpg',
+				email: 'john@example.com',
+				trees_count: 0,
+				comments_count: 0,
+				updates_count: 0,
+				files_count: 0,
+				last_active_at: 0
+			},
+			roles: [],
+			permissions: []
 		});
 
 		vi.mocked(getTreeHistory).mockResolvedValue({
@@ -114,9 +124,19 @@ describe('DeleteTreeForm', async () => {
 
 		authStore.set({
 			token: 'secret',
-			id: 'user1',
-			name: 'John Doe',
-			picture: 'https://example.com/picture.jpg'
+			user: {
+				id: 'user1',
+				name: 'John Doe',
+				picture: 'https://example.com/picture.jpg',
+				email: 'john@example.com',
+				trees_count: 0,
+				comments_count: 0,
+				updates_count: 0,
+				files_count: 0,
+				last_active_at: 0
+			},
+			roles: [],
+			permissions: []
 		});
 
 		vi.mocked(getTreeHistory).mockResolvedValue({

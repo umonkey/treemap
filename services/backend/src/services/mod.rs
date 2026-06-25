@@ -1,4 +1,4 @@
-mod app;
+pub mod app;
 pub mod comment_loader;
 pub mod like_loader;
 pub mod mcp;

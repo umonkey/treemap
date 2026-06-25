@@ -7,10 +7,11 @@ use crate::domain::mapillary::{
 };
 use crate::domain::tree::Bounds;
 use crate::responders::geo_json::respond_with_mapillary;
+use crate::services::app::{PanoEdit, RequirePermission};
 use crate::services::*;
 use crate::types::*;
 use actix_web::web::{Data, Json, Path, Query};
-use actix_web::{HttpRequest, HttpResponse};
+use actix_web::HttpResponse;
 
 pub async fn get_mapillary_geo_json_action(
     state: Data<AppState>,
@@ -79,6 +80,7 @@ pub async fn get_mapillary_image_trees_action(
 }
 
 pub async fn get_mapillary_sequences_action(
+    _user: RequirePermission<PanoEdit>,
     service: Injected<MapillaryService>,
 ) -> Result<Json<Vec<MapillarySequenceSummary>>> {
     let sequences = service.get_all_sequences().await?;
@@ -86,6 +88,7 @@ pub async fn get_mapillary_sequences_action(
 }
 
 pub async fn get_mapillary_sequence_action(
+    _user: RequirePermission<PanoEdit>,
     service: Injected<MapillaryService>,
     path: Path<String>,
 ) -> Result<Json<MapillarySequenceDetail>> {
@@ -95,6 +98,7 @@ pub async fn get_mapillary_sequence_action(
 }
 
 pub async fn update_mapillary_sequence_action(
+    _user: RequirePermission<PanoEdit>,
     service: Injected<MapillaryService>,
     path: Path<String>,
     body: Json<UpdateMapillarySequence>,
@@ -105,20 +109,16 @@ pub async fn update_mapillary_sequence_action(
 }
 
 pub async fn add_mapillary_image_tree_action(
-    state: Data<AppState>,
-    req: HttpRequest,
+    user_id: RequirePermission<PanoEdit>,
+    service: Injected<MapillaryService>,
     path: Path<String>,
     body: Json<AddMapillaryTreeRequest>,
 ) -> Result<HttpResponse> {
-    let image_id = path.into_inner();
-    let user_id = state.get_user_id(&req)?;
-    let service = state.build::<MapillaryService>()?;
-
     let tree = MapillaryTree {
-        image_id,
+        image_id: path.into_inner(),
         angle: body.angle,
         tree_id: body.tree_id,
-        user_id,
+        user_id: *user_id,
     };
 
     service.add_image_tree(tree).await?;
@@ -127,28 +127,22 @@ pub async fn add_mapillary_image_tree_action(
 }
 
 pub async fn delete_mapillary_image_trees_action(
-    state: Data<AppState>,
-    req: HttpRequest,
+    _user: RequirePermission<PanoEdit>,
+    service: Injected<MapillaryService>,
     path: Path<String>,
 ) -> Result<HttpResponse> {
-    let image_id = path.into_inner();
-    let _user_id = state.get_user_id(&req)?; // Require auth
-    let service = state.build::<MapillaryService>()?;
-
-    service.delete_image_trees(&image_id).await?;
+    service.delete_image_trees(&path.into_inner()).await?;
 
     Ok(HttpResponse::NoContent().finish())
 }
 
 pub async fn replace_mapillary_image_trees_action(
-    state: Data<AppState>,
-    req: HttpRequest,
+    user_id: RequirePermission<PanoEdit>,
+    service: Injected<MapillaryService>,
     path: Path<String>,
     body: Json<ReplaceMapillaryTreesRequest>,
 ) -> Result<HttpResponse> {
     let image_id = path.into_inner();
-    let user_id = state.get_user_id(&req)?;
-    let service = state.build::<MapillaryService>()?;
 
     let trees = body
         .trees
@@ -157,7 +151,7 @@ pub async fn replace_mapillary_image_trees_action(
             image_id: image_id.clone(),
             angle: t.angle,
             tree_id: t.tree_id,
-            user_id,
+            user_id: *user_id,
         })
         .collect();
 

@@ -9,7 +9,7 @@
 
 <div class="admin-layout">
 	<div class="content">
-		<AuthWrapper>
+		<AuthWrapper permission={['user:manage', 'pano:edit']}>
 			{@render children()}
 		</AuthWrapper>
 	</div>

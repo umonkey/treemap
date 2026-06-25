@@ -6,6 +6,7 @@ pub mod alert_photo;
 pub mod comment;
 pub mod health;
 pub mod heatmap;
+pub mod iam;
 pub mod like;
 pub mod login;
 pub mod mapillary;

@@ -89,7 +89,7 @@
 						{#if $uploadStore.uploading}
 							<SpinnerIcon />
 						{:else}
-							<UserPic src={$authStore?.picture} alt="userpic" class="user-pic-sidebar" />
+							<UserPic src={$authStore?.user?.picture} alt="userpic" class="user-pic-sidebar" />
 						{/if}
 						{#if $uploadStore.pending > 0}
 							<span class="badge">{$uploadStore.pending}</span>

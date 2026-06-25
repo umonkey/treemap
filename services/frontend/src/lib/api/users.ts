@@ -1,4 +1,12 @@
-import type { IHeatMap, ILikeList, IMeResponse, IResponse, IUser, IUserList } from '$lib/types';
+import type {
+	IHeatMap,
+	ILikeList,
+	IMeResponse,
+	IResponse,
+	IUser,
+	IUserList,
+	IUserWithRights
+} from '$lib/types';
 import { authStore } from '$lib/stores/authStore';
 import { getAuthHeaders, request } from './client';
 
@@ -16,9 +24,9 @@ export async function getMe(): Promise<IResponse<IMeResponse>> {
 			if (state) {
 				return {
 					...state,
-					id: data.id,
-					name: data.name,
-					picture: data.picture
+					user: data.user,
+					roles: data.roles || [],
+					permissions: data.permissions || []
 				};
 			}
 			return state;
@@ -42,9 +50,9 @@ export async function verifyToken(token: string): Promise<IResponse<IMeResponse>
 			if (state && state.token === token) {
 				return {
 					...state,
-					id: data.id,
-					name: data.name,
-					picture: data.picture
+					user: data.user,
+					roles: data.roles || [],
+					permissions: data.permissions || []
 				};
 			}
 			return state;
@@ -75,8 +83,11 @@ export async function updateSettings({
 			if (state) {
 				return {
 					...state,
-					name,
-					picture: picture || state.picture
+					user: {
+						...state.user,
+						name,
+						picture: picture || state.user.picture
+					}
 				};
 			}
 			return state;
@@ -104,7 +115,7 @@ export async function getUsers(): Promise<IResponse<IUserList>> {
 	});
 }
 
-export async function getUser(id: string): Promise<IResponse<IUser>> {
+export async function getUser(id: string): Promise<IResponse<IUserWithRights>> {
 	return await request('GET', `v1/users/${id}`, {
 		headers: {
 			'Content-Type': 'application/json',
@@ -113,7 +124,10 @@ export async function getUser(id: string): Promise<IResponse<IUser>> {
 	});
 }
 
-export async function updateUser(id: string, props: Partial<IUser>): Promise<IResponse<IUser>> {
+export async function updateUser(
+	id: string,
+	props: Partial<IUser>
+): Promise<IResponse<IUserWithRights>> {
 	return await request('PUT', `v1/users/${id}`, {
 		body: JSON.stringify(props),
 		headers: {

@@ -1,8 +1,9 @@
 use crate::domain::training::TrainingService;
-use crate::services::{AppState, Injected};
+use crate::services::app::UserId;
+use crate::services::Injected;
 use crate::types::*;
 use actix_web::web::ServiceConfig;
-use actix_web::{post, web::Data, web::Json, HttpRequest, HttpResponse};
+use actix_web::{post, web::Json, HttpResponse};
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -12,14 +13,11 @@ struct RequestPayload {
 
 #[post("")]
 pub async fn add_training_action(
-    state: Data<AppState>,
+    user_id: UserId,
     training_service: Injected<TrainingService>,
     payload: Json<RequestPayload>,
-    req: HttpRequest,
 ) -> Result<HttpResponse> {
-    let user_id = state.get_user_id(&req)?;
-
-    training_service.add(user_id, payload.result).await?;
+    training_service.add(*user_id, payload.result).await?;
 
     Ok(HttpResponse::Accepted().finish())
 }

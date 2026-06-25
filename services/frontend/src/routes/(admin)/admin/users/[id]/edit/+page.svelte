@@ -10,7 +10,7 @@
 	let { data }: { data: PageData } = $props();
 
 	const onSave = async (updatedUser: Partial<IUser>) => {
-		const res = await updateUser(data.user.id, updatedUser);
+		const res = await updateUser(data.user.user.id, updatedUser);
 
 		if (res.status >= 200 && res.status < 300) {
 			goto('/admin/users');
@@ -21,7 +21,7 @@
 </script>
 
 <svelte:head>
-	<title>User Editor: {data.user.name}</title>
+	<title>User Editor: {data.user.user.name}</title>
 </svelte:head>
 
 <article>
@@ -32,10 +32,10 @@
 			items={[
 				{ label: 'Admin', href: '/admin' },
 				{ label: 'Users', href: '/admin/users' },
-				{ label: data.user.name, href: `/admin/users/${data.user.id}` },
+				{ label: data.user.user.name, href: `/admin/users/${data.user.user.id}` },
 				{ label: 'Edit' }
 			]}
 		/>
 	</header>
-	<UserEditForm user={data.user} {onSave} />
+	<UserEditForm user={data.user.user} {onSave} />
 </article>

@@ -29,7 +29,7 @@
 			{#if $uploadStore.uploading}
 				<SpinnerIcon />
 			{:else if $isAuthenticated}
-				<UserPic src={$authStore?.picture} alt="userpic" class="user-pic-nav" />
+				<UserPic src={$authStore?.user?.picture} alt="userpic" class="user-pic-nav" />
 			{:else}
 				<UserIcon />
 			{/if}

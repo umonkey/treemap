@@ -3,6 +3,7 @@
 	import { page } from '$app/state';
 	import { formatDateTime } from '$lib/utils/strings';
 	import { mapLayerStore } from '$lib/stores/mapLayerStore';
+	import { hasPermission } from '$lib/stores/authStore';
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
 	import PlusIcon from '$lib/icons/PlusIcon.svelte';
 	import TrashIcon from '$lib/icons/TrashIcon.svelte';
@@ -62,7 +63,7 @@
 		</div>
 	</div>
 
-	{#if $mapLayerStore.treeHints}
+	{#if $mapLayerStore.treeHints && $hasPermission('pano:edit')}
 		<div class="middle-right">
 			<button
 				type="button"

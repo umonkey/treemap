@@ -1,5 +1,6 @@
 use super::schemas::*;
-use crate::domain::user::{User, UserRepository};
+use crate::domain::iam::IamService;
+use crate::domain::user::{User, UserService};
 use crate::infra::google_auth::{AuthResponse, GoogleAuthClient};
 use crate::infra::osm::OsmClient;
 use crate::infra::tokens::{TokenClaims, TokenService};
@@ -14,7 +15,8 @@ const TOKEN_TTL: u64 = 30 * 86400; // 30 days
 
 pub struct LoginService {
     tokens: Arc<TokenService>,
-    users: Arc<UserRepository>,
+    user_service: Arc<UserService>,
+    iam_service: Arc<IamService>,
     auth: GoogleAuthClient,
     osm: Arc<OsmClient>,
 }
@@ -46,7 +48,7 @@ impl LoginService {
     }
 
     async fn get_user(&self, userinfo: &AuthResponse) -> Result<User> {
-        if let Some(user) = self.users.get_by_email(&userinfo.email).await? {
+        if let Ok(user) = self.user_service.get_user_by_email(&userinfo.email).await {
             debug!("Found a user with email {}.", userinfo.email);
             return Ok(user);
         }
@@ -58,11 +60,11 @@ impl LoginService {
             email: userinfo.email.clone(),
             name: userinfo.name.clone(),
             picture: userinfo.picture.clone(),
-            role: "user".to_string(),
             ..Default::default()
         };
 
-        self.users.add(&user).await?;
+        self.user_service.add_user(&user).await?;
+        self.iam_service.assign_default_role(user.id).await?;
 
         info!(
             "Created a new user with email {} and id {}.",
@@ -89,7 +91,8 @@ impl Injectable for LoginService {
     fn inject(ctx: &dyn Context) -> Result<Self> {
         Ok(Self {
             tokens: ctx.tokens(),
-            users: Arc::new(ctx.build::<UserRepository>()?),
+            user_service: Arc::new(ctx.build::<UserService>()?),
+            iam_service: Arc::new(ctx.build::<IamService>()?),
             auth: GoogleAuthClient::new(),
             osm: Arc::new(ctx.build::<OsmClient>()?),
         })

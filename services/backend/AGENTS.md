@@ -21,6 +21,10 @@ The API follows the Action-Domain-Responder model.
 - src/services: additional application logic which orchestrates domains. Does not have any domain specific knowledge.
 - src/utils: common simple things with no dependencies.
 
+## Coding Style
+
+- Use the RequirePermission<> extractor to require certain permissions.
+
 ## Development workflow
 
 - Load the `rust` skill using the `skill` tool before starting any work on the backend code.

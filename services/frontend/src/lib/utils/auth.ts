@@ -29,9 +29,9 @@ export const validateStoredToken = async () => {
 
 	if (res.data) {
 		Sentry.setUser({
-			id: res.data.id,
-			email: res.data.email,
-			username: res.data.name
+			id: res.data.user.id,
+			email: res.data.user.email,
+			username: res.data.user.name
 		});
 
 		console.debug('[Sentry] User id added.');

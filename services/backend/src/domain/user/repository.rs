@@ -150,7 +150,10 @@ impl UserRepository {
     async fn query_multiple_sql(&self, sql: &str, params: &[Value]) -> Result<Vec<User>> {
         let records = self.db.fetch_sql(sql, params).await?;
 
-        records.iter().map(User::from_attributes).collect()
+        records
+            .iter()
+            .map(User::from_attributes)
+            .collect::<Result<Vec<User>>>()
     }
 
     async fn query_single(&self, query: SelectQuery) -> Result<Option<User>> {
@@ -167,7 +170,10 @@ impl UserRepository {
     async fn query_multiple(&self, query: SelectQuery) -> Result<Vec<User>> {
         let records = self.db.get_records(query).await?;
 
-        records.iter().map(User::from_attributes).collect()
+        records
+            .iter()
+            .map(User::from_attributes)
+            .collect::<Result<Vec<User>>>()
     }
 }
 

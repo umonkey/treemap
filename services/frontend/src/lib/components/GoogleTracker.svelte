@@ -9,13 +9,13 @@
 
 	$effect(() => {
 		if (!initialized) {
-			componentState.init($authStore?.id);
+			componentState.init($authStore?.user?.id);
 			initialized = true;
 		}
 
 		// Sync user ID if it changes after initialization.
-		if ($authStore?.id) {
-			componentState.setUserId($authStore.id);
+		if ($authStore?.user?.id) {
+			componentState.setUserId($authStore.user.id);
 		}
 
 		// Track page views on navigation.

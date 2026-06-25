@@ -54,3 +54,12 @@ The application includes an integrated Model Context Protocol (MCP) server that 
 - Tools: provides tools like `list_tallest`, `list_widest`, and `list_streets`.
 - Data analysis: enables AI agents to perform complex queries and generate statistics about the tree population.
 - Sorting: the `list_streets` tool supports custom sorting by name, count, or completeness.
+
+## Role-Based Access Control (RBAC)
+
+The application provides a secure environment for multiple types of users by managing access through a granular permission system. This ensures that sensitive operations are only accessible to authorized individuals while allowing regular users to contribute to the map.
+
+- Granular permissions: controls specific actions such as editing street-level imagery or managing user accounts.
+- Flexible roles: users can be assigned different roles (e.g., volunteer, editor, administrator) that define their capabilities within the system.
+- Administrative oversight: provides tools for administrators to manage user access and maintain data quality across the platform.
+- Security by design: access is restricted by default, ensuring that every sensitive operation requires explicit authorization.

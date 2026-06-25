@@ -25,6 +25,13 @@ impl UserService {
         self.users.get(user_id).await?.ok_or(Error::UserNotFound)
     }
 
+    pub async fn get_user_by_email(&self, email: &str) -> Result<User> {
+        self.users
+            .get_by_email(email)
+            .await?
+            .ok_or(Error::UserNotFound)
+    }
+
     pub async fn list(&self) -> Result<Vec<User>> {
         self.users.all().await
     }
@@ -43,7 +50,7 @@ impl UserService {
 
     async fn get_monthly_active(&self) -> Result<Vec<u64>> {
         let after = get_timestamp() - 86400 * 30;
-        let query: &str = "SELECT `added_by`, COUNT(1) AS `cnt` FROM `trees` WHERE `added_at` >= ? ORDER BY `cnt` DESC LIMIT 10";
+        let query: &str = "SELECT `added_by`, COUNT(1) AS `cnt` FROM `trees` WHERE `added_at` >= ? GROUP BY `added_by` ORDER BY `cnt` DESC LIMIT 10";
         let params = vec![Value::from(after as i64)];
 
         let rows = self.db.fetch_sql(query, &params).await?;
@@ -82,22 +89,12 @@ impl UserService {
         res
     }
 
-    pub async fn update_user(
-        &self,
-        current_user_id: u64,
-        target_user_id: u64,
-        update: UserUpdate,
-    ) -> Result<()> {
-        let current_user = self
-            .users
-            .get(current_user_id)
-            .await?
-            .ok_or(Error::UserNotFound)?;
+    pub async fn add_user(&self, user: &User) -> Result<()> {
+        self.users.add(user).await?;
+        Ok(())
+    }
 
-        if current_user.role != "admin" {
-            return Err(Error::AccessDenied);
-        }
-
+    pub async fn update_user(&self, target_user_id: u64, update: UserUpdate) -> Result<()> {
         let mut target_user = self
             .users
             .get(target_user_id)
@@ -108,7 +105,7 @@ impl UserService {
 
         self.users.update(&target_user).await?;
 
-        info!("User {current_user_id} edited profile user {target_user_id}");
+        info!("User edited profile user {target_user_id}");
 
         Ok(())
     }

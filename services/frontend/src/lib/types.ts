@@ -29,15 +29,21 @@ export interface IUser {
 	last_active_at: number;
 }
 
+export interface IUserWithRights {
+	user: IUser;
+	roles: string[];
+	permissions: string[];
+}
+
 export interface IUserList {
-	users: IUser[];
+	users: IUserWithRights[];
 }
 
 export interface ILoginResponse {
 	token: string;
-	id: string;
-	name: string;
-	picture: string;
+	user: IUser;
+	roles: string[];
+	permissions: string[];
 }
 
 export interface ITree {
@@ -88,15 +94,9 @@ export interface ITreeUpdatePayload {
 }
 
 export interface IMeResponse {
-	id: string;
-	name: string;
-	email: string;
-	picture: string;
-	trees_count: number;
-	comments_count: number;
-	updates_count: number;
-	files_count: number;
-	last_active_at: number;
+	user: IUser;
+	roles: string[];
+	permissions: string[];
 }
 
 export interface ISpecies {

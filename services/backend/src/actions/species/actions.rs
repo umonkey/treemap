@@ -3,10 +3,11 @@
 
 use super::schemas::SpeciesRead;
 use crate::domain::species::SpeciesService;
-use crate::services::{AppState, Injected};
+use crate::services::app::UserId;
+use crate::services::Injected;
 use crate::types::Result;
 use actix_web::web::ServiceConfig;
-use actix_web::{get, web::Data, web::Json, web::Query, HttpRequest};
+use actix_web::{get, web::Json, web::Query};
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -16,12 +17,10 @@ struct QueryParams {
 
 #[get("/suggest")]
 pub async fn suggest_species_action(
-    state: Data<AppState>,
+    user_id: UserId,
     species_service: Injected<SpeciesService>,
-    req: HttpRequest,
 ) -> Result<Json<Vec<String>>> {
-    let user_id = state.get_user_id(&req)?;
-    let species = species_service.suggest(user_id).await?;
+    let species = species_service.suggest(*user_id).await?;
 
     Ok(Json(species))
 }
