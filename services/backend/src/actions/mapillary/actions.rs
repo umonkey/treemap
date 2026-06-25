@@ -10,14 +10,13 @@ use crate::responders::geo_json::respond_with_mapillary;
 use crate::services::app::{PanoEdit, RequirePermission};
 use crate::services::*;
 use crate::types::*;
-use actix_web::web::{Data, Json, Path, Query};
+use actix_web::web::{Json, Path, Query};
 use actix_web::HttpResponse;
 
 pub async fn get_mapillary_geo_json_action(
-    state: Data<AppState>,
+    service: Injected<MapillaryService>,
     query: Query<GetMapillaryRequest>,
 ) -> Result<HttpResponse> {
-    let service = state.build::<MapillaryService>()?;
     let bounds = Bounds {
         n: query.n,
         e: query.e,
@@ -39,10 +38,9 @@ pub async fn get_mapillary_geo_json_action(
 }
 
 pub async fn get_mapillary_hints_action(
-    state: Data<AppState>,
+    service: Injected<MapillaryService>,
     query: Query<GetMapillaryRequest>,
 ) -> Result<HttpResponse> {
-    let service = state.build::<MapillaryService>()?;
     let bounds = Bounds {
         n: query.n,
         e: query.e,
@@ -58,22 +56,20 @@ pub async fn get_mapillary_hints_action(
 }
 
 pub async fn get_mapillary_image_action(
-    state: Data<AppState>,
+    service: Injected<MapillaryService>,
     path: Path<String>,
 ) -> Result<HttpResponse> {
     let id = path.into_inner();
-    let service = state.build::<MapillaryService>()?;
     let image = service.get_image_metadata(&id).await?;
 
     Ok(HttpResponse::Ok().json(image))
 }
 
 pub async fn get_mapillary_image_trees_action(
-    state: Data<AppState>,
+    service: Injected<MapillaryService>,
     path: Path<String>,
 ) -> Result<HttpResponse> {
     let id = path.into_inner();
-    let service = state.build::<MapillaryService>()?;
     let trees = service.get_image_trees(&id).await?;
 
     Ok(HttpResponse::Ok().json(trees))

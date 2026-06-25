@@ -1,6 +1,6 @@
 use crate::actions::mcp::schemas::*;
 use crate::services::mcp::McpService;
-use crate::services::{AppState, ContextExt};
+use crate::services::{AppState, Injected};
 use actix_web::{post, web, HttpResponse, Responder};
 use log::error;
 use uuid::Uuid;
@@ -13,6 +13,7 @@ pub struct MessageQuery {
 #[post("/message")]
 pub async fn message_handler(
     state: web::Data<AppState>,
+    mcp_service: Injected<McpService>,
     query: web::Query<MessageQuery>,
     payload: web::Json<JsonRpcRequest>,
 ) -> impl Responder {
@@ -20,11 +21,6 @@ pub async fn message_handler(
     let sender = match state.mcp.get_sender(session_id).await {
         Some(s) => s,
         None => return HttpResponse::NotFound().finish(),
-    };
-
-    let mcp_service = match state.build::<McpService>() {
-        Ok(s) => s,
-        Err(_) => return HttpResponse::InternalServerError().finish(),
     };
 
     let request = payload.into_inner();
