@@ -29,11 +29,13 @@ impl<P: Permission + 'static> FromRequest for RequirePermission<P> {
 
     fn from_request(req: &HttpRequest, payload: &mut Payload) -> Self::Future {
         let req = req.clone();
-        let mut payload = payload.take();
+
+        let user_id_fut = UserId::from_request(&req, payload);
+        let iam_service_fut = Injected::<IamService>::from_request(&req, payload);
 
         Box::pin(async move {
-            let user_id = UserId::from_request(&req, &mut payload).await?;
-            let iam_service = Injected::<IamService>::from_request(&req, &mut payload).await?;
+            let user_id = user_id_fut.await?;
+            let iam_service = iam_service_fut.await?;
 
             iam_service.require_permission(*user_id, P::NAME).await?;
 
