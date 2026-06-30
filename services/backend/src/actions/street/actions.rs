@@ -4,7 +4,7 @@ use crate::responders::csv::trees_to_csv;
 use crate::services::Injected;
 
 use crate::types::Result;
-use actix_web::web::{Json, Query, ServiceConfig};
+use actix_web::web::{Json, Query};
 use actix_web::{get, HttpResponse};
 use serde::Deserialize;
 
@@ -51,11 +51,4 @@ pub async fn get_street_csv_report_action(
     let trees = street_service.get_trees_on_street(&query.address).await?;
     let filename = format!("report-{}", query.address);
     trees_to_csv(trees, &filename)
-}
-
-// Configure the router.
-pub fn street_router(cfg: &mut ServiceConfig) {
-    cfg.service(search_streets_action)
-        .service(get_street_report_action)
-        .service(get_street_csv_report_action);
 }

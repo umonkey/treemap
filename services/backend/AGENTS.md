@@ -24,6 +24,8 @@ The API follows the Action-Domain-Responder model.
 ## Coding Style
 
 - Use the RequirePermission<> extractor to require certain permissions.
+- Use macro-based routing (e.g., `#[get("/...")]`) for web actions.
+- Action modules should define their router function (e.g., `pub fn tree_router(cfg: &mut ServiceConfig)`) in the `mod.rs` file, importing handlers from `actions.rs` via `pub use actions::*;`.
 
 ## Development workflow
 

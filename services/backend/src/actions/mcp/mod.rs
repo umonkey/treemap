@@ -2,8 +2,8 @@ pub mod actions;
 pub mod schemas;
 pub mod sse;
 
-pub use actions::message_handler;
-pub use sse::sse_handler;
+pub use actions::*;
+pub use sse::*;
 
 use actix_web::web;
 

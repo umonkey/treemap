@@ -3,7 +3,7 @@ use crate::domain::alert::AlertRepository;
 use crate::domain::alert_photo::AlertPhotoRepository;
 use crate::services::{AppState, Injected};
 use crate::types::{Error, Result};
-use actix_web::web::{Data, Json, Path, ServiceConfig};
+use actix_web::web::{Data, Json, Path};
 use actix_web::{get, HttpResponse};
 use serde::Deserialize;
 
@@ -49,10 +49,4 @@ pub async fn get_alert_photos_action(
         .collect();
 
     Ok(Json(urls))
-}
-
-pub fn alert_router(cfg: &mut ServiceConfig) {
-    cfg.service(get_active_alerts_action)
-        .service(get_alert_action)
-        .service(get_alert_photos_action);
 }

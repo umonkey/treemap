@@ -6,7 +6,7 @@ use crate::services::meta::MetaService;
 use crate::services::Injected;
 use crate::types::*;
 use actix_web::http::header::{CacheControl, CacheDirective, Expires};
-use actix_web::web::{Path, ServiceConfig};
+use actix_web::web::Path;
 use actix_web::{get, HttpResponse};
 use serde::Deserialize;
 use std::time::{Duration, SystemTime};
@@ -55,10 +55,4 @@ async fn serve_tree_meta(
         .body(html);
 
     Ok(res)
-}
-
-// Configure the router.
-pub fn meta_router(cfg: &mut ServiceConfig) {
-    cfg.service(tree_page_action);
-    cfg.service(tree_preview_action);
 }

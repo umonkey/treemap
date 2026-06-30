@@ -5,7 +5,6 @@ use crate::domain::user::{UserService, UserUpdate};
 use crate::services::app::{RequirePermission, UserManage};
 use crate::services::Injected;
 use crate::types::*;
-use actix_web::web::ServiceConfig;
 use actix_web::{get, put, web::Json, web::Path, HttpResponse};
 use serde::Deserialize;
 
@@ -62,12 +61,4 @@ pub async fn update_user_action(
     user_service.update_user(path.id, body.into_inner()).await?;
 
     Ok(HttpResponse::Accepted().finish())
-}
-
-// Configure the router.
-pub fn user_router(cfg: &mut ServiceConfig) {
-    cfg.service(get_users)
-        .service(get_user_heatmap)
-        .service(get_user)
-        .service(update_user_action);
 }

@@ -2,4 +2,10 @@
 
 mod actions;
 
-pub use actions::training_router;
+pub use actions::*;
+
+use actix_web::web::ServiceConfig;
+
+pub fn training_router(cfg: &mut ServiceConfig) {
+    cfg.service(add_training_action);
+}

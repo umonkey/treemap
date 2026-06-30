@@ -7,7 +7,7 @@ use crate::services::like_loader::{LikeList, LikeLoader};
 use crate::services::Injected;
 use crate::types::*;
 use actix_web::get;
-use actix_web::web::{Json, ServiceConfig};
+use actix_web::web::Json;
 
 #[get("")]
 pub async fn get_me_action(
@@ -30,9 +30,4 @@ pub async fn get_me_likes_action(
     let likes = like_service.get_user_likes(*user_id).await?;
     let res = like_loader.load_list(&likes).await?;
     Ok(Json(res))
-}
-
-// Configure the router.
-pub fn me_router(cfg: &mut ServiceConfig) {
-    cfg.service(get_me_action).service(get_me_likes_action);
 }

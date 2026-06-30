@@ -2,7 +2,6 @@ use crate::domain::training::TrainingService;
 use crate::services::app::UserId;
 use crate::services::Injected;
 use crate::types::*;
-use actix_web::web::ServiceConfig;
 use actix_web::{post, web::Json, HttpResponse};
 use serde::Deserialize;
 
@@ -20,9 +19,4 @@ pub async fn add_training_action(
     training_service.add(*user_id, payload.result).await?;
 
     Ok(HttpResponse::Accepted().finish())
-}
-
-// Configure the router.
-pub fn training_router(cfg: &mut ServiceConfig) {
-    cfg.service(add_training_action);
 }

@@ -1,7 +1,7 @@
 use crate::domain::login::{GoogleAuthCallbackPayload, LoginService};
 use crate::services::Injected;
 use crate::types::Result;
-use actix_web::web::{Form, Redirect, ServiceConfig};
+use actix_web::web::{Form, Redirect};
 use actix_web::{post, HttpResponse};
 use serde::Deserialize;
 
@@ -33,9 +33,4 @@ pub async fn google_action(
         .await?;
 
     Ok(Redirect::to(redirect).see_other())
-}
-
-// Configure the router.
-pub fn login_router(cfg: &mut ServiceConfig) {
-    cfg.service(google_action).service(osm_action);
 }

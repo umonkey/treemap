@@ -1,5 +1,4 @@
 use actix_web::http::header::{CacheControl, CacheDirective, ETag, EntityTag, Expires};
-use actix_web::web::ServiceConfig;
 use actix_web::{delete, get, web::Json, web::Path, HttpResponse};
 use serde::Deserialize;
 use std::time::{Duration, SystemTime};
@@ -76,12 +75,4 @@ pub async fn delete_file_action(
     tree_image_service.delete_file(*user_id, path.id).await?;
 
     Ok(HttpResponse::Accepted().finish())
-}
-
-// Configure the router.
-pub fn file_router(cfg: &mut ServiceConfig) {
-    cfg.service(get_file)
-        .service(get_file_jpg)
-        .service(get_file_status_action)
-        .service(delete_file_action);
 }

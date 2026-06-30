@@ -3,7 +3,7 @@ use crate::services::comment_loader::{CommentList, CommentLoader};
 use crate::services::Injected;
 use crate::types::Result;
 use actix_web::get;
-use actix_web::web::{Json, ServiceConfig};
+use actix_web::web::Json;
 
 #[get("")]
 pub async fn get_new_comments_action(
@@ -13,9 +13,4 @@ pub async fn get_new_comments_action(
     let comments = comments_service.get_new(100).await?;
     let res = loader.load(&comments).await?;
     Ok(Json(res))
-}
-
-// Configure the router.
-pub fn comment_router(cfg: &mut ServiceConfig) {
-    cfg.service(get_new_comments_action);
 }

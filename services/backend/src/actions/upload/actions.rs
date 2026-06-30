@@ -7,7 +7,7 @@ use crate::services::app::UserId;
 use crate::services::Injected;
 use crate::types::*;
 use crate::utils::*;
-use actix_web::web::{Json, Path, ServiceConfig};
+use actix_web::web::{Json, Path};
 use actix_web::{post, HttpRequest};
 
 #[post("")]
@@ -35,10 +35,4 @@ pub async fn finish_upload_action(
     let id = path.into_inner();
     upload_service.finish_upload(id).await?;
     Ok(Json(()))
-}
-
-// Configure the router.
-pub fn upload_router(cfg: &mut ServiceConfig) {
-    cfg.service(upload_action);
-    cfg.service(finish_upload_action);
 }

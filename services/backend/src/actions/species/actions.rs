@@ -6,7 +6,6 @@ use crate::domain::species::SpeciesService;
 use crate::services::app::UserId;
 use crate::services::Injected;
 use crate::types::Result;
-use actix_web::web::ServiceConfig;
 use actix_web::{get, web::Json, web::Query};
 use serde::Deserialize;
 
@@ -33,10 +32,4 @@ pub async fn search_species_action(
     let species = species_service.search(&query.query).await?;
     let output = species.iter().map(|f| f.into()).collect();
     Ok(Json(output))
-}
-
-// Configure the router.
-pub fn species_router(cfg: &mut ServiceConfig) {
-    cfg.service(suggest_species_action)
-        .service(search_species_action);
 }

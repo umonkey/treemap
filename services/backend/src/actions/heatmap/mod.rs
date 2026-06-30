@@ -3,4 +3,10 @@
 
 mod actions;
 
-pub use actions::heatmap_router;
+pub use actions::*;
+
+use actix_web::web::ServiceConfig;
+
+pub fn heatmap_router(cfg: &mut ServiceConfig) {
+    cfg.service(get_heatmap_action);
+}

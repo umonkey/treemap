@@ -3,5 +3,14 @@
 mod actions;
 mod schemas;
 
-pub use actions::file_router;
+pub use actions::*;
 pub use schemas::FileRead;
+
+use actix_web::web::ServiceConfig;
+
+pub fn file_router(cfg: &mut ServiceConfig) {
+    cfg.service(get_file)
+        .service(get_file_jpg)
+        .service(get_file_status_action)
+        .service(delete_file_action);
+}

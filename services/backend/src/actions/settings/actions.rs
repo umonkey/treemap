@@ -2,7 +2,7 @@ use crate::domain::settings::{SettingsService, UpdateSettingsRequest};
 use crate::services::app::UserId;
 use crate::services::Injected;
 use crate::types::Result;
-use actix_web::web::{Json, ServiceConfig};
+use actix_web::web::Json;
 use actix_web::{put, HttpResponse};
 use serde::Deserialize;
 
@@ -27,9 +27,4 @@ pub async fn update_settings_action(
         .await?;
 
     Ok(HttpResponse::Accepted().finish())
-}
-
-// Configure the router.
-pub fn settings_router(cfg: &mut ServiceConfig) {
-    cfg.service(update_settings_action);
 }

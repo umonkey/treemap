@@ -11,8 +11,9 @@ use crate::services::app::{PanoEdit, RequirePermission};
 use crate::services::*;
 use crate::types::*;
 use actix_web::web::{Json, Path, Query};
-use actix_web::HttpResponse;
+use actix_web::{delete, get, patch, post, put, HttpResponse};
 
+#[get("/geo.json")]
 pub async fn get_mapillary_geo_json_action(
     service: Injected<MapillaryService>,
     query: Query<GetMapillaryRequest>,
@@ -37,6 +38,7 @@ pub async fn get_mapillary_geo_json_action(
     Ok(respond_with_mapillary(&images, &sequences))
 }
 
+#[get("/hints.json")]
 pub async fn get_mapillary_hints_action(
     service: Injected<MapillaryService>,
     query: Query<GetMapillaryRequest>,
@@ -55,6 +57,7 @@ pub async fn get_mapillary_hints_action(
         .json(geojson))
 }
 
+#[get("/images/{id}")]
 pub async fn get_mapillary_image_action(
     service: Injected<MapillaryService>,
     path: Path<String>,
@@ -65,6 +68,7 @@ pub async fn get_mapillary_image_action(
     Ok(HttpResponse::Ok().json(image))
 }
 
+#[get("/images/{id}/trees")]
 pub async fn get_mapillary_image_trees_action(
     service: Injected<MapillaryService>,
     path: Path<String>,
@@ -75,6 +79,7 @@ pub async fn get_mapillary_image_trees_action(
     Ok(HttpResponse::Ok().json(trees))
 }
 
+#[get("/sequences")]
 pub async fn get_mapillary_sequences_action(
     _user: RequirePermission<PanoEdit>,
     service: Injected<MapillaryService>,
@@ -83,6 +88,7 @@ pub async fn get_mapillary_sequences_action(
     Ok(Json(sequences))
 }
 
+#[get("/sequences/{id}")]
 pub async fn get_mapillary_sequence_action(
     _user: RequirePermission<PanoEdit>,
     service: Injected<MapillaryService>,
@@ -93,6 +99,7 @@ pub async fn get_mapillary_sequence_action(
     Ok(Json(sequence))
 }
 
+#[patch("/sequences/{id}")]
 pub async fn update_mapillary_sequence_action(
     _user: RequirePermission<PanoEdit>,
     service: Injected<MapillaryService>,
@@ -104,6 +111,7 @@ pub async fn update_mapillary_sequence_action(
     Ok(HttpResponse::NoContent().finish())
 }
 
+#[post("/images/{id}/trees")]
 pub async fn add_mapillary_image_tree_action(
     user_id: RequirePermission<PanoEdit>,
     service: Injected<MapillaryService>,
@@ -122,6 +130,7 @@ pub async fn add_mapillary_image_tree_action(
     Ok(HttpResponse::NoContent().finish())
 }
 
+#[delete("/images/{id}/trees")]
 pub async fn delete_mapillary_image_trees_action(
     _user: RequirePermission<PanoEdit>,
     service: Injected<MapillaryService>,
@@ -132,6 +141,7 @@ pub async fn delete_mapillary_image_trees_action(
     Ok(HttpResponse::NoContent().finish())
 }
 
+#[put("/images/{id}/trees")]
 pub async fn replace_mapillary_image_trees_action(
     user_id: RequirePermission<PanoEdit>,
     service: Injected<MapillaryService>,
