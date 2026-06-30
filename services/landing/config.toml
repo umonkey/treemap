@@ -1,0 +1,11 @@
+base_url = "https://www.treemaps.app"
+title = "Tree Maps"
+description = "An open-source platform for urban forest management and data collection."
+compile_sass = false
+minify_html = true
+taxonomies = []
+
+[extra]
+email = "vladimir@kanachyerevan.am"
+github_url = "https://github.com/umonkey/treemap"
+demo_url = "https://yerevan.treemaps.app/"

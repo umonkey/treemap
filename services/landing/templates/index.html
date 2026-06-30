@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ section.title | default(value=config.title) }}</title>
+    <meta name="description" content="{{ section.description | default(value=config.description) }}">
+    <link rel="icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2d5a27;
+            --primary-hover: #1b4721;
+            --accent-green: #95d237;
+            --header-bg: #1b4721;
+            --card-border: rgba(45, 90, 39, 0.2);
+            --card-bg: var(--pico-card-background-color);
+            --feature-label: #1b1b1b;
+            --feature-text: #303030;
+            --group-label: #000;
+            --nav-bg: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+            scroll-behavior: smooth;
+        }
+
+        [data-theme="dark"], :root[data-theme="dark"] {
+            --primary: #95d237;
+            --primary-hover: #aceebb;
+            --card-border: rgba(149, 210, 55, 0.3);
+            --feature-label: #e2e2e2;
+            --feature-text: #c6c6c6;
+            --group-label: #fff;
+            --nav-bg: rgba(20, 25, 31, 0.9);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) {
+                --primary: #95d237;
+                --primary-hover: #aceebb;
+                --card-border: rgba(149, 210, 55, 0.3);
+                --feature-label: #e2e2e2;
+                --feature-text: #c6c6c6;
+                --group-label: #fff;
+                --nav-bg: rgba(20, 25, 31, 0.9);
+            }
+        }
+
+        body {
+            overflow-x: hidden;
+        }
+
+        nav.sticky-nav {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: var(--nav-bg);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--pico-muted-border-color);
+            padding: 0.5rem 0;
+        }
+
+        nav .brand {
+            font-size: 1.25rem;
+            text-decoration: none;
+            font-weight: 800;
+        }
+
+        nav .brand .tree {
+            color: var(--group-label);
+        }
+
+        nav .brand .maps {
+            color: rgb(22, 163, 74);
+        }
+
+        nav ul li a {
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: var(--pico-color);
+        }
+
+        nav ul li a:hover {
+            color: var(--primary);
+        }
+
+        .desktop-only {
+            display: inline-block;
+        }
+
+        nav .nav-cta {
+            font-size: 0.85rem !important;
+            padding: 0.4rem 0.8rem !important;
+            margin-left: 1rem;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            padding: 4rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .hero-content h1 {
+            font-size: 2.5rem !important;
+            line-height: 1.1 !important;
+            margin-bottom: 1.5rem !important;
+            color: var(--group-label) !important;
+            border-bottom: none !important;
+            display: block !important;
+            margin-top: 0 !important;
+            font-weight: 700 !important;
+        }
+
+        .hero-content p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: var(--feature-text);
+            margin-bottom: 2rem;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-image img {
+            width: 100%;
+            border-radius: var(--pico-border-radius);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .cta-section {
+            background-color: rgba(45, 90, 39, 0.05);
+            padding: 4rem 0;
+            text-align: center;
+            border-radius: var(--pico-border-radius);
+            margin: 4rem 0;
+            border: 1px solid var(--card-border);
+        }
+
+        #content h2 {
+            color: var(--group-label);
+            margin-top: 4rem;
+            margin-bottom: 2rem;
+            font-weight: 700;
+            border-bottom: none;
+            padding-bottom: 0;
+            display: inline-block;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .feature-card {
+            padding: 1.5rem;
+            border: 1px solid var(--card-border);
+            border-radius: var(--pico-border-radius);
+            background: var(--card-bg);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+            background-color: rgba(45, 90, 39, 0.02);
+        }
+
+        .feature-card i {
+            display: block;
+            font-size: 1.5rem;
+            color: rgb(22, 163, 74);
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h2 {
+            color: var(--feature-label) !important;
+            margin: 0 0 0.75rem 0 !important;
+            font-size: 1.15rem !important;
+            border-bottom: none !important;
+            padding-bottom: 0 !important;
+            display: block !important;
+        }
+
+        .feature-card p {
+            margin: 0;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: var(--feature-text);
+        }
+
+        .button-cta {
+            background-color: rgb(22, 163, 74) !important;
+            border-color: rgb(22, 163, 74) !important;
+            color: white !important;
+            font-weight: 600;
+        }
+
+        .button-cta:hover {
+            background-color: rgb(21, 128, 61) !important;
+            border-color: rgb(21, 128, 61) !important;
+        }
+
+        .button-outline {
+            color: var(--primary) !important;
+            border-color: var(--primary) !important;
+            background: transparent !important;
+        }
+
+        .button-outline:hover {
+            background-color: rgba(45, 90, 39, 0.1) !important;
+        }
+
+        @media (max-width: 992px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 2rem;
+                padding: 2rem 0;
+            }
+
+            .hero-content h1 {
+                font-size: 2rem !important;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .desktop-only {
+                display: none;
+            }
+            
+            nav.sticky-nav.container {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+
+            nav .nav-cta {
+                font-size: 0.75rem !important;
+                padding: 0.3rem 0.6rem !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="sticky-nav container">
+        <ul>
+            <li><a href="/" class="brand"><span class="tree">Tree</span><span class="maps">Maps</span></a></li>
+        </ul>
+        <ul>
+            <li class="desktop-only"><a href="#data-collection">Data Collection</a></li>
+            <li class="desktop-only"><a href="#management-and-analysis">Management</a></li>
+            <li class="desktop-only"><a href="#community">Community</a></li>
+            <li><a href="#contact" role="button" class="button-cta nav-cta">Get a Map</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <section id="content">
+            {{ section.content | safe }}
+        </section>
+
+        <section id="contact" class="cta-section">
+            <h2>Start Your Own Tree Map</h2>
+            <p>Deploy the platform for your city or organization.</p>
+            <a href="mailto:{{ config.extra.email }}" role="button" class="button-cta">{{ config.extra.email }}</a>
+        </section>
+
+    </main>
+</body>
+</html>
