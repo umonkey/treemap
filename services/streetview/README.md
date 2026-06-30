@@ -11,7 +11,7 @@ This service contains a container contains tools required to process an equirect
 
 ## Usage Examples
 
-### Synchronize GPX track with the video
+### (1) Synchronize GPX track with the video
 
 For this to work best you need to find the moment in the video where you move by a well known GCP (ground control point) at your normal/max speed, get the frame number and the coordinates of the GCP from OSM.  (Note that it won't work if you're standing still, e.g. on an intersection.)
 
@@ -29,7 +29,7 @@ uv run python3 -m app synchronize --frame 1024 --lat 40.2037352 --lon 44.5074044
 
 This command updates the video file `creation_time` meta with a timestamp that synchronzies it with the GPX track perfectly.
 
-### Extract the geotagged images
+### (2) Extract the geotagged images
 
 When you have your video synchronized with the GPX track, you can extract the frames:
 
@@ -37,3 +37,6 @@ When you have your video synchronized with the GPX track, you can extract the fr
 mkdir -p frames
 bin/extract input/video.mp4 input/track.gpx ./frames --distance 3.0
 ```
+
+
+### (3) Process images with OpenSfM
