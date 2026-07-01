@@ -12,6 +12,30 @@ document.addEventListener('DOMContentLoaded', () => {
         let currentX = 0;
         let isDragging = false;
 
+        // Lightbox element (shared across all galleries)
+        let lightbox = document.querySelector('.gallery-lightbox');
+        if (!lightbox) {
+            lightbox = document.createElement('dialog');
+            lightbox.className = 'gallery-lightbox';
+            lightbox.innerHTML = `
+                <div class="gallery-lightbox-content">
+                    <button class="gallery-lightbox-close"><i class="fa-solid fa-xmark"></i></button>
+                    <img src="" alt="">
+                    <div class="gallery-lightbox-caption"></div>
+                </div>
+            `;
+            document.body.appendChild(lightbox);
+            lightbox.addEventListener('click', (e) => {
+                if (e.target === lightbox || e.target.closest('.gallery-lightbox-close')) {
+                    lightbox.close();
+                }
+            });
+            lightbox.onclose = () => {
+                document.body.style.overflow = '';
+                // Resume all galleries if needed, but here we just reset the timer for the active one
+            };
+        }
+
         // Create structure
         const wrapper = document.createElement('div');
         wrapper.className = 'gallery-slides';
@@ -19,7 +43,30 @@ document.addEventListener('DOMContentLoaded', () => {
         images.forEach(img => {
             const slide = document.createElement('div');
             slide.className = 'gallery-slide';
-            slide.appendChild(img.cloneNode(true));
+            const newImg = img.cloneNode(true);
+            
+            // Open lightbox on click
+            newImg.addEventListener('click', (e) => {
+                // Don't trigger if we were just dragging
+                if (Math.abs(currentX - startX) > 5) return;
+                
+                const lightboxImg = lightbox.querySelector('img');
+                const lightboxCaption = lightbox.querySelector('.gallery-lightbox-caption');
+                lightboxImg.src = newImg.src;
+                lightboxImg.alt = newImg.alt;
+                lightboxCaption.textContent = newImg.alt || newImg.title || '';
+                
+                document.body.style.overflow = 'hidden';
+                clearInterval(interval);
+                lightbox.showModal();
+                
+                lightbox.onclose = () => {
+                    document.body.style.overflow = '';
+                    resetTimer();
+                };
+            });
+
+            slide.appendChild(newImg);
             wrapper.appendChild(slide);
             img.remove();
         });
