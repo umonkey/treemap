@@ -13,7 +13,17 @@ description = "An open-source platform for urban forest management and data coll
         </div>
     </div>
     <div class="hero-image">
-        <img src="/screenshot.png" alt="Tree Maps Screenshot">
+        <div class="gallery" data-delay="5000">
+            <img src="/screenshot-01-home.png" alt="Home page">
+            <img src="/screenshot-02-tree-preview.png" alt="Tree preview">
+            <img src="/screenshot-03-context-menu.png" alt="Context menu">
+            <img src="/screenshot-04-edit-form.png" alt="Tree edit form">
+            <img src="/screenshot-05-gallery.png" alt="Tree details page">
+            <img src="/screenshot-06-map-features.png" alt="Map layer settings">
+            <img src="/screenshot-07-search.png" alt="Advanced search form">
+            <img src="/screenshot-08-streetview.png" alt="Tree triangulation via Street View">
+            <img src="/screenshot-09-streetview-sequences.png" alt="Street view sequence management">
+        </div>
     </div>
 </div>
 

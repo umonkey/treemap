@@ -1,0 +1,74 @@
+.gallery {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--pico-border-radius);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    background: #000;
+}
+
+.gallery-slides {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+.gallery-slide {
+    min-width: 100%;
+    position: relative;
+}
+
+.gallery-slide img {
+    width: 100%;
+    display: block;
+}
+
+.gallery-nav {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-50%);
+    pointer-events: none;
+    z-index: 10;
+}
+
+.gallery-nav button {
+    background: rgba(0,0,0,0.3);
+    border: none;
+    color: white;
+    padding: 0;
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: background 0.2s;
+    margin: 1rem;
+    outline: none;
+    box-shadow: none;
+}
+
+.gallery-nav button:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.gallery-nav button:hover {
+    background: rgba(0,0,0,0.6);
+}
+
+.gallery-caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+    text-align: center;
+    backdrop-filter: blur(4px);
+}
