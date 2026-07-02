@@ -47,7 +47,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 # 6. Final configuration
 ENTRYPOINT []
-ENV PATH="/app/.venv/bin:$PATH"
+ENV PATH="/app/.venv/bin:/app/bin:$PATH"
 ENV UV_NO_SYNC=1
 
 # 7. Verification
