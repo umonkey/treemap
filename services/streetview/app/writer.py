@@ -86,7 +86,11 @@ class Writer:
         exif_bytes = piexif.dump(exif_dict)
         img.save(filename, "JPEG", exif=exif_bytes, quality=95)
 
-        tqdm.write(f"Writing frame {index} as {filename} @ {lat},{lon}")
+        _lat = round(lat, 6)
+        _lon = round(lon, 6)
+        _time = timestamp.strftime("%H:%M:%S")
+
+        tqdm.write(f"Writing frame {index} as {filename} @ {_lat},{_lon} // {_time}")
 
     def _get_thumbnail(self, img):
         thumb_io = io.BytesIO()

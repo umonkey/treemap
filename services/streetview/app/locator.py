@@ -55,26 +55,11 @@ class Locator:
                 f"No points found within {search_range}m of {lat}, {lon}"
             )
 
-        if timestamp_hint:
-            return min(
-                candidates, key=lambda x: abs((x[0] - timestamp_hint).total_seconds())
-            )
-
-        if len(candidates) == 1:
-            return candidates[0]
-
         print(f"Found {len(candidates)} possible intersections:")
         for t, d in candidates:
             print(f" - {t.isoformat()} (distance: {d:.2f}m)")
 
-        print(
-            "\nPlease provide a timestamp hint using --timestamp to choose "
-            "the correct one."
-        )
-
-        print(f"Example: --timestamp {candidates[0][0].isoformat()}")
-
-        raise NoCoordinates("Multiple intersections found. Please disambiguate.")
+        return candidates[0]
 
     def _find_closest_groups(
         self, lat, lon, search_range
