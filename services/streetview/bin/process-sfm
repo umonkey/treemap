@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+#
+# This script processes the input geo-tagged images to increase camera position accuracy.
+#
+# This script is expected to run inside a Docker container.
+#
+# Reads source images from the /input folder, puts new images in the /output folder.
+
+set -e
+
+OPENSFM="/source/OpenSfM/bin/opensfm"
+
+if [ ! -d /input ]; then
+    echo "Folder /input not found."
+    exit 1
+fi
+
+if [ ! -d /output ]; then
+    echo "Folder /output not found."
+    exit 1
+fi
+
+if [ ! -f /input/mask.png ]; then
+    echo "File /input/mask.png not found."
+    exit 1
+fi
+
+# (1) Clean up in case the script is restarted during development.
+rm -rf exif camera_models.json camera_models_overrides.json reports reconstruction.json
+
+# (2) Set up cameras.
+echo '{"all": {"projection_type": "spherical", "width": 7680, "height": 3840}}' > camera_models_overrides.json
+
+# (3) Extract metadata.
+$OPENSFM extract_metadata 2>&1 | tee 01-extract_metadata.log
