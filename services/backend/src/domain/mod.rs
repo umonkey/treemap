@@ -12,6 +12,7 @@ pub mod login;
 pub mod mapillary;
 pub mod observation;
 pub mod osm;
+pub mod panorama;
 pub mod photo;
 pub mod prop;
 pub mod settings;

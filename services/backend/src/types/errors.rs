@@ -30,6 +30,7 @@ pub enum Error {
     MapillaryExchange(String),
     MissingAuthorizationHeader,
     OsmExchange(String),
+    PanoramaNotFound,
     Queue,
     RemoteAddrNotSet,
     TreeNotFound,
@@ -107,6 +108,9 @@ impl Error {
             Error::OsmExchange(_) => {
                 r#"{"error":{"code":"OsmExchange","description":"OSM exchange failed."}}"#.to_string()
             }
+            Error::PanoramaNotFound => {
+                r#"{"error":{"code":"PanoramaNotFound","description":"The specified panorama does not exist in the database."}}"#.to_string()
+            }
             Error::Queue => {
                 r#"{"error":{"code":"Queue","description":"Error processing queue request."}}"#.to_string()
             }
@@ -164,6 +168,7 @@ impl ResponseError for Error {
             Error::AddressNotFound
             | Error::FileDownload
             | Error::FileNotFound
+            | Error::PanoramaNotFound
             | Error::TreeNotFound => StatusCode::NOT_FOUND,
             Error::BadAuthToken
             | Error::GoogleUserInfo
@@ -206,6 +211,7 @@ impl fmt::Display for Error {
             Error::MapillaryExchange(s) => write!(f, "MapillaryExchange: {s}"),
             Error::MissingAuthorizationHeader => write!(f, "MissingAuthorizationHeader"),
             Error::OsmExchange(s) => write!(f, "OsmExchange: {s}"),
+            Error::PanoramaNotFound => write!(f, "PanoramaNotFound"),
             Error::Queue => write!(f, "Queue"),
             Error::RemoteAddrNotSet => write!(f, "RemoteAddrNotSet"),
             Error::TreeNotFound => write!(f, "TreeNotFound"),

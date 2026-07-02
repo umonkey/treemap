@@ -10,6 +10,7 @@ pub mod mapillary;
 pub mod mcp;
 pub mod me;
 pub mod meta;
+pub mod panorama;
 pub mod settings;
 pub mod species;
 pub mod stats;

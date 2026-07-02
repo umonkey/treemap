@@ -15,6 +15,7 @@ use crate::actions::mapillary::mapillary_router;
 use crate::actions::mcp::mcp_router;
 use crate::actions::me::me_router;
 use crate::actions::meta::meta_router;
+use crate::actions::panorama::panorama_router;
 use crate::actions::settings::settings_router;
 use crate::actions::species::species_router;
 use crate::actions::stats::stats_router;
@@ -102,6 +103,12 @@ pub async fn serve_command() {
                                 HttpResponse::NotFound().finish()
                             })),
                     ),
+            )
+            .service(
+                web::scope("/api")
+                    .wrap(DefaultHeaders::new().add(("Cache-Control", "no-store")))
+                    .wrap(Transaction)
+                    .service(web::scope("/panoramas").configure(panorama_router)),
             )
             .service(
                 web::scope("/v1")
