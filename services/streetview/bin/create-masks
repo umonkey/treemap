@@ -1,0 +1,37 @@
+#!/bin/bash
+set -e
+
+# Ensure we are in the root of the project
+if [ ! -d "images" ]; then
+    echo "Error: 'images' directory not found. Please run this script from the root of your OpenSfM dataset."
+    exit 1
+fi
+
+# (1) Make sure ./mask.png exists
+if [ ! -f "mask.png" ]; then
+    echo "Error: mask.png not found in current directory."
+    exit 1
+fi
+
+# (2) Create folder masks
+mkdir -p masks
+
+# (3) Remove any existing png files from that folder
+echo "Cleaning existing masks..."
+find masks -type l -name "*.png" -delete
+find masks -type f -name "*.png" -delete
+
+# (4) For each image in the images/ folder, create a mask file
+echo "Creating masks for images..."
+count=0
+for img in images/*; do
+    # Only process files
+    if [ -f "$img" ]; then
+        img_name=$(basename "$img")
+        # OpenSfM looks for masks in the 'masks' folder with the name <filename>.png
+        ln -sf ../mask.png "masks/${img_name}.png"
+        count=$((count + 1))
+    fi
+done
+
+echo "Done. Created $count masks in the 'masks' directory."

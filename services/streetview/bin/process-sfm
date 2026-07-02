@@ -33,3 +33,27 @@ echo '{"all": {"projection_type": "spherical", "width": 7680, "height": 3840}}' 
 
 # (3) Extract metadata.
 $OPENSFM extract_metadata 2>&1 | tee 01-extract_metadata.log
+
+# (4) Smooth the raw GPS coordinates.
+bin/smooth-gps 2>&1 | tee 02-smooth_gps.log
+
+# (5) Run the core OpenSfM pipeline.
+$OPENSFM detect_features 2>&1 | tee 03-detect_features.log
+$OPENSFM match_features 2>&1 | tee 04-match_features.log
+$OPENSFM create_tracks 2>&1 | tee 05-create_tracks.log
+$OPENSFM reconstruct 2>&1 | tee 06-reconstruct.log
+
+# (6) Prune points out of the main scope.
+bin/prune_points 2>&1 | tee 07-prine_points.log
+
+# (7) Export the point cloud.
+$OPENSFM export_ply 2>&1 | tee 08-export_ply.log
+
+# (8) Check quality.
+bin/verify-error 2>&1 | tee 09-verify-error.log
+
+# (9) Write corrected images.
+bin/write-output 2>&1 | tee 10-write-output.log
+
+# (10) Log changes.
+bin/show-changes 2>&1 | tee 11-show-changes.log

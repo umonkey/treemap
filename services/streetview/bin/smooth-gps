@@ -1,0 +1,95 @@
+#!/usr/bin/env python3
+import json
+import os
+import glob
+import numpy as np
+from scipy.signal import savgol_filter
+
+def calculate_heading(lats, lons):
+    """Calculate approximate heading between consecutive points in degrees."""
+    headings = [0.0]
+    for i in range(len(lats) - 1):
+        d_lat = lats[i+1] - lats[i]
+        d_lon = lons[i+1] - lons[i]
+        heading = np.degrees(np.arctan2(d_lon, d_lat)) % 360
+        headings.append(heading)
+    return np.array(headings)
+
+def main():
+    exif_dir = 'exif'
+    
+    # Parameters for smoothing
+    window_size = 11
+    poly_order = 2
+    
+    # DOP parameters
+    base_dop = 0.05
+    turn_dop = 2.0
+    turn_threshold = 5.0  
+
+    exif_files = sorted(glob.glob(os.path.join(exif_dir, '*.exif')))
+    if not exif_files:
+        print(f"No .exif files found in {exif_dir}. Run 'extract_metadata' first.")
+        return
+
+    print(f"Reading and smoothing {len(exif_files)} exif files...")
+    
+    data_list = []
+    lats = []
+    lons = []
+    alts = []
+
+    for fpath in exif_files:
+        with open(fpath, 'r') as f:
+            data = json.load(f)
+            data_list.append((fpath, data))
+            
+            gps = data.get('gps', {})
+            lats.append(gps.get('latitude', 0))
+            lons.append(gps.get('longitude', 0))
+            alts.append(gps.get('altitude', 0))
+
+    lats = np.array(lats)
+    lons = np.array(lons)
+    alts = np.array(alts)
+
+    # SavGol smoothing
+    smooth_lats = savgol_filter(lats, window_size, poly_order)
+    smooth_lons = savgol_filter(lons, window_size, poly_order)
+    smooth_alts = savgol_filter(alts, window_size, poly_order)
+
+    # Turn Detection
+    headings = calculate_heading(smooth_lats, smooth_lons)
+    heading_deltas = np.abs(np.diff(headings, prepend=headings[0]))
+    heading_deltas = np.where(heading_deltas > 180, 360 - heading_deltas, heading_deltas)
+
+    print(f"Injecting smoothed coordinates and spherical projection directly into .exif files...")
+    
+    turn_count = 0
+    for i, (fpath, data) in enumerate(data_list):
+        is_turning = heading_deltas[i] > turn_threshold
+        current_dop = turn_dop if is_turning else base_dop
+        if is_turning:
+            turn_count += 1
+
+        # Update the data dictionary directly
+        if 'gps' not in data:
+            data['gps'] = {}
+        
+        data['gps']['latitude'] = float(smooth_lats[i])
+        data['gps']['longitude'] = float(smooth_lons[i])
+        data['gps']['altitude'] = float(smooth_alts[i])
+        data['gps']['dop'] = current_dop
+        
+        # FORCE spherical projection for 360 images
+        data['projection_type'] = 'spherical'
+        
+        # Save back to the SAME file
+        with open(fpath, 'w') as f:
+            json.dump(data, f, indent=4)
+
+    print(f"Done! Detected turns in {turn_count} frames.")
+    print("Coordinates, High-Trust DOP, and Spherical projection have been baked into exif/ folder.")
+
+if __name__ == "__main__":
+    main()
