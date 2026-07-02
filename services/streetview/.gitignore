@@ -2,3 +2,5 @@
 .envrc
 input
 output
+camera_models_overrides.json
+*.log

@@ -21,6 +21,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libglib2.0-0 \
     ca-certificates \
     curl \
+    procps \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # 2. Install uv
@@ -35,6 +36,7 @@ WORKDIR /app
 COPY pyproject.toml uv.lock README.md ./
 
 # 5. Build application environment
+ENV UV_PROJECT_ENVIRONMENT=/opt/venv
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev --no-install-project
 
@@ -47,7 +49,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 # 6. Final configuration
 ENTRYPOINT []
-ENV PATH="/app/.venv/bin:/app/bin:$PATH"
+ENV PATH="/opt/venv/bin:/app/bin:$PATH"
 ENV UV_NO_SYNC=1
 
 # 7. Verification

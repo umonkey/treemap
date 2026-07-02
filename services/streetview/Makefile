@@ -5,7 +5,7 @@ build:
 
 shell:
 	mkdir -p output output-sfm
-	docker run --rm -it -v $(PWD):/app -v $(PWD)/output:/input -v $(PWD)/output-sfm:/output $(SERVICE_NAME):latest bash
+	docker run --rm -it -v $(PWD)/output:/dataset/images -v $(PWD)/output-sfm:/dataset/output -w /dataset $(SERVICE_NAME):latest bash
 
 lint:
 	uv run flake8 .
