@@ -2,5 +2,6 @@
 .envrc
 input
 output
+output-sfm
 camera_models_overrides.json
 *.log

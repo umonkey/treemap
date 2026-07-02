@@ -34,28 +34,30 @@ echo '{"all": {"projection_type": "spherical", "width": 7680, "height": 3840}}' 
 # (3) Extract metadata.
 # This finds all images in /dataset/images and extracts the metadata into the exif folder,
 # e.g. /dataset/images/01.jpg -> /dataset/exif/01.jpg.exif
-opensfm extract_metadata /dataset 2>&1 | tee 01-extract_metadata.log
+time opensfm extract_metadata /dataset 2>&1 | tee 01-extract_metadata.log
 
 # (4) Smooth the raw GPS coordinates.
 smooth-gps 2>&1 | tee 02-smooth_gps.log
 
 # (5) Run the core OpenSfM pipeline.
-opensfm detect_features /dataset 2>&1 | tee 03-detect_features.log
-opensfm match_features /dataset 2>&1 | tee 04-match_features.log
-opensfm create_tracks /dataset 2>&1 | tee 05-create_tracks.log
-opensfm reconstruct /dataset 2>&1 | tee 06-reconstruct.log
+time opensfm detect_features /dataset 2>&1 | tee 03-detect_features.log
+time opensfm match_features /dataset 2>&1 | tee 04-match_features.log
+time opensfm create_tracks /dataset 2>&1 | tee 05-create_tracks.log
+time opensfm reconstruct /dataset 2>&1 | tee 06-reconstruct.log
 
 # (6) Prune points out of the main scope.
-bin/prune_points 2>&1 | tee 07-prine_points.log
+prune_points 2>&1 | tee 07-prine_points.log
 
 # (7) Export the point cloud.
-opensfm export_ply /dataset 2>&1 | tee 08-export_ply.log
+time opensfm export_ply /dataset 2>&1 | tee 08-export_ply.log
 
 # (8) Check quality.
-bin/verify-error 2>&1 | tee 09-verify-error.log
+verify-error 2>&1 | tee 09-verify-error.log
 
 # (9) Write corrected images.
-bin/write-output 2>&1 | tee 10-write-output.log
+time write-output 2>&1 | tee 10-write-output.log
 
 # (10) Log changes.
-bin/show-changes 2>&1 | tee 11-show-changes.log
+show-changes 2>&1 | tee 11-show-changes.log
+
+ls -ldh /dataset/output/*.jpg
