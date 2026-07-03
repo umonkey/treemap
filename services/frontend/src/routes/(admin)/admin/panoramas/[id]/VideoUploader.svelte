@@ -35,11 +35,17 @@
 	{/if}
 
 	{#if componentState.isUploading}
-		<p>
-			Uploading video: {componentState.uploadProgress}% ({formatSize(componentState.uploadedBytes)}
-			/ {formatSize(componentState.totalBytes)})
-		</p>
-		<progress value={componentState.uploadProgress} max="100"></progress>
+		<div class="upload-progress">
+			<div class="upload-status">
+				<span>Uploading video: {componentState.uploadProgress}%</span>
+				<span
+					>{formatSize(componentState.uploadedBytes)} / {formatSize(
+						componentState.totalBytes
+					)}</span
+				>
+			</div>
+			<progress value={componentState.uploadProgress} max="100"></progress>
+		</div>
 	{:else}
 		<input
 			type="file"
@@ -54,12 +60,52 @@
 
 <style>
 	section {
-		margin-top: var(--pico-spacing);
-		padding-top: var(--pico-spacing);
-		border-top: 1px solid var(--pico-muted-border-color);
+		margin-top: var(--gap);
+		padding-top: var(--gap);
+		border-top: 1px solid var(--sep-color);
 	}
 
 	.error {
-		color: var(--pico-danger-color);
+		color: var(--color-learn-wrong-bg);
+	}
+
+	.upload-progress {
+		margin-top: var(--gap);
+		width: 100%;
+	}
+
+	.upload-status {
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: calc(var(--gap) * 0.5);
+		font-size: 0.9rem;
+		color: var(--text-color-inactive);
+	}
+
+	progress {
+		display: block;
+		width: 100%;
+		height: 16px;
+		border-radius: 8px;
+		background-color: var(--color-progress-bg);
+		border: none;
+		appearance: none;
+		-webkit-appearance: none;
+	}
+
+	progress::-webkit-progress-bar {
+		background-color: var(--color-progress-bg);
+		border-radius: 8px;
+	}
+
+	progress::-webkit-progress-value {
+		background-color: var(--color-progress-fg);
+		border-radius: 8px;
+		transition: width 0.3s ease;
+	}
+
+	progress::-moz-progress-bar {
+		background-color: var(--color-progress-fg);
+		border-radius: 8px;
 	}
 </style>
