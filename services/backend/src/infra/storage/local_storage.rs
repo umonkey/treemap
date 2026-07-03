@@ -1,4 +1,4 @@
-use super::base::FileStorageInterface;
+use super::base::{CompletedPart, FileStorageInterface};
 use crate::infra::config::Config;
 use crate::types::*;
 use async_trait::async_trait;
@@ -66,6 +66,33 @@ impl FileStorageInterface for LocalFileStorage {
     }
 
     async fn create_upload_url(&self, _id: u64) -> Result<String> {
+        Err(Error::FileUpload)
+    }
+
+    async fn exists(&self, key: &str) -> Result<bool> {
+        let file_path = format!("{}/{}", self.folder, key);
+        Ok(fs::metadata(file_path).await.is_ok())
+    }
+
+    async fn start_multipart_upload(&self, _key: &str) -> Result<String> {
+        Err(Error::FileUpload)
+    }
+
+    async fn create_upload_part_url(
+        &self,
+        _key: &str,
+        _upload_id: &str,
+        _part_number: i32,
+    ) -> Result<String> {
+        Err(Error::FileUpload)
+    }
+
+    async fn complete_multipart_upload(
+        &self,
+        _key: &str,
+        _upload_id: &str,
+        _parts: Vec<CompletedPart>,
+    ) -> Result<()> {
         Err(Error::FileUpload)
     }
 }

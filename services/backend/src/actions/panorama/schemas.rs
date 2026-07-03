@@ -1,5 +1,6 @@
 use crate::domain::panorama::Panorama;
-use serde::Serialize;
+use crate::infra::storage::CompletedPart;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize)]
 pub struct PanoramaRead {
@@ -14,6 +15,23 @@ pub struct PanoramaRead {
     pub has_track: bool,
     pub has_web_video: bool,
     pub video_timestamp: Option<f64>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct StartMultipartRequest {
+    pub parts_count: i32,
+}
+
+#[derive(Debug, Serialize)]
+pub struct MultipartUploadResponse {
+    pub upload_id: String,
+    pub urls: Vec<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CompleteMultipartRequest {
+    pub upload_id: String,
+    pub parts: Vec<CompletedPart>,
 }
 
 impl From<Panorama> for PanoramaRead {

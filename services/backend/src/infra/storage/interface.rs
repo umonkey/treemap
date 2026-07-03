@@ -1,4 +1,4 @@
-use super::base::FileStorageInterface;
+use super::base::{CompletedPart, FileStorageInterface};
 use super::local_storage::LocalFileStorage;
 use super::s3_storage::S3FileStorage;
 use crate::infra::config::Config;
@@ -38,5 +38,35 @@ impl FileStorage {
 
     pub async fn create_upload_url(&self, id: u64) -> Result<String> {
         self.client.create_upload_url(id).await
+    }
+
+    pub async fn exists(&self, key: &str) -> Result<bool> {
+        self.client.exists(key).await
+    }
+
+    pub async fn start_multipart_upload(&self, key: &str) -> Result<String> {
+        self.client.start_multipart_upload(key).await
+    }
+
+    pub async fn create_upload_part_url(
+        &self,
+        key: &str,
+        upload_id: &str,
+        part_number: i32,
+    ) -> Result<String> {
+        self.client
+            .create_upload_part_url(key, upload_id, part_number)
+            .await
+    }
+
+    pub async fn complete_multipart_upload(
+        &self,
+        key: &str,
+        upload_id: &str,
+        parts: Vec<CompletedPart>,
+    ) -> Result<()> {
+        self.client
+            .complete_multipart_upload(key, upload_id, parts)
+            .await
     }
 }

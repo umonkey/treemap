@@ -1,14 +1,15 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import { pageState } from './page.svelte.ts';
+	import { page } from '$app/state';
 	import { formatDateTimeISO } from '$lib/utils/strings';
 	import Breadcrumbs from '$lib/components/admin/Breadcrumbs.svelte';
 	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
+	import VideoUploader from './VideoUploader.svelte';
 
-	let { data } = $props();
-	const id = data.id;
+	const id = $derived(page.params.id);
 
 	$effect(() => {
 		untrack(() => pageState.reload(id));
@@ -20,18 +21,18 @@
 </svelte:head>
 
 <AuthWrapper permission="pano:edit">
-	<article>
-		<header>
-			<h1>Panorama: {pageState.panorama?.title || id}</h1>
-			<Breadcrumbs
-				items={[
-					{ label: 'Admin', href: '/admin' },
-					{ label: 'Panoramas', href: '/admin/panoramas' },
-					{ label: id }
-				]}
-			/>
-		</header>
+	<header>
+		<h1>Panorama: {pageState.panorama?.title || id}</h1>
+		<Breadcrumbs
+			items={[
+				{ label: 'Admin', href: '/admin' },
+				{ label: 'Panoramas', href: '/admin/panoramas' },
+				{ label: id }
+			]}
+		/>
+	</header>
 
+	<article>
 		{#if pageState.error}
 			<p class="error">Error loading panorama: {pageState.error.description}</p>
 		{:else if pageState.isLoading}
@@ -73,6 +74,10 @@
 				<Button link="/admin/panoramas/{id}/edit">Edit Panorama</Button>
 				<Button link="/admin/panoramas" type="cancel">Back to List</Button>
 			</Buttons>
+
+			{#if !pageState.panorama.has_video}
+				<VideoUploader panoramaId={id} onUploadSuccess={() => pageState.reload(id)} />
+			{/if}
 		{/if}
 	</article>
 </AuthWrapper>
@@ -80,6 +85,12 @@
 <style>
 	.error {
 		color: red;
+	}
+
+	article {
+		display: flex;
+		flex-direction: column;
+		gap: 2rem;
 	}
 
 	dl {

@@ -58,3 +58,46 @@ export async function updatePanorama(
 		body: JSON.stringify(data)
 	});
 }
+
+export async function verifyVideoUpload(id: string): Promise<IResponse<Panorama>> {
+	return await request<Panorama>('POST', `api/panoramas/${id}/video`, {
+		headers: getAuthHeaders()
+	});
+}
+
+export interface MultipartUpload {
+	upload_id: string;
+	urls: string[];
+}
+
+export interface CompletedPart {
+	part_number: number;
+	etag: string;
+}
+
+export async function startVideoMultipart(
+	id: string,
+	partsCount: number
+): Promise<IResponse<MultipartUpload>> {
+	return await request<MultipartUpload>('POST', `api/panoramas/${id}/video/multipart`, {
+		headers: {
+			...getAuthHeaders(),
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({ parts_count: partsCount })
+	});
+}
+
+export async function completeVideoMultipart(
+	id: string,
+	uploadId: string,
+	parts: CompletedPart[]
+): Promise<IResponse<Panorama>> {
+	return await request<Panorama>('POST', `api/panoramas/${id}/video/multipart/complete`, {
+		headers: {
+			...getAuthHeaders(),
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({ upload_id: uploadId, parts })
+	});
+}
