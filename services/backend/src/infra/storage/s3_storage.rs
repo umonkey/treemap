@@ -130,7 +130,7 @@ impl FileStorageInterface for S3FileStorage {
 
     async fn create_upload_url(&self, id: u64) -> Result<String> {
         let key = id.to_string();
-        let expires_in = Duration::from_secs(3600);
+        let expires_in = Duration::from_secs(24 * 3600);
         let config = PresigningConfig::builder()
             .expires_in(expires_in)
             .build()
@@ -198,7 +198,7 @@ impl FileStorageInterface for S3FileStorage {
         upload_id: &str,
         part_number: i32,
     ) -> Result<String> {
-        let expires_in = Duration::from_secs(3600);
+        let expires_in = Duration::from_secs(24 * 3600);
         let config = PresigningConfig::builder()
             .expires_in(expires_in)
             .build()

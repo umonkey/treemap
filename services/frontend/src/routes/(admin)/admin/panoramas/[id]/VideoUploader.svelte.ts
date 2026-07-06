@@ -12,35 +12,74 @@ class VideoUploaderLogic {
 	uploadedBytes = $state<number>(0);
 	totalBytes = $state<number>(0);
 	error = $state<IError | undefined>(undefined);
+	private uploadId = $state<string | undefined>(undefined);
+	private urls = $state<string[]>([]);
+	private completedParts = $state<{ part_number: number; etag: string }[]>([]);
+	private activeFile = $state<File | undefined>(undefined);
+	private activePanoramaId = $state<string | undefined>(undefined);
 
-	uploadVideo = async (id: string, file: File, onComplete: () => void) => {
-		this.isUploading = true;
+	reset = () => {
+		this.isUploading = false;
 		this.uploadProgress = 0;
 		this.uploadedBytes = 0;
-		this.totalBytes = file.size;
+		this.totalBytes = 0;
 		this.error = undefined;
+		this.uploadId = undefined;
+		this.urls = [];
+		this.completedParts = [];
+		this.activeFile = undefined;
+		this.activePanoramaId = undefined;
+	};
+
+	uploadVideo = async (id: string, file: File, onComplete: () => void) => {
+		const isResuming = this.uploadId && this.activeFile === file && this.activePanoramaId === id;
+
+		this.isUploading = true;
+		this.error = undefined;
+		this.activeFile = file;
+		this.activePanoramaId = id;
+		this.totalBytes = file.size;
 
 		const partsCount = Math.ceil(file.size / CHUNK_SIZE);
-		console.log(
-			`Starting multipart upload for ${file.name} (${file.size} bytes), ${partsCount} parts.`
-		);
 
 		try {
-			const startRes = await startVideoMultipart(id, partsCount);
-			if (startRes.status !== 200 || !startRes.data) {
-				this.error = startRes.error || {
-					code: 'MULTIPART_START_FAILED',
-					description: 'Failed to start multipart upload'
-				};
-				this.isUploading = false;
-				return;
+			if (!isResuming) {
+				console.log(
+					`Starting multipart upload for ${file.name} (${file.size} bytes), ${partsCount} parts.`
+				);
+				const startRes = await startVideoMultipart(id, partsCount);
+				if (startRes.status !== 200 || !startRes.data) {
+					this.error = startRes.error || {
+						code: 'MULTIPART_START_FAILED',
+						description: 'Failed to start multipart upload'
+					};
+					this.isUploading = false;
+					return;
+				}
+				this.uploadId = startRes.data.upload_id;
+				this.urls = startRes.data.urls;
+				this.completedParts = [];
+			} else {
+				console.log(`Resuming multipart upload for ${file.name}, ${partsCount} parts.`);
 			}
 
-			const { upload_id, urls } = startRes.data;
-			const completedParts: { part_number: number; etag: string }[] = [];
 			const progressPerPart = new Array(partsCount).fill(0);
+			// Initialize progress for already completed parts.
+			for (const part of this.completedParts) {
+				const partIndex = part.part_number - 1;
+				const partStart = partIndex * CHUNK_SIZE;
+				const partEnd = Math.min((partIndex + 1) * CHUNK_SIZE, file.size);
+				progressPerPart[partIndex] = partEnd - partStart;
+			}
+			this.uploadedBytes = progressPerPart.reduce((a, b) => a + b, 0);
+			this.uploadProgress = Math.round((this.uploadedBytes / file.size) * 100);
 
 			const uploadPartWithRetry = async (partNumber: number, url: string) => {
+				// Skip already completed parts.
+				if (this.completedParts.find((p) => p.part_number === partNumber)) {
+					return;
+				}
+
 				let attempt = 0;
 
 				while (attempt < MAX_RETRIES) {
@@ -52,7 +91,7 @@ class VideoUploaderLogic {
 						});
 
 						console.log(`part ${partNumber} uploaded, etag=${etag}`);
-						completedParts.push({ part_number: partNumber, etag });
+						this.completedParts.push({ part_number: partNumber, etag });
 						return;
 					} catch (e) {
 						attempt++;
@@ -67,7 +106,7 @@ class VideoUploaderLogic {
 			};
 
 			// Upload parts with limited concurrency.
-			const queue = urls.map((url, i) => ({ partNumber: i + 1, url }));
+			const queue = this.urls.map((url, i) => ({ partNumber: i + 1, url }));
 			const workers = Array(Math.min(MAX_CONCURRENCY, partsCount))
 				.fill(null)
 				.map(async () => {
@@ -82,11 +121,12 @@ class VideoUploaderLogic {
 			await Promise.all(workers);
 
 			// Sort parts by part_number before sending to complete.
-			completedParts.sort((a, b) => a.part_number - b.part_number);
-			console.log(`Sending completion request with ${completedParts.length} parts.`);
+			const finalParts = [...this.completedParts].sort((a, b) => a.part_number - b.part_number);
+			console.log(`Sending completion request with ${finalParts.length} parts.`);
 
-			const completeRes = await completeVideoMultipart(id, upload_id, completedParts);
+			const completeRes = await completeVideoMultipart(id, this.uploadId!, finalParts);
 			if (completeRes.status === 200 && completeRes.data) {
+				this.reset();
 				onComplete();
 			} else {
 				this.error = completeRes.error || {

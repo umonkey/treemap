@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { componentState } from './VideoUploader.svelte.ts';
 	import Button from '$lib/ui/button/Button.svelte';
+	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import { formatSize } from '$lib/utils/strings';
 
 	const {
@@ -12,6 +13,7 @@
 	} = $props();
 
 	let fileInput = $state<HTMLInputElement>();
+	let selectedFile = $state<File | undefined>();
 
 	const handleUploadClick = () => {
 		fileInput?.click();
@@ -21,8 +23,20 @@
 		const target = event.target as HTMLInputElement;
 		const file = target.files?.[0];
 		if (file) {
+			selectedFile = file;
 			await componentState.uploadVideo(panoramaId, file, onUploadSuccess);
 		}
+	};
+
+	const handleRetry = async () => {
+		if (selectedFile) {
+			await componentState.uploadVideo(panoramaId, selectedFile, onUploadSuccess);
+		}
+	};
+
+	const handleStartOver = () => {
+		selectedFile = undefined;
+		componentState.reset();
 	};
 </script>
 
@@ -46,6 +60,11 @@
 			</div>
 			<progress value={componentState.uploadProgress} max="100"></progress>
 		</div>
+	{:else if componentState.error}
+		<Buttons>
+			<Button onClick={handleRetry}>Retry Upload</Button>
+			<Button onClick={handleStartOver} type="secondary">Start Over</Button>
+		</Buttons>
 	{:else}
 		<input
 			type="file"
