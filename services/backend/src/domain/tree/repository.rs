@@ -1,4 +1,4 @@
-use super::models::Tree;
+use super::models::{Tree, TreeLocation};
 use super::schemas::*;
 use crate::domain::prop::{PropRecord, PropRepository};
 use crate::infra::database::{CountQuery, IncrementQuery, InsertQuery, SelectQuery, UpdateQuery};
@@ -19,6 +19,23 @@ pub struct TreeRepository {
 impl TreeRepository {
     pub async fn all(&self) -> Result<Vec<Tree>> {
         self.query_multiple(SelectQuery::new(TABLE)).await
+    }
+
+    pub async fn get_lightweight_locations(&self) -> Result<Vec<TreeLocation>> {
+        let sql = format!("SELECT id, lat, lon, state FROM `{TABLE}`");
+        let rows = self.db.fetch_sql(&sql, &[]).await?;
+        let mut locations = Vec::with_capacity(rows.len());
+
+        for row in rows {
+            locations.push(TreeLocation {
+                id: row.require_u64("id")?,
+                lat: row.require_f64("lat")?,
+                lon: row.require_f64("lon")?,
+                state: row.require_string("state")?,
+            });
+        }
+
+        Ok(locations)
     }
 
     pub async fn count(&self) -> Result<u64> {

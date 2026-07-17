@@ -13,7 +13,6 @@ use crate::infra::queue::Queue;
 use crate::services::queue_consumer::{AddPhotoMessage, UpdateTreeAddressMessage};
 use crate::services::{Context, Injectable};
 use crate::types::*;
-use crate::utils::osm_round_coord;
 use crate::utils::{fix_circumference, get_timestamp, get_unique_id};
 use log::{debug, error, info, warn};
 use std::collections::HashMap;
@@ -40,43 +39,36 @@ pub struct TreeService {
 impl TreeService {
     pub async fn get_duplicates(&self) -> Result<Vec<DuplicateLocation>> {
         // Get all trees from the database
-        let trees = self.trees.all().await?;
+        let trees = self.trees.get_lightweight_locations().await?;
 
         // HashMap to store coordinate -> tree_ids mapping
-        let mut location_map: HashMap<String, Vec<String>> = HashMap::new();
+        // Key is (lat * 10,000,000, lon * 10,000,000)
+        let mut location_map: HashMap<(i64, i64), Vec<String>> = HashMap::new();
 
         // Process each tree
         for tree in trees {
-            if !Self::is_visible(&tree) {
+            if tree.state == "replaced" {
                 continue; // Skip trees that are not visible
             }
 
             // Round coordinates using OSM standard (7 decimal places)
-            let rounded_lat = osm_round_coord(tree.lat);
-            let rounded_lon = osm_round_coord(tree.lon);
-
-            // Create location key
-            let location_key = format!("{rounded_lat},{rounded_lon}");
+            let rounded_lat = (tree.lat * 10_000_000.0).round() as i64;
+            let rounded_lon = (tree.lon * 10_000_000.0).round() as i64;
 
             // Add tree ID to the location
             location_map
-                .entry(location_key)
+                .entry((rounded_lat, rounded_lon))
                 .or_default()
                 .push(tree.id.to_string());
         }
 
         // Collect locations with more than 1 tree
         let mut duplicates = Vec::new();
-        for (location_key, tree_ids) in location_map {
+        for (coords, tree_ids) in location_map {
             if tree_ids.len() > 1 {
-                // Parse coordinates back from the key
-                let coords: Vec<&str> = location_key.split(',').collect();
-                if coords.len() == 2 {
-                    if let (Ok(lat), Ok(lon)) = (coords[0].parse::<f64>(), coords[1].parse::<f64>())
-                    {
-                        duplicates.push(DuplicateLocation::new(lat, lon, tree_ids));
-                    }
-                }
+                let lat = coords.0 as f64 / 10_000_000.0;
+                let lon = coords.1 as f64 / 10_000_000.0;
+                duplicates.push(DuplicateLocation::new(lat, lon, tree_ids));
             }
         }
 
@@ -949,6 +941,7 @@ mod tests {
     use super::*;
     use crate::services::AppState;
     use crate::services::ContextExt;
+    use crate::utils::osm_round_coord;
     use std::collections::HashMap;
 
     async fn setup() -> Arc<TreeService> {

@@ -15,7 +15,10 @@ pub async fn merge_duplicates_command() {
 
     let state = AppState::new()
         .await
-        .expect("Error initializing app state.");
+        .expect("Error initializing app state.")
+        .session()
+        .await
+        .expect("Error creating session state.");
 
     let trees = state
         .build::<TreeService>()
@@ -25,6 +28,12 @@ pub async fn merge_duplicates_command() {
         .merge_duplicates(limit)
         .await
         .expect("Error merging duplicates.");
+
+    state
+        .database
+        .commit()
+        .await
+        .expect("Error committing transaction.");
 
     for (old_id, new_id) in merged_pairs {
         println!("Tree {} merged into {}.", old_id, new_id);

@@ -4,6 +4,14 @@ use crate::infra::database::{Attributes, Value};
 use crate::types::Result;
 use serde::Serialize;
 
+#[derive(Clone, Debug, Serialize)]
+pub struct TreeLocation {
+    pub id: u64,
+    pub lat: f64,
+    pub lon: f64,
+    pub state: String,
+}
+
 #[derive(Clone, Debug, Default, Serialize)]
 pub struct Tree {
     pub id: u64,
