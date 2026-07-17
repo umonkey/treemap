@@ -1,4 +1,4 @@
-use crate::domain::tree::TreeService;
+use crate::services::tree_merger::TreeMergerService;
 use crate::services::*;
 
 pub async fn osm_remap_duplicates_command() {
@@ -6,11 +6,11 @@ pub async fn osm_remap_duplicates_command() {
         .await
         .expect("Error initializing app state.");
 
-    let trees = state
-        .build::<TreeService>()
+    let merger = state
+        .build::<TreeMergerService>()
         .expect("Error creating handler.");
 
-    let remapped = trees
+    let remapped = merger
         .remap_osm_duplicates()
         .await
         .expect("Error remapping OSM duplicates.");

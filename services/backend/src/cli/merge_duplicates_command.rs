@@ -1,4 +1,4 @@
-use crate::domain::tree::TreeService;
+use crate::services::tree_merger::TreeMergerService;
 use crate::services::*;
 
 pub async fn merge_duplicates_command() {
@@ -20,11 +20,11 @@ pub async fn merge_duplicates_command() {
         .await
         .expect("Error creating session state.");
 
-    let trees = state
-        .build::<TreeService>()
+    let merger = state
+        .build::<TreeMergerService>()
         .expect("Error creating handler.");
 
-    let merged_pairs = trees
+    let merged_pairs = merger
         .merge_duplicates(limit)
         .await
         .expect("Error merging duplicates.");
