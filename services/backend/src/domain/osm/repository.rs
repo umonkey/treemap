@@ -84,7 +84,7 @@ impl OsmTreeRepository {
 
         let placeholders: Vec<String> = ids.iter().map(|_| "?".to_string()).collect();
         let sql = format!(
-            "UPDATE `{TABLE}` SET visible = 0 WHERE id IN ({})",
+            "UPDATE `{TABLE}` SET visible = 0, version = version + 1 WHERE id IN ({})",
             placeholders.join(", ")
         );
         let params: Vec<Value> = ids.iter().map(|id| Value::from(*id as i64)).collect();

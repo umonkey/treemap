@@ -146,11 +146,8 @@ impl OsmWriterService {
     }
 
     /// Push deletions to OSM.
-    pub async fn push_deletions(&self, dry_run: bool) -> Result<u64> {
-        let nodes = self
-            .osm_trees
-            .get_nodes_to_delete(self.changeset_size as u64)
-            .await?;
+    pub async fn push_deletions(&self, limit: u64, dry_run: bool) -> Result<u64> {
+        let nodes = self.osm_trees.get_nodes_to_delete(limit).await?;
 
         if nodes.is_empty() {
             info!("No nodes to delete from OSM.");
