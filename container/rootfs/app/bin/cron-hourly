@@ -8,6 +8,9 @@ bin/treemap osm-pull \
 bin/treemap merge-duplicates \
     && bin/treemap osm-remap-duplicates
 
+# Remove nodes from OSM which were deleted locally; 100 trees at a time.
+bin/treemap osm-push-delete 100
+
 # Push new trees.
 # Temporarily disabled for investigation.
 #bin/treemap osm-push && curl -s -o /dev/null 'https://hc-ping.com/8117cd7c-3ca9-42d4-b80a-06ccbde3b4e6'
