@@ -8,3 +8,5 @@
 /wiki
 /trees.json
 /.secrets
+/.opencode/node_modules
+/.opencode/package*
