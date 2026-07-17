@@ -6,7 +6,7 @@ mod interface;
 mod local_storage;
 mod s3_storage;
 
-pub use interface::{create_driver, FileStorage};
+pub use interface::{create_driver, BackupStorage, FileStorage};
 
 // We need access to exact drivers when we move between storages.
 pub use base::StorageDriver;

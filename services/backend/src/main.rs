@@ -14,6 +14,7 @@ fn usage() {
     println!("Usage: treemap command");
     println!();
     println!("Commands:");
+    println!("  backup-database       -- create a database backup");
     println!("  merge-duplicates [N]  -- automated duplicate tree resolution");
     println!("  migrate-timestamps    -- backfill update timestamps");
     println!("  mapillary-pull        -- get new images from Mapillary");
@@ -57,6 +58,10 @@ async fn main() -> std::io::Result<()> {
     match command.as_str() {
         "serve" => {
             serve_command().await;
+            return Ok(());
+        }
+        "backup-database" => {
+            backup_database_command().await;
             return Ok(());
         }
         "merge-duplicates" => {

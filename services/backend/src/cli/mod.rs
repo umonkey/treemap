@@ -1,3 +1,4 @@
+mod backup_database_command;
 mod mapillary_pull_command;
 mod merge_duplicates_command;
 mod migrate_timestamps_command;
@@ -11,6 +12,7 @@ mod serve_command;
 mod update_tree_address_command;
 mod update_tree_addresses_command;
 mod upload_files_command;
+pub use self::backup_database_command::*;
 pub use self::mapillary_pull_command::*;
 pub use self::merge_duplicates_command::*;
 pub use self::migrate_timestamps_command::*;

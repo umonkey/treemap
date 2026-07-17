@@ -55,6 +55,27 @@ impl FileStorage {
     }
 }
 
+pub struct BackupStorage {
+    storage: Storage,
+}
+
+impl BackupStorage {
+    pub fn new(driver: Arc<dyn StorageDriver>, config: &Config) -> Result<Self> {
+        let bucket = config
+            .backup_bucket
+            .as_ref()
+            .ok_or_else(|| Error::Config("backup_bucket not set".to_string()))?;
+
+        Ok(Self {
+            storage: Storage::new(driver, bucket.clone()),
+        })
+    }
+
+    pub async fn write_file(&self, path: &str, data: &[u8], public: bool) -> Result<()> {
+        self.storage.write_file(path, data, public).await
+    }
+}
+
 pub fn create_driver(config: &Config, secrets: &Secrets) -> Result<Arc<dyn StorageDriver>> {
     if config.file_storage == "s3" {
         return Ok(Arc::new(S3StorageDriver::new(config, secrets)?));

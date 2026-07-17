@@ -1,2 +1,5 @@
 # Run OSM updates every hour.
 0 * * * * /app/bin/cron-hourly
+
+# Run daily tasks.
+0 4 * * * /app/bin/cron-daily

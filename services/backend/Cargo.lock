@@ -5131,6 +5131,7 @@ dependencies = [
  "csv",
  "dotenv",
  "env_logger",
+ "flate2",
  "futures",
  "glob",
  "html-escape",
