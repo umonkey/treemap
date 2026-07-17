@@ -14,11 +14,14 @@ fn usage() {
     println!("Usage: treemap command");
     println!();
     println!("Commands:");
+    println!("  merge-duplicates [N]  -- automated duplicate tree resolution");
     println!("  migrate-timestamps    -- backfill update timestamps");
     println!("  mapillary-pull        -- get new images from Mapillary");
     println!("  osm-pull              -- get new trees from OpenStreetMap");
     println!("  osm-push              -- send new trees to OSM");
     println!("  osm-push-changes      -- send tree updates to OSM");
+    println!("  osm-push-delete       -- remove deleted trees from OSM");
+    println!("  osm-remap-duplicates  -- fix OSM IDs for merged trees");
     println!("  queue-consumer        -- run the queue consumer daemon");
     println!("  serve                 -- run the web server");
     println!("  update-tree-address N -- update street address for a single tree");
@@ -56,6 +59,10 @@ async fn main() -> std::io::Result<()> {
             serve_command().await;
             return Ok(());
         }
+        "merge-duplicates" => {
+            merge_duplicates_command().await;
+            return Ok(());
+        }
         "migrate-timestamps" => {
             migrate_timestamps_command().await;
             return Ok(());
@@ -74,6 +81,14 @@ async fn main() -> std::io::Result<()> {
         }
         "osm-push-changes" => {
             osm_push_changes_command().await;
+            return Ok(());
+        }
+        "osm-push-delete" => {
+            osm_push_delete_command().await;
+            return Ok(());
+        }
+        "osm-remap-duplicates" => {
+            osm_remap_duplicates_command().await;
             return Ok(());
         }
         "update-tree-address" => {

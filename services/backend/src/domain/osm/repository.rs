@@ -59,6 +59,40 @@ impl OsmTreeRepository {
             .await?;
         Ok(())
     }
+
+    pub async fn get_nodes_to_delete(&self, limit: u64) -> Result<Vec<OsmTreeRecord>> {
+        let sql = format!(
+            "SELECT ot.* FROM `{TABLE}` ot \
+             JOIN trees t ON ot.id = t.osm_id \
+             WHERE (t.state = 'gone' OR t.state = 'replaced') \
+             AND ot.visible = 1 \
+             ORDER BY ot.id ASC \
+             LIMIT ?"
+        );
+
+        let rows = self
+            .db
+            .fetch_sql(&sql, &[Value::from(limit as i64)])
+            .await?;
+        rows.iter().map(OsmTreeRecord::from_attributes).collect()
+    }
+
+    pub async fn mark_as_deleted(&self, ids: &[u64]) -> Result<()> {
+        if ids.is_empty() {
+            return Ok(());
+        }
+
+        let placeholders: Vec<String> = ids.iter().map(|_| "?".to_string()).collect();
+        let sql = format!(
+            "UPDATE `{TABLE}` SET visible = 0 WHERE id IN ({})",
+            placeholders.join(", ")
+        );
+        let params: Vec<Value> = ids.iter().map(|id| Value::from(*id as i64)).collect();
+
+        self.db.execute_sql(&sql, &params).await?;
+
+        Ok(())
+    }
 }
 
 impl Injectable for OsmTreeRepository {

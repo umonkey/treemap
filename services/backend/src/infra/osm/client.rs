@@ -95,6 +95,13 @@ impl OsmClient {
         Ok(())
     }
 
+    pub async fn upload_diff(&self, changeset_id: u64, xml: &str) -> Result<()> {
+        let url = format!("https://api.openstreetmap.org/api/0.6/changeset/{changeset_id}/upload");
+        self.post(&url, xml).await?;
+        info!("OSM diff uploaded to changeset {changeset_id}");
+        Ok(())
+    }
+
     pub async fn get_token(&self, code: &str) -> Result<String> {
         let client_id = self.client_id.as_ref().ok_or_else(|| {
             error!("OSM client id not set.");
@@ -245,6 +252,37 @@ impl OsmClient {
         if response.status() != 200 {
             return Err(Error::OsmExchange(format!(
                 "OSM API PUT failed with status: {}",
+                response.status()
+            )));
+        }
+
+        response
+            .text()
+            .await
+            .map_err(|e| Error::OsmExchange(format!("Error parsing OSM API response text: {e:?}")))
+    }
+
+    async fn post(&self, url: &str, body: &str) -> Result<String> {
+        debug!("OSM POST: {url}; body: {body}");
+
+        let response = match self
+            .client
+            .post(url)
+            .header("Authorization", format!("bearer {}", self.get_api_token()?))
+            .body(body.to_string())
+            .send()
+            .await
+        {
+            Ok(response) => response,
+
+            Err(e) => {
+                return Err(Error::OsmExchange(format!("Error querying OSM API: {e}")));
+            }
+        };
+
+        if response.status() != 200 {
+            return Err(Error::OsmExchange(format!(
+                "OSM API POST failed with status: {}",
                 response.status()
             )));
         }

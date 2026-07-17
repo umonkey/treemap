@@ -22,8 +22,13 @@ impl TreeRepository {
     }
 
     pub async fn count(&self) -> Result<u64> {
-        let query = CountQuery::new(TABLE);
-        self.db.count(query).await
+        let sql = format!("SELECT COUNT(1) AS count FROM `{TABLE}` WHERE state <> 'gone' AND state <> 'replaced' AND state <> 'stump'");
+        let rows = self.db.fetch_sql(&sql, &[]).await?;
+        if let Some(row) = rows.first() {
+            row.require_u64("count")
+        } else {
+            Ok(0)
+        }
     }
 
     pub async fn get(&self, id: u64) -> Result<Option<Tree>> {
@@ -366,6 +371,68 @@ impl TreeRepository {
         Ok(())
     }
 
+    pub async fn mark_as_merged(&self, id: u64, replaced_by: u64, user_id: u64) -> Result<()> {
+        let now = get_timestamp();
+        let query = UpdateQuery::new(TABLE)
+            .with_condition("id", Value::from(id as i64))
+            .with_value("state", Value::from("replaced".to_string()))
+            .with_value("replaced_by", Value::from(replaced_by as i64))
+            .with_value("updated_at", Value::from(now as i64))
+            .with_value("updated_by", Value::from(user_id as i64));
+
+        self.db.update(query).await?;
+
+        self.add_tree_prop(id, "state", "replaced", user_id).await?;
+        self.add_tree_prop(id, "replaced_by", &replaced_by.to_string(), user_id)
+            .await?;
+
+        Ok(())
+    }
+
+    pub async fn recalculate_stats(&self, tree_id: u64) -> Result<()> {
+        let comment_count = self
+            .db
+            .count(
+                CountQuery::new("comments").with_condition("tree_id", Value::from(tree_id as i64)),
+            )
+            .await?;
+        let like_count = self
+            .db
+            .count(
+                CountQuery::new("likes")
+                    .with_condition("tree_id", Value::from(tree_id as i64))
+                    .with_condition("state", Value::from(1)),
+            )
+            .await?;
+
+        let query = UpdateQuery::new(TABLE)
+            .with_condition("id", Value::from(tree_id as i64))
+            .with_value("comment_count", Value::from(comment_count as i64))
+            .with_value("like_count", Value::from(like_count as i64));
+
+        self.db.update(query).await?;
+        Ok(())
+    }
+
+    pub async fn get_mismatched_osm_trees(&self) -> Result<Vec<Tree>> {
+        let sql = format!(
+            "SELECT t.* FROM `{TABLE}` t \
+             JOIN osm_trees ot ON ot.id = t.osm_id \
+             WHERE ot.visible = 0 AND t.state NOT IN ('gone', 'replaced') \
+             ORDER BY t.id"
+        );
+
+        self.fetch(&sql, &[]).await
+    }
+
+    pub async fn get_by_replaced_by(&self, id: u64) -> Result<Vec<Tree>> {
+        let query = SelectQuery::new(TABLE)
+            .with_condition("replaced_by", Value::from(id as i64))
+            .with_order("id");
+
+        self.query_multiple(query).await
+    }
+
     async fn increment(&self, tree_id: u64, key: &str, value: i64) -> Result<()> {
         let query = IncrementQuery::new(TABLE)
             .with_condition("id", Value::from(tree_id as i64))
@@ -620,5 +687,54 @@ mod tests {
 
         let from_db = repo.get(100).await.expect("Error fetching").unwrap();
         assert_eq!(from_db.height_updated_at, 2000);
+    }
+
+    #[tokio::test]
+    async fn test_count_filters() {
+        let repo = setup().await;
+
+        repo.db
+            .execute_sql("DELETE FROM trees", &[])
+            .await
+            .expect("Error clearing trees.");
+
+        repo.add(&Tree {
+            id: 1,
+            state: "healthy".to_string(),
+            ..Default::default()
+        })
+        .await
+        .unwrap();
+        repo.add(&Tree {
+            id: 2,
+            state: "sick".to_string(),
+            ..Default::default()
+        })
+        .await
+        .unwrap();
+        repo.add(&Tree {
+            id: 3,
+            state: "gone".to_string(),
+            ..Default::default()
+        })
+        .await
+        .unwrap();
+        repo.add(&Tree {
+            id: 4,
+            state: "replaced".to_string(),
+            ..Default::default()
+        })
+        .await
+        .unwrap();
+        repo.add(&Tree {
+            id: 5,
+            state: "stump".to_string(),
+            ..Default::default()
+        })
+        .await
+        .unwrap();
+
+        let count = repo.count().await.unwrap();
+        assert_eq!(count, 2);
     }
 }

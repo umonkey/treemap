@@ -65,6 +65,21 @@ impl TreeImageRepository {
         self.query_multiple(query).await
     }
 
+    pub async fn reassign_all(&self, old_tree_id: u64, new_tree_id: u64) -> Result<()> {
+        let sql = format!("UPDATE `{TABLE}` SET tree_id = ? WHERE tree_id = ?");
+        self.db
+            .execute_sql(
+                &sql,
+                &[
+                    Value::from(new_tree_id as i64),
+                    Value::from(old_tree_id as i64),
+                ],
+            )
+            .await?;
+
+        Ok(())
+    }
+
     async fn query_multiple(&self, query: SelectQuery) -> Result<Vec<TreeImage>> {
         let records = self.db.get_records(query).await?;
 

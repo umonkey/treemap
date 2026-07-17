@@ -87,7 +87,9 @@ impl OsmWriterService {
             trees.len()
         );
 
-        let changeset = self.get_changeset_id(dry_run).await?;
+        let changeset = self
+            .get_changeset_id("Updating tree attributes.", dry_run)
+            .await?;
 
         for tree in trees {
             let node = match self.osm.get_node(tree.id).await? {
@@ -143,12 +145,57 @@ impl OsmWriterService {
         Ok(res)
     }
 
-    async fn get_changeset_id(&self, dry_run: bool) -> Result<u64> {
+    /// Push deletions to OSM.
+    pub async fn push_deletions(&self, dry_run: bool) -> Result<u64> {
+        let nodes = self
+            .osm_trees
+            .get_nodes_to_delete(self.changeset_size as u64)
+            .await?;
+
+        if nodes.is_empty() {
+            info!("No nodes to delete from OSM.");
+            return Ok(0);
+        }
+
+        let total = nodes.len();
+        debug!("Have {} nodes to delete from OSM.", total);
+
+        let changeset = self
+            .get_changeset_id("Removing cut down and replaced trees.", dry_run)
+            .await?;
+
+        let mut xml = String::new();
+        xml.push_str("<osmChange version=\"0.6\" generator=\"TreeMap\">\n");
+        xml.push_str("  <delete>\n");
+
+        for node in &nodes {
+            xml.push_str(&format!(
+                "    <node id=\"{}\" version=\"{}\" changeset=\"{}\" />\n",
+                node.id, node.version, changeset
+            ));
+        }
+
+        xml.push_str("  </delete>\n");
+        xml.push_str("</osmChange>");
+
+        if dry_run {
+            println!("OSM diff for deletion:\n{}", xml);
+        } else {
+            self.osm.upload_diff(changeset, &xml).await?;
+            let ids: Vec<u64> = nodes.iter().map(|n| n.id).collect();
+            self.osm_trees.mark_as_deleted(&ids).await?;
+            self.osm.close_changeset(changeset).await?;
+        }
+
+        Ok(total as u64)
+    }
+
+    async fn get_changeset_id(&self, comment: &str, dry_run: bool) -> Result<u64> {
         if dry_run {
             return Ok(0);
         }
 
-        self.osm.create_changeset("Updating tree attributes.").await
+        self.osm.create_changeset(comment).await
     }
 
     async fn get_changed_trees(&self) -> Result<Vec<OsmTreeRecord>> {

@@ -9,5 +9,5 @@ pub async fn get_duplicates_action(
     tree_service: Injected<TreeService>,
 ) -> Result<Json<DuplicatesResponse>> {
     let duplicates = tree_service.get_duplicates().await?;
-    Ok(Json(duplicates))
+    Ok(Json(DuplicatesResponse::new(duplicates)))
 }

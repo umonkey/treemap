@@ -46,17 +46,24 @@ impl OsmReaderService {
         let sync_start = get_timestamp();
 
         let doc = self.overpass_client.query().await?;
+        let mut updated_count = 0;
 
         for mut node in doc.iter().cloned() {
             node.last_seen_at = Some(sync_start);
             node.visible = true;
 
-            Self::update_cache_record(&self.osm_trees, &node).await?;
+            if Self::update_cache_record(&self.osm_trees, &node).await? {
+                updated_count += 1;
+            }
         }
 
         self.osm_trees.mark_invisible_before(sync_start).await?;
 
-        info!("Found {} OSM nodes.", doc.len());
+        info!(
+            "Found {} OSM nodes, had {} updates.",
+            doc.len(),
+            updated_count
+        );
 
         Ok(())
     }
@@ -167,17 +174,21 @@ impl OsmReaderService {
     }
 
     // Update a single node in the OSM cache.
-    async fn update_cache_record(repo: &OsmTreeRepository, node: &OsmTreeRecord) -> Result<()> {
-        let rows = repo.update(node).await?;
+    async fn update_cache_record(repo: &OsmTreeRepository, node: &OsmTreeRecord) -> Result<bool> {
+        let old_node = repo.get(node.id).await?;
 
-        if rows > 0 {
-            debug!("OSM node {} updated in the database.", node.id);
+        if let Some(old_node) = old_node {
+            repo.update(node).await?;
+            if old_node.version != node.version {
+                debug!("OSM node {} updated to version {}.", node.id, node.version);
+                return Ok(true);
+            }
+            Ok(false)
         } else {
             repo.add(node).await?;
-            debug!("OSM node {} added to the database.", node.id);
+            debug!("OSM node {} added with version {}.", node.id, node.version);
+            Ok(true)
         }
-
-        Ok(())
     }
 }
 
