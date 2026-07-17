@@ -161,7 +161,7 @@ impl OsmReaderService {
 
     // Delete a tree that was removed from OSM.
     async fn delete_tree(&self, tree: Tree) -> Result<()> {
-        if tree.state != "gone" {
+        if tree.state != "gone" && tree.state != "replaced" {
             self.trees.mark_gone(tree.id, self.user_id).await?;
 
             info!(
