@@ -15,6 +15,7 @@ pub struct OsmClient {
     redirect_uri: Option<String>,
     hashtag: Option<String>,
     activity: Option<String>,
+    user_agent: String,
 
     // This is the main API access token.
     // It is optional so that we don't fail to start the API when OSM sync is not configured.
@@ -173,7 +174,13 @@ impl OsmClient {
     pub async fn get_node(&self, id: u64) -> Result<Option<OsmElement>> {
         let url = format!("https://api.openstreetmap.org/api/0.6/node/{id}.json");
 
-        let response = match self.client.get(url.to_string()).send().await {
+        let response = match self
+            .client
+            .get(url.to_string())
+            .header("User-Agent", &self.user_agent)
+            .send()
+            .await
+        {
             Ok(response) => response,
 
             Err(e) => {
@@ -192,9 +199,10 @@ impl OsmClient {
         }
 
         if response.status() != 200 {
+            let status = response.status();
+            let text = response.text().await.unwrap_or_default();
             return Err(Error::OsmExchange(format!(
-                "OSM API GET failed with status: {}",
-                response.status()
+                "OSM API GET failed with status: {status}; response: {text}"
             )));
         }
 
@@ -237,7 +245,9 @@ impl OsmClient {
         let response = match self
             .client
             .put(url)
-            .header("Authorization", format!("bearer {}", self.get_api_token()?))
+            .header("Authorization", format!("Bearer {}", self.get_api_token()?))
+            .header("User-Agent", &self.user_agent)
+            .header("Content-Type", "text/xml")
             .body(body.to_string())
             .send()
             .await
@@ -250,9 +260,10 @@ impl OsmClient {
         };
 
         if response.status() != 200 {
+            let status = response.status();
+            let text = response.text().await.unwrap_or_default();
             return Err(Error::OsmExchange(format!(
-                "OSM API PUT failed with status: {}",
-                response.status()
+                "OSM API PUT failed with status: {status}; response: {text}"
             )));
         }
 
@@ -268,7 +279,9 @@ impl OsmClient {
         let response = match self
             .client
             .post(url)
-            .header("Authorization", format!("bearer {}", self.get_api_token()?))
+            .header("Authorization", format!("Bearer {}", self.get_api_token()?))
+            .header("User-Agent", &self.user_agent)
+            .header("Content-Type", "text/xml")
             .body(body.to_string())
             .send()
             .await
@@ -281,9 +294,10 @@ impl OsmClient {
         };
 
         if response.status() != 200 {
+            let status = response.status();
+            let text = response.text().await.unwrap_or_default();
             return Err(Error::OsmExchange(format!(
-                "OSM API POST failed with status: {}",
-                response.status()
+                "OSM API POST failed with status: {status}; response: {text}"
             )));
         }
 
@@ -294,7 +308,13 @@ impl OsmClient {
     }
 
     async fn request_json(&self, url: &str) -> Result<Value> {
-        let response = match self.client.get(url).send().await {
+        let response = match self
+            .client
+            .get(url)
+            .header("User-Agent", &self.user_agent)
+            .send()
+            .await
+        {
             Ok(response) => response,
 
             Err(e) => {
@@ -303,9 +323,10 @@ impl OsmClient {
         };
 
         if response.status() != 200 {
+            let status = response.status();
+            let text = response.text().await.unwrap_or_default();
             return Err(Error::OsmExchange(format!(
-                "OSM API GET failed with status: {}",
-                response.status()
+                "OSM API GET failed with status: {status}; response: {text}"
             )));
         }
 
@@ -411,6 +432,7 @@ impl Injectable for OsmClient {
     fn inject(ctx: &dyn Context) -> Result<Self> {
         let config = ctx.config();
         let secrets = ctx.secrets();
+        let user_agent = format!("TreeMap/{} ({})", get_app_version(), config.app_contact);
 
         Ok(Self {
             client: reqwest::Client::new(),
@@ -420,6 +442,7 @@ impl Injectable for OsmClient {
             activity: config.osm_activity.clone(),
             osm_client_secret: secrets.osm_client_secret.clone(),
             osm_token: secrets.osm_token.clone(),
+            user_agent,
         })
     }
 }
