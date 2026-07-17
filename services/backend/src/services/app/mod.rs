@@ -2,7 +2,7 @@ use crate::infra::config::Config;
 use crate::infra::database::Database;
 use crate::infra::queue::Queue;
 use crate::infra::secrets::Secrets;
-use crate::infra::storage::FileStorage;
+use crate::infra::storage::{create_driver, FileStorage};
 use crate::infra::tokens::TokenService;
 use crate::services::mcp::McpSessionManager;
 use crate::types::*;
@@ -78,7 +78,11 @@ impl AppState {
         ))?;
         let tokens = Arc::new(TokenService::new(jwt_secret));
 
-        let storage = Arc::new(FileStorage::new(&config, &secrets)?);
+        let driver = create_driver(&config, &secrets)?;
+
+        let files_bucket = config.files_bucket.clone().unwrap_or("files".to_string());
+        let storage = Arc::new(FileStorage::new(driver.clone(), files_bucket));
+
         let mcp = Arc::new(McpSessionManager::default());
 
         Ok(Self {

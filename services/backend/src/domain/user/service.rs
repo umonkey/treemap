@@ -148,7 +148,7 @@ impl UserService {
     async fn write_file(&self, data: &[u8]) -> Result<u64> {
         let id = get_unique_id()?;
 
-        match self.storage.write_file(id, data).await {
+        match self.storage.write_file(id, data, true).await {
             Ok(_) => Ok(id),
             Err(_) => Err(Error::FileUpload),
         }

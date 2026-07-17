@@ -134,7 +134,7 @@ impl PhotoService {
     async fn write_file(&self, data: &[u8], added_by: u64) -> Result<u64> {
         let id = get_unique_id()?;
 
-        self.storage.write_file(id, data).await.map_err(|e| {
+        self.storage.write_file(id, data, true).await.map_err(|e| {
             debug!("Error writing file: {e}");
             Error::FileUpload
         })?;

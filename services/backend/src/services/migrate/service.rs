@@ -1,26 +1,29 @@
 use crate::infra::config::Config;
-use crate::infra::storage::{FileStorageInterface, LocalFileStorage, S3FileStorage};
+use crate::infra::storage::{LocalStorageDriver, S3StorageDriver, StorageDriver};
 use crate::services::*;
 use crate::types::*;
 use log::{error, info, warn};
 use std::sync::Arc;
 
 pub struct MigrateService {
-    local: Arc<dyn FileStorageInterface>,
-    remote: Arc<dyn FileStorageInterface>,
+    local: Arc<dyn StorageDriver>,
+    remote: Arc<dyn StorageDriver>,
     file_folder: String,
+    files_bucket: String,
 }
 
 impl MigrateService {
     pub fn new(
-        local: Arc<dyn FileStorageInterface>,
-        remote: Arc<dyn FileStorageInterface>,
+        local: Arc<dyn StorageDriver>,
+        remote: Arc<dyn StorageDriver>,
         config: Arc<Config>,
     ) -> Self {
+        let files_bucket = config.files_bucket.clone().unwrap_or("files".to_string());
         Self {
             local,
             remote,
             file_folder: config.file_folder.clone(),
+            files_bucket,
         }
     }
 
@@ -30,14 +33,15 @@ impl MigrateService {
         let count = files.len();
 
         for id in files.into_iter() {
+            let id_str = id.to_string();
             let data = self
                 .local
-                .read_file(id)
+                .read_file("", &id_str)
                 .await
                 .expect("Error reading files.");
 
             self.remote
-                .write_file(id, &data)
+                .write_file(&self.files_bucket, &id_str, &data, true)
                 .await
                 .expect("Error writing files.");
         }
@@ -84,8 +88,8 @@ impl Injectable for MigrateService {
         let config = ctx.config();
         let secrets = ctx.secrets();
         Ok(Self::new(
-            Arc::new(LocalFileStorage::new(&config)),
-            Arc::new(S3FileStorage::new(&config, &secrets)?),
+            Arc::new(LocalStorageDriver::new(&config)),
+            Arc::new(S3StorageDriver::new(&config, &secrets)?),
             config,
         ))
     }
