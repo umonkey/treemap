@@ -19,6 +19,7 @@ use std::collections::HashMap;
 use std::sync::Arc;
 
 const DISTANCE: f64 = 0.1; // 10 cm
+const EXCLUDED_MERGE_PROPS: &[&str] = &["replaced_by", "replaces"];
 
 pub struct TreeService {
     db: Arc<Database>,
@@ -639,7 +640,35 @@ impl TreeService {
                     .await?;
 
                 // Move props history
-                self.props.reassign_all(secondary.id, main_tree.id).await?;
+                let secondary_props = self.props.find_by_tree(secondary.id).await?;
+                let prop_ids_to_move: Vec<u64> = secondary_props
+                    .into_iter()
+                    .filter(|p| {
+                        if EXCLUDED_MERGE_PROPS.contains(&p.name.as_str()) {
+                            return false;
+                        }
+                        if p.name == "state" && p.value == "replaced" {
+                            return false;
+                        }
+                        true
+                    })
+                    .map(|p| p.id)
+                    .collect();
+
+                self.props
+                    .update_tree_id(prop_ids_to_move, main_tree.id)
+                    .await?;
+
+                // Add audit trail entry
+                self.props
+                    .add(&PropRecord {
+                        tree_id: main_tree.id,
+                        name: "merged_from".to_string(),
+                        value: secondary.id.to_string(),
+                        added_by: self.bot_user_id,
+                        ..Default::default()
+                    })
+                    .await?;
 
                 // (6) Should mark merged trees as replaced, with replaced_by pointing to the new tree.
                 self.trees

@@ -501,11 +501,6 @@ impl TreeRepository {
             .await?;
         }
 
-        if old.species != new.species {
-            self.add_tree_prop(new.id, "species", &new.species, user_id)
-                .await?;
-        }
-
         if old.notes != new.notes {
             let value = match &new.notes {
                 Some(value) => value.to_string(),
