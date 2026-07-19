@@ -113,6 +113,7 @@
 		display: flex;
 		flex-direction: row;
 		align-items: center;
+		gap: 1rem;
 	}
 
 	.title {

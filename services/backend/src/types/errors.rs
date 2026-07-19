@@ -27,6 +27,8 @@ pub enum Error {
     FileUpload,
     GoogleUserInfo,
     ImageResize,
+    InstanceDisabled,
+    InstanceNotFound,
     MapillaryExchange(String),
     MissingAuthorizationHeader,
     OsmExchange(String),
@@ -98,6 +100,12 @@ impl Error {
             Error::ImageResize => {
                 r#"{"error":{"code":"ImageResize","description":"Image reading or resizing failed."}}"#.to_string()
             }
+            Error::InstanceDisabled => {
+                r#"{"error":{"code":"InstanceDisabled","description":"This instance is currently disabled."}}"#.to_string()
+            }
+            Error::InstanceNotFound => {
+                r#"{"error":{"code":"InstanceNotFound","description":"The specified instance does not exist."}}"#.to_string()
+            }
             Error::MapillaryExchange(_) => {
                 r#"{"error":{"code":"MapillaryExchange","description":"Mapillary exchange failed."}}"#.to_string()
             }
@@ -160,10 +168,11 @@ impl ResponseError for Error {
 
     fn status_code(&self) -> StatusCode {
         match self {
-            Error::AccessDenied => StatusCode::FORBIDDEN,
+            Error::AccessDenied | Error::InstanceDisabled => StatusCode::FORBIDDEN,
             Error::AddressNotFound
             | Error::FileDownload
             | Error::FileNotFound
+            | Error::InstanceNotFound
             | Error::TreeNotFound => StatusCode::NOT_FOUND,
             Error::BadAuthToken
             | Error::GoogleUserInfo
@@ -203,6 +212,8 @@ impl fmt::Display for Error {
             Error::FileUpload => write!(f, "FileUpload"),
             Error::GoogleUserInfo => write!(f, "GoogleUserInfo"),
             Error::ImageResize => write!(f, "ImageResize"),
+            Error::InstanceDisabled => write!(f, "InstanceDisabled"),
+            Error::InstanceNotFound => write!(f, "InstanceNotFound"),
             Error::MapillaryExchange(s) => write!(f, "MapillaryExchange: {s}"),
             Error::MissingAuthorizationHeader => write!(f, "MissingAuthorizationHeader"),
             Error::OsmExchange(s) => write!(f, "OsmExchange: {s}"),

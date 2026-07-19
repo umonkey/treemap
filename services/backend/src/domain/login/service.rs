@@ -1,5 +1,6 @@
 use super::schemas::*;
 use crate::domain::iam::IamService;
+use crate::domain::instance::InstanceService;
 use crate::domain::user::{User, UserService};
 use crate::infra::google_auth::{AuthResponse, GoogleAuthClient};
 use crate::infra::osm::OsmClient;
@@ -17,6 +18,7 @@ pub struct LoginService {
     tokens: Arc<TokenService>,
     user_service: Arc<UserService>,
     iam_service: Arc<IamService>,
+    instance_service: Arc<InstanceService>,
     auth: GoogleAuthClient,
     osm: Arc<OsmClient>,
 }
@@ -25,12 +27,17 @@ impl LoginService {
     pub async fn login_google(&self, req: GoogleAuthCallbackPayload) -> Result<String> {
         debug!("Authenticating a Google user (v3).");
 
+        let url = Url::parse(&req.state).map_err(|_| Error::BadCallback)?;
+        let domain = url.host_str().ok_or(Error::BadCallback)?;
+        self.instance_service.validate_instance(domain).await?;
+
         let userinfo = self.auth.verify_token(&req.access_token).await?;
         let user = self.get_user(&userinfo).await?;
 
         let token = self.tokens.encode(&TokenClaims {
             exp: get_timestamp() + TOKEN_TTL,
             sub: user.id.to_string(),
+            instance: Some(domain.to_string()),
         })?;
 
         let redirect = self.get_redirect_url(&req.state, &token)?;
@@ -93,6 +100,7 @@ impl Injectable for LoginService {
             tokens: ctx.tokens(),
             user_service: Arc::new(ctx.build::<UserService>()?),
             iam_service: Arc::new(ctx.build::<IamService>()?),
+            instance_service: Arc::new(ctx.build::<InstanceService>()?),
             auth: GoogleAuthClient::new(),
             osm: Arc::new(ctx.build::<OsmClient>()?),
         })

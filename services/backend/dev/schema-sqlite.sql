@@ -294,4 +294,14 @@ CREATE TABLE IF NOT EXISTS mapillary_trees (
 CREATE INDEX IF NOT EXISTS mapillary_trees_image_id ON mapillary_trees (image_id);
 
 
+CREATE TABLE IF NOT EXISTS instances (
+    id INTEGER PRIMARY KEY,
+    domain TEXT NOT NULL UNIQUE,
+    name TEXT NOT NULL,
+    description TEXT,
+    email TEXT NOT NULL,
+    enabled INTEGER NOT NULL DEFAULT 1
+);
+
+
 COMMIT;
