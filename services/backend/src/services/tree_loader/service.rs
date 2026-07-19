@@ -30,7 +30,14 @@ impl TreeLoader {
     }
 
     pub async fn load_single(&self, tree: &Tree) -> Result<SingleTreeResponse> {
-        let files = self.find_files(tree.id).await?;
+        let mut files = self.find_files(tree.id).await?;
+
+        if let Some(thumbnail_id) = tree.thumbnail_id {
+            if let Some(pos) = files.iter().position(|f| f.small_id == thumbnail_id) {
+                let thumbnail = files.remove(pos);
+                files.insert(0, thumbnail);
+            }
+        }
 
         let user_ids = self.collect_user_ids(tree, &files).await?;
         let users = self.users.get_multiple(&user_ids).await?;
