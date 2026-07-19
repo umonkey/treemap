@@ -6,11 +6,9 @@
 
 	import LazyTreeThumbnail from '$lib/components/LazyTreeThumbnail.svelte';
 
-	const { id } = $props<{
-		id: string;
-	}>();
+	const { id }: { id: string } = $props();
 
-	const tree = get(getTree)(id);
+	const tree = $derived(get(getTree)(id));
 </script>
 
 <div class="tree">

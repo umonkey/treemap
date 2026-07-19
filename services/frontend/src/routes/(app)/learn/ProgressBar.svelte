@@ -1,19 +1,15 @@
 <script lang="ts">
-	const { total, complete } = $props<{
-		total: number;
-		complete: number;
-	}>();
+	const { total, complete }: { total: number; complete: number } = $props();
 
-	console.debug(`[progress] total=${total}, complete=${complete}`);
+	$effect(() => {
+		console.debug(`[progress] total=${total}, complete=${complete}`);
+	});
 
-	const width = () => {
-		const val = Math.round((complete / total) * 100);
-		return `${val}%`;
-	};
+	const width = $derived(`${Math.round((complete / total) * 100)}%`);
 </script>
 
 <div class="progress">
-	<div class="complete" style="width: {width()}"></div>
+	<div class="complete" style="width: {width}"></div>
 </div>
 
 <style>

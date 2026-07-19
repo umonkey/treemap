@@ -6,11 +6,11 @@
 	import CommentInput from '../components/CommentInput.svelte';
 	import TreeSheet from '../components/TreeSheet.svelte';
 
-	const { id } = $props<{
-		id: string;
-	}>();
+	const { id }: { id: string } = $props();
 
-	const { loading, busy, error, tree, save, close, handleCommentChange } = stateUpdater(id, 'gone');
+	const { loading, busy, error, tree, save, close, handleCommentChange } = $derived(
+		stateUpdater(id, 'gone')
+	);
 </script>
 
 {#if $error}

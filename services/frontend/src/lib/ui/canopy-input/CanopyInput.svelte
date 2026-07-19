@@ -3,13 +3,17 @@
 	import FormElement from '$lib/ui/form-element/FormElement.svelte';
 	import SelectButton from '$lib/ui/SelectButton.svelte';
 
-	const { value, autofocus, onChange } = $props<{
+	const {
+		value,
+		autofocus,
+		onChange
+	}: {
 		value: number | null;
 		autofocus?: boolean;
 		onChange: (value: number) => void;
-	}>();
+	} = $props();
 
-	let currentValue = $state<number | null>(value);
+	let currentValue = $state<number | null>(null);
 
 	$effect(() => {
 		currentValue = value;
