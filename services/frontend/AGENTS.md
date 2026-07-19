@@ -27,3 +27,7 @@ This directory contains the static frontend for the tree mapping application.
 - `npm run lint`: run ESLint.
 - `npm run test`: run unit tests with Vitest.
 - `npm run format`: format code with Prettier.
+
+## Development workflow
+
+- All code changes need to be handed off to the `@implement` sub-agent.
