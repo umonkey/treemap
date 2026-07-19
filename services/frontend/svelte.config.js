@@ -19,7 +19,6 @@ const config = {
 			strict: true
 		}),
 		version: {
-			name: Date.now().toString(),
 			pollInterval: 60000
 		}
 	}
