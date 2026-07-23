@@ -3,7 +3,7 @@ use super::repository::TreeImageRepository;
 use crate::actions::tree::AddFileRequest;
 use crate::domain::user::UserRepository;
 use crate::infra::queue::Queue;
-use crate::infra::storage::FileStorage;
+use crate::infra::storage::FileBucket;
 use crate::services::queue_consumer::ResizeImageMessage;
 use crate::services::{Context, Injectable, ThumbnailerService};
 use crate::types::{Error, Result};
@@ -13,7 +13,7 @@ use std::sync::Arc;
 
 pub struct TreeImageService {
     queue: Arc<Queue>,
-    storage: Arc<FileStorage>,
+    storage: Arc<FileBucket>,
     files: Arc<TreeImageRepository>,
     users: Arc<UserRepository>,
     thumbnailer: Arc<ThumbnailerService>,

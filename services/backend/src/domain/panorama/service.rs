@@ -1,6 +1,6 @@
 use super::models::{CreatePanorama, Panorama, UpdatePanorama};
 use super::repository::PanoramaRepository;
-use crate::infra::storage::{CompletedPart, FileStorage};
+use crate::infra::storage::{CompletedPart, FileBucket};
 use crate::services::{Context, Injectable};
 use crate::types::*;
 use crate::utils::{get_timestamp, get_unique_id};
@@ -8,7 +8,7 @@ use std::sync::Arc;
 
 pub struct PanoramaService {
     repo: Arc<PanoramaRepository>,
-    storage: Arc<FileStorage>,
+    storage: Arc<FileBucket>,
 }
 
 impl PanoramaService {
