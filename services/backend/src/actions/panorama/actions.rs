@@ -6,7 +6,7 @@ use crate::services::app::{PanoEdit, RequirePermission};
 use crate::services::Injected;
 use crate::types::*;
 use actix_web::web::{Json, Path};
-use actix_web::{get, patch, post};
+use actix_web::{get, patch, post, HttpResponse};
 
 #[get("")]
 pub async fn list_panoramas_action(
@@ -23,9 +23,9 @@ pub async fn create_panorama_action(
     user_id: RequirePermission<PanoEdit>,
     service: Injected<PanoramaService>,
     body: Json<CreatePanorama>,
-) -> Result<Json<PanoramaRead>> {
+) -> Result<HttpResponse> {
     let panorama = service.create_panorama(body.into_inner(), *user_id).await?;
-    Ok(Json(panorama.into()))
+    Ok(HttpResponse::Created().json(PanoramaRead::from(panorama)))
 }
 
 #[get("/{id}")]

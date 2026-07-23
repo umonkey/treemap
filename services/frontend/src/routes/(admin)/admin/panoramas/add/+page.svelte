@@ -18,7 +18,7 @@
 		error = '';
 
 		const res = await createPanorama({ title });
-		if (res.status === 201 && res.data) {
+		if (res.status >= 200 && res.status < 300 && res.data) {
 			goto(`/admin/panoramas/${res.data.id}`);
 		} else {
 			error = res.error?.description || 'Failed to create panorama';
