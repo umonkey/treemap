@@ -57,14 +57,17 @@
 				<dt>Image Count</dt>
 				<dd>{pageState.panorama.image_count}</dd>
 
-				<dt>Has Video</dt>
-				<dd>{pageState.panorama.has_video ? 'Yes' : 'No'}</dd>
+				<dt>Source Video Path</dt>
+				<dd>{pageState.panorama.source_video_path ?? '(none)'}</dd>
 
-				<dt>Has Track</dt>
-				<dd>{pageState.panorama.has_track ? 'Yes' : 'No'}</dd>
+				<dt>GPS Track Path</dt>
+				<dd>{pageState.panorama.gpx_path ?? '(none)'}</dd>
 
-				<dt>Has Web Video</dt>
-				<dd>{pageState.panorama.has_web_video ? 'Yes' : 'No'}</dd>
+				<dt>Web Video Path</dt>
+				<dd>{pageState.panorama.web_video_path ?? '(none)'}</dd>
+
+				<dt>Transcode job id</dt>
+				<dd>{pageState.panorama.transcode_arn ?? '(none)'}</dd>
 
 				<dt>Video Timestamp</dt>
 				<dd>{pageState.panorama.video_timestamp ?? 'N/A'}</dd>

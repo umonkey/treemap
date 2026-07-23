@@ -29,9 +29,11 @@ impl PanoramaService {
             status: "draft".to_string(),
             title: data.title,
             visible: false,
-            has_video: false,
-            has_track: false,
-            has_web_video: false,
+            source_video_path: None,
+            gpx_path: None,
+            web_video_path: None,
+            transcode_arn: None,
+            transcode_status: None,
             video_timestamp: None,
         };
 
@@ -61,7 +63,7 @@ impl PanoramaService {
         }
 
         let mut panorama = self.get_panorama(id).await?;
-        panorama.has_video = true;
+        panorama.source_video_path = Some(key);
         self.repo.update(id, &panorama).await?;
 
         Ok(panorama)

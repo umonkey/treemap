@@ -10,9 +10,11 @@ pub struct Panorama {
     pub status: String,
     pub title: String,
     pub visible: bool,
-    pub has_video: bool,
-    pub has_track: bool,
-    pub has_web_video: bool,
+    pub source_video_path: Option<String>,
+    pub gpx_path: Option<String>,
+    pub web_video_path: Option<String>,
+    pub transcode_arn: Option<String>,
+    pub transcode_status: Option<String>,
     pub video_timestamp: Option<f64>,
 }
 
@@ -26,9 +28,11 @@ impl Panorama {
             status: attrs.require_string("status")?,
             title: attrs.require_string("title")?,
             visible: attrs.get_bool("visible")?.unwrap_or(false),
-            has_video: attrs.get_bool("has_video")?.unwrap_or(false),
-            has_track: attrs.get_bool("has_track")?.unwrap_or(false),
-            has_web_video: attrs.get_bool("has_web_video")?.unwrap_or(false),
+            source_video_path: attrs.get_string("source_video_path")?,
+            gpx_path: attrs.get_string("gpx_path")?,
+            web_video_path: attrs.get_string("web_video_path")?,
+            transcode_arn: attrs.get_string("transcode_arn")?,
+            transcode_status: attrs.get_string("transcode_status")?,
             video_timestamp: attrs.get_f64("video_timestamp")?,
         })
     }
@@ -42,9 +46,17 @@ impl Panorama {
         attrs.insert("status", Value::from(self.status.clone()));
         attrs.insert("title", Value::from(self.title.clone()));
         attrs.insert("visible", Value::from(self.visible));
-        attrs.insert("has_video", Value::from(self.has_video));
-        attrs.insert("has_track", Value::from(self.has_track));
-        attrs.insert("has_web_video", Value::from(self.has_web_video));
+        attrs.insert(
+            "source_video_path",
+            Value::from(self.source_video_path.clone()),
+        );
+        attrs.insert("gpx_path", Value::from(self.gpx_path.clone()));
+        attrs.insert("web_video_path", Value::from(self.web_video_path.clone()));
+        attrs.insert("transcode_arn", Value::from(self.transcode_arn.clone()));
+        attrs.insert(
+            "transcode_status",
+            Value::from(self.transcode_status.clone()),
+        );
         attrs.insert("video_timestamp", Value::from(self.video_timestamp));
         attrs
     }

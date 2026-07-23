@@ -11,9 +11,11 @@ pub struct PanoramaRead {
     pub status: String,
     pub title: String,
     pub visible: bool,
-    pub has_video: bool,
-    pub has_track: bool,
-    pub has_web_video: bool,
+    pub source_video_path: Option<String>,
+    pub gpx_path: Option<String>,
+    pub web_video_path: Option<String>,
+    pub transcode_arn: Option<String>,
+    pub transcode_status: Option<String>,
     pub video_timestamp: Option<f64>,
 }
 
@@ -44,9 +46,11 @@ impl From<Panorama> for PanoramaRead {
             status: p.status,
             title: p.title,
             visible: p.visible,
-            has_video: p.has_video,
-            has_track: p.has_track,
-            has_web_video: p.has_web_video,
+            source_video_path: p.source_video_path,
+            gpx_path: p.gpx_path,
+            web_video_path: p.web_video_path,
+            transcode_arn: p.transcode_arn,
+            transcode_status: p.transcode_status,
             video_timestamp: p.video_timestamp,
         }
     }
