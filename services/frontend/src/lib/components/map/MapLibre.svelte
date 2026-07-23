@@ -17,6 +17,7 @@
 	import PanoramicLayer from './PanoramicLayer.svelte';
 	import TreeHintsLayer from './TreeHintsLayer.svelte';
 	import MapCenter from './MapCenter.svelte';
+	import MapInspect from './MapInspect.svelte';
 	import MapRays from './MapRays.svelte';
 	import MoveLine from './MoveLine.svelte';
 	import NearestTree from './NearestTree.svelte';
@@ -56,6 +57,7 @@
 	>
 		<LocateButton />
 		<LocationTracker />
+		<MapInspect />
 		<AttributionControl compact={true} position="bottom-left" />
 
 		{#if children}

@@ -75,3 +75,5 @@ sqs_url = "https://sqs.eu-west-1.amazonaws.com/047041075401/trees_dev"
 
 # This is where OSM redirects you after authorizing the app.
 #osm_redirect_uri = "http://127.0.0.1:8000/auth/callback"
+
+backup_bucket = "treemap-backups-uzbmpe2a"

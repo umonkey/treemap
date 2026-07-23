@@ -69,7 +69,9 @@ LABEL maintainer="hex@umonkey.net"
 LABEL org.opencontainers.image.source=https://github.com/umonkey/treemap
 LABEL org.opencontainers.image.description="A simple self-contained backend and frontend image using an SQLite database."
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends sqlite3 supervisor logrotate bash ca-certificates cron vim procps curl && \
+    apt-get install -y --no-install-recommends sqlite3 supervisor logrotate bash ca-certificates cron vim procps curl tzdata && \
+    ln -sf /usr/share/zoneinfo/Asia/Yerevan /etc/localtime && \
+    echo "Asia/Yerevan" > /etc/timezone && \
     ln -s /usr/bin/sqlite3 /usr/bin/sqlite && \
     ln -s /usr/sbin/cron /usr/sbin/crond && \
     mkdir -p /var/spool/cron/crontabs && \
@@ -83,6 +85,7 @@ COPY services/backend/dev/schema-sqlite.sql /app
 COPY services/backend/config.toml.dev /app
 COPY --from=frontend-builder /app/build /app/static
 
+ENV TZ=Asia/Yerevan
 ENV RUST_LOG=info,treemap=debug
 
 EXPOSE 8000/tcp

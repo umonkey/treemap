@@ -7,6 +7,7 @@ pub mod comment;
 pub mod health;
 pub mod heatmap;
 pub mod iam;
+pub mod instance;
 pub mod like;
 pub mod login;
 pub mod mapillary;

@@ -311,5 +311,13 @@ CREATE TABLE IF NOT EXISTS panoramas (
 
 CREATE INDEX IF NOT EXISTS panoramas_created_at ON panoramas (created_at);
 
+CREATE TABLE IF NOT EXISTS instances (
+    id INTEGER PRIMARY KEY,
+    domain TEXT NOT NULL UNIQUE,
+    name TEXT NOT NULL,
+    description TEXT,
+    email TEXT NOT NULL,
+    enabled INTEGER NOT NULL DEFAULT 1
+);
 
 COMMIT;

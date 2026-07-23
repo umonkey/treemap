@@ -10,7 +10,7 @@
 		disabled = false,
 		square = false,
 		nowrap = false
-	} = $props<{
+	}: {
 		children: Snippet;
 		type?: 'submit' | 'button' | 'reset' | 'cancel' | 'secondary' | 'tertiary';
 		onClick?: (e: MouseEvent) => void;
@@ -18,9 +18,9 @@
 		disabled?: boolean;
 		square?: boolean;
 		nowrap?: boolean;
-	}>();
+	} = $props();
 
-	const className = `button ${type}`;
+	const className = $derived(`button ${type}`);
 
 	const getTarget = () => {
 		if (link?.startsWith('http')) {

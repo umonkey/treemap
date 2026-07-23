@@ -31,6 +31,29 @@ impl LikeRepository {
         self.query_multiple(query).await
     }
 
+    pub async fn reassign_all(&self, old_tree_id: u64, new_tree_id: u64) -> Result<()> {
+        let sql = format!(
+            "INSERT OR REPLACE INTO `{TABLE}` (tree_id, user_id, state, updated_at) \
+             SELECT ?, user_id, state, updated_at FROM `{TABLE}` WHERE tree_id = ?"
+        );
+        self.db
+            .execute_sql(
+                &sql,
+                &[
+                    Value::from(new_tree_id as i64),
+                    Value::from(old_tree_id as i64),
+                ],
+            )
+            .await?;
+
+        let sql_delete = format!("DELETE FROM `{TABLE}` WHERE tree_id = ?");
+        self.db
+            .execute_sql(&sql_delete, &[Value::from(old_tree_id as i64)])
+            .await?;
+
+        Ok(())
+    }
+
     async fn query_single(&self, query: SelectQuery) -> Result<Option<Like>> {
         match self.db.get_record(query).await {
             Ok(Some(props)) => Ok(Some(Like::from_attributes(&props)?)),

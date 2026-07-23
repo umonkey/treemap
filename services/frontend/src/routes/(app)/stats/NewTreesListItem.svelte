@@ -8,13 +8,16 @@
 	import type { ITree } from '$lib/types';
 	import LazyTreeThumbnail from '$lib/components/LazyTreeThumbnail.svelte';
 
-	const { tree, extra = undefined } = $props<{
+	const {
+		tree,
+		extra = undefined
+	}: {
 		tree: ITree;
 		extra?: string | undefined;
-	}>();
+	} = $props();
 
-	const user = get(getUser)(tree.added_by);
-	const date = formatDate(tree.added_at);
+	const user = $derived(get(getUser)(tree.added_by));
+	const date = $derived(formatDate(tree.added_at));
 </script>
 
 <div class="tree">

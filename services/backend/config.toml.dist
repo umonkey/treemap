@@ -71,3 +71,5 @@ database = "sqlite"
 
 # This is where OSM redirects you after authorizing the app.
 #osm_redirect_uri = "http://127.0.0.1:8000/auth/callback"
+
+backup_bucket = "treemap-backups-uzbmpe2a"

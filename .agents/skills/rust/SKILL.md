@@ -60,6 +60,4 @@ pub async fn my_action(state: Data<AppState>) -> Result<Json<...>> {
 
 ## Development Workflow
 
-- Formatting: always run `make format` after changing code.
-- Verification: always run `make check` to run clippy and ensure the code compiles without warnings.
-- Tests: run `make test` for unit tests.
+- After implementing the required changes, verify code integrity by running `make format check` using a sub-agent.

@@ -10,6 +10,7 @@ pub mod queue_consumer;
 mod queue_encoder;
 mod thumbnailer;
 pub mod tree_loader;
+pub mod tree_merger;
 pub use app::*;
 pub use osm_reader::*;
 pub use osm_writer::*;

@@ -8,22 +8,23 @@ pub struct CompletedPart {
 }
 
 #[async_trait]
-pub trait FileStorageInterface: Send + Sync {
-    async fn write_file(&self, id: u64, data: &[u8]) -> Result<()>;
-    async fn read_file(&self, id: u64) -> Result<Vec<u8>>;
-    async fn create_upload_url(&self, id: u64) -> Result<String>;
-    async fn exists(&self, key: &str) -> Result<bool>;
-
-    async fn start_multipart_upload(&self, key: &str) -> Result<String>;
+pub trait StorageDriver: Send + Sync {
+    async fn write_file(&self, bucket: &str, path: &str, data: &[u8], public: bool) -> Result<()>;
+    async fn read_file(&self, bucket: &str, path: &str) -> Result<Vec<u8>>;
+    async fn create_upload_url(&self, bucket: &str, path: &str) -> Result<String>;
+    async fn exists(&self, bucket: &str, path: &str) -> Result<bool>;
+    async fn start_multipart_upload(&self, bucket: &str, path: &str) -> Result<String>;
     async fn create_upload_part_url(
         &self,
-        key: &str,
+        bucket: &str,
+        path: &str,
         upload_id: &str,
         part_number: i32,
     ) -> Result<String>;
     async fn complete_multipart_upload(
         &self,
-        key: &str,
+        bucket: &str,
+        path: &str,
         upload_id: &str,
         parts: Vec<CompletedPart>,
     ) -> Result<()>;

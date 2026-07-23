@@ -15,9 +15,7 @@
 	import YearInput from '$lib/ui/year-input/YearInput.svelte';
 	import { editor } from './hooks';
 
-	const { id } = $props<{
-		id: string;
-	}>();
+	const { id }: { id: string } = $props();
 
 	const {
 		loading,
@@ -34,7 +32,7 @@
 		notes,
 		save,
 		close
-	} = editor(id);
+	} = $derived(editor(id));
 </script>
 
 {#if $loading}

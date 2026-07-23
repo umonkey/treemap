@@ -23,8 +23,8 @@
 				in the background.
 			</li>
 			<li>
-				<strong>Photos:</strong> if you choose to upload photos of trees, these photos are stored on
-				our servers and made public as part of the tree map.
+				<strong>Photos:</strong> if you choose to upload photos of trees, these photos are stored on our
+				servers and made public as part of the tree map.
 			</li>
 			<li>
 				<strong>Device Info:</strong> we may collect basic information about your device and application

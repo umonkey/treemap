@@ -6,4 +6,5 @@ use serde::{Deserialize, Serialize};
 pub struct TokenClaims {
     pub sub: String,
     pub exp: u64,
+    pub instance: Option<String>,
 }

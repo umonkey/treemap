@@ -13,7 +13,7 @@ impl StatsService {
         let rows = self
             .db
             .fetch_sql(
-                "SELECT state, COUNT(1) AS cnt FROM trees WHERE state IS NOT NULL GROUP BY state ORDER BY cnt DESC",
+                "SELECT state, COUNT(1) AS cnt FROM trees WHERE state IS NOT NULL AND state <> 'gone' AND state <> 'replaced' AND state <> 'stump' GROUP BY state ORDER BY cnt DESC",
                 &[],
             )
             .await?;
@@ -33,7 +33,7 @@ impl StatsService {
         let rows = self
             .db
             .fetch_sql(
-                "SELECT address, COUNT(1) AS cnt FROM trees WHERE state <> 'gone' AND address IS NOT NULL GROUP BY LOWER(address) ORDER BY cnt DESC, LOWER(address) LIMIT ?1",
+                "SELECT address, COUNT(1) AS cnt FROM trees WHERE state <> 'gone' AND state <> 'replaced' AND state <> 'stump' AND address IS NOT NULL GROUP BY LOWER(address) ORDER BY cnt DESC, LOWER(address) LIMIT ?1",
                 &[Value::from(1000u64)],
             )
             .await?;
@@ -96,6 +96,18 @@ mod tests {
             .await
             .expect("Error adding tree.");
 
+        service
+            .db
+            .execute_sql("INSERT INTO trees (id, lat, lon, species, state, added_at, updated_at, updated_by, added_by) VALUES (2, 40.1, 44.1, 'Birch', 'gone', 0, 0, 1, 1)", &[])
+            .await
+            .expect("Error adding tree.");
+
+        service
+            .db
+            .execute_sql("INSERT INTO trees (id, lat, lon, species, state, added_at, updated_at, updated_by, added_by) VALUES (3, 40.1, 44.1, 'Birch', 'stump', 0, 0, 1, 1)", &[])
+            .await
+            .expect("Error adding tree.");
+
         let res = service
             .count_trees_by_state()
             .await
@@ -119,6 +131,18 @@ mod tests {
         service
             .db
             .execute_sql("INSERT INTO trees (id, lat, lon, species, address, state, added_at, updated_at, updated_by, added_by) VALUES (1, 40.1, 44.1, 'Birch', 'Main St', 'healthy', 0, 0, 1, 1)", &[])
+            .await
+            .expect("Error adding tree.");
+
+        service
+            .db
+            .execute_sql("INSERT INTO trees (id, lat, lon, species, address, state, added_at, updated_at, updated_by, added_by) VALUES (2, 40.1, 44.1, 'Birch', 'Main St', 'replaced', 0, 0, 1, 1)", &[])
+            .await
+            .expect("Error adding tree.");
+
+        service
+            .db
+            .execute_sql("INSERT INTO trees (id, lat, lon, species, address, state, added_at, updated_at, updated_by, added_by) VALUES (3, 40.1, 44.1, 'Birch', 'Main St', 'stump', 0, 0, 1, 1)", &[])
             .await
             .expect("Error adding tree.");
 

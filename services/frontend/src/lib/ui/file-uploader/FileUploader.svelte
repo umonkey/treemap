@@ -4,18 +4,26 @@
 	import FileUploaderDisplay from '$lib/ui/file-uploader-display/FileUploaderDisplay.svelte';
 	import { load } from './hooks';
 
-	const { label, onBusy, onChange, small, single } = $props<{
+	const {
+		label,
+		onBusy,
+		onChange,
+		small,
+		single
+	}: {
 		label?: string;
 		onChange: (files: string[]) => void;
 		onBusy: (busy: boolean) => void;
 		small?: boolean;
 		single?: boolean;
-	}>();
+	} = $props();
 
-	const { items, handleChange, handleRetry } = load({
-		onBusy,
-		onChange
-	});
+	const { items, handleChange, handleRetry } = $derived(
+		load({
+			onBusy,
+			onChange
+		})
+	);
 </script>
 
 {#if label}

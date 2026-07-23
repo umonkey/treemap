@@ -17,18 +17,18 @@
 		value = '',
 		nosuggestions = false,
 		onChange
-	} = $props<{
+	}: {
 		value?: string | null;
 		nosuggestions?: boolean;
 		onChange: (value: string) => void;
-	}>();
+	} = $props();
 
 	const formatValue = (v: string | null | undefined) =>
 		v === 'Unknown' || v === 'Unknown tree' ? '' : (v ?? '');
 
 	// This is the editable input value.
 	// We change it on autocomplete clicks, etc.
-	let currentValue = $state<string>(formatValue(value));
+	let currentValue = $state<string>('');
 
 	const { data: suggested, reload } = loadSuggestedSpecies();
 

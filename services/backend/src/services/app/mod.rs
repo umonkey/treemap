@@ -2,7 +2,7 @@ use crate::infra::config::Config;
 use crate::infra::database::Database;
 use crate::infra::queue::Queue;
 use crate::infra::secrets::Secrets;
-use crate::infra::storage::FileStorage;
+use crate::infra::storage::{create_driver, BackupStorage, FileStorage};
 use crate::infra::tokens::TokenService;
 use crate::services::mcp::McpSessionManager;
 use crate::types::*;
@@ -16,6 +16,8 @@ pub trait Context {
     fn secrets(&self) -> Arc<Secrets>;
     fn tokens(&self) -> Arc<TokenService>;
     fn storage(&self) -> Arc<FileStorage>;
+    #[allow(dead_code)]
+    fn backups(&self) -> Arc<BackupStorage>;
     #[allow(dead_code)]
     fn mcp(&self) -> Arc<McpSessionManager>;
 }
@@ -63,6 +65,7 @@ pub struct AppState {
     pub secrets: Arc<Secrets>,
     pub tokens: Arc<TokenService>,
     pub storage: Arc<FileStorage>,
+    pub backups: Arc<BackupStorage>,
     pub mcp: Arc<McpSessionManager>,
 }
 
@@ -78,7 +81,13 @@ impl AppState {
         ))?;
         let tokens = Arc::new(TokenService::new(jwt_secret));
 
-        let storage = Arc::new(FileStorage::new(&config, &secrets)?);
+        let driver = create_driver(&config, &secrets)?;
+
+        let files_bucket = config.files_bucket.clone().unwrap_or("files".to_string());
+        let storage = Arc::new(FileStorage::new(driver.clone(), files_bucket));
+
+        let backups = Arc::new(BackupStorage::new(driver.clone(), &config)?);
+
         let mcp = Arc::new(McpSessionManager::default());
 
         Ok(Self {
@@ -88,6 +97,7 @@ impl AppState {
             secrets,
             tokens,
             storage,
+            backups,
             mcp,
         })
     }
@@ -102,6 +112,7 @@ impl AppState {
             secrets: self.secrets.clone(),
             tokens: self.tokens.clone(),
             storage: self.storage.clone(),
+            backups: self.backups.clone(),
             mcp: self.mcp.clone(),
         })
     }
@@ -161,6 +172,10 @@ impl Context for AppState {
 
     fn storage(&self) -> Arc<FileStorage> {
         self.storage.clone()
+    }
+
+    fn backups(&self) -> Arc<BackupStorage> {
+        self.backups.clone()
     }
 
     fn mcp(&self) -> Arc<McpSessionManager> {

@@ -7,3 +7,4 @@ database = "memory"
 
 # Use local file storage.
 file_storage = "local"
+backup_bucket = "backups"

@@ -5,7 +5,6 @@
 	import { hasPermission } from '$lib/stores/authStore';
 	import Button from '$lib/ui/button/Button.svelte';
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
-	import CheckUpdatesButton from './CheckUpdatesButton.svelte';
 	import SignOutButton from './SignOutButton.svelte';
 
 	const { name, userpic, trees_count, updates_count, files_count } = $props<{
@@ -33,7 +32,6 @@
 
 		<Buttons>
 			<SignOutButton />
-			<CheckUpdatesButton />
 			{#if $hasPermission('user:manage')}
 				<Button link="/admin">Admin</Button>
 			{/if}

@@ -1,5 +1,5 @@
 use super::aws_config::AwsConfig;
-use super::base::{CompletedPart, FileStorageInterface};
+use super::base::{CompletedPart, StorageDriver};
 use crate::infra::config::Config;
 use crate::infra::secrets::Secrets;
 use crate::types::*;
@@ -13,17 +13,12 @@ use aws_sdk_s3::Client;
 use log::{debug, error, info};
 use std::time::{Duration, Instant};
 
-pub struct S3FileStorage {
+pub struct S3StorageDriver {
     client: Client,
-    bucket: String,
 }
 
-impl S3FileStorage {
+impl S3StorageDriver {
     pub fn new(config: &Config, secrets: &Secrets) -> Result<Self> {
-        let s3_bucket = config.files_bucket.clone().ok_or(Error::Config(
-            "FILES_BUCKET config option not set".to_string(),
-        ))?;
-
         let s3_region = config.files_region.clone().ok_or(Error::Config(
             "FILES_REGION config option not set".to_string(),
         ))?;
@@ -46,26 +41,23 @@ impl S3FileStorage {
 
         let client = Client::new(&s3_config);
 
-        info!("S3 file storage client initialized.");
+        info!("S3 storage driver initialized.");
 
-        Ok(Self {
-            client,
-            bucket: s3_bucket.to_string(),
-        })
+        Ok(Self { client })
     }
 }
 
 #[async_trait]
-impl FileStorageInterface for S3FileStorage {
-    async fn read_file(&self, id: u64) -> Result<Vec<u8>> {
-        debug!("Reading file {} from S3.", id);
+impl StorageDriver for S3StorageDriver {
+    async fn read_file(&self, bucket: &str, path: &str) -> Result<Vec<u8>> {
+        debug!("Reading file {}/{} from S3.", bucket, path);
         let start = Instant::now();
 
         let res = self
             .client
             .get_object()
-            .bucket(&self.bucket)
-            .key(id.to_string())
+            .bucket(bucket)
+            .key(path)
             .send()
             .await;
 
@@ -76,8 +68,9 @@ impl FileStorageInterface for S3FileStorage {
                     Ok(body) => {
                         let body = body.into_bytes();
                         info!(
-                            "File {} read, {} bytes in {}ms.",
-                            id,
+                            "File {}/{} read, {} bytes in {}ms.",
+                            bucket,
+                            path,
                             body.len(),
                             start.elapsed().as_millis()
                         );
@@ -98,29 +91,27 @@ impl FileStorageInterface for S3FileStorage {
         }
     }
 
-    async fn write_file(&self, id: u64, bytes: &[u8]) -> Result<()> {
+    async fn write_file(&self, bucket: &str, path: &str, bytes: &[u8], public: bool) -> Result<()> {
         let body = ByteStream::from(bytes.to_vec());
         let start = Instant::now();
 
-        let res = self
-            .client
-            .put_object()
-            .bucket(&self.bucket)
-            .key(id.to_string())
-            .body(body)
-            .acl(ObjectCannedAcl::PublicRead)
-            .content_type("image/jpeg")
-            .send()
-            .await;
+        let mut req = self.client.put_object().bucket(bucket).key(path).body(body);
+
+        if public {
+            req = req.acl(ObjectCannedAcl::PublicRead);
+        }
+
+        let res = req.send().await;
 
         if let Err(e) = res {
-            error!("Error uploading file {} to S3: {:?}", id, e);
+            error!("Error uploading file {}/{} to S3: {:?}", bucket, path, e);
             return Err(Error::FileUpload);
         }
 
         info!(
-            "File {} written to S3, length={} in {}ms",
-            id,
+            "File {}/{} written to S3, length={} in {}ms",
+            bucket,
+            path,
             bytes.len(),
             start.elapsed().as_millis()
         );
@@ -128,9 +119,8 @@ impl FileStorageInterface for S3FileStorage {
         Ok(())
     }
 
-    async fn create_upload_url(&self, id: u64) -> Result<String> {
-        let key = id.to_string();
-        let expires_in = Duration::from_secs(24 * 3600);
+    async fn create_upload_url(&self, bucket: &str, path: &str) -> Result<String> {
+        let expires_in = Duration::from_secs(3600);
         let config = PresigningConfig::builder()
             .expires_in(expires_in)
             .build()
@@ -139,8 +129,8 @@ impl FileStorageInterface for S3FileStorage {
         let presigned_request = self
             .client
             .put_object()
-            .bucket(&self.bucket)
-            .key(key)
+            .bucket(bucket)
+            .key(path)
             .presigned(config)
             .await
             .map_err(|e| {
@@ -151,12 +141,12 @@ impl FileStorageInterface for S3FileStorage {
         Ok(presigned_request.uri().to_string())
     }
 
-    async fn exists(&self, key: &str) -> Result<bool> {
+    async fn exists(&self, bucket: &str, path: &str) -> Result<bool> {
         let res = self
             .client
             .head_object()
-            .bucket(&self.bucket)
-            .key(key)
+            .bucket(bucket)
+            .key(path)
             .send()
             .await;
 
@@ -174,12 +164,12 @@ impl FileStorageInterface for S3FileStorage {
         }
     }
 
-    async fn start_multipart_upload(&self, key: &str) -> Result<String> {
+    async fn start_multipart_upload(&self, bucket: &str, path: &str) -> Result<String> {
         let res = self
             .client
             .create_multipart_upload()
-            .bucket(&self.bucket)
-            .key(key)
+            .bucket(bucket)
+            .key(path)
             .acl(ObjectCannedAcl::PublicRead)
             .content_type("video/mp4")
             .send()
@@ -194,7 +184,8 @@ impl FileStorageInterface for S3FileStorage {
 
     async fn create_upload_part_url(
         &self,
-        key: &str,
+        bucket: &str,
+        path: &str,
         upload_id: &str,
         part_number: i32,
     ) -> Result<String> {
@@ -207,8 +198,8 @@ impl FileStorageInterface for S3FileStorage {
         let presigned_request = self
             .client
             .upload_part()
-            .bucket(&self.bucket)
-            .key(key)
+            .bucket(bucket)
+            .key(path)
             .upload_id(upload_id)
             .part_number(part_number)
             .presigned(config)
@@ -223,7 +214,8 @@ impl FileStorageInterface for S3FileStorage {
 
     async fn complete_multipart_upload(
         &self,
-        key: &str,
+        bucket: &str,
+        path: &str,
         upload_id: &str,
         parts: Vec<CompletedPart>,
     ) -> Result<()> {
@@ -243,8 +235,8 @@ impl FileStorageInterface for S3FileStorage {
 
         self.client
             .complete_multipart_upload()
-            .bucket(&self.bucket)
-            .key(key)
+            .bucket(bucket)
+            .key(path)
             .upload_id(upload_id)
             .multipart_upload(multipart_upload)
             .send()

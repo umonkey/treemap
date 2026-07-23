@@ -3,12 +3,10 @@
 	import type { ITree } from '$lib/types';
 	import FALLBACK from '$lib/assets/tree.jpg';
 
-	const { tree } = $props<{
-		tree: ITree;
-	}>();
+	const { tree }: { tree: ITree } = $props();
 
-	const src = tree.thumbnail_id ? routes.file(tree.thumbnail_id) : FALLBACK;
-	const alt = tree.species;
+	const src = $derived(tree.thumbnail_id ? routes.file(tree.thumbnail_id) : FALLBACK);
+	const alt = $derived(tree.species);
 
 	let img: HTMLImageElement;
 

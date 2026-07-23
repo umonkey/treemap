@@ -1,9 +1,11 @@
 <script lang="ts">
 	import Breadcrumbs from '$lib/components/admin/Breadcrumbs.svelte';
-	import type { PageData } from './$types';
 	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
+	import { pageState } from './page.svelte';
 
-	let { data }: { data: PageData } = $props();
+	$effect(() => {
+		pageState.reload();
+	});
 </script>
 
 <svelte:head>
@@ -17,8 +19,10 @@
 
 			<Breadcrumbs items={[{ label: 'Admin', href: '/admin' }, { label: 'Users' }]} />
 		</header>
-		{#if data.error}
-			<p class="error">Error loading users: {data.error.description}</p>
+		{#if pageState.loading}
+			<p>Loading...</p>
+		{:else if pageState.error}
+			<p class="error">Error loading users: {pageState.error.description}</p>
 		{:else}
 			<div class="user-list">
 				<table>
@@ -30,7 +34,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#each data.users as user (user.user.id)}
+						{#each pageState.users as user (user.user.id)}
 							<tr>
 								<td>
 									{#if user.user.picture}

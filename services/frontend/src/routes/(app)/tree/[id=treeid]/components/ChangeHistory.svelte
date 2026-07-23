@@ -6,15 +6,15 @@
 		id,
 		name,
 		limit = 10
-	} = $props<{
+	}: {
 		id: string;
 		name: string;
 		limit?: number;
-	}>();
+	} = $props();
 
-	const { loading, error, history } = load(id, name, limit);
+	const { loading, error, history } = $derived(load(id, name, limit));
 
-	const className = `change-list ${name}`;
+	const className = $derived(`change-list ${name}`);
 </script>
 
 <div class={className}>

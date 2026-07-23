@@ -124,31 +124,27 @@ impl OsmTreeRecord {
         key: &str,
         node_id: u64,
     ) -> Option<f64> {
-        let value = tags.get(key)?;
+        let value = tags.get(key)?.as_str()?;
 
-        let value = value.as_str()?;
+        match Self::parse_size(value) {
+            Some(v) => Some(v),
+            None => {
+                debug!("Could not parse {key} for node {node_id}: {value:?}");
+                None
+            }
+        }
+    }
 
-        if let Ok(value) = value.parse::<f64>() {
-            return Some(value);
+    fn parse_size(value: &str) -> Option<f64> {
+        let value = value.trim();
+
+        if let Ok(v) = value.parse::<f64>() {
+            return Some(v);
         }
 
         if let Some(value) = value.strip_suffix('m') {
-            if let Ok(value) = value.parse::<f64>() {
-                return Some(value);
-            }
-        }
-
-        debug!("Could not parse {key} for node {node_id}: {value:?}");
-
-        None
-    }
-
-    fn parse_size(value: Option<String>) -> Option<f64> {
-        if let Some(value) = value {
-            if let Some(value) = value.strip_suffix('m') {
-                if let Ok(value) = value.parse::<f64>() {
-                    return Some(value);
-                }
+            if let Ok(v) = value.trim().parse::<f64>() {
+                return Some(v);
             }
         }
 
@@ -196,9 +192,15 @@ impl From<&OsmElement> for OsmTreeRecord {
             genus: em.tags.get("genus").cloned(),
             species: em.tags.get("species").cloned(),
             species_wikidata: None,
-            height: Self::parse_size(em.tags.get("height").cloned()),
-            circumference: Self::parse_size(em.tags.get("circumference").cloned()),
-            diameter_crown: Self::parse_size(em.tags.get("diameter_crown").cloned()),
+            height: em.tags.get("height").and_then(|v| Self::parse_size(v)),
+            circumference: em
+                .tags
+                .get("circumference")
+                .and_then(|v| Self::parse_size(v)),
+            diameter_crown: em
+                .tags
+                .get("diameter_crown")
+                .and_then(|v| Self::parse_size(v)),
             image: em.tags.get("image").cloned(),
             version: em.version,
             timestamp: em.timestamp.clone(),
@@ -207,5 +209,20 @@ impl From<&OsmElement> for OsmTreeRecord {
             visible: true,
             last_seen_at: None,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_size() {
+        assert_eq!(OsmTreeRecord::parse_size("6.5"), Some(6.5));
+        assert_eq!(OsmTreeRecord::parse_size("6.5m"), Some(6.5));
+        assert_eq!(OsmTreeRecord::parse_size("6.5 m"), Some(6.5));
+        assert_eq!(OsmTreeRecord::parse_size(" 7.0 "), Some(7.0));
+        assert_eq!(OsmTreeRecord::parse_size("invalid"), None);
+        assert_eq!(OsmTreeRecord::parse_size(""), None);
     }
 }

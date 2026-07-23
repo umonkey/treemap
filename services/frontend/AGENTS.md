@@ -37,3 +37,7 @@ This directory contains the static frontend for the tree mapping application.
 - Use `$app/state` to access page params, do not use `+page.ts`.
 - All bigint values returned by the backend need to be converted to strings, as JavaScript cannot handle 64-bit integers.
 - API endpoints return `Result<Json<>>` unless they emit no data, then they return a `Result<HttpResponse>` with the right status code.
+
+## Development workflow
+
+- All code changes need to be handed off to the `@implement` sub-agent.

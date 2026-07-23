@@ -61,8 +61,26 @@ impl TreeImageRepository {
     }
 
     pub async fn find_by_tree(&self, tree_id: u64) -> Result<Vec<TreeImage>> {
-        let query = SelectQuery::new(TABLE).with_condition("tree_id", Value::from(tree_id as i64));
+        let query = SelectQuery::new(TABLE)
+            .with_condition("tree_id", Value::from(tree_id as i64))
+            .with_order_desc("added_at");
+
         self.query_multiple(query).await
+    }
+
+    pub async fn reassign_all(&self, old_tree_id: u64, new_tree_id: u64) -> Result<()> {
+        let sql = format!("UPDATE `{TABLE}` SET tree_id = ? WHERE tree_id = ?");
+        self.db
+            .execute_sql(
+                &sql,
+                &[
+                    Value::from(new_tree_id as i64),
+                    Value::from(old_tree_id as i64),
+                ],
+            )
+            .await?;
+
+        Ok(())
     }
 
     async fn query_multiple(&self, query: SelectQuery) -> Result<Vec<TreeImage>> {

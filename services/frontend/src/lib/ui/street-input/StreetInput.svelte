@@ -9,14 +9,17 @@
 	import type { IStreet } from '$lib/types';
 	import FormElement from '$lib/ui/form-element/FormElement.svelte';
 
-	const { value = '', onChange } = $props<{
+	const {
+		value = '',
+		onChange
+	}: {
 		value?: string | null;
 		onChange: (value: string) => void;
-	}>();
+	} = $props();
 
 	// This is the editable input value.
 	// We change it on autocomplete clicks, etc.
-	let currentValue = $state<string>(value ?? '');
+	let currentValue = $state<string>('');
 
 	let options: IStreet[] = $state([]);
 	let showOptions = $state<boolean>(false);
@@ -58,7 +61,7 @@
 	};
 
 	$effect(() => {
-		currentValue = value;
+		currentValue = value ?? '';
 	});
 </script>
 

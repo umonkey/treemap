@@ -49,6 +49,26 @@ impl PropRepository {
         self.query_multiple(query).await
     }
 
+    pub async fn update_tree_id(&self, ids: Vec<u64>, new_tree_id: u64) -> Result<()> {
+        if ids.is_empty() {
+            return Ok(());
+        }
+
+        let placeholders: Vec<String> = ids.iter().map(|_| "?".to_string()).collect();
+        let sql = format!(
+            "UPDATE `{}` SET tree_id = ? WHERE id IN ({})",
+            TABLE,
+            placeholders.join(", ")
+        );
+
+        let mut params = vec![Value::from(new_tree_id as i64)];
+        params.extend(ids.into_iter().map(|id| Value::from(id as i64)));
+
+        self.db.execute_sql(&sql, &params).await?;
+
+        Ok(())
+    }
+
     async fn query_multiple(&self, query: SelectQuery) -> Result<Vec<PropRecord>> {
         let records = self.db.get_records(query).await?;
 

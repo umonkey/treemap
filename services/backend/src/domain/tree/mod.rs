@@ -7,6 +7,7 @@ pub use models::Tree;
 pub use repository::TreeRepository;
 pub use schemas::AddTreeRequest;
 pub use schemas::Bounds;
+pub use schemas::DuplicateLocation;
 pub use schemas::DuplicatesResponse;
 pub use schemas::GetTreesRequest;
 pub use schemas::LatLon;

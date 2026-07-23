@@ -58,8 +58,7 @@ export async function createThumbnail(blob: Blob, minSize = 200): Promise<Blob> 
 	}
 
 	const ctx = canvas.getContext('2d') as
-		| OffscreenCanvasRenderingContext2D
-		| CanvasRenderingContext2D;
+		OffscreenCanvasRenderingContext2D | CanvasRenderingContext2D;
 
 	if (!ctx) {
 		if (image instanceof ImageBitmap) image.close();

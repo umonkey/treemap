@@ -5,11 +5,9 @@
 	import ChangeHistory from '../components/ChangeHistory.svelte';
 	import TreeSheet from '../components/TreeSheet.svelte';
 
-	const { id } = $props<{
-		id: string;
-	}>();
+	const { id }: { id: string } = $props();
 
-	const { loading, busy, error, tree, save, close } = stateUpdater(id, 'dead');
+	const { loading, busy, error, tree, save, close } = $derived(stateUpdater(id, 'dead'));
 </script>
 
 {#if $error}

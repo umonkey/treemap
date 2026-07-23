@@ -21,7 +21,7 @@ services:
     volumes:
       - var:/app/var
     environment:
-      - RUST_LOG=info,treemap=debug
+      - RUST_LOG=info,treemap=debug,treemap::infra::database::sqlite_database=info
       - TREEMAP_CONFIG=/app/config.toml.dev
     secrets:
       - files_key
