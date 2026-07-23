@@ -1,6 +1,7 @@
 ---
 description: Implement changes described in the plan and verify with make format/check.
 mode: subagent
+model: google/gemini-3.5-flash-lite
 temperature: 0.1
 permission:
   read: allow
