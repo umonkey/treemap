@@ -1,0 +1,51 @@
+data "aws_vpc" "default" {
+  default = true
+}
+
+data "aws_subnets" "default" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.default.id]
+  }
+}
+
+resource "aws_security_group" "batch_sg" {
+  name        = "treemap-batch-sg"
+  description = "Security group for AWS Batch compute environment instances"
+  vpc_id      = data.aws_vpc.default.id
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_batch_compute_environment" "treemap" {
+  name         = "treemap-compute-env"
+  type         = "MANAGED"
+  service_role = aws_iam_role.aws_batch_service_role.arn
+
+  compute_resources {
+    type                = "SPOT"
+    allocation_strategy = "SPOT_CAPACITY_OPTIMIZED"
+    instance_type       = [var.batch_instance_type]
+    max_vcpus           = 256
+    min_vcpus           = 0
+    subnets             = data.aws_subnets.default.ids
+    security_group_ids  = [aws_security_group.batch_sg.id]
+    instance_role       = aws_iam_instance_profile.ecs_instance_profile.arn
+  }
+}
+
+resource "aws_batch_job_queue" "treemap" {
+  name     = "treemap-transcode"
+  state    = "ENABLED"
+  priority = 1
+
+  compute_environment_order {
+    compute_environment = aws_batch_compute_environment.treemap.arn
+    order               = 1
+  }
+}
