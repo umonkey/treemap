@@ -51,6 +51,12 @@ volumes:
   svelte_kit_data:
 
 secrets:
+  aws_key:
+    file: .secrets/aws_key.txt
+  aws_secret:
+    file: .secrets/aws_secret.txt
+  aws_region:
+    file: .secrets/aws_region.txt
   chatbot_token:
     file: .secrets/chatbot_token.txt
   files_key:

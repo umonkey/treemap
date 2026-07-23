@@ -1,6 +1,5 @@
 /.cache
 /.env
-/.envrc
 /services/backend/database.*
 /services/backend/target
 /services/frontend/node_modules
@@ -10,3 +9,4 @@
 /.secrets
 /.opencode/node_modules
 /.opencode/package*
+.envrc
