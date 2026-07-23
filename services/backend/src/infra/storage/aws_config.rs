@@ -1,3 +1,5 @@
+//! Wraps the AWS SDK configuration.
+
 use crate::types::Result;
 use aws_config::{BehaviorVersion, Region, SdkConfig};
 use aws_credential_types::Credentials;

@@ -5,7 +5,7 @@
 use crate::domain::tree::TreeRepository;
 use crate::domain::tree_image::{TreeImage, TreeImageRepository};
 use crate::domain::upload::{Upload, UploadRepository};
-use crate::infra::storage::FileStorage;
+use crate::infra::storage::FileBucket;
 use crate::services::ThumbnailerService;
 use crate::services::{Context, Injectable};
 use crate::types::{Error, Result};
@@ -19,7 +19,7 @@ const LARGE_SIZE: u32 = 2000;
 pub struct PhotoService {
     tree_images: Arc<TreeImageRepository>,
     uploads: Arc<UploadRepository>,
-    storage: Arc<FileStorage>,
+    storage: Arc<FileBucket>,
     thumbnailer: Arc<ThumbnailerService>,
     trees: Arc<TreeRepository>,
 }

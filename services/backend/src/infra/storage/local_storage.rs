@@ -1,3 +1,6 @@
+//! Implements the local file system storage driver.
+//! This is very limited and should only be used for unit testing.
+
 use super::base::StorageDriver;
 use crate::infra::config::Config;
 use crate::types::*;

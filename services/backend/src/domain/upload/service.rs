@@ -8,7 +8,7 @@
 use super::models::Upload;
 use super::repository::UploadRepository;
 use crate::actions::tree::FileUploadResponse;
-use crate::infra::storage::FileStorage;
+use crate::infra::storage::FileBucket;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::{get_timestamp, get_unique_id};
@@ -17,7 +17,7 @@ use std::sync::Arc;
 
 pub struct UploadService {
     uploads: Arc<UploadRepository>,
-    storage: Arc<FileStorage>,
+    storage: Arc<FileBucket>,
 }
 
 impl UploadService {

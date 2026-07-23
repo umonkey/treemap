@@ -2,11 +2,13 @@
 
 mod aws_config;
 mod base;
+mod buckets;
 mod interface;
 mod local_storage;
 mod s3_storage;
 
-pub use interface::{create_driver, BackupStorage, FileStorage};
+pub use buckets::{BackupBucket, FileBucket};
+pub use interface::create_driver;
 
 // We need access to exact drivers when we move between storages.
 pub use base::StorageDriver;

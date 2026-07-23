@@ -1,3 +1,6 @@
+//! Implements the S3 compatible file storage driver.
+//! This is for the production.
+
 use super::aws_config::AwsConfig;
 use super::base::StorageDriver;
 use crate::infra::config::Config;

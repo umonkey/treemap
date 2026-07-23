@@ -3,7 +3,7 @@ use super::repository::UserRepository;
 use super::schemas::UserUpdate;
 use crate::domain::upload::UploadRepository;
 use crate::infra::database::{Database, Value};
-use crate::infra::storage::FileStorage;
+use crate::infra::storage::FileBucket;
 use crate::services::*;
 use crate::types::*;
 use crate::utils::{get_timestamp, get_unique_id};
@@ -16,7 +16,7 @@ pub struct UserService {
     db: Arc<Database>,
     users: Arc<UserRepository>,
     uploads: Arc<UploadRepository>,
-    storage: Arc<FileStorage>,
+    storage: Arc<FileBucket>,
     thumbnailer: Arc<ThumbnailerService>,
 }
 
