@@ -9,7 +9,7 @@
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import VideoUploader from './VideoUploader.svelte';
 
-	const id = $derived(page.params.id);
+	const id = $derived(page.params.id as string);
 
 	$effect(() => {
 		untrack(() => pageState.reload(id));

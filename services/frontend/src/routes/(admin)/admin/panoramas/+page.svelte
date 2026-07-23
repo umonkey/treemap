@@ -35,32 +35,36 @@
 		{#if pageState.isLoading}
 			<p aria-busy="true">Loading panoramas...</p>
 		{:else}
-			<div class="panorama-list">
-				<table>
-					<thead>
-						<tr>
-							<th class="col-date">Created At</th>
-							<th class="col-title">Title</th>
-							<th class="col-images">Images</th>
-							<th class="col-status">Status</th>
-							<th class="col-visible">Visible</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each pageState.panoramas as pano (pano.id)}
+			{#if pageState.panoramas.length > 0}
+				<div class="panorama-list">
+					<table>
+						<thead>
 							<tr>
-								<td class="col-date">{formatDateTimeISO(pano.created_at)}</td>
-								<td>
-									<a href="/admin/panoramas/{pano.id}">{pano.title}</a>
-								</td>
-								<td class="col-images">{pano.image_count}</td>
-								<td class="col-status">{pano.status}</td>
-								<td class="col-visible">{pano.visible ? 'Yes' : 'No'}</td>
+								<th class="col-date">Created At</th>
+								<th class="col-title">Title</th>
+								<th class="col-images">Images</th>
+								<th class="col-status">Status</th>
+								<th class="col-visible">Visible</th>
 							</tr>
-						{/each}
-					</tbody>
-				</table>
-			</div>
+						</thead>
+						<tbody>
+							{#each pageState.panoramas as pano (pano.id)}
+								<tr>
+									<td class="col-date">{formatDateTimeISO(pano.created_at)}</td>
+									<td>
+										<a href="/admin/panoramas/{pano.id}">{pano.title}</a>
+									</td>
+									<td class="col-images">{pano.image_count}</td>
+									<td class="col-status">{pano.status}</td>
+									<td class="col-visible">{pano.visible ? 'Yes' : 'No'}</td>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
+				</div>
+			{:else}
+				<p>No panoramas found.</p>
+			{/if}
 
 			<Buttons>
 				<Button link="/admin/panoramas/add">Add Panorama</Button>
