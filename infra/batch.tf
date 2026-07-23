@@ -49,3 +49,22 @@ resource "aws_batch_job_queue" "treemap" {
     order               = 1
   }
 }
+
+resource "aws_batch_job_definition" "transcoder" {
+  name = "treemap-transcoder"
+  type = "container"
+
+  container_properties = jsonencode({
+    image = "ghcr.io/umonkey/treemap-transcoder:latest"
+    resourceRequirements = [
+      {
+        value = "2"
+        type  = "VCPU"
+      },
+      {
+        value = "4096"
+        type  = "MEMORY"
+      }
+    ]
+  })
+}
