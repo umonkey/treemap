@@ -1,6 +1,6 @@
 use super::schemas::{
     CompleteMultipartRequest, MultipartUploadResponse, PanoramaRead, StartMultipartRequest,
-    UploadUrlResponse, WebVideoUrlResponse,
+    TrackPoint, UploadUrlResponse, WebVideoUrlResponse,
 };
 use crate::domain::panorama::{CreatePanorama, PanoramaService, UpdatePanorama};
 use crate::services::app::{PanoEdit, RequirePermission};
@@ -127,9 +127,28 @@ pub async fn verify_track_upload_action(
 pub async fn get_panorama_track_action(
     service: Injected<PanoramaService>,
     path: Path<u64>,
-) -> Result<HttpResponse> {
+) -> Result<Json<Vec<TrackPoint>>> {
     let id = path.into_inner();
+    let panorama = service.get_panorama(id).await?;
+    let video_timestamp = panorama.video_timestamp.unwrap_or(0.0);
     let data = service.get_track_data(id).await?;
     let points = crate::utils::parse_gpx(&data)?;
-    Ok(crate::responders::respond_with_gpx(&points))
+
+    let mut track_points = Vec::new();
+    for p in points {
+        let timestamp = p.time.unwrap_or_default();
+        let point_timestamp = match chrono::DateTime::parse_from_rfc3339(&timestamp) {
+            Ok(dt) => dt.timestamp() as f64 + dt.timestamp_subsec_nanos() as f64 / 1_000_000_000.0,
+            Err(_) => 0.0,
+        };
+        let offset = point_timestamp - video_timestamp;
+        track_points.push(TrackPoint {
+            lat: p.lat,
+            lng: p.lon,
+            offset,
+            timestamp,
+        });
+    }
+
+    Ok(Json(track_points))
 }

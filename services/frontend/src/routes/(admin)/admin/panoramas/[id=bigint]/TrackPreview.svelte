@@ -11,21 +11,19 @@
 </script>
 
 <div class="track-preview">
-	{#if componentState.loading}
-		<p aria-busy="true">Loading GPX track...</p>
-	{:else if componentState.error}
-		<p class="error">{componentState.error}</p>
-	{:else if componentState.trackData}
-		<div class="map-wrapper">
-			<MapLibre
-				style={componentState.layer}
-				class="map"
-				center={[44.5152, 40.1872]}
-				zoom={13}
-				attributionControl={false}
-			>
-				<AttributionControl compact={true} position="bottom-left" />
-				<GeoJSON data={componentState.trackData}>
+	<div class="map-wrapper">
+		<MapLibre
+			style={componentState.layer}
+			bind:map={componentState.map}
+			class="map"
+			center={[44.5152, 40.1872]}
+			zoom={13}
+			onload={componentState.fitBounds}
+			attributionControl={false}
+		>
+			<AttributionControl compact={true} position="bottom-left" />
+			{#if componentState.trackData}
+				<GeoJSON data={componentState.geoJson}>
 					<LineLayer
 						paint={{
 							'line-color': '#007aff',
@@ -33,9 +31,9 @@
 						}}
 					/>
 				</GeoJSON>
-			</MapLibre>
-		</div>
-	{/if}
+			{/if}
+		</MapLibre>
+	</div>
 </div>
 
 <style>
@@ -59,9 +57,5 @@
 	:global(.map) {
 		width: 100%;
 		height: 100%;
-	}
-
-	.error {
-		color: var(--color-error, red);
 	}
 </style>

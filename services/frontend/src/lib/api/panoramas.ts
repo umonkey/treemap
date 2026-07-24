@@ -140,8 +140,15 @@ export async function getPanoramaWebVideo(id: string): Promise<IResponse<WebVide
 	});
 }
 
-export async function getPanoramaTrackGeoJSON(id: string): Promise<IResponse<unknown>> {
-	return await request<unknown>('GET', `api/panoramas/${id}/track.json`, {
+export interface ITrackPoint {
+	lat: number;
+	lng: number;
+	offset: number;
+	timestamp: string;
+}
+
+export async function getPanoramaTrackData(id: string): Promise<IResponse<ITrackPoint[]>> {
+	return await request<ITrackPoint[]>('GET', `api/panoramas/${id}/track.json`, {
 		headers: getAuthHeaders()
 	});
 }

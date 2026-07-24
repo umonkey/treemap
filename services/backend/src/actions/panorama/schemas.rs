@@ -46,6 +46,14 @@ pub struct WebVideoUrlResponse {
     pub url: String,
 }
 
+#[derive(Debug, Serialize)]
+pub struct TrackPoint {
+    pub lat: f64,
+    pub lng: f64,
+    pub offset: f64,
+    pub timestamp: String,
+}
+
 impl From<Panorama> for PanoramaRead {
     fn from(p: Panorama) -> Self {
         Self {
