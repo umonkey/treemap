@@ -2,6 +2,7 @@
 	import { componentState } from './VideoSync.svelte.ts';
 	import VideoPlayer from './VideoPlayer.svelte';
 	import TrackPreview from './TrackPreview.svelte';
+	import NumberInput from '$lib/ui/number-input/NumberInput.svelte';
 
 	const { panoramaId }: { panoramaId: string } = $props();
 </script>
@@ -12,10 +13,16 @@
 			<VideoPlayer {panoramaId} bind:offset={componentState.videoOffset} />
 		</div>
 		<div class="cell">
-			<TrackPreview {panoramaId} offset={componentState.videoOffset} />
+			<TrackPreview {panoramaId} offset={componentState.videoOffset + componentState.manualOffset} />
 		</div>
 		<div class="cell">
-			<p>Video frame offset: {componentState.videoOffset}</p>
+			<NumberInput
+				label="GPS Track Offset"
+				value={componentState.manualOffset}
+				step="0.01"
+				min={-Infinity}
+				onChange={(val) => (componentState.manualOffset = val)}
+			/>
 		</div>
 	</div>
 </div>
