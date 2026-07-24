@@ -19,3 +19,16 @@ opensfm extract_metadata var/dataset
 
 # (5) Apply Turn-Aware GPS Smoothing and metadata injection
 bin/smooth-gps
+
+# (6) Run the core SfM pipeline
+opensfm detect_features var/dataset
+opensfm match_features var/dataset
+opensfm create_tracks var/dataset
+opensfm reconstruct var/dataset
+
+# (7) Prune outlierpoints (500m+)
+bin/prune-points var/dataset
+opensfm export_ply var/dataset
+
+# (8) Verify result quality
+bin/verify-error

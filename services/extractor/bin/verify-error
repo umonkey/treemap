@@ -1,0 +1,103 @@
+#!/usr/bin/env python3
+
+import json
+import os
+import sys
+import math
+import re
+
+def extract_from_brief_report(brief_report):
+    # Example: "Ceres Solver Report: Iterations: 3, Initial cost: 3.507217e+05, Final cost: 3.507078e+05, Termination: CONVERGENCE"
+    match = re.search(r'Final cost:\s*([\d.e+-]+)', brief_report)
+    if match:
+        return float(match.group(1))
+    return None
+
+def main(dataset_path):
+    report_path = os.path.join(dataset_path, 'reports/reconstruction.json')
+
+    if not os.path.exists(report_path):
+        print(f"ERROR: Report file not found at {report_path}")
+        sys.exit(1)
+
+    try:
+        with open(report_path, 'r') as f:
+            data = json.load(f)
+    except Exception as e:
+        print(f"ERROR: Could not read report file: {e}")
+        sys.exit(1)
+
+    reconstructions = data.get('reconstructions', [])
+    if not reconstructions:
+        print("ERROR: No reconstruction data found in report.")
+        sys.exit(1)
+
+    recon = reconstructions[0]
+
+    # We want the global bundle or the one with the most images
+    best_bundle = None
+    max_images = -1
+
+    if 'grow' in recon and 'steps' in recon['grow']:
+        for step in recon['grow']['steps']:
+            for bundle_key in ['bundle', 'bundle_after_retriangulation', 'local_bundle']:
+                if bundle_key in step:
+                    bundle = step[bundle_key]
+                    num_images = bundle.get('num_images', 0)
+                    if num_images > max_images:
+                        max_images = num_images
+                        best_bundle = bundle
+
+    error = None
+    if best_bundle:
+        num_reprojections = best_bundle.get('num_reprojections', 0)
+
+        # Try explicit average_error first
+        error = best_bundle.get('average_error')
+
+        # Try to parse from brief_report
+        if error is None and 'brief_report' in best_bundle:
+            final_cost = extract_from_brief_report(best_bundle['brief_report'])
+            if final_cost is not None and num_reprojections > 0:
+                error = math.sqrt(2 * final_cost / num_reprojections)
+
+    if error is None:
+        print("ERROR: Could not extract or calculate average_error from report.")
+        sys.exit(1)
+
+    print_report(error)
+
+def print_report(error):
+    print("\n" + "="*50)
+    print("      OPENSFM QUALITY VERIFICATION REPORT")
+    print("="*50)
+    print(f"Average Reprojection Error: {error:.4f} pixels")
+
+    if error < 0.6:
+        status = "EXCELLENT"
+        desc = "Your visual geometry is extremely tight."
+    elif error < 1.0:
+        status = "GOOD"
+        desc = "Very reliable for tree triangulation."
+    elif error < 1.5:
+        status = "ACCEPTABLE"
+        desc = "Geometry is solid, but GPS constraints may be tight."
+    else:
+        status = "POOR"
+        desc = "Geometry is stressed. Check for GPS/visual conflicts."
+
+    print(f"Status: {status}")
+    print("-" * 50)
+    print(f"Interpretation: {desc}")
+
+    if error < 1.0:
+        print("\nTRUST LEVEL: HIGH")
+        print("If a building looks misaligned in Photini, the error is")
+        print("likely in the OSM/Satellite Map, NOT your SfM data.")
+    else:
+        print("\nTRUST LEVEL: MEDIUM")
+        print("There is some tension between images and GPS.")
+    print("="*50 + "\n")
+
+if __name__ == "__main__":
+    main(*sys.argv[:1])
