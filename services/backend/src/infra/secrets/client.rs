@@ -33,6 +33,11 @@ pub struct Secrets {
     // Mapillary API.
     pub mapillary_token: Option<String>,
     pub mapillary_org_id: Option<String>,
+
+    // AWS Batch / AWS access.
+    pub aws_key: Option<String>,
+    pub aws_secret: Option<String>,
+    pub aws_region: Option<String>,
 }
 
 impl Secrets {
@@ -52,6 +57,9 @@ impl Secrets {
             sqs_secret: Self::get(path, "SQS_SECRET"),
             mapillary_token: Self::get(path, "MAPILLARY_TOKEN"),
             mapillary_org_id: Self::get(path, "MAPILLARY_ORG_ID"),
+            aws_key: Self::get(path, "AWS_KEY"),
+            aws_secret: Self::get(path, "AWS_SECRET"),
+            aws_region: Self::get(path, "AWS_REGION"),
         })
     }
 

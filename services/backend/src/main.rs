@@ -23,6 +23,8 @@ fn usage() {
     println!("  osm-push-changes      -- send tree updates to OSM");
     println!("  osm-push-delete       -- remove deleted trees from OSM");
     println!("  osm-remap-duplicates  -- fix OSM IDs for merged trees");
+    println!("  panoramas-process     -- process draft panoramas transcode status");
+    println!("  panoramas-transcode N -- start transcode for a single panorama");
     println!("  queue-consumer        -- run the queue consumer daemon");
     println!("  serve                 -- run the web server");
     println!("  update-tree-address N -- update street address for a single tree");
@@ -94,6 +96,14 @@ async fn main() -> std::io::Result<()> {
         }
         "osm-remap-duplicates" => {
             osm_remap_duplicates_command().await;
+            return Ok(());
+        }
+        "panoramas-process" => {
+            panoramas_process_command().await;
+            return Ok(());
+        }
+        "panoramas-transcode" => {
+            panoramas_transcode_command().await;
             return Ok(());
         }
         "update-tree-address" => {

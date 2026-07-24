@@ -78,9 +78,12 @@ pub struct Config {
     pub files_endpoint: Option<String>,
     pub files_bucket: Option<String>,
     pub backup_bucket: Option<String>,
+    pub panoramas_source_bucket: Option<String>,
 
     // Background job queue.
     pub sqs_url: Option<String>,
+    pub batch_job_queue: Option<String>,
+    pub batch_job_definition: Option<String>,
 }
 
 impl Config {

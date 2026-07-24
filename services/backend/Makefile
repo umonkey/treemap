@@ -19,7 +19,7 @@ build:
 
 check: lint
 	cargo check
-	cargo test -- --color=always
+	RUST_LOG="warn" JWT_SECRET="dummy-secret-for-tests" AWS_KEY="secret" AWS_SECRET="secret" AWS_REGION="eu-central-1" cargo test -- --color=always
 
 clean:
 	rm -f *.profraw
@@ -49,9 +49,9 @@ pull-docker:
 
 test:
 ifneq (,$(FILTER))
-	RUST_LOG="debug" JWT_SECRET="dummy-secret-for-tests" cargo test -- $(FILTER) --nocapture --test-threads=1 --color=always
+	RUST_LOG="debug" JWT_SECRET="dummy-secret-for-tests" AWS_KEY="secret" AWS_SECRET="secret" AWS_REGION="eu-central-1" cargo test -- $(FILTER) --nocapture --test-threads=1 --color=always
 else
-	RUST_LOG="warn" JWT_SECRET="dummy-secret-for-tests" cargo test -- --color=always
+	RUST_LOG="warn" JWT_SECRET="dummy-secret-for-tests" AWS_KEY="secret" AWS_SECRET="secret" AWS_REGION="eu-central-1" cargo test -- --color=always
 	rm -f var/test-*.db
 endif
 	rm -f var/test-files/*

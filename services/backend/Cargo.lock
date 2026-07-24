@@ -569,6 +569,32 @@ dependencies = [
 ]
 
 [[package]]
+name = "aws-sdk-batch"
+version = "1.119.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0c9e3eca785753fda18cb2e565d344009e8474d84ca6ce280f9615ec650ebe3d"
+dependencies = [
+ "arc-swap",
+ "aws-credential-types",
+ "aws-runtime",
+ "aws-smithy-async",
+ "aws-smithy-http",
+ "aws-smithy-json",
+ "aws-smithy-observability",
+ "aws-smithy-runtime",
+ "aws-smithy-runtime-api",
+ "aws-smithy-schema",
+ "aws-smithy-types",
+ "aws-types",
+ "bytes",
+ "fastrand",
+ "http 0.2.12",
+ "http 1.4.2",
+ "regex-lite",
+ "tracing",
+]
+
+[[package]]
 name = "aws-sdk-s3"
 version = "1.138.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5337,7 +5363,7 @@ dependencies = [
 
 [[package]]
 name = "treemap"
-version = "2026.6.3"
+version = "2026.7.1"
 dependencies = [
  "actix-cors",
  "actix-files",
@@ -5346,6 +5372,7 @@ dependencies = [
  "async-trait",
  "aws-config",
  "aws-credential-types",
+ "aws-sdk-batch",
  "aws-sdk-s3",
  "aws-sdk-sqs",
  "chrono",

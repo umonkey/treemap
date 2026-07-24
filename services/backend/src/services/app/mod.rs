@@ -1,8 +1,9 @@
+use crate::infra::batch::BatchClient;
 use crate::infra::config::Config;
 use crate::infra::database::Database;
 use crate::infra::queue::Queue;
 use crate::infra::secrets::Secrets;
-use crate::infra::storage::{create_driver, BackupBucket, FileBucket};
+use crate::infra::storage::{create_driver, BackupBucket, FileBucket, PanoramaSourceBucket};
 use crate::infra::tokens::TokenService;
 use crate::services::mcp::McpSessionManager;
 use crate::types::*;
@@ -18,6 +19,8 @@ pub trait Context {
     fn storage(&self) -> Arc<FileBucket>;
     #[allow(dead_code)]
     fn backups(&self) -> Arc<BackupBucket>;
+    fn panoramas_source(&self) -> Arc<PanoramaSourceBucket>;
+    fn batch(&self) -> Arc<BatchClient>;
     #[allow(dead_code)]
     fn mcp(&self) -> Arc<McpSessionManager>;
 }
@@ -66,6 +69,8 @@ pub struct AppState {
     pub tokens: Arc<TokenService>,
     pub storage: Arc<FileBucket>,
     pub backups: Arc<BackupBucket>,
+    pub panoramas_source: Arc<PanoramaSourceBucket>,
+    pub batch: Arc<BatchClient>,
     pub mcp: Arc<McpSessionManager>,
 }
 
@@ -87,6 +92,8 @@ impl AppState {
         let storage = Arc::new(FileBucket::new(driver.clone(), files_bucket));
 
         let backups = Arc::new(BackupBucket::new(driver.clone(), &config)?);
+        let panoramas_source = Arc::new(PanoramaSourceBucket::new(driver.clone(), &config)?);
+        let batch = Arc::new(BatchClient::new(&config, &secrets)?);
 
         let mcp = Arc::new(McpSessionManager::default());
 
@@ -98,6 +105,8 @@ impl AppState {
             tokens,
             storage,
             backups,
+            panoramas_source,
+            batch,
             mcp,
         })
     }
@@ -113,6 +122,8 @@ impl AppState {
             tokens: self.tokens.clone(),
             storage: self.storage.clone(),
             backups: self.backups.clone(),
+            panoramas_source: self.panoramas_source.clone(),
+            batch: self.batch.clone(),
             mcp: self.mcp.clone(),
         })
     }
@@ -176,6 +187,14 @@ impl Context for AppState {
 
     fn backups(&self) -> Arc<BackupBucket> {
         self.backups.clone()
+    }
+
+    fn panoramas_source(&self) -> Arc<PanoramaSourceBucket> {
+        self.panoramas_source.clone()
+    }
+
+    fn batch(&self) -> Arc<BatchClient> {
+        self.batch.clone()
     }
 
     fn mcp(&self) -> Arc<McpSessionManager> {

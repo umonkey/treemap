@@ -24,6 +24,9 @@ services:
       - RUST_LOG=info,treemap=debug,treemap::infra::database::sqlite_database=info
       - TREEMAP_CONFIG=/app/config.toml.dev
     secrets:
+      - aws_key
+      - aws_secret
+      - aws_region
       - files_key
       - files_secret
       - jwt_secret
