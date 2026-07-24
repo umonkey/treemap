@@ -28,6 +28,9 @@ class Writer:
         return (f.numerator, f.denominator)
 
     def _write(self, index, frame, timestamp, lat, lon, gps_time):
+        if timestamp is None:
+            timestamp = gps_time
+
         img = frame.to_image()
 
         lat_deg, lat_ref = self._loc_to_deg(lat, ["S", "N"])

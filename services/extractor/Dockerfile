@@ -45,6 +45,7 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     ffmpeg \
+    awscli \
     libopencv-core406 \
     libopencv-imgproc406 \
     libopencv-calib3d406 \
@@ -79,4 +80,5 @@ COPY pyproject.toml uv.lock /app
 RUN python3 -c "import opensfm; print('OpenSfM Python package successfully installed')" && \
     python3 -c "import av, gpxpy, piexif, PIL, tqdm, requests; print('App dependencies successfully imported')" && \
     opensfm --help > /dev/null && \
-    ffmpeg -version > /dev/null
+    ffmpeg -version > /dev/null && \
+    aws --version > /dev/null

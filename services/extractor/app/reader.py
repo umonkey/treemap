@@ -6,21 +6,15 @@ from datetime import datetime, timedelta
 
 import av
 
-from .exceptions import CreationTimeMissing
-
 
 class Reader:
-    def __init__(self, video_path, offset_seconds=0.0, timestamp=None):
+    def __init__(self, video_path, timestamp=None):
         self._container = av.open(video_path)
         self._stream = self._container.streams.video[0]
         if timestamp:
             self._creation_time = self._parse_timestamp(timestamp)
         else:
-            try:
-                self._creation_time = self._get_creation_time(self._container)
-            except CreationTimeMissing:
-                self._creation_time = None
-        self._offset_seconds = timedelta(seconds=offset_seconds)
+            self._creation_time = self._get_creation_time(self._container)
 
         self.total_frames = self._get_total_frames()
         print(f"Opening {video_path} to read {self.total_frames} video frames.")
@@ -44,16 +38,16 @@ class Reader:
         return 0
 
     def read(self):
-        if self._creation_time is None:
-            raise CreationTimeMissing()
-
         for index, frame in enumerate(self._container.decode(self._stream)):
-            frame_time_sec = frame.pts * self._stream.time_base
-            time_offset = timedelta(seconds=float(frame_time_sec))
-            current_real_time = self._creation_time + time_offset + self._offset_seconds
-            progress = self._get_progress(index)
+            pts = frame.pts if frame.pts is not None else 0
+            time_base = self._stream.time_base if self._stream.time_base is not None else 1
+            frame_offset_seconds = float(pts * time_base)
 
-            yield index, frame, current_real_time, progress
+            current_real_time = None
+            if self._creation_time is not None:
+                current_real_time = self._creation_time + timedelta(seconds=frame_offset_seconds)
+
+            yield index, frame, frame_offset_seconds, current_real_time
 
     def _get_progress(self, index):
         """
@@ -67,7 +61,7 @@ class Reader:
         creation_time = container.metadata.get("creation_time")
 
         if creation_time is None:
-            raise CreationTimeMissing()
+            return None
 
         return self._parse_timestamp(creation_time)
 

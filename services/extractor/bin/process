@@ -1,0 +1,11 @@
+#!/bin/sh
+# This script orchestrates the whole process.
+
+set -e
+
+# (1) Download the files.
+bin/download-files
+
+# (2) Extract frames.
+mkdir -p var/source_images
+python3 -m app extract --distance 3 --offset "${GPX_OFFSET:-0.0}" var/video.mp4 var/track.gpx var/source_images
