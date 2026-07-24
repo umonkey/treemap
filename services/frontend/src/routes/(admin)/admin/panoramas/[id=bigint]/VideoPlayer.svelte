@@ -52,5 +52,9 @@
 		aspect-ratio: 1;
 		border-radius: var(--pico-border-radius);
 		background-color: var(--pico-background-color);
+
+		:global(.psv-video-overlay) {
+			display: none;
+		}
 	}
 </style>
