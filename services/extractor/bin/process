@@ -4,6 +4,7 @@
 set -e
 
 mkdir -p var/dataset/images
+cp config.yaml var/dataset/
 
 # (1) Download the files.
 # This downloads source files video.mp4 and track.gpx from S3 and puts them in var/

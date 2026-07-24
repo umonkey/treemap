@@ -1,0 +1,41 @@
+# OpenSfM Configuration for 8K Sequential Frames
+
+# Optimization: Resize images for feature extraction
+# 2048 is sufficient for accurate camera poses and saves processing time.
+feature_process_size: 2048
+feature_process_size_panorama: 2048
+
+# Optimization: Sequential Matching
+matching_order_neighbors: 30
+
+# High point count for stability
+feature_min_frames: 4000
+feature_min_frames_panorama: 8000
+
+# Use masks to ignore the car hood
+use_masks: yes
+
+# --- Turn-Aware GPS Constraints ---
+# Active GPS Constraints
+bundle_use_gps: yes
+
+# Reduced from 1000 to 200 to allow visual math to lead during turns
+gps_weight: 200.0
+bundle_gps_vertical_weight: 0.01
+
+# Disable the problematic Horizontal Prior
+align_method: naive
+align_orientation_prior: vertical
+
+# Solver Stability: Frequent Global Bundle
+# This prevents drift from ever building up.
+bundle_interval: 5
+local_bundle_radius: 15
+bundle_new_points_ratio: 2.0
+
+# Rigidity settings
+triangulation_min_ray_angle: 1.0
+optimize_camera_parameters: yes
+
+# Performance
+processes: 8
