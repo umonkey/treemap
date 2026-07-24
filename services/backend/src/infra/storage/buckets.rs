@@ -29,6 +29,10 @@ impl Bucket {
         self.driver.create_upload_url(&self.bucket, path).await
     }
 
+    pub async fn create_read_url(&self, path: &str) -> Result<String> {
+        self.driver.create_read_url(&self.bucket, path).await
+    }
+
     pub async fn exists(&self, path: &str) -> Result<bool> {
         self.driver.exists(&self.bucket, path).await
     }
@@ -163,6 +167,10 @@ impl PanoramaSourceBucket {
 
     pub async fn create_upload_url(&self, path: &str) -> Result<String> {
         self.storage.create_upload_url(path).await
+    }
+
+    pub async fn create_read_url(&self, path: &str) -> Result<String> {
+        self.storage.create_read_url(path).await
     }
 
     pub async fn exists(&self, key: &str) -> Result<bool> {

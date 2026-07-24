@@ -9,6 +9,7 @@
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import VideoUploader from './VideoUploader.svelte';
 	import TrackUploader from './TrackUploader.svelte';
+	import VideoPlayer from './VideoPlayer.svelte';
 
 	const id = $derived(page.params.id as string);
 
@@ -92,7 +93,7 @@
 				<p>We are processing the uploaded video file, please wait.</p>
 				<p>You will get an email when we're ready for next steps.</p>
 			{:else}
-				<p>Next steps missing.</p>
+				<VideoPlayer panoramaId={id} />
 			{/if}
 		{/if}
 	</article>

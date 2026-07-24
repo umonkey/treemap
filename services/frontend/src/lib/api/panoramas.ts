@@ -129,3 +129,13 @@ export async function finishPanoramaTrackUpload(id: string): Promise<IResponse<P
 		headers: getAuthHeaders()
 	});
 }
+
+export interface WebVideoUrlResponse {
+	url: string;
+}
+
+export async function getPanoramaWebVideo(id: string): Promise<IResponse<WebVideoUrlResponse>> {
+	return await request<WebVideoUrlResponse>('GET', `api/panoramas/${id}/web-video`, {
+		headers: getAuthHeaders()
+	});
+}

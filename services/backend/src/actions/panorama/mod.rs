@@ -13,5 +13,6 @@ pub fn panorama_router(cfg: &mut ServiceConfig) {
         .service(start_video_multipart_action)
         .service(complete_video_multipart_action)
         .service(get_track_upload_url_action)
-        .service(verify_track_upload_action);
+        .service(verify_track_upload_action)
+        .service(get_web_video_url_action);
 }

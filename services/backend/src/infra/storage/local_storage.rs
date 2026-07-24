@@ -73,6 +73,10 @@ impl StorageDriver for LocalStorageDriver {
         Err(Error::FileUpload)
     }
 
+    async fn create_read_url(&self, _bucket: &str, _path: &str) -> Result<String> {
+        Err(Error::FileDownload)
+    }
+
     async fn exists(&self, bucket: &str, path: &str) -> Result<bool> {
         let file_path = format!("{}/{}/{}", self.folder, bucket, path);
         Ok(fs::metadata(file_path).await.is_ok())

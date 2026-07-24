@@ -41,6 +41,11 @@ pub struct UploadUrlResponse {
     pub url: String,
 }
 
+#[derive(Debug, Serialize)]
+pub struct WebVideoUrlResponse {
+    pub url: String,
+}
+
 impl From<Panorama> for PanoramaRead {
     fn from(p: Panorama) -> Self {
         Self {

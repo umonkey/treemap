@@ -144,6 +144,28 @@ impl StorageDriver for S3StorageDriver {
         Ok(presigned_request.uri().to_string())
     }
 
+    async fn create_read_url(&self, bucket: &str, path: &str) -> Result<String> {
+        let expires_in = Duration::from_secs(3600);
+        let config = PresigningConfig::builder()
+            .expires_in(expires_in)
+            .build()
+            .map_err(|e| Error::Config(e.to_string()))?;
+
+        let presigned_request = self
+            .client
+            .get_object()
+            .bucket(bucket)
+            .key(path)
+            .presigned(config)
+            .await
+            .map_err(|e| {
+                error!("Error creating presigned read URL: {e:?}");
+                Error::FileDownload
+            })?;
+
+        Ok(presigned_request.uri().to_string())
+    }
+
     async fn exists(&self, bucket: &str, path: &str) -> Result<bool> {
         let res = self
             .client
