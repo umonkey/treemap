@@ -26,7 +26,6 @@
 </script>
 
 <section>
-	<h3>Processed Video (360°)</h3>
 	{#if playerState.error}
 		<p class="error">{playerState.error.description}</p>
 	{:else if playerState.isLoading}
@@ -38,9 +37,9 @@
 
 <style>
 	section {
-		margin-top: var(--gap);
-		padding-top: var(--gap);
-		border-top: 1px solid var(--sep-color);
+		display: flex;
+		flex-direction: column;
+		height: 100%;
 	}
 
 	.error {
@@ -49,7 +48,8 @@
 
 	.viewer-container {
 		width: 100%;
-		aspect-ratio: 2/1;
+		height: 100%;
+		aspect-ratio: 1;
 		border-radius: var(--pico-border-radius);
 		background-color: var(--pico-background-color);
 	}

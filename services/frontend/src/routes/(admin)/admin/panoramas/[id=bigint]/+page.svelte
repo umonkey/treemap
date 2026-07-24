@@ -9,11 +9,9 @@
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import VideoUploader from './VideoUploader.svelte';
 	import TrackUploader from './TrackUploader.svelte';
-	import VideoPlayer from './VideoPlayer.svelte';
-	import TrackPreview from './TrackPreview.svelte';
+	import VideoSync from './VideoSync.svelte';
 
 	const id = $derived(page.params.id as string);
-	let videoOffset = $state(0);
 
 	$effect(() => {
 		untrack(() => pageState.reload(id));
@@ -95,9 +93,7 @@
 				<p>We are processing the uploaded video file, please wait.</p>
 				<p>You will get an email when we're ready for next steps.</p>
 			{:else}
-				<VideoPlayer panoramaId={id} bind:offset={videoOffset} />
-				<p>Video frame offset: {videoOffset}</p>
-				<TrackPreview panoramaId={id} />
+				<VideoSync panoramaId={id} />
 			{/if}
 		{/if}
 	</article>

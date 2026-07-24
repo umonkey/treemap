@@ -46,7 +46,8 @@ export class VideoPlayerState {
 			plugins: [VideoPlugin],
 			navbar: false,
 			keyboard: false,
-			mousewheel: false
+			mousewheel: true,
+			defaultZoomLvl: 0
 		});
 
 		(this.viewer as unknown as { resize: () => void }).resize();

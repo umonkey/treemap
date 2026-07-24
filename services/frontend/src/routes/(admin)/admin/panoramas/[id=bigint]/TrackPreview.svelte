@@ -11,7 +11,6 @@
 </script>
 
 <div class="track-preview">
-	<h3>GPS Track Preview</h3>
 	{#if componentState.loading}
 		<p aria-busy="true">Loading GPX track...</p>
 	{:else if componentState.error}
@@ -44,11 +43,13 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
+		height: 100%;
 	}
 
 	.map-wrapper {
 		width: 100%;
-		height: 400px;
+		height: 100%;
+		aspect-ratio: 1;
 		border-radius: 8px;
 		overflow: hidden;
 		border: 1px solid var(--pico-muted-border-color, #ccc);
