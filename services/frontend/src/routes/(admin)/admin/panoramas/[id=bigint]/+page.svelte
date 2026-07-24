@@ -10,6 +10,7 @@
 	import VideoUploader from './VideoUploader.svelte';
 	import TrackUploader from './TrackUploader.svelte';
 	import VideoPlayer from './VideoPlayer.svelte';
+	import TrackPreview from './TrackPreview.svelte';
 
 	const id = $derived(page.params.id as string);
 
@@ -94,6 +95,7 @@
 				<p>You will get an email when we're ready for next steps.</p>
 			{:else}
 				<VideoPlayer panoramaId={id} />
+				<TrackPreview panoramaId={id} />
 			{/if}
 		{/if}
 	</article>

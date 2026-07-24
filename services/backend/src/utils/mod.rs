@@ -1,5 +1,6 @@
 mod dates;
 mod env;
+pub mod gpx;
 mod id;
 mod osm;
 mod requests;
@@ -7,6 +8,7 @@ pub mod sentry;
 mod strings;
 pub use dates::*;
 pub use env::*;
+pub use gpx::*;
 pub use id::*;
 pub use osm::*;
 pub use requests::*;

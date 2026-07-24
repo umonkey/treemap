@@ -13,8 +13,8 @@ pub enum Error {
     BadAuthorizationHeader,
     BadCallback,
     BadImage,
-    #[allow(unused)]
     BadRequest,
+    BadRequestMessage(String),
     Config(String),
     DatabaseConnect(String),
     DatabaseQuery(String),
@@ -63,6 +63,9 @@ impl Error {
                 r#"{"error":{"code":"BadImage","description":"Bad image file, cannot work with it."}}"#.to_string()
             }
             Error::BadRequest => r#"{"error":{"code":"BadRequest","description":"Bad request."}}"#.to_string(),
+            Error::BadRequestMessage(s) => {
+                format!(r#"{{"error":{{"code":"BadRequest","description":"{s}"}}}}"#)
+            }
             Error::Config(_) => {
                 r#"{"error":{"code":"Config","description":"Configuration error."}}"#.to_string()
             }
@@ -187,7 +190,8 @@ impl ResponseError for Error {
             Error::BadAuthorizationHeader
             | Error::BadCallback
             | Error::BadImage
-            | Error::BadRequest => StatusCode::BAD_REQUEST,
+            | Error::BadRequest
+            | Error::BadRequestMessage(_) => StatusCode::BAD_REQUEST,
             Error::DuplicateRecord | Error::DuplicateTree => StatusCode::CONFLICT,
             Error::DatabaseQuery(_) => StatusCode::INTERNAL_SERVER_ERROR,
             _ => StatusCode::INTERNAL_SERVER_ERROR,
@@ -205,6 +209,7 @@ impl fmt::Display for Error {
             Error::BadCallback => write!(f, "BadCallback"),
             Error::BadImage => write!(f, "BadImage"),
             Error::BadRequest => write!(f, "BadRequest"),
+            Error::BadRequestMessage(s) => write!(f, "BadRequest: {s}"),
             Error::Config(s) => write!(f, "Config error: {s}"),
             Error::DatabaseConnect(s) => write!(f, "DatabaseConnect: {s}"),
             Error::DatabaseQuery(s) => write!(f, "Database error: {s}"),

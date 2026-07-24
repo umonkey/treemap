@@ -80,6 +80,12 @@ impl PanoramaService {
         self.storage.create_upload_url(&key).await
     }
 
+    pub async fn get_track_data(&self, id: u64) -> Result<Vec<u8>> {
+        let panorama = self.get_panorama(id).await?;
+        let path = panorama.gpx_path.ok_or(Error::FileNotFound)?;
+        self.storage.read_file(&path).await
+    }
+
     pub async fn get_web_video_url(&self, id: u64) -> Result<String> {
         let panorama = self.get_panorama(id).await?;
         let path = panorama.web_video_path.ok_or(Error::PanoramaNotFound)?;

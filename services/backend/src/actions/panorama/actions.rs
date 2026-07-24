@@ -122,3 +122,14 @@ pub async fn verify_track_upload_action(
     let panorama = service.verify_track_upload(id).await?;
     Ok(Json(panorama.into()))
 }
+
+#[get("/{id}/track.json")]
+pub async fn get_panorama_track_action(
+    service: Injected<PanoramaService>,
+    path: Path<u64>,
+) -> Result<HttpResponse> {
+    let id = path.into_inner();
+    let data = service.get_track_data(id).await?;
+    let points = crate::utils::parse_gpx(&data)?;
+    Ok(crate::responders::respond_with_gpx(&points))
+}
