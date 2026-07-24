@@ -65,6 +65,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libimage-exiftool-perl \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+RUN groupadd -g 1000 extractor && \
+    useradd -u 1000 -g extractor -s /bin/bash extractor
+
 # 7. Copy the entire virtual environment
 COPY --from=builder /opt/venv /opt/venv
 
