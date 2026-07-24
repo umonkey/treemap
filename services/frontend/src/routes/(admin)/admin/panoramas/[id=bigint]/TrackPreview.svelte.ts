@@ -40,7 +40,7 @@ export class TrackPreviewState {
 		};
 	});
 
-	layer = `https://api.maptiler.com/maps/positron/style.json?key=${config.mapTilerKey}&language=${locale.lang}`;
+	layer = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${config.mapTilerKey}&language=${locale.lang}`;
 
 	constructor() {
 		// Pure constructor
