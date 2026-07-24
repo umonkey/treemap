@@ -1,7 +1,7 @@
 import { getPanorama, type Panorama } from '$lib/api/panoramas';
 import type { IError } from '$lib/types';
 
-class PageState {
+export class PageState {
 	panorama = $state<Panorama | undefined>(undefined);
 	isLoading = $state<boolean>(false);
 	error = $state<IError | undefined>(undefined);
@@ -18,5 +18,3 @@ class PageState {
 		}
 	};
 }
-
-export const pageState = new PageState();

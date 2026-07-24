@@ -2,7 +2,7 @@ import { getPanorama, updatePanorama, type Panorama } from '$lib/api/panoramas';
 import type { IError } from '$lib/types';
 import { goto } from '$app/navigation';
 
-class PageState {
+export class PageState {
 	panorama = $state<Panorama | undefined>(undefined);
 	isLoading = $state<boolean>(false);
 	isSaving = $state<boolean>(false);
@@ -39,5 +39,3 @@ class PageState {
 		}
 	};
 }
-
-export const pageState = new PageState();

@@ -5,7 +5,7 @@ import {
 } from '$lib/api/panoramas';
 import type { IError } from '$lib/types';
 
-class TrackUploaderLogic {
+export class TrackUploaderState {
 	isUploading = $state<boolean>(false);
 	error = $state<IError | undefined>(undefined);
 
@@ -55,5 +55,3 @@ class TrackUploaderLogic {
 		}
 	};
 }
-
-export const componentState = new TrackUploaderLogic();

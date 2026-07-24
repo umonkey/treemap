@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { pageState } from './page.svelte.ts';
+	import { PageState } from './page.svelte.ts';
 	import { page } from '$app/state';
 	import Breadcrumbs from '$lib/components/admin/Breadcrumbs.svelte';
 	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
@@ -11,6 +11,7 @@
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 
 	const id = $derived(page.params.id as string);
+	const pageState = new PageState();
 
 	$effect(() => {
 		untrack(() => pageState.reload(id));

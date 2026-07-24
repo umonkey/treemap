@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { componentState } from './VideoUploader.svelte.ts';
+	import { VideoUploaderState } from './VideoUploader.svelte.ts';
 	import Button from '$lib/ui/button/Button.svelte';
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import { formatSize } from '$lib/utils/strings';
@@ -11,6 +11,8 @@
 		panoramaId: string;
 		onUploadSuccess: () => void;
 	} = $props();
+
+	const componentState = new VideoUploaderState();
 
 	let fileInput = $state<HTMLInputElement>();
 	let selectedFile = $state<File | undefined>();

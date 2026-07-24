@@ -1,14 +1,16 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { componentState } from './VideoSync.svelte.ts';
+	import { VideoSyncState } from './VideoSync.svelte.ts';
+	import type { PageState } from './page.svelte.ts';
 	import { updatePanorama } from '$lib/api/panoramas';
-	import { pageState } from './page.svelte.ts';
 	import VideoPlayer from './VideoPlayer.svelte';
 	import TrackPreview from './TrackPreview.svelte';
 	import NumberInput from '$lib/ui/number-input/NumberInput.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
 
-	const { panoramaId }: { panoramaId: string } = $props();
+	const { panoramaId, pageState }: { panoramaId: string; pageState: PageState } = $props();
+
+	const componentState = new VideoSyncState();
 
 	$effect(() => {
 		const offset = pageState.panorama?.gpx_offset;

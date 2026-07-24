@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { pageState } from './page.svelte.ts';
+	import { PageState } from './page.svelte.ts';
 	import { page } from '$app/state';
 	import { formatDateTimeISO } from '$lib/utils/strings';
 	import Breadcrumbs from '$lib/components/admin/Breadcrumbs.svelte';
@@ -12,6 +12,7 @@
 	import VideoSync from './VideoSync.svelte';
 
 	const id = $derived(page.params.id as string);
+	const pageState = new PageState();
 
 	$effect(() => {
 		untrack(() => pageState.reload(id));
@@ -96,9 +97,9 @@
 				<p>We are processing the uploaded video file, please wait.</p>
 				<p>You will get an email when we're ready for next steps.</p>
 			{:else if !pageState.panorama.gpx_offset}
-				<VideoSync panoramaId={id} />
-            {:else}
-                <p>Next steps?</p>
+				<VideoSync panoramaId={id} {pageState} />
+			{:else}
+				<p>Next steps?</p>
 			{/if}
 		{/if}
 	</article>

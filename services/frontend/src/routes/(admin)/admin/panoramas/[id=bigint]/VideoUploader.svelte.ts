@@ -6,7 +6,7 @@ const MAX_CONCURRENCY = 3;
 const MAX_RETRIES = 5;
 const RETRY_DELAY = 2000;
 
-class VideoUploaderLogic {
+export class VideoUploaderState {
 	isUploading = $state<boolean>(false);
 	uploadProgress = $state<number>(0);
 	uploadedBytes = $state<number>(0);
@@ -185,5 +185,3 @@ class VideoUploaderLogic {
 		});
 	};
 }
-
-export const componentState = new VideoUploaderLogic();

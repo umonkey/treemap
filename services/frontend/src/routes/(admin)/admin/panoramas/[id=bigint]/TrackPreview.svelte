@@ -1,9 +1,11 @@
 <script lang="ts">
 	import { MapLibre, GeoJSON, LineLayer, AttributionControl, Marker } from 'svelte-maplibre';
 	import 'maplibre-gl/dist/maplibre-gl.css';
-	import { componentState } from './TrackPreview.svelte.ts';
+	import { TrackPreviewState } from './TrackPreview.svelte.ts';
 
 	const { panoramaId, offset = 0 }: { panoramaId: string; offset?: number } = $props();
+
+	const componentState = new TrackPreviewState();
 
 	const currentPoint = $derived(componentState.getCoordinates(offset));
 

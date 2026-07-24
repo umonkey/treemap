@@ -5,7 +5,7 @@ import { locale } from '$lib/locale';
 import type { FeatureCollection } from 'geojson';
 import { LngLatBounds, type Map } from 'maplibre-gl';
 
-class TrackPreviewState {
+export class TrackPreviewState {
 	trackData = $state<ITrackPoint[] | undefined>(undefined);
 	loading = $state<boolean>(false);
 	map = $state.raw<Map | undefined>(undefined);
@@ -114,5 +114,3 @@ class TrackPreviewState {
 		}
 	};
 }
-
-export const componentState = new TrackPreviewState();
