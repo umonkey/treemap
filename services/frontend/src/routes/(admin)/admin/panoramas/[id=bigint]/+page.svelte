@@ -70,6 +70,9 @@
 				<dt>Transcode job id</dt>
 				<dd>{pageState.panorama.transcode_arn ?? '(none)'}</dd>
 
+				<dt>Transcode job status</dt>
+				<dd>{pageState.panorama.transcode_status ?? '(none)'}</dd>
+
 				<dt>Video Timestamp</dt>
 				<dd>{pageState.panorama.video_timestamp ?? 'N/A'}</dd>
 			</dl>
@@ -83,6 +86,13 @@
 				<VideoUploader panoramaId={id} onUploadSuccess={() => pageState.reload(id)} />
 			{:else if !pageState.panorama.gpx_path}
 				<TrackUploader panoramaId={id} onUploadSuccess={() => pageState.reload(id)} />
+			{:else if pageState.panorama.transcode_status === 'FAILED'}
+				<p>We could not process the uploaded file. Please contact the tech support.</p>
+			{:else if pageState.panorama.transcode_status !== 'SUCCEEDED'}
+				<p>We are processing the uploaded video file, please wait.</p>
+				<p>You will get an email when we're ready for next steps.</p>
+			{:else}
+				<p>Next steps missing.</p>
 			{/if}
 		{/if}
 	</article>
