@@ -43,7 +43,10 @@ export class VideoPlayerState {
 			container,
 			adapter: EquirectangularVideoAdapter,
 			panorama: { source: url },
-			plugins: [VideoPlugin]
+			plugins: [VideoPlugin],
+			navbar: false,
+			keyboard: false,
+			mousewheel: false
 		});
 
 		(this.viewer as unknown as { resize: () => void }).resize();
@@ -51,6 +54,9 @@ export class VideoPlayerState {
 		const videoPlugin = this.viewer.getPlugin<VideoPlugin>('video');
 		videoPlugin?.addEventListener(events.ProgressEvent.type, (e) => {
 			this.currentTime = e.time;
+		});
+		this.viewer.addEventListener('click', () => {
+			videoPlugin?.playPause();
 		});
 	};
 
