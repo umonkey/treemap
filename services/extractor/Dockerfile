@@ -3,41 +3,48 @@ FROM debian:bookworm AS builder
 
 ARG DEBIAN_FRONTEND=noninteractive
 
+# Copy uv binary
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
 # 1. Install build-time dependencies
 RUN apt-get update && apt-get install -y \
     git build-essential cmake \
     libeigen3-dev libopencv-dev libceres-dev \
     libgoogle-glog-dev libgflags-dev \
-    python3-dev python3-pip python3-venv \
+    python3-dev \
     && apt-get clean
 
-# 2. Create a virtual environment
-RUN python3 -m venv /opt/opensfm
-ENV PATH="/opt/opensfm/bin:$PATH"
+# 2. Create a virtual environment at /opt/venv
+RUN uv venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 
-# 3. Upgrade pip and install build requirements
-RUN pip install --upgrade pip wheel setuptools
-
-# 4. Clone OpenSfM
+# 3. Clone OpenSfM and install it into /opt/venv using uv pip install .
 WORKDIR /source
 RUN git clone --depth 1 --branch main https://github.com/mapillary/OpenSfM.git . && \
     git submodule update --init --recursive
+RUN uv pip install .
 
-# 5. Build and install OpenSfM
-RUN pip install .
+# 4. Copy OpenSfM's bin/* scripts to /opt/venv/bin/
+RUN cp -vr /source/bin/* /opt/venv/bin/ && \
+    chmod +x /opt/venv/bin/opensfm*
 
-# 6. Manually install all scripts from bin/ as they depend on each other's proximity
-RUN cp -vr /source/bin/* /opt/opensfm/bin/ && \
-    chmod +x /opt/opensfm/bin/opensfm*
+# 5. Install app dependencies from pyproject.toml into /opt/venv
+WORKDIR /app
+COPY pyproject.toml uv.lock ./
+RUN uv pip install -r pyproject.toml
 
 # --- STAGE 2: The Final Image (Slim Image) ---
 FROM debian:bookworm-slim
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-# 7. Install RUNTIME dependencies ONLY
+# Copy uv binary
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+# 6. Install RUNTIME dependencies ONLY (including ffmpeg)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
+    ffmpeg \
     libopencv-core406 \
     libopencv-imgproc406 \
     libopencv-calib3d406 \
@@ -55,19 +62,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libglib2.0-0 \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# 8. Copy the entire virtual environment
-COPY --from=builder /opt/opensfm /opt/opensfm
+# 7. Copy the entire virtual environment
+COPY --from=builder /opt/venv /opt/venv
 
-# 9. Set environment variables
-ENV PATH="/opt/opensfm/bin:$PATH"
-ENV VIRTUAL_ENV="/opt/opensfm"
+# 8. Set environment variables
+ENV PATH="/opt/venv/bin:$PATH"
+ENV VIRTUAL_ENV="/opt/venv"
 
-# 10. Copy custom code.
+# 9. Copy custom code.
 WORKDIR /app
 COPY app /app/app
 COPY bin /app/bin
 COPY pyproject.toml uv.lock /app
 
-# Final verification check
+# 10. Final verification checks
 RUN python3 -c "import opensfm; print('OpenSfM Python package successfully installed')" && \
-    opensfm --help > /dev/null
+    python3 -c "import av, gpxpy, piexif, PIL, tqdm, requests; print('App dependencies successfully imported')" && \
+    opensfm --help > /dev/null && \
+    ffmpeg -version > /dev/null
