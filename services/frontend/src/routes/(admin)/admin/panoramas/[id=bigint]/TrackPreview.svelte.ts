@@ -47,12 +47,37 @@ class TrackPreviewState {
 	}
 
 	getCoordinates = (offset: number): { lat: number; lng: number } | undefined => {
-		const point = this.trackData?.findLast((p) => p.offset <= offset);
-		if (!point) return undefined;
+		if (!this.trackData || this.trackData.length === 0) return undefined;
 
-        console.debug(`Video offset ${offset} = GPS offset ${point.offset}: ${point.lat}, ${point.lng}.`);
+		// 1. Find the index of the closest point before the current offset using findLastIndex.
+		const index = this.trackData.findLastIndex((p) => p.offset <= offset);
 
-		return { lat: point.lat, lng: point.lng };
+		// 2. If before the first point, return the first point.
+		if (index === -1) {
+			return { lat: this.trackData[0].lat, lng: this.trackData[0].lng };
+		}
+
+		// 3. If at or after the last point, return the last point.
+		if (index >= this.trackData.length - 1) {
+			const last = this.trackData[this.trackData.length - 1];
+			return { lat: last.lat, lng: last.lng };
+		}
+
+		// 4. Calculate the ratio between the two surrounding points based on the offset.
+		const p1 = this.trackData[index];
+		const p2 = this.trackData[index + 1];
+
+		if (p2.offset === p1.offset) {
+			return { lat: p1.lat, lng: p1.lng };
+		}
+
+		const ratio = (offset - p1.offset) / (p2.offset - p1.offset);
+
+		// 5. Interpolate the lat and lng coordinates.
+		const lat = p1.lat + (p2.lat - p1.lat) * ratio;
+		const lng = p1.lng + (p2.lng - p1.lng) * ratio;
+
+		return { lat, lng };
 	};
 
 	fitBounds = () => {

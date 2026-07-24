@@ -13,7 +13,10 @@
 			<VideoPlayer {panoramaId} bind:offset={componentState.videoOffset} />
 		</div>
 		<div class="cell">
-			<TrackPreview {panoramaId} offset={componentState.videoOffset + componentState.manualOffset} />
+			<TrackPreview
+				{panoramaId}
+				offset={componentState.videoOffset + componentState.manualOffset}
+			/>
 		</div>
 		<div class="cell">
 			<NumberInput
