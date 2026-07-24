@@ -6,29 +6,33 @@ set -e
 mkdir -p var/dataset/images
 
 # (1) Download the files.
-bin/download-files
+time bin/download-files
 
 # (2) Extract frames.
 bin/app extract --distance 3 --offset "${GPX_OFFSET:-0.0}" var/video.mp4 var/track.gpx var/dataset/images
+bin/app create-masks var/dataset
 
 # (3) Set up cameras for OpenSfM
 bin/app create-camera-overrides var/video.mp4 > var/dataset/camera_models_overrides.json
 
 # (4) Extract image metadata to var/dataset/exif/*.jpg.exif
-opensfm extract_metadata var/dataset
+time opensfm extract_metadata var/dataset
 
 # (5) Apply Turn-Aware GPS Smoothing and metadata injection
-bin/smooth-gps
+time bin/smooth-gps var/dataset/exif
 
 # (6) Run the core SfM pipeline
-opensfm detect_features var/dataset
-opensfm match_features var/dataset
-opensfm create_tracks var/dataset
-opensfm reconstruct var/dataset
+time opensfm detect_features var/dataset
+time opensfm match_features var/dataset
+time opensfm create_tracks var/dataset
+time opensfm reconstruct var/dataset
 
 # (7) Prune outlierpoints (500m+)
 bin/prune-points var/dataset
-opensfm export_ply var/dataset
+time opensfm export_ply var/dataset
 
 # (8) Verify result quality
-bin/verify-error
+bin/verify-error var/dataset
+
+# (9) Final output generation
+bin/write-output var/dataset var/output

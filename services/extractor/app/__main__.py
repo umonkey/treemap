@@ -1,5 +1,6 @@
 import argparse
 import json
+import os
 import sys
 
 import av
@@ -9,6 +10,7 @@ from . import Locator, Reader, Writer
 from .exceptions import UsageException
 from .locator import NoCoordinates
 from .map_match import run_map_match
+from .masks import create_masks
 
 
 def handle_match(args):
@@ -35,6 +37,17 @@ def handle_create_overrides(args):
         print(json.dumps(data))
     except Exception as e:
         print(f"Error reading video metadata: {e}", file=sys.stderr)
+        sys.exit(1)
+
+
+def handle_create_masks(args):
+    try:
+        create_masks(args.dataset_path, mask_size=args.mask_size)
+    except UsageException as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
+    except Exception as e:
+        print(f"Error during mask creation: {e}", file=sys.stderr)
         sys.exit(1)
 
 
@@ -105,6 +118,18 @@ def main():
     )
     create_overrides_parser.add_argument("video_path", help="Path to the video file")
     create_overrides_parser.set_defaults(func=handle_create_overrides)
+
+    create_masks_parser = subparsers.add_parser(
+        "create-masks", help="Create image masks for OpenSfM"
+    )
+    create_masks_parser.add_argument("dataset_path", help="Path to dataset directory")
+    create_masks_parser.add_argument(
+        "--mask-size",
+        type=float,
+        default=float(os.environ.get("MASK_SIZE", 0.35)),
+        help="Height fraction of the black mask part",
+    )
+    create_masks_parser.set_defaults(func=handle_create_masks)
 
     args = parser.parse_args()
     args.func(args)

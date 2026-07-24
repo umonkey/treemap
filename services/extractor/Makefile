@@ -1,6 +1,12 @@
 build:
 	docker build -t treemap-extractor:latest .
 
+format:
+	@true
+
+check:
+	python3 -m flake8 app/
+
 shell:
 	docker run --rm -v $(PWD)/var:/app/var -it treemap-extractor:latest bash
 

@@ -46,6 +46,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     ffmpeg \
     awscli \
+    procps \
     libopencv-core406 \
     libopencv-imgproc406 \
     libopencv-calib3d406 \
@@ -61,6 +62,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgomp1 \
     libgl1 \
     libglib2.0-0 \
+    libimage-exiftool-perl \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # 7. Copy the entire virtual environment
