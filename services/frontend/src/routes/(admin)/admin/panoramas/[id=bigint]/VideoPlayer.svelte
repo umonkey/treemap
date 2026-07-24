@@ -1,4 +1,7 @@
 <script lang="ts">
+	import Button from '$lib/ui/button/Button.svelte';
+	import LeftButton from '$lib/icons/LeftButton.svelte';
+	import RightButton from '$lib/icons/RightButton.svelte';
 	import { VideoPlayerState } from './VideoPlayer.svelte.ts';
 
 	let { panoramaId, offset = $bindable(0) }: { panoramaId: string; offset: number } = $props();
@@ -31,7 +34,19 @@
 	{:else if playerState.isLoading}
 		<p aria-busy="true">Loading video...</p>
 	{:else}
-		<div bind:this={containerElement} class="viewer-container"></div>
+		<div class="player-wrapper">
+			<div bind:this={containerElement} class="viewer-container"></div>
+			<div class="seek-button-left">
+				<Button square={true} type="button" onClick={() => playerState.seek(-0.1)}>
+					<LeftButton />
+				</Button>
+			</div>
+			<div class="seek-button-right">
+				<Button square={true} type="button" onClick={() => playerState.seek(0.1)}>
+					<RightButton />
+				</Button>
+			</div>
+		</div>
 	{/if}
 </section>
 
@@ -44,6 +59,26 @@
 
 	.error {
 		color: var(--color-learn-wrong-bg, red);
+	}
+
+	.player-wrapper {
+		position: relative;
+		width: 100%;
+		height: 100%;
+	}
+
+	.seek-button-left {
+		position: absolute;
+		top: 10px;
+		left: 10px;
+		z-index: 10;
+	}
+
+	.seek-button-right {
+		position: absolute;
+		top: 10px;
+		right: 10px;
+		z-index: 10;
 	}
 
 	.viewer-container {

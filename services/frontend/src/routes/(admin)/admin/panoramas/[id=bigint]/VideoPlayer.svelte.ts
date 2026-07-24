@@ -86,4 +86,11 @@ export class VideoPlayerState {
 		const videoPlugin = this.viewer?.getPlugin<VideoPlugin>('video');
 		return videoPlugin?.getTime() ?? 0;
 	};
+
+	seek = (delta: number) => {
+		const videoPlugin = this.viewer?.getPlugin<VideoPlugin>('video');
+		videoPlugin?.pause();
+		const currentTime = videoPlugin?.getTime() ?? 0;
+		videoPlugin?.setTime(currentTime + delta);
+	};
 }
