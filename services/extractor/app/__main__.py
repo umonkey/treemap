@@ -1,6 +1,8 @@
 import argparse
+import json
 import sys
 
+import av
 from tqdm import tqdm  # type: ignore
 
 from . import Locator, Reader, Writer
@@ -17,12 +19,29 @@ def handle_match(args):
         sys.exit(1)
 
 
+def handle_create_overrides(args):
+    try:
+        with av.open(args.video_path) as container:
+            stream = container.streams.video[0]
+            width = stream.width
+            height = stream.height
+        data = {
+            "all": {
+                "projection_type": "spherical",
+                "width": width,
+                "height": height,
+            }
+        }
+        print(json.dumps(data))
+    except Exception as e:
+        print(f"Error reading video metadata: {e}", file=sys.stderr)
+        sys.exit(1)
+
+
 def handle_extract(args):
     try:
         locator = Locator(args.gpx_path)
-        reader = Reader(
-            args.video_path, timestamp=args.timestamp
-        )
+        reader = Reader(args.video_path, timestamp=args.timestamp)
         writer = Writer(distance=args.distance, folder=args.output_folder)
 
         for index, frame, frame_offset_seconds, current_real_time in tqdm(
@@ -32,7 +51,9 @@ def handle_extract(args):
                 lookup_offset = frame_offset_seconds + args.offset
                 lat, lon, gps_time = locator.locate(lookup_offset)
                 frame_time = current_real_time
-                writer.write_frame(index, frame, frame_time or gps_time, lat, lon, gps_time)
+                writer.write_frame(
+                    index, frame, frame_time or gps_time, lat, lon, gps_time
+                )
             except NoCoordinates:
                 # print(f"No coordinates for frame {index}")
                 pass
@@ -78,6 +99,12 @@ def main():
         help="Valhalla trace_attributes URL",
     )
     match_parser.set_defaults(func=handle_match)
+
+    create_overrides_parser = subparsers.add_parser(
+        "create-camera-overrides", help="Create camera models overrides JSON from video"
+    )
+    create_overrides_parser.add_argument("video_path", help="Path to the video file")
+    create_overrides_parser.set_defaults(func=handle_create_overrides)
 
     args = parser.parse_args()
     args.func(args)

@@ -40,12 +40,16 @@ class Reader:
     def read(self):
         for index, frame in enumerate(self._container.decode(self._stream)):
             pts = frame.pts if frame.pts is not None else 0
-            time_base = self._stream.time_base if self._stream.time_base is not None else 1
+            time_base = (
+                self._stream.time_base if self._stream.time_base is not None else 1
+            )
             frame_offset_seconds = float(pts * time_base)
 
             current_real_time = None
             if self._creation_time is not None:
-                current_real_time = self._creation_time + timedelta(seconds=frame_offset_seconds)
+                current_real_time = self._creation_time + timedelta(
+                    seconds=frame_offset_seconds
+                )
 
             yield index, frame, frame_offset_seconds, current_real_time
 

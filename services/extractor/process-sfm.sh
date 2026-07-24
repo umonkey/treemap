@@ -16,7 +16,7 @@ echo "Cleaning intermediate results..."
 rm -rf exif camera_models.json camera_models_overrides.json reports reconstruction.json
 
 # 3. Setup Camera Overrides (Master Scale)
-echo '{"all": {"projection_type": "spherical", "width": 7680, "height": 3840}}' > camera_models_overrides.json
+bin/create-camera-overrides var/video.mp4 > camera_models_overrides.json
 
 # Function to run opensfm commands in docker
 run_sfm() {

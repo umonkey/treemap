@@ -8,4 +8,7 @@ bin/download-files
 
 # (2) Extract frames.
 mkdir -p var/source_images
-python3 -m app extract --distance 3 --offset "${GPX_OFFSET:-0.0}" var/video.mp4 var/track.gpx var/source_images
+bin/app extract --distance 3 --offset "${GPX_OFFSET:-0.0}" var/video.mp4 var/track.gpx var/source_images
+
+# (3) Set up cameras for OpenSfM
+bin/app create-camera-overrides var/video.mp4 > camera_models_overrides.json
