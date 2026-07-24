@@ -1,29 +1,35 @@
 <script lang="ts">
-	import { componentState } from './VideoPlayer.svelte.ts';
+	import { VideoPlayerState } from './VideoPlayer.svelte.ts';
 
-	const { panoramaId }: { panoramaId: string } = $props();
+	let { panoramaId, offset = $bindable(0) }: { panoramaId: string; offset: number } = $props();
+
+	const playerState = new VideoPlayerState();
 
 	let containerElement: HTMLElement | null = $state(null);
 
 	$effect(() => {
-		componentState.load(panoramaId);
+		playerState.load(panoramaId);
 	});
 
 	$effect(() => {
-		if (containerElement && componentState.videoUrl) {
-			componentState.init(containerElement, componentState.videoUrl);
+		if (containerElement && playerState.videoUrl) {
+			playerState.init(containerElement, playerState.videoUrl);
 		}
 		return () => {
-			componentState.destroy();
+			playerState.destroy();
 		};
+	});
+
+	$effect(() => {
+		offset = playerState.currentTime;
 	});
 </script>
 
 <section>
 	<h3>Processed Video (360°)</h3>
-	{#if componentState.error}
-		<p class="error">{componentState.error.description}</p>
-	{:else if componentState.isLoading}
+	{#if playerState.error}
+		<p class="error">{playerState.error.description}</p>
+	{:else if playerState.isLoading}
 		<p aria-busy="true">Loading video...</p>
 	{:else}
 		<div bind:this={containerElement} class="viewer-container"></div>

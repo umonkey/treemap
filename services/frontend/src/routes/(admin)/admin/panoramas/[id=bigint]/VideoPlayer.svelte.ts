@@ -1,15 +1,16 @@
 import { Viewer } from '@photo-sphere-viewer/core';
-import { VideoPlugin } from '@photo-sphere-viewer/video-plugin';
+import { VideoPlugin, events } from '@photo-sphere-viewer/video-plugin';
 import { EquirectangularVideoAdapter } from '@photo-sphere-viewer/equirectangular-video-adapter';
 import { getPanoramaWebVideo } from '$lib/api/panoramas';
 import type { IError } from '$lib/types';
 import '@photo-sphere-viewer/core/index.css';
 import '@photo-sphere-viewer/video-plugin/index.css';
 
-class VideoPlayerLogic {
+export class VideoPlayerState {
 	videoUrl = $state<string | null>(null);
 	isLoading = $state<boolean>(false);
 	error = $state<IError | null>(null);
+	currentTime = $state<number>(0);
 
 	private viewer: Viewer | null = null;
 
@@ -44,6 +45,13 @@ class VideoPlayerLogic {
 			panorama: { source: url },
 			plugins: [VideoPlugin]
 		});
+
+		(this.viewer as unknown as { resize: () => void }).resize();
+
+		const videoPlugin = this.viewer.getPlugin<VideoPlugin>('video');
+		videoPlugin?.addEventListener(events.ProgressEvent.type, (e) => {
+			this.currentTime = e.time;
+		});
 	};
 
 	destroy = () => {
@@ -63,11 +71,6 @@ class VideoPlayerLogic {
 		videoPlugin?.pause();
 	};
 
-	seek = (time: number) => {
-		const videoPlugin = this.viewer?.getPlugin<VideoPlugin>('video');
-		videoPlugin?.setTime(time);
-	};
-
 	rotate = (yaw: number, pitch: number) => {
 		this.viewer?.rotate({ yaw, pitch });
 	};
@@ -77,5 +80,3 @@ class VideoPlayerLogic {
 		return videoPlugin?.getTime() ?? 0;
 	};
 }
-
-export const componentState = new VideoPlayerLogic();

@@ -13,6 +13,7 @@
 	import TrackPreview from './TrackPreview.svelte';
 
 	const id = $derived(page.params.id as string);
+	let videoOffset = $state(0);
 
 	$effect(() => {
 		untrack(() => pageState.reload(id));
@@ -94,7 +95,8 @@
 				<p>We are processing the uploaded video file, please wait.</p>
 				<p>You will get an email when we're ready for next steps.</p>
 			{:else}
-				<VideoPlayer panoramaId={id} />
+				<VideoPlayer panoramaId={id} bind:offset={videoOffset} />
+				<p>Video frame offset: {videoOffset}</p>
 				<TrackPreview panoramaId={id} />
 			{/if}
 		{/if}
