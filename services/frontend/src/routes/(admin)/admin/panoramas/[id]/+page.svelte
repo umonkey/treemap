@@ -8,6 +8,7 @@
 	import Button from '$lib/ui/button/Button.svelte';
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import VideoUploader from './VideoUploader.svelte';
+	import TrackUploader from './TrackUploader.svelte';
 
 	const id = $derived(page.params.id as string);
 
@@ -80,6 +81,8 @@
 
 			{#if !pageState.panorama.source_video_path}
 				<VideoUploader panoramaId={id} onUploadSuccess={() => pageState.reload(id)} />
+			{:else if !pageState.panorama.gpx_path}
+				<TrackUploader panoramaId={id} onUploadSuccess={() => pageState.reload(id)} />
 			{/if}
 		{/if}
 	</article>

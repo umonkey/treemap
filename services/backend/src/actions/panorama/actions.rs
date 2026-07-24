@@ -1,5 +1,6 @@
 use super::schemas::{
     CompleteMultipartRequest, MultipartUploadResponse, PanoramaRead, StartMultipartRequest,
+    UploadUrlResponse,
 };
 use crate::domain::panorama::{CreatePanorama, PanoramaService, UpdatePanorama};
 use crate::services::app::{PanoEdit, RequirePermission};
@@ -86,5 +87,27 @@ pub async fn complete_video_multipart_action(
     let panorama = service
         .complete_video_multipart(id, &body.upload_id, body.parts)
         .await?;
+    Ok(Json(panorama.into()))
+}
+
+#[get("/{id}/track")]
+pub async fn get_track_upload_url_action(
+    _user: RequirePermission<PanoEdit>,
+    service: Injected<PanoramaService>,
+    path: Path<u64>,
+) -> Result<Json<UploadUrlResponse>> {
+    let id = path.into_inner();
+    let url = service.get_track_upload_url(id).await?;
+    Ok(Json(UploadUrlResponse { url }))
+}
+
+#[post("/{id}/track")]
+pub async fn verify_track_upload_action(
+    _user: RequirePermission<PanoEdit>,
+    service: Injected<PanoramaService>,
+    path: Path<u64>,
+) -> Result<Json<PanoramaRead>> {
+    let id = path.into_inner();
+    let panorama = service.verify_track_upload(id).await?;
     Ok(Json(panorama.into()))
 }

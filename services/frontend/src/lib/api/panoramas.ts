@@ -9,10 +9,15 @@ export interface Panorama {
 	status: string;
 	title: string;
 	visible: boolean;
-	has_video: boolean;
-	has_track: boolean;
-	has_web_video: boolean;
-	video_timestamp?: number;
+	source_video_path?: string | null;
+	gpx_path?: string | null;
+	web_video_path?: string | null;
+	transcode_arn?: string | null;
+	transcode_status?: string | null;
+	video_timestamp?: number | null;
+	has_video?: boolean;
+	has_track?: boolean;
+	has_web_video?: boolean;
 }
 
 export interface CreatePanorama {
@@ -99,5 +104,28 @@ export async function completeVideoMultipart(
 			'Content-Type': 'application/json'
 		},
 		body: JSON.stringify({ upload_id: uploadId, parts })
+	});
+}
+
+export interface UploadUrlResponse {
+	url: string;
+}
+
+export async function getPanoramaTrackUploadUrl(id: string): Promise<IResponse<UploadUrlResponse>> {
+	return await request<UploadUrlResponse>('GET', `api/panoramas/${id}/track`, {
+		headers: getAuthHeaders()
+	});
+}
+
+export async function uploadPanoramaTrackFile(url: string, file: File): Promise<Response> {
+	return await fetch(url, {
+		method: 'PUT',
+		body: file
+	});
+}
+
+export async function finishPanoramaTrackUpload(id: string): Promise<IResponse<Panorama>> {
+	return await request<Panorama>('POST', `api/panoramas/${id}/track`, {
+		headers: getAuthHeaders()
 	});
 }

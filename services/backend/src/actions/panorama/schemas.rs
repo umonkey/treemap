@@ -36,6 +36,11 @@ pub struct CompleteMultipartRequest {
     pub parts: Vec<CompletedPart>,
 }
 
+#[derive(Debug, Serialize)]
+pub struct UploadUrlResponse {
+    pub url: String,
+}
+
 impl From<Panorama> for PanoramaRead {
     fn from(p: Panorama) -> Self {
         Self {

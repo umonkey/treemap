@@ -144,11 +144,9 @@ pub struct PanoramaSourceBucket {
 impl PanoramaSourceBucket {
     pub fn new(driver: Arc<dyn StorageDriver>, config: &Config) -> Result<Self> {
         let bucket = config
-            .panoramas_source_bucket
-            .as_ref()
-            .or(config.files_bucket.as_ref())
-            .cloned()
-            .unwrap_or_else(|| "panoramas-source".to_string());
+            .panoramas_sources_bucket
+            .clone()
+            .unwrap_or_else(|| "treemap-panoramas-source".to_string());
 
         Ok(Self {
             storage: Bucket::new(driver, bucket),

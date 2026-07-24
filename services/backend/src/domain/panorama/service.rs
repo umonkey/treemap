@@ -74,6 +74,25 @@ impl PanoramaService {
         Ok(panorama)
     }
 
+    pub async fn get_track_upload_url(&self, id: u64) -> Result<String> {
+        let _panorama = self.get_panorama(id).await?;
+        let key = format!("{id}/track.gpx");
+        self.storage.create_upload_url(&key).await
+    }
+
+    pub async fn verify_track_upload(&self, id: u64) -> Result<Panorama> {
+        let key = format!("{id}/track.gpx");
+        if !self.storage.exists(&key).await? {
+            return Err(Error::FileNotFound);
+        }
+
+        let mut panorama = self.get_panorama(id).await?;
+        panorama.gpx_path = Some(key);
+        self.repo.update(id, &panorama).await?;
+
+        Ok(panorama)
+    }
+
     pub async fn start_video_multipart(
         &self,
         id: u64,
