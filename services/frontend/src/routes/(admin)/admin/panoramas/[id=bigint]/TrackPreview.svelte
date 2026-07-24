@@ -1,9 +1,11 @@
 <script lang="ts">
-	import { MapLibre, GeoJSON, LineLayer, AttributionControl } from 'svelte-maplibre';
+	import { MapLibre, GeoJSON, LineLayer, AttributionControl, Marker } from 'svelte-maplibre';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import { componentState } from './TrackPreview.svelte.ts';
 
-	const { panoramaId }: { panoramaId: string } = $props();
+	const { panoramaId, offset = 0 }: { panoramaId: string; offset?: number } = $props();
+
+	const currentPoint = $derived(componentState.getCoordinates(offset));
 
 	$effect(() => {
 		componentState.reload(panoramaId);
@@ -32,6 +34,11 @@
 					/>
 				</GeoJSON>
 			{/if}
+			{#if currentPoint}
+				<Marker lngLat={[currentPoint.lng, currentPoint.lat]} offset={[0, 0]}>
+					<div class="current-location-dot"></div>
+				</Marker>
+			{/if}
 		</MapLibre>
 	</div>
 </div>
@@ -57,5 +64,14 @@
 	:global(.map) {
 		width: 100%;
 		height: 100%;
+	}
+
+	.current-location-dot {
+		width: 16px;
+		height: 16px;
+		background-color: #ff4500;
+		border: 2px solid #fff;
+		border-radius: 50%;
+		box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
 	}
 </style>

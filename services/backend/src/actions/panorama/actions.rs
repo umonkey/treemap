@@ -129,19 +129,30 @@ pub async fn get_panorama_track_action(
     path: Path<u64>,
 ) -> Result<Json<Vec<TrackPoint>>> {
     let id = path.into_inner();
-    let panorama = service.get_panorama(id).await?;
-    let video_timestamp = panorama.video_timestamp.unwrap_or(0.0);
     let data = service.get_track_data(id).await?;
     let points = crate::utils::parse_gpx(&data)?;
 
+    let parse_timestamp = |time_str: &str| -> Option<f64> {
+        chrono::DateTime::parse_from_rfc3339(time_str)
+            .ok()
+            .map(|dt| dt.timestamp() as f64 + dt.timestamp_subsec_nanos() as f64 / 1_000_000_000.0)
+    };
+
+    let first_timestamp = points
+        .iter()
+        .find_map(|p| p.time.as_deref().and_then(parse_timestamp))
+        .unwrap_or(0.0);
+
     let mut track_points = Vec::new();
+
     for p in points {
         let timestamp = p.time.unwrap_or_default();
-        let point_timestamp = match chrono::DateTime::parse_from_rfc3339(&timestamp) {
-            Ok(dt) => dt.timestamp() as f64 + dt.timestamp_subsec_nanos() as f64 / 1_000_000_000.0,
-            Err(_) => 0.0,
+        let point_timestamp = if timestamp.is_empty() {
+            0.0
+        } else {
+            parse_timestamp(&timestamp).unwrap_or(0.0)
         };
-        let offset = point_timestamp - video_timestamp;
+        let offset = point_timestamp - first_timestamp;
         track_points.push(TrackPoint {
             lat: p.lat,
             lng: p.lon,

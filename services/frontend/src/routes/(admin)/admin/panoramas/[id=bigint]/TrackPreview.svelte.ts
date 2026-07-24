@@ -46,6 +46,13 @@ class TrackPreviewState {
 		// Pure constructor
 	}
 
+	getCoordinates = (offset: number): { lat: number; lng: number } | undefined => {
+		const point = this.trackData?.findLast((p) => p.offset <= offset);
+		if (!point) return undefined;
+        console.debug('Calculating frame position.', offset, point.offset, point.lat, point.lng);
+		return { lat: point.lat, lng: point.lng };
+	};
+
 	fitBounds = () => {
 		if (!this.map || !this.trackData || this.trackData.length === 0) return;
 

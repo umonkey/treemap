@@ -12,7 +12,7 @@
 			<VideoPlayer {panoramaId} bind:offset={componentState.videoOffset} />
 		</div>
 		<div class="cell">
-			<TrackPreview {panoramaId} />
+			<TrackPreview {panoramaId} offset={componentState.videoOffset} />
 		</div>
 		<div class="cell">
 			<p>Video frame offset: {componentState.videoOffset}</p>
