@@ -78,7 +78,7 @@
 				<Button link="/admin/panoramas" type="cancel">Back to List</Button>
 			</Buttons>
 
-			{#if !pageState.panorama.has_video}
+			{#if !pageState.panorama.source_video_path}
 				<VideoUploader panoramaId={id} onUploadSuccess={() => pageState.reload(id)} />
 			{/if}
 		{/if}
