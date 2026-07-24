@@ -17,6 +17,7 @@ pub struct PanoramaRead {
     pub transcode_arn: Option<String>,
     pub transcode_status: Option<String>,
     pub video_timestamp: Option<f64>,
+    pub gpx_offset: Option<f64>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -70,6 +71,7 @@ impl From<Panorama> for PanoramaRead {
             transcode_arn: p.transcode_arn,
             transcode_status: p.transcode_status,
             video_timestamp: p.video_timestamp,
+            gpx_offset: p.gpx_offset,
         }
     }
 }

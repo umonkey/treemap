@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS panoramas (
     `transcode_arn` TEXT NULL,
     `transcode_status` TEXT NULL,
     `video_timestamp` REAL NULL,
+    `gpx_offset` REAL NULL,
     PRIMARY KEY(`id`)
 );
 

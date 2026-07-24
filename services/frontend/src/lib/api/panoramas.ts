@@ -15,6 +15,7 @@ export interface Panorama {
 	transcode_arn?: string | null;
 	transcode_status?: string | null;
 	video_timestamp?: number | null;
+	gpx_offset?: number | null;
 	has_video?: boolean;
 	has_track?: boolean;
 	has_web_video?: boolean;
@@ -27,6 +28,7 @@ export interface CreatePanorama {
 export interface UpdatePanorama {
 	title?: string;
 	visible?: boolean;
+	gpx_offset?: number;
 }
 
 export async function getPanoramas(): Promise<IResponse<Panorama[]>> {

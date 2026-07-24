@@ -16,6 +16,7 @@ pub struct Panorama {
     pub transcode_arn: Option<String>,
     pub transcode_status: Option<String>,
     pub video_timestamp: Option<f64>,
+    pub gpx_offset: Option<f64>,
 }
 
 impl Panorama {
@@ -34,6 +35,7 @@ impl Panorama {
             transcode_arn: attrs.get_string("transcode_arn")?,
             transcode_status: attrs.get_string("transcode_status")?,
             video_timestamp: attrs.get_f64("video_timestamp")?,
+            gpx_offset: attrs.get_f64("gpx_offset")?,
         })
     }
 
@@ -58,6 +60,7 @@ impl Panorama {
             Value::from(self.transcode_status.clone()),
         );
         attrs.insert("video_timestamp", Value::from(self.video_timestamp));
+        attrs.insert("gpx_offset", Value::from(self.gpx_offset));
         attrs
     }
 }
@@ -71,4 +74,5 @@ pub struct CreatePanorama {
 pub struct UpdatePanorama {
     pub title: Option<String>,
     pub visible: Option<bool>,
+    pub gpx_offset: Option<f64>,
 }

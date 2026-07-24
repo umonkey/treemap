@@ -40,6 +40,7 @@ impl PanoramaService {
             transcode_arn: None,
             transcode_status: None,
             video_timestamp: None,
+            gpx_offset: None,
         };
 
         self.repo.add(&panorama).await?;
@@ -55,6 +56,10 @@ impl PanoramaService {
 
         if let Some(visible) = data.visible {
             panorama.visible = visible;
+        }
+
+        if let Some(gpx_offset) = data.gpx_offset {
+            panorama.gpx_offset = Some(gpx_offset);
         }
 
         self.repo.update(id, &panorama).await?;

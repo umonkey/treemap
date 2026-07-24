@@ -65,6 +65,9 @@
 				<dt>GPS Track Path</dt>
 				<dd>{pageState.panorama.gpx_path ?? '(none)'}</dd>
 
+				<dt>GPS Track Offset</dt>
+				<dd>{pageState.panorama.gpx_offset ?? '(none)'}</dd>
+
 				<dt>Web Video Path</dt>
 				<dd>{pageState.panorama.web_video_path ?? '(none)'}</dd>
 
@@ -92,8 +95,10 @@
 			{:else if pageState.panorama.transcode_status !== 'SUCCEEDED'}
 				<p>We are processing the uploaded video file, please wait.</p>
 				<p>You will get an email when we're ready for next steps.</p>
-			{:else}
+			{:else if !pageState.panorama.gpx_offset}
 				<VideoSync panoramaId={id} />
+            {:else}
+                <p>Next steps?</p>
 			{/if}
 		{/if}
 	</article>
