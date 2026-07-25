@@ -4,6 +4,9 @@
 set -e
 
 mkdir -p var/dataset/images
+
+# OpenSfM expects the config in the dataset folder, put it there.
+# We have it in the root initially because the dataset folder might be mounted.
 cp config.yaml var/dataset/
 
 # (1) Download the files.

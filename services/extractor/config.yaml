@@ -6,7 +6,9 @@ feature_process_size: 2048
 feature_process_size_panorama: 2048
 
 # Optimization: Sequential Matching
-matching_order_neighbors: 30
+matching_order_neighbors: 30  # Match ±15 frames in chronological sequence
+matching_gps_distance: 50      # Limit search for near images to 50m to avoid false matches and save time
+matching_gps_neighbors: 20    # Cap the number of GPS-based matches to 20 to prevent exhaustive searching
 
 # High point count for stability
 feature_min_frames: 4000
@@ -19,8 +21,9 @@ use_masks: yes
 # Active GPS Constraints
 bundle_use_gps: yes
 
-# Reduced from 1000 to 200 to allow visual math to lead during turns
-gps_weight: 200.0
+# Reduced from 1000 to 100 to allow visual math to lead during turns.
+# This helps smooth out consumer-grade GPS noise (±6m).
+gps_weight: 100.0
 bundle_gps_vertical_weight: 0.01
 
 # Disable the problematic Horizontal Prior
@@ -34,7 +37,7 @@ local_bundle_radius: 15
 bundle_new_points_ratio: 2.0
 
 # Rigidity settings
-triangulation_min_ray_angle: 1.0
+triangulation_min_ray_angle: 2.0  # Higher angle ensures more stable depth/triangulation for features like trees
 optimize_camera_parameters: yes
 
 # Performance
