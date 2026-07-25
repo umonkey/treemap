@@ -100,4 +100,4 @@ def print_report(error):
     print("="*50 + "\n")
 
 if __name__ == "__main__":
-    main(*sys.argv[:1])
+    main(*sys.argv[1:])

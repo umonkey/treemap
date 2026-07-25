@@ -3,7 +3,7 @@
 
 set -e
 
-mkdir -p var/dataset/images
+mkdir -p var/dataset/images var/output
 
 # OpenSfM expects the config in the dataset folder, put it there.
 # We have it in the root initially because the dataset folder might be mounted.
