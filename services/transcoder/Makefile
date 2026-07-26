@@ -9,7 +9,7 @@ build:
 	docker build -t $(PACKAGE):latest .
 
 push:
-	echo $(CR_TOKEN) | docker login ghcr.io -u $(CR_USER) --password-stdin
+	@echo $(CR_TOKEN) | docker login ghcr.io -u $(CR_USER) --password-stdin
 	docker tag $(PACKAGE):latest ghcr.io/$(CR_USER)/$(PACKAGE):latest
 	docker push ghcr.io/$(CR_USER)/$(PACKAGE):latest
 	docker rmi ghcr.io/$(CR_USER)/$(PACKAGE):latest

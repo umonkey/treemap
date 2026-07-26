@@ -35,6 +35,7 @@ RUN uv pip install -r pyproject.toml
 
 # --- STAGE 2: The Final Image (Slim Image) ---
 FROM debian:bookworm-slim
+LABEL org.opencontainers.image.source https://github.com/umonkey/treemap
 
 ARG DEBIAN_FRONTEND=noninteractive
 
