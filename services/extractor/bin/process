@@ -11,10 +11,12 @@ cp config.yaml var/dataset/
 
 # (1) Download the files.
 # This downloads source files video.mp4 and track.gpx from S3 and puts them in var/
+echo "=== Downloading files ==="
 time bin/download-files
 
 # (2) Extract frames.
 # This extracts a single frame every 3 meters, from the original video.
+echo "=== Extracting frames ==="
 bin/app extract --distance 3 --offset "${GPX_OFFSET:-0.0}" var/video.mp4 var/track.gpx var/dataset/images
 
 # This creates a mask for each extracted frame.
@@ -23,35 +25,48 @@ bin/app extract --distance 3 --offset "${GPX_OFFSET:-0.0}" var/video.mp4 var/tra
 # part of the image (like a car) might confuse the algorithm.
 #
 # This script creates a png file for each jpg frame, e.g. images/frame_001.jpg => masks/frame_001.jpg.png
+echo "=== Creating masks ==="
 bin/app create-masks var/dataset
 
 # (3) Set up cameras for OpenSfM
+echo "=== Creating camera overrides ==="
 bin/app create-camera-overrides var/video.mp4 > var/dataset/camera_models_overrides.json
 
 # (4) Extract image metadata to var/dataset/exif/*.jpg.exif
 # Creates a bunch of JSON files with the image metadata extracted, one per input frame.
+echo "=== OpenSfM: extract_metadata ==="
 time opensfm extract_metadata var/dataset
 
 # (5) Apply Turn-Aware GPS Smoothing and metadata injection
 # Smoothen the coordinates to avoid consumer grade signal fluctuation,
 # using a turn-aware algorithm to avoid smoothing sharp turns.
+echo "=== Smoothing the GPS coordinates ==="
 time bin/smooth-gps var/dataset/exif
 
 # (6) Run the core SfM pipeline
+echo "=== OpenSfM: detect_features ==="
 time opensfm detect_features var/dataset
+echo "=== OpenSfM: match_features ==="
 time opensfm match_features var/dataset
+echo "=== OpenSfM: create_tracks ==="
 time opensfm create_tracks var/dataset
+echo "=== OpenSfM: reconstruct ==="
 time opensfm reconstruct var/dataset
 
 # (7) Prune outlierpoints (500m+)
+echo "=== Pruning remote points ==="
 bin/prune-points var/dataset
+echo "=== OpenSfM: export_ply ==="
 time opensfm export_ply var/dataset
 
 # (8) Verify result quality
+echo "=== Verifying errors ==="
 bin/verify-error var/dataset
 
 # (9) Final output generation
+echo "=== Writing output ==="
 bin/write-output var/dataset var/output
 
 # (10) Upload the results.
+echo "=== Uploading results ==="
 bin/upload-results
