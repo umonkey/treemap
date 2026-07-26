@@ -30,7 +30,7 @@ resource "aws_batch_compute_environment" "treemap" {
   compute_resources {
     type                = "SPOT"
     allocation_strategy = "SPOT_CAPACITY_OPTIMIZED"
-    instance_type       = [var.batch_instance_type]
+    instance_type       = var.batch_instance_type
     max_vcpus           = 256
     min_vcpus           = 0
     subnets             = data.aws_subnets.default.ids
@@ -56,6 +56,25 @@ resource "aws_batch_job_definition" "transcoder" {
 
   container_properties = jsonencode({
     image = "ghcr.io/umonkey/treemap-transcoder:latest"
+    resourceRequirements = [
+      {
+        value = "2"
+        type  = "VCPU"
+      },
+      {
+        value = "4096"
+        type  = "MEMORY"
+      }
+    ]
+  })
+}
+
+resource "aws_batch_job_definition" "extractor" {
+  name = "treemap-extractor"
+  type = "container"
+
+  container_properties = jsonencode({
+    image = "ghcr.io/umonkey/treemap-extractor:latest"
     resourceRequirements = [
       {
         value = "2"
