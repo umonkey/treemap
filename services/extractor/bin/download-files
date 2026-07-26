@@ -8,7 +8,7 @@ elif [ -z "$VIDEO_SOURCE" ]; then
     echo "VIDEO_SOURCE not set, cannot download the file."
     exit 1
 else
-    aws s3 cp "$VIDEO_SOURCE" var/video.mp4
+    aws s3 --endpoint-url="$AWS_ENDPOINT_URL" cp "$VIDEO_SOURCE" var/video.mp4
 fi
 
 if [ -f var/track.gpx ]; then
@@ -17,5 +17,5 @@ elif [ -z "$GPX_SOURCE" ]; then
     echo "GPX_SOURCE not set, cannot download the file."
     exit 1
 else
-    aws s3 cp "$GPX_SOURCE" var/track.gpx
+    aws s3 --endpoint-url="$AWS_ENDPOINT_URL" cp "$GPX_SOURCE" var/track.gpx
 fi
