@@ -23,7 +23,7 @@ resource "aws_security_group" "batch_sg" {
 }
 
 resource "aws_batch_compute_environment" "treemap" {
-  name         = "treemap-compute-env"
+  name_prefix  = "treemap-ce-"
   type         = "MANAGED"
   service_role = aws_iam_role.aws_batch_service_role.arn
 
@@ -36,6 +36,10 @@ resource "aws_batch_compute_environment" "treemap" {
     subnets             = data.aws_subnets.default.ids
     security_group_ids  = [aws_security_group.batch_sg.id]
     instance_role       = aws_iam_instance_profile.ecs_instance_profile.arn
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
 

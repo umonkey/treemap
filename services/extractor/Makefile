@@ -1,5 +1,11 @@
 PACKAGE=treemap-extractor
 
+BATCH_QUEUE=treemap-transcode
+BATCH_DEFINITION=treemap-extractor
+INPUT_VIDEO_URL?=s3://treemap-panoramas-tmp-g6dxkoua/437014194731225088/video.mp4
+INPUT_TRACK_URL?=s3://treemap-panoramas-tmp-g6dxkoua/437014194731225088/track.gpx
+OUTPUT_URL?=s3://panoramas-px3qodu3/437014194731225088/
+
 build:
 	docker build -t $(PACKAGE):latest .
 
@@ -22,4 +28,4 @@ test-run:
 	docker run --rm -v $(PWD)/var:/app/var -u $(shell id -u):$(shell id -g) -e "GPX_OFFSET=471.3" -e "MASK_SIZE=0.35" -t $(PACKAGE):latest bin/process
 
 test-job:
-	docker run --rm -v $(PWD)/var:/app/var -u $(shell id -u):$(shell id -g) -e "GPX_OFFSET=471.3" -e "MASK_SIZE=0.35" -t $(PACKAGE):latest bin/process
+	aws batch submit-job --job-name $(PACKAGE)-test-$(shell date +'%Y%m%d-%H%M%S') --job-queue $(BATCH_QUEUE) --job-definition $(BATCH_DEFINITION) --container-overrides '{ "command": ["$(INPUT_URL)", "$(OUTPUT_URL)"], "environment": [ {"name": "AWS_ACCESS_KEY_ID", "value": "$(FILES_KEY)"}, {"name": "AWS_SECRET_ACCESS_KEY", "value": "$(FILES_SECRET)"}, {"name": "AWS_REGION", "value": "$(FILES_REGION)"}, {"name": "AWS_ENDPOINT_URL", "value": "$(FILES_ENDPOINT)"}, {"name": "GPX_OFFSET", "value": "471.3" }, {"name": "MASK_SIZE", "value": "0.35"} ] }'
