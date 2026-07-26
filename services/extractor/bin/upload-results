@@ -1,0 +1,13 @@
+#!/bin/sh
+# Download source video and track from the S3 file storage.
+# Skip if the files already exist (which is a debug only feature).
+
+if [ ! -f var/output/images.json ]; then
+    echo "Result file images.json not found."
+    exit 1
+elif [ -z "$VIDEO_UPLOAD_TARGET" ]; then
+    echo "VIDEO_UPLOAD_TARGET not set, cannot upload files."
+    exit 1
+fi
+
+aws s3 cp --recursive var/output/ s3://treemap-panoramas-tmp-g6dxkoua/437014194731225088/public/video.mp4

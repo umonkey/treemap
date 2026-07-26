@@ -64,11 +64,11 @@ class Writer:
                 piexif.ExifIFD.DateTimeDigitized: timestamp.strftime(
                     "%Y:%m:%d %H:%M:%S"
                 ).encode("utf-8"),
-                piexif.ExifIFD.SubSecTimeOriginal: f"{timestamp.microsecond // 10000:02d}".encode(
-                    "utf-8"
+                piexif.ExifIFD.SubSecTimeOriginal: (
+                    f"{timestamp.microsecond // 10000:02d}".encode("utf-8")
                 ),
-                piexif.ExifIFD.SubSecTimeDigitized: f"{timestamp.microsecond // 10000:02d}".encode(
-                    "utf-8"
+                piexif.ExifIFD.SubSecTimeDigitized: (
+                    f"{timestamp.microsecond // 10000:02d}".encode("utf-8")
                 ),
             },
             "GPS": {

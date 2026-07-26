@@ -36,6 +36,7 @@ def enu_to_lla(lat_ref, lon_ref, alt_ref, e, n, u):
     return lat, lon, alt
 
 def main(dataset_dir, output_dir):
+    os.makedirs(output_dir, exist_ok=True)
     # 1. Clean output directory
     print("Cleaning output directory...")
     for f in glob.glob(os.path.join(output_dir, "*.jpg")):
@@ -59,6 +60,7 @@ def main(dataset_dir, output_dir):
 
     processed_shots = set()
     csv_data = []
+    images_data = []
 
     for i, reconstruction in enumerate(reconstructions):
         print(f"Processing reconstruction component {i} ({len(reconstruction['shots'])} shots)...")
@@ -164,15 +166,31 @@ def main(dataset_dir, output_dir):
                 'XMP-GPano:UsePanoramaViewer': 'True'
             })
 
+            images_data.append({
+                'filename': shot_id,
+                'latitude': float(lat),
+                'longitude': float(lon),
+                'altitude': float(alt),
+                'heading': float(heading),
+                'pitch': float(pitch),
+                'roll': float(roll),
+            })
 
-    # 4. Write CSV for exiftool
+
+    # 4. Write images.json
+    images_json_path = os.path.join(output_dir, 'images.json')
+    images_data.sort(key=lambda x: x['filename'])
+    with open(images_json_path, 'w') as f:
+        json.dump(images_data, f, indent=4)
+
+    # 5. Write CSV for exiftool
     csv_path = os.path.join(output_dir, 'metadata.csv')
     with open(csv_path, 'w', newline='') as f:
         writer = csv.DictWriter(f, fieldnames=csv_data[0].keys())
         writer.writeheader()
         writer.writerows(csv_data)
 
-    # 5. Run exiftool
+    # 6. Run exiftool
     print(f"Applying metadata to {len(csv_data)} images using exiftool...")
     subprocess.run([
         'exiftool',

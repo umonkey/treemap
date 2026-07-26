@@ -52,3 +52,6 @@ bin/verify-error var/dataset
 
 # (9) Final output generation
 bin/write-output var/dataset var/output
+
+# (10) Upload the results.
+bin/upload-results
