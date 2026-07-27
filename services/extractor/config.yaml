@@ -48,4 +48,4 @@ triangulation_min_ray_angle: 2.0  # Higher angle ensures more stable depth/trian
 optimize_camera_parameters: yes
 
 # Performance
-processes: 8
+processes: 4
