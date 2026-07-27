@@ -20,7 +20,9 @@ Terraform was chosen because:
 
 - Provider support: it has excellent first-class support for both AWS and DigitalOcean, as well as many other vendors.
 - State management: it maintains a state file that maps the configuration to real-world resources.
-- Remote state: we use an S3 bucket to store the Terraform state file, ensuring it is accessible to all team members and CI/CD pipelines.
+- Remote state: we use an S3 bucket to store the Terraform state file, ensuring it is accessible to all team members.
+- Location: all Terraform files are in the `infra` folder.
+- Deployment: changes are applied manually by an operator with enough permissions, there is no CI/CD integration for this for security reasons (it doesn't happen too often and doesn't take much time so there is no point in extra risks).
 - Reproducibility: configurations can be versioned and applied to different environments consistently.
 - Visibility: `terraform plan` allows us to see exactly what changes will be made before they are applied.
 
