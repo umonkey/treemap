@@ -11,6 +11,7 @@ class Reader:
     def __init__(self, video_path, timestamp=None):
         self._container = av.open(video_path)
         self._stream = self._container.streams.video[0]
+        self._stream.thread_type = "AUTO"
         if timestamp:
             self._creation_time = self._parse_timestamp(timestamp)
         else:
