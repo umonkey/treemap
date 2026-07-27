@@ -8,9 +8,14 @@ variable "batch_instance_type" {
   type        = list(string)
   description = "EC2 instance types for AWS Batch compute environment"
   default     = [
-    "c6i.large", "c6a.large", "c5.large", "m6i.large", "m5.large",
-    "c6i.xlarge", "c6a.xlarge", "c5.xlarge", "m6i.xlarge", "m5.xlarge",
-    "c6i.2xlarge", "c6a.2xlarge", "c5.2xlarge", "m6i.2xlarge", "m5.2xlarge"
+    "c5.xlarge", "c5a.xlarge", "c5d.xlarge", "c6i.xlarge", "c6a.xlarge",
+    "m5.xlarge", "m5a.xlarge", "m5d.xlarge", "m6i.xlarge", "m6a.xlarge",
+    "r5.xlarge", "r5a.xlarge", "r5d.xlarge", "r6i.xlarge", "r6a.xlarge",
+    "c7i.xlarge", "c7a.xlarge", "m7i.xlarge", "m7a.xlarge", "r7i.xlarge", "r7a.xlarge",
+    "c5.2xlarge", "c5a.2xlarge", "c6i.2xlarge", "c6a.2xlarge",
+    "m5.2xlarge", "m5a.2xlarge", "m6i.2xlarge", "m6a.2xlarge",
+    "r5.2xlarge", "r5a.2xlarge", "r6i.2xlarge", "r6a.2xlarge",
+    "c7i.2xlarge", "m7i.2xlarge", "r7i.2xlarge"
   ]
 }
 

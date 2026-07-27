@@ -46,7 +46,7 @@ resource "aws_batch_compute_environment" "treemap" {
 
   compute_resources {
     type                = "SPOT"
-    allocation_strategy = "SPOT_CAPACITY_OPTIMIZED"
+    allocation_strategy = "SPOT_PRICE_CAPACITY_OPTIMIZED"
     instance_type       = var.batch_instance_type
     max_vcpus           = 256
     min_vcpus           = 0
@@ -108,7 +108,7 @@ resource "aws_batch_job_definition" "extractor" {
   type = "container"
 
   retry_strategy {
-    attempts = 3
+    attempts = 5
     evaluate_on_exit {
       on_status_reason = "Host EC2 terminated"
       action           = "RETRY"
@@ -119,7 +119,7 @@ resource "aws_batch_job_definition" "extractor" {
     image = "ghcr.io/umonkey/treemap-extractor:latest"
     resourceRequirements = [
       {
-        value = "8"
+        value = "4"
         type  = "VCPU"
       },
       {
