@@ -4,5 +4,5 @@
 
 if [ -n "$DATASET_URL" ]; then
     echo "Downloading dataset files from $DATASET_URL ..."
-    aws s3 --endpoint-url="$AWS_ENDPOINT_URL" sync --no-progress "$DATASET_URL" var/dataset/
+    aws s3 --endpoint-url="$AWS_ENDPOINT_URL" sync --no-progress --size-only --delete "$DATASET_URL" var/dataset/
 fi

@@ -1,6 +1,5 @@
 #!/bin/sh
-# Download source video and track from the S3 file storage.
-# Skip if the files already exist (which is a debug only feature).
+# Upload processing results to the S3 file storage.
 
 if [ ! -f var/output/images.json ]; then
     echo "Result file images.json not found."
@@ -10,4 +9,4 @@ elif [ -z "$RESULT_URL" ]; then
     exit 1
 fi
 
-aws s3 --endpoint-url="$AWS_ENDPOINT_URL" cp --no-progress --recursive var/output/ "$RESULT_URL"
+aws s3 --endpoint-url="$AWS_ENDPOINT_URL" sync --no-progress --size-only --delete var/output/ "$RESULT_URL"

@@ -1,10 +1,10 @@
 #!/bin/sh
-# Download source video and track from the S3 file storage.
+# Upload source video and track to the S3 file storage.
 # Skip if the files already exist (which is a debug only feature).
 
 if [ -n "$DATASET_URL" ]; then
     echo "Uploading dataset files to $DATASET_URL ..."
-    aws s3 --endpoint-url="$AWS_ENDPOINT_URL" sync --no-progress var/dataset/ "$DATASET_URL"
+    aws s3 --endpoint-url="$AWS_ENDPOINT_URL" sync --no-progress --size-only --delete var/dataset/ "$DATASET_URL"
 else
     echo "DATASET_URL not set, not uploading temporary files."
 fi
