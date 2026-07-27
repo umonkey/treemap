@@ -22,6 +22,23 @@ resource "aws_security_group" "batch_sg" {
   }
 }
 
+resource "aws_launch_template" "batch_lt" {
+  name_prefix = "treemap-batch-lt-"
+
+  block_device_mappings {
+    device_name = "/dev/xvda"
+    ebs {
+      volume_size           = 100
+      volume_type           = "gp3"
+      delete_on_termination = true
+    }
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
 resource "aws_batch_compute_environment" "treemap" {
   name_prefix  = "treemap-ce-"
   type         = "MANAGED"
@@ -36,6 +53,11 @@ resource "aws_batch_compute_environment" "treemap" {
     subnets             = data.aws_subnets.default.ids
     security_group_ids  = [aws_security_group.batch_sg.id]
     instance_role       = aws_iam_instance_profile.ecs_instance_profile.arn
+
+    launch_template {
+      launch_template_id = aws_launch_template.batch_lt.id
+      version            = "$Latest"
+    }
   }
 
   lifecycle {
@@ -81,11 +103,11 @@ resource "aws_batch_job_definition" "extractor" {
     image = "ghcr.io/umonkey/treemap-extractor:latest"
     resourceRequirements = [
       {
-        value = "2"
+        value = "8"
         type  = "VCPU"
       },
       {
-        value = "4096"
+        value = "16384"
         type  = "MEMORY"
       }
     ]

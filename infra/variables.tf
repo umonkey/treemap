@@ -7,7 +7,11 @@ variable "region" {
 variable "batch_instance_type" {
   type        = list(string)
   description = "EC2 instance types for AWS Batch compute environment"
-  default     = ["c6i.xlarge", "c5.xlarge", "c6a.xlarge", "m6i.xlarge", "m5.xlarge"]
+  default     = [
+    "c6i.large", "c6a.large", "c5.large", "m6i.large", "m5.large",
+    "c6i.xlarge", "c6a.xlarge", "c5.xlarge", "m6i.xlarge", "m5.xlarge",
+    "c6i.2xlarge", "c6a.2xlarge", "c5.2xlarge", "m6i.2xlarge", "m5.2xlarge"
+  ]
 }
 
 variable "do_token" {
