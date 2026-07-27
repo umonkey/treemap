@@ -5,4 +5,6 @@
 if [ -n "$DATASET_URL" ]; then
     echo "Uploading dataset files to $DATASET_URL ..."
     aws s3 --endpoint-url="$AWS_ENDPOINT_URL" sync --no-progress var/dataset/ "$DATASET_URL"
+else
+    echo "DATASET_URL not set, not uploading temporary files."
 fi
