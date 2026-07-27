@@ -80,6 +80,14 @@ resource "aws_batch_job_definition" "transcoder" {
   name = "treemap-transcoder"
   type = "container"
 
+  retry_strategy {
+    attempts = 3
+    evaluate_on_exit {
+      on_status_reason = "Host EC2 terminated"
+      action           = "RETRY"
+    }
+  }
+
   container_properties = jsonencode({
     image = "ghcr.io/umonkey/treemap-transcoder:latest"
     resourceRequirements = [
@@ -98,6 +106,14 @@ resource "aws_batch_job_definition" "transcoder" {
 resource "aws_batch_job_definition" "extractor" {
   name = "treemap-extractor"
   type = "container"
+
+  retry_strategy {
+    attempts = 3
+    evaluate_on_exit {
+      on_status_reason = "Host EC2 terminated"
+      action           = "RETRY"
+    }
+  }
 
   container_properties = jsonencode({
     image = "ghcr.io/umonkey/treemap-extractor:latest"
