@@ -127,6 +127,11 @@ def run_map_match(
         print("\n    docker compose up -d\n")
         return
 
+    tqdm_disabled = (
+        os.environ.get("TQDM_DISABLE", "").lower() in ("1", "true", "yes")
+        or os.environ.get("AWS_BATCH_JOB_ID") is not None
+    )
+
     os.makedirs(output_dir, exist_ok=True)
     image_files = sorted(glob(os.path.join(image_dir, "*.jpg")))
 
@@ -136,7 +141,7 @@ def run_map_match(
 
     print(f"Reading EXIF from {len(image_files)} images...")
     points = []
-    for f in tqdm(image_files):
+    for f in tqdm(image_files, disable=tqdm_disabled):
         data = get_image_data(f)
         if data:
             points.append(data)
@@ -161,7 +166,7 @@ def run_map_match(
     edges = result.get("edges", [])
 
     print("Updating images with matched coordinates and bearing...")
-    for i, matched in enumerate(tqdm(matched_points)):
+    for i, matched in enumerate(tqdm(matched_points, disable=tqdm_disabled)):
         orig_path = points[i]["path"]
         filename = os.path.basename(orig_path)
         new_path = os.path.join(output_dir, filename)

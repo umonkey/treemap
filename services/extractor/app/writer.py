@@ -8,15 +8,15 @@ import math
 from fractions import Fraction
 
 import piexif  # type: ignore
-from tqdm import tqdm  # type: ignore
 
 
 class Writer:
-    def __init__(self, folder, distance=1.0):
+    def __init__(self, folder, distance=1.0, total_frames=None):
         self._last = (None, None)
         self._distance = distance
         self._folder = folder
         self._index = 1
+        self._total_frames = total_frames
 
     def write_frame(self, index, frame, frame_time, lat, lon, gps_time):
         if self._should_write(lat, lon):
@@ -89,7 +89,14 @@ class Writer:
         exif_bytes = piexif.dump(exif_dict)
         img.save(filename, "JPEG", exif=exif_bytes, quality=95)
 
-        tqdm.write(f"Writing frame {index} as {filename} @ {lat},{lon}")
+        if self._total_frames:
+            percent = (index + 1) / self._total_frames * 100
+            print(
+                f"Writing frame {index+1}/{self._total_frames} "
+                f"({percent}%) as {filename}"
+            )
+        else:
+            print(f"Writing frame {index+1} as {filename}")
 
     def _get_thumbnail(self, img):
         thumb_io = io.BytesIO()

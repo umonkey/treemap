@@ -55,10 +55,27 @@ def handle_extract(args):
     try:
         locator = Locator(args.gpx_path)
         reader = Reader(args.video_path, timestamp=args.timestamp)
-        writer = Writer(distance=args.distance, folder=args.output_folder)
+        writer = Writer(
+            distance=args.distance,
+            folder=args.output_folder,
+            total_frames=reader.total_frames,
+        )
 
-        for index, frame, frame_offset_seconds, current_real_time in tqdm(
-            reader.read(), total=reader.total_frames, desc="Processing frames"
+        tqdm_disabled = (
+            os.environ.get("TQDM_DISABLE", "").lower() in ("1", "true", "yes")
+            or os.environ.get("AWS_BATCH_JOB_ID") is not None
+        )
+
+        for (
+            index,
+            frame,
+            frame_offset_seconds,
+            current_real_time,
+        ) in tqdm(
+            reader.read(),
+            total=reader.total_frames,
+            desc="Processing frames",
+            disable=tqdm_disabled,
         ):
             try:
                 lookup_offset = frame_offset_seconds + args.offset
