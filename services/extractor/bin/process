@@ -17,7 +17,7 @@ time bin/download-files
 # (2) Extract frames.
 # This extracts a single frame every 3 meters, from the original video.
 echo "=== Extracting frames ==="
-bin/app extract --distance 3 --offset "${GPX_OFFSET:-0.0}" var/video.mp4 var/track.gpx var/dataset/images
+time bin/app extract --distance 3 --offset "${GPX_OFFSET:-0.0}" var/video.mp4 var/track.gpx var/dataset/images
 
 # This creates a mask for each extracted frame.
 # The mask contains upper white part and black bottom part.  The black part is ignored
