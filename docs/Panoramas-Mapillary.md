@@ -1,6 +1,6 @@
 # Armchair Mapping with 360 Panoramas
 
-> NOTE: this document describes the outdated implementation based on Mapillary.  We dumped it in favour of a home-grown solution.
+> NOTE: this document describes the outdated implementation based on Mapillary. We dumped it in favour of a home-grown solution.
 
 This document describes the armchair mapping tool, which allows users to add trees to the map using 360-degree street-level imagery uploaded to Mapillary.
 
