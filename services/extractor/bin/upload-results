@@ -10,4 +10,4 @@ elif [ -z "$VIDEO_UPLOAD_TARGET" ]; then
     exit 1
 fi
 
-aws s3 --endpoint-url="$AWS_ENDPOINT_URL" cp --no-progress --recursive var/output/ s3://treemap-panoramas-tmp-g6dxkoua/437014194731225088/public/video.mp4
+aws s3 --endpoint-url="$AWS_ENDPOINT_URL" cp --no-progress --recursive var/output/ "$VIDEO_UPLOAD_TARGET"
