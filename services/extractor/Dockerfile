@@ -85,7 +85,7 @@ COPY config.yaml /app
 
 # 10. Final verification checks
 RUN python3 -c "import opensfm; print('OpenSfM Python package successfully installed')" && \
-    python3 -c "import av, gpxpy, piexif, PIL, tqdm, requests; print('App dependencies successfully imported')" && \
+    python3 -c "import av, gpxpy, piexif, PIL, requests; print('App dependencies successfully imported')" && \
     opensfm --help > /dev/null && \
     ffmpeg -version > /dev/null && \
     aws --version > /dev/null

@@ -38,21 +38,74 @@ class Reader:
 
         return 0
 
-    def read(self):
-        for index, frame in enumerate(self._container.decode(self._stream)):
-            pts = frame.pts if frame.pts is not None else 0
-            time_base = (
-                self._stream.time_base if self._stream.time_base is not None else 1
+    @property
+    def fps(self):
+        return float(self._stream.average_rate)
+
+    def read(self, indices=None):
+        if indices is None:
+            for index, frame in enumerate(self._container.decode(self._stream)):
+                yield self._format_frame(index, frame)
+        else:
+            current_pos = None
+            decoder = None
+
+            for target_idx in indices:
+                if (
+                    current_pos is None
+                    or target_idx - current_pos > 50
+                    or target_idx < current_pos
+                ):
+                    target_time = target_idx / self.fps if self.fps > 0 else 0.0
+                    time_base = (
+                        self._stream.time_base
+                        if self._stream.time_base is not None
+                        else 1
+                    )
+                    timestamp = int(target_time / time_base)
+                    self._container.seek(
+                        timestamp, backward=True, stream=self._stream
+                    )
+                    decoder = self._container.decode(self._stream)
+                    current_pos = None
+
+                for frame in decoder:
+                    pts = frame.pts if frame.pts is not None else 0
+                    time_base = (
+                        self._stream.time_base
+                        if self._stream.time_base is not None
+                        else 1
+                    )
+                    frame_offset_seconds = float(pts * time_base)
+                    frame_idx = (
+                        int(round(frame_offset_seconds * self.fps))
+                        if self.fps > 0
+                        else 0
+                    )
+
+                    current_pos = frame_idx
+
+                    if frame_idx >= target_idx:
+                        _, _, offset_sec, real_time = self._format_frame(
+                            target_idx, frame
+                        )
+                        yield target_idx, frame, offset_sec, real_time
+                        break
+
+    def _format_frame(self, index, frame):
+        pts = frame.pts if frame.pts is not None else 0
+        time_base = (
+            self._stream.time_base if self._stream.time_base is not None else 1
+        )
+        frame_offset_seconds = float(pts * time_base)
+
+        current_real_time = None
+        if self._creation_time is not None:
+            current_real_time = self._creation_time + timedelta(
+                seconds=frame_offset_seconds
             )
-            frame_offset_seconds = float(pts * time_base)
 
-            current_real_time = None
-            if self._creation_time is not None:
-                current_real_time = self._creation_time + timedelta(
-                    seconds=frame_offset_seconds
-                )
-
-            yield index, frame, frame_offset_seconds, current_real_time
+        return index, frame, frame_offset_seconds, current_real_time
 
     def _get_progress(self, index):
         """

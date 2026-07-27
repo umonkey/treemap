@@ -4,7 +4,6 @@ import os
 import sys
 
 import av
-from tqdm import tqdm  # type: ignore
 
 from . import Locator, Reader, Writer
 from .exceptions import UsageException
@@ -55,34 +54,70 @@ def handle_extract(args):
     try:
         locator = Locator(args.gpx_path)
         reader = Reader(args.video_path, timestamp=args.timestamp)
+
+        target_indices = []
+        last_lat, last_lon = None, None
+
+        print("Planning...")
+        for index in range(reader.total_frames):
+            frame_offset_seconds = (
+                index / reader.fps if reader.fps > 0 else 0.0
+            )
+            lookup_offset = frame_offset_seconds + args.offset
+            try:
+                lat, lon, gps_time = locator.locate(lookup_offset)
+                if (
+                    last_lat is None
+                    or Writer.get_distance(last_lat, last_lon, lat, lon)
+                    >= args.distance
+                ):
+                    last_lat, last_lon = lat, lon
+                    target_indices.append(index)
+            except NoCoordinates:
+                pass
+
         writer = Writer(
             distance=args.distance,
             folder=args.output_folder,
             total_frames=reader.total_frames,
         )
 
-        tqdm_disabled = (
-            os.environ.get("TQDM_DISABLE", "").lower() in ("1", "true", "yes")
-            or os.environ.get("AWS_BATCH_JOB_ID") is not None
-        )
+        missing_targets = []
+        for i, target_idx in enumerate(target_indices):
+            out_idx = i + 1
+            filename = os.path.join(args.output_folder, f"frame_{out_idx:06d}.jpg")
+            if not os.path.exists(filename):
+                missing_targets.append((target_idx, out_idx))
 
-        for (
+        if len(missing_targets) < len(target_indices):
+            print(
+                f"Resuming: found "
+                f"{len(target_indices) - len(missing_targets)} "
+                "existing frames, skipping..."
+            )
+
+        print(f"Extracting {len(target_indices)} frames...")
+        for (target_idx, out_idx), (
             index,
             frame,
             frame_offset_seconds,
             current_real_time,
-        ) in tqdm(
-            reader.read(),
-            total=reader.total_frames,
-            desc="Processing frames",
-            disable=tqdm_disabled,
+        ) in zip(
+            missing_targets,
+            reader.read(indices=[t[0] for t in missing_targets]),
         ):
             try:
                 lookup_offset = frame_offset_seconds + args.offset
                 lat, lon, gps_time = locator.locate(lookup_offset)
                 frame_time = current_real_time
                 writer.write_frame(
-                    index, frame, frame_time or gps_time, lat, lon, gps_time
+                    index,
+                    frame,
+                    frame_time or gps_time,
+                    lat,
+                    lon,
+                    gps_time,
+                    output_index=out_idx,
                 )
             except NoCoordinates:
                 # print(f"No coordinates for frame {index}")

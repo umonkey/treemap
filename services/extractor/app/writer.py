@@ -18,8 +18,20 @@ class Writer:
         self._index = 1
         self._total_frames = total_frames
 
-    def write_frame(self, index, frame, frame_time, lat, lon, gps_time):
-        if self._should_write(lat, lon):
+    def write_frame(
+        self, index, frame, frame_time, lat, lon, gps_time, output_index=None
+    ):
+        if output_index is not None:
+            self._write(
+                index,
+                frame,
+                frame_time,
+                lat,
+                lon,
+                gps_time,
+                output_index=output_index,
+            )
+        elif self._should_write(lat, lon):
             self._last = (lat, lon)
             self._write(index, frame, frame_time, lat, lon, gps_time)
 
@@ -27,7 +39,19 @@ class Writer:
         f = Fraction(str(number)).limit_denominator(1000000)
         return (f.numerator, f.denominator)
 
-    def _write(self, index, frame, timestamp, lat, lon, gps_time):
+    def _write(
+        self,
+        index,
+        frame,
+        timestamp,
+        lat,
+        lon,
+        gps_time,
+        output_index=None,
+    ):
+        if output_index is not None:
+            self._index = output_index
+
         if timestamp is None:
             timestamp = gps_time
 
@@ -90,7 +114,7 @@ class Writer:
         img.save(filename, "JPEG", exif=exif_bytes, quality=95)
 
         if self._total_frames:
-            percent = (index + 1) / self._total_frames * 100
+            percent = int((index + 1) / self._total_frames * 100)
             print(
                 f"Writing frame {index+1}/{self._total_frames} "
                 f"({percent}%) as {filename}"
@@ -111,11 +135,12 @@ class Writer:
 
         llat, llon = self._last
 
-        distance = self._get_distance(llat, llon, lat, lon)
+        distance = Writer.get_distance(llat, llon, lat, lon)
 
         return distance >= self._distance
 
-    def _get_distance(self, lat1, lon1, lat2, lon2):
+    @staticmethod
+    def get_distance(lat1, lon1, lat2, lon2):
         """
         Get distance in meters between two GPS points, in meters.
         """
