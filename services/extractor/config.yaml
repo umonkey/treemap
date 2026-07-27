@@ -6,13 +6,17 @@ feature_process_size: 2048
 feature_process_size_panorama: 2048
 
 # Optimization: Sequential Matching
-matching_order_neighbors: 30  # Match ±15 frames in chronological sequence
+matching_order_neighbors: 16  # Match ±8 frames in chronological sequence
 matching_gps_distance: 50      # Limit search for near images to 50m to avoid false matches and save time
-matching_gps_neighbors: 20    # Cap the number of GPS-based matches to 20 to prevent exhaustive searching
+matching_gps_neighbors: 10    # Cap the number of GPS-based matches to 10 to prevent exhaustive searching
 
 # High point count for stability
-feature_min_frames: 4000
-feature_min_frames_panorama: 8000
+feature_min_frames: 2000
+feature_min_frames_panorama: 2500
+
+# Minimum number of frames a feature must be seen in to create a track.
+# Increasing this significantly reduces memory by filtering out noise.
+min_track_length: 3
 
 # Use masks to ignore the car hood
 use_masks: yes
@@ -32,9 +36,12 @@ align_orientation_prior: vertical
 
 # Solver Stability: Frequent Global Bundle
 # This prevents drift from ever building up.
-bundle_interval: 5
+bundle_interval: 20
 local_bundle_radius: 15
 bundle_new_points_ratio: 2.0
+
+# Memory-efficient solver for large datasets
+ceres_linear_solver: SPARSE_SCHUR
 
 # Rigidity settings
 triangulation_min_ray_angle: 2.0  # Higher angle ensures more stable depth/triangulation for features like trees
