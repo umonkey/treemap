@@ -5,9 +5,9 @@
 if [ ! -f var/output/images.json ]; then
     echo "Result file images.json not found."
     exit 1
-elif [ -z "$VIDEO_UPLOAD_TARGET" ]; then
-    echo "VIDEO_UPLOAD_TARGET not set, cannot upload files."
+elif [ -z "$RESULT_URL" ]; then
+    echo "RESULT_URL not set, cannot upload files."
     exit 1
 fi
 
-aws s3 --endpoint-url="$AWS_ENDPOINT_URL" cp --no-progress --recursive var/output/ "$VIDEO_UPLOAD_TARGET"
+aws s3 --endpoint-url="$AWS_ENDPOINT_URL" cp --no-progress --recursive var/output/ "$RESULT_URL"

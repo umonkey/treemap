@@ -12,12 +12,12 @@ cp config.yaml var/dataset/
 # (1) Download the files.
 # This downloads source files video.mp4 and track.gpx from S3 and puts them in var/
 echo "=== Downloading files ==="
-time bin/download-files
+time bin/download-dataset
 
 # (2) Extract frames.
 # This extracts a single frame every 3 meters, from the original video.
 echo "=== Extracting frames ==="
-time bin/app extract --distance 3 --offset "${GPX_OFFSET:-0.0}" var/video.mp4 var/track.gpx var/dataset/images
+time bin/app extract --distance 3 --offset "${GPX_OFFSET:-0.0}" var/dataset/video.mp4 var/dataset/track.gpx var/dataset/images
 
 # This creates a mask for each extracted frame.
 # The mask contains upper white part and black bottom part.  The black part is ignored
@@ -30,7 +30,7 @@ bin/app create-masks var/dataset
 
 # (3) Set up cameras for OpenSfM
 echo "=== Creating camera overrides ==="
-bin/app create-camera-overrides var/video.mp4 > var/dataset/camera_models_overrides.json
+bin/app create-camera-overrides var/dataset/video.mp4 > var/dataset/camera_models_overrides.json
 
 # (4) Extract image metadata to var/dataset/exif/*.jpg.exif
 # Creates a bunch of JSON files with the image metadata extracted, one per input frame.
