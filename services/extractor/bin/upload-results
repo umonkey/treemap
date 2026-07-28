@@ -9,4 +9,4 @@ elif [ -z "$RESULT_URL" ]; then
     exit 1
 fi
 
-aws s3 --endpoint-url="$AWS_ENDPOINT_URL" sync --no-progress --size-only --delete var/output/ "$RESULT_URL"
+aws s3 --endpoint-url="$AWS_ENDPOINT_URL" sync --no-progress --size-only --delete --acl public-read var/output/ "$RESULT_URL"
