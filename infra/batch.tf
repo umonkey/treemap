@@ -124,6 +124,7 @@ resource "aws_batch_job_definition" "extractor" {
     attempts = 5
   }
 
+  # Use 16 gig nodes with some memory left for the OS.
   container_properties = jsonencode({
     image = "ghcr.io/umonkey/treemap-extractor:latest"
     resourceRequirements = [
