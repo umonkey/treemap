@@ -29,7 +29,7 @@ pub enum Error {
     ImageResize,
     InstanceDisabled,
     InstanceNotFound,
-    MapillaryExchange(String),
+
     MissingAuthorizationHeader,
     OsmExchange(String),
     PanoramaNotFound,
@@ -110,9 +110,7 @@ impl Error {
             Error::InstanceNotFound => {
                 r#"{"error":{"code":"InstanceNotFound","description":"The specified instance does not exist."}}"#.to_string()
             }
-            Error::MapillaryExchange(_) => {
-                r#"{"error":{"code":"MapillaryExchange","description":"Mapillary exchange failed."}}"#.to_string()
-            }
+
             Error::MissingAuthorizationHeader => {
                 r#"{"error":{"code":"MissingAuthorizationHeader","description":"Authentication required for this call."}}"#.to_string()
             }
@@ -230,7 +228,7 @@ impl fmt::Display for Error {
             Error::ImageResize => write!(f, "ImageResize"),
             Error::InstanceDisabled => write!(f, "InstanceDisabled"),
             Error::InstanceNotFound => write!(f, "InstanceNotFound"),
-            Error::MapillaryExchange(s) => write!(f, "MapillaryExchange: {s}"),
+
             Error::MissingAuthorizationHeader => write!(f, "MissingAuthorizationHeader"),
             Error::OsmExchange(s) => write!(f, "OsmExchange: {s}"),
             Error::PanoramaNotFound => write!(f, "PanoramaNotFound"),

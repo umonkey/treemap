@@ -6,6 +6,7 @@
 	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
 	import TextInput from '$lib/ui/text-input/TextInput.svelte';
+	import NumberInput from '$lib/ui/number-input/NumberInput.svelte';
 	import CheckInput from '$lib/ui/check-input/CheckInput.svelte';
 	import Form from '$lib/ui/form/Form.svelte';
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
@@ -49,6 +50,22 @@
 				/>
 
 				<CheckInput label="Visible on map" bind:value={pageState.panorama.visible} />
+
+				<NumberInput
+					label="Latitude Offset"
+					value={pageState.panorama.lat_offset}
+					step={0.000001}
+					min={-Infinity}
+					onChange={(v) => (pageState.panorama!.lat_offset = v)}
+				/>
+
+				<NumberInput
+					label="Longitude Offset"
+					value={pageState.panorama.lon_offset}
+					step={0.000001}
+					min={-Infinity}
+					onChange={(v) => (pageState.panorama!.lon_offset = v)}
+				/>
 
 				<Buttons>
 					<Button type="submit" disabled={pageState.isSaving}>Save Changes</Button>

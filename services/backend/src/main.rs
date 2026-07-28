@@ -17,7 +17,7 @@ fn usage() {
     println!("  backup-database       -- create a database backup");
     println!("  merge-duplicates [N]  -- automated duplicate tree resolution");
     println!("  migrate-timestamps    -- backfill update timestamps");
-    println!("  mapillary-pull        -- get new images from Mapillary");
+
     println!("  osm-pull              -- get new trees from OpenStreetMap");
     println!("  osm-push              -- send new trees to OSM");
     println!("  osm-push-changes      -- send tree updates to OSM");
@@ -74,10 +74,7 @@ async fn main() -> std::io::Result<()> {
             migrate_timestamps_command().await;
             return Ok(());
         }
-        "mapillary-pull" => {
-            mapillary_pull_command().await;
-            return Ok(());
-        }
+
         "osm-pull" => {
             osm_pull_command().await;
             return Ok(());

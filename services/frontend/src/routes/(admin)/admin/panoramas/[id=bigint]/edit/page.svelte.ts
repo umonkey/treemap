@@ -27,7 +27,9 @@ export class PageState {
 
 		const res = await updatePanorama(this.panorama.id, {
 			title: this.panorama.title,
-			visible: this.panorama.visible
+			visible: this.panorama.visible,
+			lat_offset: this.panorama.lat_offset,
+			lon_offset: this.panorama.lon_offset
 		});
 
 		this.isSaving = false;

@@ -88,9 +88,12 @@ impl PanoramaRepository {
         records.iter().map(Panorama::from_attributes).collect()
     }
 
-    pub async fn find_images_by_bounds(&self, bounds: Bounds) -> Result<Vec<(PanoramaImage, i64)>> {
+    pub async fn find_images_by_bounds(
+        &self,
+        bounds: Bounds,
+    ) -> Result<Vec<(PanoramaImage, i64, f64, f64)>> {
         let sql = format!(
-            "SELECT i.*, p.created_at FROM `{}` i INNER JOIN `{}` p ON i.panorama_id = p.id WHERE i.`lat` <= ? AND i.lat >= ? AND i.lng <= ? AND i.lng >= ? AND i.hidden = 0 AND p.status = 'SUCCESS' AND p.visible = 1",
+            "SELECT i.*, p.created_at, p.lat_offset, p.lon_offset FROM `{}` i INNER JOIN `{}` p ON i.panorama_id = p.id WHERE i.`lat` + p.lat_offset <= ? AND i.lat + p.lat_offset >= ? AND i.lng + p.lon_offset <= ? AND i.lng + p.lon_offset >= ? AND i.hidden = 0 AND p.status = 'SUCCESS' AND p.visible = 1",
             IMAGES_TABLE, TABLE
         );
 
@@ -107,7 +110,9 @@ impl PanoramaRepository {
         for record in records {
             let img = PanoramaImage::from_attributes(&record)?;
             let created_at = record.require_i64("created_at")?;
-            res.push((img, created_at));
+            let lat_offset = record.get_f64("lat_offset")?.unwrap_or(0.0);
+            let lon_offset = record.get_f64("lon_offset")?.unwrap_or(0.0);
+            res.push((img, created_at, lat_offset, lon_offset));
         }
 
         Ok(res)
@@ -116,9 +121,9 @@ impl PanoramaRepository {
     pub async fn find_hints_with_location_by_bounds(
         &self,
         bounds: Bounds,
-    ) -> Result<Vec<(PanoramaHint, f64, f64, f64)>> {
+    ) -> Result<Vec<(PanoramaHint, f64, f64, f64, f64, f64)>> {
         let sql = format!(
-            "SELECT h.*, i.lat, i.lng, i.heading FROM `{}` h INNER JOIN `{}` i ON h.image_id = i.id INNER JOIN `{}` p ON i.panorama_id = p.id WHERE i.`lat` <= ? AND i.lat >= ? AND i.lng <= ? AND i.lng >= ? AND i.hidden = 0 AND p.status = 'SUCCESS' AND p.visible = 1",
+            "SELECT h.*, i.lat, i.lng, i.heading, p.lat_offset, p.lon_offset FROM `{}` h INNER JOIN `{}` i ON h.image_id = i.id INNER JOIN `{}` p ON i.panorama_id = p.id WHERE i.`lat` + p.lat_offset <= ? AND i.lat + p.lat_offset >= ? AND i.lng + p.lon_offset <= ? AND i.lng + p.lon_offset >= ? AND i.hidden = 0 AND p.status = 'SUCCESS' AND p.visible = 1",
             HINTS_TABLE, IMAGES_TABLE, TABLE
         );
 
@@ -137,7 +142,9 @@ impl PanoramaRepository {
             let lat = record.require_f64("lat")?;
             let lng = record.require_f64("lng")?;
             let heading = record.require_f64("heading")?;
-            res.push((hint, lat, lng, heading));
+            let lat_offset = record.get_f64("lat_offset")?.unwrap_or(0.0);
+            let lon_offset = record.get_f64("lon_offset")?.unwrap_or(0.0);
+            res.push((hint, lat, lng, heading, lat_offset, lon_offset));
         }
 
         Ok(res)

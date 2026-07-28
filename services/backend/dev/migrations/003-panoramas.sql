@@ -15,6 +15,8 @@ CREATE TABLE IF NOT EXISTS panoramas (
     `transcode_status` TEXT NULL,
     `video_timestamp` REAL NULL,
     `gpx_offset` REAL NULL,
+    `lat_offset` REAL NOT NULL DEFAULT 0.0,
+    `lon_offset` REAL NOT NULL DEFAULT 0.0,
     `processing_arn` TEXT NULL,
     `processing_status` TEXT NULL,
     `failure_reason` TEXT NULL,
@@ -50,5 +52,9 @@ CREATE TABLE IF NOT EXISTS panoramas_hints (
     `user_id` INT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS panoramas_hints_image_id ON panoramas_hints (image_id);
+
+DROP TABLE IF EXISTS mapillary_images;
+DROP TABLE IF EXISTS mapillary_sequences;
+DROP TABLE IF EXISTS mapillary_trees;
 
 COMMIT;

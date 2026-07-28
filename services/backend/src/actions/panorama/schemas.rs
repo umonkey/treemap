@@ -29,6 +29,8 @@ pub struct PanoramaRead {
     pub transcode_status: Option<String>,
     pub video_timestamp: Option<f64>,
     pub gpx_offset: Option<f64>,
+    pub lat_offset: f64,
+    pub lon_offset: f64,
     pub failure_reason: Option<String>,
 }
 
@@ -126,6 +128,8 @@ impl From<Panorama> for PanoramaRead {
             transcode_status: p.transcode_status,
             video_timestamp: p.video_timestamp,
             gpx_offset: p.gpx_offset,
+            lat_offset: p.lat_offset,
+            lon_offset: p.lon_offset,
             failure_reason: p.failure_reason,
         }
     }

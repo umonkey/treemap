@@ -31,7 +31,10 @@ impl PanoramaService {
         self.repo.find_by_bounds(bounds).await
     }
 
-    pub async fn get_images_by_bounds(&self, bounds: Bounds) -> Result<Vec<(PanoramaImage, i64)>> {
+    pub async fn get_images_by_bounds(
+        &self,
+        bounds: Bounds,
+    ) -> Result<Vec<(PanoramaImage, i64, f64, f64)>> {
         self.repo.find_images_by_bounds(bounds).await
     }
 
@@ -39,7 +42,9 @@ impl PanoramaService {
         let hints = self.repo.find_hints_with_location_by_bounds(bounds).await?;
         let mut features = Vec::new();
 
-        for (hint, lat, lon, compass_angle) in hints {
+        for (hint, lat, lon, compass_angle, lat_offset, lon_offset) in hints {
+            let lat = lat + lat_offset;
+            let lon = lon + lon_offset;
             let absolute_bearing = (compass_angle + hint.angle + 360.0) % 360.0;
             let bearing_rad = absolute_bearing.to_radians();
 
@@ -101,8 +106,8 @@ impl PanoramaService {
             id: image.id.to_string(),
             sequence_id: image.panorama_id.to_string(),
             captured_at: panorama.created_at,
-            lat: image.lat,
-            lon: image.lng,
+            lat: image.lat + panorama.lat_offset,
+            lon: image.lng + panorama.lon_offset,
             compass_angle: image.heading,
             url,
         })
@@ -124,6 +129,8 @@ impl PanoramaService {
             transcode_status: None,
             video_timestamp: None,
             gpx_offset: None,
+            lat_offset: 0.0,
+            lon_offset: 0.0,
             processing_arn: None,
             processing_status: None,
             failure_reason: None,
@@ -154,6 +161,18 @@ impl PanoramaService {
             if panorama.status == PanoramaStatus::NeedsSync {
                 panorama.status = PanoramaStatus::NeedsProcessing;
             }
+        }
+
+        if let Some(lat_offset) = data.lat_offset {
+            panorama.lat_offset = lat_offset;
+        }
+
+        if let Some(lon_offset) = data.lon_offset {
+            panorama.lon_offset = lon_offset;
+        }
+
+        if data.lat_offset.is_some() || data.lon_offset.is_some() {
+            self.update_panorama_stats(&mut panorama).await?;
         }
 
         self.repo.update(id, &panorama).await?;
@@ -502,10 +521,12 @@ impl PanoramaService {
         let mut coordinates = Vec::new();
 
         for img in &images {
-            min_lat = min_lat.min(img.lat);
-            max_lat = max_lat.max(img.lat);
-            min_lon = min_lon.min(img.lng);
-            max_lon = max_lon.max(img.lng);
+            let lat = img.lat + panorama.lat_offset;
+            let lon = img.lng + panorama.lon_offset;
+            min_lat = min_lat.min(lat);
+            max_lat = max_lat.max(lat);
+            min_lon = min_lon.min(lon);
+            max_lon = max_lon.max(lon);
             coordinates.push(vec![img.lng, img.lat]);
         }
 

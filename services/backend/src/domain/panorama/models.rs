@@ -66,6 +66,8 @@ pub struct Panorama {
     pub transcode_status: Option<String>,
     pub video_timestamp: Option<f64>,
     pub gpx_offset: Option<f64>,
+    pub lat_offset: f64,
+    pub lon_offset: f64,
     pub processing_arn: Option<String>,
     pub processing_status: Option<String>,
     pub failure_reason: Option<String>,
@@ -96,6 +98,8 @@ impl Panorama {
             transcode_status: attrs.get_string("transcode_status")?,
             video_timestamp: attrs.get_f64("video_timestamp")?,
             gpx_offset: attrs.get_f64("gpx_offset")?,
+            lat_offset: attrs.get_f64("lat_offset")?.unwrap_or(0.0),
+            lon_offset: attrs.get_f64("lon_offset")?.unwrap_or(0.0),
             processing_arn: attrs.get_string("processing_arn")?,
             processing_status: attrs.get_string("processing_status")?,
             failure_reason: attrs.get_string("failure_reason")?,
@@ -129,6 +133,8 @@ impl Panorama {
         );
         attrs.insert("video_timestamp", Value::from(self.video_timestamp));
         attrs.insert("gpx_offset", Value::from(self.gpx_offset));
+        attrs.insert("lat_offset", Value::from(self.lat_offset));
+        attrs.insert("lon_offset", Value::from(self.lon_offset));
         attrs.insert("processing_arn", Value::from(self.processing_arn.clone()));
         attrs.insert(
             "processing_status",
@@ -154,6 +160,8 @@ pub struct UpdatePanorama {
     pub title: Option<String>,
     pub visible: Option<bool>,
     pub gpx_offset: Option<f64>,
+    pub lat_offset: Option<f64>,
+    pub lon_offset: Option<f64>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
