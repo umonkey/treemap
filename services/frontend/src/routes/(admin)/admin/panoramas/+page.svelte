@@ -19,7 +19,7 @@
 	<article>
 		<PageHeader
 			text="Manage Panoramas"
-			button={{ label: 'Add Panorama', link: '/admin/panoramas/add' }}
+			button={{ label: 'Add', link: '/admin/panoramas/add' }}
 		/>
 		<Breadcrumbs items={[{ label: 'Admin', href: '/admin' }, { label: 'Panoramas' }]} />
 
