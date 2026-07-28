@@ -2,6 +2,7 @@
 	import { createPanorama } from '$lib/api/panoramas';
 	import { goto } from '$app/navigation';
 	import Breadcrumbs from '$lib/components/admin/Breadcrumbs.svelte';
+	import PageHeader from '$lib/ui/header/PageHeader.svelte';
 	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
 	import TextInput from '$lib/ui/text-input/TextInput.svelte';
@@ -32,18 +33,15 @@
 </svelte:head>
 
 <AuthWrapper permission="pano:edit">
+	<PageHeader text="Add Panorama" />
+	<Breadcrumbs
+		items={[
+			{ label: 'Admin', href: '/admin' },
+			{ label: 'Panoramas', href: '/admin/panoramas' },
+			{ label: 'Add' }
+		]}
+	/>
 	<article>
-		<header>
-			<h1>Add Panorama</h1>
-			<Breadcrumbs
-				items={[
-					{ label: 'Admin', href: '/admin' },
-					{ label: 'Panoramas', href: '/admin/panoramas' },
-					{ label: 'Add' }
-				]}
-			/>
-		</header>
-
 		<Form onSubmit={handleSubmit}>
 			<TextInput
 				label="Title"

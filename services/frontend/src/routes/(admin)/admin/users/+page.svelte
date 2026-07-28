@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Breadcrumbs from '$lib/components/admin/Breadcrumbs.svelte';
+	import PageHeader from '$lib/ui/header/PageHeader.svelte';
 	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
 	import { pageState } from './page.svelte';
 
@@ -14,11 +15,8 @@
 
 <AuthWrapper permission="user:manage">
 	<article>
-		<header>
-			<h1>User List</h1>
-
-			<Breadcrumbs items={[{ label: 'Admin', href: '/admin' }, { label: 'Users' }]} />
-		</header>
+		<PageHeader text="User List" />
+		<Breadcrumbs items={[{ label: 'Admin', href: '/admin' }, { label: 'Users' }]} />
 		{#if pageState.loading}
 			<p>Loading...</p>
 		{:else if pageState.error}

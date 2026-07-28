@@ -26,7 +26,7 @@
 		background-color: rgba(128, 128, 128, 0.1);
 		padding: 0 0.5rem;
 		border-radius: 0.25rem;
-		margin-bottom: var(--pico-spacing);
+		margin-bottom: 1rem;
 	}
 
 	nav[aria-label='breadcrumb'] ul {

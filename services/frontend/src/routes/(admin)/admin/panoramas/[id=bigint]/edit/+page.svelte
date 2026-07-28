@@ -3,6 +3,7 @@
 	import { PageState } from './page.svelte.ts';
 	import { page } from '$app/state';
 	import Breadcrumbs from '$lib/components/admin/Breadcrumbs.svelte';
+	import PageHeader from '$lib/ui/header/PageHeader.svelte';
 	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
 	import TextInput from '$lib/ui/text-input/TextInput.svelte';
@@ -24,19 +25,16 @@
 </svelte:head>
 
 <AuthWrapper permission="pano:edit">
+	<PageHeader text={`Edit Panorama: ${pageState.panorama?.title || id}`} />
+	<Breadcrumbs
+		items={[
+			{ label: 'Admin', href: '/admin' },
+			{ label: 'Panoramas', href: '/admin/panoramas' },
+			{ label: id, href: `/admin/panoramas/${id}` },
+			{ label: 'Edit' }
+		]}
+	/>
 	<article>
-		<header>
-			<h1>Edit Panorama: {pageState.panorama?.title || id}</h1>
-			<Breadcrumbs
-				items={[
-					{ label: 'Admin', href: '/admin' },
-					{ label: 'Panoramas', href: '/admin/panoramas' },
-					{ label: id, href: `/admin/panoramas/${id}` },
-					{ label: 'Edit' }
-				]}
-			/>
-		</header>
-
 		{#if pageState.error}
 			<p class="error">Error: {pageState.error.description}</p>
 		{:else if pageState.isLoading}

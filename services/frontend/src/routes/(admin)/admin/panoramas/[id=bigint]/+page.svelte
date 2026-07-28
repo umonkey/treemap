@@ -4,9 +4,8 @@
 	import { page } from '$app/state';
 	import { formatDateTimeISO } from '$lib/utils/strings';
 	import Breadcrumbs from '$lib/components/admin/Breadcrumbs.svelte';
+	import PageHeader from '$lib/ui/header/PageHeader.svelte';
 	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
-	import Button from '$lib/ui/button/Button.svelte';
-	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import VideoUploader from './VideoUploader.svelte';
 	import TrackUploader from './TrackUploader.svelte';
 	import VideoSync from './VideoSync.svelte';
@@ -24,16 +23,17 @@
 </svelte:head>
 
 <AuthWrapper permission="pano:edit">
-	<header>
-		<h1>Panorama: {pageState.panorama?.title || id}</h1>
-		<Breadcrumbs
-			items={[
-				{ label: 'Admin', href: '/admin' },
-				{ label: 'Panoramas', href: '/admin/panoramas' },
-				{ label: id }
-			]}
-		/>
-	</header>
+	<PageHeader
+		text={pageState.panorama?.title || id}
+		button={{ label: 'Edit', link: `/admin/panoramas/${id}/edit` }}
+	/>
+	<Breadcrumbs
+		items={[
+			{ label: 'Admin', href: '/admin' },
+			{ label: 'Panoramas', href: '/admin/panoramas' },
+			{ label: id }
+		]}
+	/>
 
 	<article>
 		{#if pageState.error}
@@ -86,11 +86,6 @@
 				<dt>Video Timestamp</dt>
 				<dd>{pageState.panorama.video_timestamp ?? 'N/A'}</dd>
 			</dl>
-
-			<Buttons>
-				<Button link="/admin/panoramas/{id}/edit">Edit Panorama</Button>
-				<Button link="/admin/panoramas" type="cancel">Back to List</Button>
-			</Buttons>
 
 			{#if !pageState.panorama.source_video_path}
 				<VideoUploader panoramaId={id} onUploadSuccess={() => pageState.reload(id)} />
