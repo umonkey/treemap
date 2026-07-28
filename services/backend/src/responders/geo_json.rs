@@ -1,5 +1,6 @@
 use crate::domain::alert::Alert;
 use crate::domain::mapillary::{MapillaryImage, MapillarySequence};
+use crate::domain::panorama::{Panorama, PanoramaImage};
 use crate::domain::tree::Tree;
 use crate::utils::get_timestamp;
 use actix_web::HttpResponse;
@@ -89,6 +90,7 @@ pub fn respond_with_alerts(alerts: &[Alert], days: u64) -> HttpResponse {
         .json(collection)
 }
 
+#[allow(dead_code)]
 pub fn respond_with_mapillary(
     images: &[MapillaryImage],
     sequences: &[MapillarySequence],
@@ -126,6 +128,59 @@ pub fn respond_with_mapillary(
                 "id": seq.id.clone(),
                 "captured_at": seq.captured_at,
                 "image_count": seq.image_count,
+                "kind": "sequence"
+            }
+        }));
+    }
+
+    let collection = json!({
+        "type": "FeatureCollection",
+        "features": features
+    });
+
+    HttpResponse::Ok()
+        .content_type("application/geo+json")
+        .json(collection)
+}
+
+pub fn respond_with_panoramas(
+    images: &[(PanoramaImage, i64)],
+    panoramas: &[Panorama],
+) -> HttpResponse {
+    let mut features = Vec::new();
+
+    for (img, created_at) in images {
+        features.push(json!({
+            "type": "Feature",
+            "id": img.id.to_string(),
+            "geometry": {
+                "type": "Point",
+                "coordinates": [img.lng, img.lat]
+            },
+            "properties": {
+                "id": img.id.to_string(),
+                "sequence_id": img.panorama_id.to_string(),
+                "captured_at": *created_at,
+                "compass_angle": img.heading,
+                "kind": "image"
+            }
+        }));
+    }
+
+    for pan in panoramas {
+        let coords: Value =
+            serde_json::from_str(&pan.points_json.clone().unwrap_or_default()).unwrap_or(json!([]));
+        features.push(json!({
+            "type": "Feature",
+            "id": pan.id.to_string(),
+            "geometry": {
+                "type": "LineString",
+                "coordinates": coords
+            },
+            "properties": {
+                "id": pan.id.to_string(),
+                "captured_at": pan.created_at,
+                "image_count": pan.image_count,
                 "kind": "sequence"
             }
         }));

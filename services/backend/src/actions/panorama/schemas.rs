@@ -56,6 +56,18 @@ pub struct TrackPoint {
     pub timestamp: String,
 }
 
+#[derive(Debug, Deserialize)]
+pub struct GetPanoramasGeoJSONRequest {
+    pub n: f64,
+    pub e: f64,
+    pub s: f64,
+    pub w: f64,
+    #[serde(default)]
+    pub points: bool,
+    #[serde(default)]
+    pub lines: bool,
+}
+
 impl From<Panorama> for PanoramaRead {
     fn from(p: Panorama) -> Self {
         Self {

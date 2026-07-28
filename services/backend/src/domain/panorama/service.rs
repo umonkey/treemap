@@ -1,5 +1,6 @@
-use super::models::{CreatePanorama, Panorama, PanoramaStatus, UpdatePanorama};
+use super::models::{CreatePanorama, Panorama, PanoramaImage, PanoramaStatus, UpdatePanorama};
 use super::repository::PanoramaRepository;
+use crate::domain::tree::Bounds;
 use crate::infra::batch::BatchClient;
 use crate::infra::queue::Queue;
 use crate::infra::storage::{CompletedPart, PanoramaBucket, PanoramaSourceBucket};
@@ -21,6 +22,14 @@ pub struct PanoramaService {
 impl PanoramaService {
     pub async fn get_all_panoramas(&self) -> Result<Vec<Panorama>> {
         self.repo.all().await
+    }
+
+    pub async fn get_panoramas_by_bounds(&self, bounds: Bounds) -> Result<Vec<Panorama>> {
+        self.repo.find_by_bounds(bounds).await
+    }
+
+    pub async fn get_images_by_bounds(&self, bounds: Bounds) -> Result<Vec<(PanoramaImage, i64)>> {
+        self.repo.find_images_by_bounds(bounds).await
     }
 
     pub async fn get_panorama(&self, id: u64) -> Result<Panorama> {

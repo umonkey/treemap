@@ -1,12 +1,13 @@
 use super::schemas::{
-    CompleteMultipartRequest, MultipartUploadResponse, PanoramaRead, StartMultipartRequest,
-    TrackPoint, UploadUrlResponse, WebVideoUrlResponse,
+    CompleteMultipartRequest, GetPanoramasGeoJSONRequest, MultipartUploadResponse, PanoramaRead,
+    StartMultipartRequest, TrackPoint, UploadUrlResponse, WebVideoUrlResponse,
 };
 use crate::domain::panorama::{CreatePanorama, PanoramaService, UpdatePanorama};
+use crate::domain::tree::Bounds;
 use crate::services::app::{PanoEdit, RequirePermission};
 use crate::services::Injected;
 use crate::types::*;
-use actix_web::web::{Json, Path};
+use actix_web::web::{Json, Path, Query};
 use actix_web::{get, patch, post, HttpResponse};
 
 #[get("")]
@@ -162,4 +163,31 @@ pub async fn get_panorama_track_action(
     }
 
     Ok(Json(track_points))
+}
+
+#[get("/geo.json")]
+pub async fn get_panoramas_geo_json_action(
+    service: Injected<PanoramaService>,
+    query: Query<GetPanoramasGeoJSONRequest>,
+) -> Result<HttpResponse> {
+    let bounds = Bounds {
+        n: query.n,
+        e: query.e,
+        s: query.s,
+        w: query.w,
+    };
+
+    let mut images = Vec::new();
+    if query.points {
+        images = service.get_images_by_bounds(bounds.clone()).await?;
+    }
+
+    let mut panoramas = Vec::new();
+    if query.lines {
+        panoramas = service.get_panoramas_by_bounds(bounds).await?;
+    }
+
+    Ok(crate::responders::geo_json::respond_with_panoramas(
+        &images, &panoramas,
+    ))
 }

@@ -47,6 +47,7 @@ impl MapillaryRepository {
         Ok(())
     }
 
+    #[allow(dead_code)]
     pub async fn find_images_by_bounds(&self, bounds: Bounds) -> Result<Vec<MapillaryImage>> {
         let sql = format!(
             "SELECT i.*, s.lat_offset, s.lon_offset FROM `{}` i INNER JOIN `{}` s ON i.sequence_id = s.id WHERE i.`lat` <= ? AND i.lat >= ? AND i.lon <= ? AND i.lon >= ? AND s.hidden = 0",
@@ -178,6 +179,7 @@ impl MapillaryRepository {
         Ok(())
     }
 
+    #[allow(dead_code)]
     pub async fn find_sequences_by_bounds(&self, bounds: Bounds) -> Result<Vec<MapillarySequence>> {
         // Query sequences whose bounding box intersects with the requested bounds.
         let sql = format!(

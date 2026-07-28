@@ -7,8 +7,10 @@ pub struct GetMapillaryRequest {
     pub s: f64,
     pub w: f64,
     #[serde(default)]
+    #[allow(dead_code)]
     pub lines: bool,
     #[serde(default)]
+    #[allow(dead_code)]
     pub points: bool,
 }
 

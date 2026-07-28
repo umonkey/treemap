@@ -106,10 +106,12 @@ impl MapillaryService {
         Ok(added)
     }
 
+    #[allow(dead_code)]
     pub async fn get_images_by_bounds(&self, bounds: Bounds) -> Result<Vec<MapillaryImage>> {
         self.repo.find_images_by_bounds(bounds).await
     }
 
+    #[allow(dead_code)]
     pub async fn get_sequences_by_bounds(&self, bounds: Bounds) -> Result<Vec<MapillarySequence>> {
         self.repo.find_sequences_by_bounds(bounds).await
     }

@@ -6,8 +6,7 @@ pub use actions::*;
 use actix_web::web;
 
 pub fn mapillary_router(cfg: &mut web::ServiceConfig) {
-    cfg.service(get_mapillary_geo_json_action)
-        .service(get_mapillary_hints_action)
+    cfg.service(get_mapillary_hints_action)
         .service(get_mapillary_sequences_action)
         .service(get_mapillary_sequence_action)
         .service(update_mapillary_sequence_action)

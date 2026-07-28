@@ -1,4 +1,4 @@
-import { getMapillaryGeoJSON } from '$lib/api/mapillary';
+import { getPanoramasGeoJSON } from '$lib/api/panoramas';
 import { mapBus } from '$lib/buses/mapBus';
 import { showError } from '$lib/errors';
 import { goto, routes } from '$lib/routes';
@@ -59,7 +59,7 @@ class PanoramicLayerState {
 		});
 
 		this.fetchDebouncer.run(() => {
-			getMapillaryGeoJSON(n, e, s, w, zoom >= 18, true)
+			getPanoramasGeoJSON(n, e, s, w, zoom >= 18, true)
 				.then(({ status, data }) => {
 					if (status === 200 && data) {
 						const collection = data as unknown as Collection;

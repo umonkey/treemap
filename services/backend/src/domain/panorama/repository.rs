@@ -1,4 +1,5 @@
 use super::models::{Panorama, PanoramaImage};
+use crate::domain::tree::Bounds;
 use crate::infra::database::{Database, DeleteQuery, InsertQuery, SelectQuery, UpdateQuery, Value};
 use crate::services::{Context, Injectable};
 use crate::types::*;
@@ -59,6 +60,48 @@ impl PanoramaRepository {
             .with_condition("panorama_id", Value::from(panorama_id as i64));
         let records = self.db.get_records(query).await?;
         records.iter().map(PanoramaImage::from_attributes).collect()
+    }
+
+    pub async fn find_by_bounds(&self, bounds: Bounds) -> Result<Vec<Panorama>> {
+        let sql = format!(
+            "SELECT * FROM `{}` WHERE `min_lat` <= ? AND `max_lat` >= ? AND `min_lon` <= ? AND `max_lon` >= ? AND `status` = 'SUCCESS' AND `visible` = 1",
+            TABLE
+        );
+
+        let params = &[
+            Value::from(bounds.n),
+            Value::from(bounds.s),
+            Value::from(bounds.e),
+            Value::from(bounds.w),
+        ];
+
+        let records = self.db.fetch_sql(&sql, params).await?;
+        records.iter().map(Panorama::from_attributes).collect()
+    }
+
+    pub async fn find_images_by_bounds(&self, bounds: Bounds) -> Result<Vec<(PanoramaImage, i64)>> {
+        let sql = format!(
+            "SELECT i.*, p.created_at FROM `{}` i INNER JOIN `{}` p ON i.panorama_id = p.id WHERE i.`lat` <= ? AND i.lat >= ? AND i.lng <= ? AND i.lng >= ? AND i.hidden = 0 AND p.status = 'SUCCESS' AND p.visible = 1",
+            IMAGES_TABLE, TABLE
+        );
+
+        let params = &[
+            Value::from(bounds.n),
+            Value::from(bounds.s),
+            Value::from(bounds.e),
+            Value::from(bounds.w),
+        ];
+
+        let records = self.db.fetch_sql(&sql, params).await?;
+        let mut res = Vec::new();
+
+        for record in records {
+            let img = PanoramaImage::from_attributes(&record)?;
+            let created_at = record.require_i64("created_at")?;
+            res.push((img, created_at));
+        }
+
+        Ok(res)
     }
 
     pub async fn transact(&self) -> Result<Self> {
