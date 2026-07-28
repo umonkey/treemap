@@ -1,7 +1,7 @@
 use super::schemas::{
-    CompleteMultipartRequest, GetPanoramasGeoJSONRequest, MultipartUploadResponse,
-    PanoramaImageRead, PanoramaRead, StartMultipartRequest, TrackPoint, UploadUrlResponse,
-    WebVideoUrlResponse,
+    CompleteMultipartRequest, GetPanoramaHintsRequest, GetPanoramasGeoJSONRequest,
+    MultipartUploadResponse, PanoramaImageRead, PanoramaRead, StartMultipartRequest, TrackPoint,
+    UploadUrlResponse, WebVideoUrlResponse,
 };
 use crate::domain::panorama::{CreatePanorama, PanoramaService, UpdatePanorama};
 use crate::domain::tree::Bounds;
@@ -201,4 +201,23 @@ pub async fn get_panoramas_geo_json_action(
     Ok(crate::responders::geo_json::respond_with_panoramas(
         &images, &panoramas,
     ))
+}
+
+#[get("/hints.json")]
+pub async fn get_panorama_hints_action(
+    service: Injected<PanoramaService>,
+    query: Query<GetPanoramaHintsRequest>,
+) -> Result<HttpResponse> {
+    let bounds = Bounds {
+        n: query.n,
+        e: query.e,
+        s: query.s,
+        w: query.w,
+    };
+
+    let geojson = service.get_tree_hints_geojson(bounds).await?;
+
+    Ok(HttpResponse::Ok()
+        .content_type("application/geo+json")
+        .json(geojson))
 }

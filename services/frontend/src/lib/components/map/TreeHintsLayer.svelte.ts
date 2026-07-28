@@ -1,4 +1,4 @@
-import { getMapillaryHints } from '$lib/api/mapillary';
+import { getPanoramasHints } from '$lib/api/panoramas';
 import { showError } from '$lib/errors';
 import { Debouncer } from '$lib/utils/debounce';
 import { panoBus } from '$lib/buses/panoBus';
@@ -40,7 +40,7 @@ class TreeHintsLayerState {
 		});
 
 		this.fetchDebouncer.run(() => {
-			getMapillaryHints(n, e, s, w)
+			getPanoramasHints(n, e, s, w)
 				.then(({ status, data }) => {
 					if (status === 200 && data) {
 						const collection = data as unknown as Collection;

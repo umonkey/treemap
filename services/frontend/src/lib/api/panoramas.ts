@@ -205,3 +205,19 @@ export interface PanoramaImage {
 export async function getPanoramasImage(id: string): Promise<IResponse<PanoramaImage>> {
 	return await request<PanoramaImage>('GET', `api/panoramas/images/${id}`);
 }
+
+export async function getPanoramasHints(
+	n: number,
+	e: number,
+	s: number,
+	w: number
+): Promise<IResponse<unknown>> {
+	const params = new URLSearchParams({
+		n: n.toString(),
+		e: e.toString(),
+		s: s.toString(),
+		w: w.toString()
+	});
+
+	return await request<unknown>('GET', `api/panoramas/hints.json?${params.toString()}`);
+}

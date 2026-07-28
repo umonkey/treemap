@@ -210,3 +210,29 @@ pub struct PanoramaImageSource {
     pub pitch: f64,
     pub roll: f64,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PanoramaHint {
+    pub image_id: u64,
+    pub angle: f64,
+    pub user_id: u64,
+}
+
+impl PanoramaHint {
+    pub fn from_attributes(attrs: &Attributes) -> crate::types::Result<Self> {
+        Ok(Self {
+            image_id: attrs.require_u64("image_id")?,
+            angle: attrs.require_f64("angle")?,
+            user_id: attrs.require_u64("user_id")?,
+        })
+    }
+
+    #[allow(dead_code)]
+    pub fn to_attributes(&self) -> Attributes {
+        let mut attrs = Attributes::default();
+        attrs.insert("image_id", Value::from(self.image_id as i64));
+        attrs.insert("angle", Value::from(self.angle));
+        attrs.insert("user_id", Value::from(self.user_id as i64));
+        attrs
+    }
+}

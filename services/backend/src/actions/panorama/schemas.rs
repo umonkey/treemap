@@ -79,6 +79,14 @@ pub struct GetPanoramasGeoJSONRequest {
     pub lines: bool,
 }
 
+#[derive(Debug, Deserialize)]
+pub struct GetPanoramaHintsRequest {
+    pub n: f64,
+    pub e: f64,
+    pub s: f64,
+    pub w: f64,
+}
+
 impl From<Panorama> for PanoramaRead {
     fn from(p: Panorama) -> Self {
         Self {

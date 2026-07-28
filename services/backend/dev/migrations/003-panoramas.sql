@@ -44,4 +44,11 @@ CREATE TABLE IF NOT EXISTS panoramas_images (
 
 CREATE INDEX IF NOT EXISTS panoramas_images_panorama_id ON panoramas_images (panorama_id);
 
+CREATE TABLE IF NOT EXISTS panoramas_hints (
+    `image_id` INT NOT NULL,
+    `angle` REAL NOT NULL,
+    `user_id` INT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS panoramas_hints_image_id ON panoramas_hints (image_id);
+
 COMMIT;

@@ -33,6 +33,55 @@ impl PanoramaService {
         self.repo.find_images_by_bounds(bounds).await
     }
 
+    pub async fn get_tree_hints_geojson(&self, bounds: Bounds) -> Result<serde_json::Value> {
+        let hints = self.repo.find_hints_with_location_by_bounds(bounds).await?;
+        let mut features = Vec::new();
+
+        for (hint, lat, lon, compass_angle) in hints {
+            let absolute_bearing = (compass_angle + hint.angle + 360.0) % 360.0;
+            let bearing_rad = absolute_bearing.to_radians();
+
+            // 20 meters approximation
+            let dist_m: f64 = 20.0;
+            let earth_radius_m: f64 = 6_371_000.0;
+            let d_r: f64 = dist_m / earth_radius_m;
+
+            let lat_rad = lat.to_radians();
+            let lon_rad = lon.to_radians();
+
+            let end_lat_rad =
+                (lat_rad.sin() * d_r.cos() + lat_rad.cos() * d_r.sin() * bearing_rad.cos()).asin();
+
+            let end_lon_rad = lon_rad
+                + (bearing_rad.sin() * d_r.sin() * lat_rad.cos())
+                    .atan2(d_r.cos() - lat_rad.sin() * end_lat_rad.sin());
+
+            let end_lat = end_lat_rad.to_degrees();
+            let end_lon = end_lon_rad.to_degrees();
+
+            features.push(json!({
+                "type": "Feature",
+                "geometry": {
+                    "type": "LineString",
+                    "coordinates": [
+                        [lon, lat],
+                        [end_lon, end_lat]
+                    ]
+                },
+                "properties": {
+                    "image_id": hint.image_id.to_string(),
+                    "user_id": hint.user_id,
+                    "kind": "hint"
+                }
+            }));
+        }
+
+        Ok(json!({
+            "type": "FeatureCollection",
+            "features": features
+        }))
+    }
+
     pub async fn get_panorama(&self, id: u64) -> Result<Panorama> {
         self.repo.get(id).await?.ok_or(Error::PanoramaNotFound)
     }

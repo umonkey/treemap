@@ -1,22 +1,6 @@
 import type { IResponse } from '$lib/types';
 import { getAuthHeaders, request } from './client';
 
-export async function getMapillaryHints(
-	n: number,
-	e: number,
-	s: number,
-	w: number
-): Promise<IResponse<unknown>> {
-	const params = new URLSearchParams({
-		n: n.toString(),
-		e: e.toString(),
-		s: s.toString(),
-		w: w.toString()
-	});
-
-	return await request<unknown>('GET', `v1/mapillary/hints.json?${params.toString()}`);
-}
-
 export interface MapillaryTree {
 	image_id: string;
 	angle: number;
