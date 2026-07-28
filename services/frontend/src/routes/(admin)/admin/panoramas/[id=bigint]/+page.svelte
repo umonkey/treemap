@@ -54,6 +54,11 @@
 				<dt>Status</dt>
 				<dd>{pageState.panorama.status}</dd>
 
+				{#if pageState.panorama.failure_reason}
+					<dt>Failure Reason</dt>
+					<dd class="error">{pageState.panorama.failure_reason}</dd>
+				{/if}
+
 				<dt>Visible</dt>
 				<dd>{pageState.panorama.visible ? 'Yes' : 'No'}</dd>
 
@@ -91,15 +96,20 @@
 				<VideoUploader panoramaId={id} onUploadSuccess={() => pageState.reload(id)} />
 			{:else if !pageState.panorama.gpx_path}
 				<TrackUploader panoramaId={id} onUploadSuccess={() => pageState.reload(id)} />
-			{:else if pageState.panorama.transcode_status === 'FAILED'}
-				<p>We could not process the uploaded file. Please contact the tech support.</p>
-			{:else if pageState.panorama.transcode_status !== 'SUCCEEDED'}
+			{:else if pageState.panorama.status === 'FAILURE'}
+				<p class="error">
+					We could not process the uploaded file: {pageState.panorama.failure_reason ||
+						'Please contact technical support.'}
+				</p>
+			{:else if pageState.panorama.status === 'NEEDS_TRANSCODING' || pageState.panorama.status === 'NEEDS_TRANSCODING_FINISH'}
 				<p>We are processing the uploaded video file, please wait.</p>
 				<p>You will get an email when we're ready for next steps.</p>
-			{:else if !pageState.panorama.gpx_offset}
+			{:else if pageState.panorama.status === 'NEEDS_SYNC'}
 				<VideoSync panoramaId={id} {pageState} />
-			{:else}
-				<p>Next steps?</p>
+			{:else if pageState.panorama.status === 'NEEDS_PROCESSING' || pageState.panorama.status === 'NEEDS_PROCESSING_FINISH'}
+				<p>Processing panorama data, please wait...</p>
+			{:else if pageState.panorama.status === 'SUCCESS'}
+				<p>Panorama processing completed successfully.</p>
 			{/if}
 		{/if}
 	</article>

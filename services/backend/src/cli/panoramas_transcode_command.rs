@@ -29,7 +29,7 @@ pub async fn panoramas_transcode_command() {
         .expect("Error creating panorama service.");
 
     service
-        .transcode_panorama(panorama_id)
+        .start_transcoding(panorama_id)
         .await
         .expect("Error transcoding panorama.");
 }

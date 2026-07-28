@@ -87,7 +87,7 @@ impl QueueConsumer {
             }
 
             Ok(Some(QueueCommand::TranscodePanorama(id))) => {
-                self.panoramas.transcode_panorama(id).await?;
+                self.panoramas.start_transcoding(id).await?;
             }
 
             Ok(None) => {

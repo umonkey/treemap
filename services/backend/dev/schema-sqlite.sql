@@ -299,7 +299,7 @@ CREATE TABLE IF NOT EXISTS panoramas (
     `created_at` INT NOT NULL,
     `created_by` INT NOT NULL,
     `image_count` INT NOT NULL DEFAULT 0,
-    `status` TEXT NOT NULL DEFAULT 'draft',
+    `status` TEXT NOT NULL DEFAULT 'NEEDS_FILES',
     `title` TEXT NOT NULL,
     `visible` INT NOT NULL DEFAULT 0,
     `source_video_path` TEXT NULL,
@@ -309,6 +309,7 @@ CREATE TABLE IF NOT EXISTS panoramas (
     `transcode_status` TEXT NULL,
     `video_timestamp` REAL NULL,
     `gpx_offset` REAL NULL,
+    `failure_reason` TEXT NULL,
     PRIMARY KEY(`id`)
 );
 

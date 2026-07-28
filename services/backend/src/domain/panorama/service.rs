@@ -1,4 +1,4 @@
-use super::models::{CreatePanorama, Panorama, UpdatePanorama};
+use super::models::{CreatePanorama, Panorama, PanoramaStatus, UpdatePanorama};
 use super::repository::PanoramaRepository;
 use crate::infra::batch::BatchClient;
 use crate::infra::queue::Queue;
@@ -31,7 +31,7 @@ impl PanoramaService {
             created_at: get_timestamp() as i64,
             created_by: user_id,
             image_count: 0,
-            status: "draft".to_string(),
+            status: PanoramaStatus::NeedsFiles,
             title: data.title,
             visible: false,
             source_video_path: None,
@@ -41,6 +41,7 @@ impl PanoramaService {
             transcode_status: None,
             video_timestamp: None,
             gpx_offset: None,
+            failure_reason: None,
         };
 
         self.repo.add(&panorama).await?;
@@ -60,6 +61,9 @@ impl PanoramaService {
 
         if let Some(gpx_offset) = data.gpx_offset {
             panorama.gpx_offset = Some(gpx_offset);
+            if panorama.status == PanoramaStatus::NeedsSync {
+                panorama.status = PanoramaStatus::NeedsProcessing;
+            }
         }
 
         self.repo.update(id, &panorama).await?;
@@ -74,6 +78,12 @@ impl PanoramaService {
 
         let mut panorama = self.get_panorama(id).await?;
         panorama.source_video_path = Some(key);
+        if panorama.source_video_path.is_some()
+            && panorama.gpx_path.is_some()
+            && panorama.status == PanoramaStatus::NeedsFiles
+        {
+            panorama.status = PanoramaStatus::NeedsTranscoding;
+        }
         self.repo.update(id, &panorama).await?;
 
         Ok(panorama)
@@ -105,6 +115,12 @@ impl PanoramaService {
 
         let mut panorama = self.get_panorama(id).await?;
         panorama.gpx_path = Some(key);
+        if panorama.source_video_path.is_some()
+            && panorama.gpx_path.is_some()
+            && panorama.status == PanoramaStatus::NeedsFiles
+        {
+            panorama.status = PanoramaStatus::NeedsTranscoding;
+        }
         self.repo.update(id, &panorama).await?;
 
         Ok(panorama)
@@ -149,9 +165,22 @@ impl PanoramaService {
         Ok(panorama)
     }
 
-    pub async fn transcode_panorama(&self, id: u64) -> Result<Panorama> {
+    pub async fn start_transcoding(&self, id: u64) -> Result<Panorama> {
         let mut panorama = self.get_panorama(id).await?;
-        if panorama.transcode_arn.is_some() {
+
+        if panorama.status != PanoramaStatus::NeedsTranscoding {
+            log::warn!(
+                "Cannot start transcoding for panorama {}: status is {:?}",
+                id,
+                panorama.status
+            );
+            return Ok(panorama);
+        }
+
+        if let Some(arn) = &panorama.transcode_arn {
+            log::warn!("Panorama {} already has a transcode ARN: {}", id, arn);
+            panorama.status = PanoramaStatus::NeedsTranscodingFinish;
+            self.repo.update(id, &panorama).await?;
             return Ok(panorama);
         }
 
@@ -166,44 +195,97 @@ impl PanoramaService {
             .batch
             .transcode(&job_name, &input_path, &output_path)
             .await?;
+
+        log::info!("Assigned transcode ARN {} to panorama {}", arn, id);
+
         panorama.transcode_arn = Some(arn);
         panorama.transcode_status = Some("SUBMITTED".to_string());
+        panorama.status = PanoramaStatus::NeedsTranscodingFinish;
+
         self.repo.update(id, &panorama).await?;
 
         Ok(panorama)
     }
 
+    /// Checks the transcoding job and updates the panorama status as needed.
+    pub async fn check_transcoding_status(&self, panorama: &mut Panorama) -> Result<()> {
+        let arn = match &panorama.transcode_arn {
+            Some(arn) => arn,
+            None => {
+                return Err(Error::BadRequestMessage(
+                    "Transcode ARN is missing".to_string(),
+                ));
+            }
+        };
+
+        let status = panorama.transcode_status.as_deref().unwrap_or("");
+
+        if status == "SUCCEEDED" || status == "FAILED" {
+            return Ok(());
+        }
+
+        let new_status = self.batch.get_transcode_status(arn).await.map_err(|e| {
+            log::error!("Error getting transcode status for {arn}: {e}");
+            e
+        })?;
+
+        if new_status == status {
+            return Ok(());
+        }
+
+        log::info!(
+            "Panorama {} transcode status changed from {} to {}",
+            panorama.id,
+            status,
+            new_status
+        );
+
+        panorama.transcode_status = Some(new_status.clone());
+
+        if new_status == "SUCCEEDED" {
+            panorama.web_video_path = Some(format!("{}/video-360p.mp4", panorama.id));
+            panorama.status = PanoramaStatus::NeedsSync;
+        }
+
+        self.repo.update(panorama.id, panorama).await?;
+
+        if new_status == "FAILED" {
+            return Err(Error::BadRequestMessage(
+                "Transcoding job failed".to_string(),
+            ));
+        }
+
+        Ok(())
+    }
+
+    /// Find all panoramas and see if any of them needs work.
     pub async fn process_draft_panoramas(&self) -> Result<()> {
         let panoramas = self.repo.all().await?;
+
         for mut panorama in panoramas {
-            if let Some(arn) = &panorama.transcode_arn {
-                let status = panorama.transcode_status.as_deref().unwrap_or("");
-                if status != "SUCCEEDED" && status != "FAILED" {
-                    match self.batch.get_transcode_status(arn).await {
-                        Ok(new_status) => {
-                            if new_status != status {
-                                log::info!(
-                                    "Panorama {} transcode status changed from {} to {}",
-                                    panorama.id,
-                                    status,
-                                    new_status
-                                );
-                                panorama.transcode_status = Some(new_status.clone());
-                                if new_status == "SUCCEEDED" {
-                                    panorama.web_video_path =
-                                        Some(format!("{id}/video-360p.mp4", id = panorama.id));
-                                    panorama.status = "processed".to_string();
-                                }
-                                self.repo.update(panorama.id, &panorama).await?;
-                            }
-                        }
-                        Err(e) => {
-                            log::error!("Error getting transcode status for {arn}: {e}");
-                        }
-                    }
+            let result = match panorama.status {
+                PanoramaStatus::NeedsTranscoding => {
+                    self.start_transcoding(panorama.id).await.map(|_| ())
+                }
+                PanoramaStatus::NeedsTranscodingFinish => {
+                    self.check_transcoding_status(&mut panorama).await
+                }
+                _ => Ok(()),
+            };
+
+            if let Err(e) = result {
+                log::error!("Error processing panorama {}: {e}", panorama.id);
+                panorama.status = PanoramaStatus::Failure;
+                panorama.failure_reason = Some(e.to_string());
+                if let Err(update_err) = self.repo.update(panorama.id, &panorama).await {
+                    log::error!(
+                        "Failed to update panorama {} failure status: {update_err}",
+                        panorama.id
+                    );
                 }
             }
         }
+
         Ok(())
     }
 }

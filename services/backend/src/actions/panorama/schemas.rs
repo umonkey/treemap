@@ -1,4 +1,4 @@
-use crate::domain::panorama::Panorama;
+use crate::domain::panorama::{Panorama, PanoramaStatus};
 use crate::infra::storage::CompletedPart;
 use serde::{Deserialize, Serialize};
 
@@ -8,7 +8,7 @@ pub struct PanoramaRead {
     pub created_at: i64,
     pub created_by: String,
     pub image_count: i32,
-    pub status: String,
+    pub status: PanoramaStatus,
     pub title: String,
     pub visible: bool,
     pub source_video_path: Option<String>,
@@ -18,6 +18,7 @@ pub struct PanoramaRead {
     pub transcode_status: Option<String>,
     pub video_timestamp: Option<f64>,
     pub gpx_offset: Option<f64>,
+    pub failure_reason: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -72,6 +73,7 @@ impl From<Panorama> for PanoramaRead {
             transcode_status: p.transcode_status,
             video_timestamp: p.video_timestamp,
             gpx_offset: p.gpx_offset,
+            failure_reason: p.failure_reason,
         }
     }
 }

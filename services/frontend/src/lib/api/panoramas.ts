@@ -1,12 +1,22 @@
 import type { IResponse } from '$lib/types';
 import { getAuthHeaders, request } from './client';
 
+export type PanoramaStatus =
+	| 'NEEDS_FILES'
+	| 'NEEDS_TRANSCODING'
+	| 'NEEDS_TRANSCODING_FINISH'
+	| 'NEEDS_SYNC'
+	| 'NEEDS_PROCESSING'
+	| 'NEEDS_PROCESSING_FINISH'
+	| 'SUCCESS'
+	| 'FAILURE';
+
 export interface Panorama {
 	id: string;
 	created_at: number;
 	created_by: string;
 	image_count: number;
-	status: string;
+	status: PanoramaStatus;
 	title: string;
 	visible: boolean;
 	source_video_path?: string | null;
@@ -16,6 +26,7 @@ export interface Panorama {
 	transcode_status?: string | null;
 	video_timestamp?: number | null;
 	gpx_offset?: number | null;
+	failure_reason?: string | null;
 	has_video?: boolean;
 	has_track?: boolean;
 	has_web_video?: boolean;

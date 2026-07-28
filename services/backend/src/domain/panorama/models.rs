@@ -1,5 +1,54 @@
 use crate::infra::database::{Attributes, Value};
 use serde::{Deserialize, Serialize};
+use std::fmt;
+use std::str::FromStr;
+
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum PanoramaStatus {
+    NeedsFiles,
+    NeedsTranscoding,
+    NeedsTranscodingFinish,
+    NeedsSync,
+    NeedsProcessing,
+    NeedsProcessingFinish,
+    Success,
+    Failure,
+}
+
+impl fmt::Display for PanoramaStatus {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let s = match self {
+            Self::NeedsFiles => "NEEDS_FILES",
+            Self::NeedsTranscoding => "NEEDS_TRANSCODING",
+            Self::NeedsTranscodingFinish => "NEEDS_TRANSCODING_FINISH",
+            Self::NeedsSync => "NEEDS_SYNC",
+            Self::NeedsProcessing => "NEEDS_PROCESSING",
+            Self::NeedsProcessingFinish => "NEEDS_PROCESSING_FINISH",
+            Self::Success => "SUCCESS",
+            Self::Failure => "FAILURE",
+        };
+        write!(f, "{}", s)
+    }
+}
+
+impl FromStr for PanoramaStatus {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_uppercase().as_str() {
+            "NEEDS_FILES" | "DRAFT" => Ok(Self::NeedsFiles),
+            "NEEDS_TRANSCODING" => Ok(Self::NeedsTranscoding),
+            "NEEDS_TRANSCODING_FINISH" => Ok(Self::NeedsTranscodingFinish),
+            "NEEDS_SYNC" => Ok(Self::NeedsSync),
+            "NEEDS_PROCESSING" => Ok(Self::NeedsProcessing),
+            "NEEDS_PROCESSING_FINISH" => Ok(Self::NeedsProcessingFinish),
+            "SUCCESS" | "PROCESSED" => Ok(Self::Success),
+            "FAILURE" => Ok(Self::Failure),
+            _ => Err(format!("Invalid panorama status: {s}")),
+        }
+    }
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Panorama {
@@ -7,7 +56,7 @@ pub struct Panorama {
     pub created_at: i64,
     pub created_by: u64,
     pub image_count: i32,
-    pub status: String,
+    pub status: PanoramaStatus,
     pub title: String,
     pub visible: bool,
     pub source_video_path: Option<String>,
@@ -17,6 +66,7 @@ pub struct Panorama {
     pub transcode_status: Option<String>,
     pub video_timestamp: Option<f64>,
     pub gpx_offset: Option<f64>,
+    pub failure_reason: Option<String>,
 }
 
 impl Panorama {
@@ -26,7 +76,10 @@ impl Panorama {
             created_at: attrs.require_i64("created_at")?,
             created_by: attrs.require_u64("created_by")?,
             image_count: attrs.require_u64("image_count")? as i32,
-            status: attrs.require_string("status")?,
+            status: attrs
+                .require_string("status")?
+                .parse()
+                .map_err(crate::types::Error::DatabaseStructure)?,
             title: attrs.require_string("title")?,
             visible: attrs.get_bool("visible")?.unwrap_or(false),
             source_video_path: attrs.get_string("source_video_path")?,
@@ -36,6 +89,7 @@ impl Panorama {
             transcode_status: attrs.get_string("transcode_status")?,
             video_timestamp: attrs.get_f64("video_timestamp")?,
             gpx_offset: attrs.get_f64("gpx_offset")?,
+            failure_reason: attrs.get_string("failure_reason")?,
         })
     }
 
@@ -45,7 +99,7 @@ impl Panorama {
         attrs.insert("created_at", Value::from(self.created_at));
         attrs.insert("created_by", Value::from(self.created_by as i64));
         attrs.insert("image_count", Value::from(self.image_count as i64));
-        attrs.insert("status", Value::from(self.status.clone()));
+        attrs.insert("status", Value::from(self.status.to_string()));
         attrs.insert("title", Value::from(self.title.clone()));
         attrs.insert("visible", Value::from(self.visible));
         attrs.insert(
@@ -61,6 +115,7 @@ impl Panorama {
         );
         attrs.insert("video_timestamp", Value::from(self.video_timestamp));
         attrs.insert("gpx_offset", Value::from(self.gpx_offset));
+        attrs.insert("failure_reason", Value::from(self.failure_reason.clone()));
         attrs
     }
 }
