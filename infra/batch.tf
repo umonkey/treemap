@@ -1,3 +1,20 @@
+# Set up AWS Batch processing pipelines.
+#
+# We have two types of jobs:
+#
+# (1) The transcoder job uses ffmpeg to downsample huge videos into 360p,
+# normally takes up to 10 minutes, and doesn't need much resources, as
+# ffmpeg cannot be parallelized heavily.
+#
+# (2) The extractor job runs the full OpenSfM pipeline, see `services/extractor`
+# for details, the entry point is `bin/process`.  This normally takes 30 to 60 minutes.
+#
+# We don't use spot instances as the jobs are rather long running and are getting
+# killed frequently and we ended up spending more on retries that with on-demand mode.
+#
+# Note that we almost never run multiple jobs in parallel, so no point in requesting
+# nodes larger than we actually need.
+
 data "aws_vpc" "default" {
   default = true
 }
@@ -45,8 +62,8 @@ resource "aws_batch_compute_environment" "treemap" {
   service_role = aws_iam_role.aws_batch_service_role.arn
 
   compute_resources {
-    type                = "SPOT"
-    allocation_strategy = "SPOT_PRICE_CAPACITY_OPTIMIZED"
+    type                = "EC2"
+    allocation_strategy = "BEST_FIT_PROGRESSIVE"
     instance_type       = var.batch_instance_type
     max_vcpus           = 256
     min_vcpus           = 0
@@ -82,10 +99,6 @@ resource "aws_batch_job_definition" "transcoder" {
 
   retry_strategy {
     attempts = 3
-    evaluate_on_exit {
-      on_status_reason = "Host EC2 terminated"
-      action           = "RETRY"
-    }
   }
 
   container_properties = jsonencode({
@@ -109,10 +122,6 @@ resource "aws_batch_job_definition" "extractor" {
 
   retry_strategy {
     attempts = 5
-    evaluate_on_exit {
-      on_status_reason = "Host EC2 terminated"
-      action           = "RETRY"
-    }
   }
 
   container_properties = jsonencode({
@@ -123,7 +132,7 @@ resource "aws_batch_job_definition" "extractor" {
         type  = "VCPU"
       },
       {
-        value = "16384"
+        value = "15360"
         type  = "MEMORY"
       }
     ]
