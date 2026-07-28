@@ -7,6 +7,7 @@ use crate::services::queue_consumer::TranscodePanorama;
 use crate::services::{Context, Injectable};
 use crate::types::*;
 use crate::utils::{get_timestamp, get_unique_id};
+use serde_json::json;
 use std::sync::Arc;
 
 pub struct PanoramaService {
@@ -45,6 +46,11 @@ impl PanoramaService {
             processing_arn: None,
             processing_status: None,
             failure_reason: None,
+            min_lat: None,
+            max_lat: None,
+            min_lon: None,
+            max_lon: None,
+            points_json: None,
         };
 
         self.repo.add(&panorama).await?;
@@ -338,6 +344,7 @@ impl PanoramaService {
 
         if new_status == "SUCCEEDED" {
             self.pull_panoramas_images(panorama).await?;
+            self.update_panorama_stats(panorama).await?;
 
             panorama.status = PanoramaStatus::Success;
 
@@ -391,6 +398,41 @@ impl PanoramaService {
         repo.commit().await?;
 
         panorama.image_count = images.len() as i32;
+
+        Ok(())
+    }
+
+    async fn update_panorama_stats(&self, panorama: &mut Panorama) -> Result<()> {
+        let images = self.repo.get_images(panorama.id).await?;
+
+        if images.is_empty() {
+            panorama.min_lat = None;
+            panorama.max_lat = None;
+            panorama.min_lon = None;
+            panorama.max_lon = None;
+            panorama.points_json = None;
+            return Ok(());
+        }
+
+        let mut min_lat = f64::MAX;
+        let mut max_lat = f64::MIN;
+        let mut min_lon = f64::MAX;
+        let mut max_lon = f64::MIN;
+        let mut coordinates = Vec::new();
+
+        for img in &images {
+            min_lat = min_lat.min(img.lat);
+            max_lat = max_lat.max(img.lat);
+            min_lon = min_lon.min(img.lng);
+            max_lon = max_lon.max(img.lng);
+            coordinates.push(vec![img.lng, img.lat]);
+        }
+
+        panorama.min_lat = Some(min_lat);
+        panorama.max_lat = Some(max_lat);
+        panorama.min_lon = Some(min_lon);
+        panorama.max_lon = Some(max_lon);
+        panorama.points_json = Some(json!(coordinates).to_string());
 
         Ok(())
     }

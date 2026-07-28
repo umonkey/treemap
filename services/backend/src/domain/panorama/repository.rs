@@ -54,6 +54,13 @@ impl PanoramaRepository {
         Ok(())
     }
 
+    pub async fn get_images(&self, panorama_id: u64) -> Result<Vec<PanoramaImage>> {
+        let query = SelectQuery::new(IMAGES_TABLE)
+            .with_condition("panorama_id", Value::from(panorama_id as i64));
+        let records = self.db.get_records(query).await?;
+        records.iter().map(PanoramaImage::from_attributes).collect()
+    }
+
     pub async fn transact(&self) -> Result<Self> {
         let db = Arc::new(self.db.transact().await?);
         Ok(Self { db })

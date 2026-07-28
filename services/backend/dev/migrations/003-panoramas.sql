@@ -18,6 +18,11 @@ CREATE TABLE IF NOT EXISTS panoramas (
     `processing_arn` TEXT NULL,
     `processing_status` TEXT NULL,
     `failure_reason` TEXT NULL,
+    `min_lat` REAL NULL,
+    `max_lat` REAL NULL,
+    `min_lon` REAL NULL,
+    `max_lon` REAL NULL,
+    `points_json` TEXT NULL,
     PRIMARY KEY(`id`)
 );
 
