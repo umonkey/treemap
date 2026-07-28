@@ -214,6 +214,7 @@ impl PanoramaSourceBucket {
 
 pub struct PanoramaBucket {
     storage: Bucket,
+    base_url: Option<String>,
 }
 
 #[allow(dead_code)]
@@ -223,9 +224,11 @@ impl PanoramaBucket {
             .panoramas_bucket
             .clone()
             .unwrap_or_else(|| "treemap-panoramas".to_string());
+        let base_url = config.panoramas_bucket_url.clone();
 
         Ok(Self {
             storage: Bucket::new(driver, bucket),
+            base_url,
         })
     }
 
@@ -246,7 +249,11 @@ impl PanoramaBucket {
     }
 
     pub async fn create_read_url(&self, path: &str) -> Result<String> {
-        self.storage.create_read_url(path).await
+        if let Some(url) = &self.base_url {
+            Ok(format!("{}{}", url, path))
+        } else {
+            self.storage.create_read_url(path).await
+        }
     }
 
     pub async fn exists(&self, key: &str) -> Result<bool> {

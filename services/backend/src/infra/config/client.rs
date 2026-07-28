@@ -80,6 +80,7 @@ pub struct Config {
     pub backup_bucket: Option<String>,
     pub panoramas_sources_bucket: Option<String>,
     pub panoramas_bucket: Option<String>,
+    pub panoramas_bucket_url: Option<String>,
 
     // Background job queue.
     pub sqs_url: Option<String>,
