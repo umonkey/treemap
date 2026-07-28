@@ -1,35 +1,13 @@
-use crate::actions::mapillary::schemas::{
-    AddMapillaryTreeRequest, GetMapillaryRequest, ReplaceMapillaryTreesRequest,
-};
+use crate::actions::mapillary::schemas::{AddMapillaryTreeRequest, ReplaceMapillaryTreesRequest};
 use crate::domain::mapillary::{
     MapillarySequenceDetail, MapillarySequenceSummary, MapillaryService, MapillaryTree,
     UpdateMapillarySequence,
 };
-use crate::domain::tree::Bounds;
 use crate::services::app::{PanoEdit, RequirePermission};
 use crate::services::*;
 use crate::types::*;
-use actix_web::web::{Json, Path, Query};
+use actix_web::web::{Json, Path};
 use actix_web::{delete, get, patch, post, put, HttpResponse};
-
-#[get("/hints.json")]
-pub async fn get_mapillary_hints_action(
-    service: Injected<MapillaryService>,
-    query: Query<GetMapillaryRequest>,
-) -> Result<HttpResponse> {
-    let bounds = Bounds {
-        n: query.n,
-        e: query.e,
-        s: query.s,
-        w: query.w,
-    };
-
-    let geojson = service.get_tree_hints_geojson(bounds).await?;
-
-    Ok(HttpResponse::Ok()
-        .content_type("application/geo+json")
-        .json(geojson))
-}
 
 #[get("/images/{id}")]
 pub async fn get_mapillary_image_action(

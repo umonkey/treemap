@@ -74,38 +74,6 @@ impl MapillaryRepository {
         Ok(res)
     }
 
-    pub async fn find_trees_with_location_by_bounds(
-        &self,
-        bounds: Bounds,
-    ) -> Result<Vec<(MapillaryTree, f64, f64, f64, f64, f64)>> {
-        let sql = format!(
-            "SELECT t.*, i.lat, i.lon, i.compass_angle, s.lat_offset, s.lon_offset FROM `{}` t INNER JOIN `{}` i ON t.image_id = i.id INNER JOIN `{}` s ON i.sequence_id = s.id WHERE i.`lat` <= ? AND i.lat >= ? AND i.lon <= ? AND i.lon >= ?",
-            TREES_TABLE, IMAGES_TABLE, SEQUENCES_TABLE
-        );
-
-        let params = &[
-            Value::from(bounds.n),
-            Value::from(bounds.s),
-            Value::from(bounds.e),
-            Value::from(bounds.w),
-        ];
-
-        let records = self.db.fetch_sql(&sql, params).await?;
-        let mut res = Vec::new();
-
-        for record in records {
-            let tree = MapillaryTree::from_attributes(&record)?;
-            let lat = record.require_f64("lat")?;
-            let lon = record.require_f64("lon")?;
-            let compass_angle = record.require_f64("compass_angle")?;
-            let lat_offset = record.get_f64("lat_offset")?.unwrap_or(0.0);
-            let lon_offset = record.get_f64("lon_offset")?.unwrap_or(0.0);
-            res.push((tree, lat, lon, compass_angle, lat_offset, lon_offset));
-        }
-
-        Ok(res)
-    }
-
     pub async fn find_images_by_sequence(&self, sequence_id: &str) -> Result<Vec<MapillaryImage>> {
         let query = SelectQuery::new(IMAGES_TABLE)
             .with_condition("sequence_id", Value::from(sequence_id.to_string()))
