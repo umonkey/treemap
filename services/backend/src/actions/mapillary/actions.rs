@@ -1,13 +1,11 @@
-use crate::actions::mapillary::schemas::{AddMapillaryTreeRequest, ReplaceMapillaryTreesRequest};
 use crate::domain::mapillary::{
-    MapillarySequenceDetail, MapillarySequenceSummary, MapillaryService, MapillaryTree,
-    UpdateMapillarySequence,
+    MapillarySequenceDetail, MapillarySequenceSummary, MapillaryService, UpdateMapillarySequence,
 };
 use crate::services::app::{PanoEdit, RequirePermission};
 use crate::services::*;
 use crate::types::*;
 use actix_web::web::{Json, Path};
-use actix_web::{delete, get, patch, post, put, HttpResponse};
+use actix_web::{get, patch, HttpResponse};
 
 #[get("/images/{id}")]
 pub async fn get_mapillary_image_action(
@@ -18,17 +16,6 @@ pub async fn get_mapillary_image_action(
     let image = service.get_image_metadata(&id).await?;
 
     Ok(HttpResponse::Ok().json(image))
-}
-
-#[get("/images/{id}/trees")]
-pub async fn get_mapillary_image_trees_action(
-    service: Injected<MapillaryService>,
-    path: Path<String>,
-) -> Result<HttpResponse> {
-    let id = path.into_inner();
-    let trees = service.get_image_trees(&id).await?;
-
-    Ok(HttpResponse::Ok().json(trees))
 }
 
 #[get("/sequences")]
@@ -60,60 +47,5 @@ pub async fn update_mapillary_sequence_action(
 ) -> Result<HttpResponse> {
     let id = path.into_inner();
     service.update_sequence(&id, body.into_inner()).await?;
-    Ok(HttpResponse::NoContent().finish())
-}
-
-#[post("/images/{id}/trees")]
-pub async fn add_mapillary_image_tree_action(
-    user_id: RequirePermission<PanoEdit>,
-    service: Injected<MapillaryService>,
-    path: Path<String>,
-    body: Json<AddMapillaryTreeRequest>,
-) -> Result<HttpResponse> {
-    let tree = MapillaryTree {
-        image_id: path.into_inner(),
-        angle: body.angle,
-        tree_id: body.tree_id,
-        user_id: *user_id,
-    };
-
-    service.add_image_tree(tree).await?;
-
-    Ok(HttpResponse::NoContent().finish())
-}
-
-#[delete("/images/{id}/trees")]
-pub async fn delete_mapillary_image_trees_action(
-    _user: RequirePermission<PanoEdit>,
-    service: Injected<MapillaryService>,
-    path: Path<String>,
-) -> Result<HttpResponse> {
-    service.delete_image_trees(&path.into_inner()).await?;
-
-    Ok(HttpResponse::NoContent().finish())
-}
-
-#[put("/images/{id}/trees")]
-pub async fn replace_mapillary_image_trees_action(
-    user_id: RequirePermission<PanoEdit>,
-    service: Injected<MapillaryService>,
-    path: Path<String>,
-    body: Json<ReplaceMapillaryTreesRequest>,
-) -> Result<HttpResponse> {
-    let image_id = path.into_inner();
-
-    let trees = body
-        .trees
-        .iter()
-        .map(|t| MapillaryTree {
-            image_id: image_id.clone(),
-            angle: t.angle,
-            tree_id: t.tree_id,
-            user_id: *user_id,
-        })
-        .collect();
-
-    service.replace_image_trees(&image_id, trees).await?;
-
     Ok(HttpResponse::NoContent().finish())
 }

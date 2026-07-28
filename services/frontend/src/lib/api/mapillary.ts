@@ -1,35 +1,6 @@
 import type { IResponse } from '$lib/types';
 import { getAuthHeaders, request } from './client';
 
-export interface MapillaryTree {
-	image_id: string;
-	angle: number;
-	tree_id?: number;
-	user_id: number;
-}
-
-export async function getMapillaryImageTrees(id: string): Promise<IResponse<MapillaryTree[]>> {
-	return await request<MapillaryTree[]>('GET', `v1/mapillary/images/${id}/trees`, {
-		headers: getAuthHeaders()
-	});
-}
-
-export async function addMapillaryTree(id: string, angle: number): Promise<IResponse<void>> {
-	return await request<void>('POST', `v1/mapillary/images/${id}/trees`, {
-		headers: {
-			...getAuthHeaders(),
-			'Content-Type': 'application/json'
-		},
-		body: JSON.stringify({ angle })
-	});
-}
-
-export async function deleteMapillaryTrees(id: string): Promise<IResponse<void>> {
-	return await request<void>('DELETE', `v1/mapillary/images/${id}/trees`, {
-		headers: getAuthHeaders()
-	});
-}
-
 export interface MapillarySequenceSummary {
 	id: string;
 	captured_at: number;

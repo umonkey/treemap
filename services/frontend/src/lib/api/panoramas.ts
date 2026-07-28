@@ -221,3 +221,31 @@ export async function getPanoramasHints(
 
 	return await request<unknown>('GET', `api/panoramas/hints.json?${params.toString()}`);
 }
+
+export interface PanoramaHint {
+	image_id: string;
+	angle: number;
+	user_id: string;
+}
+
+export async function getPanoramasImageHints(id: string): Promise<IResponse<PanoramaHint[]>> {
+	return await request<PanoramaHint[]>('GET', `api/panoramas/images/${id}/hints`, {
+		headers: getAuthHeaders()
+	});
+}
+
+export async function addPanoramaImageHint(id: string, angle: number): Promise<IResponse<void>> {
+	return await request<void>('POST', `api/panoramas/images/${id}/hints`, {
+		headers: {
+			...getAuthHeaders(),
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({ angle })
+	});
+}
+
+export async function deletePanoramaImageHints(id: string): Promise<IResponse<void>> {
+	return await request<void>('DELETE', `api/panoramas/images/${id}/hints`, {
+		headers: getAuthHeaders()
+	});
+}

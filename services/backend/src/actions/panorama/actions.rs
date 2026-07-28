@@ -1,15 +1,15 @@
 use super::schemas::{
-    CompleteMultipartRequest, GetPanoramaHintsRequest, GetPanoramasGeoJSONRequest,
-    MultipartUploadResponse, PanoramaImageRead, PanoramaRead, StartMultipartRequest, TrackPoint,
-    UploadUrlResponse, WebVideoUrlResponse,
+    AddPanoramaHintRequest, CompleteMultipartRequest, GetPanoramaHintsRequest,
+    GetPanoramasGeoJSONRequest, MultipartUploadResponse, PanoramaHintRead, PanoramaImageRead,
+    PanoramaRead, StartMultipartRequest, TrackPoint, UploadUrlResponse, WebVideoUrlResponse,
 };
-use crate::domain::panorama::{CreatePanorama, PanoramaService, UpdatePanorama};
+use crate::domain::panorama::{CreatePanorama, PanoramaHint, PanoramaService, UpdatePanorama};
 use crate::domain::tree::Bounds;
 use crate::services::app::{PanoEdit, RequirePermission};
 use crate::services::Injected;
 use crate::types::*;
 use actix_web::web::{Json, Path, Query};
-use actix_web::{get, patch, post, HttpResponse};
+use actix_web::{delete, get, patch, post, HttpResponse};
 
 #[get("")]
 pub async fn list_panoramas_action(
@@ -220,4 +220,43 @@ pub async fn get_panorama_hints_action(
     Ok(HttpResponse::Ok()
         .content_type("application/geo+json")
         .json(geojson))
+}
+
+#[get("/images/{id}/hints")]
+pub async fn get_panorama_image_hints_action(
+    service: Injected<PanoramaService>,
+    path: Path<u64>,
+) -> Result<Json<Vec<PanoramaHintRead>>> {
+    let id = path.into_inner();
+    let hints = service.get_image_hints(id).await?;
+    let res = hints.into_iter().map(PanoramaHintRead::from).collect();
+    Ok(Json(res))
+}
+
+#[post("/images/{id}/hints")]
+pub async fn add_panorama_image_hint_action(
+    user_id: RequirePermission<PanoEdit>,
+    service: Injected<PanoramaService>,
+    path: Path<u64>,
+    body: Json<AddPanoramaHintRequest>,
+) -> Result<HttpResponse> {
+    let image_id = path.into_inner();
+    let hint = PanoramaHint {
+        image_id,
+        angle: body.angle,
+        user_id: *user_id,
+    };
+    service.add_image_hint(hint).await?;
+    Ok(HttpResponse::NoContent().finish())
+}
+
+#[delete("/images/{id}/hints")]
+pub async fn delete_panorama_image_hints_action(
+    _user: RequirePermission<PanoEdit>,
+    service: Injected<PanoramaService>,
+    path: Path<u64>,
+) -> Result<HttpResponse> {
+    let image_id = path.into_inner();
+    service.delete_image_hints(image_id).await?;
+    Ok(HttpResponse::NoContent().finish())
 }

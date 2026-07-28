@@ -1,4 +1,6 @@
-use super::models::{CreatePanorama, Panorama, PanoramaImage, PanoramaStatus, UpdatePanorama};
+use super::models::{
+    CreatePanorama, Panorama, PanoramaHint, PanoramaImage, PanoramaStatus, UpdatePanorama,
+};
 use super::repository::PanoramaRepository;
 use crate::actions::panorama::PanoramaImageRead;
 use crate::domain::tree::Bounds;
@@ -514,6 +516,18 @@ impl PanoramaService {
         panorama.points_json = Some(json!(coordinates).to_string());
 
         Ok(())
+    }
+
+    pub async fn get_image_hints(&self, image_id: u64) -> Result<Vec<PanoramaHint>> {
+        self.repo.find_hints_by_image_id(image_id).await
+    }
+
+    pub async fn add_image_hint(&self, hint: PanoramaHint) -> Result<()> {
+        self.repo.add_hint(&hint).await
+    }
+
+    pub async fn delete_image_hints(&self, image_id: u64) -> Result<()> {
+        self.repo.delete_hints_by_image_id(image_id).await
     }
 
     /// Find all panoramas and see if any of them needs work.

@@ -1,10 +1,9 @@
 use crate::domain::mapillary::{
     MapillaryImage, MapillarySequence, MapillarySequenceDetail, MapillarySequenceSummary,
-    MapillaryTree,
 };
 use crate::domain::tree::Bounds;
 use crate::infra::database::{
-    Database, DeleteQuery, InsertQuery, ReplaceQuery, SelectQuery, UpdateQuery, Value,
+    Database, InsertQuery, ReplaceQuery, SelectQuery, UpdateQuery, Value,
 };
 use crate::services::*;
 use crate::types::*;
@@ -12,7 +11,6 @@ use std::sync::Arc;
 
 const IMAGES_TABLE: &str = "mapillary_images";
 const SEQUENCES_TABLE: &str = "mapillary_sequences";
-const TREES_TABLE: &str = "mapillary_trees";
 
 pub struct MapillaryRepository {
     db: Arc<Database>,
@@ -22,28 +20,6 @@ impl MapillaryRepository {
     pub async fn add_image(&self, image: &MapillaryImage) -> Result<()> {
         let query = InsertQuery::new(IMAGES_TABLE).with_values(image.to_attributes());
         self.db.add_record(query).await?;
-        Ok(())
-    }
-
-    pub async fn find_trees_by_image_id(&self, image_id: &str) -> Result<Vec<MapillaryTree>> {
-        let query = SelectQuery::new(TREES_TABLE)
-            .with_condition("image_id", Value::from(image_id.to_string()));
-
-        let records = self.db.get_records(query).await?;
-        records.iter().map(MapillaryTree::from_attributes).collect()
-    }
-
-    pub async fn add_tree(&self, tree: &MapillaryTree) -> Result<()> {
-        let query = InsertQuery::new(TREES_TABLE).with_values(tree.to_attributes());
-        self.db.add_record(query).await?;
-        Ok(())
-    }
-
-    pub async fn delete_trees_by_image_id(&self, image_id: &str) -> Result<()> {
-        let query = DeleteQuery::new(TREES_TABLE)
-            .with_condition("image_id", Value::from(image_id.to_string()));
-
-        self.db.delete(query).await?;
         Ok(())
     }
 

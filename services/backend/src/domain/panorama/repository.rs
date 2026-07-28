@@ -143,6 +143,26 @@ impl PanoramaRepository {
         Ok(res)
     }
 
+    pub async fn find_hints_by_image_id(&self, image_id: u64) -> Result<Vec<PanoramaHint>> {
+        let query =
+            SelectQuery::new(HINTS_TABLE).with_condition("image_id", Value::from(image_id as i64));
+        let records = self.db.get_records(query).await?;
+        records.iter().map(PanoramaHint::from_attributes).collect()
+    }
+
+    pub async fn add_hint(&self, hint: &PanoramaHint) -> Result<()> {
+        let query = InsertQuery::new(HINTS_TABLE).with_values(hint.to_attributes());
+        self.db.add_record(query).await?;
+        Ok(())
+    }
+
+    pub async fn delete_hints_by_image_id(&self, image_id: u64) -> Result<()> {
+        let query =
+            DeleteQuery::new(HINTS_TABLE).with_condition("image_id", Value::from(image_id as i64));
+        self.db.delete(query).await?;
+        Ok(())
+    }
+
     pub async fn transact(&self) -> Result<Self> {
         let db = Arc::new(self.db.transact().await?);
         Ok(Self { db })

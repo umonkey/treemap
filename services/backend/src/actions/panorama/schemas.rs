@@ -1,4 +1,4 @@
-use crate::domain::panorama::{Panorama, PanoramaStatus};
+use crate::domain::panorama::{Panorama, PanoramaHint, PanoramaStatus};
 use crate::infra::storage::CompletedPart;
 use serde::{Deserialize, Serialize};
 
@@ -85,6 +85,28 @@ pub struct GetPanoramaHintsRequest {
     pub e: f64,
     pub s: f64,
     pub w: f64,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct AddPanoramaHintRequest {
+    pub angle: f64,
+}
+
+#[derive(Debug, Serialize)]
+pub struct PanoramaHintRead {
+    pub image_id: String,
+    pub angle: f64,
+    pub user_id: String,
+}
+
+impl From<PanoramaHint> for PanoramaHintRead {
+    fn from(h: PanoramaHint) -> Self {
+        Self {
+            image_id: h.image_id.to_string(),
+            angle: h.angle,
+            user_id: h.user_id.to_string(),
+        }
+    }
 }
 
 impl From<Panorama> for PanoramaRead {

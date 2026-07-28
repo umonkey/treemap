@@ -1,6 +1,6 @@
 use crate::domain::mapillary::{
     MapillaryImage, MapillaryRepository, MapillarySequence, MapillarySequenceDetail,
-    MapillarySequenceSummary, MapillaryTree, UpdateMapillarySequence,
+    MapillarySequenceSummary, UpdateMapillarySequence,
 };
 use crate::domain::tree::Bounds;
 use crate::infra::mapillary::MapillaryClient;
@@ -17,30 +17,6 @@ pub struct MapillaryService {
 }
 
 impl MapillaryService {
-    pub async fn get_image_trees(&self, image_id: &str) -> Result<Vec<MapillaryTree>> {
-        self.repo.find_trees_by_image_id(image_id).await
-    }
-
-    pub async fn add_image_tree(&self, tree: MapillaryTree) -> Result<()> {
-        self.repo.add_tree(&tree).await
-    }
-
-    pub async fn delete_image_trees(&self, image_id: &str) -> Result<()> {
-        self.repo.delete_trees_by_image_id(image_id).await
-    }
-
-    pub async fn replace_image_trees(
-        &self,
-        image_id: &str,
-        trees: Vec<MapillaryTree>,
-    ) -> Result<()> {
-        self.repo.delete_trees_by_image_id(image_id).await?;
-        for tree in trees {
-            self.repo.add_tree(&tree).await?;
-        }
-        Ok(())
-    }
-
     pub async fn pull(&self) -> Result<u32> {
         let mut added = 0;
         let limit = 5000;

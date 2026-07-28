@@ -1,13 +1,12 @@
 import { untrack } from 'svelte';
-import type { PanoramaImage } from '$lib/api/panoramas';
-import type { MapillaryTree } from '$lib/api/mapillary';
+import type { PanoramaImage, PanoramaHint } from '$lib/api/panoramas';
 import 'pannellum';
 
 class PanoramaViewerLogic {
 	viewer: Pannellum.Viewer | null = null;
 	yaw = $state(0);
 	onMove?: (angle: number) => void;
-	trees = $state<MapillaryTree[]>([]);
+	trees = $state<PanoramaHint[]>([]);
 	isLoaded = $state(false);
 	private addedHotspotIds: string[] = [];
 
@@ -57,7 +56,7 @@ class PanoramaViewerLogic {
 		});
 	};
 
-	setTrees = (trees: MapillaryTree[]) => {
+	setTrees = (trees: PanoramaHint[]) => {
 		this.trees = trees;
 
 		if (this.viewer && this.isLoaded) {
