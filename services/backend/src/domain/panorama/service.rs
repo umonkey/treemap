@@ -1,5 +1,6 @@
 use super::models::{CreatePanorama, Panorama, PanoramaImage, PanoramaStatus, UpdatePanorama};
 use super::repository::PanoramaRepository;
+use crate::actions::panorama::PanoramaImageRead;
 use crate::domain::tree::Bounds;
 use crate::infra::batch::BatchClient;
 use crate::infra::queue::Queue;
@@ -34,6 +35,26 @@ impl PanoramaService {
 
     pub async fn get_panorama(&self, id: u64) -> Result<Panorama> {
         self.repo.get(id).await?.ok_or(Error::PanoramaNotFound)
+    }
+
+    pub async fn get_image_metadata(&self, id: u64) -> Result<PanoramaImageRead> {
+        let image = self.repo.get_image(id).await?.ok_or(Error::FileNotFound)?;
+        let panorama = self.get_panorama(image.panorama_id).await?;
+        let url = self
+            .panoramas
+            .create_read_url(&format!("{}/{}", image.panorama_id, image.filename))
+            .await
+            .ok();
+
+        Ok(PanoramaImageRead {
+            id: image.id.to_string(),
+            sequence_id: image.panorama_id.to_string(),
+            captured_at: panorama.created_at,
+            lat: image.lat,
+            lon: image.lng,
+            compass_angle: image.heading,
+            url,
+        })
     }
 
     pub async fn create_panorama(&self, data: CreatePanorama, user_id: u64) -> Result<Panorama> {

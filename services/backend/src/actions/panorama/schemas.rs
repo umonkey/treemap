@@ -3,6 +3,17 @@ use crate::infra::storage::CompletedPart;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize)]
+pub struct PanoramaImageRead {
+    pub id: String,
+    pub sequence_id: String,
+    pub captured_at: i64,
+    pub lat: f64,
+    pub lon: f64,
+    pub compass_angle: f64,
+    pub url: Option<String>,
+}
+
+#[derive(Debug, Serialize)]
 pub struct PanoramaRead {
     pub id: String,
     pub created_at: i64,

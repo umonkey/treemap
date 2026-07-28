@@ -1,10 +1,9 @@
 import { goto, routes } from '$lib/routes';
+import { getPanoramasImage, type PanoramaImage } from '$lib/api/panoramas';
 import {
-	getMapillaryImage,
 	getMapillaryImageTrees,
 	addMapillaryTree,
 	deleteMapillaryTrees,
-	type MapillaryImage,
 	type MapillaryTree
 } from '$lib/api/mapillary';
 import { mapRaysStore } from '$lib/stores/mapRays.svelte';
@@ -15,7 +14,7 @@ import { LngLat } from 'maplibre-gl';
 
 class PageState {
 	id = $state<string>('');
-	image = $state<MapillaryImage | null>(null);
+	image = $state<PanoramaImage | null>(null);
 	trees = $state<MapillaryTree[]>([]);
 	angle = $state<number>(0);
 	isBusy = $state(false);
@@ -92,7 +91,7 @@ class PageState {
 		this.trees = [];
 
 		const [imageRes, treesRes] = await Promise.all([
-			getMapillaryImage(id),
+			getPanoramasImage(id),
 			getMapillaryImageTrees(id)
 		]);
 

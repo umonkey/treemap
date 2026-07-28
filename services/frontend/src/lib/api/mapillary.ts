@@ -17,20 +17,6 @@ export async function getMapillaryHints(
 	return await request<unknown>('GET', `v1/mapillary/hints.json?${params.toString()}`);
 }
 
-export interface MapillaryImage {
-	id: string;
-	sequence_id: string;
-	captured_at: number;
-	lat: number;
-	lon: number;
-	compass_angle: number;
-	url?: string;
-}
-
-export async function getMapillaryImage(id: string): Promise<IResponse<MapillaryImage>> {
-	return await request<MapillaryImage>('GET', `v1/mapillary/images/${id}`);
-}
-
 export interface MapillaryTree {
 	image_id: string;
 	angle: number;

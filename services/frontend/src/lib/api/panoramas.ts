@@ -191,3 +191,17 @@ export async function getPanoramasGeoJSON(
 
 	return await request<unknown>('GET', `api/panoramas/geo.json?${params.toString()}`);
 }
+
+export interface PanoramaImage {
+	id: string;
+	sequence_id: string;
+	captured_at: number;
+	lat: number;
+	lon: number;
+	compass_angle: number;
+	url?: string;
+}
+
+export async function getPanoramasImage(id: string): Promise<IResponse<PanoramaImage>> {
+	return await request<PanoramaImage>('GET', `api/panoramas/images/${id}`);
+}

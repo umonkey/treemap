@@ -1,11 +1,12 @@
 <script lang="ts">
-	import type { MapillaryImage, MapillaryTree } from '$lib/api/mapillary';
+	import type { PanoramaImage } from '$lib/api/panoramas';
+	import type { MapillaryTree } from '$lib/api/mapillary';
 	import { componentState } from './PanoramaViewer.svelte.ts';
 	import { untrack } from 'svelte';
 	import 'pannellum/build/pannellum.css';
 
 	interface Props {
-		image: MapillaryImage;
+		image: PanoramaImage;
 		angle?: number;
 		trees?: MapillaryTree[];
 		onMove?: (angle: number) => void;

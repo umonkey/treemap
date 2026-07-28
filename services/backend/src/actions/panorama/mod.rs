@@ -1,6 +1,7 @@
 use actix_web::web::ServiceConfig;
 
 pub use actions::*;
+pub use schemas::*;
 mod actions;
 mod schemas;
 
@@ -16,5 +17,6 @@ pub fn panorama_router(cfg: &mut ServiceConfig) {
         .service(get_track_upload_url_action)
         .service(verify_track_upload_action)
         .service(get_web_video_url_action)
-        .service(get_panorama_track_action);
+        .service(get_panorama_track_action)
+        .service(get_panorama_image_action);
 }

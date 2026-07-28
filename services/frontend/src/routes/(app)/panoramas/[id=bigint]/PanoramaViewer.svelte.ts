@@ -1,5 +1,6 @@
 import { untrack } from 'svelte';
-import type { MapillaryImage, MapillaryTree } from '$lib/api/mapillary';
+import type { PanoramaImage } from '$lib/api/panoramas';
+import type { MapillaryTree } from '$lib/api/mapillary';
 import 'pannellum';
 
 class PanoramaViewerLogic {
@@ -12,7 +13,7 @@ class PanoramaViewerLogic {
 
 	init = (
 		container: HTMLElement,
-		image: MapillaryImage,
+		image: PanoramaImage,
 		initialYaw: number = 0,
 		onMove?: (angle: number) => void
 	) => {

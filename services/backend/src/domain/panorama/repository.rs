@@ -55,6 +55,14 @@ impl PanoramaRepository {
         Ok(())
     }
 
+    pub async fn get_image(&self, id: u64) -> Result<Option<PanoramaImage>> {
+        let query = SelectQuery::new(IMAGES_TABLE).with_condition("id", Value::from(id as i64));
+        match self.db.get_record(query).await? {
+            Some(attrs) => Ok(Some(PanoramaImage::from_attributes(&attrs)?)),
+            None => Ok(None),
+        }
+    }
+
     pub async fn get_images(&self, panorama_id: u64) -> Result<Vec<PanoramaImage>> {
         let query = SelectQuery::new(IMAGES_TABLE)
             .with_condition("panorama_id", Value::from(panorama_id as i64));

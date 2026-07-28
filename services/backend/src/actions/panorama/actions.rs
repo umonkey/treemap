@@ -1,6 +1,7 @@
 use super::schemas::{
-    CompleteMultipartRequest, GetPanoramasGeoJSONRequest, MultipartUploadResponse, PanoramaRead,
-    StartMultipartRequest, TrackPoint, UploadUrlResponse, WebVideoUrlResponse,
+    CompleteMultipartRequest, GetPanoramasGeoJSONRequest, MultipartUploadResponse,
+    PanoramaImageRead, PanoramaRead, StartMultipartRequest, TrackPoint, UploadUrlResponse,
+    WebVideoUrlResponse,
 };
 use crate::domain::panorama::{CreatePanorama, PanoramaService, UpdatePanorama};
 use crate::domain::tree::Bounds;
@@ -39,6 +40,16 @@ pub async fn get_panorama_action(
     let id = path.into_inner();
     let panorama = service.get_panorama(id).await?;
     Ok(Json(panorama.into()))
+}
+
+#[get("/images/{id}")]
+pub async fn get_panorama_image_action(
+    service: Injected<PanoramaService>,
+    path: Path<u64>,
+) -> Result<Json<PanoramaImageRead>> {
+    let id = path.into_inner();
+    let res = service.get_image_metadata(id).await?;
+    Ok(Json(res))
 }
 
 #[patch("/{id}")]
