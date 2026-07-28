@@ -4,8 +4,17 @@ The app has built in support for 360° street panoramas. This features processin
 
 ## Processing Overview
 
-The user must provide an equirectangular 2:1 video, and a separate `.gpx` file. The rest is handled by the application. The following steps are taken:
+The workflow for adding new panoramas to the system is as follows:
 
-1. Downsample the video to 360p for playing in the web. This is needed to manually synchronize the recording with the GPS track. We use AWS Batch for this.
+- upload: the user uploads an equirectangular 2:1 video file and a corresponding `.gpx` track.
+- synchronize: the user manually synchronizes the video with the GPS track using a map-based interface.
+- process: once synchronized, the data is queued for processing.
+- duration: processing normally takes 30 to 60 minutes per street.
 
-### Downsampling the Video
+## Infrastructure
+
+We use AWS Batch to offload heavy processing from the main backend server. This ensures that the application remains responsive while video frames are being extracted and processed.
+
+## Data Ownership
+
+All images and processed data are stored on the user's S3 compatible buckets, ensuring full data ownership.
