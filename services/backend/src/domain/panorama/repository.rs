@@ -5,7 +5,7 @@ use crate::types::*;
 use std::sync::Arc;
 
 const TABLE: &str = "panoramas";
-const IMAGES_TABLE: &str = "panorama_images";
+const IMAGES_TABLE: &str = "panoramas_images";
 
 pub struct PanoramaRepository {
     db: Arc<Database>,

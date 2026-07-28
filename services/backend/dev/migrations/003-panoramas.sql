@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS panoramas (
 CREATE INDEX IF NOT EXISTS panoramas_created_at ON panoramas (created_at);
 
 
-CREATE TABLE IF NOT EXISTS panorama_images (
+CREATE TABLE IF NOT EXISTS panoramas_images (
     id INT NOT NULL,
     panorama_id INT NOT NULL,
     filename TEXT NOT NULL,
@@ -37,6 +37,6 @@ CREATE TABLE IF NOT EXISTS panorama_images (
     PRIMARY KEY(id)
 );
 
-CREATE INDEX IF NOT EXISTS panorama_images_panorama_id ON panorama_images (panorama_id);
+CREATE INDEX IF NOT EXISTS panoramas_images_panorama_id ON panoramas_images (panorama_id);
 
 COMMIT;

@@ -337,7 +337,7 @@ impl PanoramaService {
         panorama.processing_status = Some(new_status.clone());
 
         if new_status == "SUCCEEDED" {
-            self.pull_panorama_images(panorama).await?;
+            self.pull_panoramas_images(panorama).await?;
 
             panorama.status = PanoramaStatus::Success;
 
@@ -359,7 +359,7 @@ impl PanoramaService {
         Ok(())
     }
 
-    async fn pull_panorama_images(&self, panorama: &mut Panorama) -> Result<()> {
+    async fn pull_panoramas_images(&self, panorama: &mut Panorama) -> Result<()> {
         let path = format!("{}/images.json", panorama.id);
 
         let data = self.panoramas.read_file(&path).await?;

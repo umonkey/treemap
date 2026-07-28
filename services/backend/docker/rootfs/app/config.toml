@@ -70,3 +70,4 @@ files_base_url = "https://treemap.fra1.cdn.digitaloceanspaces.com/"
 
 backup_bucket = "treemap-backups-uzbmpe2a"
 panoramas_sources_bucket = "treemap-panoramas-tmp-g6dxkoua"
+panoramas_bucket = "panoramas-px3qodu3"
