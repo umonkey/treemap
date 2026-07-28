@@ -66,6 +66,8 @@ pub struct Panorama {
     pub transcode_status: Option<String>,
     pub video_timestamp: Option<f64>,
     pub gpx_offset: Option<f64>,
+    pub processing_arn: Option<String>,
+    pub processing_status: Option<String>,
     pub failure_reason: Option<String>,
 }
 
@@ -89,6 +91,8 @@ impl Panorama {
             transcode_status: attrs.get_string("transcode_status")?,
             video_timestamp: attrs.get_f64("video_timestamp")?,
             gpx_offset: attrs.get_f64("gpx_offset")?,
+            processing_arn: attrs.get_string("processing_arn")?,
+            processing_status: attrs.get_string("processing_status")?,
             failure_reason: attrs.get_string("failure_reason")?,
         })
     }
@@ -115,6 +119,11 @@ impl Panorama {
         );
         attrs.insert("video_timestamp", Value::from(self.video_timestamp));
         attrs.insert("gpx_offset", Value::from(self.gpx_offset));
+        attrs.insert("processing_arn", Value::from(self.processing_arn.clone()));
+        attrs.insert(
+            "processing_status",
+            Value::from(self.processing_status.clone()),
+        );
         attrs.insert("failure_reason", Value::from(self.failure_reason.clone()));
         attrs
     }
@@ -130,4 +139,59 @@ pub struct UpdatePanorama {
     pub title: Option<String>,
     pub visible: Option<bool>,
     pub gpx_offset: Option<f64>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PanoramaImage {
+    pub id: u64,
+    pub panorama_id: u64,
+    pub filename: String,
+    pub lat: f64,
+    pub lng: f64,
+    pub heading: f64,
+    pub pitch: f64,
+    pub roll: f64,
+    pub hidden: bool,
+}
+
+impl PanoramaImage {
+    #[allow(dead_code)]
+    pub fn from_attributes(attrs: &Attributes) -> crate::types::Result<Self> {
+        Ok(Self {
+            id: attrs.require_u64("id")?,
+            panorama_id: attrs.require_u64("panorama_id")?,
+            filename: attrs.require_string("filename")?,
+            lat: attrs.require_f64("lat")?,
+            lng: attrs.require_f64("lng")?,
+            heading: attrs.require_f64("heading")?,
+            pitch: attrs.require_f64("pitch")?,
+            roll: attrs.require_f64("roll")?,
+            hidden: attrs.get_bool("hidden")?.unwrap_or(false),
+        })
+    }
+
+    pub fn to_attributes(&self) -> Attributes {
+        let mut attrs = Attributes::default();
+        attrs.insert("id", Value::from(self.id as i64));
+        attrs.insert("panorama_id", Value::from(self.panorama_id as i64));
+        attrs.insert("filename", Value::from(self.filename.clone()));
+        attrs.insert("lat", Value::from(self.lat));
+        attrs.insert("lng", Value::from(self.lng));
+        attrs.insert("heading", Value::from(self.heading));
+        attrs.insert("pitch", Value::from(self.pitch));
+        attrs.insert("roll", Value::from(self.roll));
+        attrs.insert("hidden", Value::from(self.hidden));
+        attrs
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PanoramaImageSource {
+    pub filename: String,
+    pub latitude: f64,
+    pub longitude: f64,
+    pub altitude: f64,
+    pub heading: f64,
+    pub pitch: f64,
+    pub roll: f64,
 }

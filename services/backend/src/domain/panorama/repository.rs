@@ -1,10 +1,11 @@
-use super::models::Panorama;
-use crate::infra::database::{Database, InsertQuery, SelectQuery, UpdateQuery, Value};
+use super::models::{Panorama, PanoramaImage};
+use crate::infra::database::{Database, DeleteQuery, InsertQuery, SelectQuery, UpdateQuery, Value};
 use crate::services::{Context, Injectable};
 use crate::types::*;
 use std::sync::Arc;
 
 const TABLE: &str = "panoramas";
+const IMAGES_TABLE: &str = "panorama_images";
 
 pub struct PanoramaRepository {
     db: Arc<Database>,
@@ -36,6 +37,30 @@ impl PanoramaRepository {
             .with_values(panorama.to_attributes());
         self.db.update(query).await?;
         Ok(())
+    }
+
+    pub async fn delete_images(&self, panorama_id: u64) -> Result<()> {
+        let query = DeleteQuery::new(IMAGES_TABLE)
+            .with_condition("panorama_id", Value::from(panorama_id as i64));
+        self.db.delete(query).await?;
+        Ok(())
+    }
+
+    pub async fn add_images(&self, images: &[PanoramaImage]) -> Result<()> {
+        for image in images {
+            let query = InsertQuery::new(IMAGES_TABLE).with_values(image.to_attributes());
+            self.db.add_record(query).await?;
+        }
+        Ok(())
+    }
+
+    pub async fn transact(&self) -> Result<Self> {
+        let db = Arc::new(self.db.transact().await?);
+        Ok(Self { db })
+    }
+
+    pub async fn commit(&self) -> Result<()> {
+        self.db.commit().await
     }
 }
 

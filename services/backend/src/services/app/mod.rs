@@ -3,7 +3,9 @@ use crate::infra::config::Config;
 use crate::infra::database::Database;
 use crate::infra::queue::Queue;
 use crate::infra::secrets::Secrets;
-use crate::infra::storage::{create_driver, BackupBucket, FileBucket, PanoramaSourceBucket};
+use crate::infra::storage::{
+    create_driver, BackupBucket, FileBucket, PanoramaBucket, PanoramaSourceBucket,
+};
 use crate::infra::tokens::TokenService;
 use crate::services::mcp::McpSessionManager;
 use crate::types::*;
@@ -19,7 +21,10 @@ pub trait Context {
     fn storage(&self) -> Arc<FileBucket>;
     #[allow(dead_code)]
     fn backups(&self) -> Arc<BackupBucket>;
+    #[allow(dead_code)]
     fn panoramas_source(&self) -> Arc<PanoramaSourceBucket>;
+    #[allow(dead_code)]
+    fn panoramas(&self) -> Arc<PanoramaBucket>;
     fn batch(&self) -> Arc<BatchClient>;
     #[allow(dead_code)]
     fn mcp(&self) -> Arc<McpSessionManager>;
@@ -70,6 +75,7 @@ pub struct AppState {
     pub storage: Arc<FileBucket>,
     pub backups: Arc<BackupBucket>,
     pub panoramas_source: Arc<PanoramaSourceBucket>,
+    pub panoramas: Arc<PanoramaBucket>,
     pub batch: Arc<BatchClient>,
     pub mcp: Arc<McpSessionManager>,
 }
@@ -93,6 +99,7 @@ impl AppState {
 
         let backups = Arc::new(BackupBucket::new(driver.clone(), &config)?);
         let panoramas_source = Arc::new(PanoramaSourceBucket::new(driver.clone(), &config)?);
+        let panoramas = Arc::new(PanoramaBucket::new(driver.clone(), &config)?);
         let batch = Arc::new(BatchClient::new(&config, &secrets)?);
 
         let mcp = Arc::new(McpSessionManager::default());
@@ -106,6 +113,7 @@ impl AppState {
             storage,
             backups,
             panoramas_source,
+            panoramas,
             batch,
             mcp,
         })
@@ -123,6 +131,7 @@ impl AppState {
             storage: self.storage.clone(),
             backups: self.backups.clone(),
             panoramas_source: self.panoramas_source.clone(),
+            panoramas: self.panoramas.clone(),
             batch: self.batch.clone(),
             mcp: self.mcp.clone(),
         })
@@ -191,6 +200,11 @@ impl Context for AppState {
 
     fn panoramas_source(&self) -> Arc<PanoramaSourceBucket> {
         self.panoramas_source.clone()
+    }
+
+    #[allow(dead_code)]
+    fn panoramas(&self) -> Arc<PanoramaBucket> {
+        self.panoramas.clone()
     }
 
     fn batch(&self) -> Arc<BatchClient> {

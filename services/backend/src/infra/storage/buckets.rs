@@ -15,6 +15,10 @@ impl Bucket {
         Self { driver, bucket }
     }
 
+    pub fn name(&self) -> &str {
+        &self.bucket
+    }
+
     pub async fn write_file(&self, path: &str, data: &[u8], public: bool) -> Result<()> {
         self.driver
             .write_file(&self.bucket, path, data, public)
@@ -155,6 +159,78 @@ impl PanoramaSourceBucket {
         Ok(Self {
             storage: Bucket::new(driver, bucket),
         })
+    }
+
+    pub fn name(&self) -> &str {
+        self.storage.name()
+    }
+
+    pub async fn write_file(&self, path: &str, data: &[u8], public: bool) -> Result<()> {
+        self.storage.write_file(path, data, public).await
+    }
+
+    pub async fn read_file(&self, path: &str) -> Result<Vec<u8>> {
+        self.storage.read_file(path).await
+    }
+
+    pub async fn create_upload_url(&self, path: &str) -> Result<String> {
+        self.storage.create_upload_url(path).await
+    }
+
+    pub async fn create_read_url(&self, path: &str) -> Result<String> {
+        self.storage.create_read_url(path).await
+    }
+
+    pub async fn exists(&self, key: &str) -> Result<bool> {
+        self.storage.exists(key).await
+    }
+
+    pub async fn start_multipart_upload(&self, key: &str) -> Result<String> {
+        self.storage.start_multipart_upload(key).await
+    }
+
+    pub async fn create_upload_part_url(
+        &self,
+        key: &str,
+        upload_id: &str,
+        part_number: i32,
+    ) -> Result<String> {
+        self.storage
+            .create_upload_part_url(key, upload_id, part_number)
+            .await
+    }
+
+    pub async fn complete_multipart_upload(
+        &self,
+        key: &str,
+        upload_id: &str,
+        parts: Vec<CompletedPart>,
+    ) -> Result<()> {
+        self.storage
+            .complete_multipart_upload(key, upload_id, parts)
+            .await
+    }
+}
+
+pub struct PanoramaBucket {
+    storage: Bucket,
+}
+
+#[allow(dead_code)]
+impl PanoramaBucket {
+    pub fn new(driver: Arc<dyn StorageDriver>, config: &Config) -> Result<Self> {
+        let bucket = config
+            .panoramas_bucket
+            .clone()
+            .unwrap_or_else(|| "treemap-panoramas".to_string());
+
+        Ok(Self {
+            storage: Bucket::new(driver, bucket),
+        })
+    }
+
+    pub fn name(&self) -> &str {
+        self.storage.name()
     }
 
     pub async fn write_file(&self, path: &str, data: &[u8], public: bool) -> Result<()> {

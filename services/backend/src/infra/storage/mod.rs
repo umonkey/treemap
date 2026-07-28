@@ -8,7 +8,7 @@ mod local_storage;
 mod s3_storage;
 
 pub use base::{CompletedPart, StorageDriver};
-pub use buckets::{BackupBucket, FileBucket, PanoramaSourceBucket};
+pub use buckets::{BackupBucket, FileBucket, PanoramaBucket, PanoramaSourceBucket};
 pub use interface::create_driver;
 pub use local_storage::LocalStorageDriver;
 pub use s3_storage::S3StorageDriver;

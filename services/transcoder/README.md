@@ -8,6 +8,6 @@ The workflow is the following:
 2. Transcode using `ffmpeg`.
 3. Upload the results to S3.
 
-The container normally runs in AWS Batch, as a spot instance of size `c6i.xlarge`.
+The container normally runs in AWS Batch, on on-demand instances.
 
 The configuration is passed via environment variables.

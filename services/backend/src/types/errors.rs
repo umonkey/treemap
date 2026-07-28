@@ -160,6 +160,12 @@ impl From<JwtError> for Error {
     }
 }
 
+impl From<serde_json::Error> for Error {
+    fn from(e: serde_json::Error) -> Self {
+        Error::BadRequestMessage(format!("JSON error: {e}"))
+    }
+}
+
 impl ResponseError for Error {
     fn error_response(&self) -> HttpResponse {
         let status = self.status_code();

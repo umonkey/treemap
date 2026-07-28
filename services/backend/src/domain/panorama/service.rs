@@ -2,7 +2,7 @@ use super::models::{CreatePanorama, Panorama, PanoramaStatus, UpdatePanorama};
 use super::repository::PanoramaRepository;
 use crate::infra::batch::BatchClient;
 use crate::infra::queue::Queue;
-use crate::infra::storage::{CompletedPart, PanoramaSourceBucket};
+use crate::infra::storage::{CompletedPart, PanoramaBucket, PanoramaSourceBucket};
 use crate::services::queue_consumer::TranscodePanorama;
 use crate::services::{Context, Injectable};
 use crate::types::*;
@@ -12,6 +12,7 @@ use std::sync::Arc;
 pub struct PanoramaService {
     repo: Arc<PanoramaRepository>,
     storage: Arc<PanoramaSourceBucket>,
+    panoramas: Arc<PanoramaBucket>,
     batch: Arc<BatchClient>,
     queue: Arc<Queue>,
 }
@@ -41,6 +42,8 @@ impl PanoramaService {
             transcode_status: None,
             video_timestamp: None,
             gpx_offset: None,
+            processing_arn: None,
+            processing_status: None,
             failure_reason: None,
         };
 
@@ -224,7 +227,7 @@ impl PanoramaService {
             return Ok(());
         }
 
-        let new_status = self.batch.get_transcode_status(arn).await.map_err(|e| {
+        let new_status = self.batch.get_job_status(arn).await.map_err(|e| {
             log::error!("Error getting transcode status for {arn}: {e}");
             e
         })?;
@@ -258,6 +261,140 @@ impl PanoramaService {
         Ok(())
     }
 
+    pub async fn start_processing(&self, id: u64) -> Result<Panorama> {
+        let mut panorama = self.get_panorama(id).await?;
+
+        if panorama.status != PanoramaStatus::NeedsProcessing {
+            log::warn!(
+                "Cannot start processing for panorama {}: status is {:?}",
+                id,
+                panorama.status
+            );
+            return Ok(panorama);
+        }
+
+        if let Some(arn) = &panorama.processing_arn {
+            log::warn!("Panorama {} already has a processing ARN: {}", id, arn);
+            panorama.status = PanoramaStatus::NeedsProcessingFinish;
+            self.repo.update(id, &panorama).await?;
+            return Ok(panorama);
+        }
+
+        let dataset_url = format!("s3://{}/{}/", self.storage.name(), id);
+        let result_url = format!("s3://{}/{}/", self.panoramas.name(), id);
+        let job_name = format!("panoramas-extract-{id}");
+        let gpx_offset = panorama.gpx_offset.unwrap_or(0.0);
+        let mask_size = 0.35;
+
+        let arn = self
+            .batch
+            .extract(&job_name, gpx_offset, mask_size, &dataset_url, &result_url)
+            .await?;
+
+        log::info!("Assigned processing ARN {} to panorama {}", arn, id);
+
+        panorama.processing_arn = Some(arn);
+        panorama.processing_status = Some("SUBMITTED".to_string());
+        panorama.status = PanoramaStatus::NeedsProcessingFinish;
+
+        self.repo.update(id, &panorama).await?;
+
+        Ok(panorama)
+    }
+
+    pub async fn check_processing_status(&self, panorama: &mut Panorama) -> Result<()> {
+        let arn = match &panorama.processing_arn {
+            Some(arn) => arn,
+            None => {
+                return Err(Error::BadRequestMessage(
+                    "Processing ARN is missing".to_string(),
+                ));
+            }
+        };
+
+        let status = panorama.processing_status.as_deref().unwrap_or("");
+
+        if status == "SUCCEEDED" || status == "FAILED" {
+            return Ok(());
+        }
+
+        let new_status = self.batch.get_job_status(arn).await.map_err(|e| {
+            log::error!("Error getting processing status for {arn}: {e}");
+            e
+        })?;
+
+        if new_status == status {
+            return Ok(());
+        }
+
+        log::info!(
+            "Panorama {} processing status changed from {} to {}",
+            panorama.id,
+            status,
+            new_status
+        );
+
+        panorama.processing_status = Some(new_status.clone());
+
+        if new_status == "SUCCEEDED" {
+            self.pull_panorama_images(panorama).await?;
+
+            panorama.status = PanoramaStatus::Success;
+
+            log::info!(
+                "Panorama {} status changed to {}.",
+                panorama.id,
+                panorama.status
+            );
+        }
+
+        self.repo.update(panorama.id, panorama).await?;
+
+        if new_status == "FAILED" {
+            return Err(Error::BadRequestMessage(
+                "Processing job failed".to_string(),
+            ));
+        }
+
+        Ok(())
+    }
+
+    async fn pull_panorama_images(&self, panorama: &mut Panorama) -> Result<()> {
+        let path = format!("{}/images.json", panorama.id);
+
+        let data = self.panoramas.read_file(&path).await?;
+
+        let images_source: Vec<super::models::PanoramaImageSource> = serde_json::from_slice(&data)?;
+
+        let mut images = Vec::new();
+
+        for src in images_source {
+            images.push(super::models::PanoramaImage {
+                id: get_unique_id()?,
+                panorama_id: panorama.id,
+                filename: src.filename,
+                lat: src.latitude,
+                lng: src.longitude,
+                heading: src.heading,
+                pitch: src.pitch,
+                roll: src.roll,
+                hidden: false,
+            });
+        }
+
+        let repo = self.repo.transact().await?;
+
+        repo.delete_images(panorama.id).await?;
+
+        repo.add_images(&images).await?;
+
+        repo.commit().await?;
+
+        panorama.image_count = images.len() as i32;
+
+        Ok(())
+    }
+
     /// Find all panoramas and see if any of them needs work.
     pub async fn process_draft_panoramas(&self) -> Result<()> {
         let panoramas = self.repo.all().await?;
@@ -269,6 +406,12 @@ impl PanoramaService {
                 }
                 PanoramaStatus::NeedsTranscodingFinish => {
                     self.check_transcoding_status(&mut panorama).await
+                }
+                PanoramaStatus::NeedsProcessing => {
+                    self.start_processing(panorama.id).await.map(|_| ())
+                }
+                PanoramaStatus::NeedsProcessingFinish => {
+                    self.check_processing_status(&mut panorama).await
                 }
                 _ => Ok(()),
             };
@@ -295,6 +438,7 @@ impl Injectable for PanoramaService {
         Ok(Self {
             repo: Arc::new(ctx.build::<PanoramaRepository>()?),
             storage: ctx.panoramas_source(),
+            panoramas: ctx.panoramas(),
             batch: ctx.batch(),
             queue: ctx.queue(),
         })
