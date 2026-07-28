@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import { pageState } from './page.svelte.ts';
-	import { formatDateTimeISO } from '$lib/utils/strings';
+	import { formatDate } from '$lib/utils/strings';
 	import Breadcrumbs from '$lib/components/admin/Breadcrumbs.svelte';
 	import PageHeader from '$lib/ui/header/PageHeader.svelte';
 	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
@@ -44,7 +44,7 @@
 					<tbody>
 						{#each pageState.panoramas as pano (pano.id)}
 							<tr>
-								<td class="col-date">{formatDateTimeISO(pano.created_at)}</td>
+								<td class="col-date">{formatDate(pano.created_at)}</td>
 								<td>
 									<a href="/admin/panoramas/{pano.id}">{pano.title}</a>
 								</td>
