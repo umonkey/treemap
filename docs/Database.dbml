@@ -157,20 +157,48 @@ Table observations {
   inclined int [not null, default: 0]
 }
 
-Table mapillary_images {
-  id text [pk]
-  sequence_id text [not null]
-  captured_at int [not null]
-  lat real [not null]
-  lon real [not null]
-  compass_angle real [not null]
-  quality_score real
+Table panoramas {
+  id int [pk]
+  created_at int [not null]
+  created_by int [not null]
+  image_count int [not null, default: 0]
+  status text [not null, default: 'NEEDS_FILES']
+  title text [not null]
+  visible int [not null, default: 0]
+  source_video_path text
+  gpx_path text
+  web_video_path text
+  transcode_arn text
+  transcode_status text
+  video_timestamp real
+  gpx_offset real
+  lat_offset real [not null, default: 0.0]
+  lon_offset real [not null, default: 0.0]
+  processing_arn text
+  processing_status text
+  failure_reason text
+  min_lat real
+  max_lat real
+  min_lon real
+  max_lon real
+  points_json text
 }
 
-Table mapillary_trees {
-  image_id text [not null]
+Table panoramas_images {
+  id int [pk]
+  panorama_id int [not null]
+  filename text [not null]
+  lat real [not null]
+  lng real [not null]
+  heading real [not null]
+  pitch real [not null]
+  roll real [not null]
+  hidden int [not null, default: 0]
+}
+
+Table panoramas_hints {
+  image_id int [not null]
   angle real [not null]
-  tree_id int
   user_id int [not null]
 }
 
@@ -193,9 +221,10 @@ Ref: comments.added_by > users.id
 Ref: likes.user_id > users.id
 Ref: training.user_id > users.id
 Ref: observations.created_by > users.id
+Ref: panoramas.created_by > users.id
 
 Ref: trees.species > species.name
 
-Ref: mapillary_trees.image_id > mapillary_images.id
-Ref: mapillary_trees.tree_id > trees.id
-Ref: mapillary_trees.user_id > users.id
+Ref: panoramas_images.panorama_id > panoramas.id
+Ref: panoramas_hints.image_id > panoramas_images.id
+Ref: panoramas_hints.user_id > users.id
