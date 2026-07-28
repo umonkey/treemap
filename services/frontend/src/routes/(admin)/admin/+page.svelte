@@ -18,7 +18,6 @@
 		{/if}
 		{#if $hasPermission('pano:edit')}
 			<li><a href="/admin/panoramas">Manage Panoramas</a></li>
-			<li><a href="/admin/sequences">StreetView Sequences</a></li>
 		{/if}
 	</ul>
 </article>
