@@ -179,6 +179,7 @@ impl BatchClient {
         ];
 
         let container_overrides = ContainerOverrides::builder()
+            .command("bin/process")
             .set_environment(Some(envs))
             .build();
 

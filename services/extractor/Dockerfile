@@ -89,3 +89,7 @@ RUN python3 -c "import opensfm; print('OpenSfM Python package successfully insta
     opensfm --help > /dev/null && \
     ffmpeg -version > /dev/null && \
     aws --version > /dev/null
+
+# 11. Set the default command
+RUN chmod +x /app/bin/*
+CMD ["bin/process"]
