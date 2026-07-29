@@ -12,7 +12,7 @@ if [ -z "$2" ]; then
 fi
 
 # (1) Download the original mp4 file.
-aws s3 cp "$1" ./source.mp4
+aws s3 cp --no-progress "$1" ./source.mp4
 
 # (2) Transcode the file
 ffmpeg -i ./source.mp4 -vf "scale=-2:360,format=yuv420p" -c:v libx264 -crf 30 -preset veryfast -movflags +faststart -an target.mp4
