@@ -47,7 +47,15 @@ resource "digitalocean_project_resources" "treemap" {
     digitalocean_spaces_bucket.dataset.urn,
     digitalocean_spaces_bucket.tiles.urn,
     digitalocean_spaces_bucket.treemap.urn,
+    digitalocean_droplet.app.urn,
   ]
+}
+
+resource "digitalocean_droplet" "app" {
+  name   = "cloud.treemaps.app"
+  region = "fra1"
+  size   = "s-1vcpu-512mb-10gb"
+  image  = "195932981"
 }
 
 resource "digitalocean_spaces_bucket" "backups" {
