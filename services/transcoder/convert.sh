@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # The main transcoder script.  Does the following:
 # (1) Download the original mp4 file
 # (2) Transcode to 360p
@@ -12,11 +12,11 @@ if [ -z "$2" ]; then
 fi
 
 # (1) Download the original mp4 file.
-aws s3 cp --no-progress "$1" ./source.mp4
+time aws s3 cp --no-progress "$1" ./source.mp4
 
 # (2) Transcode the file
-ffmpeg -i ./source.mp4 -vf "scale=-2:360,format=yuv420p" -c:v libx264 -crf 30 -preset veryfast -movflags +faststart -an target.mp4
+time ffmpeg -i ./source.mp4 -vf "scale=-2:360,format=yuv420p" -c:v libx264 -crf 30 -preset veryfast -movflags +faststart -an target.mp4
 ls -lh target.mp4
 
 # (3) Upload the results.
-aws s3 cp target.mp4 "$2"
+time aws s3 cp --no-progress target.mp4 "$2"
