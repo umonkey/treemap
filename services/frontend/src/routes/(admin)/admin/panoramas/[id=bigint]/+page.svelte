@@ -97,8 +97,10 @@
 						'Please contact technical support.'}
 				</p>
 			{:else if pageState.panorama.status === 'NEEDS_TRANSCODING' || pageState.panorama.status === 'NEEDS_TRANSCODING_FINISH'}
-				<p>We are processing the uploaded video file, please wait.</p>
-				<p>You will get an email when we're ready for next steps.</p>
+				<div class="message">
+					<p>We are processing the uploaded video file, please wait.</p>
+					<p>You will get an email when we're ready for next steps.</p>
+				</div>
 			{:else if pageState.panorama.status === 'NEEDS_SYNC'}
 				<VideoSync panoramaId={id} {pageState} />
 			{:else if pageState.panorama.status === 'NEEDS_PROCESSING' || pageState.panorama.status === 'NEEDS_PROCESSING_FINISH'}

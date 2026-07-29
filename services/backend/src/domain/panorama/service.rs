@@ -293,11 +293,12 @@ impl PanoramaService {
             return Ok(panorama);
         }
 
-        let input_path = panorama
+        let input_key = panorama
             .source_video_path
             .clone()
             .unwrap_or_else(|| format!("{id}/video.mp4"));
-        let output_path = format!("{id}/video-360p.mp4");
+        let input_path = format!("s3://{}/{}", self.storage.name(), input_key);
+        let output_path = format!("s3://{}/{id}/video-360p.mp4", self.storage.name());
         let job_name = format!("panoramas-transcode-{id}");
 
         let arn = self
