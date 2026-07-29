@@ -333,6 +333,11 @@ impl PanoramaService {
             return Ok(());
         }
 
+        log::debug!(
+            "Checking transcode job status for panorama {} ...",
+            panorama.id
+        );
+
         let new_status = self.batch.get_job_status(arn).await.map_err(|e| {
             log::error!("Error getting transcode status for {arn}: {e}");
             e
