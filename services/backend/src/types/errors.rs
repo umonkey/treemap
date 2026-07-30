@@ -32,6 +32,7 @@ pub enum Error {
 
     MissingAuthorizationHeader,
     OsmExchange(String),
+    PanoramaFailure(String),
     PanoramaNotFound,
     Queue,
     RemoteAddrNotSet,
@@ -117,6 +118,9 @@ impl Error {
             Error::OsmExchange(_) => {
                 r#"{"error":{"code":"OsmExchange","description":"OSM exchange failed."}}"#.to_string()
             }
+            Error::PanoramaFailure(s) => {
+                format!(r#"{{"error":{{"code":"PanoramaFailure","description":"{s}"}}}}"#)
+            }
             Error::PanoramaNotFound => {
                 r#"{"error":{"code":"PanoramaNotFound","description":"The specified panorama does not exist in the database."}}"#.to_string()
             }
@@ -195,7 +199,8 @@ impl ResponseError for Error {
             | Error::BadCallback
             | Error::BadImage
             | Error::BadRequest
-            | Error::BadRequestMessage(_) => StatusCode::BAD_REQUEST,
+            | Error::BadRequestMessage(_)
+            | Error::PanoramaFailure(_) => StatusCode::BAD_REQUEST,
             Error::DuplicateRecord | Error::DuplicateTree => StatusCode::CONFLICT,
             Error::DatabaseQuery(_) => StatusCode::INTERNAL_SERVER_ERROR,
             _ => StatusCode::INTERNAL_SERVER_ERROR,
@@ -231,6 +236,7 @@ impl fmt::Display for Error {
 
             Error::MissingAuthorizationHeader => write!(f, "MissingAuthorizationHeader"),
             Error::OsmExchange(s) => write!(f, "OsmExchange: {s}"),
+            Error::PanoramaFailure(s) => write!(f, "PanoramaFailure: {s}"),
             Error::PanoramaNotFound => write!(f, "PanoramaNotFound"),
             Error::Queue => write!(f, "Queue"),
             Error::RemoteAddrNotSet => write!(f, "RemoteAddrNotSet"),

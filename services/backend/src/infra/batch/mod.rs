@@ -204,7 +204,7 @@ impl BatchClient {
         Ok(arn.to_string())
     }
 
-    pub async fn get_job_status(&self, arn: &str) -> Result<String> {
+    pub async fn get_job_status(&self, arn: &str) -> Result<(String, Option<String>)> {
         let output = self
             .client
             .describe_jobs()
@@ -225,7 +225,10 @@ impl BatchClient {
             .status()
             .map(|s| s.as_str().to_string())
             .unwrap_or_else(|| "UNKNOWN".to_string());
-        Ok(status)
+
+        let status_reason = job.status_reason().map(|s| s.to_string());
+
+        Ok((status, status_reason))
     }
 }
 

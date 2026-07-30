@@ -322,7 +322,7 @@ impl PanoramaService {
         let arn = match &panorama.transcode_arn {
             Some(arn) => arn,
             None => {
-                return Err(Error::BadRequestMessage(
+                return Err(Error::PanoramaFailure(
                     "Transcode ARN is missing".to_string(),
                 ));
             }
@@ -339,7 +339,7 @@ impl PanoramaService {
             panorama.id
         );
 
-        let new_status = self.batch.get_job_status(arn).await.map_err(|e| {
+        let (new_status, status_reason) = self.batch.get_job_status(arn).await.map_err(|e| {
             log::error!("Error getting transcode status for {arn}: {e}");
             e
         })?;
@@ -365,9 +365,8 @@ impl PanoramaService {
         self.repo.update(panorama.id, panorama).await?;
 
         if new_status == "FAILED" {
-            return Err(Error::BadRequestMessage(
-                "Transcoding job failed".to_string(),
-            ));
+            let msg = status_reason.unwrap_or_else(|| "Transcoding job failed".to_string());
+            return Err(Error::PanoramaFailure(msg));
         }
 
         Ok(())
@@ -418,7 +417,7 @@ impl PanoramaService {
         let arn = match &panorama.processing_arn {
             Some(arn) => arn,
             None => {
-                return Err(Error::BadRequestMessage(
+                return Err(Error::PanoramaFailure(
                     "Processing ARN is missing".to_string(),
                 ));
             }
@@ -430,7 +429,7 @@ impl PanoramaService {
             return Ok(());
         }
 
-        let new_status = self.batch.get_job_status(arn).await.map_err(|e| {
+        let (new_status, status_reason) = self.batch.get_job_status(arn).await.map_err(|e| {
             log::error!("Error getting processing status for {arn}: {e}");
             e
         })?;
@@ -464,9 +463,8 @@ impl PanoramaService {
         self.repo.update(panorama.id, panorama).await?;
 
         if new_status == "FAILED" {
-            return Err(Error::BadRequestMessage(
-                "Processing job failed".to_string(),
-            ));
+            let msg = status_reason.unwrap_or_else(|| "Processing job failed".to_string());
+            return Err(Error::PanoramaFailure(msg));
         }
 
         Ok(())
@@ -477,7 +475,8 @@ impl PanoramaService {
 
         let data = self.panoramas.read_file(&path).await?;
 
-        let images_source: Vec<super::models::PanoramaImageSource> = serde_json::from_slice(&data)?;
+        let images_source: Vec<super::models::PanoramaImageSource> = serde_json::from_slice(&data)
+            .map_err(|e| Error::PanoramaFailure(format!("JSON error: {e}")))?;
 
         let mut images = Vec::new();
 
@@ -580,13 +579,15 @@ impl PanoramaService {
 
             if let Err(e) = result {
                 log::error!("Error processing panorama {}: {e}", panorama.id);
-                panorama.status = PanoramaStatus::Failure;
-                panorama.failure_reason = Some(e.to_string());
-                if let Err(update_err) = self.repo.update(panorama.id, &panorama).await {
-                    log::error!(
-                        "Failed to update panorama {} failure status: {update_err}",
-                        panorama.id
-                    );
+                if let Error::PanoramaFailure(msg) = &e {
+                    panorama.status = PanoramaStatus::Failure;
+                    panorama.failure_reason = Some(msg.clone());
+                    if let Err(update_err) = self.repo.update(panorama.id, &panorama).await {
+                        log::error!(
+                            "Failed to update panorama {} failure status: {update_err}",
+                            panorama.id
+                        );
+                    }
                 }
             }
         }
