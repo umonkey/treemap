@@ -558,38 +558,44 @@ impl PanoramaService {
 
     /// Find all panoramas and see if any of them needs work.
     pub async fn process_draft_panoramas(&self) -> Result<()> {
-        let panoramas = self.repo.all().await?;
+        log::info!("Starting to look for panoramas...");
 
-        for mut panorama in panoramas {
-            let result = match panorama.status {
-                PanoramaStatus::NeedsTranscoding => {
-                    self.start_transcoding(panorama.id).await.map(|_| ())
-                }
-                PanoramaStatus::NeedsTranscodingFinish => {
-                    self.check_transcoding_status(&mut panorama).await
-                }
-                PanoramaStatus::NeedsProcessing => {
-                    self.start_processing(panorama.id).await.map(|_| ())
-                }
-                PanoramaStatus::NeedsProcessingFinish => {
-                    self.check_processing_status(&mut panorama).await
-                }
-                _ => Ok(()),
-            };
+        for _ in 0..1000 {
+            let panoramas = self.repo.all().await?;
 
-            if let Err(e) = result {
-                log::error!("Error processing panorama {}: {e}", panorama.id);
-                if let Error::PanoramaFailure(msg) = &e {
-                    panorama.status = PanoramaStatus::Failure;
-                    panorama.failure_reason = Some(msg.clone());
-                    if let Err(update_err) = self.repo.update(panorama.id, &panorama).await {
-                        log::error!(
-                            "Failed to update panorama {} failure status: {update_err}",
-                            panorama.id
-                        );
+            for mut panorama in panoramas {
+                let result = match panorama.status {
+                    PanoramaStatus::NeedsTranscoding => {
+                        self.start_transcoding(panorama.id).await.map(|_| ())
+                    }
+                    PanoramaStatus::NeedsTranscodingFinish => {
+                        self.check_transcoding_status(&mut panorama).await
+                    }
+                    PanoramaStatus::NeedsProcessing => {
+                        self.start_processing(panorama.id).await.map(|_| ())
+                    }
+                    PanoramaStatus::NeedsProcessingFinish => {
+                        self.check_processing_status(&mut panorama).await
+                    }
+                    _ => Ok(()),
+                };
+
+                if let Err(e) = result {
+                    log::error!("Error processing panorama {}: {e}", panorama.id);
+                    if let Error::PanoramaFailure(msg) = &e {
+                        panorama.status = PanoramaStatus::Failure;
+                        panorama.failure_reason = Some(msg.clone());
+                        if let Err(update_err) = self.repo.update(panorama.id, &panorama).await {
+                            log::error!(
+                                "Failed to update panorama {} failure status: {update_err}",
+                                panorama.id
+                            );
+                        }
                     }
                 }
             }
+
+            tokio::time::sleep(std::time::Duration::from_secs(10)).await;
         }
 
         Ok(())
