@@ -5,14 +5,16 @@ BATCH_DEFINITION=treemap-extractor
 DATASET_URL?=s3://treemap-panoramas-tmp-g6dxkoua/437014194731225088/
 RESULT_URL?=s3://panoramas-px3qodu3/437014194731225088/
 
-build:
+build: docker-login
 	docker build -t $(PACKAGE):latest .
 
-push:
-	@echo $(CR_TOKEN) | docker login ghcr.io -u $(CR_USER) --password-stdin
+push: docker-login
 	docker tag $(PACKAGE):latest ghcr.io/$(CR_USER)/$(PACKAGE):latest
 	docker push ghcr.io/$(CR_USER)/$(PACKAGE):latest
 	docker rmi ghcr.io/$(CR_USER)/$(PACKAGE):latest
+
+docker-login:
+	@echo $(CR_TOKEN) | docker login ghcr.io -u $(CR_USER) --password-stdin
 
 format:
 	@true
