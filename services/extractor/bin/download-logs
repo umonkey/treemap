@@ -1,0 +1,16 @@
+#!/bin/sh
+
+if [ -z "$1" ]; then
+    echo "Usage: $0 stream_name > batch.log"
+    exit 1
+fi
+
+aws logs filter-log-events \
+  --log-group-name "/aws/batch/job" \
+  --log-stream-names "$1" \
+  --query "events[].[to_string(timestamp), message]" \
+  --output text | awk '{
+    ts = strftime("[%Y-%m-%d %H:%M:%S]", $1/1000);
+    sub(/^[0-9]+[ \t]+/, "");
+    print ts, $0;
+  }'
