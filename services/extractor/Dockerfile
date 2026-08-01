@@ -4,7 +4,7 @@ FROM debian:bookworm AS builder
 ARG DEBIAN_FRONTEND=noninteractive
 
 # Copy uv binary
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+COPY --from=astralsh/uv:latest /uv /uvx /bin/
 
 # 1. Install build-time dependencies
 RUN apt-get update && apt-get install -y \
@@ -35,12 +35,12 @@ RUN uv pip install -r pyproject.toml
 
 # --- STAGE 2: The Final Image (Slim Image) ---
 FROM debian:bookworm-slim
-LABEL org.opencontainers.image.source https://github.com/umonkey/treemap
+LABEL org.opencontainers.image.source=https://github.com/umonkey/treemap
 
 ARG DEBIAN_FRONTEND=noninteractive
 
 # Copy uv binary
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+COPY --from=astralsh/uv:latest /uv /uvx /bin/
 
 # 6. Install RUNTIME dependencies ONLY (including ffmpeg)
 RUN apt-get update && apt-get install -y --no-install-recommends \
