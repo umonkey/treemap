@@ -22,7 +22,7 @@ time bin/upload-dataset
 
 # Double check config existence, otherwise we run with default settings
 # which make the process multiple times slower.
-if [ ! -f var/dataset/config.yml ]; then
+if [ ! -f var/dataset/config.yaml ]; then
     echo "OpenSfM config not found, abort."
     exit 1
 fi
