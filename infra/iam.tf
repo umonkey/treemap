@@ -14,7 +14,10 @@ resource "aws_iam_user_policy" "treemap_batch" {
         Action = [
           "batch:SubmitJob",
           "batch:DescribeJobs",
-          "batch:TerminateJob"
+          "batch:TerminateJob",
+          "logs:GetLogEvents",
+          "logs:DescribeLogStreams",
+          "logs:FilterLogEvents"
         ]
         Resource = "*"
       }
