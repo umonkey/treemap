@@ -27,6 +27,14 @@ resource "cloudflare_record" "ses_dkim" {
   ttl     = 600
 }
 
+resource "cloudflare_record" "spf" {
+  zone_id = data.cloudflare_zone.main.id
+  name    = "@"
+  type    = "TXT"
+  content = "\"v=spf1 include:amazonses.com include:zoho.eu ~all\""
+  ttl     = 3600
+}
+
 resource "aws_iam_user" "ses_smtp_user" {
   name = "ses-smtp-user"
 }
