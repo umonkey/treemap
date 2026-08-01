@@ -4,6 +4,7 @@
 pub mod batch;
 pub mod config;
 pub mod database;
+pub mod email;
 pub mod google_auth;
 pub mod nominatim;
 pub mod osm;
@@ -15,3 +16,5 @@ pub mod tokens;
 
 #[allow(unused_imports)]
 pub use batch::BatchClient;
+#[allow(unused_imports)]
+pub use email::EmailClient;

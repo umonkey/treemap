@@ -15,6 +15,7 @@ fn usage() {
     println!();
     println!("Commands:");
     println!("  backup-database       -- create a database backup");
+    println!("  dispatch-emails       -- run the email dispatcher daemon");
     println!("  merge-duplicates [N]  -- automated duplicate tree resolution");
     println!("  migrate-timestamps    -- backfill update timestamps");
 
@@ -64,6 +65,10 @@ async fn main() -> std::io::Result<()> {
         }
         "backup-database" => {
             backup_database_command().await;
+            return Ok(());
+        }
+        "dispatch-emails" => {
+            dispatch_emails_command().await;
             return Ok(());
         }
         "merge-duplicates" => {

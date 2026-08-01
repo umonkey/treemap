@@ -1,3 +1,4 @@
+use crate::domain::email::{EmailRepository, EmailService};
 use crate::infra::batch::BatchClient;
 use crate::infra::config::Config;
 use crate::infra::database::Database;
@@ -26,6 +27,8 @@ pub trait Context {
     #[allow(dead_code)]
     fn panoramas(&self) -> Arc<PanoramaBucket>;
     fn batch(&self) -> Arc<BatchClient>;
+    #[allow(dead_code)]
+    fn email(&self) -> Arc<EmailService>;
     #[allow(dead_code)]
     fn mcp(&self) -> Arc<McpSessionManager>;
 }
@@ -77,6 +80,7 @@ pub struct AppState {
     pub panoramas_source: Arc<PanoramaSourceBucket>,
     pub panoramas: Arc<PanoramaBucket>,
     pub batch: Arc<BatchClient>,
+    pub email: Arc<EmailService>,
     pub mcp: Arc<McpSessionManager>,
 }
 
@@ -101,6 +105,8 @@ impl AppState {
         let panoramas_source = Arc::new(PanoramaSourceBucket::new(driver.clone(), &config)?);
         let panoramas = Arc::new(PanoramaBucket::new(driver.clone(), &config)?);
         let batch = Arc::new(BatchClient::new(&config, &secrets)?);
+        let email_repo = Arc::new(EmailRepository::new(database.clone()));
+        let email = Arc::new(EmailService::new(email_repo));
 
         let mcp = Arc::new(McpSessionManager::default());
 
@@ -115,6 +121,7 @@ impl AppState {
             panoramas_source,
             panoramas,
             batch,
+            email,
             mcp,
         })
     }
@@ -133,6 +140,7 @@ impl AppState {
             panoramas_source: self.panoramas_source.clone(),
             panoramas: self.panoramas.clone(),
             batch: self.batch.clone(),
+            email: self.email.clone(),
             mcp: self.mcp.clone(),
         })
     }
@@ -209,6 +217,10 @@ impl Context for AppState {
 
     fn batch(&self) -> Arc<BatchClient> {
         self.batch.clone()
+    }
+
+    fn email(&self) -> Arc<EmailService> {
+        self.email.clone()
     }
 
     fn mcp(&self) -> Arc<McpSessionManager> {

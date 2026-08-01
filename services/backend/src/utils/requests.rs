@@ -22,6 +22,7 @@ fn guess_cdn_type(request: &HttpRequest) -> CdnType {
     CdnType::Other
 }
 
+#[allow(clippy::question_mark)]
 pub fn get_remote_addr(request: &HttpRequest) -> Option<String> {
     let header = match guess_cdn_type(request) {
         CdnType::Cloudflare => "cf-connecting-ip",

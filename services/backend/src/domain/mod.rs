@@ -4,6 +4,7 @@
 pub mod alert;
 pub mod alert_photo;
 pub mod comment;
+pub mod email;
 pub mod health;
 pub mod heatmap;
 pub mod iam;

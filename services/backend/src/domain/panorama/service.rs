@@ -3,7 +3,9 @@ use super::models::{
 };
 use super::repository::PanoramaRepository;
 use crate::actions::panorama::PanoramaImageRead;
+use crate::domain::email::EmailService;
 use crate::domain::tree::Bounds;
+use crate::domain::user::UserService;
 use crate::infra::batch::BatchClient;
 use crate::infra::queue::Queue;
 use crate::infra::storage::{CompletedPart, PanoramaBucket, PanoramaSourceBucket};
@@ -20,6 +22,8 @@ pub struct PanoramaService {
     panoramas: Arc<PanoramaBucket>,
     batch: Arc<BatchClient>,
     queue: Arc<Queue>,
+    users: Arc<UserService>,
+    email: Arc<EmailService>,
 }
 
 impl PanoramaService {
@@ -360,12 +364,24 @@ impl PanoramaService {
         if new_status == "SUCCEEDED" {
             panorama.web_video_path = Some(format!("{}/video-360p.mp4", panorama.id));
             panorama.status = PanoramaStatus::NeedsSync;
+            self.notify_user(
+                panorama.created_by,
+                "panorama_sync",
+                json!({ "panorama_id": panorama.id }),
+            )
+            .await;
         }
 
         self.repo.update(panorama.id, panorama).await?;
 
         if new_status == "FAILED" {
             let msg = status_reason.unwrap_or_else(|| "Transcoding job failed".to_string());
+            self.notify_user(
+                panorama.created_by,
+                "panorama_transcoding_failed",
+                json!({ "panorama_id": panorama.id, "reason": msg }),
+            )
+            .await;
             return Err(Error::PanoramaFailure(msg));
         }
 
@@ -453,6 +469,13 @@ impl PanoramaService {
 
             panorama.status = PanoramaStatus::Success;
 
+            self.notify_user(
+                panorama.created_by,
+                "panorama_ready",
+                json!({ "panorama_id": panorama.id }),
+            )
+            .await;
+
             log::info!(
                 "Panorama {} status changed to {}.",
                 panorama.id,
@@ -468,6 +491,21 @@ impl PanoramaService {
         }
 
         Ok(())
+    }
+
+    async fn notify_user(&self, user_id: u64, template: &str, data: serde_json::Value) {
+        match self.users.get_user(user_id).await {
+            Ok(user) => {
+                if !user.email.is_empty() {
+                    if let Err(e) = self.email.enqueue(&user.email, template, &data).await {
+                        log::error!("Failed to queue email notification: {e}");
+                    }
+                }
+            }
+            Err(e) => {
+                log::warn!("Could not retrieve user {user_id} email for notification: {e}");
+            }
+        }
     }
 
     async fn pull_panoramas_images(&self, panorama: &mut Panorama) -> Result<()> {
@@ -610,6 +648,8 @@ impl Injectable for PanoramaService {
             panoramas: ctx.panoramas(),
             batch: ctx.batch(),
             queue: ctx.queue(),
+            users: Arc::new(ctx.build::<UserService>()?),
+            email: Arc::new(ctx.build::<EmailService>()?),
         })
     }
 }

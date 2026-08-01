@@ -310,4 +310,17 @@ CREATE TABLE IF NOT EXISTS instances (
     enabled INTEGER NOT NULL DEFAULT 1
 );
 
+CREATE TABLE IF NOT EXISTS emails (
+    `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+    `recipient` TEXT NOT NULL,
+    `event_name` TEXT NOT NULL,
+    `template_data` TEXT NOT NULL,
+    `status` TEXT NOT NULL DEFAULT 'PENDING',
+    `attempts` INT NOT NULL DEFAULT 0,
+    `last_error` TEXT NULL,
+    `created_at` INT NOT NULL,
+    `sent_at` INT NULL
+);
+CREATE INDEX IF NOT EXISTS emails_status ON emails (status);
+
 COMMIT;

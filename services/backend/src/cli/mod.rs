@@ -1,4 +1,5 @@
 mod backup_database_command;
+mod dispatch_emails_command;
 mod merge_duplicates_command;
 mod migrate_timestamps_command;
 mod osm_pull_command;
@@ -13,7 +14,9 @@ mod serve_command;
 mod update_tree_address_command;
 mod update_tree_addresses_command;
 mod upload_files_command;
+
 pub use self::backup_database_command::*;
+pub use self::dispatch_emails_command::*;
 pub use self::merge_duplicates_command::*;
 pub use self::migrate_timestamps_command::*;
 pub use self::osm_pull_command::*;
