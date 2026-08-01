@@ -27,13 +27,6 @@ The API follows the Action-Domain-Responder model.
 - Use macro-based routing (e.g., `#[get("/...")]`) for web actions.
 - Action modules should define their router function (e.g., `pub fn tree_router(cfg: &mut ServiceConfig)`) in the `mod.rs` file, importing handlers from `actions.rs` via `pub use actions::*;`.
 
-## Development workflow
-
-- Load the `rust` skill using the `skill` tool before starting any work on the backend code.
-- No automatic commits. Never execute git commit, git push or similar version control commands automatically.
-- When asked for a solution, suggest the best one for this project, but mention alternatives.
-- Before implementing any changes, provide the implementation plan and ask for the user's confirmation.
-
 ## Useful commands
 
 - `make build`: build the project (release mode).
