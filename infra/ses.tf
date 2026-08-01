@@ -35,6 +35,14 @@ resource "cloudflare_record" "spf" {
   ttl     = 3600
 }
 
+resource "cloudflare_record" "dmarc" {
+  zone_id = data.cloudflare_zone.main.id
+  name    = "_dmarc"
+  type    = "TXT"
+  content = "\"v=DMARC1; p=none;\""
+  ttl     = 3600
+}
+
 resource "aws_iam_user" "ses_smtp_user" {
   name = "ses-smtp-user"
 }
