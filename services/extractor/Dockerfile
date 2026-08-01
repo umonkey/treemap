@@ -4,7 +4,7 @@ FROM debian:bookworm AS builder
 ARG DEBIAN_FRONTEND=noninteractive
 
 # Copy uv binary
-COPY --from=astralsh/uv:latest /uv /uvx /bin/
+COPY --from=astral/uv:latest /uv /uvx /bin/
 
 # 1. Install build-time dependencies
 RUN apt-get update && apt-get install -y \
@@ -40,7 +40,7 @@ LABEL org.opencontainers.image.source=https://github.com/umonkey/treemap
 ARG DEBIAN_FRONTEND=noninteractive
 
 # Copy uv binary
-COPY --from=astralsh/uv:latest /uv /uvx /bin/
+COPY --from=astral/uv:latest /uv /uvx /bin/
 
 # 6. Install RUNTIME dependencies ONLY (including ffmpeg)
 RUN apt-get update && apt-get install -y --no-install-recommends \
