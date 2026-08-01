@@ -20,6 +20,13 @@ echo "=== Extracting frames ==="
 time bin/app extract --distance 3 --offset "${GPX_OFFSET:-0.0}" var/dataset/video.mp4 var/dataset/track.gpx var/dataset/images
 time bin/upload-dataset
 
+# Double check config existence, otherwise we run with default settings
+# which make the process multiple times slower.
+if [ ! -f var/dataset/config.yml ]; then
+    echo "OpenSfM config not found, abort."
+    exit 1
+fi
+
 # This creates a mask for each extracted frame.
 # The mask contains upper white part and black bottom part.  The black part is ignored
 # by OpenSfM.  We use this to mask the car or the human operator, because having a static
