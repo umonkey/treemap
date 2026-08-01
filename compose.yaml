@@ -33,6 +33,10 @@ services:
       - sqs_key
       - sqs_secret
       - osm_token
+      - smtp_user
+      - smtp_secret
+      - smtp_host
+      - from_email
 
   frontend:
     build:
@@ -72,3 +76,11 @@ secrets:
     file: .secrets/sqs_secret.txt
   osm_token:
     file: .secrets/osm_token.txt
+  smtp_user:
+    file: .secrets/smtp_user.txt
+  smtp_secret:
+    file: .secrets/smtp_secret.txt
+  smtp_host:
+    file: .secrets/smtp_host.txt
+  from_email:
+    file: .secrets/from_email.txt

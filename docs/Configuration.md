@@ -38,6 +38,6 @@ This will create an empty database with the correct schema.
 
 ## Secrets
 
-API keys and tokens cannot be stored in the config file. Instead, they are read from the environment variables or files under `/run/secrets` with the same name. The following secrets are supported: FILES_KEY, FILES_SECRET, OSM_CLIENT_SECRET, OSM_TOKEN, TURSO_TOKEN, JWT_SECRET.
+API keys and tokens cannot be stored in the config file. Instead, they are read from the environment variables or files under `/run/secrets` with the same name. The following secrets are supported: FILES_KEY, FILES_SECRET, OSM_CLIENT_SECRET, OSM_TOKEN, TURSO_TOKEN, JWT_SECRET, SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_SECRET, FROM_EMAIL.
 
 When running the app in Fly.io, secrets must be set using the `fly secrets set K1=V K2=V` command.
