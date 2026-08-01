@@ -1,26 +1,19 @@
-# This workflow builds and pushes the video transcoder service image.
-#
-# The image is built and pushed as: ghcr.io/umonkey/treemap-transcoder:latest
-
-name: Deploy Transcoder
+name: Deploy Extractor
 
 on:
   push:
     branches:
       - master
     paths:
-      - 'services/transcoder/**'
+      - 'services/extractor/**'
   pull_request:
     paths:
-      - 'services/transcoder/**'
+      - 'services/extractor/**'
   workflow_dispatch:
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: services/transcoder
     permissions:
       contents: read
       packages: write
@@ -41,10 +34,10 @@ jobs:
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v6
         with:
-          context: services/transcoder
+          context: services/extractor
           push: ${{ github.ref == 'refs/heads/master' }}
-          tags: ghcr.io/umonkey/treemap-transcoder:latest
+          tags: ghcr.io/umonkey/treemap-extractor:latest
           cache-from: |
-            type=gha,scope=transcoder
-            ghcr.io/umonkey/treemap-transcoder:latest
-          cache-to: type=gha,mode=max,scope=transcoder
+            type=gha,scope=extractor
+            ghcr.io/umonkey/treemap-extractor:latest
+          cache-to: type=gha,mode=max,scope=extractor
