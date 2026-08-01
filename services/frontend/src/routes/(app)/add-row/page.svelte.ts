@@ -5,10 +5,27 @@ import { showError } from '$lib/errors';
 import { spreadDots } from '$lib/map';
 import { goto, routes } from '$lib/routes';
 import { mapRowState } from '$lib/stores/mapRowState.svelte';
+import { getDistance } from '$lib/utils';
 import type { IAddTreesRequest, ILatLon } from '$lib/types';
 
 class PageState {
 	saving = $state<boolean>(false);
+
+	distance = $derived(
+		mapRowState.pointA && mapRowState.pointB
+			? getDistance(mapRowState.pointA, mapRowState.pointB)
+			: 0
+	);
+
+	offset = $derived.by(() => {
+		if (mapRowState.pointA && mapRowState.pointB) {
+			return {
+				lat: mapRowState.pointB.lat - mapRowState.pointA.lat,
+				lon: mapRowState.pointB.lng - mapRowState.pointA.lng
+			};
+		}
+		return null;
+	});
 
 	setPointA = () => {
 		const center = mapState.center;
