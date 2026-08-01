@@ -39,6 +39,7 @@ RUN rm -rf src
 # Now build the main application.
 COPY services/backend/src src
 COPY services/backend/dev dev
+COPY services/backend/templates templates
 RUN touch src/main.rs
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
     --mount=type=cache,target=/app/target \
@@ -83,6 +84,7 @@ COPY container/rootfs/ /
 RUN if [ -f /etc/crontabs/root ]; then mkdir -p /var/spool/cron/crontabs && cp /etc/crontabs/root /var/spool/cron/crontabs/root && chmod 600 /var/spool/cron/crontabs/root; fi
 COPY services/backend/dev/schema-sqlite.sql /app
 COPY services/backend/config.toml.dev /app
+COPY services/backend/templates /app/templates
 COPY --from=frontend-builder /app/build /app/static
 
 ENV TZ=Asia/Yerevan

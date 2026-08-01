@@ -28,6 +28,7 @@ RUN rm -rf src
 
 COPY src src
 COPY dev dev
+COPY templates templates
 RUN touch src/main.rs
 RUN cargo build --release
 
@@ -47,6 +48,7 @@ RUN cp /etc/crontabs/root /var/spool/cron/crontabs/root && chmod 600 /var/spool/
 COPY dev/schema-sqlite.sql /app
 COPY static /app/static
 COPY config.toml.dev /app
+COPY templates /app/templates
 
 ENV RUST_LOG=info,treemap=debug
 
