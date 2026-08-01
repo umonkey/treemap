@@ -1,3 +1,20 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 6.56.0"
+    }
+    digitalocean = {
+      source  = "digitalocean/digitalocean"
+      version = "~> 2.96.0"
+    }
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 4.0"
+    }
+  }
+}
+
 provider "aws" {
   region = var.region
 }
@@ -25,4 +42,8 @@ provider "digitalocean" {
   token             = var.do_token
   spaces_access_id  = var.do_spaces_access_id
   spaces_secret_key = var.do_spaces_secret_key
+}
+
+provider "cloudflare" {
+  api_token = var.cloudflare_api_token
 }

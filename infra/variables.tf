@@ -35,3 +35,15 @@ variable "do_project_id" {
   description = "DigitalOcean project ID"
   default     = "5af28a34-90ae-4738-9c14-ce604676ba4c"
 }
+
+variable "domain" {
+  type        = string
+  description = "Domain name for SES and other services"
+  default     = "treemaps.app"
+}
+
+variable "cloudflare_api_token" {
+  type        = string
+  description = "Cloudflare API token"
+  sensitive   = true
+}
