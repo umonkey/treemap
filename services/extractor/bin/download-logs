@@ -1,4 +1,5 @@
 #!/bin/sh
+# This script downloads the whole AWS Batch job log for local debugging.
 
 if [ -z "$1" ]; then
     echo "Usage: $0 stream_name > batch.log"
