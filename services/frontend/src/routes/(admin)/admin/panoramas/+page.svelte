@@ -31,7 +31,7 @@
 				<table>
 					<thead>
 						<tr>
-							<th class="col-date">Created At</th>
+							<th class="col-date">Date</th>
 							<th class="col-title">Title</th>
 							<th class="col-images">Images</th>
 							<th class="col-status">Status</th>
