@@ -2,17 +2,17 @@
 
 # Optimization: Resize images for feature extraction
 # 2048 is sufficient for accurate camera poses and saves processing time.
-feature_process_size: 2048
-feature_process_size_panorama: 2048
+feature_process_size: 4096
+feature_process_size_panorama: 4096
 
 # Optimization: Sequential Matching
-matching_order_neighbors: 16  # Match ±8 frames in chronological sequence
+matching_order_neighbors: 20  # Match ±8 frames in chronological sequence
 matching_gps_distance: 50      # Limit search for near images to 50m to avoid false matches and save time
 matching_gps_neighbors: 10    # Cap the number of GPS-based matches to 10 to prevent exhaustive searching
 
 # High point count for stability
-feature_min_frames: 2000
-feature_min_frames_panorama: 2500
+min_features: 10000
+min_features_panorama: 10000
 
 # Minimum number of frames a feature must be seen in to create a track.
 # Increasing this significantly reduces memory by filtering out noise.
@@ -27,7 +27,7 @@ bundle_use_gps: yes
 
 # Reduced from 1000 to 100 to allow visual math to lead during turns.
 # This helps smooth out consumer-grade GPS noise (±6m).
-gps_weight: 100.0
+gps_weight: 1.0
 bundle_gps_vertical_weight: 0.01
 
 # Disable the problematic Horizontal Prior

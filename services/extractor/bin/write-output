@@ -42,6 +42,14 @@ def main(dataset_dir, output_dir):
     for f in glob.glob(os.path.join(output_dir, "*.jpg")):
         os.remove(f)
 
+    # Copy all images to output directory to fill holes
+    print("Copying all images to output directory...")
+    images_src_dir = os.path.join(dataset_dir, 'images')
+    if os.path.exists(images_src_dir):
+        for img_path in glob.glob(os.path.join(images_src_dir, '*')):
+            if os.path.isfile(img_path):
+                shutil.copy2(img_path, os.path.join(output_dir, os.path.basename(img_path)))
+
     reconstruction_path = os.path.join(dataset_dir, "reconstruction.json")
     reference_lla_path = os.path.join(dataset_dir, "reference_lla.json")
 
@@ -99,15 +107,9 @@ def main(dataset_dir, output_dir):
             r_vec = np.array(shot_data['rotation'])
             t_vec = np.array(shot_data['translation'])
             rmat = R.from_rotvec(r_vec).as_matrix()
-            # OpenSfM internal coords for camera center calculation use T
-            # but reconstruction.json also has gps_position which is often the optimized ENU
-            if 'gps_position' in shot_data:
-                e, n, u = shot_data['gps_position']
-            else:
-                # Fallback to calculating from R, T
-                # Note: OpenSfM T is in camera coordinates
-                c_world = -rmat.T @ t_vec
-                e, n, u = c_world
+            # Note: OpenSfM T is in camera coordinates
+            c_world = -rmat.T @ t_vec
+            e, n, u = c_world
 
             lat, lon, alt = enu_to_lla(lat_ref, lon_ref, alt_ref, e, n, u)
 
@@ -197,7 +199,7 @@ def main(dataset_dir, output_dir):
         '-csv=' + csv_path,
         '-overwrite_original',
         '-n', # Use numeric values for coordinates
-        'output/'
+        output_dir
     ])
 
     # Clean up temp CSV

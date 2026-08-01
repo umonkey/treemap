@@ -23,7 +23,7 @@ def main(exif_dir):
     poly_order = 2
 
     # DOP parameters
-    base_dop = 0.05
+    base_dop = 1.0
     turn_dop = 2.0
     turn_threshold = 5.0
 
