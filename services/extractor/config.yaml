@@ -35,9 +35,9 @@ align_orientation_prior: vertical
 
 # Solver Stability: Frequent Global Bundle
 # This prevents drift from ever building up.
-bundle_interval: 20
+bundle_interval: 10             # Optimized for linear street-view sequences to reduce compute time and improve alignment stability
 local_bundle_radius: 15
-bundle_new_points_ratio: 2.0
+bundle_new_points_ratio: 1.2    # Optimized for linear street-view sequences to reduce compute time and improve alignment stability
 
 # Memory-efficient solver for large datasets
 ceres_linear_solver: SPARSE_SCHUR
