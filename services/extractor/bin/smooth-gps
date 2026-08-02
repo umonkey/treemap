@@ -23,7 +23,7 @@ def main(exif_dir):
     poly_order = 2
 
     # DOP parameters
-    base_dop = 1.0
+    base_dop = 0.05
     turn_dop = 2.0
     turn_threshold = 5.0
 
@@ -80,6 +80,9 @@ def main(exif_dir):
         data['gps']['longitude'] = float(smooth_lons[i])
         data['gps']['altitude'] = float(smooth_alts[i])
         data['gps']['dop'] = current_dop
+
+        # Inject computed heading prior
+        data['compass'] = {'compass': float(headings[i])}
 
         # FORCE spherical projection for 360 images
         data['projection_type'] = 'spherical'

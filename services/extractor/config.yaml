@@ -25,9 +25,8 @@ use_masks: yes
 # Active GPS Constraints
 bundle_use_gps: yes
 
-# Reduced from 1000 to 100 to allow visual math to lead during turns.
-# This helps smooth out consumer-grade GPS noise (±6m).
-gps_weight: 1.0
+# Increased to 10.0 to provide sufficient anchor force on straight segments with adaptive DOP.
+gps_weight: 10.0
 bundle_gps_vertical_weight: 0.01
 
 # Disable the problematic Horizontal Prior
