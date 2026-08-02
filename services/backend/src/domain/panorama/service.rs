@@ -410,23 +410,17 @@ impl PanoramaService {
         if new_status == "SUCCEEDED" {
             panorama.web_video_path = Some(format!("{}/video-360p.mp4", panorama.id));
 
-            let mut auto_processed = false;
-
             if let Ok(Some(offset)) = self.get_gps_offset(panorama.id).await {
                 panorama.gpx_offset = Some(offset);
-                panorama.status = PanoramaStatus::NeedsProcessing;
-                auto_processed = true;
             }
 
-            if !auto_processed {
-                panorama.status = PanoramaStatus::NeedsSync;
-                self.notify_user(
-                    panorama.created_by,
-                    "panorama_sync",
-                    json!({ "panorama_id": panorama.id, "name": panorama.title }),
-                )
-                .await;
-            }
+            panorama.status = PanoramaStatus::NeedsSync;
+            self.notify_user(
+                panorama.created_by,
+                "panorama_sync",
+                json!({ "panorama_id": panorama.id, "name": panorama.title }),
+            )
+            .await;
         }
 
         self.repo.update(panorama.id, panorama).await?;
