@@ -410,8 +410,12 @@ impl PanoramaService {
         if new_status == "SUCCEEDED" {
             panorama.web_video_path = Some(format!("{}/video-360p.mp4", panorama.id));
 
-            if let Ok(Some(offset)) = self.get_gps_offset(panorama.id).await {
-                panorama.gpx_offset = Some(offset);
+            if let Ok(Some(creation_time)) = self.get_video_creation_time(panorama.id).await {
+                panorama.created_at = creation_time;
+
+                if let Ok(Some(offset)) = self.get_gps_offset(panorama.id, creation_time).await {
+                    panorama.gpx_offset = Some(offset);
+                }
             }
 
             panorama.status = PanoramaStatus::NeedsSync;
@@ -550,7 +554,7 @@ impl PanoramaService {
         Ok(())
     }
 
-    async fn get_gps_offset(&self, id: u64) -> Result<Option<f64>> {
+    async fn get_video_creation_time(&self, id: u64) -> Result<Option<i64>> {
         let video_json_path = format!("{id}/video.json");
 
         let video_data = match self.storage.read_file(&video_json_path).await {
@@ -568,6 +572,10 @@ impl PanoramaService {
             None => return Ok(None),
         };
 
+        Ok(Some(video_creation_time))
+    }
+
+    async fn get_gps_offset(&self, id: u64, video_creation_time: i64) -> Result<Option<f64>> {
         let track_gpx_path = format!("{id}/track.gpx");
 
         let track_data = match self.storage.read_file(&track_gpx_path).await {
