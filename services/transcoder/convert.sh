@@ -27,9 +27,12 @@ echo "=== Extracting video creation_time for gpx_offset ==="
 video_time_str=$(ffprobe -v quiet -select_streams v:0 -show_entries stream_tags=creation_time -of default=noprint_wrappers=1:nokey=1 var/dataset/video.mp4 | tr -d '\r')
 if [ -n "$video_time_str" ]; then
     video_sec=$(date -d "$video_time_str" +%s 2>/dev/null || echo "")
+
     if [ -n "$video_sec" ]; then
         echo "Calculated timestamp: $video_sec"
         echo "{\"creation_time\": $video_sec}" > var/dataset/video.json
+    else
+        echo "Could not extract the timestamp."
     fi
 fi
 
