@@ -1,5 +1,5 @@
 FROM docker.io/library/debian:bookworm-slim
-LABEL org.opencontainers.image.source https://github.com/umonkey/treemap
+LABEL org.opencontainers.image.source=https://github.com/umonkey/treemap
 
 # Install ffmpeg and tools needed for AWS CLI installation
 RUN apt-get update && \
