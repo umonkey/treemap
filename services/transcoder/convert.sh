@@ -37,9 +37,13 @@ if [ -n "$video_time_str" ]; then
 fi
 
 # (3) Transcode the file
-echo "=== Transcoding the video ==="
-time ffmpeg -i ./var/dataset/video.mp4 -vf "scale=-2:360,format=yuv420p" -c:v libx264 -crf 30 -preset veryfast -movflags +faststart -an /tmp/tmp.mp4
-mv /tmp/tmp.mp4 var/dataset/video-360p.mp4
+if [ ! -f var/dataset/video-360p.mp4 ]; then
+    echo "=== Transcoding the video ==="
+    time ffmpeg -i ./var/dataset/video.mp4 -vf "scale=-2:360,format=yuv420p" -c:v libx264 -crf 30 -preset veryfast -movflags +faststart -an /tmp/tmp.mp4
+    mv /tmp/tmp.mp4 var/dataset/video-360p.mp4
+else
+    echo "Transcoded video is there, reusing."
+fi
 
 ls -lh var/dataset/*
 
