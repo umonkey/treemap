@@ -350,7 +350,7 @@ impl PanoramaService {
         }
 
         let dataset_url = format!("s3://{}/{}", self.storage.name(), id);
-        let job_name = format!("panoramas-transcode-{id}");
+        let job_name = format!("transcode-{id}");
 
         let arn = self.batch.transcode(&job_name, &dataset_url).await?;
 
@@ -468,7 +468,7 @@ impl PanoramaService {
 
         let dataset_url = format!("s3://{}/{}/", self.storage.name(), id);
         let result_url = format!("s3://{}/{}/", self.panoramas.name(), id);
-        let job_name = format!("panoramas-extract-{id}");
+        let job_name = format!("extract-{id}");
         let gpx_offset = panorama.gpx_offset.unwrap_or(0.0);
         let mask_size = 0.35;
 
