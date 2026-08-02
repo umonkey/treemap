@@ -9,13 +9,14 @@ from scipy.signal import savgol_filter
 
 def calculate_heading(lats, lons):
     """Calculate approximate heading between consecutive points in degrees."""
-    headings = [0.0]
-    for i in range(len(lats) - 1):
-        d_lat = lats[i+1] - lats[i]
-        d_lon = lons[i+1] - lons[i]
-        heading = np.degrees(np.arctan2(d_lon, d_lat)) % 360
-        headings.append(heading)
-    return np.array(headings)
+    if len(lats) < 2:
+        return np.zeros_like(lats)
+    avg_lat = np.radians(np.mean(lats))
+    cos_lat = np.cos(avg_lat)
+    d_lats = np.diff(lats)
+    d_lons = np.diff(lons) * cos_lat
+    headings = np.degrees(np.arctan2(d_lons, d_lats)) % 360
+    return np.append(headings, headings[-1])
 
 def main(exif_dir):
     # Parameters for smoothing
@@ -82,7 +83,7 @@ def main(exif_dir):
         data['gps']['dop'] = current_dop
 
         # Inject computed heading prior
-        data['compass'] = {'compass': float(headings[i])}
+        data['compass'] = {'angle': float(headings[i])}
 
         # FORCE spherical projection for 360 images
         data['projection_type'] = 'spherical'
