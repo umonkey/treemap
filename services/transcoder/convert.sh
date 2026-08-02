@@ -19,7 +19,8 @@ time aws s3 cp --no-progress "$DATASET_URL/video.mp4" ./source.mp4
 if aws s3 cp --no-progress "$DATASET_URL/track.gpx" ./track.gpx 2>/dev/null; then
     echo "Found track.gpx, calculating gpx_offset..."
     video_time_str=$(ffprobe -v quiet -select_streams v:0 -show_entries stream_tags=creation_time -of default=noprint_wrappers=1:nokey=1 source.mp4)
-    gpx_time_str=$(grep -om 1 '<time>[^<]*</time>' ./track.gpx | head -n 1 | sed 's/<[^>]*>//g')
+    # Get the time from the first trackpoint, skipping metadata time which is often the file end time.
+    gpx_time_str=$(grep -m 1 '<trkpt' -A 10 ./track.gpx | grep '<time>' | head -n 1 | sed 's/<[^>]*>//g' | xargs)
 
     if [ -n "$video_time_str" ] && [ -n "$gpx_time_str" ]; then
         video_sec=$(date -d "$video_time_str" +%s 2>/dev/null || echo "")
