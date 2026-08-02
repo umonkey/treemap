@@ -28,6 +28,7 @@ export interface Panorama {
 	gpx_offset?: number | null;
 	lat_offset: number;
 	lon_offset: number;
+	processing_status?: string | null;
 	failure_reason?: string | null;
 	has_video?: boolean;
 	has_track?: boolean;
@@ -250,6 +251,12 @@ export async function addPanoramaImageHint(id: string, angle: number): Promise<I
 
 export async function deletePanoramaImageHints(id: string): Promise<IResponse<void>> {
 	return await request<void>('DELETE', `api/panoramas/images/${id}/hints`, {
+		headers: getAuthHeaders()
+	});
+}
+
+export async function restartPanorama(id: string): Promise<IResponse<Panorama>> {
+	return await request<Panorama>('POST', `api/panoramas/${id}/restart`, {
 		headers: getAuthHeaders()
 	});
 }

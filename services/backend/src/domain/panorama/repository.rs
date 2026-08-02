@@ -48,6 +48,16 @@ impl PanoramaRepository {
         Ok(())
     }
 
+    pub async fn delete_hints_by_panorama_id(&self, panorama_id: u64) -> Result<()> {
+        let sql = format!(
+            "DELETE FROM `{}` WHERE `image_id` IN (SELECT `id` FROM `{}` WHERE `panorama_id` = ?)",
+            HINTS_TABLE, IMAGES_TABLE
+        );
+        let params = &[Value::from(panorama_id as i64)];
+        self.db.execute_sql(&sql, params).await?;
+        Ok(())
+    }
+
     pub async fn add_images(&self, images: &[PanoramaImage]) -> Result<()> {
         for image in images {
             let query = InsertQuery::new(IMAGES_TABLE).with_values(image.to_attributes());

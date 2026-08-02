@@ -10,7 +10,8 @@ use async_trait::async_trait;
 use aws_sdk_s3::presigning::PresigningConfig;
 use aws_sdk_s3::primitives::ByteStream;
 use aws_sdk_s3::types::{
-    CompletedMultipartUpload, CompletedPart as S3CompletedPart, ObjectCannedAcl,
+    CompletedMultipartUpload, CompletedPart as S3CompletedPart, Delete, ObjectCannedAcl,
+    ObjectIdentifier,
 };
 use aws_sdk_s3::Client;
 use log::{debug, error, info};
@@ -272,5 +273,95 @@ impl StorageDriver for S3StorageDriver {
             })?;
 
         Ok(())
+    }
+
+    async fn delete_file(&self, bucket: &str, path: &str) -> Result<()> {
+        debug!("Deleting file {}/{} from S3.", bucket, path);
+        let res = self
+            .client
+            .delete_object()
+            .bucket(bucket)
+            .key(path)
+            .send()
+            .await;
+
+        match res {
+            Ok(_) => Ok(()),
+            Err(e) => {
+                error!("Error deleting file {}/{}: {:?}", bucket, path, e);
+                Err(Error::FileUpload)
+            }
+        }
+    }
+
+    async fn delete_files(&self, bucket: &str, paths: &[String]) -> Result<()> {
+        if paths.is_empty() {
+            return Ok(());
+        }
+
+        debug!("Deleting {} files from S3 bucket {}.", paths.len(), bucket);
+
+        for chunk in paths.chunks(1000) {
+            let objects: Vec<ObjectIdentifier> = chunk
+                .iter()
+                .map(|path| {
+                    ObjectIdentifier::builder().key(path).build().map_err(|e| {
+                        error!("Error building object identifier for {path}: {e:?}");
+                        Error::FileUpload
+                    })
+                })
+                .collect::<Result<Vec<_>>>()?;
+
+            let delete = Delete::builder()
+                .set_objects(Some(objects))
+                .build()
+                .map_err(|e| {
+                    error!("Error building delete request: {e:?}");
+                    Error::FileUpload
+                })?;
+
+            let res = self
+                .client
+                .delete_objects()
+                .bucket(bucket)
+                .delete(delete)
+                .send()
+                .await;
+
+            if let Err(e) = res {
+                error!("Error deleting files from S3 bucket {}: {:?}", bucket, e);
+                return Err(Error::FileUpload);
+            }
+        }
+
+        Ok(())
+    }
+
+    async fn list_files(&self, bucket: &str, prefix: &str) -> Result<Vec<String>> {
+        debug!(
+            "Listing files in {} with prefix {} from S3.",
+            bucket, prefix
+        );
+        let res = self
+            .client
+            .list_objects_v2()
+            .bucket(bucket)
+            .prefix(prefix)
+            .send()
+            .await
+            .map_err(|e| {
+                error!("Error listing files in {}/{}: {:?}", bucket, prefix, e);
+                Error::FileDownload
+            })?;
+
+        let mut keys = Vec::new();
+        if let Some(contents) = res.contents {
+            for object in contents {
+                if let Some(key) = object.key {
+                    keys.push(key);
+                }
+            }
+        }
+        Ok(keys)
     }
 }

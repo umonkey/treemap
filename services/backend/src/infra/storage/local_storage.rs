@@ -105,4 +105,78 @@ impl StorageDriver for LocalStorageDriver {
     ) -> Result<()> {
         Err(Error::FileUpload)
     }
+
+    async fn delete_file(&self, bucket: &str, path: &str) -> Result<()> {
+        let file_path = format!("{}/{}/{}", self.folder, bucket, path);
+        match fs::remove_file(&file_path).await {
+            Ok(()) => {
+                debug!("File {}/{} deleted.", bucket, path);
+                Ok(())
+            }
+            Err(ref e) if e.kind() == std::io::ErrorKind::NotFound => Ok(()),
+            Err(e) => {
+                error!("Error deleting file {}/{}: {:?}", bucket, path, e);
+                Err(Error::FileUpload)
+            }
+        }
+    }
+
+    async fn delete_files(&self, bucket: &str, paths: &[String]) -> Result<()> {
+        for path in paths {
+            let file_path = format!("{}/{}/{}", self.folder, bucket, path);
+            match fs::remove_file(&file_path).await {
+                Ok(()) => {
+                    debug!("File {}/{} deleted.", bucket, path);
+                }
+                Err(ref e) if e.kind() == std::io::ErrorKind::NotFound => {}
+                Err(e) => {
+                    error!("Error deleting file {}/{}: {:?}", bucket, path, e);
+                    return Err(Error::FileUpload);
+                }
+            }
+        }
+
+        Ok(())
+    }
+
+    async fn list_files(&self, bucket: &str, prefix: &str) -> Result<Vec<String>> {
+        let bucket_folder = std::path::PathBuf::from(format!("{}/{}", self.folder, bucket));
+        let search_path = bucket_folder.join(prefix);
+        let mut files = Vec::new();
+
+        if tokio::fs::metadata(&search_path).await.is_ok() {
+            if search_path.is_file() {
+                if let Ok(rel) = search_path.strip_prefix(&bucket_folder) {
+                    if let Some(rel_str) = rel.to_str() {
+                        files.push(rel_str.replace('\\', "/"));
+                    }
+                }
+            } else {
+                let mut stack = vec![search_path];
+                while let Some(dir) = stack.pop() {
+                    let mut entries = match fs::read_dir(&dir).await {
+                        Ok(entries) => entries,
+                        Err(_) => continue,
+                    };
+                    while let Some(entry) = entries
+                        .next_entry()
+                        .await
+                        .map_err(|_| Error::FileDownload)?
+                    {
+                        let path = entry.path();
+                        if path.is_dir() {
+                            stack.push(path);
+                        } else if path.is_file() {
+                            if let Ok(rel) = path.strip_prefix(&bucket_folder) {
+                                if let Some(rel_str) = rel.to_str() {
+                                    files.push(rel_str.replace('\\', "/"));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        Ok(files)
+    }
 }

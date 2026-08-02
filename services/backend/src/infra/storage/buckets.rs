@@ -66,6 +66,18 @@ impl Bucket {
             .complete_multipart_upload(&self.bucket, path, upload_id, parts)
             .await
     }
+
+    pub async fn delete_file(&self, path: &str) -> Result<()> {
+        self.driver.delete_file(&self.bucket, path).await
+    }
+
+    pub async fn delete_files(&self, paths: &[String]) -> Result<()> {
+        self.driver.delete_files(&self.bucket, paths).await
+    }
+
+    pub async fn list_files(&self, prefix: &str) -> Result<Vec<String>> {
+        self.driver.list_files(&self.bucket, prefix).await
+    }
 }
 
 pub struct FileBucket {
@@ -120,6 +132,18 @@ impl FileBucket {
         self.storage
             .complete_multipart_upload(key, upload_id, parts)
             .await
+    }
+
+    pub async fn delete_file(&self, path: &str) -> Result<()> {
+        self.storage.delete_file(path).await
+    }
+
+    pub async fn delete_files(&self, paths: &[String]) -> Result<()> {
+        self.storage.delete_files(paths).await
+    }
+
+    pub async fn list_files(&self, prefix: &str) -> Result<Vec<String>> {
+        self.storage.list_files(prefix).await
     }
 }
 
@@ -210,6 +234,18 @@ impl PanoramaSourceBucket {
             .complete_multipart_upload(key, upload_id, parts)
             .await
     }
+
+    pub async fn delete_file(&self, path: &str) -> Result<()> {
+        self.storage.delete_file(path).await
+    }
+
+    pub async fn delete_files(&self, paths: &[String]) -> Result<()> {
+        self.storage.delete_files(paths).await
+    }
+
+    pub async fn list_files(&self, prefix: &str) -> Result<Vec<String>> {
+        self.storage.list_files(prefix).await
+    }
 }
 
 pub struct PanoramaBucket {
@@ -284,5 +320,17 @@ impl PanoramaBucket {
         self.storage
             .complete_multipart_upload(key, upload_id, parts)
             .await
+    }
+
+    pub async fn delete_file(&self, path: &str) -> Result<()> {
+        self.storage.delete_file(path).await
+    }
+
+    pub async fn delete_files(&self, paths: &[String]) -> Result<()> {
+        self.storage.delete_files(paths).await
+    }
+
+    pub async fn list_files(&self, prefix: &str) -> Result<Vec<String>> {
+        self.storage.list_files(prefix).await
     }
 }

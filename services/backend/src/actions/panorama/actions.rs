@@ -64,6 +64,17 @@ pub async fn update_panorama_action(
     Ok(Json(panorama.into()))
 }
 
+#[post("/{id}/restart")]
+pub async fn restart_panorama_action(
+    _user: RequirePermission<PanoEdit>,
+    service: Injected<PanoramaService>,
+    path: Path<u64>,
+) -> Result<Json<PanoramaRead>> {
+    let id = path.into_inner();
+    let panorama = service.restart_panorama(id).await?;
+    Ok(Json(panorama.into()))
+}
+
 #[post("/{id}/video")]
 pub async fn verify_video_upload_action(
     _user: RequirePermission<PanoEdit>,

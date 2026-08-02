@@ -1,4 +1,4 @@
-import { getPanorama, type Panorama } from '$lib/api/panoramas';
+import { getPanorama, restartPanorama, type Panorama } from '$lib/api/panoramas';
 import type { IError } from '$lib/types';
 
 export class PageState {
@@ -15,6 +15,20 @@ export class PageState {
 			this.panorama = res.data;
 		} else {
 			this.error = res.error;
+		}
+	};
+
+	restart = async (id: string) => {
+		if (window.confirm('Are you sure you want to restart this panorama?')) {
+			this.isLoading = true;
+			this.error = undefined;
+			const res = await restartPanorama(id);
+			this.isLoading = false;
+			if (res.status === 200 && res.data) {
+				this.panorama = res.data;
+			} else {
+				this.error = res.error;
+			}
 		}
 	};
 }

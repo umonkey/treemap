@@ -31,6 +31,7 @@ pub struct PanoramaRead {
     pub gpx_offset: Option<f64>,
     pub lat_offset: f64,
     pub lon_offset: f64,
+    pub processing_status: Option<String>,
     pub failure_reason: Option<String>,
 }
 
@@ -130,6 +131,7 @@ impl From<Panorama> for PanoramaRead {
             gpx_offset: p.gpx_offset,
             lat_offset: p.lat_offset,
             lon_offset: p.lon_offset,
+            processing_status: p.processing_status,
             failure_reason: p.failure_reason,
         }
     }
