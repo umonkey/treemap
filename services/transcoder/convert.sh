@@ -29,7 +29,7 @@ if [ -n "$video_time_str" ]; then
     video_sec=$(date -d "$video_time_str" +%s 2>/dev/null || echo "")
     if [ -n "$video_sec" ]; then
         echo "Calculated timestamp: $video_sec"
-        echo "{\"gpx_offset\": $video_sec}" > var/dataset/video.json
+        echo "{\"creation_time\": $video_sec}" > var/dataset/video.json
     fi
 fi
 
