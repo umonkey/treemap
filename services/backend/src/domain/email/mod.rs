@@ -8,7 +8,7 @@ pub use repository::EmailRepository;
 
 use crate::services::{Context, Injectable};
 use crate::types::Result;
-use crate::utils::get_timestamp;
+use crate::utils::{get_timestamp, get_unique_id};
 use std::sync::Arc;
 
 pub struct EmailService {
@@ -27,7 +27,7 @@ impl EmailService {
         data: &serde_json::Value,
     ) -> Result<()> {
         let email = Email {
-            id: 0,
+            id: get_unique_id()?,
             recipient: recipient.to_string(),
             event_name: event_name.to_string(),
             template_data: data.to_string(),
