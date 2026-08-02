@@ -10,7 +10,7 @@ pub async fn dispatch_emails_command() {
         }
     };
 
-    let dispatcher = match EmailDispatcher::new(&state.secrets, state.email.repo.clone()) {
+    let dispatcher = match EmailDispatcher::new(&state.config, state.email.repo.clone()) {
         Ok(dispatcher) => dispatcher,
         Err(e) => {
             log::error!("Error creating email dispatcher: {e}");

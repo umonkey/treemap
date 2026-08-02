@@ -40,6 +40,7 @@ pub struct Chatbot {
 }
 
 impl Chatbot {
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         token: String,
         bot_id: UserId,

@@ -25,6 +25,7 @@ bot_user_id = 1
 
 # Contact information for the app.
 app_contact = "https://github.com/umonkey/treemap; info@kanachyerevan.am"
+website_url = "https://yerevan.treemaps.app"
 
 osm_changeset_size = 100
 

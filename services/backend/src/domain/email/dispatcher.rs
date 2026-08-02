@@ -1,4 +1,5 @@
 use crate::domain::email::{Email, EmailRepository};
+use crate::infra::config::Config;
 use crate::infra::email::EmailClient;
 use crate::infra::secrets::Secrets;
 use crate::types::{Error, Result};
@@ -10,6 +11,7 @@ pub struct EmailDispatcher {
     client: Arc<EmailClient>,
     repo: Arc<EmailRepository>,
     handlebars: Handlebars<'static>,
+    website_url: String,
 }
 
 impl EmailDispatcher {
@@ -44,14 +46,17 @@ impl EmailDispatcher {
         Ok(handlebars)
     }
 
-    pub fn new(secrets: &Secrets, repo: Arc<EmailRepository>) -> Result<Self> {
-        let client = Arc::new(EmailClient::new(secrets)?);
+    pub fn new(config: &Config, repo: Arc<EmailRepository>) -> Result<Self> {
+        let secrets = Secrets::new(Arc::new(config.clone()))?;
+        let client = Arc::new(EmailClient::new(&secrets)?);
         let handlebars = Self::init_handlebars()?;
+        let website_url = config.website_url.clone();
 
         Ok(Self {
             client,
             repo,
             handlebars,
+            website_url,
         })
     }
 
@@ -64,22 +69,41 @@ impl EmailDispatcher {
         let html_key = format!("{}_html", template_name);
         let txt_key = format!("{}_txt", template_name);
 
-        let html_body = self.handlebars.render(&html_key, data).map_err(|e| {
-            log::error!("Failed to render HTML template {template_name}: {e}");
-            Error::Config(format!("Template render error: {e}"))
-        })?;
+        let mut map = match data {
+            serde_json::Value::Object(m) => m.clone(),
+            _ => serde_json::Map::new(),
+        };
+        map.insert(
+            "website_url".to_string(),
+            serde_json::Value::String(self.website_url.clone()),
+        );
+        let data_with_url = serde_json::Value::Object(map);
 
-        let text_body = self.handlebars.render(&txt_key, data).map_err(|e| {
-            log::error!("Failed to render TXT template {template_name}: {e}");
-            Error::Config(format!("Template render error: {e}"))
-        })?;
+        let html_body = self
+            .handlebars
+            .render(&html_key, &data_with_url)
+            .map_err(|e| {
+                log::error!("Failed to render HTML template {template_name}: {e}");
+                Error::Config(format!("Template render error: {e}"))
+            })?;
+
+        let text_body = self
+            .handlebars
+            .render(&txt_key, &data_with_url)
+            .map_err(|e| {
+                log::error!("Failed to render TXT template {template_name}: {e}");
+                Error::Config(format!("Template render error: {e}"))
+            })?;
 
         let subject_string;
         let subject = match template_name {
             "panorama_transcoding_failed" => "Panorama Transcoding Failed",
             "panorama_sync" => "Panorama Ready for Sync",
             "panorama_ready" => {
-                let name = data.get("name").and_then(|v| v.as_str()).unwrap_or("");
+                let name = data_with_url
+                    .get("name")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("");
                 subject_string = format!("Panorama ready: {name}");
                 &subject_string
             }
@@ -138,48 +162,72 @@ mod tests {
     async fn test_email_dispatcher_rendering() {
         let state = AppState::new().await.expect("Failed to create AppState");
         let email_repo = Arc::new(EmailRepository::new(state.database.clone()));
-        let dispatcher = EmailDispatcher::new(&state.secrets, email_repo)
+        let dispatcher = EmailDispatcher::new(&state.config, email_repo)
             .expect("Failed to create EmailDispatcher");
         let data = serde_json::json!({
             "panorama_id": 123,
             "reason": "Test failure reason"
         });
 
+        let mut map = match &data {
+            serde_json::Value::Object(m) => m.clone(),
+            _ => serde_json::Map::new(),
+        };
+        map.insert(
+            "website_url".to_string(),
+            serde_json::Value::String(dispatcher.website_url.clone()),
+        );
+        let data_with_url = serde_json::Value::Object(map);
+
         let html_res = dispatcher
             .handlebars
-            .render("panorama_transcoding_failed_html", &data);
+            .render("panorama_transcoding_failed_html", &data_with_url);
         assert!(html_res.is_ok());
         let html = html_res.unwrap();
         assert!(html.contains("123"));
         assert!(html.contains("Test failure reason"));
+        assert!(html.contains(&dispatcher.website_url));
 
         let txt_res = dispatcher
             .handlebars
-            .render("panorama_transcoding_failed_txt", &data);
+            .render("panorama_transcoding_failed_txt", &data_with_url);
         assert!(txt_res.is_ok());
         let txt = txt_res.unwrap();
         assert!(txt.contains("123"));
         assert!(txt.contains("Test failure reason"));
+        assert!(txt.contains(&dispatcher.website_url));
 
         let ready_data = serde_json::json!({
             "panorama_id": 456,
             "name": "Test Panorama"
         });
 
+        let mut ready_map = match &ready_data {
+            serde_json::Value::Object(m) => m.clone(),
+            _ => serde_json::Map::new(),
+        };
+        ready_map.insert(
+            "website_url".to_string(),
+            serde_json::Value::String(dispatcher.website_url.clone()),
+        );
+        let ready_data_with_url = serde_json::Value::Object(ready_map);
+
         let ready_html_res = dispatcher
             .handlebars
-            .render("panorama_ready_html", &ready_data);
+            .render("panorama_ready_html", &ready_data_with_url);
         assert!(ready_html_res.is_ok());
         let ready_html = ready_html_res.unwrap();
         assert!(ready_html.contains("456"));
         assert!(ready_html.contains("Test Panorama"));
+        assert!(ready_html.contains(&dispatcher.website_url));
 
         let ready_txt_res = dispatcher
             .handlebars
-            .render("panorama_ready_txt", &ready_data);
+            .render("panorama_ready_txt", &ready_data_with_url);
         assert!(ready_txt_res.is_ok());
         let ready_txt = ready_txt_res.unwrap();
         assert!(ready_txt.contains("456"));
         assert!(ready_txt.contains("Test Panorama"));
+        assert!(ready_txt.contains(&dispatcher.website_url));
     }
 }
