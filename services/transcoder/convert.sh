@@ -19,39 +19,24 @@ if [ ! -f var/dataset/video.mp4 ]; then
     exit 1
 fi
 
-if [ ! -f var/dataset/track.gpx ]; then
-    echo "No track.gpx in the dataset, cannot continue."
-    exit 1
-fi
-
 echo "=== Listing dataset files ==="
 ls -lh var/dataset/*
 
-# (2) Attempt to download track.gpx and calculate offset if it exists (video.json is generated here and uploaded in Step 4)
-echo "=== Calculating gpx_offset ==="
-video_time_str=$(ffprobe -v quiet -select_streams v:0 -show_entries stream_tags=creation_time -of default=noprint_wrappers=1:nokey=1 var/dataset/video.mp4)
-# Get the time from the first trackpoint, skipping metadata time which is often the file end time.
-gpx_time_str=$(grep -m 1 '<trkpt' -A 10 ./var/dataset/track.gpx | grep '<time>' | head -n 1 | sed 's/<[^>]*>//g' | xargs)
-
-if [ -n "$video_time_str" ] && [ -n "$gpx_time_str" ]; then
+# (2) Extract video creation_time and set as gpx_offset (video.json is generated here and uploaded in Step 4)
+echo "=== Extracting video creation_time for gpx_offset ==="
+video_time_str=$(ffprobe -v quiet -select_streams v:0 -show_entries stream_tags=creation_time -of default=noprint_wrappers=1:nokey=1 var/dataset/video.mp4 | tr -d '\r')
+if [ -n "$video_time_str" ]; then
     video_sec=$(date -d "$video_time_str" +%s 2>/dev/null || echo "")
-    gpx_sec=$(date -d "$gpx_time_str" +%s 2>/dev/null || echo "")
-
-    if [ -n "$video_sec" ] && [ -n "$gpx_sec" ]; then
-        offset=$(( video_sec - gpx_sec ))
-        echo "Calculated gpx_offset: $offset seconds"
-        echo "{\"gpx_offset\": $offset}" > var/dataset/video.json
-    else
-        echo "Failed to parse timestamps: video_time='$video_time_str', gpx_time='$gpx_time_str'"
+    if [ -n "$video_sec" ]; then
+        echo "Calculated timestamp: $video_sec"
+        echo "{\"gpx_offset\": $video_sec}" > var/dataset/video.json
     fi
-else
-    echo "Missing video creation_time or GPX start time"
 fi
 
 # (3) Transcode the file
 echo "=== Transcoding the video ==="
-time ffmpeg -i ./var/dataset/video.mp4 -vf "scale=-2:360,format=yuv420p" -c:v libx264 -crf 30 -preset veryfast -movflags +faststart -an tmp.mp4
-mv tmp.mp4 var/dataset/video-360p.mp4
+time ffmpeg -i ./var/dataset/video.mp4 -vf "scale=-2:360,format=yuv420p" -c:v libx264 -crf 30 -preset veryfast -movflags +faststart -an /tmp/tmp.mp4
+mv /tmp/tmp.mp4 var/dataset/video-360p.mp4
 
 ls -lh var/dataset/*
 
