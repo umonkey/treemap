@@ -12,7 +12,9 @@ use crate::infra::storage::{CompletedPart, PanoramaBucket, PanoramaSourceBucket}
 use crate::services::queue_consumer::TranscodePanorama;
 use crate::services::{Context, Injectable};
 use crate::types::*;
+use crate::utils::gpx::parse_gpx;
 use crate::utils::{get_timestamp, get_unique_id};
+use chrono::DateTime;
 use serde_json::json;
 use std::sync::Arc;
 
@@ -408,16 +410,12 @@ impl PanoramaService {
         if new_status == "SUCCEEDED" {
             panorama.web_video_path = Some(format!("{}/video-360p.mp4", panorama.id));
 
-            let video_json_path = format!("{}/video.json", panorama.id);
             let mut auto_processed = false;
-            if let Ok(data) = self.storage.read_file(&video_json_path).await {
-                if let Ok(json_val) = serde_json::from_slice::<serde_json::Value>(&data) {
-                    if let Some(offset) = json_val.get("gpx_offset").and_then(|v| v.as_f64()) {
-                        panorama.gpx_offset = Some(offset);
-                        panorama.status = PanoramaStatus::NeedsProcessing;
-                        auto_processed = true;
-                    }
-                }
+
+            if let Ok(Some(offset)) = self.get_gps_offset(panorama.id).await {
+                panorama.gpx_offset = Some(offset);
+                panorama.status = PanoramaStatus::NeedsProcessing;
+                auto_processed = true;
             }
 
             if !auto_processed {
@@ -556,6 +554,53 @@ impl PanoramaService {
         }
 
         Ok(())
+    }
+
+    async fn get_gps_offset(&self, id: u64) -> Result<Option<f64>> {
+        let video_json_path = format!("{id}/video.json");
+
+        let video_data = match self.storage.read_file(&video_json_path).await {
+            Ok(data) => data,
+            Err(_) => return Ok(None),
+        };
+
+        let video_json: serde_json::Value = match serde_json::from_slice(&video_data) {
+            Ok(v) => v,
+            Err(_) => return Ok(None),
+        };
+
+        let video_creation_time = match video_json.get("creation_time").and_then(|v| v.as_i64()) {
+            Some(t) => t,
+            None => return Ok(None),
+        };
+
+        let track_gpx_path = format!("{id}/track.gpx");
+
+        let track_data = match self.storage.read_file(&track_gpx_path).await {
+            Ok(data) => data,
+            Err(_) => return Ok(None),
+        };
+
+        let gpx_points = match parse_gpx(&track_data) {
+            Ok(points) => points,
+            Err(_) => return Ok(None),
+        };
+
+        let first_time_str = gpx_points.iter().find_map(|p| p.time.as_ref());
+
+        let time_str = match first_time_str {
+            Some(t) => t,
+            None => return Ok(None),
+        };
+
+        let gpx_start_time = match DateTime::parse_from_rfc3339(time_str) {
+            Ok(dt) => dt.timestamp(),
+            Err(_) => return Ok(None),
+        };
+
+        let difference = (video_creation_time - gpx_start_time) as f64;
+
+        Ok(Some(difference))
     }
 
     async fn notify_user(&self, user_id: u64, template: &str, data: serde_json::Value) {
