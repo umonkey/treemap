@@ -34,6 +34,9 @@ if [ -n "$video_time_str" ]; then
     else
         echo "Could not extract the timestamp."
     fi
+else
+    echo "WARNING: creation_time not found, dump follows."
+    ffprobe var/dataset/video.mp4
 fi
 
 # (3) Transcode the file
