@@ -546,6 +546,12 @@ impl PanoramaService {
 
         if new_status == "FAILED" {
             let msg = status_reason.unwrap_or_else(|| "Processing job failed".to_string());
+            self.notify_user(
+                panorama.created_by,
+                "panorama_processing_failed",
+                json!({ "panorama_id": panorama.id, "name": panorama.title, "reason": msg }),
+            )
+            .await;
             return Err(Error::PanoramaFailure(msg));
         }
 

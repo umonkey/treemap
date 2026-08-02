@@ -21,6 +21,7 @@ impl EmailDispatcher {
 
         for name in &[
             "panorama_transcoding_failed",
+            "panorama_processing_failed",
             "panorama_sync",
             "panorama_ready",
         ] {
@@ -98,6 +99,14 @@ impl EmailDispatcher {
         let subject_string;
         let subject = match template_name {
             "panorama_transcoding_failed" => "Panorama Transcoding Failed",
+            "panorama_processing_failed" => {
+                let name = data_with_url
+                    .get("name")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("");
+                subject_string = format!("Panorama processing failed: {name}");
+                &subject_string
+            }
             "panorama_sync" => "Panorama Ready for Sync",
             "panorama_ready" => {
                 let name = data_with_url
