@@ -74,12 +74,7 @@ impl BatchClient {
         })
     }
 
-    pub async fn transcode(
-        &self,
-        job_name: &str,
-        input_path: &str,
-        output_path: &str,
-    ) -> Result<String> {
+    pub async fn transcode(&self, job_name: &str, dataset_url: &str) -> Result<String> {
         let envs = vec![
             KeyValuePair::builder()
                 .name("AWS_ACCESS_KEY_ID")
@@ -98,18 +93,12 @@ impl BatchClient {
                 .value(&self.files_endpoint)
                 .build(),
             KeyValuePair::builder()
-                .name("INPUT_PATH")
-                .value(input_path)
-                .build(),
-            KeyValuePair::builder()
-                .name("OUTPUT_PATH")
-                .value(output_path)
+                .name("DATASET_URL")
+                .value(dataset_url)
                 .build(),
         ];
 
         let container_overrides = ContainerOverrides::builder()
-            .command(input_path)
-            .command(output_path)
             .set_environment(Some(envs))
             .build();
 

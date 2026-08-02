@@ -349,18 +349,10 @@ impl PanoramaService {
             return Ok(panorama);
         }
 
-        let input_key = panorama
-            .source_video_path
-            .clone()
-            .unwrap_or_else(|| format!("{id}/video.mp4"));
-        let input_path = format!("s3://{}/{}", self.storage.name(), input_key);
-        let output_path = format!("s3://{}/{id}/video-360p.mp4", self.storage.name());
+        let dataset_url = format!("s3://{}/{}", self.storage.name(), id);
         let job_name = format!("panoramas-transcode-{id}");
 
-        let arn = self
-            .batch
-            .transcode(&job_name, &input_path, &output_path)
-            .await?;
+        let arn = self.batch.transcode(&job_name, &dataset_url).await?;
 
         log::info!("Assigned transcode ARN {} to panorama {}", arn, id);
 
@@ -415,13 +407,28 @@ impl PanoramaService {
 
         if new_status == "SUCCEEDED" {
             panorama.web_video_path = Some(format!("{}/video-360p.mp4", panorama.id));
-            panorama.status = PanoramaStatus::NeedsSync;
-            self.notify_user(
-                panorama.created_by,
-                "panorama_sync",
-                json!({ "panorama_id": panorama.id }),
-            )
-            .await;
+
+            let video_json_path = format!("{}/video.json", panorama.id);
+            let mut auto_processed = false;
+            if let Ok(data) = self.storage.read_file(&video_json_path).await {
+                if let Ok(json_val) = serde_json::from_slice::<serde_json::Value>(&data) {
+                    if let Some(offset) = json_val.get("gpx_offset").and_then(|v| v.as_f64()) {
+                        panorama.gpx_offset = Some(offset);
+                        panorama.status = PanoramaStatus::NeedsProcessing;
+                        auto_processed = true;
+                    }
+                }
+            }
+
+            if !auto_processed {
+                panorama.status = PanoramaStatus::NeedsSync;
+                self.notify_user(
+                    panorama.created_by,
+                    "panorama_sync",
+                    json!({ "panorama_id": panorama.id }),
+                )
+                .await;
+            }
         }
 
         self.repo.update(panorama.id, panorama).await?;
