@@ -50,7 +50,8 @@ fi
 
 # (3) Transcode the file
 echo "=== Transcoding the video ==="
-time ffmpeg -i ./var/dataset/video.mp4 -vf "scale=-2:360,format=yuv420p" -c:v libx264 -crf 30 -preset veryfast -movflags +faststart -an var/dataset/video-360p.mp4
+time ffmpeg -i ./var/dataset/video.mp4 -vf "scale=-2:360,format=yuv420p" -c:v libx264 -crf 30 -preset veryfast -movflags +faststart -an tmp.mp4
+mv tmp.mp4 var/dataset/video-360p.mp4
 
 ls -lh var/dataset/*
 
