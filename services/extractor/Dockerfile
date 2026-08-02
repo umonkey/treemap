@@ -75,6 +75,7 @@ COPY --from=builder /opt/venv /opt/venv
 # 8. Set environment variables
 ENV PATH="/opt/venv/bin:$PATH"
 ENV VIRTUAL_ENV="/opt/venv"
+ENV MPLCONFIGDIR="/tmp/matplotlib"
 
 # 9. Copy custom code.
 WORKDIR /app
