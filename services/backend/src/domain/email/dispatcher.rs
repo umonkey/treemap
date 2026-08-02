@@ -107,7 +107,14 @@ impl EmailDispatcher {
                 subject_string = format!("Panorama processing failed: {name}");
                 &subject_string
             }
-            "panorama_sync" => "Panorama Ready for Sync",
+            "panorama_sync" => {
+                let name = data_with_url
+                    .get("name")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("");
+                subject_string = format!("Panorama ready for sync: {name}");
+                &subject_string
+            }
             "panorama_ready" => {
                 let name = data_with_url
                     .get("name")
