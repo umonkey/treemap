@@ -472,7 +472,7 @@ impl PanoramaService {
             self.notify_user(
                 panorama.created_by,
                 "panorama_ready",
-                json!({ "panorama_id": panorama.id }),
+                json!({ "panorama_id": panorama.id, "name": panorama.title }),
             )
             .await;
 

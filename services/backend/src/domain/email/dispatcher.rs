@@ -74,10 +74,15 @@ impl EmailDispatcher {
             Error::Config(format!("Template render error: {e}"))
         })?;
 
+        let subject_string;
         let subject = match template_name {
             "panorama_transcoding_failed" => "Panorama Transcoding Failed",
             "panorama_sync" => "Panorama Ready for Sync",
-            "panorama_ready" => "Panorama Processing Complete",
+            "panorama_ready" => {
+                let name = data.get("name").and_then(|v| v.as_str()).unwrap_or("");
+                subject_string = format!("Panorama ready: {name}");
+                &subject_string
+            }
             _ => "Notification from Tree Map",
         };
 
@@ -155,5 +160,26 @@ mod tests {
         let txt = txt_res.unwrap();
         assert!(txt.contains("123"));
         assert!(txt.contains("Test failure reason"));
+
+        let ready_data = serde_json::json!({
+            "panorama_id": 456,
+            "name": "Test Panorama"
+        });
+
+        let ready_html_res = dispatcher
+            .handlebars
+            .render("panorama_ready_html", &ready_data);
+        assert!(ready_html_res.is_ok());
+        let ready_html = ready_html_res.unwrap();
+        assert!(ready_html.contains("456"));
+        assert!(ready_html.contains("Test Panorama"));
+
+        let ready_txt_res = dispatcher
+            .handlebars
+            .render("panorama_ready_txt", &ready_data);
+        assert!(ready_txt_res.is_ok());
+        let ready_txt = ready_txt_res.unwrap();
+        assert!(ready_txt.contains("456"));
+        assert!(ready_txt.contains("Test Panorama"));
     }
 }
