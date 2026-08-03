@@ -160,16 +160,6 @@ impl PanoramaRepository {
         Ok(res)
     }
 
-    pub async fn find_hints_by_panorama_id(&self, panorama_id: u64) -> Result<Vec<PanoramaHint>> {
-        let sql = format!(
-            "SELECT h.* FROM `{}` h INNER JOIN `{}` i ON h.image_id = i.id WHERE i.panorama_id = ?",
-            HINTS_TABLE, IMAGES_TABLE
-        );
-        let params = &[Value::from(panorama_id as i64)];
-        let records = self.db.fetch_sql(&sql, params).await?;
-        records.iter().map(PanoramaHint::from_attributes).collect()
-    }
-
     pub async fn find_hints_by_image_id(&self, image_id: u64) -> Result<Vec<PanoramaHint>> {
         let query =
             SelectQuery::new(HINTS_TABLE).with_condition("image_id", Value::from(image_id as i64));

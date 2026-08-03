@@ -104,7 +104,7 @@ impl PanoramaService {
         let panorama = self.get_panorama(image.panorama_id).await?;
         let url = self
             .panoramas
-            .create_read_url(&format!("{}/{}", image.panorama_id, image.filename))
+            .create_read_url(&format!("{}/{}", panorama.storage_key, image.filename))
             .await
             .ok();
 
@@ -120,8 +120,10 @@ impl PanoramaService {
     }
 
     pub async fn create_panorama(&self, data: CreatePanorama, user_id: u64) -> Result<Panorama> {
+        let id = get_unique_id()?;
         let panorama = Panorama {
-            id: get_unique_id()?,
+            id,
+            storage_key: id.to_string(),
             created_at: get_timestamp() as i64,
             created_by: user_id,
             image_count: 0,
@@ -694,14 +696,10 @@ impl PanoramaService {
         Ok(())
     }
 
-    pub async fn export_panorama(
-        &self,
-        id: u64,
-    ) -> Result<(Panorama, Vec<PanoramaImage>, Vec<PanoramaHint>)> {
+    pub async fn export_panorama(&self, id: u64) -> Result<(Panorama, Vec<PanoramaImage>)> {
         let panorama = self.get_panorama(id).await?;
         let images = self.repo.get_images(id).await?;
-        let hints = self.repo.find_hints_by_panorama_id(id).await?;
-        Ok((panorama, images, hints))
+        Ok((panorama, images))
     }
 
     pub async fn get_image_hints(&self, image_id: u64) -> Result<Vec<PanoramaHint>> {

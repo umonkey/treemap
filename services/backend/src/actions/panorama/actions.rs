@@ -50,7 +50,7 @@ pub async fn export_panorama_action(
     path: Path<u64>,
 ) -> Result<Json<PanoramaExport>> {
     let id = path.into_inner();
-    let (panorama, images, _hints) = service.export_panorama(id).await?;
+    let (panorama, images) = service.export_panorama(id).await?;
     let meta = PanoramaMetaExport::from(panorama.clone());
     let images = images
         .into_iter()

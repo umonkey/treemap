@@ -250,6 +250,7 @@ CREATE INDEX IF NOT EXISTS observations_tree_id ON observations (tree_id);
 
 CREATE TABLE IF NOT EXISTS panoramas (
     `id` INT NOT NULL,
+    `storage_key` TEXT,
     `created_at` INT NOT NULL,
     `created_by` INT NOT NULL,
     `image_count` INT NOT NULL DEFAULT 0,

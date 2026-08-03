@@ -53,6 +53,7 @@ impl FromStr for PanoramaStatus {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Panorama {
     pub id: u64,
+    pub storage_key: String,
     pub created_at: i64,
     pub created_by: u64,
     pub image_count: i32,
@@ -80,8 +81,12 @@ pub struct Panorama {
 
 impl Panorama {
     pub fn from_attributes(attrs: &Attributes) -> crate::types::Result<Self> {
+        let id = attrs.require_u64("id")?;
         Ok(Self {
-            id: attrs.require_u64("id")?,
+            id,
+            storage_key: attrs
+                .get_string("storage_key")?
+                .unwrap_or_else(|| id.to_string()),
             created_at: attrs.require_i64("created_at")?,
             created_by: attrs.require_u64("created_by")?,
             image_count: attrs.require_u64("image_count")? as i32,
@@ -114,6 +119,7 @@ impl Panorama {
     pub fn to_attributes(&self) -> Attributes {
         let mut attrs = Attributes::default();
         attrs.insert("id", Value::from(self.id as i64));
+        attrs.insert("storage_key", Value::from(self.storage_key.clone()));
         attrs.insert("created_at", Value::from(self.created_at));
         attrs.insert("created_by", Value::from(self.created_by as i64));
         attrs.insert("image_count", Value::from(self.image_count as i64));

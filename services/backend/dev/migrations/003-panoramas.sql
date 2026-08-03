@@ -2,6 +2,7 @@ BEGIN;
 
 CREATE TABLE IF NOT EXISTS panoramas (
     `id` INT NOT NULL,
+    `storage_key` TEXT NULL,
     `created_at` INT NOT NULL,
     `created_by` INT NOT NULL,
     `image_count` INT NOT NULL DEFAULT 0,

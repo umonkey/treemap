@@ -159,6 +159,7 @@ Table observations {
 
 Table panoramas {
   id int [pk]
+  storage_key varchar
   created_at int [not null]
   created_by int [not null]
   image_count int [not null, default: 0]

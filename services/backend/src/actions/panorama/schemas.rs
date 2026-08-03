@@ -38,6 +38,7 @@ pub struct PanoramaRead {
 #[derive(Debug, Serialize)]
 pub struct PanoramaMetaExport {
     pub title: String,
+    pub storage_key: String,
     pub created_at: i64,
     pub gpx_offset: Option<f64>,
     pub lat_offset: f64,
@@ -166,6 +167,7 @@ impl From<Panorama> for PanoramaMetaExport {
     fn from(p: Panorama) -> Self {
         Self {
             title: p.title,
+            storage_key: p.storage_key,
             created_at: p.created_at,
             gpx_offset: p.gpx_offset,
             lat_offset: p.lat_offset,

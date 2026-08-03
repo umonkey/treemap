@@ -263,6 +263,7 @@ export async function restartPanorama(id: string): Promise<IResponse<Panorama>> 
 
 export interface PanoramaMetaExport {
 	title: string;
+	storage_key: string;
 	created_at: number;
 	gpx_offset?: number | null;
 	lat_offset: number;
