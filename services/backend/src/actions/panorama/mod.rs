@@ -11,6 +11,7 @@ pub fn panorama_router(cfg: &mut ServiceConfig) {
         .service(get_panoramas_geo_json_action)
         .service(get_panorama_hints_action)
         .service(get_panorama_action)
+        .service(export_panorama_action)
         .service(update_panorama_action)
         .service(restart_panorama_action)
         .service(verify_video_upload_action)

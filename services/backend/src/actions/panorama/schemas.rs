@@ -35,6 +35,31 @@ pub struct PanoramaRead {
     pub failure_reason: Option<String>,
 }
 
+#[derive(Debug, Serialize)]
+pub struct PanoramaMetaExport {
+    pub title: String,
+    pub created_at: i64,
+    pub gpx_offset: Option<f64>,
+    pub lat_offset: f64,
+    pub lon_offset: f64,
+}
+
+#[derive(Debug, Serialize)]
+pub struct PanoramaImageExport {
+    pub filename: String,
+    pub lat: f64,
+    pub lon: f64,
+    pub heading: f64,
+    pub pitch: f64,
+    pub roll: f64,
+}
+
+#[derive(Debug, Serialize)]
+pub struct PanoramaExport {
+    pub meta: PanoramaMetaExport,
+    pub images: Vec<PanoramaImageExport>,
+}
+
 #[derive(Debug, Deserialize)]
 pub struct StartMultipartRequest {
     pub parts_count: i32,
@@ -133,6 +158,18 @@ impl From<Panorama> for PanoramaRead {
             lon_offset: p.lon_offset,
             processing_status: p.processing_status,
             failure_reason: p.failure_reason,
+        }
+    }
+}
+
+impl From<Panorama> for PanoramaMetaExport {
+    fn from(p: Panorama) -> Self {
+        Self {
+            title: p.title,
+            created_at: p.created_at,
+            gpx_offset: p.gpx_offset,
+            lat_offset: p.lat_offset,
+            lon_offset: p.lon_offset,
         }
     }
 }

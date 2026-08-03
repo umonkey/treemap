@@ -1,7 +1,8 @@
 use super::schemas::{
     AddPanoramaHintRequest, CompleteMultipartRequest, GetPanoramaHintsRequest,
-    GetPanoramasGeoJSONRequest, MultipartUploadResponse, PanoramaHintRead, PanoramaImageRead,
-    PanoramaRead, StartMultipartRequest, TrackPoint, UploadUrlResponse, WebVideoUrlResponse,
+    GetPanoramasGeoJSONRequest, MultipartUploadResponse, PanoramaExport, PanoramaHintRead,
+    PanoramaImageExport, PanoramaImageRead, PanoramaMetaExport, PanoramaRead,
+    StartMultipartRequest, TrackPoint, UploadUrlResponse, WebVideoUrlResponse,
 };
 use crate::domain::panorama::{CreatePanorama, PanoramaHint, PanoramaService, UpdatePanorama};
 use crate::domain::tree::Bounds;
@@ -40,6 +41,30 @@ pub async fn get_panorama_action(
     let id = path.into_inner();
     let panorama = service.get_panorama(id).await?;
     Ok(Json(panorama.into()))
+}
+
+#[get("/{id}/export")]
+pub async fn export_panorama_action(
+    _user: RequirePermission<PanoEdit>,
+    service: Injected<PanoramaService>,
+    path: Path<u64>,
+) -> Result<Json<PanoramaExport>> {
+    let id = path.into_inner();
+    let (panorama, images, _hints) = service.export_panorama(id).await?;
+    let meta = PanoramaMetaExport::from(panorama.clone());
+    let images = images
+        .into_iter()
+        .map(|img| PanoramaImageExport {
+            filename: img.filename,
+            lat: img.lat + panorama.lat_offset,
+            lon: img.lng + panorama.lon_offset,
+            heading: img.heading,
+            pitch: img.pitch,
+            roll: img.roll,
+        })
+        .collect();
+
+    Ok(Json(PanoramaExport { meta, images }))
 }
 
 #[get("/images/{id}")]

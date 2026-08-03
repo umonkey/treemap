@@ -694,6 +694,16 @@ impl PanoramaService {
         Ok(())
     }
 
+    pub async fn export_panorama(
+        &self,
+        id: u64,
+    ) -> Result<(Panorama, Vec<PanoramaImage>, Vec<PanoramaHint>)> {
+        let panorama = self.get_panorama(id).await?;
+        let images = self.repo.get_images(id).await?;
+        let hints = self.repo.find_hints_by_panorama_id(id).await?;
+        Ok((panorama, images, hints))
+    }
+
     pub async fn get_image_hints(&self, image_id: u64) -> Result<Vec<PanoramaHint>> {
         self.repo.find_hints_by_image_id(image_id).await
     }

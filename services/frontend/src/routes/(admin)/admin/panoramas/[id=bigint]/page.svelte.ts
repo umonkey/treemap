@@ -1,4 +1,4 @@
-import { getPanorama, restartPanorama, type Panorama } from '$lib/api/panoramas';
+import { getPanorama, restartPanorama, exportPanorama, type Panorama } from '$lib/api/panoramas';
 import type { IError } from '$lib/types';
 
 export class PageState {
@@ -29,6 +29,27 @@ export class PageState {
 			} else {
 				this.error = res.error;
 			}
+		}
+	};
+
+	exportData = async (id: string) => {
+		this.isLoading = true;
+		this.error = undefined;
+		const res = await exportPanorama(id);
+		this.isLoading = false;
+		if (res.status === 200 && res.data) {
+			const jsonString = JSON.stringify(res.data, null, 2);
+			const blob = new Blob([jsonString], { type: 'application/json' });
+			const url = URL.createObjectURL(blob);
+			const a = document.createElement('a');
+			a.href = url;
+			a.download = `panorama-${id}.json`;
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+			URL.revokeObjectURL(url);
+		} else {
+			this.error = res.error;
 		}
 	};
 }

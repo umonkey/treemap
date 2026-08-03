@@ -7,6 +7,7 @@
 	import PageHeader from '$lib/ui/header/PageHeader.svelte';
 	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
+	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import VideoUploader from './VideoUploader.svelte';
 	import TrackUploader from './TrackUploader.svelte';
 	import VideoSync from './VideoSync.svelte';
@@ -109,9 +110,10 @@
 			{/if}
 
 			{#if pageState.panorama.status === 'SUCCESS' || pageState.panorama.status === 'FAILURE'}
-				<div>
+				<Buttons>
+					<Button type="secondary" onClick={() => pageState.exportData(id)}>Download data</Button>
 					<Button type="secondary" onClick={() => pageState.restart(id)}>Restart Panorama</Button>
-				</div>
+				</Buttons>
 			{/if}
 		{/if}
 	</article>

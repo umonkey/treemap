@@ -260,3 +260,31 @@ export async function restartPanorama(id: string): Promise<IResponse<Panorama>> 
 		headers: getAuthHeaders()
 	});
 }
+
+export interface PanoramaMetaExport {
+	title: string;
+	created_at: number;
+	gpx_offset?: number | null;
+	lat_offset: number;
+	lon_offset: number;
+}
+
+export interface PanoramaImageExport {
+	filename: string;
+	lat: number;
+	lon: number;
+	heading: number;
+	pitch: number;
+	roll: number;
+}
+
+export interface PanoramaExport {
+	meta: PanoramaMetaExport;
+	images: PanoramaImageExport[];
+}
+
+export async function exportPanorama(id: string): Promise<IResponse<PanoramaExport>> {
+	return await request<PanoramaExport>('GET', `api/panoramas/${id}/export`, {
+		headers: getAuthHeaders()
+	});
+}
