@@ -43,6 +43,34 @@ pub async fn get_panorama_action(
     Ok(Json(panorama.into()))
 }
 
+#[get("/{id}/geo.json")]
+pub async fn get_panorama_geo_json_action(
+    service: Injected<PanoramaService>,
+    path: Path<u64>,
+) -> Result<HttpResponse> {
+    let id = path.into_inner();
+    let panorama = service.get_panorama(id).await?;
+    let images = service.get_panorama_images(id).await?;
+
+    let images_with_offsets: Vec<_> = images
+        .into_iter()
+        .filter(|img| !img.hidden)
+        .map(|img| {
+            (
+                img,
+                panorama.created_at,
+                panorama.lat_offset,
+                panorama.lon_offset,
+            )
+        })
+        .collect();
+
+    Ok(crate::responders::geo_json::respond_with_panoramas(
+        &images_with_offsets,
+        &[panorama],
+    ))
+}
+
 #[get("/{id}/export")]
 pub async fn export_panorama_action(
     _user: RequirePermission<PanoEdit>,

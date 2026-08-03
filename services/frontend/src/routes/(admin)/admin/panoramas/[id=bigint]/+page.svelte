@@ -11,7 +11,7 @@
 	import VideoUploader from './VideoUploader.svelte';
 	import TrackUploader from './TrackUploader.svelte';
 	import VideoSync from './VideoSync.svelte';
-	import TrackPreview from './TrackPreview.svelte';
+	import PanoramaPreview from './PanoramaPreview.svelte';
 
 	const id = $derived(page.params.id as string);
 	const pageState = new PageState();
@@ -106,7 +106,7 @@
 			{:else if pageState.panorama.status === 'NEEDS_PROCESSING' || pageState.panorama.status === 'NEEDS_PROCESSING_FINISH'}
 				<p>Processing panorama data, please wait...</p>
 			{:else if pageState.panorama.status === 'SUCCESS'}
-				<TrackPreview panoramaId={id} />
+				<PanoramaPreview panoramaId={id} />
 			{/if}
 
 			{#if pageState.panorama.status === 'SUCCESS' || pageState.panorama.status === 'FAILURE'}

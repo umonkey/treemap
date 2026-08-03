@@ -99,6 +99,10 @@ impl PanoramaService {
         self.repo.get(id).await?.ok_or(Error::PanoramaNotFound)
     }
 
+    pub async fn get_panorama_images(&self, id: u64) -> Result<Vec<PanoramaImage>> {
+        self.repo.get_images(id).await
+    }
+
     pub async fn get_image_metadata(&self, id: u64) -> Result<PanoramaImageRead> {
         let image = self.repo.get_image(id).await?.ok_or(Error::FileNotFound)?;
         let panorama = self.get_panorama(image.panorama_id).await?;

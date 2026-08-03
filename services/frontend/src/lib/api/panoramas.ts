@@ -289,3 +289,9 @@ export async function exportPanorama(id: string): Promise<IResponse<PanoramaExpo
 		headers: getAuthHeaders()
 	});
 }
+
+export async function getPanoramaGeoJSON(id: string): Promise<IResponse<unknown>> {
+	return await request<unknown>('GET', `api/panoramas/${id}/geo.json`, {
+		headers: getAuthHeaders()
+	});
+}
