@@ -2,6 +2,7 @@ export interface MapRay {
 	lat: number;
 	lng: number;
 	angle: number;
+	length?: number;
 }
 
 class MapRaysStore {
