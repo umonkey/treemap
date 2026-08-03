@@ -10,6 +10,7 @@ env:
   SCCACHE_GHA_ENABLED: "true"
   RUSTC_WRAPPER: "sccache"
   JWT_SECRET: "dummy-secret-for-tests"
+  AWS_KEY: "secret"
 
 jobs:
   linter:
