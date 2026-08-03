@@ -30,7 +30,11 @@
 		<div class="subtitle">{formatDate(createdAt)} - {status}</div>
 	</div>
 	<div class="right-cell">
-		<CheckInput bind:value={visible} onChange={(v) => componentState.updateVisibility(id, v)} disabled={status != 'SUCCESS'} />
+		<CheckInput
+			bind:value={visible}
+			onChange={(v) => componentState.updateVisibility(id, v)}
+			disabled={status != 'SUCCESS'}
+		/>
 	</div>
 </div>
 
