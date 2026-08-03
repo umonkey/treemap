@@ -3,7 +3,11 @@
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import { TrackPreviewState } from './TrackPreview.svelte.ts';
 
-	const { panoramaId, offset = 0 }: { panoramaId: string; offset?: number } = $props();
+	const {
+		panoramaId,
+		offset = 0,
+		ratio = '2 / 1'
+	}: { panoramaId: string; offset?: number; ratio?: string } = $props();
 
 	const componentState = new TrackPreviewState();
 
@@ -15,7 +19,7 @@
 </script>
 
 <div class="track-preview">
-	<div class="map-wrapper">
+	<div class="map-wrapper" style:aspect-ratio={ratio}>
 		<MapLibre
 			style={componentState.layer}
 			bind:map={componentState.map}
@@ -50,13 +54,11 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
-		height: 100%;
+		width: 100%;
 	}
 
 	.map-wrapper {
 		width: 100%;
-		height: 100%;
-		aspect-ratio: 1;
 		border-radius: 8px;
 		overflow: hidden;
 		border: 1px solid var(--pico-muted-border-color, #ccc);

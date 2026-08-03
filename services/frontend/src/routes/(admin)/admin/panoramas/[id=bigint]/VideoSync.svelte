@@ -45,6 +45,7 @@
 			<TrackPreview
 				{panoramaId}
 				offset={componentState.videoOffset + componentState.manualOffset}
+				ratio="1"
 			/>
 		</div>
 		<div class="cell">
