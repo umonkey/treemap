@@ -39,7 +39,9 @@
 		<div class="title">
 			{locale.addRowTitle()}
 		</div>
-		<button class="close" onclick={pageState.handleCancel}><CloseIcon /></button>
+		<button class="close" aria-label={locale.editCancel()} onclick={pageState.handleCancel}
+			><CloseIcon /></button
+		>
 	</div>
 
 	<div class="props">

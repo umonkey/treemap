@@ -38,7 +38,9 @@
 			<div class="title" onclick={previewState.toggleExpand}>
 				{formatSpecies(tree.species)}
 			</div>
-			<button class="close" onclick={previewState.handleClose}><CloseIcon /></button>
+			<button class="close" aria-label={locale.editCancel()} onclick={previewState.handleClose}
+				><CloseIcon /></button
+			>
 		</div>
 
 		<div class="props">
