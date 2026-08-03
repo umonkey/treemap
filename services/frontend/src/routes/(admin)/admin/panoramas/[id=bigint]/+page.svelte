@@ -53,24 +53,38 @@
 		{:else if pageState.isLoading}
 			<p aria-busy="true">Loading panorama...</p>
 		{:else if pageState.panorama}
-			<dl>
-				{#if pageState.panorama.failure_reason}
-					<dt>Failure Reason</dt>
-					<dd class="error">{pageState.panorama.failure_reason}</dd>
-				{/if}
+			<div class="panorama-details">
+				<table>
+					<tbody>
+						{#if pageState.panorama.failure_reason}
+							<tr>
+								<th>Failure Reason</th>
+								<td class="error">{pageState.panorama.failure_reason}</td>
+							</tr>
+						{/if}
 
-				<dt>Images:</dt>
-				<dd>{pageState.panorama.image_count}</dd>
+						<tr>
+							<th>Images:</th>
+							<td>{pageState.panorama.image_count}</td>
+						</tr>
 
-				<dt>GPS Track Offset</dt>
-				<dd>{pageState.panorama.gpx_offset ?? 'not set'}</dd>
+						<tr>
+							<th>GPS Time Offset</th>
+							<td>{pageState.panorama.gpx_offset ?? 'not set'}</td>
+						</tr>
 
-				<dt>Transcode job status</dt>
-				<dd>{pageState.panorama.transcode_status ?? 'unknown'}</dd>
+						<tr>
+							<th>Transcode job status</th>
+							<td>{pageState.panorama.transcode_status ?? 'unknown'}</td>
+						</tr>
 
-				<dt>Processing job status</dt>
-				<dd>{pageState.panorama.processing_status ?? 'unknown'}</dd>
-			</dl>
+						<tr>
+							<th>Processing job status</th>
+							<td>{pageState.panorama.processing_status ?? 'unknown'}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
 
 			{#if !pageState.panorama.source_video_path}
 				<VideoUploader panoramaId={id} onUploadSuccess={() => pageState.reload(id)} />
@@ -111,20 +125,26 @@
 	article {
 		display: flex;
 		flex-direction: column;
-		gap: 2rem;
+		gap: 1rem;
+		margin-top: 1rem;
 	}
 
-	dl {
-		display: grid;
-		grid-template-columns: max-content 1fr;
-		gap: 0.5rem 1rem;
+	.panorama-details table {
+		width: 100%;
+		border-collapse: collapse;
+		margin-bottom: 2rem;
 	}
 
-	dt {
+	.panorama-details th,
+	.panorama-details td {
+		padding: 0.5rem 1rem;
+		border-bottom: 1px solid light-dark(#ddd, #444);
+		text-align: left;
+		vertical-align: top;
+	}
+
+	.panorama-details th {
+		width: 250px;
 		font-weight: bold;
-	}
-
-	dd {
-		margin: 0;
 	}
 </style>
