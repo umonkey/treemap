@@ -18,3 +18,7 @@ We use AWS Batch to offload heavy processing from the main backend server. This 
 ## Data Ownership
 
 All images and processed data are stored on the user's S3 compatible buckets, ensuring full data ownership.
+
+## Exporting Data
+
+Admins can download all information on a panorama in `json` format using the export feature. There is no way to import it back just yet.
