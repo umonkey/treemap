@@ -2,7 +2,7 @@ use crate::actions::mcp::schemas::*;
 use crate::services::mcp::McpService;
 use crate::services::{AppState, Injected};
 use actix_web::{post, web, HttpResponse, Responder};
-use log::error;
+use log::{debug, error};
 use uuid::Uuid;
 
 #[derive(serde::Deserialize)]
@@ -18,13 +18,30 @@ pub async fn message_handler(
     payload: web::Json<JsonRpcRequest>,
 ) -> impl Responder {
     let session_id = query.session_id;
+    debug!("Looking up MCP session: {}", session_id);
     let sender = match state.mcp.get_sender(session_id).await {
-        Some(s) => s,
-        None => return HttpResponse::NotFound().finish(),
+        Some(s) => {
+            debug!("Found MCP session: {}", session_id);
+            s
+        }
+        None => {
+            debug!("MCP session not found: {}", session_id);
+            return HttpResponse::NotFound().finish();
+        }
     };
 
     let request = payload.into_inner();
-    let response = mcp_service.handle_message(request).await;
+    debug!("Processing MCP message for session: {}", session_id);
+    let response = match mcp_service.handle_message(request).await {
+        Some(resp) => resp,
+        None => {
+            debug!(
+                "MCP notification received for session: {}, returning Accepted",
+                session_id
+            );
+            return HttpResponse::Accepted().finish();
+        }
+    };
 
     let response_json = match serde_json::to_string(&response) {
         Ok(j) => j,
@@ -42,5 +59,5 @@ pub async fn message_handler(
         return HttpResponse::InternalServerError().finish();
     }
 
-    HttpResponse::Accepted().finish()
+    HttpResponse::Ok().finish()
 }

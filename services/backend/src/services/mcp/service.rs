@@ -4,6 +4,7 @@ use crate::services::mcp::schemas::*;
 use crate::services::{Context, Injectable};
 use crate::types::*;
 use crate::utils::get_timestamp;
+use log::debug;
 use serde_json::{json, Value as JsonValue};
 use std::sync::Arc;
 
@@ -40,15 +41,47 @@ pub struct McpService {
 }
 
 impl McpService {
-    pub async fn handle_message(&self, request: JsonRpcRequest) -> JsonRpcResponse {
-        let id = request.id.clone().unwrap_or(JsonValue::Null);
+    pub async fn handle_message(&self, request: JsonRpcRequest) -> Option<JsonRpcResponse> {
+        debug!(
+            "MCP incoming method: {}, params: {:?}",
+            request.method, request.params
+        );
 
-        match request.method.as_str() {
+        let id = match request.id.clone() {
+            Some(i) => i,
+            None => {
+                if request.method == "notifications/initialized" {
+                    debug!("Received notifications/initialized notification");
+                    return None;
+                }
+                debug!(
+                    "Received notification without ID or unhandled notification: {}",
+                    request.method
+                );
+                return None;
+            }
+        };
+
+        if request.jsonrpc != "2.0" {
+            let resp = JsonRpcResponse::error(id, INVALID_REQUEST, "Invalid JSON-RPC version");
+            debug!("MCP outgoing response: {:?}", resp);
+            return Some(resp);
+        }
+
+        let resp = match request.method.as_str() {
             "initialize" => self.handle_initialize(id),
+            "ping" => JsonRpcResponse::success(id, json!({})),
+            "notifications/initialized" => {
+                debug!("Received notifications/initialized request");
+                JsonRpcResponse::success(id, json!({}))
+            }
             "tools/list" => self.handle_tools_list(id),
             "tools/call" => self.handle_tools_call(id, request.params).await,
-            _ => JsonRpcResponse::error(id, -32601, "Method not found"),
-        }
+            _ => JsonRpcResponse::error(id, METHOD_NOT_FOUND, "Method not found"),
+        };
+
+        debug!("MCP outgoing response: {:?}", resp);
+        Some(resp)
     }
 
     fn handle_initialize(&self, id: JsonValue) -> JsonRpcResponse {
@@ -141,68 +174,57 @@ impl McpService {
     async fn handle_tools_call(&self, id: JsonValue, params: Option<JsonValue>) -> JsonRpcResponse {
         let params = match params {
             Some(p) => p,
-            None => return JsonRpcResponse::error(id, -32602, "Missing params"),
+            None => return JsonRpcResponse::error(id, INVALID_PARAMS, "Missing params"),
         };
 
         let tool_name = params.get("name").and_then(|v| v.as_str());
         let arguments = params.get("arguments").cloned().unwrap_or(json!({}));
 
-        match tool_name {
-            Some("list_tallest") => self.handle_list_tallest(id, arguments).await,
-            Some("list_widest") => self.handle_list_widest(id, arguments).await,
-            Some("list_streets") => self.handle_list_streets(id, arguments).await,
-            Some("get_street_stats") => self.handle_get_street_stats(id, arguments).await,
-            _ => JsonRpcResponse::error(id, -32601, "Tool not found"),
-        }
+        let tool_result = match tool_name {
+            Some("list_tallest") => self.handle_list_tallest(arguments).await,
+            Some("list_widest") => self.handle_list_widest(arguments).await,
+            Some("list_streets") => self.handle_list_streets(arguments).await,
+            Some("get_street_stats") => self.handle_get_street_stats(arguments).await,
+            _ => {
+                return JsonRpcResponse::error(id, METHOD_NOT_FOUND, "Tool not found");
+            }
+        };
+
+        JsonRpcResponse::success(
+            id,
+            serde_json::to_value(&tool_result).unwrap_or_else(|_| json!({})),
+        )
     }
 
-    async fn handle_list_tallest(&self, id: JsonValue, args: JsonValue) -> JsonRpcResponse {
+    async fn handle_list_tallest(&self, args: JsonValue) -> CallToolResult {
         let limit = args.get("limit").and_then(|v| v.as_u64()).unwrap_or(10);
 
         match self.repo.get_top_height(limit).await {
             Ok(trees) => {
                 let mcp_trees: Vec<McpTree> = trees.into_iter().map(McpTree::from).collect();
-                JsonRpcResponse::success(
-                    id,
-                    json!({
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": serde_json::to_string_pretty(&mcp_trees)
-                                    .unwrap_or_else(|_| "[]".to_string())
-                            }
-                        ]
-                    }),
-                )
+                CallToolResult::success(vec![McpContent::text(
+                    serde_json::to_string_pretty(&mcp_trees).unwrap_or_else(|_| "[]".to_string()),
+                )])
             }
-            Err(e) => JsonRpcResponse::error(id, -32000, &format!("Database error: {}", e)),
+            Err(e) => CallToolResult::error_text(format!("Database error: {}", e)),
         }
     }
 
-    async fn handle_list_widest(&self, id: JsonValue, args: JsonValue) -> JsonRpcResponse {
+    async fn handle_list_widest(&self, args: JsonValue) -> CallToolResult {
         let limit = args.get("limit").and_then(|v| v.as_u64()).unwrap_or(10);
 
         match self.repo.get_top_diameter(limit).await {
             Ok(trees) => {
                 let mcp_trees: Vec<McpTree> = trees.into_iter().map(McpTree::from).collect();
-                JsonRpcResponse::success(
-                    id,
-                    json!({
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": serde_json::to_string_pretty(&mcp_trees)
-                                    .unwrap_or_else(|_| "[]".to_string())
-                            }
-                        ]
-                    }),
-                )
+                CallToolResult::success(vec![McpContent::text(
+                    serde_json::to_string_pretty(&mcp_trees).unwrap_or_else(|_| "[]".to_string()),
+                )])
             }
-            Err(e) => JsonRpcResponse::error(id, -32000, &format!("Database error: {}", e)),
+            Err(e) => CallToolResult::error_text(format!("Database error: {}", e)),
         }
     }
 
-    async fn handle_list_streets(&self, id: JsonValue, args: JsonValue) -> JsonRpcResponse {
+    async fn handle_list_streets(&self, args: JsonValue) -> CallToolResult {
         let limit = args.get("limit").and_then(|v| v.as_u64()).unwrap_or(10);
         let sort = args.get("sort").and_then(|v| v.as_str()).unwrap_or("count");
 
@@ -229,27 +251,18 @@ impl McpService {
                     })
                     .collect();
 
-                JsonRpcResponse::success(
-                    id,
-                    json!({
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": serde_json::to_string_pretty(&results)
-                                    .unwrap_or_else(|_| "[]".to_string())
-                            }
-                        ]
-                    }),
-                )
+                CallToolResult::success(vec![McpContent::text(
+                    serde_json::to_string_pretty(&results).unwrap_or_else(|_| "[]".to_string()),
+                )])
             }
-            Err(e) => JsonRpcResponse::error(id, -32000, &format!("Database error: {}", e)),
+            Err(e) => CallToolResult::error_text(format!("Database error: {}", e)),
         }
     }
 
-    async fn handle_get_street_stats(&self, id: JsonValue, args: JsonValue) -> JsonRpcResponse {
+    async fn handle_get_street_stats(&self, args: JsonValue) -> CallToolResult {
         let street = match args.get("street").and_then(|v| v.as_str()) {
             Some(s) => s.to_lowercase(),
-            None => return JsonRpcResponse::error(id, -32602, "Missing 'street' argument"),
+            None => return CallToolResult::error_text("Missing 'street' argument".to_string()),
         };
 
         let now = get_timestamp();
@@ -286,10 +299,8 @@ impl McpService {
                         .unwrap_or_default()
                         .unwrap_or_default();
                     if total_count == 0 {
-                        return JsonRpcResponse::error(
-                            id,
-                            -32001,
-                            "No trees found for this street",
+                        return CallToolResult::error_text(
+                            "No trees found for this street".to_string(),
                         );
                     }
 
@@ -304,23 +315,14 @@ impl McpService {
                         "without_photos_count": row.get_u64("without_photos_count").unwrap_or_default().unwrap_or_default(),
                     });
 
-                    JsonRpcResponse::success(
-                        id,
-                        json!({
-                            "content": [
-                                {
-                                    "type": "text",
-                                    "text": serde_json::to_string_pretty(&result)
-                                        .unwrap_or_else(|_| "{}".to_string())
-                                }
-                            ]
-                        }),
-                    )
+                    CallToolResult::success(vec![McpContent::text(
+                        serde_json::to_string_pretty(&result).unwrap_or_else(|_| "{}".to_string()),
+                    )])
                 } else {
-                    JsonRpcResponse::error(id, -32001, "No trees found for this street")
+                    CallToolResult::error_text("No trees found for this street".to_string())
                 }
             }
-            Err(e) => JsonRpcResponse::error(id, -32000, &format!("Database error: {}", e)),
+            Err(e) => CallToolResult::error_text(format!("Database error: {}", e)),
         }
     }
 }
