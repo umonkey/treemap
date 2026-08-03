@@ -2,7 +2,8 @@ use super::schemas::{
     AddPanoramaHintRequest, CompleteMultipartRequest, GetPanoramaHintsRequest,
     GetPanoramasGeoJSONRequest, MultipartUploadResponse, PanoramaExport, PanoramaHintRead,
     PanoramaImageExport, PanoramaImageRead, PanoramaMetaExport, PanoramaRead,
-    StartMultipartRequest, TrackPoint, UploadUrlResponse, WebVideoUrlResponse,
+    RestartPanoramaRequest, StartMultipartRequest, TrackPoint, UploadUrlResponse,
+    WebVideoUrlResponse,
 };
 use crate::domain::panorama::{CreatePanorama, PanoramaHint, PanoramaService, UpdatePanorama};
 use crate::domain::tree::Bounds;
@@ -122,9 +123,12 @@ pub async fn restart_panorama_action(
     _user: RequirePermission<PanoEdit>,
     service: Injected<PanoramaService>,
     path: Path<u64>,
+    body: Json<RestartPanoramaRequest>,
 ) -> Result<Json<PanoramaRead>> {
     let id = path.into_inner();
-    let panorama = service.restart_panorama(id).await?;
+
+    let panorama = service.restart_panorama(id, body.into_inner()).await?;
+
     Ok(Json(panorama.into()))
 }
 

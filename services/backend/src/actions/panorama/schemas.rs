@@ -62,6 +62,12 @@ pub struct PanoramaExport {
 }
 
 #[derive(Debug, Deserialize)]
+pub struct RestartPanoramaRequest {
+    pub erase_results: bool,
+    pub erase_temp_files: bool,
+}
+
+#[derive(Debug, Deserialize)]
 pub struct StartMultipartRequest {
     pub parts_count: i32,
 }

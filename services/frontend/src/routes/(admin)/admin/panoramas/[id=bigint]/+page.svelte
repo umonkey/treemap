@@ -112,7 +112,7 @@
 			{#if pageState.panorama.status === 'SUCCESS' || pageState.panorama.status === 'FAILURE'}
 				<Buttons>
 					<Button type="secondary" onClick={() => pageState.exportData(id)}>Download data</Button>
-					<Button type="secondary" onClick={() => pageState.restart(id)}>Restart Panorama</Button>
+					<Button type="secondary" link="/admin/panoramas/{id}/restart">Restart Panorama</Button>
 				</Buttons>
 			{/if}
 		{/if}
