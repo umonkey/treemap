@@ -64,6 +64,7 @@
 		"@photo-sphere-viewer/video-plugin": "^5.14.3",
 		"@sentry/sveltekit": "^10.39.0",
 		"@turf/circle": "^7.3.4",
+		"@zerodevx/svelte-toast": "^0.9.6",
 		"cal-heatmap": "^4.2.4",
 		"chart.js": "^4.5.0",
 		"dexie": "^4.3.0",

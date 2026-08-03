@@ -8,7 +8,6 @@
 	import Button from '$lib/ui/button/Button.svelte';
 	import TextInput from '$lib/ui/text-input/TextInput.svelte';
 	import NumberInput from '$lib/ui/number-input/NumberInput.svelte';
-	import CheckInput from '$lib/ui/check-input/CheckInput.svelte';
 	import Form from '$lib/ui/form/Form.svelte';
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 
@@ -30,7 +29,7 @@
 		items={[
 			{ label: 'Admin', href: '/admin' },
 			{ label: 'Panoramas', href: '/admin/panoramas' },
-			{ label: id, href: `/admin/panoramas/${id}` },
+			{ label: pageState.panorama?.title || id, href: `/admin/panoramas/${id}` },
 			{ label: 'Edit' }
 		]}
 	/>
@@ -46,8 +45,6 @@
 					value={pageState.panorama.title}
 					onChange={(v) => (pageState.panorama!.title = v)}
 				/>
-
-				<CheckInput label="Visible on map" bind:value={pageState.panorama.visible} />
 
 				<NumberInput
 					label="Latitude Offset"

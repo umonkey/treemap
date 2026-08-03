@@ -2,8 +2,8 @@
 	import { untrack } from 'svelte';
 	import { PageState } from './page.svelte.ts';
 	import { page } from '$app/state';
-	import { formatDate } from '$lib/utils/strings';
 	import Breadcrumbs from '$lib/components/admin/Breadcrumbs.svelte';
+	import PanoramaHeader from '$lib/components/panoramas/PanoramaHeader.svelte';
 	import PageHeader from '$lib/ui/header/PageHeader.svelte';
 	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
@@ -36,6 +36,16 @@
 		]}
 	/>
 
+	{#if pageState.panorama}
+		<PanoramaHeader
+			{id}
+			title={pageState.panorama.title}
+			createdAt={pageState.panorama.created_at}
+			status={pageState.panorama.status}
+			bind:visible={pageState.panorama.visible}
+		/>
+	{/if}
+
 	<article>
 		{#if pageState.error}
 			<p class="error">Error loading panorama: {pageState.error.description}</p>
@@ -43,34 +53,22 @@
 			<p aria-busy="true">Loading panorama...</p>
 		{:else if pageState.panorama}
 			<dl>
-				<dt>Date</dt>
-				<dd>{formatDate(pageState.panorama.created_at)}</dd>
-
-				<dt>Title</dt>
-				<dd>{pageState.panorama.title}</dd>
-
-				<dt>Overall status</dt>
-				<dd>{pageState.panorama.status}</dd>
-
 				{#if pageState.panorama.failure_reason}
 					<dt>Failure Reason</dt>
 					<dd class="error">{pageState.panorama.failure_reason}</dd>
 				{/if}
 
-				<dt>Visible</dt>
-				<dd>{pageState.panorama.visible ? 'Yes' : 'No'}</dd>
-
-				<dt>Image Count</dt>
+				<dt>Images:</dt>
 				<dd>{pageState.panorama.image_count}</dd>
 
 				<dt>GPS Track Offset</dt>
-				<dd>{pageState.panorama.gpx_offset ?? '(none)'}</dd>
+				<dd>{pageState.panorama.gpx_offset ?? 'not set'}</dd>
 
 				<dt>Transcode job status</dt>
-				<dd>{pageState.panorama.transcode_status ?? '(none)'}</dd>
+				<dd>{pageState.panorama.transcode_status ?? 'unknown'}</dd>
 
 				<dt>Processing job status</dt>
-				<dd>{pageState.panorama.processing_status ?? '(none)'}</dd>
+				<dd>{pageState.panorama.processing_status ?? 'unknown'}</dd>
 			</dl>
 
 			{#if !pageState.panorama.source_video_path}
