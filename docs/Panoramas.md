@@ -37,6 +37,10 @@ The workflow for adding new panoramas to the system is as follows:
 - Process: once synchronized, the data is queued for processing.
 - Duration: processing normally takes 30 to 60 minutes per street.
 
+## Positional Accuracy and OpenSfM
+
+Consumer-grade GPS loggers (like smartphone apps or action cameras) often experience positional drift in urban environments. The system integrates OpenSfM (Structure from Motion) into the background processing pipeline to reconstruct the 3D scene from overlapping frames. This refines camera positions and orientation, significantly improving positional accuracy and enabling reliable tree triangulation from consumer-grade GPS data.
+
 ## Infrastructure
 
 We use AWS Batch to offload heavy processing from the main backend server. This ensures that the application remains responsive while video frames are being extracted and processed.
