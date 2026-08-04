@@ -17,7 +17,8 @@ check:
 	for service in $(CHANGED_SERVICES); do make -C $$service check; done
 
 format-docs:
-	npx -y prettier --write $(shell find ./docs ./.agents -name "*.md")
+	@echo "Formatting Markdown documents..."
+	@npx -y prettier --list-different --write $(shell find ./docs ./.agents -name "*.md")
 
 format:
 	for service in $(CHANGED_SERVICES); do make -C $$service format; done

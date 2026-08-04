@@ -55,6 +55,16 @@ The application includes an integrated Model Context Protocol (MCP) server that 
 - Data analysis: enables AI agents to perform complex queries and generate statistics about the tree population.
 - Sorting: the `list_streets` tool supports custom sorting by name, count, or completeness.
 
+## Street panoramas
+
+The application integrates 360° street panoramas to support remote inventorying, automated computer-vision pipelines, and armchair mapping.
+
+- Interactive 360 viewer: enables smooth exploration of equirectangular street imagery.
+- Track/layer navigation: allows switching between map layers and panorama sequences effortlessly.
+- Armchair mapping: supports remote auditing and asset tagging from desktop or mobile devices.
+- Panorama hints: provides navigational cues across adjacent panorama nodes and sequences.
+- Coordinate offsets: assists in fine-tuning spatial alignment between GPS tracks and imagery frames.
+
 ## Role-Based Access Control (RBAC)
 
 The application provides a secure environment for multiple types of users by managing access through a granular permission system. This ensures that sensitive operations are only accessible to authorized individuals while allowing regular users to contribute to the map.
