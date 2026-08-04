@@ -7,6 +7,7 @@ on:
 
 env:
   AWS_KEY: "secret"
+  AWS_REGION: "fra1"
   AWS_SECRET: "secret"
   CARGO_TERM_COLOR: always
   JWT_SECRET: "dummy-secret-for-tests"
