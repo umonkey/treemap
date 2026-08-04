@@ -28,10 +28,11 @@ pub fn get_remote_addr(request: &HttpRequest) -> Option<String> {
         CdnType::Cloudflare => "cf-connecting-ip",
         CdnType::CDN77 => "x-real-ip",
 
-        _ => match request.connection_info().realip_remote_addr() {
-            Some(value) => return Some(value.to_string()),
-            None => return None,
-        },
+        _ => {
+            let conn_info = request.connection_info();
+            let value = conn_info.realip_remote_addr()?;
+            return Some(value.to_string());
+        }
     };
 
     if let Some(header) = request.headers().get(header) {

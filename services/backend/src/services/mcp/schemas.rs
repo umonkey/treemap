@@ -1,9 +1,16 @@
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
+#[allow(dead_code)]
+pub const PARSE_ERROR: i32 = -32700;
+pub const INVALID_REQUEST: i32 = -32600;
+pub const METHOD_NOT_FOUND: i32 = -32601;
+pub const INVALID_PARAMS: i32 = -32602;
+#[allow(dead_code)]
+pub const INTERNAL_ERROR: i32 = -32603;
+
 #[derive(Debug, Deserialize)]
 pub struct JsonRpcRequest {
-    #[allow(dead_code)]
     pub jsonrpc: String,
     pub id: Option<Value>,
     pub method: String,
@@ -26,6 +33,61 @@ pub struct JsonRpcError {
     pub message: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub data: Option<Value>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct McpContent {
+    pub r#type: String,
+    pub text: String,
+}
+
+impl McpContent {
+    pub fn text(text: String) -> Self {
+        Self {
+            r#type: "text".to_string(),
+            text,
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CallToolResult {
+    pub content: Vec<McpContent>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub is_error: Option<bool>,
+}
+
+impl CallToolResult {
+    pub fn success(content: Vec<McpContent>) -> Self {
+        Self {
+            content,
+            is_error: None,
+        }
+    }
+
+    #[allow(dead_code)]
+    pub fn error(content: Vec<McpContent>) -> Self {
+        Self {
+            content,
+            is_error: Some(true),
+        }
+    }
+
+    #[allow(dead_code)]
+    pub fn text(text: String) -> Self {
+        Self {
+            content: vec![McpContent::text(text)],
+            is_error: None,
+        }
+    }
+
+    pub fn error_text(text: String) -> Self {
+        Self {
+            content: vec![McpContent::text(text)],
+            is_error: Some(true),
+        }
+    }
 }
 
 impl JsonRpcResponse {
