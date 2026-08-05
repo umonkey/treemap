@@ -157,20 +157,57 @@ mod tests {
     async fn test_get_total() {
         let service = setup().await;
 
+        let today_ts = HeatmapService::get_today();
+        let yesterday_ts = today_ts - 86400;
+
         service
             .db
-            .execute_batch(include_str!(
-                "../../infra/database/fixtures/test_heatmap.sql"
-            ))
+            .execute_sql("DELETE FROM trees_props", &[])
+            .await
+            .expect("Error clearing trees_props.");
+
+        service
+            .db
+            .execute_sql(
+                "INSERT INTO trees_props (id, tree_id, added_at, name, value, added_by) VALUES (1, 1, ?1, 'state', 'healthy', 1)",
+                &[Value::from(yesterday_ts + 3600)],
+            )
+            .await
+            .expect("Error adding heatmap input.");
+
+        service
+            .db
+            .execute_sql(
+                "INSERT INTO trees_props (id, tree_id, added_at, name, value, added_by) VALUES (2, 2, ?1, 'state', 'healthy', 2)",
+                &[Value::from(today_ts + 3600)],
+            )
+            .await
+            .expect("Error adding heatmap input.");
+
+        service
+            .db
+            .execute_sql(
+                "INSERT INTO trees_props (id, tree_id, added_at, name, value, added_by) VALUES (3, 3, ?1, 'state', 'healthy', 1)",
+                &[Value::from(today_ts + 7200)],
+            )
             .await
             .expect("Error adding heatmap input.");
 
         let res = service.get_total().await.expect("Error getting heatmap.");
 
-        let day1 = res.iter().find(|i| i.date == "2025-08-04").unwrap();
+        let yesterday_str = DateTime::from_timestamp(yesterday_ts as i64, 0)
+            .unwrap()
+            .format("%Y-%m-%d")
+            .to_string();
+        let today_str = DateTime::from_timestamp(today_ts as i64, 0)
+            .unwrap()
+            .format("%Y-%m-%d")
+            .to_string();
+
+        let day1 = res.iter().find(|i| i.date == yesterday_str).unwrap();
         assert_eq!(day1.value, 1);
 
-        let day2 = res.iter().find(|i| i.date == "2025-08-05").unwrap();
+        let day2 = res.iter().find(|i| i.date == today_str).unwrap();
         assert_eq!(day2.value, 2);
     }
 
@@ -178,20 +215,57 @@ mod tests {
     async fn test_get_user() {
         let service = setup().await;
 
+        let today_ts = HeatmapService::get_today();
+        let yesterday_ts = today_ts - 86400;
+
         service
             .db
-            .execute_batch(include_str!(
-                "../../infra/database/fixtures/test_heatmap.sql"
-            ))
+            .execute_sql("DELETE FROM trees_props", &[])
+            .await
+            .expect("Error clearing trees_props.");
+
+        service
+            .db
+            .execute_sql(
+                "INSERT INTO trees_props (id, tree_id, added_at, name, value, added_by) VALUES (1, 1, ?1, 'state', 'healthy', 1)",
+                &[Value::from(yesterday_ts + 3600)],
+            )
+            .await
+            .expect("Error adding heatmap input.");
+
+        service
+            .db
+            .execute_sql(
+                "INSERT INTO trees_props (id, tree_id, added_at, name, value, added_by) VALUES (2, 2, ?1, 'state', 'healthy', 2)",
+                &[Value::from(today_ts + 3600)],
+            )
+            .await
+            .expect("Error adding heatmap input.");
+
+        service
+            .db
+            .execute_sql(
+                "INSERT INTO trees_props (id, tree_id, added_at, name, value, added_by) VALUES (3, 3, ?1, 'state', 'healthy', 1)",
+                &[Value::from(today_ts + 7200)],
+            )
             .await
             .expect("Error adding heatmap input.");
 
         let res = service.get_user(1).await.expect("Error getting heatmap.");
 
-        let day1 = res.iter().find(|i| i.date == "2025-08-04").unwrap();
+        let yesterday_str = DateTime::from_timestamp(yesterday_ts as i64, 0)
+            .unwrap()
+            .format("%Y-%m-%d")
+            .to_string();
+        let today_str = DateTime::from_timestamp(today_ts as i64, 0)
+            .unwrap()
+            .format("%Y-%m-%d")
+            .to_string();
+
+        let day1 = res.iter().find(|i| i.date == yesterday_str).unwrap();
         assert_eq!(day1.value, 1);
 
-        let day2 = res.iter().find(|i| i.date == "2025-08-05").unwrap();
+        let day2 = res.iter().find(|i| i.date == today_str).unwrap();
         assert_eq!(day2.value, 1);
     }
 }
