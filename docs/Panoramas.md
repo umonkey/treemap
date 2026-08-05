@@ -1,104 +1,54 @@
-# Armchair Mapping with 360 Panoramas
+# Street Panoramas
 
-This document describes the armchair mapping tool, which allows users to add trees to the map using 360-degree street-level imagery uploaded to Mapillary.
+The app has built in support for 360° street panoramas. This features processing of equirectangular videos with external GPX tracks, synchronizing them, extracting still frames at every 3 meters, reconstructing the scene using OpenSfM, and creating series of images to display in the app.
 
-## Workflow Overview
+## Goals
 
-Instead of physically visiting every tree with a GPS receiver, users can record 360 videos, process them, upload them to Mapillary, and then triangulate tree positions from their computer.
+Street panoramas are designed for high-performance automated data extraction, remote inventorying, and automated computer-vision pipelines, rather than being limited to visual navigation. They provide comprehensive spatial context for analyzing urban assets and mapping features efficiently from the desktop or field.
 
-The mapping workflow follows these steps:
+## User Features
 
-- mapping preparation: record 360 video and GPS tracks, process them into geotagged images, and upload them to Mapillary.
-- background synchronization: the backend periodically pulls metadata for uploaded panoramas using the `mapillary-pull` command and caches them in the local database.
-- workspace navigation: the user opens the armchair mapping page where Mapillary sequences are displayed as tracks on the map.
-- ray casting: the user opens an image, aligns a tree in the center of the viewer, and casts a ray in that direction.
-- triangulation: the user opens a different image from another angle, points to the same tree, and casts another ray. The system calculates the intersection of the rays and proposes a new tree location.
-- creation: the user confirms the proposed location, enters the species and properties, and creates the tree on the map.
+- Interactive 360 viewer: allows users to explore street-level equirectangular imagery smoothly.
+- Map layer navigation: enables switching between map views and panorama sequences seamlessly.
+- Armchair mapping: supports remote auditing and data collection from recorded imagery.
+- Panorama hints: guides users through sequences and highlights relevant features or adjacent nodes.
+- Spatial sequence alignment: aligns video frames and GPS tracks for precise geospatial positioning.
 
-## Database Caching
+## Field Recording
 
-To ensure fast rendering of tracks on the map and avoid querying the Mapillary API during map interaction, the backend maintains a local cache of panorama metadata.
+Recording imagery for the system involves capturing video and GPS tracks in the field:
 
-The database schema includes the following tables:
+- Video recording: record a video track with the highest available resolution and maximum available shutter speed to avoid motion blur. For armchair mapping, driving closer to the middle of the road works best; 30 fps at 60 km/h gives you a frame every 55 cm, so you do not need to drive very slowly.
+- GPS track logging: record a separate GPX track using an application like GPS Logger (Android) or myTracks (iPhone).
+- Clock synchronization: before recording, connect the camera app (e.g., DJI Mimo) to synchronize the camera clock with your phone. If the video and GPS track are out of sync, manual alignment using the application UI video sync feature will be required. Synchronizing clocks beforehand makes this alignment process significantly simpler.
 
-### mapillary_images
+## Video Conversion
 
-- id: unique Mapillary image identifier.
-- sequence_id: identifier of the sequence/track.
-- lat: latitude of the camera.
-- lon: longitude of the camera.
-- compass_angle: heading direction of the camera.
-- captured_at: timestamp when the image was taken.
+The video file coming from the camera contains two video tracks with round videos (one for each lens) and a track with accelerometer data used for stabilizing the video later. You need to use DJI Studio to convert it.
 
-### mapillary_trees
+Load all your recorded `.osv` files into DJI Studio, enable direction lock, and export as a panoramic video in the highest possible quality. After processing, you will have an MP4 file with a stabilized equirectangular video.
 
-- image_id: Mapillary image identifier.
-- angle: relative angle of the tree in the panorama.
-- tree_id: (optional) identifier of the tree on the map.
-- user_id: identifier of the user who marked the tree.
+## Processing Overview
 
-## API Endpoints
+The workflow for adding new panoramas to the system is as follows:
 
-The backend provides a GeoJSON endpoint to fetch cached panorama data for display on the map.
+- Upload: the user uploads an equirectangular 2:1 video file and a corresponding `.gpx` track.
+- Synchronize: the user manually synchronizes the video with the GPS track using a map-based interface.
+- Process: once synchronized, the data is queued for processing.
+- Duration: processing normally takes 30 to 60 minutes per street.
 
-### Get Mapillary Data
+## Positional Accuracy and OpenSfM
 
-`GET /v1/mapillary/geo.json`
+Consumer-grade GPS loggers (like smartphone apps or action cameras) often experience positional drift in urban environments. The system integrates OpenSfM (Structure from Motion) into the background processing pipeline to reconstruct the 3D scene from overlapping frames. This refines camera positions and orientation, significantly improving positional accuracy and enabling reliable tree triangulation from consumer-grade GPS data.
 
-Returns a `FeatureCollection` containing image locations (points) and/or sequence tracks (LineStrings) within the requested bounding box.
+## Infrastructure
 
-### Query Parameters
+We use AWS Batch to offload heavy processing from the main backend server. This ensures that the application remains responsive while video frames are being extracted and processed.
 
-- n, s, e, w: (required) coordinates of the bounding box.
-- points: (optional) boolean, whether to include individual image points.
-- lines: (optional) boolean, whether to include sequence lines.
+## Data Ownership
 
-### Response Structure
+All images and processed data are stored on the user's S3 compatible buckets, ensuring full data ownership.
 
-The features in the GeoJSON response have a `kind` property to distinguish between images and sequences.
+## Exporting Data
 
-- kind: "image" or "sequence".
-- id: Mapillary identifier.
-- captured_at: unix timestamp of the image or sequence start.
-- compass_angle: (images only) heading direction.
-- image_count: (sequences only) number of images in the sequence.
-
-## Triangulation Mathematics
-
-Triangulation uses 2D vector geometry to find the intersection of two or more rays cast from different camera positions.
-
-Since mapping operations occur over small distances, we convert coordinates into a local flat-earth Cartesian projection (in meters) relative to the first camera position.
-
-For each ray, we define:
-
-- camera position: represented as a 2D coordinate point P = (x, y) in meters.
-- bearing unit vector: represented as d = (sin(theta), cos(theta)) where theta is the compass angle of the ray in radians.
-
-The intersection point I of two rays (PA + t _ dA) and (PB + s _ dB) is solved by finding the scale factor t using the following system of linear equations:
-
-t _ sin(theta_A) - s _ sin(theta*B) = x_B - x_A
-t * cos(theta*A) - s * cos(theta_B) = y_B - y_A
-
-If the angle between the rays is too small, the triangulation may be imprecise, and the interface will warn the user. For three or more rays, a least-squares optimization is applied to find the point that minimizes the sum of squared perpendicular distances to all rays.
-
-## Mapillary API Configuration
-
-The integration requires configuring the public username and a client token for authentication with Mapillary.
-
-- mapillary_username: this public username is stored in `config.toml` to filter and sync tracks.
-- mapillary_client_token: this client token is stored securely as a file-based secret named `MAPILLARY_CLIENT_TOKEN` in the configured secrets directory (or as an environment variable for legacy support).
-
-## Implementation Plan
-
-- [x] database schema update: create the `mapillary_images` table and `mapillary_sequences` table in SQLite schema.
-- [x] configuration registration: add `mapillary_username` to the config structures and `mapillary_client_token` to the `Secrets` struct in the backend.
-- [x] synchronization command: implement a `mapillary-pull` command in the Rust backend to fetch sequence metadata and cache it locally.
-- [x] backend API endpoints: expose endpoint `/v1/mapillary/geo.json` to serve cached data (images and tracks) as GeoJSON.
-- [x] panoramic layer display: render Mapillary tracks and image points as layers on the MapLibre map on the client.
-- [x] workspace page routing: set up a split-screen layout on a dedicated `/armchair` Svelte page.
-- [x] Panellum integration: embed the interactive panoramic viewer inside the `/armchair` page.
-- [x] ray casting tool: add the visual ray line on MapLibre which updates dynamically with the active image coordinates and camera orientation.
-- [x] triangulation engine: implement the 2D multi-ray vector intersection calculations on the frontend.
-- [ ] creation flow: add a button to pre-fill the tree creation form with the triangulated coordinates.
-- [x] map-matching: research map-matching APIs, like Valhalla, OSRM or Mapbox Map Matching, to align the GPX track with the roads.
-- [ ] validation and testing: write tests for triangulation math and verify everything with build and formatting.
+Admins can download all information on a panorama in `json` format using the export feature. There is no way to import it back just yet.

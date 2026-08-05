@@ -2,14 +2,17 @@
 //! This is for the production.
 
 use super::aws_config::AwsConfig;
-use super::base::StorageDriver;
+use super::base::{CompletedPart, StorageDriver};
 use crate::infra::config::Config;
 use crate::infra::secrets::Secrets;
 use crate::types::*;
 use async_trait::async_trait;
 use aws_sdk_s3::presigning::PresigningConfig;
 use aws_sdk_s3::primitives::ByteStream;
-use aws_sdk_s3::types::ObjectCannedAcl;
+use aws_sdk_s3::types::{
+    CompletedMultipartUpload, CompletedPart as S3CompletedPart, Delete, ObjectCannedAcl,
+    ObjectIdentifier,
+};
 use aws_sdk_s3::Client;
 use log::{debug, error, info};
 use std::time::{Duration, Instant};
@@ -140,5 +143,225 @@ impl StorageDriver for S3StorageDriver {
             })?;
 
         Ok(presigned_request.uri().to_string())
+    }
+
+    async fn create_read_url(&self, bucket: &str, path: &str) -> Result<String> {
+        let expires_in = Duration::from_secs(3600);
+        let config = PresigningConfig::builder()
+            .expires_in(expires_in)
+            .build()
+            .map_err(|e| Error::Config(e.to_string()))?;
+
+        let presigned_request = self
+            .client
+            .get_object()
+            .bucket(bucket)
+            .key(path)
+            .presigned(config)
+            .await
+            .map_err(|e| {
+                error!("Error creating presigned read URL: {e:?}");
+                Error::FileDownload
+            })?;
+
+        Ok(presigned_request.uri().to_string())
+    }
+
+    async fn exists(&self, bucket: &str, path: &str) -> Result<bool> {
+        let res = self
+            .client
+            .head_object()
+            .bucket(bucket)
+            .key(path)
+            .send()
+            .await;
+
+        match res {
+            Ok(_) => Ok(true),
+            Err(e) => {
+                let service_error = e.into_service_error();
+                if service_error.is_not_found() {
+                    Ok(false)
+                } else {
+                    error!("Error checking file existence: {service_error:?}");
+                    Err(Error::FileDownload)
+                }
+            }
+        }
+    }
+
+    async fn start_multipart_upload(&self, bucket: &str, path: &str) -> Result<String> {
+        let res = self
+            .client
+            .create_multipart_upload()
+            .bucket(bucket)
+            .key(path)
+            .acl(ObjectCannedAcl::PublicRead)
+            .content_type("video/mp4")
+            .send()
+            .await
+            .map_err(|e| {
+                error!("Error starting multipart upload: {e:?}");
+                Error::FileUpload
+            })?;
+
+        Ok(res.upload_id().ok_or(Error::FileUpload)?.to_string())
+    }
+
+    async fn create_upload_part_url(
+        &self,
+        bucket: &str,
+        path: &str,
+        upload_id: &str,
+        part_number: i32,
+    ) -> Result<String> {
+        let expires_in = Duration::from_secs(24 * 3600);
+        let config = PresigningConfig::builder()
+            .expires_in(expires_in)
+            .build()
+            .map_err(|e| Error::Config(e.to_string()))?;
+
+        let presigned_request = self
+            .client
+            .upload_part()
+            .bucket(bucket)
+            .key(path)
+            .upload_id(upload_id)
+            .part_number(part_number)
+            .presigned(config)
+            .await
+            .map_err(|e| {
+                error!("Error creating presigned part URL: {e:?}");
+                Error::FileUpload
+            })?;
+
+        Ok(presigned_request.uri().to_string())
+    }
+
+    async fn complete_multipart_upload(
+        &self,
+        bucket: &str,
+        path: &str,
+        upload_id: &str,
+        parts: Vec<CompletedPart>,
+    ) -> Result<()> {
+        let completed_parts: Vec<S3CompletedPart> = parts
+            .into_iter()
+            .map(|p| {
+                S3CompletedPart::builder()
+                    .part_number(p.part_number)
+                    .e_tag(p.etag)
+                    .build()
+            })
+            .collect();
+
+        let multipart_upload = CompletedMultipartUpload::builder()
+            .set_parts(Some(completed_parts))
+            .build();
+
+        self.client
+            .complete_multipart_upload()
+            .bucket(bucket)
+            .key(path)
+            .upload_id(upload_id)
+            .multipart_upload(multipart_upload)
+            .send()
+            .await
+            .map_err(|e| {
+                error!("Error completing multipart upload: {e:?}");
+                Error::FileUpload
+            })?;
+
+        Ok(())
+    }
+
+    async fn delete_file(&self, bucket: &str, path: &str) -> Result<()> {
+        debug!("Deleting file {}/{} from S3.", bucket, path);
+        let res = self
+            .client
+            .delete_object()
+            .bucket(bucket)
+            .key(path)
+            .send()
+            .await;
+
+        match res {
+            Ok(_) => Ok(()),
+            Err(e) => {
+                error!("Error deleting file {}/{}: {:?}", bucket, path, e);
+                Err(Error::FileUpload)
+            }
+        }
+    }
+
+    async fn delete_files(&self, bucket: &str, paths: &[String]) -> Result<()> {
+        if paths.is_empty() {
+            return Ok(());
+        }
+
+        debug!("Deleting {} files from S3 bucket {}.", paths.len(), bucket);
+
+        for chunk in paths.chunks(1000) {
+            let objects: Vec<ObjectIdentifier> = chunk
+                .iter()
+                .map(|path| {
+                    ObjectIdentifier::builder().key(path).build().map_err(|e| {
+                        error!("Error building object identifier for {path}: {e:?}");
+                        Error::FileUpload
+                    })
+                })
+                .collect::<Result<Vec<_>>>()?;
+
+            let delete = Delete::builder()
+                .set_objects(Some(objects))
+                .build()
+                .map_err(|e| {
+                    error!("Error building delete request: {e:?}");
+                    Error::FileUpload
+                })?;
+
+            let res = self
+                .client
+                .delete_objects()
+                .bucket(bucket)
+                .delete(delete)
+                .send()
+                .await;
+
+            if let Err(e) = res {
+                error!("Error deleting files from S3 bucket {}: {:?}", bucket, e);
+                return Err(Error::FileUpload);
+            }
+        }
+
+        Ok(())
+    }
+
+    async fn list_files(&self, bucket: &str, prefix: &str) -> Result<Vec<String>> {
+        debug!(
+            "Listing files in {} with prefix {} from S3.",
+            bucket, prefix
+        );
+        let res = self
+            .client
+            .list_objects_v2()
+            .bucket(bucket)
+            .prefix(prefix)
+            .send()
+            .await
+            .map_err(|e| {
+                error!("Error listing files in {}/{}: {:?}", bucket, prefix, e);
+                Error::FileDownload
+            })?;
+
+        let mut keys = Vec::new();
+        if let Some(contents) = res.contents {
+            for object in contents {
+                if let Some(key) = object.key {
+                    keys.push(key);
+                }
+            }
+        }
+        Ok(keys)
     }
 }

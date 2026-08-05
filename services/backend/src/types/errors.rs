@@ -13,8 +13,8 @@ pub enum Error {
     BadAuthorizationHeader,
     BadCallback,
     BadImage,
-    #[allow(unused)]
     BadRequest,
+    BadRequestMessage(String),
     Config(String),
     DatabaseConnect(String),
     DatabaseQuery(String),
@@ -29,9 +29,11 @@ pub enum Error {
     ImageResize,
     InstanceDisabled,
     InstanceNotFound,
-    MapillaryExchange(String),
+
     MissingAuthorizationHeader,
     OsmExchange(String),
+    PanoramaFailure(String),
+    PanoramaNotFound,
     Queue,
     RemoteAddrNotSet,
     TreeNotFound,
@@ -62,6 +64,9 @@ impl Error {
                 r#"{"error":{"code":"BadImage","description":"Bad image file, cannot work with it."}}"#.to_string()
             }
             Error::BadRequest => r#"{"error":{"code":"BadRequest","description":"Bad request."}}"#.to_string(),
+            Error::BadRequestMessage(s) => {
+                format!(r#"{{"error":{{"code":"BadRequest","description":"{s}"}}}}"#)
+            }
             Error::Config(_) => {
                 r#"{"error":{"code":"Config","description":"Configuration error."}}"#.to_string()
             }
@@ -106,14 +111,18 @@ impl Error {
             Error::InstanceNotFound => {
                 r#"{"error":{"code":"InstanceNotFound","description":"The specified instance does not exist."}}"#.to_string()
             }
-            Error::MapillaryExchange(_) => {
-                r#"{"error":{"code":"MapillaryExchange","description":"Mapillary exchange failed."}}"#.to_string()
-            }
+
             Error::MissingAuthorizationHeader => {
                 r#"{"error":{"code":"MissingAuthorizationHeader","description":"Authentication required for this call."}}"#.to_string()
             }
             Error::OsmExchange(_) => {
                 r#"{"error":{"code":"OsmExchange","description":"OSM exchange failed."}}"#.to_string()
+            }
+            Error::PanoramaFailure(s) => {
+                format!(r#"{{"error":{{"code":"PanoramaFailure","description":"{s}"}}}}"#)
+            }
+            Error::PanoramaNotFound => {
+                r#"{"error":{"code":"PanoramaNotFound","description":"The specified panorama does not exist in the database."}}"#.to_string()
             }
             Error::Queue => {
                 r#"{"error":{"code":"Queue","description":"Error processing queue request."}}"#.to_string()
@@ -153,6 +162,12 @@ impl From<JwtError> for Error {
     }
 }
 
+impl From<serde_json::Error> for Error {
+    fn from(e: serde_json::Error) -> Self {
+        Error::BadRequestMessage(format!("JSON error: {e}"))
+    }
+}
+
 impl ResponseError for Error {
     fn error_response(&self) -> HttpResponse {
         let status = self.status_code();
@@ -172,6 +187,7 @@ impl ResponseError for Error {
             Error::AddressNotFound
             | Error::FileDownload
             | Error::FileNotFound
+            | Error::PanoramaNotFound
             | Error::InstanceNotFound
             | Error::TreeNotFound => StatusCode::NOT_FOUND,
             Error::BadAuthToken
@@ -182,7 +198,9 @@ impl ResponseError for Error {
             Error::BadAuthorizationHeader
             | Error::BadCallback
             | Error::BadImage
-            | Error::BadRequest => StatusCode::BAD_REQUEST,
+            | Error::BadRequest
+            | Error::BadRequestMessage(_)
+            | Error::PanoramaFailure(_) => StatusCode::BAD_REQUEST,
             Error::DuplicateRecord | Error::DuplicateTree => StatusCode::CONFLICT,
             Error::DatabaseQuery(_) => StatusCode::INTERNAL_SERVER_ERROR,
             _ => StatusCode::INTERNAL_SERVER_ERROR,
@@ -200,6 +218,7 @@ impl fmt::Display for Error {
             Error::BadCallback => write!(f, "BadCallback"),
             Error::BadImage => write!(f, "BadImage"),
             Error::BadRequest => write!(f, "BadRequest"),
+            Error::BadRequestMessage(s) => write!(f, "BadRequest: {s}"),
             Error::Config(s) => write!(f, "Config error: {s}"),
             Error::DatabaseConnect(s) => write!(f, "DatabaseConnect: {s}"),
             Error::DatabaseQuery(s) => write!(f, "Database error: {s}"),
@@ -214,9 +233,11 @@ impl fmt::Display for Error {
             Error::ImageResize => write!(f, "ImageResize"),
             Error::InstanceDisabled => write!(f, "InstanceDisabled"),
             Error::InstanceNotFound => write!(f, "InstanceNotFound"),
-            Error::MapillaryExchange(s) => write!(f, "MapillaryExchange: {s}"),
+
             Error::MissingAuthorizationHeader => write!(f, "MissingAuthorizationHeader"),
             Error::OsmExchange(s) => write!(f, "OsmExchange: {s}"),
+            Error::PanoramaFailure(s) => write!(f, "PanoramaFailure: {s}"),
+            Error::PanoramaNotFound => write!(f, "PanoramaNotFound"),
             Error::Queue => write!(f, "Queue"),
             Error::RemoteAddrNotSet => write!(f, "RemoteAddrNotSet"),
             Error::TreeNotFound => write!(f, "TreeNotFound"),

@@ -9,7 +9,7 @@
 	import TrashIcon from '$lib/icons/TrashIcon.svelte';
 	import FullScreenIcon from '$lib/icons/FullScreenIcon.svelte';
 	import CrossHair from '$lib/icons/CrossHair.svelte';
-	import PanoramaViewer from './PanoramaViewer.svelte';
+	import PanoramaViewer from '$lib/components/panoramas/PanoramaViewer.svelte';
 
 	const id = $derived(page.params.id as string);
 	let previewElement = $state<HTMLElement>();

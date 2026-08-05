@@ -12,7 +12,7 @@
 		nowrap = false
 	}: {
 		children: Snippet;
-		type?: 'submit' | 'button' | 'reset' | 'cancel' | 'secondary' | 'tertiary';
+		type?: 'submit' | 'button' | 'reset' | 'cancel' | 'secondary' | 'tertiary' | 'danger';
 		onClick?: (e: MouseEvent) => void;
 		link?: string;
 		disabled?: boolean;
@@ -74,6 +74,11 @@
 		&.secondary {
 			background-color: var(--map-secondary-background);
 			color: white;
+		}
+
+		&.danger {
+			background-color: var(--color-learn-wrong-bg);
+			color: var(--color-learn-wrong-fg);
 		}
 
 		&.tretiary {

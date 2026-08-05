@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+#
+# This script processes the input geo-tagged images to increase camera position accuracy.
+#
+# This script is expected to run inside a Docker container.
+#
+# Reads source images from the /input folder, puts new images in the /output folder.
+
+set -e
+
+if [ ! -d /dataset/input ]; then
+    echo "Folder /input not found."
+    exit 1
+fi
+
+if [ ! -d /dataset/output ]; then
+    echo "Folder /output not found."
+    exit 1
+fi
+
+if [ ! -f /dataset/input/mask.png ]; then
+    echo "File /input/mask.png not found."
+    exit 1
+fi
+
+cd /dataset
+
+# (1) Clean up in case the script is restarted during development.
+rm -rf exif camera_models.json camera_models_overrides.json reports reconstruction.json
+
+# (2) Set up cameras.
+echo '{"all": {"projection_type": "spherical", "width": 7680, "height": 3840}}' > camera_models_overrides.json
+
+# (3) Extract metadata.
+# This finds all images in /dataset/images and extracts the metadata into the exif folder,
+# e.g. /dataset/images/01.jpg -> /dataset/exif/01.jpg.exif
+time opensfm extract_metadata /dataset 2>&1 | tee 01-extract_metadata.log
+
+# (4) Smooth the raw GPS coordinates.
+smooth-gps 2>&1 | tee 02-smooth_gps.log
+
+# (5) Run the core OpenSfM pipeline.
+time opensfm detect_features /dataset 2>&1 | tee 03-detect_features.log
+time opensfm match_features /dataset 2>&1 | tee 04-match_features.log
+time opensfm create_tracks /dataset 2>&1 | tee 05-create_tracks.log
+time opensfm reconstruct /dataset 2>&1 | tee 06-reconstruct.log
+
+# (6) Prune points out of the main scope.
+prune_points 2>&1 | tee 07-prine_points.log
+
+# (7) Export the point cloud.
+time opensfm export_ply /dataset 2>&1 | tee 08-export_ply.log
+
+# (8) Check quality.
+verify-error 2>&1 | tee 09-verify-error.log
+
+# (9) Write corrected images.
+time write-output 2>&1 | tee 10-write-output.log
+
+# (10) Log changes.
+show-changes 2>&1 | tee 11-show-changes.log
+
+ls -ldh /dataset/output/*.jpg

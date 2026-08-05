@@ -1,5 +1,5 @@
 use crate::domain::alert::Alert;
-use crate::domain::mapillary::{MapillaryImage, MapillarySequence};
+use crate::domain::panorama::{Panorama, PanoramaImage};
 use crate::domain::tree::Tree;
 use crate::utils::get_timestamp;
 use actix_web::HttpResponse;
@@ -89,43 +89,67 @@ pub fn respond_with_alerts(alerts: &[Alert], days: u64) -> HttpResponse {
         .json(collection)
 }
 
-pub fn respond_with_mapillary(
-    images: &[MapillaryImage],
-    sequences: &[MapillarySequence],
+pub fn respond_with_panoramas(
+    images: &[(PanoramaImage, i64, f64, f64)],
+    panoramas: &[Panorama],
 ) -> HttpResponse {
     let mut features = Vec::new();
 
-    for img in images {
+    for (img, created_at, lat_offset, lon_offset) in images {
+        let lat = img.lat + lat_offset;
+        let lng = img.lng + lon_offset;
         features.push(json!({
             "type": "Feature",
-            "id": img.id.clone(),
+            "id": img.id.to_string(),
             "geometry": {
                 "type": "Point",
-                "coordinates": [img.lon, img.lat]
+                "coordinates": [lng, lat]
             },
             "properties": {
-                "id": img.id.clone(),
-                "sequence_id": img.sequence_id.clone(),
-                "captured_at": img.captured_at,
-                "compass_angle": img.compass_angle,
+                "id": img.id.to_string(),
+                "sequence_id": img.panorama_id.to_string(),
+                "captured_at": *created_at,
+                "compass_angle": img.heading,
                 "kind": "image"
             }
         }));
     }
 
-    for seq in sequences {
-        let coords: Value = serde_json::from_str(&seq.geom_json).unwrap_or(json!([]));
+    for pan in panoramas {
+        let coords: Value =
+            serde_json::from_str(&pan.points_json.clone().unwrap_or_default()).unwrap_or(json!([]));
+        let adjusted_coords = if let Value::Array(arr) = coords {
+            Value::Array(
+                arr.into_iter()
+                    .map(|pt| {
+                        if let Value::Array(pt_arr) = pt {
+                            if pt_arr.len() >= 2 {
+                                let lon = pt_arr[0].as_f64().unwrap_or(0.0) + pan.lon_offset;
+                                let lat = pt_arr[1].as_f64().unwrap_or(0.0) + pan.lat_offset;
+                                json!([lon, lat])
+                            } else {
+                                Value::Array(pt_arr)
+                            }
+                        } else {
+                            pt
+                        }
+                    })
+                    .collect(),
+            )
+        } else {
+            coords
+        };
         features.push(json!({
             "type": "Feature",
-            "id": seq.id.clone(),
+            "id": pan.id.to_string(),
             "geometry": {
                 "type": "LineString",
-                "coordinates": coords
+                "coordinates": adjusted_coords
             },
             "properties": {
-                "id": seq.id.clone(),
-                "captured_at": seq.captured_at,
-                "image_count": seq.image_count,
+                "id": pan.id.to_string(),
+                "captured_at": pan.created_at,
+                "image_count": pan.image_count,
                 "kind": "sequence"
             }
         }));

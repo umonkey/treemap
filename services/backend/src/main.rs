@@ -15,14 +15,17 @@ fn usage() {
     println!();
     println!("Commands:");
     println!("  backup-database       -- create a database backup");
+    println!("  dispatch-emails       -- run the email dispatcher daemon");
     println!("  merge-duplicates [N]  -- automated duplicate tree resolution");
     println!("  migrate-timestamps    -- backfill update timestamps");
-    println!("  mapillary-pull        -- get new images from Mapillary");
+
     println!("  osm-pull              -- get new trees from OpenStreetMap");
     println!("  osm-push              -- send new trees to OSM");
     println!("  osm-push-changes      -- send tree updates to OSM");
     println!("  osm-push-delete       -- remove deleted trees from OSM");
     println!("  osm-remap-duplicates  -- fix OSM IDs for merged trees");
+    println!("  panoramas-process     -- process draft panoramas transcode status");
+    println!("  panoramas-transcode N -- start transcode for a single panorama");
     println!("  queue-consumer        -- run the queue consumer daemon");
     println!("  serve                 -- run the web server");
     println!("  update-tree-address N -- update street address for a single tree");
@@ -64,6 +67,10 @@ async fn main() -> std::io::Result<()> {
             backup_database_command().await;
             return Ok(());
         }
+        "dispatch-emails" => {
+            dispatch_emails_command().await;
+            return Ok(());
+        }
         "merge-duplicates" => {
             merge_duplicates_command().await;
             return Ok(());
@@ -72,10 +79,7 @@ async fn main() -> std::io::Result<()> {
             migrate_timestamps_command().await;
             return Ok(());
         }
-        "mapillary-pull" => {
-            mapillary_pull_command().await;
-            return Ok(());
-        }
+
         "osm-pull" => {
             osm_pull_command().await;
             return Ok(());
@@ -94,6 +98,14 @@ async fn main() -> std::io::Result<()> {
         }
         "osm-remap-duplicates" => {
             osm_remap_duplicates_command().await;
+            return Ok(());
+        }
+        "panoramas-process" => {
+            panoramas_process_command().await;
+            return Ok(());
+        }
+        "panoramas-transcode" => {
+            panoramas_transcode_command().await;
             return Ok(());
         }
         "update-tree-address" => {

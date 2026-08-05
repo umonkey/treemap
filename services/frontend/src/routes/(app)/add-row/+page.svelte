@@ -8,16 +8,9 @@
 	import { onMount } from 'svelte';
 	import RowSizeInput from '$lib/components/map/RowSizeInput.svelte';
 	import { mapRowState } from '$lib/stores/mapRowState.svelte';
-	import { getDistance } from '$lib/utils';
 	import { get } from 'svelte/store';
 	import { mapStore } from '$lib/stores/mapStore';
 	import '$lib/styles/variables.css';
-
-	const distance = $derived(
-		mapRowState.pointA && mapRowState.pointB
-			? getDistance(mapRowState.pointA, mapRowState.pointB)
-			: 0
-	);
 
 	onMount(() => {
 		$mapMode = 'add-row';
@@ -26,6 +19,14 @@
 		return () => {
 			$mapMode = undefined;
 		};
+	});
+
+	$effect(() => {
+		if (pageState.offset) {
+			console.log(
+				`Row offset: lat=${pageState.offset.lat.toFixed(6)} lon=${pageState.offset.lon.toFixed(6)}`
+			);
+		}
 	});
 </script>
 
@@ -38,7 +39,9 @@
 		<div class="title">
 			{locale.addRowTitle()}
 		</div>
-		<button class="close" onclick={pageState.handleCancel}><CloseIcon /></button>
+		<button class="close" aria-label={locale.editCancel()} onclick={pageState.handleCancel}
+			><CloseIcon /></button
+		>
 	</div>
 
 	<div class="props">
@@ -48,7 +51,7 @@
 			</Button>
 
 			<div class="value centered">
-				{locale.meters(distance.toFixed(1))}
+				{locale.meters(pageState.distance.toFixed(1))}
 			</div>
 
 			<Button type="secondary" onClick={pageState.setPointB} nowrap>
@@ -57,7 +60,11 @@
 		</div>
 
 		{#if mapRowState.pointA && mapRowState.pointB}
-			<RowSizeInput value={mapRowState.count} {distance} onChange={pageState.handleCountChange} />
+			<RowSizeInput
+				value={mapRowState.count}
+				distance={pageState.distance}
+				onChange={pageState.handleCountChange}
+			/>
 		{/if}
 	</div>
 

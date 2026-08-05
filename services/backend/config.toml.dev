@@ -76,4 +76,9 @@ sqs_url = "https://sqs.eu-west-1.amazonaws.com/047041075401/trees_dev"
 # This is where OSM redirects you after authorizing the app.
 #osm_redirect_uri = "http://127.0.0.1:8000/auth/callback"
 
+# Define buckets for domain specific storage.
+# TODO: shall we move this to secrets?
 backup_bucket = "treemap-backups-uzbmpe2a"
+panoramas_sources_bucket = "treemap-panoramas-tmp-g6dxkoua"
+panoramas_bucket = "panoramas-px3qodu3"
+panoramas_bucket_url = "https://panoramas-px3qodu3.fra1.cdn.digitaloceanspaces.com/"

@@ -248,50 +248,58 @@ CREATE TABLE IF NOT EXISTS observations (
 CREATE INDEX IF NOT EXISTS observations_tree_id ON observations (tree_id);
 
 
-CREATE TABLE IF NOT EXISTS mapillary_images (
-    `id` TEXT NOT NULL,
-    `sequence_id` TEXT NOT NULL,
-    `captured_at` INT NOT NULL,
-    `lat` REAL NOT NULL,
-    `lon` REAL NOT NULL,
-    `compass_angle` REAL NOT NULL,
-    `quality_score` REAL NULL,
+CREATE TABLE IF NOT EXISTS panoramas (
+    `id` INT NOT NULL,
+    `storage_key` TEXT,
+    `created_at` INT NOT NULL,
+    `created_by` INT NOT NULL,
+    `image_count` INT NOT NULL DEFAULT 0,
+    `status` TEXT NOT NULL DEFAULT 'NEEDS_FILES',
+    `title` TEXT NOT NULL,
+    `visible` INT NOT NULL DEFAULT 0,
+    `source_video_path` TEXT NULL,
+    `gpx_path` TEXT NULL,
+    `web_video_path` TEXT NULL,
+    `transcode_arn` TEXT NULL,
+    `transcode_status` TEXT NULL,
+    `video_timestamp` REAL NULL,
+    `gpx_offset` REAL NULL,
+    `lat_offset` REAL NOT NULL DEFAULT 0.0,
+    `lon_offset` REAL NOT NULL DEFAULT 0.0,
+    `processing_arn` TEXT NULL,
+    `processing_status` TEXT NULL,
+    `failure_reason` TEXT NULL,
+    `min_lat` REAL NULL,
+    `max_lat` REAL NULL,
+    `min_lon` REAL NULL,
+    `max_lon` REAL NULL,
+    `points_json` TEXT NULL,
     PRIMARY KEY(`id`)
 );
 
-CREATE INDEX IF NOT EXISTS mapillary_images_sequence_id ON mapillary_images (sequence_id);
-CREATE INDEX IF NOT EXISTS mapillary_images_captured_at ON mapillary_images (captured_at);
-CREATE INDEX IF NOT EXISTS mapillary_images_lat ON mapillary_images (lat);
-CREATE INDEX IF NOT EXISTS mapillary_images_lon ON mapillary_images (lon);
+CREATE INDEX IF NOT EXISTS panoramas_created_at ON panoramas (created_at);
 
-
-CREATE TABLE IF NOT EXISTS mapillary_sequences (
-    `id` TEXT NOT NULL,
-    `captured_at` INT NOT NULL,
-    `image_count` INT NOT NULL,
-    `min_lat` REAL NOT NULL,
-    `max_lat` REAL NOT NULL,
-    `min_lon` REAL NOT NULL,
-    `max_lon` REAL NOT NULL,
-    `geom_json` TEXT NOT NULL,
-    `hidden` INT NOT NULL DEFAULT '0',
-    `title` TEXT NOT NULL DEFAULT 'untitled',
-    `lat_offset` REAL NOT NULL DEFAULT 0,
-    `lon_offset` REAL NOT NULL DEFAULT 0,
-    PRIMARY KEY(`id`)
+CREATE TABLE IF NOT EXISTS panoramas_images (
+    id INT NOT NULL,
+    panorama_id INT NOT NULL,
+    filename TEXT NOT NULL,
+    lat REAL NOT NULL,
+    lng REAL NOT NULL,
+    heading REAL NOT NULL,
+    pitch REAL NOT NULL,
+    roll REAL NOT NULL,
+    hidden INT NOT NULL DEFAULT 0,
+    PRIMARY KEY(id)
 );
 
-CREATE INDEX IF NOT EXISTS mapillary_sequences_captured_at ON mapillary_sequences (captured_at);
+CREATE INDEX IF NOT EXISTS panoramas_images_panorama_id ON panoramas_images (panorama_id);
 
-
-CREATE TABLE IF NOT EXISTS mapillary_trees (
-    `image_id` TEXT NOT NULL,
+CREATE TABLE IF NOT EXISTS panoramas_hints (
+    `image_id` INT NOT NULL,
     `angle` REAL NOT NULL,
-    `tree_id` INT NULL,
     `user_id` INT NOT NULL
 );
-
-CREATE INDEX IF NOT EXISTS mapillary_trees_image_id ON mapillary_trees (image_id);
+CREATE INDEX IF NOT EXISTS panoramas_hints_image_id ON panoramas_hints (image_id);
 
 
 CREATE TABLE IF NOT EXISTS instances (
@@ -303,5 +311,17 @@ CREATE TABLE IF NOT EXISTS instances (
     enabled INTEGER NOT NULL DEFAULT 1
 );
 
+CREATE TABLE IF NOT EXISTS emails (
+    `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+    `recipient` TEXT NOT NULL,
+    `event_name` TEXT NOT NULL,
+    `template_data` TEXT NOT NULL,
+    `status` TEXT NOT NULL DEFAULT 'PENDING',
+    `attempts` INT NOT NULL DEFAULT 0,
+    `last_error` TEXT NULL,
+    `created_at` INT NOT NULL,
+    `sent_at` INT NULL
+);
+CREATE INDEX IF NOT EXISTS emails_status ON emails (status);
 
 COMMIT;

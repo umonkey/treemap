@@ -29,7 +29,9 @@
 			<div class="title" onclick={previewState.toggleExpand}>
 				{locale.title(alert.id)}
 			</div>
-			<button class="close" onclick={previewState.handleClose}><CloseIcon /></button>
+			<button class="close" aria-label={locale.close()} onclick={previewState.handleClose}
+				><CloseIcon /></button
+			>
 		</div>
 
 		<div class="props">

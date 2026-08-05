@@ -1,0 +1,50 @@
+# OpenSfM Configuration for 8K Sequential Frames
+
+# Optimization: Resize images for feature extraction
+# 2048 is sufficient for accurate camera poses and saves processing time.
+feature_process_size: 4096
+feature_process_size_panorama: 4096
+
+# Optimization: Sequential Matching
+matching_order_neighbors: 20  # Match ±8 frames in chronological sequence
+matching_gps_distance: 50      # Limit search for near images to 50m to avoid false matches and save time
+matching_gps_neighbors: 10    # Cap the number of GPS-based matches to 10 to prevent exhaustive searching
+
+# High point count for stability
+min_features: 10000
+min_features_panorama: 10000
+
+# Minimum number of frames a feature must be seen in to create a track.
+# Increasing this significantly reduces memory by filtering out noise.
+min_track_length: 3
+
+# Use masks to ignore the car hood
+use_masks: yes
+
+# --- Turn-Aware GPS Constraints ---
+# Active GPS Constraints
+bundle_use_gps: yes
+
+# Increased to 10.0 to provide sufficient anchor force on straight segments with adaptive DOP.
+gps_weight: 10.0
+bundle_gps_vertical_weight: 0.01
+
+# Disable the problematic Horizontal Prior
+align_method: naive
+align_orientation_prior: vertical
+
+# Solver Stability: Frequent Global Bundle
+# This prevents drift from ever building up.
+bundle_interval: 10             # Optimized for linear street-view sequences to reduce compute time and improve alignment stability
+local_bundle_radius: 15
+bundle_new_points_ratio: 1.2    # Optimized for linear street-view sequences to reduce compute time and improve alignment stability
+
+# Memory-efficient solver for large datasets
+ceres_linear_solver: SPARSE_SCHUR
+
+# Rigidity settings
+triangulation_min_ray_angle: 2.0  # Higher angle ensures more stable depth/triangulation for features like trees
+optimize_camera_parameters: yes
+
+# Performance
+processes: 4

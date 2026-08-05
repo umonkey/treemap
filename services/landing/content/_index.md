@@ -61,7 +61,7 @@ The platform provides a streamlined workflow for gathering accurate data on urba
     <div class="feature-card">
         <i class="fa-solid fa-street-view"></i>
         <h2>Street View Integration</h2>
-        <p>Support for 360° street-level imagery via Mapillary, including specialized tools to triangulate and verify tree positions directly from the imagery.</p>
+        <p>Support for 360° street-level imagery, including specialized tools to triangulate and verify tree positions directly from the imagery.</p>
     </div>
     <div class="feature-card">
         <i class="fa-solid fa-mobile-screen"></i>

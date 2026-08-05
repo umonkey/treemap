@@ -28,6 +28,12 @@ This directory contains the static frontend for the tree mapping application.
 - `npm run test`: run unit tests with Vitest.
 - `npm run format`: format code with Prettier.
 
-## Development workflow
+## Coding styles
 
-- All code changes need to be handed off to the `@implement` sub-agent.
+- Use `Form.svelte` to wrap forms.
+- Use `Button.svelte` to add buttons to forms.
+- Use `Buttons.svelte` to wrap multiple buttons, e.g. in the end of a form.
+- Use `TextInput.svelte`, `CheckInput.svelte`, `NumberInput.svelte` and other similar components for forms.
+- Use `$app/state` to access page params, do not use `+page.ts`.
+- All bigint values returned by the backend need to be converted to strings, as JavaScript cannot handle 64-bit integers.
+- API endpoints return `Result<Json<>>` unless they emit no data, then they return a `Result<HttpResponse>` with the right status code.

@@ -9,6 +9,8 @@ pub struct Config {
     pub files_bucket: String,
     pub files_key: String,
     pub files_secret: String,
+    #[allow(dead_code)]
+    pub website_url: String,
 }
 
 impl Config {
@@ -24,6 +26,8 @@ impl Config {
             files_bucket: env::var("FILES_BUCKET").expect("FILES_BUCKET must be set"),
             files_key: secrets.files_key,
             files_secret: secrets.files_secret,
+            website_url: env::var("WEBSITE_URL")
+                .unwrap_or_else(|_| "http://localhost:5173".to_string()),
         }
     }
 }

@@ -9,7 +9,7 @@
 {#if treeHintsLayerState.data}
 	<GeoJSON data={treeHintsLayerState.data}>
 		<LineLayer
-			id="mapillary-tree-hints"
+			id="tree-hints"
 			paint={{
 				'line-color': '#22c55e',
 				'line-width': 2,

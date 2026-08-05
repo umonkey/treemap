@@ -1,0 +1,6 @@
+#!/bin/bash
+if [ -f uv.lock ]; then
+    exec uv run python3 -m app "$@"
+else
+    exec python3 -m app "$@"
+fi

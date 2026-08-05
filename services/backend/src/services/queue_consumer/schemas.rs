@@ -27,12 +27,16 @@ pub struct UpdateUserpicMessage {
     pub file_id: u64,
 }
 
+#[derive(Debug, Deserialize, Serialize)]
+pub struct TranscodePanorama(pub u64);
+
 #[derive(Debug, Serialize)]
 pub enum QueueCommand {
     ResizeImage(ResizeImageMessage),
     UpdateTreeAddress(UpdateTreeAddressMessage),
     AddPhoto(AddPhotoMessage),
     UpdateUserpic(UpdateUserpicMessage),
+    TranscodePanorama(u64),
 }
 
 impl ResizeImageMessage {
@@ -79,6 +83,18 @@ impl UpdateUserpicMessage {
             "params": {
                 "user_id": self.user_id,
                 "file_id": self.file_id,
+            },
+        })
+        .to_string()
+    }
+}
+
+impl TranscodePanorama {
+    pub fn encode(&self) -> String {
+        json!({
+            "command": "TranscodePanorama",
+            "params": {
+                "id": self.0,
             },
         })
         .to_string()

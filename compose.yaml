@@ -24,14 +24,19 @@ services:
       - RUST_LOG=info,treemap=debug,treemap::infra::database::sqlite_database=info
       - TREEMAP_CONFIG=/app/config.toml.dev
     secrets:
+      - aws_key
+      - aws_secret
+      - aws_region
       - files_key
       - files_secret
       - jwt_secret
-      - mapillary_org_id
-      - mapillary_token
       - sqs_key
       - sqs_secret
       - osm_token
+      - smtp_user
+      - smtp_secret
+      - smtp_host
+      - from_email
 
   frontend:
     build:
@@ -51,6 +56,12 @@ volumes:
   svelte_kit_data:
 
 secrets:
+  aws_key:
+    file: .secrets/aws_key.txt
+  aws_secret:
+    file: .secrets/aws_secret.txt
+  aws_region:
+    file: .secrets/aws_region.txt
   chatbot_token:
     file: .secrets/chatbot_token.txt
   files_key:
@@ -59,13 +70,17 @@ secrets:
     file: .secrets/files_secret.txt
   jwt_secret:
     file: .secrets/jwt_secret.txt
-  mapillary_org_id:
-    file: .secrets/mapillary_org_id.txt
-  mapillary_token:
-    file: .secrets/mapillary_token.txt
   sqs_key:
     file: .secrets/sqs_key.txt
   sqs_secret:
     file: .secrets/sqs_secret.txt
   osm_token:
     file: .secrets/osm_token.txt
+  smtp_user:
+    file: .secrets/smtp_user.txt
+  smtp_secret:
+    file: .secrets/smtp_secret.txt
+  smtp_host:
+    file: .secrets/smtp_host.txt
+  from_email:
+    file: .secrets/from_email.txt

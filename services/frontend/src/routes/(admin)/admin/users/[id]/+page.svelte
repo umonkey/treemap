@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import Breadcrumbs from '$lib/components/admin/Breadcrumbs.svelte';
-	import Button from '$lib/ui/button/Button.svelte';
-	import Buttons from '$lib/ui/buttons/Buttons.svelte';
+	import PageHeader from '$lib/ui/header/PageHeader.svelte';
 	import { pageState } from './page.svelte';
 
 	$effect(() => {
@@ -26,17 +25,17 @@
 	{:else if pageState.error}
 		<p class="error">Error loading user: {pageState.error.description}</p>
 	{:else if user}
-		<header>
-			<h1>User Properties</h1>
-
-			<Breadcrumbs
-				items={[
-					{ label: 'Admin', href: '/admin' },
-					{ label: 'Users', href: '/admin/users' },
-					{ label: user.user.name }
-				]}
-			/>
-		</header>
+		<PageHeader
+			text="User Properties"
+			button={{ label: 'Edit', link: `/admin/users/${user.user.id}/edit` }}
+		/>
+		<Breadcrumbs
+			items={[
+				{ label: 'Admin', href: '/admin' },
+				{ label: 'Users', href: '/admin/users' },
+				{ label: user.user.name }
+			]}
+		/>
 		<div class="user-details">
 			<h2>{user.user.name}</h2>
 			{#if user.user.picture}
@@ -74,11 +73,6 @@
 					</ul>
 				</dd>
 			</dl>
-
-			<Buttons>
-				<Button link="/admin/users/{user.user.id}/edit">Edit</Button>
-				<Button link="/admin/users" type="cancel">Back to List</Button>
-			</Buttons>
 		</div>
 	{/if}
 </article>

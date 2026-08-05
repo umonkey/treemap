@@ -9,7 +9,7 @@
 {#if panoramicLayerState.data}
 	<GeoJSON data={panoramicLayerState.data}>
 		<LineLayer
-			id="mapillary-sequences"
+			id="panoramas-sequences"
 			filter={['==', ['get', 'kind'], 'sequence']}
 			paint={{
 				'line-color': '#007aff',
@@ -19,7 +19,7 @@
 		/>
 
 		<CircleLayer
-			id="mapillary-images"
+			id="panoramas-images"
 			minzoom={18}
 			filter={['==', ['get', 'kind'], 'image']}
 			paint={{

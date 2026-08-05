@@ -30,9 +30,17 @@ pub struct Secrets {
     pub sqs_key: Option<String>,
     pub sqs_secret: Option<String>,
 
-    // Mapillary API.
-    pub mapillary_token: Option<String>,
-    pub mapillary_org_id: Option<String>,
+    // AWS Batch / AWS access.
+    pub aws_key: Option<String>,
+    pub aws_secret: Option<String>,
+    pub aws_region: Option<String>,
+
+    // SMTP configuration / secrets.
+    pub smtp_host: Option<String>,
+    pub smtp_port: Option<u16>,
+    pub smtp_user: Option<String>,
+    pub smtp_secret: Option<String>,
+    pub from_email: Option<String>,
 }
 
 impl Secrets {
@@ -50,8 +58,18 @@ impl Secrets {
             jwt_secret: Self::get(path, "JWT_SECRET"),
             sqs_key: Self::get(path, "SQS_KEY"),
             sqs_secret: Self::get(path, "SQS_SECRET"),
-            mapillary_token: Self::get(path, "MAPILLARY_TOKEN"),
-            mapillary_org_id: Self::get(path, "MAPILLARY_ORG_ID"),
+            aws_key: Self::get(path, "AWS_KEY"),
+            aws_secret: Self::get(path, "AWS_SECRET"),
+            aws_region: Self::get(path, "AWS_REGION"),
+            smtp_host: Self::get(path, "SMTP_HOST").or_else(|| Self::get(path, "HOST")),
+            smtp_port: Self::get(path, "SMTP_PORT")
+                .and_then(|v| v.parse().ok())
+                .or_else(|| Self::get(path, "PORT").and_then(|v| v.parse().ok())),
+            smtp_user: Self::get(path, "SMTP_USER").or_else(|| Self::get(path, "USER")),
+            smtp_secret: Self::get(path, "SMTP_SECRET")
+                .or_else(|| Self::get(path, "SECRET"))
+                .or_else(|| Self::get(path, "SMTP_PASSWORD")),
+            from_email: Self::get(path, "FROM_EMAIL").or_else(|| Self::get(path, "SMTP_FROM")),
         })
     }
 

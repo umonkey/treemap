@@ -10,13 +10,16 @@ use std::fs;
 use std::io::Read;
 
 #[allow(unused)]
-#[derive(Debug, Default, Deserialize)]
+#[derive(Debug, Default, Clone, Deserialize)]
 pub struct Config {
     #[serde(default = "default_bot_user_id")]
     pub bot_user_id: u64,
 
     #[serde(default = "default_app_contact")]
     pub app_contact: String,
+
+    #[serde(default = "default_website_url")]
+    pub website_url: String,
 
     #[serde(default = "default_file_folder")]
     pub file_folder: String,
@@ -78,9 +81,13 @@ pub struct Config {
     pub files_endpoint: Option<String>,
     pub files_bucket: Option<String>,
     pub backup_bucket: Option<String>,
+    pub panoramas_sources_bucket: Option<String>,
+    pub panoramas_bucket: Option<String>,
+    pub panoramas_bucket_url: Option<String>,
 
     // Background job queue.
     pub sqs_url: Option<String>,
+    pub batch_job_queue: Option<String>,
 }
 
 impl Config {
@@ -172,6 +179,10 @@ fn default_bot_user_id() -> u64 {
 
 fn default_app_contact() -> String {
     "https://github.com/umonkey/treemap".to_string()
+}
+
+fn default_website_url() -> String {
+    "http://localhost:5173".to_string()
 }
 
 fn default_osm_changeset_size() -> u64 {

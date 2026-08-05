@@ -1,0 +1,210 @@
+#!/usr/bin/env python3
+
+import json
+import csv
+import math
+import os
+import glob
+import subprocess
+import shutil
+import numpy as np
+import sys
+from scipy.spatial.transform import Rotation as R
+
+def enu_to_lla(lat_ref, lon_ref, alt_ref, e, n, u):
+    # WGS84 ellipsoid constants
+    a = 6378137.0
+    f = 1 / 298.257223563
+    b = (1 - f) * a
+    e2 = (a**2 - b**2) / a**2
+
+    lat_ref_rad = math.radians(lat_ref)
+    lon_ref_rad = math.radians(lon_ref)
+
+    # Calculate radii of curvature
+    sin_lat = math.sin(lat_ref_rad)
+    cos_lat = math.cos(lat_ref_rad)
+    n_rad = a / math.sqrt(1 - e2 * sin_lat**2)
+
+    # Approximate conversion for small distances
+    dlat = n / (n_rad * (1 - e2) / (1 - e2 * sin_lat**2))
+    dlon = e / (n_rad * cos_lat)
+
+    lat = lat_ref + math.degrees(dlat)
+    lon = lon_ref + math.degrees(dlon)
+    alt = alt_ref + u
+    return lat, lon, alt
+
+def main(dataset_dir, output_dir):
+    os.makedirs(output_dir, exist_ok=True)
+    # 1. Clean output directory
+    print("Cleaning output directory...")
+    for f in glob.glob(os.path.join(output_dir, "*.jpg")):
+        os.remove(f)
+
+    # Copy all images to output directory to fill holes
+    print("Copying all images to output directory...")
+    images_src_dir = os.path.join(dataset_dir, 'images')
+    if os.path.exists(images_src_dir):
+        for img_path in glob.glob(os.path.join(images_src_dir, '*')):
+            if os.path.isfile(img_path):
+                shutil.copy2(img_path, os.path.join(output_dir, os.path.basename(img_path)))
+
+    reconstruction_path = os.path.join(dataset_dir, "reconstruction.json")
+    reference_lla_path = os.path.join(dataset_dir, "reference_lla.json")
+
+    # 2. Read reconstruction data
+    print("Reading reconstruction.json...")
+    if not os.path.exists(reconstruction_path):
+        print("Error: reconstruction.json not found")
+        return
+
+    with open(reconstruction_path, 'r') as f:
+        reconstructions = json.load(f)
+
+    if not reconstructions:
+        print("Error: reconstruction.json is empty")
+        return
+
+    processed_shots = set()
+    csv_data = []
+    images_data = []
+
+    for i, reconstruction in enumerate(reconstructions):
+        print(f"Processing reconstruction component {i} ({len(reconstruction['shots'])} shots)...")
+        ref_lla = reconstruction.get('reference_lla')
+        if not ref_lla:
+            if os.path.exists(reference_lla_path):
+                with open(reference_lla_path, 'r') as f:
+                    ref_lla = json.load(f)
+            else:
+                print(f"Warning: No reference_lla found for reconstruction {i}. Skipping.")
+                continue
+
+        lat_ref = ref_lla['latitude']
+        lon_ref = ref_lla['longitude']
+        alt_ref = ref_lla['altitude']
+
+        # 3. Prepare metadata for exiftool
+        for shot_id, shot_data in reconstruction['shots'].items():
+            if shot_id in processed_shots:
+                continue
+            processed_shots.add(shot_id)
+
+            src_path = os.path.join(dataset_dir, 'images', shot_id)
+            dst_path = os.path.join(output_dir, shot_id)
+
+            if not os.path.exists(src_path):
+                print(f"Warning: source image {src_path} not found, skipping.")
+                continue
+
+            # Copy image to output
+            shutil.copy2(src_path, dst_path)
+
+            # Position
+            # OpenSfM 'translation' is T in x_cam = R*x_world + T
+            # Camera center C = -R^T * T
+            r_vec = np.array(shot_data['rotation'])
+            t_vec = np.array(shot_data['translation'])
+            rmat = R.from_rotvec(r_vec).as_matrix()
+            # Note: OpenSfM T is in camera coordinates
+            c_world = -rmat.T @ t_vec
+            e, n, u = c_world
+
+            lat, lon, alt = enu_to_lla(lat_ref, lon_ref, alt_ref, e, n, u)
+
+            # Rotation
+            # R_cam_to_world transforms camera coords to ENU
+            R_c2w = rmat.T
+
+            # Viewing direction (Z forward) in ENU
+            v_forward = R_c2w @ np.array([0, 0, 1])
+            # Right direction (X right in OpenSfM) in ENU
+            v_right = R_c2w @ np.array([1, 0, 0])
+            # Up direction (Y down in OpenSfM, so [0, -1, 0] is up) in ENU
+            v_up = R_c2w @ np.array([0, -1, 0])
+
+            # Heading: angle from North (Y) towards East (X)
+            heading = math.degrees(math.atan2(v_forward[0], v_forward[1])) % 360
+
+            # Pitch: angle from horizontal plane, up is positive
+            pitch = math.degrees(math.asin(v_forward[2]))
+
+            # Roll: angle of the camera's "right" vector relative to the horizontal plane
+            # perpendicular to the viewing direction.
+            world_up = np.array([0, 0, 1])
+            h_right = np.cross(v_forward, world_up)
+            h_right_len = np.linalg.norm(h_right)
+
+            if h_right_len < 1e-6:
+                # Looking straight up or down
+                roll = 0
+            else:
+                h_right /= h_right_len
+                # Project camera right onto the plane perpendicular to forward
+                # (It should already be in that plane if the matrix is orthonormal)
+                dot = np.clip(np.dot(h_right, v_right), -1.0, 1.0)
+                roll = math.degrees(math.acos(dot))
+                # Determine sign of roll: positive if camera right is "below" h_right
+                if np.dot(v_right, world_up) < 0:
+                    roll = -roll
+
+            csv_data.append({
+                'SourceFile': os.path.abspath(dst_path),
+                'GPSLatitude': lat,
+                'GPSLatitudeRef': 'N' if lat >= 0 else 'S',
+                'GPSLongitude': lon,
+                'GPSLongitudeRef': 'E' if lon >= 0 else 'W',
+                'GPSAltitude': alt,
+                'GPSAltitudeRef': 0 if alt >= 0 else 1,
+                'GPSImgDirection': heading,
+                'GPSImgDirectionRef': 'T',
+                'XMP-GPano:PoseHeadingDegrees': heading,
+                'XMP-GPano:PosePitchDegrees': pitch,
+                'XMP-GPano:PoseRollDegrees': roll,
+                'XMP-GPano:ProjectionType': 'equirectangular',
+                'XMP-GPano:FullPanoWidthPixels': 7680,
+                'XMP-GPano:FullPanoHeightPixels': 3840,
+                'XMP-GPano:UsePanoramaViewer': 'True'
+            })
+
+            images_data.append({
+                'filename': shot_id,
+                'latitude': float(lat),
+                'longitude': float(lon),
+                'altitude': float(alt),
+                'heading': float(heading),
+                'pitch': float(pitch),
+                'roll': float(roll),
+            })
+
+
+    # 4. Write images.json
+    images_json_path = os.path.join(output_dir, 'images.json')
+    images_data.sort(key=lambda x: x['filename'])
+    with open(images_json_path, 'w') as f:
+        json.dump(images_data, f, indent=4)
+
+    # 5. Write CSV for exiftool
+    csv_path = os.path.join(output_dir, 'metadata.csv')
+    with open(csv_path, 'w', newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=csv_data[0].keys())
+        writer.writeheader()
+        writer.writerows(csv_data)
+
+    # 6. Run exiftool
+    print(f"Applying metadata to {len(csv_data)} images using exiftool...")
+    subprocess.run([
+        'exiftool',
+        '-csv=' + csv_path,
+        '-overwrite_original',
+        '-n', # Use numeric values for coordinates
+        output_dir
+    ])
+
+    # Clean up temp CSV
+    os.remove(csv_path)
+    print("Done!")
+
+if __name__ == '__main__':
+    main(*sys.argv[1:])

@@ -25,6 +25,7 @@ bot_user_id = 1
 
 # Contact information for the app.
 app_contact = "https://github.com/umonkey/treemap; info@kanachyerevan.am"
+website_url = "https://yerevan.treemaps.app"
 
 osm_changeset_size = 100
 
@@ -69,3 +70,6 @@ files_region = "fra1"
 files_base_url = "https://treemap.fra1.cdn.digitaloceanspaces.com/"
 
 backup_bucket = "treemap-backups-uzbmpe2a"
+panoramas_sources_bucket = "treemap-panoramas-tmp-g6dxkoua"
+panoramas_bucket = "panoramas-px3qodu3"
+panoramas_bucket_url = "https://panoramas-px3qodu3.fra1.cdn.digitaloceanspaces.com/"

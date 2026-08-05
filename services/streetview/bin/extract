@@ -1,0 +1,6 @@
+#!/bin/bash
+# Extract geotagged jpeg frames at 3 meter intervals form an equirectangular video and an external GPX track.
+#
+# Usage: bin/extract input.mp4 input.gpx ./output --distance 3.0
+
+exec python3 -m app extract "$@"

@@ -6,6 +6,7 @@ interface StringList {
 	noDescription: () => string;
 	photoAlt: () => string;
 	sendReport: () => string;
+	close: () => string;
 }
 
 class English implements StringList {
@@ -14,6 +15,7 @@ class English implements StringList {
 	noDescription = () => 'No description provided';
 	photoAlt = () => 'Alert photo';
 	sendReport = () => 'Sent via @kanach_yerevan_bot';
+	close = () => 'Close';
 }
 
 class Russian extends English {
@@ -22,6 +24,7 @@ class Russian extends English {
 	noDescription = () => 'Описание отсутствует';
 	photoAlt = () => 'Фото сигнала';
 	sendReport = () => 'Отправлено через @kanach_yerevan_bot';
+	close = () => 'Закрыть';
 }
 
 class Armenian extends English {
@@ -30,6 +33,7 @@ class Armenian extends English {
 	noDescription = () => 'Նկարագրությունը բացակայում է';
 	photoAlt = () => 'Ահազանգի լուսանկար';
 	sendReport = () => 'Ուղարկված է @kanach_yerevan_bot-ի միջոցով';
+	close = () => 'Փակել';
 }
 
 const getLocale = (): StringList => {

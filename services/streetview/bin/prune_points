@@ -1,0 +1,59 @@
+#!/usr/bin/env python3
+
+import json
+import numpy as np
+
+def prune_reconstruction(input_file, output_file, threshold=500.0):
+    print(f"Loading {input_file}...")
+    with open(input_file, 'r') as f:
+        reconstructions = json.load(f)
+
+    for recon in reconstructions:
+        shots = recon['shots']
+        points = recon['points']
+
+        # 1. Collect all camera positions
+        camera_coords = []
+        for shot_id, shot_data in shots.items():
+            # In OpenSfM: origin = -R^T * t
+            from scipy.spatial.transform import Rotation as R
+            r = R.from_rotvec(shot_data['rotation']).as_matrix()
+            t = np.array(shot_data['translation'])
+            origin = -r.T @ t
+            camera_coords.append(origin)
+
+        camera_coords = np.array(camera_coords)
+        print(f"Calculated {len(camera_coords)} camera origins.")
+
+        # 2. Filter points
+        initial_count = len(points)
+        point_ids = list(points.keys())
+
+        pruned_points = {}
+        removed_count = 0
+
+        print(f"Pruning {initial_count} points with threshold {threshold}...")
+
+        for p_id in point_ids:
+            p_coord = np.array(points[p_id]['coordinates'])
+
+            # Find distance to the closest camera
+            # Optimization: check against mean first or use spatial index?
+            # For 120k points and 544 cameras, a broadcasted min is fine.
+            dists_sq = np.sum((camera_coords - p_coord)**2, axis=1)
+            min_dist = np.sqrt(np.min(dists_sq))
+
+            if min_dist <= threshold:
+                pruned_points[p_id] = points[p_id]
+            else:
+                removed_count += 1
+
+        recon['points'] = pruned_points
+        print(f"Removed {removed_count} outlier points ({removed_count/initial_count*100:.1f}%).")
+
+    print(f"Writing cleaned reconstruction to {output_file}...")
+    with open(output_file, 'w') as f:
+        json.dump(reconstructions, f, indent=4)
+
+if __name__ == "__main__":
+    prune_reconstruction('reconstruction.json', 'reconstruction.json', threshold=500.0)

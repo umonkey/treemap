@@ -167,7 +167,7 @@ describe('add page', async () => {
 		render(Page);
 
 		const em = screen.getByRole('button', {
-			name: /confirm/i
+			name: /^add$/i
 		});
 
 		await user.click(em);

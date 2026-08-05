@@ -7,10 +7,8 @@ mod interface;
 mod local_storage;
 mod s3_storage;
 
-pub use buckets::{BackupBucket, FileBucket};
+pub use base::{CompletedPart, StorageDriver};
+pub use buckets::{BackupBucket, FileBucket, PanoramaBucket, PanoramaSourceBucket};
 pub use interface::create_driver;
-
-// We need access to exact drivers when we move between storages.
-pub use base::StorageDriver;
 pub use local_storage::LocalStorageDriver;
 pub use s3_storage::S3StorageDriver;

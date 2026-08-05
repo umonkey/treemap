@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+if [ -z "$1" ]; then
+    echo "Usage: $0 source_video.mp4"
+    echo "Transcodes the video down to 360p and saves as .lrf"
+    exit 1
+fi
+
+if [ ! -f "$1" ]; then
+    echo "File $1 not found."
+    exit 1
+fi
+
+NAME=`basename $1 .mp4`
+OUTPUT="$NAME.lrf"
+
+ffmpeg -y -i "$1" -vf "scale=-1:360" -c:v libx264 -crf 30 -preset veryfast -an -b:a 128k -movflags faststart -f mp4 "$OUTPUT"

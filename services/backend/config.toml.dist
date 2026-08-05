@@ -73,3 +73,6 @@ database = "sqlite"
 #osm_redirect_uri = "http://127.0.0.1:8000/auth/callback"
 
 backup_bucket = "treemap-backups-uzbmpe2a"
+panoramas_sources_bucket = "treemap-panoramas-tmp-g6dxkoua"
+panoramas_bucket = "panoramas-px3qodu3"
+panoramas_bucket_url = "https://panoramas-px3qodu3.fra1.cdn.digitaloceanspaces.com/"

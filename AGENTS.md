@@ -33,4 +33,8 @@ The project uses a `Makefile` for high-level tasks:
 - When creating plans, arrange them so that each step focuses on one service: frontend, backend, caddy or documentation. This ensures that the domain-specific skills (such as `svelte` or `rust`) are triggered and applied effectively to the relevant sub-tasks.
 - Markdown formatting: whenever a Markdown file is added or updated, it must be formatted according to the `markdown` skill. Run `make format-docs` after any changes to files in the `docs/` folder.
 - No exploration scripts: never create code files or scripts (e.g., for fetching web pages, querying the database, or system introspection) for the purpose of exploration. Use existing tools (grep, glob, read, bash for direct cli) to gather information.
-- Plan mode: when in planning mode, strictly adhere to read-only operations. Do not attempt any file edits, system changes, or commits until explicitly transitioning to build mode.
+- Phase 1: Planning (Main Session): The main session is for exploration and planning only. Maintain a strictly read-only approach: do not edit files, change configurations, or make commits. Use this phase to understand requirements and provide a detailed plan for user approval.
+- Phase 2: Execution (Sub-Agent): Once the plan is approved and you receive an explicit request to execute (e.g., "apply the plan"), delegate ALL implementation tasks to the `@implement` sub-agent. The main session must never perform file modifications or system changes.
+- Verification: The `@implement` sub-agent must verify all changes by running `make format check` (or the service-specific equivalent) before concluding its task.
+- No automatic commits. Never execute git commit, git push or similar version control commands automatically.
+- When asked for a solution, suggest the best one for this project, but mention alternatives.

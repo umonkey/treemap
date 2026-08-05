@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import Breadcrumbs from '$lib/components/admin/Breadcrumbs.svelte';
+	import PageHeader from '$lib/ui/header/PageHeader.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import { pageState } from './page.svelte';
@@ -29,18 +30,15 @@
 	{:else if pageState.error}
 		<p class="error">Error loading user: {pageState.error.description}</p>
 	{:else if pageState.user}
-		<header>
-			<h1>User Editor</h1>
-
-			<Breadcrumbs
-				items={[
-					{ label: 'Admin', href: '/admin' },
-					{ label: 'Users', href: '/admin/users' },
-					{ label: pageState.user.name, href: `/admin/users/${pageState.user.id}` },
-					{ label: 'Edit' }
-				]}
-			/>
-		</header>
+		<PageHeader text="User Editor" />
+		<Breadcrumbs
+			items={[
+				{ label: 'Admin', href: '/admin' },
+				{ label: 'Users', href: '/admin/users' },
+				{ label: pageState.user.name, href: `/admin/users/${pageState.user.id}` },
+				{ label: 'Edit' }
+			]}
+		/>
 
 		<form onsubmit={handleSubmit} class="user-edit-form">
 			<div class="field">

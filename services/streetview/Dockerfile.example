@@ -1,0 +1,45 @@
+# This example shows how to use the pre-compiled OpenSfM image
+# as a base for your own applications.
+
+FROM debian:bookworm-slim
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+# 1. Install OpenSfM runtime dependencies
+# These are required for the pre-compiled binaries to run.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 \
+    libopencv-core406 \
+    libopencv-imgproc406 \
+    libopencv-calib3d406 \
+    libopencv-imgcodecs406 \
+    libopencv-videoio406 \
+    libopencv-features2d406 \
+    libopencv-flann406 \
+    libceres3 \
+    libgoogle-glog0v6 \
+    libgflags2.2 \
+    libatlas3-base \
+    liblapack3 \
+    libgomp1 \
+    libgl1 \
+    libglib2.0-0 \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# 2. Copy the pre-compiled OpenSfM environment from GHCR
+# This includes the Python package, C++ extensions, and helper scripts.
+COPY --from=ghcr.io/kanachyerevan/opensfm:latest /opt/opensfm /opt/opensfm
+
+# 3. Configure environment variables
+# This ensures that 'python3' uses the OpenSfM virtual environment
+# and that 'opensfm' command is available in the PATH.
+ENV PATH="/opt/opensfm/bin:$PATH"
+ENV VIRTUAL_ENV="/opt/opensfm"
+
+# 4. Verification (Optional)
+RUN opensfm --help > /dev/null && \
+    python3 -c "import opensfm; print('OpenSfM is ready to use')"
+
+# Your application setup goes here...
+# WORKDIR /app
+# COPY . .

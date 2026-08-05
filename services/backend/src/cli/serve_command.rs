@@ -11,10 +11,11 @@ use crate::actions::file::file_router;
 use crate::actions::health::health_router;
 use crate::actions::heatmap::heatmap_router;
 use crate::actions::login::login_router;
-use crate::actions::mapillary::mapillary_router;
+
 use crate::actions::mcp::mcp_router;
 use crate::actions::me::me_router;
 use crate::actions::meta::meta_router;
+use crate::actions::panorama::panorama_router;
 use crate::actions::settings::settings_router;
 use crate::actions::species::species_router;
 use crate::actions::stats::stats_router;
@@ -104,6 +105,12 @@ pub async fn serve_command() {
                     ),
             )
             .service(
+                web::scope("/api")
+                    .wrap(DefaultHeaders::new().add(("Cache-Control", "no-store")))
+                    .wrap(Transaction)
+                    .service(web::scope("/panoramas").configure(panorama_router)),
+            )
+            .service(
                 web::scope("/v1")
                     .wrap(DefaultHeaders::new().add(("Cache-Control", "no-store")))
                     .wrap(Transaction)
@@ -114,7 +121,6 @@ pub async fn serve_command() {
                     .service(web::scope("/files").configure(file_router))
                     .service(web::scope("/heatmap").configure(heatmap_router))
                     .service(web::scope("/alerts").configure(alert_router))
-                    .service(web::scope("/mapillary").configure(mapillary_router))
                     .service(web::scope("/me").configure(me_router))
                     .service(web::scope("/species").configure(species_router))
                     .service(web::scope("/stats").configure(stats_router))

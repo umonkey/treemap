@@ -1,0 +1,16 @@
+#!/bin/sh
+# Remove generated files for a panorama to restart processing.
+
+if [ -z "$1" ]; then
+    echo "Usage: $0 panorama_id"
+    exit 1
+fi
+
+aws s3 rm s3://treemap-panoramas-tmp-g6dxkoua/$1/config.yaml
+aws s3 rm s3://treemap-panoramas-tmp-g6dxkoua/$1/reconstruction.json
+aws s3 rm s3://treemap-panoramas-tmp-g6dxkoua/$1/tracks.csv
+aws s3 rm --recursive s3://treemap-panoramas-tmp-g6dxkoua/$1/exif/
+aws s3 rm --recursive s3://treemap-panoramas-tmp-g6dxkoua/$1/features/
+aws s3 rm --recursive s3://treemap-panoramas-tmp-g6dxkoua/$1/matches/
+aws s3 rm --recursive s3://treemap-panoramas-tmp-g6dxkoua/$1/reports/
+aws s3 rm --recursive s3://panoramas-px3qodu3/$1/

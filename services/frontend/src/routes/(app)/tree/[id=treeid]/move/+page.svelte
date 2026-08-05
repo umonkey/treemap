@@ -30,7 +30,11 @@
 			<div class="title">
 				{locale.contextMove()}
 			</div>
-			<button class="close" onclick={() => pageState.handleCancel(id)}><CloseIcon /></button>
+			<button
+				class="close"
+				aria-label={locale.editCancel()}
+				onclick={() => pageState.handleCancel(id)}><CloseIcon /></button
+			>
 		</div>
 
 		<div class="props">

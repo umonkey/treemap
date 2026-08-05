@@ -92,6 +92,15 @@ impl QueueCommand {
                 })))
             }
 
+            "TranscodePanorama" => {
+                let id = params["id"].as_u64().ok_or("missing id").map_err(|e| {
+                    error!("Error extracting panorama id: {e}, payload={json}");
+                    Error::Queue
+                })?;
+
+                Ok(Some(QueueCommand::TranscodePanorama(id)))
+            }
+
             _ => {
                 error!("Could not parse message: {json}");
                 Ok(None)

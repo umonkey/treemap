@@ -1,12 +1,12 @@
 import { goto, routes } from '$lib/routes';
 import {
-	getMapillaryImage,
-	getMapillaryImageTrees,
-	addMapillaryTree,
-	deleteMapillaryTrees,
-	type MapillaryImage,
-	type MapillaryTree
-} from '$lib/api/mapillary';
+	getPanoramasImage,
+	getPanoramasImageHints,
+	addPanoramaImageHint,
+	deletePanoramaImageHints,
+	type PanoramaImage,
+	type PanoramaHint
+} from '$lib/api/panoramas';
 import { mapRaysStore } from '$lib/stores/mapRays.svelte';
 import { mapMarkerStore } from '$lib/stores/mapMarker.svelte';
 import { mapBus } from '$lib/buses/mapBus';
@@ -15,8 +15,8 @@ import { LngLat } from 'maplibre-gl';
 
 class PageState {
 	id = $state<string>('');
-	image = $state<MapillaryImage | null>(null);
-	trees = $state<MapillaryTree[]>([]);
+	image = $state<PanoramaImage | null>(null);
+	trees = $state<PanoramaHint[]>([]);
 	angle = $state<number>(0);
 	isBusy = $state(false);
 
@@ -27,17 +27,17 @@ class PageState {
 	public handleAddTree = async () => {
 		if (!this.id || this.isBusy) return;
 
-		const newTree: MapillaryTree = {
+		const newTree: PanoramaHint = {
 			image_id: this.id,
 			angle: this.angle,
-			user_id: 0 // Will be set by backend
+			user_id: '' // Will be set by backend
 		};
 
 		// Optimistic update
 		this.trees = [...this.trees, newTree];
 
 		this.isBusy = true;
-		const res = await addMapillaryTree(this.id, this.angle);
+		const res = await addPanoramaImageHint(this.id, this.angle);
 		if (res.error) {
 			// Rollback optimistic update
 			this.trees = this.trees.filter((t) => t !== newTree);
@@ -45,8 +45,8 @@ class PageState {
 			return;
 		}
 
-		// Refresh from server to get correct user_id and tree_id if any
-		const treesRes = await getMapillaryImageTrees(this.id);
+		// Refresh from server to get correct user_id if any
+		const treesRes = await getPanoramasImageHints(this.id);
 		if (treesRes.data) {
 			this.trees = treesRes.data;
 		}
@@ -61,7 +61,7 @@ class PageState {
 		this.trees = [];
 		this.isBusy = true;
 
-		const res = await deleteMapillaryTrees(this.id);
+		const res = await deletePanoramaImageHints(this.id);
 		if (res.error) {
 			this.trees = oldTrees;
 			this.isBusy = false;
@@ -92,8 +92,8 @@ class PageState {
 		this.trees = [];
 
 		const [imageRes, treesRes] = await Promise.all([
-			getMapillaryImage(id),
-			getMapillaryImageTrees(id)
+			getPanoramasImage(id),
+			getPanoramasImageHints(id)
 		]);
 
 		if (imageRes.data) {
