@@ -33,7 +33,7 @@ format:
 	cargo fmt
 
 queue:
-	cargo run -- queue-consumer
+	cargo run -- dispatch-queue
 
 serve:
 	cargo run -- serve

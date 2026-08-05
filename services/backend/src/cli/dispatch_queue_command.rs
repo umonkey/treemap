@@ -1,7 +1,7 @@
 use crate::services::queue_consumer::QueueConsumer;
 use crate::services::{AppState, ContextExt};
 
-pub async fn queue_consumer_command() {
+pub async fn dispatch_queue_command() {
     let state = AppState::new()
         .await
         .expect("Error initializing app state.");

@@ -17,15 +17,14 @@ fn usage() {
     println!("  backup-database       -- create a database backup");
     println!("  dispatch-emails       -- run the email dispatcher daemon");
     println!("  dispatch-panoramas    -- process draft panoramas transcode status");
+    println!("  dispatch-queue        -- run the queue consumer daemon");
     println!("  merge-duplicates [N]  -- automated duplicate tree resolution");
     println!("  migrate-timestamps    -- backfill update timestamps");
-
     println!("  osm-pull              -- get new trees from OpenStreetMap");
     println!("  osm-push              -- send new trees to OSM");
     println!("  osm-push-changes      -- send tree updates to OSM");
     println!("  osm-push-delete       -- remove deleted trees from OSM");
     println!("  osm-remap-duplicates  -- fix OSM IDs for merged trees");
-    println!("  queue-consumer        -- run the queue consumer daemon");
     println!("  serve                 -- run the web server");
     println!("  update-tree-address N -- update street address for a single tree");
     println!("  update-tree-addresses -- update street address for all trees");
@@ -116,8 +115,8 @@ async fn main() -> std::io::Result<()> {
             upload_files_command().await;
             return Ok(());
         }
-        "queue-consumer" => {
-            queue_consumer_command().await;
+        "dispatch-queue" => {
+            dispatch_queue_command().await;
             return Ok(());
         }
 

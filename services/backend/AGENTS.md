@@ -43,7 +43,7 @@ The binary also supports several CLI commands (run via `cargo run -- <command>`)
 - `osm-pull`: get new trees from OpenStreetMap.
 - `osm-push`: send new trees to OSM.
 - `osm-push-changes`: send tree updates to OSM.
-- `queue-consumer`: run the queue consumer daemon.
+- `dispatch-queue`: run the queue consumer daemon.
 - `serve`: run the web server.
 - `update-tree-address N`: update street address for a single tree.
 - `update-tree-addresses`: update street address for all trees.
