@@ -16,6 +16,7 @@ fn usage() {
     println!("Commands:");
     println!("  backup-database       -- create a database backup");
     println!("  dispatch-emails       -- run the email dispatcher daemon");
+    println!("  dispatch-panoramas    -- process draft panoramas transcode status");
     println!("  merge-duplicates [N]  -- automated duplicate tree resolution");
     println!("  migrate-timestamps    -- backfill update timestamps");
 
@@ -24,8 +25,6 @@ fn usage() {
     println!("  osm-push-changes      -- send tree updates to OSM");
     println!("  osm-push-delete       -- remove deleted trees from OSM");
     println!("  osm-remap-duplicates  -- fix OSM IDs for merged trees");
-    println!("  panoramas-process     -- process draft panoramas transcode status");
-    println!("  panoramas-transcode N -- start transcode for a single panorama");
     println!("  queue-consumer        -- run the queue consumer daemon");
     println!("  serve                 -- run the web server");
     println!("  update-tree-address N -- update street address for a single tree");
@@ -71,6 +70,10 @@ async fn main() -> std::io::Result<()> {
             dispatch_emails_command().await;
             return Ok(());
         }
+        "dispatch-panoramas" => {
+            dispatch_panoramas_command().await;
+            return Ok(());
+        }
         "merge-duplicates" => {
             merge_duplicates_command().await;
             return Ok(());
@@ -100,14 +103,7 @@ async fn main() -> std::io::Result<()> {
             osm_remap_duplicates_command().await;
             return Ok(());
         }
-        "panoramas-process" => {
-            panoramas_process_command().await;
-            return Ok(());
-        }
-        "panoramas-transcode" => {
-            panoramas_transcode_command().await;
-            return Ok(());
-        }
+
         "update-tree-address" => {
             update_tree_address_command().await;
             return Ok(());

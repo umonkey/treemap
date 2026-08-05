@@ -7,6 +7,7 @@ services:
   backend:
     image: ghcr.io/umonkey/treemap:latest
     container_name: backend
+    hostname: treemap-backend
     command: /app/startup.sh
     restart: unless-stopped
     ports:
