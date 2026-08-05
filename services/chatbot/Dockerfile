@@ -4,7 +4,7 @@
 # PHASE 1: build the chatbot.
 #############################
 
-FROM docker.io/library/rust:1.95-bookworm AS builder
+FROM docker.io/library/rust:1.97-bookworm AS builder
 RUN apt-get update && apt-get install -y libssl-dev pkg-config
 
 WORKDIR /app

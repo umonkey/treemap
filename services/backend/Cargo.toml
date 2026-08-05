@@ -2,7 +2,7 @@
 name = "treemap"
 version = "2026.7.1"
 edition = "2021"
-rust-version = "1.95"
+rust-version = "1.97"
 
 [profile.release]
 strip = true

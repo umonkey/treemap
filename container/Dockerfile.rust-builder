@@ -1,4 +1,4 @@
-FROM docker.io/library/rust:1.95-bookworm
+FROM docker.io/library/rust:1.97-bookworm
 RUN apt-get update && apt-get install -y libssl-dev pkg-config
 ENV OPENSSL_DIR=/usr
 
