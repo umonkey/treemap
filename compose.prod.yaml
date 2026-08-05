@@ -17,16 +17,19 @@ services:
       - RUST_LOG=info
       - TREEMAP_CONFIG=/app/config.toml
     secrets:
+      - aws_key
+      - aws_region
+      - aws_secret
       - files_key
       - files_secret
+      - from_email
       - jwt_secret
+      - osm_token
+      - smtp_host
+      - smtp_secret
+      - smtp_user
       - sqs_key
       - sqs_secret
-      - osm_token
-      - smtp_user
-      - smtp_secret
-      - smtp_host
-      - from_email
     ulimits:
       nofile:
         soft: 65535
