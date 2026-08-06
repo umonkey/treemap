@@ -66,7 +66,7 @@
 				/>
 
 				<Buttons>
-					<Button type="danger" disabled={pageState.isSaving}>Restart Panorama</Button>
+					<Button type="danger" disabled={pageState.isSaving} onClick={() => pageState.submit(id)}>Restart Panorama</Button>
 					<Button link="/admin/panoramas/{id}" type="cancel">Cancel</Button>
 				</Buttons>
 			</Form>
