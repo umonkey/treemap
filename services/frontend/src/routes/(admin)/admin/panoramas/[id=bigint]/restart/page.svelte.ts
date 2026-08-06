@@ -7,8 +7,7 @@ export class PageState {
 	isLoading = $state<boolean>(false);
 	isSaving = $state<boolean>(false);
 	error = $state<IError | undefined>(undefined);
-	eraseResults = $state<boolean>(false);
-	eraseTempFiles = $state<boolean>(true);
+	understandCost = $state<boolean>(false);
 
 	reload = async (id: string) => {
 		this.isLoading = true;
@@ -27,10 +26,7 @@ export class PageState {
 		this.isSaving = true;
 		this.error = undefined;
 
-		const res = await restartPanorama(id, {
-			erase_results: this.eraseResults,
-			erase_temp_files: this.eraseTempFiles
-		});
+		const res = await restartPanorama(id);
 
 		this.isSaving = false;
 

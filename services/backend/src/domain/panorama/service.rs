@@ -2,7 +2,7 @@ use super::models::{
     CreatePanorama, Panorama, PanoramaHint, PanoramaImage, PanoramaStatus, UpdatePanorama,
 };
 use super::repository::PanoramaRepository;
-use crate::actions::panorama::{PanoramaImageRead, RestartPanoramaRequest};
+use crate::actions::panorama::PanoramaImageRead;
 use crate::domain::email::EmailService;
 use crate::domain::tree::Bounds;
 use crate::domain::user::UserService;
@@ -157,54 +157,8 @@ impl PanoramaService {
         Ok(panorama)
     }
 
-    pub async fn restart_panorama(
-        &self,
-        id: u64,
-        data: RestartPanoramaRequest,
-    ) -> Result<Panorama> {
-        log::info!(
-            "Processing panorama restart request, delete_results={} delete_temp={}",
-            data.erase_results,
-            data.erase_temp_files
-        );
-
+    pub async fn restart_panorama(&self, id: u64) -> Result<Panorama> {
         let mut panorama = self.get_panorama(id).await?;
-
-        if data.erase_results {
-            let hints_count = self.repo.delete_hints_by_panorama_id(id).await?;
-            log::info!("Deleted {} hints for panorama {}", hints_count, id);
-
-            let images_count = self.repo.delete_images(id).await?;
-            log::info!("Deleted {} images for panorama {}", images_count, id);
-
-            let prefix = format!("{}/", id);
-
-            let pano_files = self.panoramas.list_files(&prefix).await?;
-            let count = pano_files.len();
-
-            if !pano_files.is_empty() {
-                self.panoramas.delete_files(&pano_files).await?;
-            }
-            log::info!("Deleted {} files from bucket", count);
-        }
-
-        if data.erase_temp_files {
-            let prefix = format!("{}/", id);
-
-            let source_files = self.storage.list_files(&prefix).await?;
-
-            let filtered_source_files: Vec<String> = source_files
-                .into_iter()
-                .filter(|file| !file.ends_with(".mp4") && !file.ends_with(".gpx"))
-                .collect();
-
-            let count = filtered_source_files.len();
-
-            if !filtered_source_files.is_empty() {
-                self.storage.delete_files(&filtered_source_files).await?;
-            }
-            log::info!("Deleted {} files from bucket", count);
-        }
 
         panorama.processing_arn = None;
         panorama.processing_status = None;
@@ -483,6 +437,44 @@ impl PanoramaService {
             self.repo.update(id, &panorama).await?;
             return Ok(panorama);
         }
+
+        let hints_count = self.repo.delete_hints_by_panorama_id(id).await?;
+        log::info!("Deleted {} hints for panorama {}", hints_count, id);
+
+        let images_count = self.repo.delete_images(id).await?;
+        log::info!("Deleted {} images for panorama {}", images_count, id);
+
+        let prefix = format!("{}/", id);
+
+        let pano_files = self.panoramas.list_files(&prefix).await?;
+        let count = pano_files.len();
+
+        if !pano_files.is_empty() {
+            self.panoramas.delete_files(&pano_files).await?;
+        }
+        log::info!(
+            "Deleted {} files from panoramas bucket for panorama {}",
+            count,
+            id
+        );
+
+        let source_files = self.storage.list_files(&prefix).await?;
+
+        let filtered_source_files: Vec<String> = source_files
+            .into_iter()
+            .filter(|file| !file.ends_with(".mp4") && !file.ends_with(".gpx"))
+            .collect();
+
+        let count = filtered_source_files.len();
+
+        if !filtered_source_files.is_empty() {
+            self.storage.delete_files(&filtered_source_files).await?;
+        }
+        log::info!(
+            "Deleted {} temporary files from storage bucket for panorama {}",
+            count,
+            id
+        );
 
         let dataset_url = format!("s3://{}/{}/", self.storage.name(), id);
         let result_url = format!("s3://{}/{}/", self.panoramas.name(), id);

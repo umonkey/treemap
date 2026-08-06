@@ -17,7 +17,7 @@ When generating or modifying a Svelte component or page, you MUST adhere strictl
 6. Pure constructors: the constructor must be strictly pure. It is entirely forbidden to execute side effects, API calls, or subscriptions within the constructor.
    - If the component/page needs any data, use a dedicated `reload` or `init` method triggered via `$effect`.
    - If the component/page needs code executed on mount, create the `onMount` method.
-7. Singleton export: the class must be instantiated at the bottom of the `.svelte.ts` file and exported as a singleton.
+7. Local instantiation: classes must be exported as classes (e.g., `export class PageState` or `export class ComponentNameLogic`) and instantiated locally inside the component or page `.svelte` file's `<script>` block (e.g., `const pageState = new PageState();` or `const componentState = new ComponentNameLogic();`).
    - For components: strictly named `componentState`.
    - For pages: strictly named `pageState`.
 8. Component placement and routing:
@@ -49,7 +49,7 @@ You must use the following structure as your baseline.
 ### 1. Component Logic (`[ComponentName].svelte.ts`)
 
 ```typescript
-class ComponentNameLogic {
+export class ComponentNameLogic {
   // 1. Reactive state using runes
   title = $state<string>("Default Title");
   isActive = $state<boolean>(false);
@@ -63,15 +63,15 @@ class ComponentNameLogic {
     this.isActive = !this.isActive;
   };
 }
-
-export const componentState = new ComponentNameLogic();
 ```
 
 ### 2. Component Markup (`[ComponentName].svelte`)
 
 ```html
 <script lang="ts">
-  import { componentState } from "./[ComponentName].svelte.ts";
+  import { ComponentNameLogic } from "./[ComponentName].svelte.ts";
+
+  const componentState = new ComponentNameLogic();
 </script>
 
 <div>
@@ -92,23 +92,23 @@ export const componentState = new ComponentNameLogic();
 ### 3. Page Logic (`page.svelte.ts`)
 
 ```typescript
-class PageState {
+export class PageState {
   data = $state<any>(null);
 
   reload = async (id: string) => {
     // Data fetching logic here
   };
 }
-
-export const pageState = new PageState();
 ```
 
 ### 4. Page Markup (`+page.svelte`)
 
 ```html
 <script lang="ts">
-  import { pageState } from "./page.svelte.ts";
+  import { PageState } from "./page.svelte.ts";
   import { page } from "$app/state";
+
+  const pageState = new PageState();
 
   // Reactive extraction of non-optional arguments
   const id = $derived(page.params.id as string);

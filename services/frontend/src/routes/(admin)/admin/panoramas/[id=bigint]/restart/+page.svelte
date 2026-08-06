@@ -11,8 +11,9 @@
 	import Form from '$lib/ui/form/Form.svelte';
 	import CheckInput from '$lib/ui/check-input/CheckInput.svelte';
 
-	const id = $derived(page.params.id as string);
 	const pageState = new PageState();
+
+	const id = $derived(page.params.id as string);
 
 	$effect(() => {
 		untrack(() => pageState.reload(id));
@@ -51,22 +52,17 @@
 			<p aria-busy="true">Loading panorama...</p>
 		{:else if pageState.panorama}
 			<Form onSubmit={() => pageState.submit(id)}>
-				<p>Select restart options:</p>
-
 				<CheckInput
-					label="Erase results"
-					hint="Delete generated images and hints"
-					bind:value={pageState.eraseResults}
-				/>
-
-				<CheckInput
-					label="Erase temporary files"
-					hint="Delete extracted temporary files (except source video and GPX track)"
-					bind:value={pageState.eraseTempFiles}
+					label="I understand that this process will incur additional cost"
+					bind:value={pageState.understandCost}
 				/>
 
 				<Buttons>
-					<Button type="danger" disabled={pageState.isSaving} onClick={() => pageState.submit(id)}>Restart Panorama</Button>
+					<Button
+						type="danger"
+						disabled={!pageState.understandCost || pageState.isSaving}
+						onClick={() => pageState.submit(id)}>Restart Panorama</Button
+					>
 					<Button link="/admin/panoramas/{id}" type="cancel">Cancel</Button>
 				</Buttons>
 			</Form>

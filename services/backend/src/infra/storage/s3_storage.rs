@@ -342,26 +342,36 @@ impl StorageDriver for S3StorageDriver {
             "Listing files in {} with prefix {} from S3.",
             bucket, prefix
         );
-        let res = self
-            .client
-            .list_objects_v2()
-            .bucket(bucket)
-            .prefix(prefix)
-            .send()
-            .await
-            .map_err(|e| {
+        let mut keys = Vec::new();
+        let mut continuation_token = None;
+
+        loop {
+            let mut req = self.client.list_objects_v2().bucket(bucket).prefix(prefix);
+
+            if let Some(token) = &continuation_token {
+                req = req.continuation_token(token);
+            }
+
+            let res = req.send().await.map_err(|e| {
                 error!("Error listing files in {}/{}: {:?}", bucket, prefix, e);
                 Error::FileDownload
             })?;
 
-        let mut keys = Vec::new();
-        if let Some(contents) = res.contents {
-            for object in contents {
-                if let Some(key) = object.key {
-                    keys.push(key);
+            if let Some(contents) = res.contents {
+                for object in contents {
+                    if let Some(key) = object.key {
+                        keys.push(key);
+                    }
                 }
             }
+
+            if res.is_truncated == Some(true) {
+                continuation_token = res.next_continuation_token.map(|s| s.to_string());
+            } else {
+                break;
+            }
         }
+
         Ok(keys)
     }
 }

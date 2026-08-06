@@ -255,21 +255,9 @@ export async function deletePanoramaImageHints(id: string): Promise<IResponse<vo
 	});
 }
 
-export interface RestartPanoramaRequest {
-	erase_results: boolean;
-	erase_temp_files: boolean;
-}
-
-export async function restartPanorama(
-	id: string,
-	data: RestartPanoramaRequest
-): Promise<IResponse<Panorama>> {
+export async function restartPanorama(id: string): Promise<IResponse<Panorama>> {
 	return await request<Panorama>('POST', `api/panoramas/${id}/restart`, {
-		headers: {
-			...getAuthHeaders(),
-			'Content-Type': 'application/json'
-		},
-		body: JSON.stringify(data)
+		headers: getAuthHeaders()
 	});
 }
 
