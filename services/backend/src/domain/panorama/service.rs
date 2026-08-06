@@ -162,20 +162,30 @@ impl PanoramaService {
         id: u64,
         data: RestartPanoramaRequest,
     ) -> Result<Panorama> {
+        log::info!(
+            "Processing panorama restart request, delete_results={} delete_temp={}",
+            data.erase_results,
+            data.erase_temp_files
+        );
+
         let mut panorama = self.get_panorama(id).await?;
 
         if data.erase_results {
-            self.repo.delete_hints_by_panorama_id(id).await?;
+            let hints_count = self.repo.delete_hints_by_panorama_id(id).await?;
+            log::info!("Deleted {} hints for panorama {}", hints_count, id);
 
-            self.repo.delete_images(id).await?;
+            let images_count = self.repo.delete_images(id).await?;
+            log::info!("Deleted {} images for panorama {}", images_count, id);
 
             let prefix = format!("{}/", id);
 
             let pano_files = self.panoramas.list_files(&prefix).await?;
+            let count = pano_files.len();
 
             if !pano_files.is_empty() {
                 self.panoramas.delete_files(&pano_files).await?;
             }
+            log::info!("Deleted {} files from bucket", count);
         }
 
         if data.erase_temp_files {
@@ -188,35 +198,26 @@ impl PanoramaService {
                 .filter(|file| !file.ends_with(".mp4") && !file.ends_with(".gpx"))
                 .collect();
 
+            let count = filtered_source_files.len();
+
             if !filtered_source_files.is_empty() {
                 self.storage.delete_files(&filtered_source_files).await?;
             }
+            log::info!("Deleted {} files from bucket", count);
         }
 
         panorama.processing_arn = None;
-
         panorama.processing_status = None;
-
         panorama.min_lat = None;
-
         panorama.max_lat = None;
-
         panorama.min_lon = None;
-
         panorama.max_lon = None;
-
         panorama.points_json = None;
-
         panorama.failure_reason = None;
-
         panorama.image_count = 0;
-
         panorama.lat_offset = 0.0;
-
         panorama.lon_offset = 0.0;
-
         panorama.visible = false;
-
         panorama.status = PanoramaStatus::NeedsProcessing;
 
         self.repo.update(id, &panorama).await?;

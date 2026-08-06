@@ -41,21 +41,19 @@ impl PanoramaRepository {
         Ok(())
     }
 
-    pub async fn delete_images(&self, panorama_id: u64) -> Result<()> {
+    pub async fn delete_images(&self, panorama_id: u64) -> Result<u64> {
         let query = DeleteQuery::new(IMAGES_TABLE)
             .with_condition("panorama_id", Value::from(panorama_id as i64));
-        self.db.delete(query).await?;
-        Ok(())
+        self.db.delete(query).await
     }
 
-    pub async fn delete_hints_by_panorama_id(&self, panorama_id: u64) -> Result<()> {
+    pub async fn delete_hints_by_panorama_id(&self, panorama_id: u64) -> Result<u64> {
         let sql = format!(
             "DELETE FROM `{}` WHERE `image_id` IN (SELECT `id` FROM `{}` WHERE `panorama_id` = ?)",
             HINTS_TABLE, IMAGES_TABLE
         );
         let params = &[Value::from(panorama_id as i64)];
-        self.db.execute_sql(&sql, params).await?;
-        Ok(())
+        self.db.execute_sql(&sql, params).await
     }
 
     pub async fn add_images(&self, images: &[PanoramaImage]) -> Result<()> {
