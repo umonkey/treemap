@@ -16,21 +16,22 @@ cp config.yaml $DATASET/
 # This downloads source files video.mp4 and track.gpx from S3 and puts them in var/
 echo "=== Downloading dataset files ==="
 time bin/download-dataset
+sync
 
 # (2) Extract frames.
 # This extracts a single frame every 3 meters, from the original video.
 if [ ! -f $DATASET/frames_extracted.txt ]; then
     echo "=== Extracting frames ==="
-    time bin/app extract --distance 3 --offset "${GPX_OFFSET:-0.0}" var/dataset/video.mp4 var/dataset/track.gpx var/dataset/images
-    echo yes > $DATASET/frames_extracted.txt
-    time bin/upload-dataset
+    time bin/app extract --distance 3 --offset "${GPX_OFFSET:-0.0}" $DATASET/video.mp4 $DATASET/track.gpx $DATASET/images
+    time bin/upload-dataset $DATASET frames_extracted.txt
+    sync
 else
     echo "Found previously extracted frames."
 fi
 
 # Double check config existence, otherwise we run with default settings
 # which make the process multiple times slower.
-if [ ! -f var/dataset/config.yaml ]; then
+if [ ! -f $DATASET/config.yaml ]; then
     echo "OpenSfM config not found, abort."
     exit 1
 fi
@@ -44,8 +45,8 @@ fi
 if [ ! -f $DATASET/masks_created.txt ]; then
     echo "=== Creating masks ==="
     bin/app create-masks $DATASET
-    echo yes > $DATASET/masks_created.txt
-    time bin/upload-dataset
+    time bin/upload-dataset $DATASET masks_created.txt
+    sync
 else
     echo "Found previously created masks."
 fi
@@ -55,17 +56,19 @@ if [ ! -f $DATASET/camera_overrides_created.txt ]; then
     echo "=== Creating camera overrides ==="
     bin/app create-camera-overrides $DATASET/video.mp4 > $DATASET/camera_models_overrides.json
     echo yes > $DATASET/camera_overrides_created.txt
+    time bin/upload-dataset $DATASET camera_overrides_created.txt
+    sync
 else
     echo "Found previously created camera overrides."
 fi
 
-# (4) Extract image metadata to var/dataset/exif/*.jpg.exif
+# (4) Extract image metadata to $DATASET/exif/*.jpg.exif
 # Creates a bunch of JSON files with the image metadata extracted, one per input frame.
 if [ ! -f $DATASET/metadata_extracted.txt ]; then
     echo "=== OpenSfM: extract_metadata ==="
-    time opensfm extract_metadata var/dataset
-    echo yes > $DATASET/metadata_extracted.txt
-    time bin/upload-dataset
+    time opensfm extract_metadata $DATASET
+    time bin/upload-dataset $DATASET metadata_extracted.txt
+    sync
 else
     echo "Found previously extracted metadata."
 fi
@@ -75,9 +78,9 @@ fi
 # using a turn-aware algorithm to avoid smoothing sharp turns.
 if [ ! -f $DATASET/smoothed_coordinates.txt ]; then
     echo "=== Smoothing the GPS coordinates ==="
-    time bin/smooth-gps var/dataset/exif
-    echo yes > $DATASET/smoothed_coordinates.txt
-    time bin/upload-dataset
+    time bin/smooth-gps $DATASET/exif
+    time bin/upload-dataset $DATASET smoothed_coordinates.txt
+    sync
 else
     echo "Found previously smoothed coordinates."
 fi
@@ -85,36 +88,36 @@ fi
 # (6) Run the core SfM pipeline
 if [ ! -f $DATASET/features_detected.txt ]; then
     echo "=== OpenSfM: detect_features ==="
-    time opensfm detect_features var/dataset
-    echo yes > $DATASET/features_detected.txt
-    time bin/upload-dataset
+    time opensfm detect_features $DATASET
+    time bin/upload-dataset $DATASET features_detected.txt
+    sync
 else
     echo "Found previously detected features."
 fi
 
 if [ ! -f $DATASET/features_matched.txt ]; then
     echo "=== OpenSfM: match_features ==="
-    time opensfm match_features var/dataset
-    echo yes > $DATASET/features_matched.txt
-    time bin/upload-dataset
+    time opensfm match_features $DATASET
+    time bin/upload-dataset $DATASET features_matched.txt
+    sync
 else
     echo "Found previously matched features."
 fi
 
 if [ ! -f $DATASET/tracks_created.txt ]; then
     echo "=== OpenSfM: create_tracks ==="
-    time opensfm create_tracks var/dataset
-    echo yes > $DATASET/tracks_created.txt
-    time bin/upload-dataset
+    time opensfm create_tracks $DATASET
+    time bin/upload-dataset $DATASET tracks_created.txt
+    sync
 else
     echo "Found previously created tracks."
 fi
 
 if [ ! -f $DATASET/reconstructed.txt ]; then
     echo "=== OpenSfM: reconstruct ==="
-    time opensfm reconstruct var/dataset
-    echo yes > $DATASET/reconstructed.txt
-    time bin/upload-dataset
+    time opensfm reconstruct $DATASET
+    time bin/upload-dataset $DATASET reconstructed.txt
+    sync
 else
     echo "Found previously reconstructed scene."
 fi
@@ -122,30 +125,30 @@ fi
 # (7) Prune outlierpoints (500m+)
 if [ ! -f $DATASET/points_pruned.txt ]; then
     echo "=== Pruning remote points ==="
-    bin/prune-points var/dataset
-    echo yes > $DATASET/points_pruned.txt
-    time bin/upload-dataset
+    bin/prune-points $DATASET
+    time bin/upload-dataset $DATASET points_pruned.txt
+    sync
 else
     echo "Found previously pruned points."
 fi
 
 if [ ! -f $DATASET/ply_exported.txt ]; then
     echo "=== OpenSfM: export_ply ==="
-    time opensfm export_ply var/dataset
-    echo yes > $DATASET/ply_exported.txt
-    time bin/upload-dataset
+    time opensfm export_ply $DATASET
+    time bin/upload-dataset $DATASET ply_exported.txt
+    sync
 else
     echo "Found previously exported ply."
 fi
 
 # (8) Verify result quality
 echo "=== Verifying errors ==="
-bin/verify-error var/dataset
+bin/verify-error $DATASET
 
 # (9) Final output generation
 echo "=== Writing output ==="
-bin/write-output var/dataset var/output
+bin/write-output $DATASET var/output
 
 # (10) Upload the results.
 echo "=== Uploading results ==="
-bin/upload-results
+time bin/upload-results

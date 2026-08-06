@@ -2,9 +2,20 @@
 # Upload source video and track to the S3 file storage.
 # Skip if the files already exist (which is a debug only feature).
 
+if [ -z "$2" ]; then
+    echo "Usage: $0 dataset_path lock_file"
+    exit 1
+fi
+
+DATASET="$1"
+LOCK="$2"
+
 if [ -n "$DATASET_URL" ]; then
     echo "Uploading dataset files to $DATASET_URL ..."
-    aws s3 --endpoint-url="$AWS_ENDPOINT_URL" sync --no-progress --size-only var/dataset/ "$DATASET_URL"
+    aws s3 --endpoint-url="$AWS_ENDPOINT_URL" sync --no-progress "$DATASET/" "$DATASET_URL"
+
+    echo yes > "$DATASET/$LOCK"
+    aws s3 --endpoint-url="$AWS_ENDPOINT_URL" cp --no-progress "$DATASET/$LOCK" "$DATASET_URL/$LOCK"
 else
     echo "DATASET_URL not set, not uploading temporary files."
 fi
