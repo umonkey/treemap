@@ -2,6 +2,7 @@
 # This script orchestrates the whole process.
 
 set -e
+exec 1>&2
 
 mkdir -p var/dataset/images var/output
 
