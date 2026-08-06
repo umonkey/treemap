@@ -5,8 +5,10 @@ export class PageState {
 	panorama = $state<Panorama | undefined>(undefined);
 	isLoading = $state<boolean>(false);
 	error = $state<IError | undefined>(undefined);
+	private pollInterval: ReturnType<typeof setInterval> | null = null;
 
 	reload = async (id: string) => {
+		this.stopPolling();
 		this.isLoading = true;
 		this.error = undefined;
 		const res = await getPanorama(id);
@@ -18,7 +20,30 @@ export class PageState {
 		}
 	};
 
+	startPolling = (id: string) => {
+		if (this.pollInterval) return;
+		this.pollInterval = setInterval(async () => {
+			const res = await getPanorama(id);
+			if (res.status === 200 && res.data) {
+				this.panorama = res.data;
+				if (this.panorama.status === 'SUCCESS' || this.panorama.status === 'FAILURE') {
+					this.stopPolling();
+				}
+			} else if (res.error) {
+				this.error = res.error;
+			}
+		}, 10000);
+	};
+
+	stopPolling = () => {
+		if (this.pollInterval) {
+			clearInterval(this.pollInterval);
+			this.pollInterval = null;
+		}
+	};
+
 	exportData = async (id: string) => {
+		this.stopPolling();
 		this.isLoading = true;
 		this.error = undefined;
 		const res = await exportPanorama(id);

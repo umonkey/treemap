@@ -19,6 +19,19 @@
 	$effect(() => {
 		untrack(() => pageState.reload(id));
 	});
+
+	$effect(() => {
+		const status = pageState.panorama?.status;
+		if (status && status !== 'SUCCESS' && status !== 'FAILURE') {
+			pageState.startPolling(id);
+		} else {
+			pageState.stopPolling();
+		}
+
+		return () => {
+			pageState.stopPolling();
+		};
+	});
 </script>
 
 <svelte:head>
