@@ -2,8 +2,8 @@
 
 # Optimization: Resize images for feature extraction
 # 2048 is sufficient for accurate camera poses and saves processing time.
-feature_process_size: 4096
-feature_process_size_panorama: 4096
+feature_process_size: 2048
+feature_process_size_panorama: 2048
 
 # Optimization: Sequential Matching
 matching_order_neighbors: 20  # Match ±8 frames in chronological sequence
@@ -47,4 +47,5 @@ triangulation_min_ray_angle: 2.0  # Higher angle ensures more stable depth/trian
 optimize_camera_parameters: yes
 
 # Performance
-processes: 4
+processes: 8
+reconstruction_clustering: yes
