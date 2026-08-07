@@ -36,6 +36,7 @@ align_orientation_prior: vertical
 # Solver Stability: Frequent Global Bundle
 # This prevents drift from ever building up.
 bundle_interval: 10             # Optimized for linear street-view sequences to reduce compute time and improve alignment stability
+bundle_max_iterations: 25       # Limit solver iterations and prevent memory spikes
 local_bundle_radius: 15
 bundle_new_points_ratio: 1.2    # Optimized for linear street-view sequences to reduce compute time and improve alignment stability
 

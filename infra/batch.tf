@@ -39,42 +39,16 @@ resource "aws_security_group" "batch_sg" {
   }
 }
 
-resource "aws_launch_template" "batch_lt" {
-  name_prefix = "treemap-batch-lt-"
-
-  block_device_mappings {
-    device_name = "/dev/xvda"
-    ebs {
-      volume_size           = 100
-      volume_type           = "gp3"
-      delete_on_termination = true
-    }
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
 resource "aws_batch_compute_environment" "treemap" {
   name_prefix  = "treemap-ce-"
   type         = "MANAGED"
   service_role = aws_iam_role.aws_batch_service_role.arn
 
   compute_resources {
-    type                = "EC2"
-    allocation_strategy = "BEST_FIT_PROGRESSIVE"
-    instance_type       = var.batch_instance_type
-    max_vcpus           = 256
-    min_vcpus           = 0
-    subnets             = data.aws_subnets.default.ids
-    security_group_ids  = [aws_security_group.batch_sg.id]
-    instance_role       = aws_iam_instance_profile.ecs_instance_profile.arn
-
-    launch_template {
-      launch_template_id = aws_launch_template.batch_lt.id
-      version            = "$Latest"
-    }
+    type               = "FARGATE"
+    max_vcpus          = 256
+    subnets            = data.aws_subnets.default.ids
+    security_group_ids = [aws_security_group.batch_sg.id]
   }
 
   lifecycle {
@@ -94,8 +68,9 @@ resource "aws_batch_job_queue" "treemap" {
 }
 
 resource "aws_batch_job_definition" "transcoder" {
-  name = "treemap-transcoder"
-  type = "container"
+  name                  = "treemap-transcoder"
+  type                  = "container"
+  platform_capabilities = ["FARGATE"]
 
   retry_strategy {
     attempts = 3
@@ -113,30 +88,43 @@ resource "aws_batch_job_definition" "transcoder" {
         type  = "MEMORY"
       }
     ]
+    fargatePlatformConfiguration = {
+      platformVersion = "LATEST"
+    }
+    networkConfiguration = {
+      assignPublicIp = "ENABLED"
+    }
   })
 }
 
 resource "aws_batch_job_definition" "extractor" {
-  name = "treemap-extractor"
-  type = "container"
+  name                  = "treemap-extractor"
+  type                  = "container"
+  platform_capabilities = ["FARGATE"]
 
   retry_strategy {
     attempts = 5
   }
 
-  # Use 32 gig nodes with some memory left for the OS.
+  # Use 30 GB Fargate tier with 4 vCPU.
   container_properties = jsonencode({
     image   = "ghcr.io/umonkey/treemap-extractor:latest"
     command = ["bin/process"]
     resourceRequirements = [
       {
-        value = "8"
+        value = "4"
         type  = "VCPU"
       },
       {
-        value = "28672"
+        value = "30720"
         type  = "MEMORY"
       }
     ]
+    fargatePlatformConfiguration = {
+      platformVersion = "LATEST"
+    }
+    networkConfiguration = {
+      assignPublicIp = "ENABLED"
+    }
   })
 }
