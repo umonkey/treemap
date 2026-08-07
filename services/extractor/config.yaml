@@ -11,8 +11,8 @@ matching_gps_distance: 50      # Limit search for near images to 50m to avoid fa
 matching_gps_neighbors: 10    # Cap the number of GPS-based matches to 10 to prevent exhaustive searching
 
 # High point count for stability
-min_features: 10000
-min_features_panorama: 10000
+min_features: 4000
+min_features_panorama: 4000
 
 # Minimum number of frames a feature must be seen in to create a track.
 # Increasing this significantly reduces memory by filtering out noise.
@@ -41,7 +41,7 @@ local_bundle_radius: 15
 bundle_new_points_ratio: 1.2    # Optimized for linear street-view sequences to reduce compute time and improve alignment stability
 
 # Memory-efficient solver for large datasets
-ceres_linear_solver: SPARSE_SCHUR
+ceres_linear_solver: ITERATIVE_SCHUR
 
 # Rigidity settings
 triangulation_min_ray_angle: 2.0  # Higher angle ensures more stable depth/triangulation for features like trees
@@ -50,3 +50,5 @@ optimize_camera_parameters: yes
 # Performance
 processes: 8
 reconstruction_clustering: yes
+reconstruction_cluster_size: 500
+reconstruction_cluster_overlap: 50
