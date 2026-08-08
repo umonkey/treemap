@@ -117,7 +117,10 @@
 			{:else if pageState.panorama.status === 'NEEDS_SYNC'}
 				<VideoSync panoramaId={id} {pageState} />
 			{:else if pageState.panorama.status === 'NEEDS_PROCESSING' || pageState.panorama.status === 'NEEDS_PROCESSING_FINISH'}
-				<p>We are now processing your dataset: extracting images, correcting their position, etc. When we finish, you will get an email.</p>
+				<p>
+					We are now processing your dataset: extracting images, correcting their position, etc.
+					When we finish, you will get an email.
+				</p>
 			{:else if pageState.panorama.status === 'SUCCESS'}
 				<PanoramaPreview panoramaId={id} />
 			{/if}

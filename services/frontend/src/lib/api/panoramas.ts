@@ -8,6 +8,7 @@ export type PanoramaStatus =
 	| 'NEEDS_SYNC'
 	| 'NEEDS_PROCESSING'
 	| 'NEEDS_PROCESSING_FINISH'
+	| 'NEEDS_CLEAN_RESTART'
 	| 'SUCCESS'
 	| 'FAILURE';
 
@@ -255,9 +256,16 @@ export async function deletePanoramaImageHints(id: string): Promise<IResponse<vo
 	});
 }
 
-export async function restartPanorama(id: string): Promise<IResponse<Panorama>> {
+export async function restartPanorama(
+	id: string,
+	deleteTemporaryFiles: boolean
+): Promise<IResponse<Panorama>> {
 	return await request<Panorama>('POST', `api/panoramas/${id}/restart`, {
-		headers: getAuthHeaders()
+		headers: {
+			...getAuthHeaders(),
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({ delete_temporary_files: deleteTemporaryFiles })
 	});
 }
 

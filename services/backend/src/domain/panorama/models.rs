@@ -12,6 +12,7 @@ pub enum PanoramaStatus {
     NeedsSync,
     NeedsProcessing,
     NeedsProcessingFinish,
+    NeedsCleanRestart,
     Success,
     Failure,
 }
@@ -25,6 +26,7 @@ impl fmt::Display for PanoramaStatus {
             Self::NeedsSync => "NEEDS_SYNC",
             Self::NeedsProcessing => "NEEDS_PROCESSING",
             Self::NeedsProcessingFinish => "NEEDS_PROCESSING_FINISH",
+            Self::NeedsCleanRestart => "NEEDS_CLEAN_RESTART",
             Self::Success => "SUCCESS",
             Self::Failure => "FAILURE",
         };
@@ -43,6 +45,7 @@ impl FromStr for PanoramaStatus {
             "NEEDS_SYNC" => Ok(Self::NeedsSync),
             "NEEDS_PROCESSING" => Ok(Self::NeedsProcessing),
             "NEEDS_PROCESSING_FINISH" => Ok(Self::NeedsProcessingFinish),
+            "NEEDS_CLEAN_RESTART" => Ok(Self::NeedsCleanRestart),
             "SUCCESS" | "PROCESSED" => Ok(Self::Success),
             "FAILURE" => Ok(Self::Failure),
             _ => Err(format!("Invalid panorama status: {s}")),

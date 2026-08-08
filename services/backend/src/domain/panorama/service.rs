@@ -149,7 +149,11 @@ impl PanoramaService {
         Ok(panorama)
     }
 
-    pub async fn restart_panorama(&self, id: u64) -> Result<Panorama> {
+    pub async fn restart_panorama(
+        &self,
+        id: u64,
+        delete_temporary_files: bool,
+    ) -> Result<Panorama> {
         let mut panorama = self.get_panorama(id).await?;
 
         panorama.processing_arn = None;
@@ -164,7 +168,11 @@ impl PanoramaService {
         panorama.lat_offset = 0.0;
         panorama.lon_offset = 0.0;
         panorama.visible = false;
-        panorama.status = PanoramaStatus::NeedsProcessing;
+        panorama.status = if delete_temporary_files {
+            PanoramaStatus::NeedsCleanRestart
+        } else {
+            PanoramaStatus::NeedsProcessing
+        };
 
         self.repo.update(id, &panorama).await?;
 

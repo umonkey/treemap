@@ -53,6 +53,10 @@
 		{:else if pageState.panorama}
 			<Form onSubmit={() => pageState.submit(id)}>
 				<CheckInput
+					label="Delete temporary files (uncheck to preserve extracted files and retry with different settings)"
+					bind:value={pageState.deleteTemporaryFiles}
+				/>
+				<CheckInput
 					label="I understand that this process will incur additional cost"
 					bind:value={pageState.understandCost}
 				/>

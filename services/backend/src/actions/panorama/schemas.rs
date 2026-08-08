@@ -66,6 +66,12 @@ pub struct StartMultipartRequest {
     pub parts_count: i32,
 }
 
+#[derive(Debug, Deserialize)]
+pub struct RestartPanoramaRequest {
+    #[serde(default)]
+    pub delete_temporary_files: bool,
+}
+
 #[derive(Debug, Serialize)]
 pub struct MultipartUploadResponse {
     pub upload_id: String,

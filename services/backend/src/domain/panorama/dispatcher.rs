@@ -154,14 +154,6 @@ impl PanoramaDispatcher {
             return Ok(panorama);
         }
 
-        let hints_count = self.repo.delete_hints_by_panorama_id(id).await?;
-        log::info!("Deleted {} hints for panorama {}", hints_count, id);
-
-        let images_count = self.repo.delete_images(id).await?;
-        log::info!("Deleted {} images for panorama {}", images_count, id);
-
-        self.delete_temporary_files(id).await?;
-
         let dataset_url = format!("s3://{}/{}/", self.storage.name(), id);
         let result_url = format!("s3://{}/{}/", self.panoramas.name(), id);
         let job_name = format!("extract-{id}");
@@ -394,6 +386,24 @@ impl PanoramaDispatcher {
                     }
                     PanoramaStatus::NeedsTranscodingFinish => {
                         self.check_transcoding_status(&mut panorama).await
+                    }
+                    PanoramaStatus::NeedsCleanRestart => {
+                        let hints_count =
+                            self.repo.delete_hints_by_panorama_id(panorama.id).await?;
+                        log::info!("Deleted {} hints for panorama {}", hints_count, panorama.id);
+
+                        let images_count = self.repo.delete_images(panorama.id).await?;
+                        log::info!(
+                            "Deleted {} images for panorama {}",
+                            images_count,
+                            panorama.id
+                        );
+
+                        self.delete_temporary_files(panorama.id).await?;
+
+                        panorama.status = PanoramaStatus::NeedsProcessing;
+                        self.repo.update(panorama.id, &panorama).await?;
+                        Ok(())
                     }
                     PanoramaStatus::NeedsProcessing => {
                         self.start_processing(panorama.id).await.map(|_| ())
