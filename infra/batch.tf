@@ -89,6 +89,9 @@ resource "aws_batch_job_definition" "transcoder" {
         type  = "MEMORY"
       }
     ]
+    ephemeralStorage = {
+      sizeInGiB = 100
+    }
     fargatePlatformConfiguration = {
       platformVersion = "LATEST"
     }
@@ -122,6 +125,9 @@ resource "aws_batch_job_definition" "extractor" {
         type  = "MEMORY"
       }
     ]
+    ephemeralStorage = {
+      sizeInGiB = 100
+    }
     fargatePlatformConfiguration = {
       platformVersion = "LATEST"
     }
