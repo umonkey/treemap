@@ -77,7 +77,8 @@ resource "aws_batch_job_definition" "transcoder" {
   }
 
   container_properties = jsonencode({
-    image = "ghcr.io/umonkey/treemap-transcoder:latest"
+    image            = "ghcr.io/umonkey/treemap-transcoder:latest"
+    executionRoleArn = aws_iam_role.fargate_execution_role.arn
     resourceRequirements = [
       {
         value = "2"
@@ -108,8 +109,9 @@ resource "aws_batch_job_definition" "extractor" {
 
   # Use 30 GB Fargate tier with 4 vCPU.
   container_properties = jsonencode({
-    image   = "ghcr.io/umonkey/treemap-extractor:latest"
-    command = ["bin/process"]
+    image            = "ghcr.io/umonkey/treemap-extractor:latest"
+    executionRoleArn = aws_iam_role.fargate_execution_role.arn
+    command          = ["bin/process"]
     resourceRequirements = [
       {
         value = "4"
