@@ -8,7 +8,7 @@ export class PageState {
 	isSaving = $state<boolean>(false);
 	error = $state<IError | undefined>(undefined);
 	understandCost = $state<boolean>(false);
-	deleteTemporaryFiles = $state<boolean>(true);
+	deleteTemporaryFiles = $state<boolean>(false);
 
 	reload = async (id: string) => {
 		this.isLoading = true;
