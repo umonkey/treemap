@@ -28,8 +28,6 @@ self.addEventListener('install', (event) => {
 	async function addFilesToCache() {
 		const cache = await caches.open(CACHE);
 		await cache.addAll(ASSETS);
-		// Force the waiting service worker to become the active service worker.
-		(self as unknown as ServiceWorkerGlobalScope).skipWaiting();
 	}
 
 	extendableEvent.waitUntil(addFilesToCache());
@@ -41,8 +39,6 @@ self.addEventListener('activate', (event) => {
 		for (const key of await caches.keys()) {
 			if (key !== CACHE) await caches.delete(key);
 		}
-		// Take control of all pages immediately.
-		await (self as unknown as ServiceWorkerGlobalScope).clients.claim();
 	}
 
 	extendableEvent.waitUntil(deleteOldCaches());
