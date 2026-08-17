@@ -45,4 +45,6 @@ COPY --from=builder /app/chatbot-bin bin/chatbot
 COPY --from=builder /app/locales locales
 COPY services/chatbot/docker/rootfs/ /
 
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+  CMD supervisorctl status chatbot || exit 1
 CMD ["/usr/bin/supervisord", "-nc", "/etc/supervisord.conf"]

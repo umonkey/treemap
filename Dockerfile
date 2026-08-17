@@ -91,4 +91,7 @@ ENV TZ=Asia/Yerevan
 ENV RUST_LOG=info,treemap=debug
 
 EXPOSE 8000/tcp
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+  CMD curl -fsS http://localhost:8000/health || exit 1
 CMD ["/app/startup.sh"]
