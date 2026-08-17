@@ -35,7 +35,7 @@ RUN cargo build --release
 # STEP 2: Build the Final Image
 FROM docker.io/library/debian:bookworm-slim
 RUN apt-get update && \
-    apt-get install -y sqlite3 supervisor logrotate bash ca-certificates cron && \
+    apt-get install -y sqlite3 supervisor logrotate bash ca-certificates cron curl && \
     ln -s /usr/bin/sqlite3 /usr/bin/sqlite && \
     ln -s /usr/sbin/cron /usr/sbin/crond && \
     mkdir -p /var/spool/cron/crontabs && \
