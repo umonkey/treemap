@@ -4,12 +4,11 @@ import { menuBus } from '$lib/buses/menuBus';
 import { showError } from '$lib/errors';
 import { goto, routes } from '$lib/routes';
 import { mapPoiStore } from '$lib/stores/mapPoi.svelte';
+import { mapZoom } from '$lib/stores/mapStore';
 import { searchStore } from '$lib/stores/searchStore';
+import type { IBounds } from '$lib/types';
 import { Debouncer } from '$lib/utils/debounce';
-import type { Map } from 'maplibre-gl';
-import { getMapContext } from 'svelte-maplibre';
 import { get } from 'svelte/store';
-import { MapBouncer } from './MapBouncer';
 
 type Properties = {
 	id: string;
@@ -32,7 +31,7 @@ type Collection = {
 	features: Feature[];
 };
 
-const extendBounds = ({ n, e, s, w }: { n: number; e: number; s: number; w: number }) => {
+const extendBounds = ({ n, e, s, w }: IBounds): IBounds => {
 	const dLat = n - s;
 	const dLon = e - w;
 
@@ -44,11 +43,10 @@ const extendBounds = ({ n, e, s, w }: { n: number; e: number; s: number; w: numb
 	};
 };
 
-class TreeLayerState {
+export class TreeLayerState {
+	bounds = $state<IBounds | undefined>(undefined);
 	markers = $state.raw<Collection | undefined>(undefined);
 	fetchDebouncer = new Debouncer(100);
-	moveBouncer = new MapBouncer();
-	private map: Map | undefined = undefined;
 
 	public readonly crownRadiusSmall = 4;
 
@@ -74,17 +72,15 @@ class TreeLayerState {
 		['*', ['get', 'trunk'], 17.534]
 	];
 
-	private reload = (map: Map) => {
-		const bounds = map.getBounds();
-		const search = get(searchStore);
-		const zoom = map.getZoom();
+	private reload = () => {
+		if (!this.bounds) {
+			return;
+		}
 
-		const { n, e, s, w } = extendBounds({
-			n: bounds.getNorth(),
-			s: bounds.getSouth(),
-			e: bounds.getEast(),
-			w: bounds.getWest()
-		});
+		const search = get(searchStore);
+		const zoom = get(mapZoom);
+
+		const { n, e, s, w } = extendBounds(this.bounds);
 
 		this.fetchDebouncer.run(() => {
 			getGeoJSON(n, e, s, w, search, zoom)
@@ -107,20 +103,14 @@ class TreeLayerState {
 		});
 	};
 
-	private handleMove = (map: Map) => {
-		const bounds = map.getBounds();
-
-		if (!this.moveBouncer.changed(bounds)) {
-			console.debug('TreeLayer reload triggered, but map not moved.');
-			return;
-		}
-
-		this.reload(map);
+	private handleBounds = (bounds: IBounds) => {
+		this.bounds = bounds;
+		this.reload();
 	};
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public handleClick = async (e: any) => {
-		if (this.map && this.map.getZoom() < 15) {
+		if (get(mapZoom) < 15) {
 			return;
 		}
 
@@ -148,7 +138,7 @@ class TreeLayerState {
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public handleContextMenu = (e: any) => {
-		if (this.map && this.map.getZoom() < 15) {
+		if (get(mapZoom) < 15) {
 			return;
 		}
 
@@ -169,33 +159,13 @@ class TreeLayerState {
 	};
 
 	public onMount = () => {
-		const map = getMapContext()?.map;
-
-		if (!map) {
-			console.warn('Map not available, cannot display trees.');
-			return;
-		}
-
-		this.map = map;
-		const handleMove = () => this.handleMove(map);
-		const reload = () => this.reload(map);
-
-		mapBus.on('reload', reload);
-
-		if (map) {
-			map.on('moveend', handleMove);
-			map.on('zoomend', handleMove);
-			reload();
-		}
+		mapBus.on('bounds', this.handleBounds);
+		mapBus.on('reload', this.reload);
 
 		return () => {
-			this.map = undefined;
-			mapBus.off('reload', reload);
-
-			if (map) {
-				map.off('moveend', handleMove);
-				map.off('zoomend', handleMove);
-			}
+			this.bounds = undefined;
+			mapBus.off('bounds', this.handleBounds);
+			mapBus.off('reload', this.reload);
 		};
 	};
 }
