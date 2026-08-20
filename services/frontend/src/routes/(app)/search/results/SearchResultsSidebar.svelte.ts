@@ -2,6 +2,7 @@ import { getSearchTreesCSV, searchTrees } from '$lib/api/trees';
 import { mapBus } from '$lib/buses/mapBus';
 import { showError } from '$lib/errors';
 import { goto, routes } from '$lib/routes';
+import { mapMode } from '$lib/stores/mapMode';
 import { mapStore } from '$lib/stores/mapStore';
 import { searchStore } from '$lib/stores/searchStore';
 import type { IBounds, ITree } from '$lib/types';
@@ -127,6 +128,7 @@ export class SearchResultsSidebarLogic {
 		this.selectedTreeId = null;
 		this.bounds = undefined;
 		this.zoom = undefined;
+		mapMode.set('search');
 		mapBus.on('bounds', this.handleBounds);
 
 		return () => {
@@ -135,6 +137,7 @@ export class SearchResultsSidebarLogic {
 			this.bounds = undefined;
 			this.zoom = undefined;
 			mapBus.emit('pin', undefined);
+			mapMode.set(undefined);
 		};
 	};
 }

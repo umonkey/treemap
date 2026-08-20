@@ -3,6 +3,7 @@ import { searchTrees } from '$lib/api/trees';
 import { mapBus } from '$lib/buses/mapBus';
 import { DEFAULT_MAP_CENTER, DEFAULT_TREE } from '$lib/constants';
 import { routes } from '$lib/routes';
+import { mapMode } from '$lib/stores/mapMode';
 import { mapStore } from '$lib/stores/mapStore';
 import { searchStore } from '$lib/stores/searchStore';
 import { cleanup, render, screen, waitFor } from '@testing-library/svelte';
@@ -619,17 +620,19 @@ describe('Search Results Page', () => {
 			expect(mockedGoto).toHaveBeenCalledWith(routes.home());
 		});
 
-		test('init resets selectedTreeId initially and on cleanup', () => {
+		test('init sets mapMode to search and resets it to undefined on cleanup', () => {
 			const logic = new SearchResultsSidebarLogic();
 			logic.selectedTreeId = 'tree-1';
 
 			const cleanup = logic.init();
 			expect(logic.selectedTreeId).toBeNull();
+			expect(get(mapMode)).toBe('search');
 
 			logic.selectedTreeId = 'tree-2';
 			cleanup();
 			expect(logic.selectedTreeId).toBeNull();
 			expect(mockedMapBusEmit).toHaveBeenCalledWith('pin', undefined);
+			expect(get(mapMode)).toBeUndefined();
 		});
 
 		test('initial search with unset bounds calculates result bounds and emits mapBus.fit', async () => {
