@@ -10,6 +10,7 @@ export interface IBounds {
 	e: number;
 	s: number;
 	w: number;
+	zoom?: number;
 }
 
 export type MountFn = (fn: () => void) => void;

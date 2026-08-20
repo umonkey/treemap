@@ -78,6 +78,7 @@ class MapLibre {
 
 	public handleMoveStart = (e?: MapLibreEvent) => {
 		this.zoomChanged = false;
+
 		if (e?.originalEvent) {
 			this.moving = true;
 			this.hasMoved = true;
@@ -133,11 +134,13 @@ class MapLibre {
 		this.updateStore(this.bounds);
 
 		mapBus.emit('center', this.center);
+
 		mapBus.emit('bounds', {
 			n: this.bounds.getNorth(),
 			e: this.bounds.getEast(),
 			s: this.bounds.getSouth(),
-			w: this.bounds.getWest()
+			w: this.bounds.getWest(),
+			zoom: this.zoom
 		});
 
 		if (this.onMove) {

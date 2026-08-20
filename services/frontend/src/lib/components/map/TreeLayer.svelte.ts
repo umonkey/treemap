@@ -34,6 +34,7 @@ type Collection = {
 
 export class TreeLayerState {
 	bounds = $state<IBounds | undefined>(undefined);
+	zoom = $state<number | undefined>(undefined);
 	markers = $state.raw<Collection | undefined>(undefined);
 	fetchDebouncer = new Debouncer(100);
 
@@ -67,7 +68,7 @@ export class TreeLayerState {
 		}
 
 		const search = get(searchStore);
-		const zoom = get(mapZoom);
+		const zoom = this.zoom ?? get(mapZoom);
 
 		const { n, e, s, w } = extendBounds(this.bounds);
 
@@ -94,12 +95,13 @@ export class TreeLayerState {
 
 	private handleBounds = (bounds: IBounds) => {
 		this.bounds = bounds;
+		this.zoom = bounds.zoom;
 		this.reload();
 	};
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public handleClick = async (e: any) => {
-		if (get(mapZoom) < 15) {
+		if ((this.zoom ?? get(mapZoom)) < 15) {
 			return;
 		}
 
@@ -127,7 +129,7 @@ export class TreeLayerState {
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public handleContextMenu = (e: any) => {
-		if (get(mapZoom) < 15) {
+		if ((this.zoom ?? get(mapZoom)) < 15) {
 			return;
 		}
 
@@ -153,6 +155,7 @@ export class TreeLayerState {
 
 		return () => {
 			this.bounds = undefined;
+			this.zoom = undefined;
 			mapBus.off('bounds', this.handleBounds);
 			mapBus.off('reload', this.reload);
 		};

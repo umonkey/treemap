@@ -14,9 +14,10 @@ export class SearchResultsSidebarLogic {
 	error = $state<string | null>(null);
 	query = $state<string>('');
 	bounds: IBounds | undefined = undefined;
+	zoom = $state<number | undefined>(undefined);
 
 	getDownloadUrl = () => {
-		return getSearchTreesCSV(this.query, get(mapStore).zoom, this.bounds);
+		return getSearchTreesCSV(this.query, this.zoom ?? get(mapStore).zoom, this.bounds);
 	};
 
 	selectTree = (tree: ITree) => {
@@ -35,9 +36,13 @@ export class SearchResultsSidebarLogic {
 	reload = async (query: string, zoom?: number, bounds?: IBounds) => {
 		if (query !== this.query) {
 			this.bounds = undefined;
+			this.zoom = undefined;
 		}
 		if (bounds) {
 			this.bounds = bounds;
+		}
+		if (zoom !== undefined) {
+			this.zoom = zoom;
 		}
 		this.query = query;
 		this.error = null;
@@ -57,7 +62,7 @@ export class SearchResultsSidebarLogic {
 		this.loading = true;
 
 		try {
-			const res = await searchTrees(query, zoom ?? get(mapStore).zoom, this.bounds);
+			const res = await searchTrees(query, this.zoom ?? get(mapStore).zoom, this.bounds);
 			if (res.status === 200 && res.data) {
 				this.trees = res.data.trees.filter((t) => t.state !== 'placeholder');
 				if (this.selectedTreeId && !this.trees.some((t) => t.id === this.selectedTreeId)) {
@@ -112,20 +117,23 @@ export class SearchResultsSidebarLogic {
 
 	handleBounds = (bounds: IBounds) => {
 		this.bounds = bounds;
+		this.zoom = bounds.zoom;
 		if (this.query.trim()) {
-			void this.reload(this.query, undefined, bounds);
+			void this.reload(this.query, bounds.zoom, bounds);
 		}
 	};
 
 	init = () => {
 		this.selectedTreeId = null;
 		this.bounds = undefined;
+		this.zoom = undefined;
 		mapBus.on('bounds', this.handleBounds);
 
 		return () => {
 			mapBus.off('bounds', this.handleBounds);
 			this.selectedTreeId = null;
 			this.bounds = undefined;
+			this.zoom = undefined;
 			mapBus.emit('pin', undefined);
 		};
 	};

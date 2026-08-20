@@ -373,11 +373,11 @@ describe('Search Results Page', () => {
 			expect(mockedSearchTrees).toHaveBeenCalledWith('oak', 15, undefined);
 		});
 
-		const newBounds = { n: 41, e: 45, s: 40, w: 44 };
+		const newBounds = { n: 41, e: 45, s: 40, w: 44, zoom: 16 };
 		mapBus.emit('bounds', newBounds);
 
 		await waitFor(() => {
-			expect(mockedSearchTrees).toHaveBeenCalledWith('oak', 15, newBounds);
+			expect(mockedSearchTrees).toHaveBeenCalledWith('oak', 16, newBounds);
 		});
 	});
 
@@ -667,11 +667,11 @@ describe('Search Results Page', () => {
 
 			logic.init();
 
-			const newBounds = { n: 41, e: 45, s: 40, w: 44 };
+			const newBounds = { n: 41, e: 45, s: 40, w: 44, zoom: 16 };
 			mapBus.emit('bounds', newBounds);
 
 			expect(logic.bounds).toEqual(newBounds);
-			expect(mockedSearchTrees).toHaveBeenCalledWith('oak', 15, newBounds);
+			expect(mockedSearchTrees).toHaveBeenCalledWith('oak', 16, newBounds);
 		});
 
 		test('cleanup unregisters mapBus.bounds listener', () => {
