@@ -5,6 +5,7 @@
 	import { formatSpecies, formatState, shortDetails } from '$lib/utils/trees';
 	import { locale } from './lang';
 	import { SearchResultsSidebarLogic } from './SearchResultsSidebar.svelte.ts';
+	import { untrack } from 'svelte';
 	import '$lib/styles/variables.css';
 
 	const { query }: { query: string } = $props();
@@ -12,11 +13,14 @@
 	const componentState = new SearchResultsSidebarLogic();
 
 	$effect(() => {
-		return componentState.init(query);
+		return componentState.init();
 	});
 
 	$effect(() => {
-		componentState.reload(query);
+		const q = query;
+		untrack(() => {
+			componentState.reload(q);
+		});
 	});
 </script>
 

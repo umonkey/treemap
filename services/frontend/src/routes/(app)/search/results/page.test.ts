@@ -326,10 +326,11 @@ describe('Search Results Page', () => {
 			expect(mockedSearchTrees).toHaveBeenCalledWith('oak', 15, undefined);
 		});
 
-		mapStore.update((s) => ({ ...s, zoom: 18 }));
+		const newBounds = { n: 41, e: 45, s: 40, w: 44 };
+		mapBus.emit('bounds', newBounds);
 
 		await waitFor(() => {
-			expect(mockedSearchTrees).toHaveBeenCalledWith('oak', 18, undefined);
+			expect(mockedSearchTrees).toHaveBeenCalledWith('oak', 15, newBounds);
 		});
 	});
 
@@ -575,7 +576,7 @@ describe('Search Results Page', () => {
 			const logic = new SearchResultsSidebarLogic();
 			logic.selectedTreeId = 'tree-1';
 
-			const cleanup = logic.init('oak');
+			const cleanup = logic.init();
 			expect(logic.selectedTreeId).toBeNull();
 
 			logic.selectedTreeId = 'tree-2';
@@ -608,6 +609,7 @@ describe('Search Results Page', () => {
 
 		test('receiving mapBus bounds updates logic.bounds and reloads search trees with those bounds', async () => {
 			const logic = new SearchResultsSidebarLogic();
+			logic.query = 'oak';
 			mockedSearchTrees.mockResolvedValue({
 				status: 200,
 				data: {
@@ -616,7 +618,7 @@ describe('Search Results Page', () => {
 				}
 			});
 
-			logic.init('oak');
+			logic.init();
 
 			const newBounds = { n: 41, e: 45, s: 40, w: 44 };
 			mapBus.emit('bounds', newBounds);
@@ -627,7 +629,7 @@ describe('Search Results Page', () => {
 
 		test('cleanup unregisters mapBus.bounds listener', () => {
 			const logic = new SearchResultsSidebarLogic();
-			const cleanup = logic.init('oak');
+			const cleanup = logic.init();
 
 			expect(mockedMapBusOn).toHaveBeenCalledWith('bounds', logic.handleBounds);
 

@@ -2,7 +2,7 @@ import { searchTrees } from '$lib/api/trees';
 import { mapBus } from '$lib/buses/mapBus';
 import { showError } from '$lib/errors';
 import { goto, routes } from '$lib/routes';
-import { mapZoom } from '$lib/stores/mapStore';
+import { mapStore } from '$lib/stores/mapStore';
 import { searchStore } from '$lib/stores/searchStore';
 import type { IBounds, ITree } from '$lib/types';
 import { get } from 'svelte/store';
@@ -13,7 +13,7 @@ export class SearchResultsSidebarLogic {
 	loading = $state<boolean>(false);
 	error = $state<string | null>(null);
 	query = $state<string>('');
-	bounds = $state<IBounds | undefined>(undefined);
+	bounds: IBounds | undefined = undefined;
 
 	selectTree = (tree: ITree) => {
 		this.selectedTreeId = tree.id;
@@ -29,12 +29,15 @@ export class SearchResultsSidebarLogic {
 	};
 
 	reload = async (query: string, zoom?: number, bounds?: IBounds) => {
-		this.query = query;
-		this.error = null;
-
+		if (query !== this.query) {
+			this.bounds = undefined;
+		}
 		if (bounds) {
 			this.bounds = bounds;
 		}
+		this.query = query;
+		this.error = null;
+
 		const initialBounds = this.bounds;
 
 		if (!query.trim()) {
@@ -50,7 +53,7 @@ export class SearchResultsSidebarLogic {
 		this.loading = true;
 
 		try {
-			const res = await searchTrees(query, zoom ?? get(mapZoom), this.bounds);
+			const res = await searchTrees(query, zoom ?? get(mapStore).zoom, this.bounds);
 			if (res.status === 200 && res.data) {
 				this.trees = res.data.trees.filter((t) => t.state !== 'placeholder');
 				if (this.selectedTreeId && !this.trees.some((t) => t.id === this.selectedTreeId)) {
@@ -106,35 +109,17 @@ export class SearchResultsSidebarLogic {
 	handleBounds = (bounds: IBounds) => {
 		this.bounds = bounds;
 		if (this.query.trim()) {
-			void this.reload(this.query, get(mapZoom), bounds);
+			void this.reload(this.query, undefined, bounds);
 		}
 	};
 
-	init = (query: string) => {
+	init = () => {
 		this.selectedTreeId = null;
-		this.query = query;
 		this.bounds = undefined;
-		if (query.trim()) {
-			searchStore.set(query);
-		}
-
 		mapBus.on('bounds', this.handleBounds);
 
-		let initial = true;
-		const unsubscribe = mapZoom.subscribe((newZoom) => {
-			if (initial) {
-				initial = false;
-				return;
-			}
-			if (this.query.trim()) {
-				void this.reload(this.query, newZoom);
-			}
-		});
-
 		return () => {
-			unsubscribe();
 			mapBus.off('bounds', this.handleBounds);
-			searchStore.set(undefined);
 			this.selectedTreeId = null;
 			this.bounds = undefined;
 			mapBus.emit('pin', undefined);
