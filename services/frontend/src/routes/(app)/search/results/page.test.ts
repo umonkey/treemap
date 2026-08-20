@@ -11,6 +11,32 @@ import { get } from 'svelte/store';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import Page from './+page.svelte';
 import { SearchResultsSidebarLogic } from './SearchResultsSidebar.svelte.ts';
+const { bus } = vi.hoisted(() => {
+	const listeners = new Map<string, Set<(event: unknown) => void>>();
+	return {
+		bus: {
+			on(type: string, handler: (event: unknown) => void) {
+				let set = listeners.get(type);
+				if (!set) {
+					set = new Set();
+					listeners.set(type, set);
+				}
+				set.add(handler);
+			},
+			off(type: string, handler: (event: unknown) => void) {
+				listeners.get(type)?.delete(handler);
+			},
+			emit(type: string, event: unknown) {
+				const set = listeners.get(type);
+				if (set) {
+					for (const h of set) {
+						h(event);
+					}
+				}
+			}
+		}
+	};
+});
 
 let mockUrl = new URL('http://localhost/search/results?query=oak');
 
@@ -32,15 +58,17 @@ vi.mock('$lib/api/trees', () => ({
 
 vi.mock('$lib/buses/mapBus', () => ({
 	mapBus: {
-		emit: vi.fn(),
-		on: vi.fn(),
-		off: vi.fn()
+		emit: vi.fn((type, evt) => bus.emit(type, evt)),
+		on: vi.fn((type, handler) => bus.on(type, handler)),
+		off: vi.fn((type, handler) => bus.off(type, handler))
 	}
 }));
 
 const mockedGoto = vi.mocked(goto);
 const mockedSearchTrees = vi.mocked(searchTrees);
 const mockedMapBusEmit = vi.mocked(mapBus.emit);
+const mockedMapBusOn = vi.mocked(mapBus.on);
+const mockedMapBusOff = vi.mocked(mapBus.off);
 
 describe('Search Results Page', () => {
 	beforeEach(() => {
@@ -99,7 +127,7 @@ describe('Search Results Page', () => {
 		expect(screen.queryByText('oak')).toBeNull();
 
 		await waitFor(() => {
-			expect(mockedSearchTrees).toHaveBeenCalledWith('oak', 15);
+			expect(mockedSearchTrees).toHaveBeenCalledWith('oak', 15, undefined);
 			expect(screen.getByText(/Search results \(2\)/i)).toBeTruthy();
 			expect(get(searchStore)).toBe('oak');
 		});
@@ -203,7 +231,7 @@ describe('Search Results Page', () => {
 		render(Page);
 
 		await waitFor(() => {
-			expect(mockedSearchTrees).toHaveBeenCalledWith('oak', 15);
+			expect(mockedSearchTrees).toHaveBeenCalledWith('oak', 15, undefined);
 			expect(screen.getByText(/Search results \(1\)/i)).toBeTruthy();
 		});
 
@@ -295,13 +323,13 @@ describe('Search Results Page', () => {
 		render(Page);
 
 		await waitFor(() => {
-			expect(mockedSearchTrees).toHaveBeenCalledWith('oak', 15);
+			expect(mockedSearchTrees).toHaveBeenCalledWith('oak', 15, undefined);
 		});
 
 		mapStore.update((s) => ({ ...s, zoom: 18 }));
 
 		await waitFor(() => {
-			expect(mockedSearchTrees).toHaveBeenCalledWith('oak', 18);
+			expect(mockedSearchTrees).toHaveBeenCalledWith('oak', 18, undefined);
 		});
 	});
 
@@ -554,6 +582,58 @@ describe('Search Results Page', () => {
 			cleanup();
 			expect(logic.selectedTreeId).toBeNull();
 			expect(mockedMapBusEmit).toHaveBeenCalledWith('pin', undefined);
+		});
+
+		test('initial search with unset bounds calculates result bounds and emits mapBus.fit', async () => {
+			const logic = new SearchResultsSidebarLogic();
+			mockedSearchTrees.mockResolvedValueOnce({
+				status: 200,
+				data: {
+					trees: [
+						{ ...DEFAULT_TREE, id: 't1', lat: 40.1, lon: 44.5 },
+						{ ...DEFAULT_TREE, id: 't2', lat: 40.2, lon: 44.6 }
+					],
+					users: []
+				}
+			});
+
+			await logic.reload('oak');
+
+			expect(mockedSearchTrees).toHaveBeenCalledWith('oak', 15, undefined);
+			expect(mockedMapBusEmit).toHaveBeenCalledWith('fit', {
+				start: { lat: 40.1, lng: 44.5 },
+				end: { lat: 40.2, lng: 44.6 }
+			});
+		});
+
+		test('receiving mapBus bounds updates logic.bounds and reloads search trees with those bounds', async () => {
+			const logic = new SearchResultsSidebarLogic();
+			mockedSearchTrees.mockResolvedValue({
+				status: 200,
+				data: {
+					trees: [{ ...DEFAULT_TREE, id: 't1', lat: 40.1, lon: 44.5 }],
+					users: []
+				}
+			});
+
+			logic.init('oak');
+
+			const newBounds = { n: 41, e: 45, s: 40, w: 44 };
+			mapBus.emit('bounds', newBounds);
+
+			expect(logic.bounds).toEqual(newBounds);
+			expect(mockedSearchTrees).toHaveBeenCalledWith('oak', 15, newBounds);
+		});
+
+		test('cleanup unregisters mapBus.bounds listener', () => {
+			const logic = new SearchResultsSidebarLogic();
+			const cleanup = logic.init('oak');
+
+			expect(mockedMapBusOn).toHaveBeenCalledWith('bounds', logic.handleBounds);
+
+			cleanup();
+
+			expect(mockedMapBusOff).toHaveBeenCalledWith('bounds', logic.handleBounds);
 		});
 	});
 });

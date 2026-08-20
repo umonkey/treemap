@@ -3,6 +3,7 @@ import { addUsers } from '$lib/stores/userStore';
 import type {
 	DuplicateList,
 	IAddTreesRequest,
+	IBounds,
 	IChangeList,
 	IMarkers,
 	IReplaceTreeRequest,
@@ -333,12 +334,16 @@ export async function getDuplicates(): Promise<IResponse<DuplicateList>> {
 	return res;
 }
 
-export async function searchTrees(query: string, zoom?: number): Promise<IResponse<ITreeList>> {
+export async function searchTrees(
+	query: string,
+	zoom?: number,
+	bounds?: IBounds
+): Promise<IResponse<ITreeList>> {
 	const params = new URLSearchParams({
-		n: '90',
-		e: '180',
-		s: '-90',
-		w: '-180',
+		n: (bounds ? bounds.n : 90).toString(),
+		e: (bounds ? bounds.e : 180).toString(),
+		s: (bounds ? bounds.s : -90).toString(),
+		w: (bounds ? bounds.w : -180).toString(),
 		zoom: (zoom ?? 10).toString(),
 		search: query
 	});
