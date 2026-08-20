@@ -332,3 +332,22 @@ export async function getDuplicates(): Promise<IResponse<DuplicateList>> {
 	const res = await request<DuplicateList>('GET', 'v1/duplicates');
 	return res;
 }
+
+export async function searchTrees(query: string, zoom?: number): Promise<IResponse<ITreeList>> {
+	const params = new URLSearchParams({
+		n: '90',
+		e: '180',
+		s: '-90',
+		w: '-180',
+		zoom: (zoom ?? 10).toString(),
+		search: query
+	});
+
+	const res = await request<ITreeList>('GET', `v1/trees?${params.toString()}`);
+
+	if (res.status === 200 && res.data) {
+		addTrees(res.data.trees);
+	}
+
+	return res;
+}
