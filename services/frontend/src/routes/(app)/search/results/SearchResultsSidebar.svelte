@@ -350,8 +350,7 @@
 		.preview {
 			position: fixed;
 			bottom: var(--bottom-nav-height);
-			height: auto;
-			max-height: 80dvh;
+			height: 40vh;
 			padding-bottom: var(--gap);
 			border-width: 0;
 
