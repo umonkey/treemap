@@ -20,10 +20,10 @@
 	});
 </script>
 
-<div class="preview" class:loading={componentState.loading}>
+<div class="preview" class:loading={componentState.loading && componentState.trees.length === 0}>
 	<div class="header">
 		<div class="title">
-			{#if componentState.query && !componentState.loading}
+			{#if componentState.query && (componentState.trees.length > 0 || !componentState.loading)}
 				{locale.titleWithCount(componentState.trees.length)}
 			{:else}
 				{locale.title()}
@@ -35,7 +35,7 @@
 	</div>
 
 	<div class="props">
-		{#if componentState.loading}
+		{#if componentState.loading && componentState.trees.length === 0}
 			<div class="loading-state">
 				<SpinnerIcon />
 				<span>{locale.loading()}</span>
@@ -55,7 +55,7 @@
 		{/if}
 	</div>
 
-	{#if !componentState.loading && componentState.trees.length > 0}
+	{#if componentState.trees.length > 0}
 		<ul class="trees">
 			{#each componentState.trees as tree (tree.id)}
 				{@const isSelected = componentState.selectedTreeId === tree.id}
