@@ -1,5 +1,6 @@
 import type { ILatLng } from '$lib/types';
 export { mapHome } from './home';
+export { extendBounds } from './extend';
 export { getContext } from 'svelte';
 
 export const spreadDots = (start: ILatLng, end: ILatLng, count: number): ILatLng[] => {

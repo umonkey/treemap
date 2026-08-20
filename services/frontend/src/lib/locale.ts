@@ -242,7 +242,7 @@ class EnglishLocale {
 	}
 
 	public stateUnknown(): string {
-		return '(unknown)';
+		return 'unknown';
 	}
 
 	public stateHealthy(): string {
@@ -974,7 +974,7 @@ class RussianLocale extends EnglishLocale {
 	}
 
 	public stateUnknown(): string {
-		return '(неизвестно)';
+		return 'неизвестно';
 	}
 
 	public stateHealthy(): string {
@@ -1706,7 +1706,7 @@ class ArmenianLocale extends EnglishLocale {
 	}
 
 	public stateUnknown(): string {
-		return '(անհայտ)';
+		return 'անհայտ';
 	}
 
 	public stateHealthy(): string {

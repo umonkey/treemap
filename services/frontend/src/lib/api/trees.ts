@@ -1,8 +1,10 @@
 import { addTrees, getTree as getCachedTree } from '$lib/stores/treeStore';
 import { addUsers } from '$lib/stores/userStore';
+import { config } from '$lib/env';
 import type {
 	DuplicateList,
 	IAddTreesRequest,
+	IBounds,
 	IChangeList,
 	IMarkers,
 	IReplaceTreeRequest,
@@ -331,4 +333,40 @@ export async function unlikeTree(id: string): Promise<IResponse<void>> {
 export async function getDuplicates(): Promise<IResponse<DuplicateList>> {
 	const res = await request<DuplicateList>('GET', 'v1/duplicates');
 	return res;
+}
+
+export async function searchTrees(
+	query: string,
+	zoom?: number,
+	bounds?: IBounds
+): Promise<IResponse<ITreeList>> {
+	const params = new URLSearchParams({
+		n: (bounds ? bounds.n : 90).toString(),
+		e: (bounds ? bounds.e : 180).toString(),
+		s: (bounds ? bounds.s : -90).toString(),
+		w: (bounds ? bounds.w : -180).toString(),
+		zoom: (zoom ?? 10).toString(),
+		search: query
+	});
+
+	const res = await request<ITreeList>('GET', `v1/trees?${params.toString()}`);
+
+	if (res.status === 200 && res.data) {
+		addTrees(res.data.trees);
+	}
+
+	return res;
+}
+
+export function getSearchTreesCSV(query: string, zoom?: number, bounds?: IBounds): string {
+	const params = new URLSearchParams({
+		n: (bounds ? bounds.n : 90).toString(),
+		e: (bounds ? bounds.e : 180).toString(),
+		s: (bounds ? bounds.s : -90).toString(),
+		w: (bounds ? bounds.w : -180).toString(),
+		zoom: (zoom ?? 10).toString(),
+		search: query
+	});
+
+	return `${config.apiRoot}v1/trees/search.csv?${params.toString()}`;
 }

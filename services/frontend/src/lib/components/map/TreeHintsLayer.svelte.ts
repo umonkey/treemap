@@ -1,10 +1,10 @@
 import { getPanoramasHints } from '$lib/api/panoramas';
-import { showError } from '$lib/errors';
-import { Debouncer } from '$lib/utils/debounce';
+import { mapBus } from '$lib/buses/mapBus';
 import { panoBus } from '$lib/buses/panoBus';
-import { type Map } from 'maplibre-gl';
-import { getMapContext } from 'svelte-maplibre';
-import { MapBouncer } from './MapBouncer';
+import { showError } from '$lib/errors';
+import { extendBounds } from '$lib/map';
+import type { IBounds } from '$lib/types';
+import { Debouncer } from '$lib/utils/debounce';
 
 type Collection = {
 	type: 'FeatureCollection';
@@ -12,32 +12,17 @@ type Collection = {
 	features: any[];
 };
 
-const extendBounds = ({ n, e, s, w }: { n: number; e: number; s: number; w: number }) => {
-	const dLat = n - s;
-	const dLon = e - w;
-
-	return {
-		n: n + dLat,
-		e: e + dLon,
-		s: s - dLat,
-		w: w - dLon
-	};
-};
-
-class TreeHintsLayerState {
+export class TreeHintsLayerState {
 	data = $state.raw<Collection | undefined>(undefined);
+	bounds = $state<IBounds | undefined>(undefined);
 	fetchDebouncer = new Debouncer(200);
-	moveBouncer = new MapBouncer();
 
-	private reload = (map: Map) => {
-		const bounds = map.getBounds();
+	private reload = () => {
+		if (!this.bounds) {
+			return;
+		}
 
-		const { n, s, e, w } = extendBounds({
-			n: bounds.getNorth(),
-			s: bounds.getSouth(),
-			e: bounds.getEast(),
-			w: bounds.getWest()
-		});
+		const { n, s, e, w } = extendBounds(this.bounds, 1);
 
 		this.fetchDebouncer.run(() => {
 			getPanoramasHints(n, e, s, w)
@@ -55,37 +40,19 @@ class TreeHintsLayerState {
 		});
 	};
 
-	private handleMove = (map: Map) => {
-		const bounds = map.getBounds();
-
-		if (!this.moveBouncer.changed(bounds)) {
-			console.debug('TreeHintsLayer reload triggered, but map not moved.');
-			return;
-		}
-
-		this.reload(map);
+	private handleBounds = (bounds: IBounds) => {
+		this.bounds = bounds;
+		this.reload();
 	};
 
 	public onMount = () => {
-		const map = getMapContext()?.map;
-
-		if (!map) {
-			console.warn('Map not available, cannot display tree hints.');
-			return;
-		}
-
-		const handleMove = () => this.handleMove(map);
-		const reload = () => this.reload(map);
-
-		map.on('moveend', handleMove);
-		map.on('zoomend', handleMove);
-		panoBus.on('reload', reload);
-		reload();
+		mapBus.on('bounds', this.handleBounds);
+		panoBus.on('reload', this.reload);
 
 		return () => {
-			map.off('moveend', handleMove);
-			map.off('zoomend', handleMove);
-			panoBus.off('reload', reload);
+			this.bounds = undefined;
+			mapBus.off('bounds', this.handleBounds);
+			panoBus.off('reload', this.reload);
 		};
 	};
 }

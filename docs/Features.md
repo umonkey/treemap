@@ -73,3 +73,11 @@ The application provides a secure environment for multiple types of users by man
 - Flexible roles: users can be assigned different roles (e.g., volunteer, editor, administrator) that define their capabilities within the system.
 - Administrative oversight: provides tools for administrators to manage user access and maintain data quality across the platform.
 - Security by design: access is restricted by default, ensuring that every sensitive operation requires explicit authorization.
+
+## Tree search and data export
+
+The application provides advanced search and filtering capabilities to help users query the tree population and export data for external research and analysis.
+
+- Filtering: search trees by state, address, species, presence or absence of specific measurements, and data age such as recent photos.
+- List view: view matching trees in a structured list with quick selection to jump directly to map locations.
+- Data export: download the entire search result set as a CSV file for research, reporting, or external analysis.

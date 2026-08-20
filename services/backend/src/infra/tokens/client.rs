@@ -1,6 +1,7 @@
 use super::types::TokenClaims;
 use crate::services::{Context, Injectable};
 use crate::types::{Error, Result};
+use jsonwebtoken::errors::ErrorKind;
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
 use log::{debug, error};
 
@@ -28,7 +29,15 @@ impl TokenService {
             Ok(token) => Ok(token.claims),
 
             Err(e) => {
-                error!("Error decoding token: {e}");
+                match e.kind() {
+                    ErrorKind::ExpiredSignature => {
+                        debug!("Token expired: {e}");
+                    }
+                    _ => {
+                        error!("Error decoding token: {e}");
+                    }
+                }
+
                 debug!("Token payload: {encoded}");
                 Err(e.into())
             }
