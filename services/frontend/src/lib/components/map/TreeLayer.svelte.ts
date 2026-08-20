@@ -2,6 +2,7 @@ import { getGeoJSON } from '$lib/api/trees';
 import { mapBus } from '$lib/buses/mapBus';
 import { menuBus } from '$lib/buses/menuBus';
 import { showError } from '$lib/errors';
+import { extendBounds } from '$lib/map';
 import { goto, routes } from '$lib/routes';
 import { mapPoiStore } from '$lib/stores/mapPoi.svelte';
 import { mapZoom } from '$lib/stores/mapStore';
@@ -29,18 +30,6 @@ type Feature = {
 type Collection = {
 	type: 'FeatureCollection';
 	features: Feature[];
-};
-
-const extendBounds = ({ n, e, s, w }: IBounds): IBounds => {
-	const dLat = n - s;
-	const dLon = e - w;
-
-	return {
-		n: n + dLat / 2,
-		e: e + dLon / 2,
-		s: s - dLat / 2,
-		w: w - dLon / 2
-	};
 };
 
 export class TreeLayerState {

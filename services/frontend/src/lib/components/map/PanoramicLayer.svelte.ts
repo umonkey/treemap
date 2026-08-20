@@ -1,6 +1,7 @@
 import { getPanoramasGeoJSON } from '$lib/api/panoramas';
 import { mapBus } from '$lib/buses/mapBus';
 import { showError } from '$lib/errors';
+import { extendBounds } from '$lib/map';
 import { goto, routes } from '$lib/routes';
 import { mapMarkerStore } from '$lib/stores/mapMarker.svelte';
 import { mapPoiStore } from '$lib/stores/mapPoi.svelte';
@@ -31,18 +32,6 @@ type Collection = {
 	features: Feature[];
 };
 
-const extendBounds = ({ n, e, s, w }: IBounds): IBounds => {
-	const dLat = n - s;
-	const dLon = e - w;
-
-	return {
-		n: n + dLat,
-		e: e + dLon,
-		s: s - dLat,
-		w: w - dLon
-	};
-};
-
 export class PanoramicLayerState {
 	data = $state.raw<Collection | undefined>(undefined);
 	bounds = $state<IBounds | undefined>(undefined);
@@ -54,7 +43,7 @@ export class PanoramicLayerState {
 		}
 
 		const zoom = get(mapZoom);
-		const { n, s, e, w } = extendBounds(this.bounds);
+		const { n, s, e, w } = extendBounds(this.bounds, 1);
 
 		this.fetchDebouncer.run(() => {
 			getPanoramasGeoJSON(n, e, s, w, zoom >= 18, true)

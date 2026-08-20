@@ -2,6 +2,7 @@ import { getPanoramasHints } from '$lib/api/panoramas';
 import { mapBus } from '$lib/buses/mapBus';
 import { panoBus } from '$lib/buses/panoBus';
 import { showError } from '$lib/errors';
+import { extendBounds } from '$lib/map';
 import type { IBounds } from '$lib/types';
 import { Debouncer } from '$lib/utils/debounce';
 
@@ -9,18 +10,6 @@ type Collection = {
 	type: 'FeatureCollection';
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	features: any[];
-};
-
-const extendBounds = ({ n, e, s, w }: IBounds): IBounds => {
-	const dLat = n - s;
-	const dLon = e - w;
-
-	return {
-		n: n + dLat,
-		e: e + dLon,
-		s: s - dLat,
-		w: w - dLon
-	};
 };
 
 export class TreeHintsLayerState {
@@ -33,7 +22,7 @@ export class TreeHintsLayerState {
 			return;
 		}
 
-		const { n, s, e, w } = extendBounds(this.bounds);
+		const { n, s, e, w } = extendBounds(this.bounds, 1);
 
 		this.fetchDebouncer.run(() => {
 			getPanoramasHints(n, e, s, w)
