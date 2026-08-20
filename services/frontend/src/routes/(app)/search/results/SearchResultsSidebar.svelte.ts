@@ -1,4 +1,5 @@
 import { searchTrees } from '$lib/api/trees';
+import { mapBus } from '$lib/buses/mapBus';
 import { showError } from '$lib/errors';
 import { goto, routes } from '$lib/routes';
 import { mapZoom } from '$lib/stores/mapStore';
@@ -11,6 +12,10 @@ export class SearchResultsSidebarLogic {
 	loading = $state<boolean>(false);
 	error = $state<string | null>(null);
 	query = $state<string>('');
+
+	handleTreeClick = (tree: ITree) => {
+		mapBus.emit('move', { lat: tree.lat, lng: tree.lon });
+	};
 
 	reload = async (query: string, zoom?: number) => {
 		this.query = query;

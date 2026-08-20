@@ -1,5 +1,6 @@
 import { goto } from '$app/navigation';
 import { searchTrees } from '$lib/api/trees';
+import { mapBus } from '$lib/buses/mapBus';
 import { DEFAULT_MAP_CENTER, DEFAULT_TREE } from '$lib/constants';
 import { routes } from '$lib/routes';
 import { mapStore } from '$lib/stores/mapStore';
@@ -28,12 +29,22 @@ vi.mock('$lib/api/trees', () => ({
 	searchTrees: vi.fn()
 }));
 
+vi.mock('$lib/buses/mapBus', () => ({
+	mapBus: {
+		emit: vi.fn(),
+		on: vi.fn(),
+		off: vi.fn()
+	}
+}));
+
 const mockedGoto = vi.mocked(goto);
 const mockedSearchTrees = vi.mocked(searchTrees);
+const mockedMapBusEmit = vi.mocked(mapBus.emit);
 
 describe('Search Results Page', () => {
 	beforeEach(() => {
 		mockedGoto.mockClear();
+		mockedMapBusEmit.mockClear();
 		mockedSearchTrees.mockReset();
 		searchStore.set(undefined);
 		mapStore.set({
@@ -272,5 +283,36 @@ describe('Search Results Page', () => {
 		await waitFor(() => {
 			expect(mockedSearchTrees).toHaveBeenCalledWith('oak', 18);
 		});
+	});
+
+	test('emits move event with tree coordinates when a tree item is clicked', async () => {
+		const user = userEvent.setup();
+		mockedSearchTrees.mockResolvedValueOnce({
+			status: 200,
+			data: {
+				trees: [
+					{
+						...DEFAULT_TREE,
+						id: 'tree1',
+						species: 'Quercus robur',
+						state: 'healthy',
+						lat: 40.18,
+						lon: 44.51
+					}
+				],
+				users: []
+			}
+		});
+
+		render(Page);
+
+		await waitFor(() => {
+			expect(screen.getByText(/Search results \(1\)/i)).toBeTruthy();
+		});
+
+		const tree1Link = screen.getByRole('link', { name: /Quercus robur alive/i });
+		await user.click(tree1Link);
+
+		expect(mockedMapBusEmit).toHaveBeenCalledWith('move', { lat: 40.18, lng: 44.51 });
 	});
 });

@@ -59,7 +59,11 @@
 		<ul class="trees">
 			{#each componentState.trees as tree (tree.id)}
 				<li class="tree-item">
-					<a href={routes.mapPreview(tree.id)} class="state-{tree.state}">
+					<a
+						href={routes.mapPreview(tree.id)}
+						class="state-{tree.state}"
+						onclick={() => componentState.handleTreeClick(tree)}
+					>
 						<div class="primary">
 							{formatSpecies(tree.species)}
 							<span class="state-label">{formatState(tree.state)}</span>
