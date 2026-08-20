@@ -103,7 +103,7 @@ export class SearchResultsSidebarLogic {
 		this.selectedTreeId = null;
 		searchStore.set(undefined);
 		mapBus.emit('pin', undefined);
-		await goto(routes.search());
+		await goto(routes.home());
 	};
 
 	handleBounds = (bounds: IBounds) => {
