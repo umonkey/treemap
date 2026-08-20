@@ -1,7 +1,7 @@
 <script lang="ts">
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
+	import RightButton from '$lib/icons/RightButton.svelte';
 	import SpinnerIcon from '$lib/icons/SpinnerIcon.svelte';
-	import { routes } from '$lib/routes';
 	import { formatSpecies, formatState, shortDetails } from '$lib/utils/trees';
 	import { locale } from './lang';
 	import { SearchResultsSidebarLogic } from './SearchResultsSidebar.svelte.ts';
@@ -58,20 +58,40 @@
 	{#if !componentState.loading && componentState.trees.length > 0}
 		<ul class="trees">
 			{#each componentState.trees as tree (tree.id)}
+				{@const isSelected = componentState.selectedTreeId === tree.id}
 				<li class="tree-item">
-					<a
-						href={routes.mapPreview(tree.id)}
-						class="state-{tree.state}"
-						onclick={() => componentState.handleTreeClick(tree)}
+					<div
+						class="tree-card state-{tree.state}"
+						class:selected={isSelected}
+						onclick={() => componentState.selectTree(tree)}
+						onkeydown={(e) => {
+							if (e.key === 'Enter' || e.key === ' ') {
+								e.preventDefault();
+								componentState.selectTree(tree);
+							}
+						}}
+						role="button"
+						tabindex="0"
+						aria-pressed={isSelected}
 					>
-						<div class="primary">
-							{formatSpecies(tree.species)}
-							<span class="state-label">{formatState(tree.state)}</span>
+						<div class="tree-info">
+							<div class="primary">
+								{formatSpecies(tree.species)}
+								<span class="state-label">{formatState(tree.state)}</span>
+							</div>
+							<div class="secondary">
+								{shortDetails(tree)}
+							</div>
 						</div>
-						<div class="secondary">
-							{shortDetails(tree)}
-						</div>
-					</a>
+						<button
+							type="button"
+							class="preview-btn"
+							aria-label={locale.preview()}
+							onclick={(e) => componentState.navigateToPreview(e, tree.id)}
+						>
+							<RightButton />
+						</button>
+					</div>
 				</li>
 			{/each}
 		</ul>
@@ -187,16 +207,24 @@
 			gap: var(--gap);
 
 			.tree-item {
-				a {
+				.tree-card {
 					display: flex;
-					flex-direction: column;
-					gap: 2px;
+					flex-direction: row;
+					align-items: center;
+					justify-content: space-between;
+					gap: var(--gap);
 					color: inherit;
 					text-decoration: none;
 					padding: 6px 8px;
 					border-radius: 4px;
+					border: 1px solid transparent;
 					border-left: 4px solid transparent;
 					background-color: light-dark(rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.06));
+					cursor: pointer;
+
+					&.selected {
+						border-color: rgba(128, 128, 128, 0.5);
+					}
 
 					&.state-alive,
 					&.state-healthy {
@@ -220,24 +248,63 @@
 						background-color: light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.12));
 					}
 
-					.primary {
-						font-weight: 500;
-						white-space: nowrap;
-						overflow: hidden;
-						text-overflow: ellipsis;
+					.tree-info {
+						flex: 1 1 auto;
+						min-width: 0;
+						display: flex;
+						flex-direction: column;
+						gap: 2px;
 
-						.state-label {
-							font-size: 80%;
-							opacity: 0.5;
+						.primary {
+							font-weight: 500;
+							white-space: nowrap;
+							overflow: hidden;
+							text-overflow: ellipsis;
+
+							.state-label {
+								font-size: 80%;
+								opacity: 0.5;
+							}
+						}
+
+						.secondary {
+							font-size: 85%;
+							opacity: 0.7;
+							white-space: nowrap;
+							overflow: hidden;
+							text-overflow: ellipsis;
 						}
 					}
 
-					.secondary {
-						font-size: 85%;
+					.preview-btn {
+						display: none;
+						align-items: center;
+						justify-content: center;
+						flex-shrink: 0;
+						color: inherit;
+						background: transparent;
+						border: none;
+						padding: 0;
+						margin: 0;
+						cursor: pointer;
 						opacity: 0.7;
-						white-space: nowrap;
-						overflow: hidden;
-						text-overflow: ellipsis;
+
+						:global(svg) {
+							width: 24px;
+							height: 24px;
+						}
+
+						&:hover {
+							opacity: 1;
+						}
+					}
+
+					&:hover,
+					&:focus-within,
+					&.selected {
+						.preview-btn {
+							display: flex;
+						}
 					}
 				}
 			}

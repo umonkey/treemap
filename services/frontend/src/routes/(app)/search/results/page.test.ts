@@ -10,6 +10,7 @@ import userEvent from '@testing-library/user-event';
 import { get } from 'svelte/store';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import Page from './+page.svelte';
+import { SearchResultsSidebarLogic } from './SearchResultsSidebar.svelte.ts';
 
 let mockUrl = new URL('http://localhost/search/results?query=oak');
 
@@ -60,6 +61,7 @@ describe('Search Results Page', () => {
 	});
 
 	test('renders header, search results count, species list and preview links with details', async () => {
+		const user = userEvent.setup();
 		mockedSearchTrees.mockResolvedValueOnce({
 			status: 200,
 			data: {
@@ -71,7 +73,9 @@ describe('Search Results Page', () => {
 						state: 'healthy',
 						height: 12,
 						diameter: 8,
-						circumference: 1.5
+						circumference: 1.5,
+						lat: 40.18,
+						lon: 44.51
 					},
 					{
 						...DEFAULT_TREE,
@@ -80,7 +84,9 @@ describe('Search Results Page', () => {
 						state: 'dead',
 						height: null,
 						diameter: null,
-						circumference: null
+						circumference: null,
+						lat: 40.19,
+						lon: 44.52
 					}
 				],
 				users: []
@@ -105,30 +111,42 @@ describe('Search Results Page', () => {
 		const items = screen.getAllByRole('listitem');
 		expect(items).toHaveLength(2);
 
-		const tree1Link = screen.getByRole('link', { name: /Quercus robur alive/i });
-		expect(tree1Link).toBeTruthy();
-		expect(tree1Link.getAttribute('href')).toBe(routes.mapPreview('tree1'));
-		expect(tree1Link.classList.contains('state-healthy')).toBe(true);
-		expect(items[0].contains(tree1Link)).toBe(true);
+		const tree1Card = screen.getByRole('button', { name: /Quercus robur alive/i });
+		expect(tree1Card).toBeTruthy();
+		expect(tree1Card.classList.contains('state-healthy')).toBe(true);
+		expect(tree1Card.classList.contains('selected')).toBe(false);
+		expect(tree1Card.getAttribute('aria-pressed')).toBe('false');
+		expect(items[0].contains(tree1Card)).toBe(true);
 
 		const tree1Primary = items[0].querySelector('.primary');
 		expect(tree1Primary?.textContent?.trim()).toBe('Quercus robur alive');
 		const tree1Secondary = items[0].querySelector('.secondary');
 		expect(tree1Secondary?.textContent?.trim()).toBe('H=12 m D=8 m C=150 cm');
 
-		const tree2Link = screen.getByRole('link', { name: /Acer platanoides dead/i });
-		expect(tree2Link).toBeTruthy();
-		expect(tree2Link.getAttribute('href')).toBe(routes.mapPreview('tree2'));
-		expect(tree2Link.classList.contains('state-dead')).toBe(true);
-		expect(items[1].contains(tree2Link)).toBe(true);
+		const tree2Card = screen.getByRole('button', { name: /Acer platanoides dead/i });
+		expect(tree2Card).toBeTruthy();
+		expect(tree2Card.classList.contains('state-dead')).toBe(true);
+		expect(tree2Card.classList.contains('selected')).toBe(false);
+		expect(tree2Card.getAttribute('aria-pressed')).toBe('false');
+		expect(items[1].contains(tree2Card)).toBe(true);
 
 		const tree2Primary = items[1].querySelector('.primary');
 		expect(tree2Primary?.textContent?.trim()).toBe('Acer platanoides dead');
 		const tree2Secondary = items[1].querySelector('.secondary');
 		expect(tree2Secondary?.textContent?.trim()).toBe('H=? D=? C=?');
+
+		const previewButtons = screen.getAllByRole('button', { name: /Tree preview/i });
+		expect(previewButtons).toHaveLength(2);
+
+		// Clicking tree1 selects it
+		await user.click(tree1Card);
+
+		expect(mockedMapBusEmit).toHaveBeenCalledWith('move', { lat: 40.18, lng: 44.51 });
+		expect(tree1Card.classList.contains('selected')).toBe(true);
+		expect(tree1Card.getAttribute('aria-pressed')).toBe('true');
 	});
 
-	test('applies state classes to tree links for all tree states', async () => {
+	test('applies state classes to tree cards for all tree states', async () => {
 		mockedSearchTrees.mockResolvedValueOnce({
 			status: 200,
 			data: {
@@ -150,22 +168,22 @@ describe('Search Results Page', () => {
 			expect(screen.getByText(/Search results \(6\)/i)).toBeTruthy();
 		});
 
-		const treeHealthy = screen.getByRole('link', { name: /Tree Healthy/i });
+		const treeHealthy = screen.getByRole('button', { name: /Tree Healthy/i });
 		expect(treeHealthy.classList.contains('state-healthy')).toBe(true);
 
-		const treeAlive = screen.getByRole('link', { name: /Tree Alive/i });
+		const treeAlive = screen.getByRole('button', { name: /Tree Alive/i });
 		expect(treeAlive.classList.contains('state-alive')).toBe(true);
 
-		const treeDead = screen.getByRole('link', { name: /Tree Dead/i });
+		const treeDead = screen.getByRole('button', { name: /Tree Dead/i });
 		expect(treeDead.classList.contains('state-dead')).toBe(true);
 
-		const treeStump = screen.getByRole('link', { name: /Tree Stump/i });
+		const treeStump = screen.getByRole('button', { name: /Tree Stump/i });
 		expect(treeStump.classList.contains('state-stump')).toBe(true);
 
-		const treeGone = screen.getByRole('link', { name: /Tree Gone/i });
+		const treeGone = screen.getByRole('button', { name: /Tree Gone/i });
 		expect(treeGone.classList.contains('state-gone')).toBe(true);
 
-		const treeReplaced = screen.getByRole('link', { name: /Tree Replaced/i });
+		const treeReplaced = screen.getByRole('button', { name: /Tree Replaced/i });
 		expect(treeReplaced.classList.contains('state-replaced')).toBe(true);
 	});
 
@@ -195,10 +213,10 @@ describe('Search Results Page', () => {
 		const items = screen.getAllByRole('listitem');
 		expect(items).toHaveLength(1);
 
-		const tree1Link = screen.getByRole('link', { name: /Quercus robur alive/i });
-		expect(tree1Link).toBeTruthy();
-		expect(items[0].contains(tree1Link)).toBe(true);
-		expect(screen.queryByRole('link', { name: /Placeholder tree/i })).toBeNull();
+		const tree1Card = screen.getByRole('button', { name: /Quercus robur alive/i });
+		expect(tree1Card).toBeTruthy();
+		expect(items[0].contains(tree1Card)).toBe(true);
+		expect(screen.queryByRole('button', { name: /Placeholder tree/i })).toBeNull();
 	});
 
 	test('displays no results when search returns empty list', async () => {
@@ -240,7 +258,7 @@ describe('Search Results Page', () => {
 
 		render(Page);
 
-		const closeButton = screen.getByRole('button', { name: /close/i });
+		const closeButton = screen.getByRole('button', { name: /^close$/i });
 		await user.click(closeButton);
 
 		await waitFor(() => {
@@ -310,9 +328,220 @@ describe('Search Results Page', () => {
 			expect(screen.getByText(/Search results \(1\)/i)).toBeTruthy();
 		});
 
-		const tree1Link = screen.getByRole('link', { name: /Quercus robur alive/i });
-		await user.click(tree1Link);
+		const tree1Card = screen.getByRole('button', { name: /Quercus robur alive/i });
+		await user.click(tree1Card);
 
 		expect(mockedMapBusEmit).toHaveBeenCalledWith('move', { lat: 40.18, lng: 44.51 });
+		expect(tree1Card.classList.contains('selected')).toBe(true);
+		expect(tree1Card.getAttribute('aria-pressed')).toBe('true');
+
+		const previewButton = screen.getByRole('button', { name: /Tree preview/i });
+		expect(previewButton).toBeTruthy();
+	});
+
+	test('supports keyboard navigation with Enter and Space keys', async () => {
+		const user = userEvent.setup();
+		mockedSearchTrees.mockResolvedValueOnce({
+			status: 200,
+			data: {
+				trees: [
+					{
+						...DEFAULT_TREE,
+						id: 'tree1',
+						species: 'Quercus robur',
+						state: 'healthy',
+						lat: 40.18,
+						lon: 44.51
+					},
+					{
+						...DEFAULT_TREE,
+						id: 'tree2',
+						species: 'Acer platanoides',
+						state: 'dead',
+						lat: 40.19,
+						lon: 44.52
+					}
+				],
+				users: []
+			}
+		});
+
+		render(Page);
+
+		await waitFor(() => {
+			expect(screen.getByText(/Search results \(2\)/i)).toBeTruthy();
+		});
+
+		const tree1Card = screen.getByRole('button', { name: /Quercus robur alive/i });
+		const tree2Card = screen.getByRole('button', { name: /Acer platanoides dead/i });
+
+		tree1Card.focus();
+		await user.keyboard('{Enter}');
+
+		expect(mockedMapBusEmit).toHaveBeenCalledWith('move', { lat: 40.18, lng: 44.51 });
+		expect(tree1Card.classList.contains('selected')).toBe(true);
+
+		tree2Card.focus();
+		await user.keyboard(' ');
+
+		expect(mockedMapBusEmit).toHaveBeenCalledWith('move', { lat: 40.19, lng: 44.52 });
+		expect(tree2Card.classList.contains('selected')).toBe(true);
+		expect(tree1Card.classList.contains('selected')).toBe(false);
+	});
+
+	test('clicking preview button navigates to preview and stops event propagation', async () => {
+		const user = userEvent.setup();
+		mockedSearchTrees.mockResolvedValueOnce({
+			status: 200,
+			data: {
+				trees: [
+					{
+						...DEFAULT_TREE,
+						id: 'tree1',
+						species: 'Quercus robur',
+						state: 'healthy',
+						lat: 40.18,
+						lon: 44.51
+					}
+				],
+				users: []
+			}
+		});
+
+		render(Page);
+
+		await waitFor(() => {
+			expect(screen.getByText(/Search results \(1\)/i)).toBeTruthy();
+		});
+
+		mockedMapBusEmit.mockClear();
+
+		const previewButton = screen.getByRole('button', { name: /Tree preview/i });
+		expect(previewButton).toBeTruthy();
+
+		await user.click(previewButton);
+
+		expect(mockedGoto).toHaveBeenCalledWith(routes.mapPreview('tree1'));
+		expect(mockedMapBusEmit).not.toHaveBeenCalled();
+	});
+
+	describe('SearchResultsSidebarLogic', () => {
+		test('navigateToPreview prevents default, stops propagation, and navigates to tree preview', async () => {
+			const logic = new SearchResultsSidebarLogic();
+			const event = {
+				preventDefault: vi.fn(),
+				stopPropagation: vi.fn()
+			} as unknown as Event;
+
+			await logic.navigateToPreview(event, 'tree-123');
+
+			expect(event.preventDefault).toHaveBeenCalled();
+			expect(event.stopPropagation).toHaveBeenCalled();
+			expect(mockedGoto).toHaveBeenCalledWith(routes.mapPreview('tree-123'));
+		});
+
+		test('selectTree sets selectedTreeId and emits map move', () => {
+			const logic = new SearchResultsSidebarLogic();
+			const tree = { ...DEFAULT_TREE, id: 'tree-123', lat: 40.18, lon: 44.51 };
+
+			logic.selectTree(tree);
+
+			expect(logic.selectedTreeId).toBe('tree-123');
+			expect(mockedMapBusEmit).toHaveBeenCalledWith('move', { lat: 40.18, lng: 44.51 });
+		});
+
+		test('reload clears selectedTreeId on empty query', async () => {
+			const logic = new SearchResultsSidebarLogic();
+			logic.selectedTreeId = 'tree-123';
+
+			await logic.reload('   ');
+
+			expect(logic.selectedTreeId).toBeNull();
+			expect(logic.trees).toEqual([]);
+		});
+
+		test('reload resets selectedTreeId if selected tree is not in new search results', async () => {
+			const logic = new SearchResultsSidebarLogic();
+			logic.selectedTreeId = 'tree-old';
+
+			mockedSearchTrees.mockResolvedValueOnce({
+				status: 200,
+				data: {
+					trees: [{ ...DEFAULT_TREE, id: 'tree-new', species: 'New tree' }],
+					users: []
+				}
+			});
+
+			await logic.reload('oak');
+
+			expect(logic.selectedTreeId).toBeNull();
+			expect(logic.trees).toHaveLength(1);
+			expect(logic.trees[0].id).toBe('tree-new');
+		});
+
+		test('reload preserves selectedTreeId if selected tree is present in new results', async () => {
+			const logic = new SearchResultsSidebarLogic();
+			logic.selectedTreeId = 'tree-1';
+
+			mockedSearchTrees.mockResolvedValueOnce({
+				status: 200,
+				data: {
+					trees: [
+						{ ...DEFAULT_TREE, id: 'tree-1', species: 'Tree 1' },
+						{ ...DEFAULT_TREE, id: 'tree-2', species: 'Tree 2' }
+					],
+					users: []
+				}
+			});
+
+			await logic.reload('oak');
+
+			expect(logic.selectedTreeId).toBe('tree-1');
+			expect(logic.trees).toHaveLength(2);
+		});
+
+		test('reload resets selectedTreeId on search error response and exception', async () => {
+			const logic = new SearchResultsSidebarLogic();
+			logic.selectedTreeId = 'tree-1';
+
+			mockedSearchTrees.mockResolvedValueOnce({
+				status: 500,
+				data: undefined,
+				error: { code: 'ERR', description: 'Error' }
+			});
+
+			await logic.reload('oak');
+
+			expect(logic.selectedTreeId).toBeNull();
+
+			logic.selectedTreeId = 'tree-2';
+			mockedSearchTrees.mockRejectedValueOnce(new Error('Network failure'));
+
+			await logic.reload('oak');
+
+			expect(logic.selectedTreeId).toBeNull();
+		});
+
+		test('handleClose resets selectedTreeId and navigates to search', async () => {
+			const logic = new SearchResultsSidebarLogic();
+			logic.selectedTreeId = 'tree-1';
+
+			await logic.handleClose();
+
+			expect(logic.selectedTreeId).toBeNull();
+			expect(mockedGoto).toHaveBeenCalledWith(routes.search());
+		});
+
+		test('init resets selectedTreeId initially and on cleanup', () => {
+			const logic = new SearchResultsSidebarLogic();
+			logic.selectedTreeId = 'tree-1';
+
+			const cleanup = logic.init('oak');
+			expect(logic.selectedTreeId).toBeNull();
+
+			logic.selectedTreeId = 'tree-2';
+			cleanup();
+			expect(logic.selectedTreeId).toBeNull();
+		});
 	});
 });

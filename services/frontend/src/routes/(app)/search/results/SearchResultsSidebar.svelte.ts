@@ -9,12 +9,20 @@ import { get } from 'svelte/store';
 
 export class SearchResultsSidebarLogic {
 	trees = $state<ITree[]>([]);
+	selectedTreeId = $state<string | null>(null);
 	loading = $state<boolean>(false);
 	error = $state<string | null>(null);
 	query = $state<string>('');
 
-	handleTreeClick = (tree: ITree) => {
+	selectTree = (tree: ITree) => {
+		this.selectedTreeId = tree.id;
 		mapBus.emit('move', { lat: tree.lat, lng: tree.lon });
+	};
+
+	navigateToPreview = async (e: Event, treeId: string) => {
+		e.preventDefault();
+		e.stopPropagation();
+		await goto(routes.mapPreview(treeId));
 	};
 
 	reload = async (query: string, zoom?: number) => {
@@ -23,6 +31,7 @@ export class SearchResultsSidebarLogic {
 
 		if (!query.trim()) {
 			this.trees = [];
+			this.selectedTreeId = null;
 			this.loading = false;
 			searchStore.set(undefined);
 			return;
@@ -35,8 +44,12 @@ export class SearchResultsSidebarLogic {
 			const res = await searchTrees(query, zoom ?? get(mapZoom));
 			if (res.status === 200 && res.data) {
 				this.trees = res.data.trees.filter((t) => t.state !== 'placeholder');
+				if (this.selectedTreeId && !this.trees.some((t) => t.id === this.selectedTreeId)) {
+					this.selectedTreeId = null;
+				}
 			} else {
 				this.trees = [];
+				this.selectedTreeId = null;
 				if (res.error) {
 					this.error = res.error.description;
 					showError(res.error.description);
@@ -44,6 +57,7 @@ export class SearchResultsSidebarLogic {
 			}
 		} catch (err) {
 			this.trees = [];
+			this.selectedTreeId = null;
 			const message = err instanceof Error ? err.message : 'Failed to search trees';
 			this.error = message;
 			showError(message);
@@ -53,11 +67,13 @@ export class SearchResultsSidebarLogic {
 	};
 
 	handleClose = async () => {
+		this.selectedTreeId = null;
 		searchStore.set(undefined);
 		await goto(routes.search());
 	};
 
 	init = (query: string) => {
+		this.selectedTreeId = null;
 		this.query = query;
 		if (query.trim()) {
 			searchStore.set(query);
@@ -77,6 +93,7 @@ export class SearchResultsSidebarLogic {
 		return () => {
 			unsubscribe();
 			searchStore.set(undefined);
+			this.selectedTreeId = null;
 		};
 	};
 }

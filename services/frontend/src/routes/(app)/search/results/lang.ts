@@ -9,6 +9,7 @@ interface StringList {
 	noResults: () => string;
 	loading: () => string;
 	emptyQuery: () => string;
+	preview: () => string;
 }
 
 class English implements StringList {
@@ -21,6 +22,7 @@ class English implements StringList {
 	noResults = () => 'No trees found';
 	loading = () => 'Searching...';
 	emptyQuery = () => 'No search query provided';
+	preview = () => 'Tree preview';
 }
 
 class Russian extends English {
@@ -33,6 +35,7 @@ class Russian extends English {
 	noResults = () => 'Деревья не найдены';
 	loading = () => 'Поиск...';
 	emptyQuery = () => 'Поисковый запрос не указан';
+	preview = () => 'Просмотр дерева';
 }
 
 class Armenian extends English {
@@ -45,6 +48,7 @@ class Armenian extends English {
 	noResults = () => 'Ծառեր չեն գտնվել';
 	loading = () => 'Որոնում...';
 	emptyQuery = () => 'Որոնման հարցումը նշված չէ';
+	preview = () => 'Ծառի դիտում';
 }
 
 const getLocale = (): StringList => {
