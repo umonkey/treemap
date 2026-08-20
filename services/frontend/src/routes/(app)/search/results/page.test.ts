@@ -142,6 +142,7 @@ describe('Search Results Page', () => {
 		await user.click(tree1Card);
 
 		expect(mockedMapBusEmit).toHaveBeenCalledWith('move', { lat: 40.18, lng: 44.51 });
+		expect(mockedMapBusEmit).toHaveBeenCalledWith('pin', { lat: 40.18, lng: 44.51 });
 		expect(tree1Card.classList.contains('selected')).toBe(true);
 		expect(tree1Card.getAttribute('aria-pressed')).toBe('true');
 	});
@@ -264,6 +265,7 @@ describe('Search Results Page', () => {
 		await waitFor(() => {
 			expect(mockedGoto).toHaveBeenCalledWith(routes.search());
 			expect(get(searchStore)).toBeUndefined();
+			expect(mockedMapBusEmit).toHaveBeenCalledWith('pin', undefined);
 		});
 	});
 
@@ -332,6 +334,7 @@ describe('Search Results Page', () => {
 		await user.click(tree1Card);
 
 		expect(mockedMapBusEmit).toHaveBeenCalledWith('move', { lat: 40.18, lng: 44.51 });
+		expect(mockedMapBusEmit).toHaveBeenCalledWith('pin', { lat: 40.18, lng: 44.51 });
 		expect(tree1Card.classList.contains('selected')).toBe(true);
 		expect(tree1Card.getAttribute('aria-pressed')).toBe('true');
 
@@ -379,12 +382,14 @@ describe('Search Results Page', () => {
 		await user.keyboard('{Enter}');
 
 		expect(mockedMapBusEmit).toHaveBeenCalledWith('move', { lat: 40.18, lng: 44.51 });
+		expect(mockedMapBusEmit).toHaveBeenCalledWith('pin', { lat: 40.18, lng: 44.51 });
 		expect(tree1Card.classList.contains('selected')).toBe(true);
 
 		tree2Card.focus();
 		await user.keyboard(' ');
 
 		expect(mockedMapBusEmit).toHaveBeenCalledWith('move', { lat: 40.19, lng: 44.52 });
+		expect(mockedMapBusEmit).toHaveBeenCalledWith('pin', { lat: 40.19, lng: 44.52 });
 		expect(tree2Card.classList.contains('selected')).toBe(true);
 		expect(tree1Card.classList.contains('selected')).toBe(false);
 	});
@@ -448,6 +453,7 @@ describe('Search Results Page', () => {
 
 			expect(logic.selectedTreeId).toBe('tree-123');
 			expect(mockedMapBusEmit).toHaveBeenCalledWith('move', { lat: 40.18, lng: 44.51 });
+			expect(mockedMapBusEmit).toHaveBeenCalledWith('pin', { lat: 40.18, lng: 44.51 });
 		});
 
 		test('reload clears selectedTreeId on empty query', async () => {
@@ -458,6 +464,7 @@ describe('Search Results Page', () => {
 
 			expect(logic.selectedTreeId).toBeNull();
 			expect(logic.trees).toEqual([]);
+			expect(mockedMapBusEmit).toHaveBeenCalledWith('pin', undefined);
 		});
 
 		test('reload resets selectedTreeId if selected tree is not in new search results', async () => {
@@ -477,6 +484,7 @@ describe('Search Results Page', () => {
 			expect(logic.selectedTreeId).toBeNull();
 			expect(logic.trees).toHaveLength(1);
 			expect(logic.trees[0].id).toBe('tree-new');
+			expect(mockedMapBusEmit).toHaveBeenCalledWith('pin', undefined);
 		});
 
 		test('reload preserves selectedTreeId if selected tree is present in new results', async () => {
@@ -513,6 +521,7 @@ describe('Search Results Page', () => {
 			await logic.reload('oak');
 
 			expect(logic.selectedTreeId).toBeNull();
+			expect(mockedMapBusEmit).toHaveBeenCalledWith('pin', undefined);
 
 			logic.selectedTreeId = 'tree-2';
 			mockedSearchTrees.mockRejectedValueOnce(new Error('Network failure'));
@@ -520,6 +529,7 @@ describe('Search Results Page', () => {
 			await logic.reload('oak');
 
 			expect(logic.selectedTreeId).toBeNull();
+			expect(mockedMapBusEmit).toHaveBeenCalledWith('pin', undefined);
 		});
 
 		test('handleClose resets selectedTreeId and navigates to search', async () => {
@@ -529,6 +539,7 @@ describe('Search Results Page', () => {
 			await logic.handleClose();
 
 			expect(logic.selectedTreeId).toBeNull();
+			expect(mockedMapBusEmit).toHaveBeenCalledWith('pin', undefined);
 			expect(mockedGoto).toHaveBeenCalledWith(routes.search());
 		});
 
@@ -542,6 +553,7 @@ describe('Search Results Page', () => {
 			logic.selectedTreeId = 'tree-2';
 			cleanup();
 			expect(logic.selectedTreeId).toBeNull();
+			expect(mockedMapBusEmit).toHaveBeenCalledWith('pin', undefined);
 		});
 	});
 });

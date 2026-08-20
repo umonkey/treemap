@@ -16,7 +16,9 @@ export class SearchResultsSidebarLogic {
 
 	selectTree = (tree: ITree) => {
 		this.selectedTreeId = tree.id;
-		mapBus.emit('move', { lat: tree.lat, lng: tree.lon });
+		const ll = { lat: tree.lat, lng: tree.lon };
+		mapBus.emit('move', ll);
+		mapBus.emit('pin', ll);
 	};
 
 	navigateToPreview = async (e: Event, treeId: string) => {
@@ -34,6 +36,7 @@ export class SearchResultsSidebarLogic {
 			this.selectedTreeId = null;
 			this.loading = false;
 			searchStore.set(undefined);
+			mapBus.emit('pin', undefined);
 			return;
 		}
 
@@ -46,10 +49,12 @@ export class SearchResultsSidebarLogic {
 				this.trees = res.data.trees.filter((t) => t.state !== 'placeholder');
 				if (this.selectedTreeId && !this.trees.some((t) => t.id === this.selectedTreeId)) {
 					this.selectedTreeId = null;
+					mapBus.emit('pin', undefined);
 				}
 			} else {
 				this.trees = [];
 				this.selectedTreeId = null;
+				mapBus.emit('pin', undefined);
 				if (res.error) {
 					this.error = res.error.description;
 					showError(res.error.description);
@@ -58,6 +63,7 @@ export class SearchResultsSidebarLogic {
 		} catch (err) {
 			this.trees = [];
 			this.selectedTreeId = null;
+			mapBus.emit('pin', undefined);
 			const message = err instanceof Error ? err.message : 'Failed to search trees';
 			this.error = message;
 			showError(message);
@@ -69,6 +75,7 @@ export class SearchResultsSidebarLogic {
 	handleClose = async () => {
 		this.selectedTreeId = null;
 		searchStore.set(undefined);
+		mapBus.emit('pin', undefined);
 		await goto(routes.search());
 	};
 
@@ -94,6 +101,7 @@ export class SearchResultsSidebarLogic {
 			unsubscribe();
 			searchStore.set(undefined);
 			this.selectedTreeId = null;
+			mapBus.emit('pin', undefined);
 		};
 	};
 }

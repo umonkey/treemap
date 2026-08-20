@@ -177,10 +177,15 @@ class MapLibre {
 		this.handleMoveRequest(ll);
 	};
 
+	private handlePinRequest = (ll: ILatLng | undefined) => {
+		mapMarkerStore.center = ll ? new LngLat(ll.lng, ll.lat) : undefined;
+	};
+
 	public onMount = () => {
 		mapBus.on('fit', this.handleFit);
 		mapBus.on('move', this.handleMoveRequest);
 		mapBus.on('map-once', this.handleMapOnceRequest);
+		mapBus.on('pin', this.handlePinRequest);
 
 		const unsub = mapLayerStore.subscribe(() => {
 			this.updateLayers();
@@ -194,6 +199,7 @@ class MapLibre {
 			mapBus.off('fit', this.handleFit);
 			mapBus.off('move', this.handleMoveRequest);
 			mapBus.off('map-once', this.handleMapOnceRequest);
+			mapBus.off('pin', this.handlePinRequest);
 			unsub();
 		};
 	};
