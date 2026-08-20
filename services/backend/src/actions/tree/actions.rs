@@ -235,6 +235,17 @@ pub async fn get_trees_json_action(
     Ok(crate::responders::geo_json::respond_with_trees(&trees))
 }
 
+#[get("/search.csv")]
+pub async fn search_trees_csv_action(
+    query: Query<GetTreesRequest>,
+    user_id: OptionalUserId,
+    service: Injected<TreeService>,
+) -> Result<HttpResponse> {
+    let trees = service.get_trees(&query, *user_id).await?;
+
+    crate::responders::csv::trees_to_csv(trees, "trees")
+}
+
 #[get("/updated")]
 pub async fn get_updated_trees_action(
     query: Query<AddedTreesRequest>,

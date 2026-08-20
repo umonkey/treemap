@@ -1,5 +1,6 @@
 import { addTrees, getTree as getCachedTree } from '$lib/stores/treeStore';
 import { addUsers } from '$lib/stores/userStore';
+import { config } from '$lib/env';
 import type {
 	DuplicateList,
 	IAddTreesRequest,
@@ -355,4 +356,17 @@ export async function searchTrees(
 	}
 
 	return res;
+}
+
+export function getSearchTreesCSV(query: string, zoom?: number, bounds?: IBounds): string {
+	const params = new URLSearchParams({
+		n: (bounds ? bounds.n : 90).toString(),
+		e: (bounds ? bounds.e : 180).toString(),
+		s: (bounds ? bounds.s : -90).toString(),
+		w: (bounds ? bounds.w : -180).toString(),
+		zoom: (zoom ?? 10).toString(),
+		search: query
+	});
+
+	return `${config.apiRoot}v1/trees/search.csv?${params.toString()}`;
 }

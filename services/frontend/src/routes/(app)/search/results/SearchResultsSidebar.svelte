@@ -1,5 +1,6 @@
 <script lang="ts">
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
+	import DownloadIcon from '$lib/icons/DownloadIcon.svelte';
 	import RightButton from '$lib/icons/RightButton.svelte';
 	import SpinnerIcon from '$lib/icons/SpinnerIcon.svelte';
 	import { formatSpecies, formatState, shortDetails } from '$lib/utils/trees';
@@ -33,7 +34,17 @@
 				{locale.title()}
 			{/if}
 		</div>
-		<button class="close" aria-label={locale.close()} onclick={componentState.handleClose}>
+		{#if componentState.trees.length > 0}
+			<a
+				class="icon-btn download"
+				aria-label={locale.download()}
+				href={componentState.getDownloadUrl()}
+				download
+			>
+				<DownloadIcon />
+			</a>
+		{/if}
+		<button class="icon-btn close" aria-label={locale.close()} onclick={componentState.handleClose}>
 			<CloseIcon />
 		</button>
 	</div>
@@ -144,7 +155,7 @@
 			flex-direction: row;
 			align-items: center;
 
-			.close {
+			.icon-btn {
 				flex-basis: 30px;
 				flex-grow: 0;
 				flex-shrink: 0;
@@ -153,13 +164,23 @@
 				height: 30px;
 				cursor: pointer;
 
+				display: flex;
+				align-items: center;
+				justify-content: center;
+
 				background-color: transparent;
 				border: none;
 				color: light-dark(black, white);
 				opacity: 0.5;
+				text-decoration: none;
 
 				&:hover {
 					opacity: 1;
+				}
+
+				:global(svg) {
+					width: 20px;
+					height: 20px;
 				}
 			}
 		}

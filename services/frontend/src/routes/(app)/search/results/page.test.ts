@@ -53,7 +53,18 @@ vi.mock('$app/navigation', () => ({
 }));
 
 vi.mock('$lib/api/trees', () => ({
-	searchTrees: vi.fn()
+	searchTrees: vi.fn(),
+	getSearchTreesCSV: vi.fn((query, zoom, bounds) => {
+		const params = new URLSearchParams({
+			n: (bounds ? bounds.n : 90).toString(),
+			e: (bounds ? bounds.e : 180).toString(),
+			s: (bounds ? bounds.s : -90).toString(),
+			w: (bounds ? bounds.w : -180).toString(),
+			zoom: (zoom ?? 10).toString(),
+			search: query
+		});
+		return `http://localhost/v1/trees/search.csv?${params.toString()}`;
+	})
 }));
 
 vi.mock('$lib/buses/mapBus', () => ({
@@ -291,9 +302,45 @@ describe('Search Results Page', () => {
 		await user.click(closeButton);
 
 		await waitFor(() => {
-			expect(mockedGoto).toHaveBeenCalledWith(routes.search());
+			expect(mockedGoto).toHaveBeenCalledWith(routes.home());
 			expect(get(searchStore)).toBeUndefined();
 			expect(mockedMapBusEmit).toHaveBeenCalledWith('pin', undefined);
+		});
+	});
+
+	test('renders download button when trees are present, and not when empty', async () => {
+		mockedSearchTrees.mockResolvedValueOnce({
+			status: 200,
+			data: {
+				trees: [{ ...DEFAULT_TREE, id: 'tree1', species: 'Quercus robur' }],
+				users: []
+			}
+		});
+
+		render(Page);
+
+		await waitFor(() => {
+			const downloadBtn = screen.getByRole('link', { name: /Download CSV/i });
+			expect(downloadBtn).toBeTruthy();
+			expect(downloadBtn.getAttribute('href')).toContain('v1/trees/search.csv');
+		});
+
+		cleanup();
+
+		mockedSearchTrees.mockResolvedValueOnce({
+			status: 200,
+			data: {
+				trees: [],
+				users: []
+			}
+		});
+
+		render(Page);
+
+		await waitFor(() => {
+			expect(screen.getByText(/No trees found/i)).toBeTruthy();
+			const downloadBtn = screen.queryByRole('link', { name: /Download CSV/i });
+			expect(downloadBtn).toBeNull();
 		});
 	});
 
@@ -561,7 +608,7 @@ describe('Search Results Page', () => {
 			expect(mockedMapBusEmit).toHaveBeenCalledWith('pin', undefined);
 		});
 
-		test('handleClose resets selectedTreeId and navigates to search', async () => {
+		test('handleClose resets selectedTreeId and navigates to home', async () => {
 			const logic = new SearchResultsSidebarLogic();
 			logic.selectedTreeId = 'tree-1';
 
@@ -569,7 +616,7 @@ describe('Search Results Page', () => {
 
 			expect(logic.selectedTreeId).toBeNull();
 			expect(mockedMapBusEmit).toHaveBeenCalledWith('pin', undefined);
-			expect(mockedGoto).toHaveBeenCalledWith(routes.search());
+			expect(mockedGoto).toHaveBeenCalledWith(routes.home());
 		});
 
 		test('init resets selectedTreeId initially and on cleanup', () => {
@@ -636,6 +683,16 @@ describe('Search Results Page', () => {
 			cleanup();
 
 			expect(mockedMapBusOff).toHaveBeenCalledWith('bounds', logic.handleBounds);
+		});
+
+		test('getDownloadUrl returns correct CSV search URL', () => {
+			const logic = new SearchResultsSidebarLogic();
+			logic.query = 'oak';
+			logic.bounds = { n: 41, e: 45, s: 40, w: 44 };
+			const url = logic.getDownloadUrl();
+			expect(url).toContain('v1/trees/search.csv');
+			expect(url).toContain('search=oak');
+			expect(url).toContain('n=41');
 		});
 	});
 });

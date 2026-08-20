@@ -10,6 +10,7 @@ interface StringList {
 	loading: () => string;
 	emptyQuery: () => string;
 	preview: () => string;
+	download: () => string;
 }
 
 class English implements StringList {
@@ -23,6 +24,7 @@ class English implements StringList {
 	loading = () => 'Searching...';
 	emptyQuery = () => 'No search query provided';
 	preview = () => 'Tree preview';
+	download = () => 'Download CSV';
 }
 
 class Russian extends English {
@@ -36,6 +38,7 @@ class Russian extends English {
 	loading = () => 'Поиск...';
 	emptyQuery = () => 'Поисковый запрос не указан';
 	preview = () => 'Просмотр дерева';
+	download = () => 'Скачать CSV';
 }
 
 class Armenian extends English {
@@ -49,6 +52,7 @@ class Armenian extends English {
 	loading = () => 'Որոնում...';
 	emptyQuery = () => 'Որոնման հարցումը նշված չէ';
 	preview = () => 'Ծառի դիտում';
+	download = () => 'Ներբեռնել CSV';
 }
 
 const getLocale = (): StringList => {

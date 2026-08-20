@@ -1,4 +1,4 @@
-import { searchTrees } from '$lib/api/trees';
+import { getSearchTreesCSV, searchTrees } from '$lib/api/trees';
 import { mapBus } from '$lib/buses/mapBus';
 import { showError } from '$lib/errors';
 import { goto, routes } from '$lib/routes';
@@ -14,6 +14,10 @@ export class SearchResultsSidebarLogic {
 	error = $state<string | null>(null);
 	query = $state<string>('');
 	bounds: IBounds | undefined = undefined;
+
+	getDownloadUrl = () => {
+		return getSearchTreesCSV(this.query, get(mapStore).zoom, this.bounds);
+	};
 
 	selectTree = (tree: ITree) => {
 		this.selectedTreeId = tree.id;
