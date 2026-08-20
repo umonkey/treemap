@@ -5,6 +5,13 @@ export interface ILatLng {
 	lng: number;
 }
 
+export interface IBounds {
+	n: number;
+	e: number;
+	s: number;
+	w: number;
+}
+
 export type MountFn = (fn: () => void) => void;
 export type DestroyFn = (fn: () => void) => void;
 
