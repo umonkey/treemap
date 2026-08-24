@@ -61,7 +61,7 @@
 			"form_factor": "narrow",
 			"type": "image/png",
 			"sizes": "1080x2400",
-			"label": "Damage alerts"
+			"label": "Citizen feedback"
 		},
 		{
 			"src": "/assets/screenshots/screenshot-narrow-add.png",
@@ -96,7 +96,7 @@
 			"form_factor": "wide",
 			"type": "image/png",
 			"sizes": "1920x1080",
-			"label": "Damage alerts"
+			"label": "Citizen feedback"
 		},
 		{
 			"src": "/assets/screenshots/screenshot-wide-add.png",

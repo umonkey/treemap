@@ -22,7 +22,7 @@ use teloxide::utils::command::BotCommands;
 enum Command {
     #[command(description = "start the bot")]
     Start,
-    #[command(description = "alert tree damage")]
+    #[command(description = "submit citizen feedback")]
     Alert,
     #[command(description = "view the tree map")]
     Map,

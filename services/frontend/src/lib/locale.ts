@@ -37,8 +37,8 @@ class EnglishLocale {
 		return 'Profile';
 	}
 
-	public sideReportDamage(): string {
-		return 'Report damage';
+	public sideSendAlert(): string {
+		return 'Send alert';
 	}
 
 	public sideAbout(): string {
@@ -789,8 +789,8 @@ class RussianLocale extends EnglishLocale {
 		return 'Профиль';
 	}
 
-	public sideReportDamage(): string {
-		return 'Сообщить о проблеме';
+	public sideSendAlert(): string {
+		return 'Отправить сигнал';
 	}
 
 	public sideAbout(): string {
@@ -1525,8 +1525,8 @@ class ArmenianLocale extends EnglishLocale {
 		return 'Պրոֆիլ';
 	}
 
-	public sideReportDamage(): string {
-		return 'Հայտնել վնասի մասին';
+	public sideSendAlert(): string {
+		return 'Ուղարկել ահազանգ';
 	}
 
 	public sideAbout(): string {

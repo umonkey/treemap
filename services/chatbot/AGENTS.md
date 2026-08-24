@@ -13,7 +13,7 @@ This directory contains the Telegram chatbot service and its background workers.
 
 - `src/cli/`: command line action commands.
 - `src/domains/`: domain models and data repositories.
-  - `alert`: tree damage alert records and eligibility evaluation.
+  - `alert`: citizen feedback report records and eligibility evaluation.
   - `alert_photo`: uploaded photo records associated with alerts.
   - `outbox`: outbox message queue for reliable decoupled Telegram dispatch.
   - `tree`: tree data querying.

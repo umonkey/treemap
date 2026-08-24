@@ -128,9 +128,9 @@ Tree Maps is built to facilitate collaboration between volunteers, administrator
         <p>Integrated commenting system to facilitate discussion between team members and administrators about specific trees.</p>
     </div>
     <div class="feature-card">
-        <i class="fa-solid fa-circle-exclamation"></i>
-        <h2>Incident Reporting</h2>
-        <p>Integration with Telegram for real-time reporting of tree damage or maintenance needs by volunteers and the public.</p>
+        <i class="fa-solid fa-bullhorn"></i>
+        <h2>Citizen Feedback</h2>
+        <p>Integration with Telegram for reporting remarkable sightings, new plantings, or maintenance needs by volunteers and the public.</p>
     </div>
     <div class="feature-card">
         <i class="fa-solid fa-user-shield"></i>
