@@ -8,7 +8,7 @@ FROM docker.io/library/rust:1.97-bookworm AS builder
 RUN apt-get update && apt-get install -y libssl-dev pkg-config
 
 WORKDIR /app
-COPY services/chatbot/Cargo.toml services/chatbot/Cargo.lock ./
+COPY Cargo.toml Cargo.lock ./
 
 # STEP 1: build only dependencies.
 RUN mkdir src && echo "fn main() {}" > src/main.rs
@@ -18,8 +18,8 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry \
 RUN rm -rf src
 
 # Now build the main application.
-COPY services/chatbot/src src
-COPY services/chatbot/locales locales
+COPY src src
+COPY locales locales
 RUN touch src/main.rs
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
     --mount=type=cache,target=/app/target \
@@ -43,7 +43,7 @@ RUN apt-get update && \
 WORKDIR /app
 COPY --from=builder /app/chatbot-bin bin/chatbot
 COPY --from=builder /app/locales locales
-COPY services/chatbot/docker/rootfs/ /
+COPY docker/rootfs/ /
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
   CMD supervisorctl status chatbot || exit 1

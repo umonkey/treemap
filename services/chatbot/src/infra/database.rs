@@ -11,11 +11,19 @@ impl DatabaseClient {
     pub async fn new(path: &str) -> anyhow::Result<Self> {
         log::info!("Using database: {}", path);
         let db = Builder::new_local(path).build().await?;
+        let conn = db.connect()?;
+        conn.execute_batch(
+            "PRAGMA journal_mode = WAL;
+             PRAGMA synchronous = NORMAL;
+             PRAGMA busy_timeout = 5000;",
+        )
+        .await?;
         Ok(Self { db })
     }
 
     pub async fn connect(&self) -> anyhow::Result<Connection> {
         let conn = self.db.connect()?;
+        conn.execute_batch("PRAGMA busy_timeout = 5000;").await?;
         Ok(conn)
     }
 

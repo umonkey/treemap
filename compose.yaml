@@ -3,11 +3,39 @@
 # This file starts both frontend and backend to run the Trees of Yerevan
 # application in a dev environment.
 #
-# The web UI is available at:
+# The web UI is available at: http://localhost:5173/
+#
+# The chatbot is NOT running by default, you have to run it explicitly:
+# docker compose run --rm chatbot
 
 name: trees_dev
 
 services:
+  chatbot:
+    build:
+      context: services/chatbot
+    container_name: trees_chatbot
+    profiles:
+      - manual
+      - chatbot
+    restart: "no"
+    volumes:
+      - var:/app/var
+    environment:
+      - CHATBOT_DATABASE=/app/var/database.sqlite
+      - FILES_BUCKET=${FILES_BUCKET:-treemap}
+      - FILES_REGION=${FILES_REGION:-fra1}
+      - FILES_ENDPOINT=${FILES_ENDPOINT:-https://fra1.digitaloceanspaces.com}
+      - WEBSITE_URL=http://localhost:5173
+      - RUST_LOG=info,chatbot=debug
+    secrets:
+      - files_key
+      - files_secret
+      - chatbot_token
+      - report_recipients
+    depends_on:
+      - backend
+
   backend:
     build:
       context: services/backend
@@ -97,3 +125,5 @@ secrets:
     file: .secrets/smtp_host.txt
   from_email:
     file: .secrets/from_email.txt
+  report_recipients:
+    file: .secrets/report_recipients.txt

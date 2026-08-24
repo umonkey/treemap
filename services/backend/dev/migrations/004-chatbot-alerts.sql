@@ -1,3 +1,5 @@
+BEGIN;
+
 CREATE TABLE IF NOT EXISTS `chatbot_alerts` (
     `id` INTEGER PRIMARY KEY AUTOINCREMENT,
     `created_at` INTEGER NOT NULL,
@@ -25,3 +27,5 @@ CREATE TABLE IF NOT EXISTS `chatbot_alerts_photos` (
 );
 
 CREATE INDEX IF NOT EXISTS `idx_chatbot_alerts_photos_alert_id` ON `chatbot_alerts_photos` (`alert_id`);
+
+COMMIT;

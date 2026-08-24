@@ -9,7 +9,12 @@ This folder contains a tree mapping application. The application is API-first, w
 - `services`: contains the application services.
   - `backend`: contains the API backend and queue consumers written in Rust and Actix-Web.
   - `caddy`: contains the Caddy reverse proxy configuration.
+  - `chatbot`: contains the Telegram chatbot and alert dispatcher written in Rust and Teloxide.
+  - `extractor`: image and panorama feature extraction service.
   - `frontend`: contains the static frontend written with TypeScript and SvelteKit 5, client side rendering only.
+  - `landing`: static landing page.
+  - `streetview`: Street View processing pipelines.
+  - `transcoder`: video transcode and sequence processor.
 - `tools`: contains some additional scripts used for non-regular manual tasks.
 
 
@@ -21,11 +26,25 @@ The project uses a `Makefile` for high-level tasks:
 - `make start`: start the application using Docker Compose.
 
 
+## Database Schema & Migrations
+
+- All SQLite database schemas, seeds, and migration scripts are centralized in `services/backend/dev/`:
+  - `schema-sqlite.sql`: Complete current schema (loaded during backend tests and initial setup).
+  - `dev/migrations/*.sql`: Sequential migration scripts.
+- Do NOT create standalone `.sql` schema files inside other service directories; all services share the database schema defined in `services/backend`.
+- When actively developing a feature branch before release, consolidate related schema adjustments into the current in-progress migration rather than generating fragmented individual migration files.
+
+
+## Background Workers & Daemons
+
+- Services running background tasks (such as `backend` and `chatbot`) use Supervisord in production (`docker/rootfs/etc/supervisor.d/*.ini`).
+- When introducing a new background worker, implement it as a CLI subcommand in the service binary and add a corresponding `.ini` file under `docker/rootfs/etc/supervisor.d/`.
+
+
 ## Documentation
 
 - Check the `docs/` folder for architectural decisions and detailed documentation on specific features.
-- See `services/backend/AGENTS.md` and `services/frontend/AGENTS.md` for specific instructions on those subprojects.
-- When working on Rust code in the `services/backend` directory, you MUST load the `rust` skill.
+- When working on Rust code in the `services/backend` or `services/chatbot` directory, you MUST load the `rust` skill.
 
 
 ## Development Workflow

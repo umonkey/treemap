@@ -14,7 +14,7 @@ impl AlertRepository {
 
     pub async fn get_by_id(&self, id: i64) -> anyhow::Result<Option<Alert>> {
         let conn = self.db.connect().await?;
-        let sql = "SELECT id, created_at, created_by, chat_id, message_id, username, language_code, lat, lon, description, status, response_text, responded_at FROM chatbot_alerts WHERE id = ?";
+        let sql = "SELECT id, created_at, created_by, chat_id, message_id, username, language_code, lat, lon, description, status, response_text, responded_at, reported_at FROM chatbot_alerts WHERE id = ?";
         let mut stmt = conn.prepare(sql).await?;
         let mut rows = stmt
             .query(params_from_iter(vec![Value::Integer(id)]))
@@ -35,10 +35,50 @@ impl AlertRepository {
                 status: row.get(10)?,
                 response_text: row.get(11)?,
                 responded_at: row.get(12)?,
+                reported_at: row.get(13)?,
             }))
         } else {
             Ok(None)
         }
+    }
+
+    pub async fn get_unreported(&self) -> anyhow::Result<Vec<Alert>> {
+        let conn = self.db.connect().await?;
+        let sql = "SELECT id, created_at, created_by, chat_id, message_id, username, language_code, lat, lon, description, status, response_text, responded_at, reported_at FROM chatbot_alerts WHERE reported_at IS NULL ORDER BY created_at ASC";
+        let mut stmt = conn.prepare(sql).await?;
+        let mut rows = stmt
+            .query(params_from_iter(std::iter::empty::<Value>()))
+            .await?;
+        let mut results = Vec::new();
+
+        while let Some(row) = rows.next().await? {
+            results.push(Alert {
+                id: row.get(0)?,
+                created_at: row.get(1)?,
+                created_by: row.get(2)?,
+                chat_id: row.get(3)?,
+                message_id: row.get(4)?,
+                username: row.get(5)?,
+                language_code: row.get(6)?,
+                lat: row.get(7)?,
+                lon: row.get(8)?,
+                description: row.get(9)?,
+                status: row.get(10)?,
+                response_text: row.get(11)?,
+                responded_at: row.get(12)?,
+                reported_at: row.get(13)?,
+            });
+        }
+
+        Ok(results)
+    }
+
+    pub async fn mark_reported(&self, id: i64) -> anyhow::Result<()> {
+        let conn = self.db.connect().await?;
+        let sql = "UPDATE chatbot_alerts SET reported_at = unixepoch() WHERE id = ?";
+        conn.execute(sql, params_from_iter(vec![Value::Integer(id)]))
+            .await?;
+        Ok(())
     }
 
     #[allow(clippy::too_many_arguments)]

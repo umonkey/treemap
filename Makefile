@@ -6,6 +6,7 @@ help:
 	@echo ""
 	@echo "make build                 -- compile backend and frontend"
 	@echo "make start                 -- run the development version"
+	@echo "make sql                   -- run sqlite3 in backend container"
 
 build:
 	docker compose build
@@ -44,3 +45,6 @@ load-prod:
 rebuild-backend:
 	docker compose build backend
 	docker compose up backend -d
+
+sql:
+	docker compose run --rm backend sqlite3 /app/var/database.sqlite

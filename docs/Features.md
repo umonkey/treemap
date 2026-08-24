@@ -42,6 +42,7 @@ The application displays the number of pending photo uploads as a badge (or "bub
 Users can send tree damage alerts through a dedicated Telegram bot. These alerts are integrated into the application's map, providing real-time awareness of tree health issues.
 
 - Implementation: a Telegram bot receives alerts and stores them in the central database.
+- Curator notifications: completed reports (containing photos, GPS location, and description) are automatically and promptly dispatched via private Telegram messages to a designated team of moderators/curators.
 - Visualization: damage alerts are rendered as red circles on the map.
 - Retention: all alerts are stored permanently in the database for historical analysis.
 - Display logic: only alerts submitted within the last 7 days are displayed on the active map to ensure current relevance.

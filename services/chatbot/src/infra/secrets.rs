@@ -8,14 +8,20 @@ pub struct Secrets {
     pub bot_token: String,
     pub files_key: String,
     pub files_secret: String,
+    pub report_recipients: Option<String>,
 }
 
 impl Secrets {
     pub fn new(path: &str) -> anyhow::Result<Self> {
+        let report_recipients = Self::get_env("REPORT_RECIPIENTS")
+            .or_else(|| Self::get_file(path, "REPORT_RECIPIENTS"))
+            .or_else(|| Self::get_file_lowercase(path, "REPORT_RECIPIENTS"));
+
         Ok(Self {
             bot_token: Self::get(path, "CHATBOT_TOKEN")?,
             files_key: Self::get(path, "FILES_KEY")?,
             files_secret: Self::get(path, "FILES_SECRET")?,
+            report_recipients,
         })
     }
 

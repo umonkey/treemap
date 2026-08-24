@@ -9,14 +9,29 @@ pub struct Config {
     pub files_bucket: String,
     pub files_key: String,
     pub files_secret: String,
-    #[allow(dead_code)]
     pub website_url: String,
+    pub report_recipients: Vec<i64>,
 }
 
 impl Config {
     pub fn from_env() -> Self {
         let secrets_path = env::var("SECRETS_PATH").unwrap_or_else(|_| "/run/secrets".to_string());
         let secrets = Secrets::new(&secrets_path).expect("Failed to load secrets");
+
+        let report_recipients = secrets
+            .report_recipients
+            .unwrap_or_default()
+            .split(',')
+            .map(|s| s.trim())
+            .filter(|s| !s.is_empty())
+            .filter_map(|s| match s.parse::<i64>() {
+                Ok(id) => Some(id),
+                Err(e) => {
+                    log::warn!("Invalid report recipient ID '{}': {}", s, e);
+                    None
+                }
+            })
+            .collect();
 
         Self {
             bot_token: secrets.bot_token,
@@ -28,6 +43,7 @@ impl Config {
             files_secret: secrets.files_secret,
             website_url: env::var("WEBSITE_URL")
                 .unwrap_or_else(|_| "http://localhost:5173".to_string()),
+            report_recipients,
         }
     }
 }

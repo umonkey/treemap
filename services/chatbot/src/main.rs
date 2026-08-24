@@ -1,34 +1,49 @@
+mod cli;
 mod domains;
 mod infra;
 mod services;
 mod utils;
 
-use crate::domains::alert::AlertRepository;
-use crate::domains::alert_photo::AlertPhotoRepository;
-use crate::domains::tree::TreeRepository;
-use crate::infra::config::Config;
-use crate::services::i18n::I18n;
-use std::sync::Arc;
+use self::cli::*;
+
+fn usage() {
+    println!("Usage: chatbot command");
+    println!();
+    println!("Commands:");
+    println!("  dispatch-alerts -- run the background alert dispatcher worker daemon");
+    println!("  dispatch-outbox -- run the background outbox message dispatcher worker daemon");
+    println!("  serve           -- run the interactive Telegram bot REPL");
+}
 
 #[tokio::main]
 async fn main() {
     dotenv::dotenv().ok();
     env_logger::init();
 
-    let config = Config::from_env();
-    let i18n = Arc::new(I18n::new());
-    let db = Arc::new(
-        crate::infra::database::DatabaseClient::new(&config.database_path)
-            .await
-            .expect("Failed to initialize database"),
-    );
+    let command_arg = std::env::args().nth(1);
 
-    let alerts = Arc::new(AlertRepository::new(Arc::clone(&db)));
-    let photos = Arc::new(AlertPhotoRepository::new(Arc::clone(&db)));
-    let trees = Arc::new(TreeRepository::new(Arc::clone(&db)));
-    let storage = Arc::new(
-        crate::infra::s3::S3FileStorage::new(&config).expect("Failed to initialize S3 storage"),
-    );
+    let command = match command_arg {
+        Some(value) => value,
+        None => {
+            println!("Command not specified.");
+            usage();
+            return;
+        }
+    };
 
-    services::chatbot::run(config.bot_token, i18n, alerts, photos, trees, storage).await;
+    match command.as_str() {
+        "dispatch-alerts" => {
+            dispatch_alerts_command().await;
+        }
+        "dispatch-outbox" => {
+            dispatch_outbox_command().await;
+        }
+        "serve" => {
+            serve_command().await;
+        }
+        other => {
+            println!("Command {} not understood.", other);
+            usage();
+        }
+    }
 }

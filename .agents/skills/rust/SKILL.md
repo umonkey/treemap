@@ -58,6 +58,14 @@ pub async fn my_action(state: Data<AppState>) -> Result<Json<...>> {
 - Log at the boundary: errors should be logged once at the application boundary (e.g., in Actix-Web's `ResponseError` implementation).
 - Provide context: when creating errors, include enough information (e.g., field names, IDs) so the person reading the log can identify the cause without needing a stack trace.
 
+## Database Queries (libSQL)
+
+- Parameterless queries: when executing a query with no parameters on a prepared statement with libSQL, use `params_from_iter(std::iter::empty::<Value>())` to avoid `IntoParams` type inference ambiguities:
+
+```rust
+let mut rows = stmt.query(params_from_iter(std::iter::empty::<Value>())).await?;
+```
+
 ## Development Workflow
 
 - After implementing the required changes, verify code integrity by running `make format check` using a sub-agent.

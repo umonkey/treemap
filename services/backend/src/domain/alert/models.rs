@@ -17,6 +17,7 @@ pub struct Alert {
     pub status: String,
     pub response_text: Option<String>,
     pub responded_at: Option<u64>,
+    pub reported_at: Option<u64>,
 }
 
 impl Alert {
@@ -35,6 +36,7 @@ impl Alert {
             status: attributes.require_string("status")?,
             response_text: attributes.get_string("response_text")?,
             responded_at: attributes.get_u64("responded_at")?,
+            reported_at: attributes.get_u64("reported_at")?,
         })
     }
 

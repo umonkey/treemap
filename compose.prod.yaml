@@ -47,11 +47,13 @@ services:
       - FILES_BUCKET=${FILES_BUCKET}
       - FILES_REGION=${FILES_REGION}
       - FILES_ENDPOINT=${FILES_ENDPOINT}
+      - WEBSITE_URL=https://yerevan.treemaps.app
       - RUST_LOG=info
     secrets:
       - files_key
       - files_secret
       - chatbot_token
+      - report_recipients
     depends_on:
       - backend
 
@@ -109,3 +111,5 @@ secrets:
     file: .secrets/smtp_host.txt
   from_email:
     file: .secrets/from_email.txt
+  report_recipients:
+    file: .secrets/report_recipients.txt
