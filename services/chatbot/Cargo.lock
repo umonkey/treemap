@@ -850,6 +850,7 @@ dependencies = [
  "libsql",
  "log 0.4.33",
  "reqwest 0.12.28",
+ "serde_json",
  "snowflaker",
  "teloxide",
  "tokio",

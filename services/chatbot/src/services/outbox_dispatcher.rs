@@ -2,7 +2,7 @@ use crate::domains::outbox::OutboxRepository;
 use std::sync::Arc;
 use std::time::Duration;
 use teloxide::prelude::*;
-use teloxide::types::ChatId;
+use teloxide::types::{ChatId, InputFile, InputMedia, InputMediaPhoto};
 
 pub struct OutboxDispatcher {
     bot: Bot,
@@ -48,11 +48,34 @@ impl OutboxDispatcher {
                 msg.chat_id
             );
 
-            match self
-                .bot
-                .send_message(ChatId(msg.chat_id), msg.text.clone())
-                .await
-            {
+            let urls = msg.attachment_urls();
+            let send_res = if urls.is_empty() {
+                self.bot
+                    .send_message(ChatId(msg.chat_id), msg.text.clone())
+                    .await
+                    .map(|_| ())
+            } else if urls.len() == 1 {
+                self.bot
+                    .send_photo(ChatId(msg.chat_id), InputFile::url(urls[0].parse()?))
+                    .caption(msg.text.clone())
+                    .await
+                    .map(|_| ())
+            } else {
+                let mut media = Vec::new();
+                for (i, url) in urls.into_iter().take(10).enumerate() {
+                    let mut photo = InputMediaPhoto::new(InputFile::url(url.parse()?));
+                    if i == 0 {
+                        photo = photo.caption(msg.text.clone());
+                    }
+                    media.push(InputMedia::Photo(photo));
+                }
+                self.bot
+                    .send_media_group(ChatId(msg.chat_id), media)
+                    .await
+                    .map(|_| ())
+            };
+
+            match send_res {
                 Ok(_) => {
                     if let Err(e) = self.outbox.mark_sent(msg.id).await {
                         log::error!("Failed to mark outbox message {} as sent: {:?}", msg.id, e);

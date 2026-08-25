@@ -47,6 +47,7 @@ services:
       - FILES_BUCKET=${FILES_BUCKET}
       - FILES_REGION=${FILES_REGION}
       - FILES_ENDPOINT=${FILES_ENDPOINT}
+      - FILES_BASE_URL=${FILES_BASE_URL}
       - WEBSITE_URL=https://yerevan.treemaps.app
       - RUST_LOG=info
     secrets:

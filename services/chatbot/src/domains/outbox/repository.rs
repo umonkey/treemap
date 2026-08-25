@@ -12,14 +12,22 @@ impl OutboxRepository {
         Self { db }
     }
 
-    pub async fn enqueue(&self, alert_id: i64, chat_id: i64, text: &str) -> anyhow::Result<i64> {
+    pub async fn enqueue(
+        &self,
+        alert_id: i64,
+        chat_id: i64,
+        text: &str,
+        attachments: Option<&[String]>,
+    ) -> anyhow::Result<i64> {
         let conn = self.db.connect().await?;
-        let sql = "INSERT INTO chatbot_outbox (alert_id, chat_id, text, status, created_at, next_retry_at, attempts) 
-                   VALUES (?, ?, ?, 'pending', unixepoch(), unixepoch(), 0)";
+        let att_json = attachments.map(serde_json::to_string).transpose()?;
+        let sql = "INSERT INTO chatbot_outbox (alert_id, chat_id, text, attachments, status, created_at, next_retry_at, attempts) 
+                   VALUES (?, ?, ?, ?, 'pending', unixepoch(), unixepoch(), 0)";
         let params = vec![
             Value::Integer(alert_id),
             Value::Integer(chat_id),
             Value::Text(text.to_string()),
+            att_json.map(Value::Text).unwrap_or(Value::Null),
         ];
         conn.execute(sql, params_from_iter(params)).await?;
         Ok(conn.last_insert_rowid())
@@ -30,7 +38,7 @@ impl OutboxRepository {
         conn.execute("BEGIN IMMEDIATE", params_from_iter(Vec::<Value>::new()))
             .await?;
 
-        let sql = "SELECT id, alert_id, chat_id, text, status, created_at, sent_at, next_retry_at, attempts, error_message 
+        let sql = "SELECT id, alert_id, chat_id, text, attachments, status, created_at, sent_at, next_retry_at, attempts, error_message 
                    FROM chatbot_outbox 
                    WHERE status = 'pending' AND next_retry_at <= unixepoch() 
                    ORDER BY created_at ASC 
@@ -67,12 +75,13 @@ impl OutboxRepository {
                             alert_id: row.get(1)?,
                             chat_id: row.get(2)?,
                             text: row.get(3)?,
-                            status: row.get(4)?,
-                            created_at: row.get(5)?,
-                            sent_at: row.get(6)?,
-                            next_retry_at: row.get(7)?,
-                            attempts: row.get(8)?,
-                            error_message: row.get(9)?,
+                            attachments: row.get(4)?,
+                            status: row.get(5)?,
+                            created_at: row.get(6)?,
+                            sent_at: row.get(7)?,
+                            next_retry_at: row.get(8)?,
+                            attempts: row.get(9)?,
+                            error_message: row.get(10)?,
                         })
                     })() {
                         Ok(msg) => messages.push(msg),

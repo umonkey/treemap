@@ -99,7 +99,7 @@ impl AlertRepository {
 
         if !force_new {
             let sql = "SELECT id FROM chatbot_alerts 
-                       WHERE created_by = ? AND created_at > (unixepoch() - 600) 
+                       WHERE created_by = ? AND status = 'draft' AND created_at > (unixepoch() - 600) 
                        ORDER BY created_at DESC LIMIT 1";
             let mut stmt = conn.prepare(sql).await?;
             let mut rows = stmt
@@ -165,7 +165,7 @@ impl AlertRepository {
     pub async fn get_active_id_by_user_id(&self, user_id: i64) -> anyhow::Result<Option<i64>> {
         let conn = self.db.connect().await?;
         let sql = "SELECT id FROM chatbot_alerts 
-                   WHERE created_by = ? AND created_at > (unixepoch() - 600) 
+                   WHERE created_by = ? AND status = 'draft' AND created_at > (unixepoch() - 600) 
                    ORDER BY created_at DESC LIMIT 1";
         let mut stmt = conn.prepare(sql).await?;
         let mut rows = stmt

@@ -47,5 +47,6 @@ The binary (`/app/bin/chatbot`) supports subcommands:
 ## Alert Lifecycle
 
 - Alerts start with `status = 'draft'`.
-- When location, a non-empty description, and at least one photo are provided, the alert status automatically transitions to `new`.
+- Alerts accumulate subsequent photos, location updates, and descriptions only while in `draft` status within a 10-minute window.
+- When location, a non-empty description, and at least one photo are provided, the alert status automatically transitions to `new` and the alert is locked; further communication creates a new alert.
 - The `dispatch-alerts` worker polls for alerts with `status = 'new'` and `reported_at IS NULL` and dispatches them immediately.

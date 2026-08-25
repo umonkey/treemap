@@ -9,6 +9,7 @@ pub struct Config {
     pub files_bucket: String,
     pub files_key: String,
     pub files_secret: String,
+    pub files_base_url: String,
     pub website_url: String,
     pub report_recipients: Vec<i64>,
 }
@@ -41,6 +42,7 @@ impl Config {
             files_bucket: env::var("FILES_BUCKET").expect("FILES_BUCKET must be set"),
             files_key: secrets.files_key,
             files_secret: secrets.files_secret,
+            files_base_url: env::var("FILES_BASE_URL").expect("FILES_BASE_URL must be set"),
             website_url: env::var("WEBSITE_URL")
                 .unwrap_or_else(|_| "http://localhost:5173".to_string()),
             report_recipients,

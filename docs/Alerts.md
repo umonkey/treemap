@@ -7,7 +7,8 @@ The application features an integrated Telegram bot (`services/chatbot`) that en
 1. Submission via Telegram bot:
    - users interact with the Telegram bot to submit reports.
    - a reporting session allows users to send close-up and wide photos, precise GPS location, and a text description.
-   - multiple messages sent within a 10-minute window are intelligently grouped into the active feedback session.
+   - multiple messages sent within a 10-minute window while in `draft` status accumulate into the active feedback session.
+   - once completed and transitioned to `new`, the alert is locked and further communication creates a new alert.
 
 2. Map integration and retention:
    - citizen feedback reports are stored permanently in the database for historical tracking.
@@ -15,7 +16,7 @@ The application features an integrated Telegram bot (`services/chatbot`) that en
 
 3. Curator dispatcher workflow:
    - a decoupled background worker daemon (`chatbot dispatch-alerts`, managed via supervisor) runs periodically in the background.
-   - report status: reports start with status `draft` and automatically transition to `new` once complete.
+   - report status: reports start with status `draft` and accumulate subsequent photos, location updates, and descriptions only while in `draft` status within a 10-minute window; once complete, they automatically transition to `new` and are locked against further updates.
    - eligibility criteria: a report is dispatched to curators when it meets all of the following requirements:
      - status: has status `new` (meaning it contains at least one uploaded photo, valid latitude and longitude coordinates, and a non-empty text description).
      - reported: has not been previously reported (`reported_at` is null).
@@ -25,11 +26,11 @@ The application features an integrated Telegram bot (`services/chatbot`) that en
    - Telegram delivery is provided as an initial notification channel and is extensible to other channels such as email or LLM processing pipelines.
    - message format:
      ```
-     New report available:
-
-     https://yerevan.treemaps.app/alert/:id
-
      <description text>
+
+     https://yerevan.treemaps.app/alert/:id/preview
+
+     #alerts
      ```
    - reliability and retry semantics: if message delivery fails for any recipient ID, the error is logged and dispatch continues to other recipients. A report is marked as successfully reported (`reported_at = unixepoch()`) only if delivery succeeds for all configured recipients. If any recipient fails, the report remains unreported and will be automatically retried on subsequent background polling cycles.
 

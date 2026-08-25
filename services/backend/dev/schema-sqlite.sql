@@ -360,6 +360,7 @@ CREATE TABLE IF NOT EXISTS `chatbot_outbox` (
     `alert_id` INTEGER NOT NULL,
     `chat_id` INTEGER NOT NULL,
     `text` TEXT NOT NULL,
+    `attachments` TEXT,
     `status` TEXT NOT NULL DEFAULT 'pending', -- 'pending', 'processing', 'sent', 'failed'
     `created_at` INTEGER NOT NULL,
     `sent_at` INTEGER,

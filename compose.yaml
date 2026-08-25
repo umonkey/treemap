@@ -26,6 +26,7 @@ services:
       - FILES_BUCKET=${FILES_BUCKET:-treemap}
       - FILES_REGION=${FILES_REGION:-fra1}
       - FILES_ENDPOINT=${FILES_ENDPOINT:-https://fra1.digitaloceanspaces.com}
+      - FILES_BASE_URL=${FILES_BASE_URL:-https://treemap.fra1.cdn.digitaloceanspaces.com/}
       - WEBSITE_URL=http://localhost:5173
       - RUST_LOG=info,chatbot=debug
     secrets:

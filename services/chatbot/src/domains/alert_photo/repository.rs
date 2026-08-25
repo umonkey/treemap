@@ -50,4 +50,18 @@ impl AlertPhotoRepository {
             Ok(0)
         }
     }
+
+    pub async fn get_photos_by_alert_id(&self, alert_id: i64) -> anyhow::Result<Vec<String>> {
+        let conn = self.db.connect().await?;
+        let sql = "SELECT photo_path FROM chatbot_alerts_photos WHERE alert_id = ? ORDER BY id ASC";
+        let mut stmt = conn.prepare(sql).await?;
+        let mut rows = stmt
+            .query(params_from_iter(vec![Value::Integer(alert_id)]))
+            .await?;
+        let mut paths = Vec::new();
+        while let Some(row) = rows.next().await? {
+            paths.push(row.get(0)?);
+        }
+        Ok(paths)
+    }
 }

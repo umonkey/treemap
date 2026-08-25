@@ -13,6 +13,7 @@ The chatbot is configured using the following environment variables:
 
 - `CHATBOT_TOKEN`: the API token for the Telegram bot (obtained via BotFather).
 - `CHATBOT_DATABASE`: path to the SQLite database file.
+- `FILES_BASE_URL`: base URL for media files.
 - `FILES_BUCKET`: name of the storage bucket for uploaded media.
 - `FILES_REGION`: region for the file storage service.
 - `FILES_ENDPOINT`: API endpoint for the file storage service.
