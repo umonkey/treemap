@@ -1,3 +1,46 @@
+use std::fmt;
+use std::str::FromStr;
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
+pub enum AlertStatus {
+    #[default]
+    Draft,
+    New,
+}
+
+impl AlertStatus {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Draft => "draft",
+            Self::New => "new",
+        }
+    }
+}
+
+impl AsRef<str> for AlertStatus {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl fmt::Display for AlertStatus {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl FromStr for AlertStatus {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.trim().to_lowercase().as_str() {
+            "draft" => Ok(Self::Draft),
+            "new" => Ok(Self::New),
+            unknown => Err(format!("Unknown alert status: '{unknown}'")),
+        }
+    }
+}
+
 #[derive(Clone, Debug)]
 #[allow(dead_code)]
 pub struct Alert {
@@ -11,40 +54,22 @@ pub struct Alert {
     pub lat: Option<f64>,
     pub lon: Option<f64>,
     pub description: Option<String>,
-    pub status: String,
+    pub status: AlertStatus,
     pub response_text: Option<String>,
     pub responded_at: Option<i64>,
     pub reported_at: Option<i64>,
 }
 
 impl Alert {
-    pub fn is_eligible_for_sending(&self, photo_count: i64, now: i64) -> bool {
-        // 1. Must be at least 10 minutes old (600 seconds)
-        if now - self.created_at < 600 {
-            return false;
-        }
-
-        // 2. Must have valid coordinates
-        if self.lat.is_none() || self.lon.is_none() {
-            return false;
-        }
-
-        // 3. Must have a non-empty description
-        let has_description = self
-            .description
-            .as_ref()
-            .map(|d| !d.trim().is_empty())
-            .unwrap_or(false);
-        if !has_description {
-            return false;
-        }
-
-        // 4. Must have at least one photo
-        if photo_count <= 0 {
-            return false;
-        }
-
-        true
+    pub fn is_complete(&self, photo_count: i64) -> bool {
+        self.lat.is_some()
+            && self.lon.is_some()
+            && self
+                .description
+                .as_ref()
+                .map(|d| !d.trim().is_empty())
+                .unwrap_or(false)
+            && photo_count > 0
     }
 }
 
@@ -53,7 +78,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_is_eligible_for_sending() {
+    fn test_is_complete() {
         let mut alert = Alert {
             id: 1,
             created_at: 1000,
@@ -65,28 +90,25 @@ mod tests {
             lat: Some(40.18),
             lon: Some(44.51),
             description: Some("Broken branch".to_string()),
-            status: "new".to_string(),
+            status: AlertStatus::Draft,
             response_text: None,
             responded_at: None,
             reported_at: None,
         };
 
-        // Too recent (now = 1500, created = 1000, diff = 500 < 600)
-        assert!(!alert.is_eligible_for_sending(1, 1500));
-
-        // Old enough (now = 1600, created = 1000, diff = 600)
-        assert!(alert.is_eligible_for_sending(1, 1600));
+        // Complete alert
+        assert!(alert.is_complete(1));
 
         // Missing photo
-        assert!(!alert.is_eligible_for_sending(0, 1600));
+        assert!(!alert.is_complete(0));
 
         // Missing location
         alert.lat = None;
-        assert!(!alert.is_eligible_for_sending(1, 1600));
+        assert!(!alert.is_complete(1));
         alert.lat = Some(40.18);
 
         // Empty description
         alert.description = Some("   ".to_string());
-        assert!(!alert.is_eligible_for_sending(1, 1600));
+        assert!(!alert.is_complete(1));
     }
 }

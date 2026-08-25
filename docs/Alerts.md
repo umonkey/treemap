@@ -15,12 +15,10 @@ The application features an integrated Telegram bot (`services/chatbot`) that en
 
 3. Curator dispatcher workflow:
    - a decoupled background worker daemon (`chatbot dispatch-alerts`, managed via supervisor) runs periodically in the background.
-   - eligibility criteria: a report is dispatched to curators only when it meets all of the following requirements:
-     - age: created at least 10 minutes ago (giving users time to finish uploading photos, location, and description).
-     - photos: contains at least one uploaded photo.
-     - location: contains valid latitude and longitude coordinates.
-     - description: contains a non-empty text description.
-     - status: has not been previously reported (`reported_at` is null).
+   - report status: reports start with status `draft` and automatically transition to `new` once complete.
+   - eligibility criteria: a report is dispatched to curators when it meets all of the following requirements:
+     - status: has status `new` (meaning it contains at least one uploaded photo, valid latitude and longitude coordinates, and a non-empty text description).
+     - reported: has not been previously reported (`reported_at` is null).
 
 4. Curator notification delivery:
    - eligible reports trigger private notifications sent to all configured recipients.

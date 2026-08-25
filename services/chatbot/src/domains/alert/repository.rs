@@ -1,4 +1,4 @@
-use super::model::Alert;
+use super::model::{Alert, AlertStatus};
 use crate::infra::database::DatabaseClient;
 use libsql::{params_from_iter, Value};
 use std::sync::Arc;
@@ -21,6 +21,7 @@ impl AlertRepository {
             .await?;
 
         if let Some(row) = rows.next().await? {
+            let status_str: String = row.get(10)?;
             Ok(Some(Alert {
                 id: row.get(0)?,
                 created_at: row.get(1)?,
@@ -32,7 +33,7 @@ impl AlertRepository {
                 lat: row.get(7)?,
                 lon: row.get(8)?,
                 description: row.get(9)?,
-                status: row.get(10)?,
+                status: status_str.parse().unwrap_or_default(),
                 response_text: row.get(11)?,
                 responded_at: row.get(12)?,
                 reported_at: row.get(13)?,
@@ -44,7 +45,7 @@ impl AlertRepository {
 
     pub async fn get_unreported(&self) -> anyhow::Result<Vec<Alert>> {
         let conn = self.db.connect().await?;
-        let sql = "SELECT id, created_at, created_by, chat_id, message_id, username, language_code, lat, lon, description, status, response_text, responded_at, reported_at FROM chatbot_alerts WHERE reported_at IS NULL ORDER BY created_at ASC";
+        let sql = "SELECT id, created_at, created_by, chat_id, message_id, username, language_code, lat, lon, description, status, response_text, responded_at, reported_at FROM chatbot_alerts WHERE status = 'new' AND reported_at IS NULL ORDER BY created_at ASC";
         let mut stmt = conn.prepare(sql).await?;
         let mut rows = stmt
             .query(params_from_iter(std::iter::empty::<Value>()))
@@ -52,6 +53,7 @@ impl AlertRepository {
         let mut results = Vec::new();
 
         while let Some(row) = rows.next().await? {
+            let status_str: String = row.get(10)?;
             results.push(Alert {
                 id: row.get(0)?,
                 created_at: row.get(1)?,
@@ -63,7 +65,7 @@ impl AlertRepository {
                 lat: row.get(7)?,
                 lon: row.get(8)?,
                 description: row.get(9)?,
-                status: row.get(10)?,
+                status: status_str.parse().unwrap_or_default(),
                 response_text: row.get(11)?,
                 responded_at: row.get(12)?,
                 reported_at: row.get(13)?,
@@ -113,8 +115,8 @@ impl AlertRepository {
             }
         }
 
-        let sql = "INSERT INTO chatbot_alerts (created_at, created_by, chat_id, message_id, username, language_code, lat, lon) 
-                   VALUES (unixepoch(), ?, ?, ?, ?, ?, ?, ?)";
+        let sql = "INSERT INTO chatbot_alerts (created_at, created_by, chat_id, message_id, username, language_code, lat, lon, status) 
+                   VALUES (unixepoch(), ?, ?, ?, ?, ?, ?, ?, 'draft')";
 
         let params = vec![
             Value::Integer(user_id),
@@ -148,6 +150,14 @@ impl AlertRepository {
         let conn = self.db.connect().await?;
         let sql = "UPDATE chatbot_alerts SET description = ? WHERE id = ?";
         let params = vec![Value::Text(description.to_string()), Value::Integer(id)];
+        conn.execute(sql, params_from_iter(params)).await?;
+        Ok(())
+    }
+
+    pub async fn update_status(&self, id: i64, status: AlertStatus) -> anyhow::Result<()> {
+        let conn = self.db.connect().await?;
+        let sql = "UPDATE chatbot_alerts SET status = ? WHERE id = ?";
+        let params = vec![Value::Text(status.to_string()), Value::Integer(id)];
         conn.execute(sql, params_from_iter(params)).await?;
         Ok(())
     }

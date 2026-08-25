@@ -1,5 +1,4 @@
 use crate::domains::alert::AlertRepository;
-use crate::domains::alert_photo::AlertPhotoRepository;
 use crate::domains::outbox::OutboxRepository;
 use crate::infra::config::Config;
 use crate::services::dispatcher::AlertDispatcher;
@@ -15,7 +14,6 @@ pub async fn dispatch_alerts_command() {
     );
 
     let alerts = Arc::new(AlertRepository::new(Arc::clone(&db)));
-    let photos = Arc::new(AlertPhotoRepository::new(Arc::clone(&db)));
     let outbox = Arc::new(OutboxRepository::new(Arc::clone(&db)));
 
     log::info!("Starting Alert Dispatcher daemon...");
@@ -23,7 +21,6 @@ pub async fn dispatch_alerts_command() {
     let dispatcher = AlertDispatcher::new(
         config.bot_token,
         alerts,
-        photos,
         outbox,
         config.report_recipients,
         config.website_url,

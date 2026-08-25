@@ -1,4 +1,4 @@
-use crate::domains::alert::{Alert, AlertRepository};
+use crate::domains::alert::{Alert, AlertRepository, AlertStatus};
 use crate::domains::alert_photo::AlertPhotoRepository;
 use crate::domains::tree::TreeRepository;
 use crate::infra::s3::S3FileStorage;
@@ -286,12 +286,29 @@ impl Chatbot {
         Ok(is_first)
     }
 
+    async fn check_and_update_status(&self, alert_id: i64) -> anyhow::Result<()> {
+        if let Some(alert) = self.alerts.get_by_id(alert_id).await? {
+            if alert.status == AlertStatus::Draft {
+                let photo_count = self.photos.count_by_alert_id(alert_id).await.unwrap_or(0);
+                if alert.is_complete(photo_count) {
+                    self.alerts
+                        .update_status(alert_id, AlertStatus::New)
+                        .await?;
+                    log::info!("Alert {} status transitioned from draft to new.", alert_id);
+                }
+            }
+        }
+        Ok(())
+    }
+
     async fn send_next_step(
         &self,
         chat_id: ChatId,
         alert_id: i64,
         lang: &str,
     ) -> anyhow::Result<()> {
+        self.check_and_update_status(alert_id).await?;
+
         let alert = match self.alerts.get_by_id(alert_id).await {
             Ok(Some(r)) => r,
             _ => return Ok(()),

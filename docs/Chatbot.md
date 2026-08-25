@@ -26,11 +26,8 @@ The chatbot is configured using the following environment variables:
 
 The application runs a decoupled background worker (`dispatch-alerts` subcommand, managed via supervisord) that periodically scans for pending citizen feedback reports. A report is dispatched to all chat IDs in `REPORT_RECIPIENTS` when it meets the following criteria:
 
-1. Created at least 10 minutes ago.
-2. Contains at least one photo.
-3. Contains valid GPS coordinates (latitude and longitude).
-4. Contains a non-empty text description.
-5. Has not been previously reported (`reported_at` is null).
+1. Status is `new` (transitioned automatically from `draft` once photos, location, and description are complete).
+2. Has not been previously reported (`reported_at` is null).
 
 If notification delivery fails for any recipient ID, the error is logged and dispatch continues for remaining recipients.
 

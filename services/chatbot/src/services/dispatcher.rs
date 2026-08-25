@@ -1,12 +1,10 @@
 use crate::domains::alert::AlertRepository;
-use crate::domains::alert_photo::AlertPhotoRepository;
 use crate::domains::outbox::OutboxRepository;
 use std::sync::Arc;
 use std::time::Duration;
 
 pub struct AlertDispatcher {
     alerts: Arc<AlertRepository>,
-    photos: Arc<AlertPhotoRepository>,
     outbox: Arc<OutboxRepository>,
     recipients: Vec<i64>,
     website_url: String,
@@ -17,14 +15,12 @@ impl AlertDispatcher {
     pub fn new(
         _token: String,
         alerts: Arc<AlertRepository>,
-        photos: Arc<AlertPhotoRepository>,
         outbox: Arc<OutboxRepository>,
         recipients: Vec<i64>,
         website_url: String,
     ) -> Self {
         Self {
             alerts,
-            photos,
             outbox,
             recipients,
             website_url,
@@ -68,23 +64,7 @@ impl AlertDispatcher {
             unreported.len()
         );
 
-        let now = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)?
-            .as_secs() as i64;
-
         for alert in unreported {
-            let photo_count = self.photos.count_by_alert_id(alert.id).await.unwrap_or(0);
-
-            if !alert.is_eligible_for_sending(photo_count, now) {
-                log::debug!(
-                    "Alert {} not yet eligible (created_at: {}, photo_count: {}).",
-                    alert.id,
-                    alert.created_at,
-                    photo_count
-                );
-                continue;
-            }
-
             let description = alert
                 .description
                 .as_deref()
