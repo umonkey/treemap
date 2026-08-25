@@ -43,3 +43,9 @@ The binary (`/app/bin/chatbot`) supports subcommands:
 - `make format`: format Rust code with `cargo fmt`.
 - `make serve`: run the chatbot locally.
 - `make test`: run unit tests.
+
+## Alert Lifecycle
+
+- Alerts start with `status = 'draft'`.
+- When location, a non-empty description, and at least one photo are provided, the alert status automatically transitions to `new`.
+- The `dispatch-alerts` worker polls for alerts with `status = 'new'` and `reported_at IS NULL` and dispatches them immediately.
