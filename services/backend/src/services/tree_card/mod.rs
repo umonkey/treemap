@@ -8,108 +8,90 @@ use ab_glyph::{FontArc, PxScale};
 use image::{imageops, io::Reader as ImageReader, Rgb, RgbImage};
 use imageproc::drawing::{draw_filled_rect_mut, draw_text_mut, text_size};
 use imageproc::rect::Rect;
-use log::warn;
+use log::{debug, error, info, warn};
 use std::io::Cursor;
 use std::sync::Arc;
 use tokio::fs;
+
+const REGULAR_FONT_BYTES: &[u8] = include_bytes!("../../../assets/fonts/NotoSans-Regular.ttf");
+const ITALIC_FONT_BYTES: &[u8] = include_bytes!("../../../assets/fonts/NotoSans-Italic.ttf");
 
 pub struct TreeCardService {
     config: Arc<Config>,
     secrets: Arc<Secrets>,
     storage: Arc<FileBucket>,
     http: reqwest::Client,
+    regular_font: FontArc,
+    italic_font: FontArc,
 }
 
 impl TreeCardService {
     pub async fn get_card(&self, tree: &Tree) -> Result<Vec<u8>> {
-        let thumbnail_id = match tree.thumbnail_id {
-            Some(id) => id,
-            None => 0,
-        };
+        debug!(
+            "Handling card generation for tree ID: {}, thumbnail_id: {:?}, images_updated_at: {}",
+            tree.id, tree.thumbnail_id, tree.images_updated_at
+        );
+
+        let thumbnail_id = tree.thumbnail_id.unwrap_or_default();
         let cache_path = format!(
             "var/cache/cards/{}_{}_{}.jpg",
             tree.id, thumbnail_id, tree.images_updated_at
         );
 
+        debug!("Checking cache file at: {}", cache_path);
+
         if fs::metadata(&cache_path).await.is_ok() {
             if let Ok(data) = fs::read(&cache_path).await {
+                debug!("Cache HIT for tree ID {} ({} bytes)", tree.id, data.len());
                 return Ok(data);
             }
         }
 
+        debug!("Cache MISS for tree ID {}, generating new card...", tree.id);
+
         let _ = fs::create_dir_all("var/cache/cards").await;
-
-        let regular_font = self
-            .load_font(
-                "NotoSans-Regular.ttf",
-                "https://raw.githubusercontent.com/google/fonts/main/ofl/notosans/NotoSans-Regular.ttf",
-            )
-            .await?;
-
-        let semibold_font = self
-            .load_font(
-                "NotoSans-SemiBold.ttf",
-                "https://raw.githubusercontent.com/google/fonts/main/ofl/notosans/NotoSans-SemiBold.ttf",
-            )
-            .await?;
 
         let mut canvas = RgbImage::from_pixel(1200, 630, Rgb([244, 246, 244]));
 
-        let header_left = "TREES OF YEREVAN";
-        let header_right = "yerevan.treemaps.app";
-        let header_scale = PxScale::from(18.0);
-        let right_scale = PxScale::from(16.0);
-
-        draw_text_mut(
-            &mut canvas,
-            Rgb([30, 41, 59]),
-            110,
-            38,
-            header_scale,
-            &semibold_font,
-            header_left,
-        );
-
-        let (right_w, _) = text_size(right_scale, &regular_font, header_right);
-        let right_x = 1200 - 110 - right_w as i32;
-
-        draw_text_mut(
-            &mut canvas,
-            Rgb([100, 116, 139]),
-            right_x,
-            40,
-            right_scale,
-            &regular_font,
-            header_right,
-        );
-
-        let left_block_rect = Rect::at(110, 90).of_size(430, 430);
+        let left_block_rect = Rect::at(50, 20).of_size(525, 525);
         draw_filled_rect_mut(&mut canvas, left_block_rect, Rgb([255, 255, 255]));
 
         let photo_drawn = if let Some(thumb_id) = tree.thumbnail_id {
+            debug!("Attempting to read thumbnail file ID: {:?}", thumb_id);
             match self.storage.read_file(thumb_id).await {
-                Ok(bytes) => match self.decode_and_crop_image(&bytes, 430) {
+                Ok(bytes) => match self.decode_and_crop_image(&bytes, 525) {
                     Ok(img) => {
-                        imageops::overlay(&mut canvas, &img, 110, 90);
+                        debug!("Thumbnail read successfully ({} bytes), decoding and cropping image to 525x525", bytes.len());
+                        imageops::overlay(&mut canvas, &img, 50, 20);
                         true
                     }
-                    Err(_) => false,
+                    Err(e) => {
+                        warn!("Failed to decode/crop thumbnail image: {:?}. Falling back to placeholder graphic.", e);
+                        false
+                    }
                 },
-                Err(_) => false,
+                Err(e) => {
+                    warn!("Failed to read thumbnail file ID {:?}: {:?}. Falling back to placeholder graphic.", thumb_id, e);
+                    false
+                }
             }
         } else {
+            debug!(
+                "Tree ID {} has no thumbnail_id, falling back to placeholder graphic.",
+                tree.id
+            );
             false
         };
 
         if !photo_drawn {
-            let placeholder_rect = Rect::at(110, 90).of_size(430, 430);
+            let placeholder_rect = Rect::at(50, 20).of_size(525, 525);
             draw_filled_rect_mut(&mut canvas, placeholder_rect, Rgb([226, 232, 240]));
 
             let ph_text = "No Photo Available";
-            let ph_scale = PxScale::from(22.0);
-            let (ph_w, ph_h) = text_size(ph_scale, &regular_font, ph_text);
-            let ph_x = 110 + (430 - ph_w as i32) / 2;
-            let ph_y = 90 + (430 - ph_h as i32) / 2;
+            let ph_scale = PxScale::from(24.0);
+            let (ph_w, ph_h) = text_size(ph_scale, &self.regular_font, ph_text);
+            let ph_x = 50 + (525 - ph_w as i32) / 2;
+            let ph_y = 20 + (525 - ph_h as i32) / 2;
 
             draw_text_mut(
                 &mut canvas,
@@ -117,35 +99,44 @@ impl TreeCardService {
                 ph_x,
                 ph_y,
                 ph_scale,
-                &regular_font,
+                &self.regular_font,
                 ph_text,
             );
         }
 
-        self.draw_border(&mut canvas, 110, 90, 430, 430, Rgb([203, 213, 225]));
+        self.draw_border(&mut canvas, 50, 20, 525, 525, Rgb([203, 213, 225]));
 
-        let map_rect = Rect::at(660, 90).of_size(430, 430);
+        let map_rect = Rect::at(625, 20).of_size(525, 525);
         draw_filled_rect_mut(&mut canvas, map_rect, Rgb([255, 255, 255]));
 
         let map_drawn = match self.fetch_map_image(tree.lat, tree.lon).await {
-            Ok(bytes) => match self.decode_and_crop_image(&bytes, 430) {
+            Ok(bytes) => match self.decode_and_crop_image(&bytes, 525) {
                 Ok(img) => {
-                    imageops::overlay(&mut canvas, &img, 660, 90);
+                    imageops::overlay(&mut canvas, &img, 625, 20);
                     true
                 }
-                Err(_) => false,
+                Err(e) => {
+                    warn!("Failed to decode/crop map image: {:?}. Falling back to placeholder graphic.", e);
+                    false
+                }
             },
-            Err(_) => false,
+            Err(e) => {
+                warn!(
+                    "Failed to fetch map image: {:?}. Falling back to placeholder graphic.",
+                    e
+                );
+                false
+            }
         };
 
         if !map_drawn {
             draw_filled_rect_mut(&mut canvas, map_rect, Rgb([226, 232, 240]));
 
             let mp_text = "Map Unavailable";
-            let mp_scale = PxScale::from(22.0);
-            let (mp_w, mp_h) = text_size(mp_scale, &regular_font, mp_text);
-            let mp_x = 660 + (430 - mp_w as i32) / 2;
-            let mp_y = 90 + (430 - mp_h as i32) / 2;
+            let mp_scale = PxScale::from(24.0);
+            let (mp_w, mp_h) = text_size(mp_scale, &self.regular_font, mp_text);
+            let mp_x = 625 + (525 - mp_w as i32) / 2;
+            let mp_y = 20 + (525 - mp_h as i32) / 2;
 
             draw_text_mut(
                 &mut canvas,
@@ -153,12 +144,12 @@ impl TreeCardService {
                 mp_x,
                 mp_y,
                 mp_scale,
-                &regular_font,
+                &self.regular_font,
                 mp_text,
             );
         }
 
-        self.draw_border(&mut canvas, 660, 90, 430, 430, Rgb([203, 213, 225]));
+        self.draw_border(&mut canvas, 625, 20, 525, 525, Rgb([203, 213, 225]));
 
         let species = &tree.species;
         let address = match &tree.address {
@@ -170,24 +161,35 @@ impl TreeCardService {
             }
         };
 
+        debug!(
+            "Compositing card for tree ID {}: species='{}', address='{}'",
+            tree.id, species, address
+        );
+
         draw_text_mut(
             &mut canvas,
             Rgb([15, 23, 42]),
-            110,
-            540,
-            PxScale::from(26.0),
-            &semibold_font,
+            50,
+            548,
+            PxScale::from(48.0),
+            &self.italic_font,
             species,
         );
 
         draw_text_mut(
             &mut canvas,
             Rgb([71, 85, 105]),
-            110,
-            575,
-            PxScale::from(18.0),
-            &regular_font,
+            50,
+            604,
+            PxScale::from(16.0),
+            &self.regular_font,
             address,
+        );
+
+        debug!(
+            "Encoding card canvas to JPEG ({}x{})...",
+            canvas.width(),
+            canvas.height()
         );
 
         let mut jpeg_bytes = Vec::new();
@@ -195,40 +197,25 @@ impl TreeCardService {
 
         canvas
             .write_to(&mut cursor, image::ImageFormat::Jpeg)
-            .map_err(|_| Error::ImageResize)?;
+            .map_err(|e| {
+                error!("Failed to encode canvas to JPEG: {:?}", e);
+                Error::ImageResize
+            })?;
 
+        debug!(
+            "Writing generated card to disk cache at: {} ({} bytes)",
+            cache_path,
+            jpeg_bytes.len()
+        );
         let _ = fs::write(&cache_path, &jpeg_bytes).await;
 
+        info!(
+            "Successfully generated OpenGraph card for tree ID {} in {} bytes",
+            tree.id,
+            jpeg_bytes.len()
+        );
+
         Ok(jpeg_bytes)
-    }
-
-    async fn load_font(&self, filename: &str, url: &str) -> Result<FontArc> {
-        let font_dir = "var/fonts";
-        let font_path = format!("{}/{}", font_dir, filename);
-
-        let bytes = if fs::metadata(&font_path).await.is_ok() {
-            fs::read(&font_path)
-                .await
-                .map_err(|_| Error::FileNotFound)?
-        } else {
-            let _ = fs::create_dir_all(font_dir).await;
-
-            match self.http.get(url).send().await {
-                Ok(resp) => {
-                    if let Ok(b) = resp.bytes().await {
-                        let _ = fs::write(&font_path, &b).await;
-                        b.to_vec()
-                    } else {
-                        return Err(Error::FileDownload);
-                    }
-                }
-                Err(_) => {
-                    return Err(Error::FileDownload);
-                }
-            }
-        };
-
-        FontArc::try_from_vec(bytes).map_err(|_| Error::BadImage)
     }
 
     fn decode_and_crop_image(&self, bytes: &[u8], target_size: u32) -> Result<RgbImage> {
@@ -263,28 +250,43 @@ impl TreeCardService {
             .or_else(|| self.config.maptiler_key.as_deref())
             .unwrap_or_default();
 
+        debug!(
+            "Fetching static map for tree ID (lat: {}, lon: {}) from MapTiler...",
+            lat, lon
+        );
+        debug!("MapTiler API key present: {}", !key.is_empty());
+
         if key.is_empty() {
             warn!("MapTiler API key is not configured.");
             return Err(Error::FileDownload);
         }
 
         let url = format!(
-            "https://api.maptiler.com/maps/streets-v2/static/{},{},17/430x430@2x.png?key={}&markers={},{}",
+            "https://api.maptiler.com/maps/streets-v2/static/{},{},17/525x525@2x.png?key={}&markers={},{}",
             lon, lat, key, lon, lat
         );
 
-        let resp = self
-            .http
-            .get(&url)
-            .send()
-            .await
-            .map_err(|_| Error::FileDownload)?;
+        let resp = self.http.get(&url).send().await.map_err(|e| {
+            warn!("HTTP request to MapTiler failed: {:?}", e);
+            Error::FileDownload
+        })?;
 
-        if !resp.status().is_success() {
+        let status = resp.status();
+        let bytes = resp.bytes().await.map_err(|e| {
+            warn!("Failed to read MapTiler response bytes: {:?}", e);
+            Error::FileDownload
+        })?;
+
+        debug!(
+            "MapTiler HTTP response status: {}, size: {} bytes",
+            status,
+            bytes.len()
+        );
+
+        if !status.is_success() {
+            warn!("MapTiler returned non-success status: {}", status);
             return Err(Error::FileDownload);
         }
-
-        let bytes = resp.bytes().await.map_err(|_| Error::FileDownload)?;
 
         Ok(bytes.to_vec())
     }
@@ -304,11 +306,22 @@ impl TreeCardService {
 
 impl Injectable for TreeCardService {
     fn inject(ctx: &dyn Context) -> Result<Self> {
+        let regular_font = FontArc::try_from_vec(REGULAR_FONT_BYTES.to_vec()).map_err(|e| {
+            error!("Failed to parse regular font: {:?}", e);
+            Error::BadImage
+        })?;
+        let italic_font = FontArc::try_from_vec(ITALIC_FONT_BYTES.to_vec()).map_err(|e| {
+            error!("Failed to parse italic font: {:?}", e);
+            Error::BadImage
+        })?;
+
         Ok(Self {
             config: ctx.config(),
             secrets: ctx.secrets(),
             storage: ctx.storage(),
             http: reqwest::Client::new(),
+            regular_font,
+            italic_font,
         })
     }
 }
