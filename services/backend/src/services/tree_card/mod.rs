@@ -11,7 +11,6 @@ use imageproc::rect::Rect;
 use log::{debug, error, info, warn};
 use std::io::Cursor;
 use std::sync::Arc;
-use tokio::fs;
 
 const REGULAR_FONT_BYTES: &[u8] = include_bytes!("../../../assets/fonts/NotoSans-Regular.ttf");
 const ITALIC_FONT_BYTES: &[u8] = include_bytes!("../../../assets/fonts/NotoSans-Italic.ttf");
@@ -32,37 +31,18 @@ impl TreeCardService {
             tree.id, tree.thumbnail_id, tree.images_updated_at
         );
 
-        let thumbnail_id = tree.thumbnail_id.unwrap_or_default();
-        let cache_path = format!(
-            "var/cache/cards/{}_{}_{}.jpg",
-            tree.id, thumbnail_id, tree.images_updated_at
-        );
-
-        debug!("Checking cache file at: {}", cache_path);
-
-        if fs::metadata(&cache_path).await.is_ok() {
-            if let Ok(data) = fs::read(&cache_path).await {
-                debug!("Cache HIT for tree ID {} ({} bytes)", tree.id, data.len());
-                return Ok(data);
-            }
-        }
-
-        debug!("Cache MISS for tree ID {}, generating new card...", tree.id);
-
-        let _ = fs::create_dir_all("var/cache/cards").await;
-
         let mut canvas = RgbImage::from_pixel(1200, 630, Rgb([244, 246, 244]));
 
-        let left_block_rect = Rect::at(50, 20).of_size(525, 525);
+        let left_block_rect = Rect::at(20, 20).of_size(570, 492);
         draw_filled_rect_mut(&mut canvas, left_block_rect, Rgb([255, 255, 255]));
 
         let photo_drawn = if let Some(thumb_id) = tree.thumbnail_id {
             debug!("Attempting to read thumbnail file ID: {:?}", thumb_id);
             match self.storage.read_file(thumb_id).await {
-                Ok(bytes) => match self.decode_and_crop_image(&bytes, 525) {
+                Ok(bytes) => match self.decode_and_crop_image(&bytes, 570, 492) {
                     Ok(img) => {
-                        debug!("Thumbnail read successfully ({} bytes), decoding and cropping image to 525x525", bytes.len());
-                        imageops::overlay(&mut canvas, &img, 50, 20);
+                        debug!("Thumbnail read successfully ({} bytes), decoding and cropping image to 570x492", bytes.len());
+                        imageops::overlay(&mut canvas, &img, 20, 20);
                         true
                     }
                     Err(e) => {
@@ -84,14 +64,14 @@ impl TreeCardService {
         };
 
         if !photo_drawn {
-            let placeholder_rect = Rect::at(50, 20).of_size(525, 525);
+            let placeholder_rect = Rect::at(20, 20).of_size(570, 492);
             draw_filled_rect_mut(&mut canvas, placeholder_rect, Rgb([226, 232, 240]));
 
             let ph_text = "No Photo Available";
             let ph_scale = PxScale::from(24.0);
             let (ph_w, ph_h) = text_size(ph_scale, &self.regular_font, ph_text);
-            let ph_x = 50 + (525 - ph_w as i32) / 2;
-            let ph_y = 20 + (525 - ph_h as i32) / 2;
+            let ph_x = 20 + (570 - ph_w as i32) / 2;
+            let ph_y = 20 + (492 - ph_h as i32) / 2;
 
             draw_text_mut(
                 &mut canvas,
@@ -104,15 +84,15 @@ impl TreeCardService {
             );
         }
 
-        self.draw_border(&mut canvas, 50, 20, 525, 525, Rgb([203, 213, 225]));
+        self.draw_border(&mut canvas, 20, 20, 570, 492, Rgb([203, 213, 225]));
 
-        let map_rect = Rect::at(625, 20).of_size(525, 525);
+        let map_rect = Rect::at(610, 20).of_size(570, 492);
         draw_filled_rect_mut(&mut canvas, map_rect, Rgb([255, 255, 255]));
 
         let map_drawn = match self.fetch_map_image(tree.lat, tree.lon).await {
-            Ok(bytes) => match self.decode_and_crop_image(&bytes, 525) {
+            Ok(bytes) => match self.decode_and_crop_image(&bytes, 570, 492) {
                 Ok(img) => {
-                    imageops::overlay(&mut canvas, &img, 625, 20);
+                    imageops::overlay(&mut canvas, &img, 610, 20);
                     true
                 }
                 Err(e) => {
@@ -135,8 +115,8 @@ impl TreeCardService {
             let mp_text = "Map Unavailable";
             let mp_scale = PxScale::from(24.0);
             let (mp_w, mp_h) = text_size(mp_scale, &self.regular_font, mp_text);
-            let mp_x = 625 + (525 - mp_w as i32) / 2;
-            let mp_y = 20 + (525 - mp_h as i32) / 2;
+            let mp_x = 610 + (570 - mp_w as i32) / 2;
+            let mp_y = 20 + (492 - mp_h as i32) / 2;
 
             draw_text_mut(
                 &mut canvas,
@@ -149,7 +129,7 @@ impl TreeCardService {
             );
         }
 
-        self.draw_border(&mut canvas, 625, 20, 525, 525, Rgb([203, 213, 225]));
+        self.draw_border(&mut canvas, 610, 20, 570, 492, Rgb([203, 213, 225]));
 
         let species = &tree.species;
         let address = match &tree.address {
@@ -169,8 +149,8 @@ impl TreeCardService {
         draw_text_mut(
             &mut canvas,
             Rgb([15, 23, 42]),
-            50,
-            548,
+            20,
+            515,
             PxScale::from(48.0),
             &self.italic_font,
             species,
@@ -179,9 +159,9 @@ impl TreeCardService {
         draw_text_mut(
             &mut canvas,
             Rgb([71, 85, 105]),
-            50,
-            604,
-            PxScale::from(16.0),
+            20,
+            575,
+            PxScale::from(32.0),
             &self.regular_font,
             address,
         );
@@ -202,13 +182,6 @@ impl TreeCardService {
                 Error::ImageResize
             })?;
 
-        debug!(
-            "Writing generated card to disk cache at: {} ({} bytes)",
-            cache_path,
-            jpeg_bytes.len()
-        );
-        let _ = fs::write(&cache_path, &jpeg_bytes).await;
-
         info!(
             "Successfully generated OpenGraph card for tree ID {} in {} bytes",
             tree.id,
@@ -218,24 +191,37 @@ impl TreeCardService {
         Ok(jpeg_bytes)
     }
 
-    fn decode_and_crop_image(&self, bytes: &[u8], target_size: u32) -> Result<RgbImage> {
+    fn decode_and_crop_image(&self, bytes: &[u8], target_w: u32, target_h: u32) -> Result<RgbImage> {
         let reader = ImageReader::new(Cursor::new(bytes))
             .with_guessed_format()
             .map_err(|_| Error::BadImage)?;
         let img = reader.decode().map_err(|_| Error::BadImage)?;
 
         let rgb_img = img.to_rgb8();
-        let w = rgb_img.width();
-        let h = rgb_img.height();
-        let min_dim = std::cmp::min(w, h);
-        let x = (w - min_dim) / 2;
-        let y = (h - min_dim) / 2;
+        let src_w = rgb_img.width() as f64;
+        let src_h = rgb_img.height() as f64;
+        let target_aspect = target_w as f64 / target_h as f64;
+        let src_aspect = src_w / src_h;
 
-        let cropped = imageops::crop_imm(&rgb_img, x, y, min_dim, min_dim).to_image();
+        let (crop_w, crop_h, crop_x, crop_y) = if src_aspect > target_aspect {
+            let h = src_h;
+            let w = src_h * target_aspect;
+            let x = (src_w - w) / 2.0;
+            let y = 0.0;
+            (w as u32, h as u32, x as u32, y as u32)
+        } else {
+            let w = src_w;
+            let h = src_w / target_aspect;
+            let x = 0.0;
+            let y = (src_h - h) / 2.0;
+            (w as u32, h as u32, x as u32, y as u32)
+        };
+
+        let cropped = imageops::crop_imm(&rgb_img, crop_x, crop_y, crop_w, crop_h).to_image();
         let resized = imageops::resize(
             &cropped,
-            target_size,
-            target_size,
+            target_w,
+            target_h,
             imageops::FilterType::Lanczos3,
         );
 
@@ -262,7 +248,7 @@ impl TreeCardService {
         }
 
         let url = format!(
-            "https://api.maptiler.com/maps/streets-v2/static/{},{},17/525x525@2x.png?key={}&markers={},{}",
+            "https://api.maptiler.com/maps/streets-v2/static/{},{},17/570x492@2x.png?key={}&markers={},{}",
             lon, lat, key, lon, lat
         );
 
