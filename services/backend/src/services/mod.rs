@@ -9,6 +9,7 @@ pub mod prop_loader;
 pub mod queue_consumer;
 mod queue_encoder;
 mod thumbnailer;
+pub mod tree_card;
 pub mod tree_loader;
 pub mod tree_merger;
 pub use app::*;

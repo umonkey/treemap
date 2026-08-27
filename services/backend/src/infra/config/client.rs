@@ -88,6 +88,7 @@ pub struct Config {
     // Background job queue.
     pub sqs_url: Option<String>,
     pub batch_job_queue: Option<String>,
+    pub maptiler_key: Option<String>,
 }
 
 impl Config {

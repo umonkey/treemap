@@ -18,11 +18,13 @@ use crate::domain::user::UserService;
 use crate::services::app::{OptionalUserId, UserId};
 use crate::services::comment_loader::{CommentList, CommentLoader};
 use crate::services::prop_loader::{PropList, PropLoader};
+use crate::services::tree_card::TreeCardService;
 use crate::services::tree_loader::SingleTreeResponse;
 use crate::services::tree_loader::{TreeList, TreeLoader};
 use crate::services::Injected;
 use crate::types::{Error, Result};
 use crate::utils::{get_remote_addr, get_user_agent};
+use actix_web::http::header::{CacheControl, CacheDirective, ETag, EntityTag};
 use actix_web::web::{Bytes, Json, Path, Query};
 use actix_web::{delete, get, post, put, HttpRequest, HttpResponse};
 use serde::Deserialize;
@@ -469,4 +471,41 @@ pub async fn get_tree_actors_action(
 ) -> Result<Json<UserList>> {
     let users = service.get_tree_actors(path.id).await?;
     Ok(Json(UserList::from(users)))
+}
+
+#[get("/{id:\\d+}/card.jpg")]
+pub async fn tree_card_action(
+    tree_service: Injected<TreeService>,
+    card_service: Injected<TreeCardService>,
+    path: Path<PathInfo>,
+) -> Result<HttpResponse> {
+    let tree = tree_service.get_tree(path.id).await?;
+
+    let card_bytes = card_service.get_card(&tree).await?;
+
+    let etag_str = format!(
+        "{}_{}_{}",
+        tree.id,
+        tree.thumbnail_id.unwrap_or(0),
+        tree.images_updated_at
+    );
+
+    let etag = ETag(EntityTag::new_strong(etag_str));
+
+    let cache_control = CacheControl(vec![
+        CacheDirective::Public,
+        CacheDirective::MaxAge(86400),
+        CacheDirective::Extension(
+            "stale-while-revalidate".to_string(),
+            Some("604800".to_string()),
+        ),
+    ]);
+
+    let res = HttpResponse::Ok()
+        .content_type("image/jpeg")
+        .insert_header(cache_control)
+        .insert_header(etag)
+        .body(card_bytes);
+
+    Ok(res)
 }
