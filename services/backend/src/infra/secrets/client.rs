@@ -44,6 +44,9 @@ pub struct Secrets {
 
     // MapTiler API Key.
     pub maptiler_key: Option<String>,
+
+    // Mapbox API Token.
+    pub mapbox_token: Option<String>,
 }
 
 impl Secrets {
@@ -76,6 +79,9 @@ impl Secrets {
             maptiler_key: Self::get(path, "MAPTILER_KEY")
                 .or_else(|| Self::get(path, "PUBLIC_MAPTILER_KEY"))
                 .or_else(|| config.maptiler_key.clone()),
+            mapbox_token: Self::get(path, "MAPBOX_TOKEN")
+                .or_else(|| Self::get(path, "MAPBOX_KEY"))
+                .or_else(|| config.mapbox_token.clone()),
         })
     }
 

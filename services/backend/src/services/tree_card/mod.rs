@@ -229,48 +229,73 @@ impl TreeCardService {
     }
 
     async fn fetch_map_image(&self, lat: f64, lon: f64) -> Result<Vec<u8>> {
-        let key = self
+        let token = self
             .secrets
-            .maptiler_key
+            .mapbox_token
             .as_deref()
-            .or_else(|| self.config.maptiler_key.as_deref())
+            .or_else(|| self.config.mapbox_token.as_deref())
             .unwrap_or_default();
 
         debug!(
-            "Fetching static map for tree ID (lat: {}, lon: {}) from MapTiler...",
+            "Fetching static map for tree ID (lat: {}, lon: {}) from Mapbox...",
             lat, lon
         );
-        debug!("MapTiler API key present: {}", !key.is_empty());
+        debug!("Mapbox token present: {}, value: '{}' (len: {})", !token.is_empty(), token, token.len());
 
-        if key.is_empty() {
-            warn!("MapTiler API key is not configured.");
+        if token.is_empty() {
+            warn!("Mapbox token is not configured.");
             return Err(Error::FileDownload);
         }
 
         let url = format!(
-            "https://api.maptiler.com/maps/streets-v2/static/{},{},17/570x492@2x.png?key={}&markers={},{}",
-            lon, lat, key, lon, lat
+            "https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/{},{},15,0/570x492.png?attribution=false&logo=false&access_token={}",
+            lon, lat, token
         );
 
-        let resp = self.http.get(&url).send().await.map_err(|e| {
-            warn!("HTTP request to MapTiler failed: {:?}", e);
-            Error::FileDownload
-        })?;
+        debug!("Requesting Mapbox URL: {}", url);
+
+        let resp = self
+            .http
+            .get(&url)
+            .header("Origin", "http://localhost")
+            .header("Referer", "http://localhost/")
+            .send()
+            .await
+            .map_err(|e| {
+                warn!("HTTP request to Mapbox failed: {:?}", e);
+                Error::FileDownload
+            })?;
 
         let status = resp.status();
+        let content_type = resp
+            .headers()
+            .get(reqwest::header::CONTENT_TYPE)
+            .and_then(|v| v.to_str().ok())
+            .unwrap_or("")
+            .to_string();
+
         let bytes = resp.bytes().await.map_err(|e| {
-            warn!("Failed to read MapTiler response bytes: {:?}", e);
+            warn!("Failed to read Mapbox response bytes: {:?}", e);
             Error::FileDownload
         })?;
 
         debug!(
-            "MapTiler HTTP response status: {}, size: {} bytes",
+            "Mapbox HTTP response status: {}, content-type: {}, size: {} bytes",
             status,
+            content_type,
             bytes.len()
         );
 
         if !status.is_success() {
-            warn!("MapTiler returned non-success status: {}", status);
+            if content_type.starts_with("image/") {
+                warn!("Mapbox returned non-success status: {}, but content-type is image ({}), rendering anyway", status, content_type);
+                return Ok(bytes.to_vec());
+            } else if content_type.starts_with("text/") || content_type.contains("json") || content_type.contains("xml") {
+                let error_text = String::from_utf8_lossy(&bytes);
+                warn!("Mapbox returned non-success status: {}, content-type: {}, body: {}", status, content_type, error_text);
+            } else {
+                warn!("Mapbox returned non-success status: {}, content-type: {}, body: (binary data, {} bytes)", status, content_type, bytes.len());
+            }
             return Err(Error::FileDownload);
         }
 

@@ -89,6 +89,7 @@ pub struct Config {
     pub sqs_url: Option<String>,
     pub batch_job_queue: Option<String>,
     pub maptiler_key: Option<String>,
+    pub mapbox_token: Option<String>,
 }
 
 impl Config {
