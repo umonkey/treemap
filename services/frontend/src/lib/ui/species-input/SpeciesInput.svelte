@@ -5,13 +5,11 @@
 	 * and a history of recent inputs, also backed by the API.
 	 */
 
-	import { searchSpecies } from '$lib/api/species';
 	import { locale } from '$lib/locale';
-	import type { ISpecies } from '$lib/types';
 	import SelectButton from '$lib/ui/SelectButton.svelte';
 	import FormElement from '$lib/ui/form-element/FormElement.svelte';
 	import { onMount } from 'svelte';
-	import { loadSuggestedSpecies } from './hooks';
+	import { SpeciesInputLogic } from './SpeciesInput.svelte.ts';
 
 	const {
 		value = '',
@@ -23,101 +21,53 @@
 		onChange: (value: string) => void;
 	} = $props();
 
-	const formatValue = (v: string | null | undefined) =>
-		v === 'Unknown' || v === 'Unknown tree' ? '' : (v ?? '');
-
-	// This is the editable input value.
-	// We change it on autocomplete clicks, etc.
-	let currentValue = $state<string>('');
-
-	const { data: suggested, reload } = loadSuggestedSpecies();
-
-	let options: ISpecies[] = $state([]);
-	let showOptions = $state<boolean>(false);
-
-	const handleInput = (event: Event) => {
-		const target = event.target as HTMLInputElement;
-
-		searchSpecies(target.value).then((res) => {
-			if (res.status === 200 && res.data) {
-				options = res.data;
-				showOptions = options.length > 0;
-			}
-		});
-	};
-
-	// This is called when the user clicks an autocomplete suggestion.
-	const handleOptionClick = (e: Event, v: string) => {
-		e.preventDefault();
-		if (e.target instanceof HTMLElement) {
-			e.target.blur();
-		}
-
-		showOptions = false;
-		currentValue = formatValue(v);
-		onChange(v);
-	};
-
-	const handleSuggestionClick = (v: string) => {
-		showOptions = false;
-		currentValue = formatValue(v);
-		onChange(v);
-	};
-
-	const handleFocusOut = () => {
-		setTimeout(() => {
-			showOptions = false;
-		}, 200);
-	};
-
-	const handleChange = (e: Event) => {
-		if (e.target) {
-			const input = e.target as HTMLInputElement;
-			onChange(input.value ?? '');
-		}
-	};
+	const componentState = new SpeciesInputLogic();
 
 	onMount(() => {
 		if (!nosuggestions) {
-			reload();
+			componentState.loadSuggested();
 		}
 	});
 
 	$effect(() => {
-		currentValue = formatValue(value);
+		componentState.syncValue(value);
 	});
 </script>
 
 <FormElement label={locale.speciesLabel()} hint={locale.speciesHint()}>
-	<label class:drop={showOptions}>
+	<label class:drop={componentState.showOptions}>
 		<input
 			type="text"
 			autocomplete="off"
-			value={currentValue}
+			value={componentState.currentValue}
 			placeholder={locale.speciesPrompt()}
-			oninput={handleInput}
-			onfocusout={handleFocusOut}
-			onchange={handleChange}
+			oninput={componentState.handleInput}
+			onfocusout={componentState.handleFocusOut}
+			onchange={(e) => componentState.handleChange(e, onChange)}
 		/>
 	</label>
 
-	{#if showOptions && options.length > 0}
+	{#if componentState.showOptions && componentState.options.length > 0}
 		<ul class="options" aria-label="suggestions">
-			{#each options as option}
+			{#each componentState.options as option}
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-				<li onclick={(e) => handleOptionClick(e, option.name)}>
+				<li onclick={(e) => componentState.handleOptionClick(e, option.name, onChange)}>
 					{option.name} <small>~ {option.local}</small>
 				</li>
 			{/each}
 		</ul>
 	{/if}
 
-	{#if !nosuggestions && $suggested && $suggested.length > 0}
+	{#if !nosuggestions && componentState.suggested && componentState.suggested.length > 0}
 		<div class="suggested">
-			{#each $suggested as option}
+			{#each componentState.suggested as option}
 				{#if option}
-					<SelectButton value={option} label={option} onClick={handleSuggestionClick} />
+					<SelectButton
+						value={option}
+						label={option}
+						onClick={(v) => componentState.handleSuggestionClick(v, onChange)}
+					/>
 				{/if}
 			{/each}
 		</div>
