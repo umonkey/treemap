@@ -37,7 +37,7 @@ LABEL org.opencontainers.image.source=https://github.com/umonkey/treemap
 LABEL org.opencontainers.image.description="Chatbot for Trees of Yerevan."
 
 RUN apt-get update && \
-    apt-get install -y supervisor ca-certificates && \
+    apt-get install -y supervisor ca-certificates procps htop && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app

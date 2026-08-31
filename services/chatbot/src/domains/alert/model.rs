@@ -58,6 +58,7 @@ pub struct Alert {
     pub response_text: Option<String>,
     pub responded_at: Option<i64>,
     pub reported_at: Option<i64>,
+    pub ping_at: Option<i64>,
 }
 
 impl Alert {
@@ -94,6 +95,7 @@ mod tests {
             response_text: None,
             responded_at: None,
             reported_at: None,
+            ping_at: None,
         };
 
         // Complete alert

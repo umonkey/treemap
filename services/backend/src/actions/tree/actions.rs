@@ -433,12 +433,7 @@ pub async fn update_tree_state_action(
     loader: Injected<TreeLoader>,
 ) -> Result<Json<SingleTreeResponse>> {
     let tree = service
-        .update_state(
-            path.id,
-            payload.value,
-            *user_id,
-            payload.comment.clone(),
-        )
+        .update_state(path.id, payload.value, *user_id, payload.comment.clone())
         .await?;
 
     let res = loader.load_single(&tree).await?;

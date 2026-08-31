@@ -18,6 +18,7 @@ pub struct Alert {
     pub response_text: Option<String>,
     pub responded_at: Option<u64>,
     pub reported_at: Option<u64>,
+    pub ping_at: Option<u64>,
 }
 
 impl Alert {
@@ -37,6 +38,7 @@ impl Alert {
             response_text: attributes.get_string("response_text")?,
             responded_at: attributes.get_u64("responded_at")?,
             reported_at: attributes.get_u64("reported_at")?,
+            ping_at: attributes.get_u64("ping_at")?,
         })
     }
 
@@ -73,6 +75,13 @@ impl Alert {
             (
                 "responded_at".to_string(),
                 match self.responded_at {
+                    Some(v) => Value::from(v as i64),
+                    None => Value::Null,
+                },
+            ),
+            (
+                "ping_at".to_string(),
+                match self.ping_at {
                     Some(v) => Value::from(v as i64),
                     None => Value::Null,
                 },

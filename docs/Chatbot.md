@@ -23,14 +23,13 @@ The chatbot is configured using the following environment variables:
 - `REPORT_RECIPIENTS`: comma-separated list of Telegram chat IDs to receive notifications when a completed citizen feedback report is ready.
 - `WEBSITE_URL`: base URL for report links in notifications.
 
-## Feedback Dispatcher
+## Feedback Dispatcher and Draft Pinger
 
-The application runs a decoupled background worker (`dispatch-alerts` subcommand, managed via supervisord) that periodically scans for pending citizen feedback reports. A report is dispatched to all chat IDs in `REPORT_RECIPIENTS` when it meets the following criteria:
+The application runs decoupled background workers (managed via supervisord):
 
-1. Status is `new` (transitioned automatically from `draft` once photos, location, and description are complete).
-2. Has not been previously reported (`reported_at` is null).
-
-If notification delivery fails for any recipient ID, the error is logged and dispatch continues for remaining recipients.
+1. `dispatch-alerts`: periodically scans for pending citizen feedback reports with status `new` and dispatches them to all chat IDs in `REPORT_RECIPIENTS`.
+2. `dispatch-outbox`: delivers pending messages from the outbox queue with exponential backoff retries.
+3. `dispatch-pings`: scans for incomplete draft reports and enqueues reminder messages into the outbox when `ping_at` is reached. Draft reports remain in `draft` status indefinitely until completed.
 
 To get started with the chatbot:
 

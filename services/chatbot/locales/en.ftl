@@ -21,3 +21,9 @@ alert-completed =
     We will get back to you if we have an update.
 alert-unsupported-file-type = I currently don't support files of this kind, only photos.
 generic-error = Something went wrong. Please try again later.
+alert-ping-reminder =
+    To be able to process your report and escalate it to the authorities, we need the following information:
+    1️⃣ A few photos of the tree (close-up and general view)
+    2️⃣ The location (as precise as possible)
+    3️⃣ A short text description of what you observed
+

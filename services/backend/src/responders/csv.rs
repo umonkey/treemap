@@ -90,8 +90,7 @@ mod tests {
         let csv_content = String::from_utf8(body.to_vec()).unwrap();
 
         assert!(csv_content.contains("id,lat,lon"));
-        assert!(csv_content.contains(
-            "#42,40.1792000,44.5091000,alive,Tilia cordata,0,0,0,2023-11-14T22:13:20Z,"
-        ));
+        assert!(csv_content
+            .contains("#42,40.1792000,44.5091000,alive,Tilia cordata,0,0,0,2023-11-14T22:13:20Z,"));
     }
 }

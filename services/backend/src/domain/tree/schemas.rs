@@ -162,7 +162,11 @@ impl SearchQuery {
                 || word.contains("hasphoto")
             {
                 res.hasimages = true;
-            } else if word.contains("state:alive") || word.contains("healthy") || word.contains("deformed") || word.contains("sick") {
+            } else if word.contains("state:alive")
+                || word.contains("healthy")
+                || word.contains("deformed")
+                || word.contains("sick")
+            {
                 if !res.statuses.contains(&TreeState::Alive) {
                     res.statuses.push(TreeState::Alive);
                 }

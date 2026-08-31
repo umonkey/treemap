@@ -21,13 +21,14 @@ This directory contains the Telegram chatbot service and its background workers.
   - `chatbot.rs`: interactive Telegram bot message REPL.
   - `dispatcher.rs`: decoupled background alert dispatcher daemon.
   - `outbox_dispatcher.rs`: outbox message consumer daemon with exponential retries.
+  - `pinger.rs`: draft alert reminder pinger daemon.
   - `i18n.rs`: localization manager using Fluent (`locales/*.ftl`).
 - `src/infra/`: infrastructure adapters.
   - `config.rs`: application configuration.
   - `database.rs`: libSQL connection client.
   - `s3.rs`: S3 object storage file client.
   - `secrets.rs`: file-based and environment-based secret loaders.
-- `docker/rootfs/etc/supervisor.d/`: production supervisor process configurations (`chatbot.ini`, `dispatch-alerts.ini`, `dispatch-outbox.ini`).
+- `docker/rootfs/etc/supervisor.d/`: production supervisor process configurations (`chatbot.ini`, `dispatch-alerts.ini`, `dispatch-outbox.ini`, `dispatch-pings.ini`).
 
 ## CLI Commands
 
@@ -36,6 +37,7 @@ The binary (`/app/bin/chatbot`) supports subcommands:
 - `serve`: runs the interactive Telegram bot REPL.
 - `dispatch-alerts`: runs the background alert dispatcher worker daemon.
 - `dispatch-outbox`: runs the outbox queue worker daemon to deliver pending messages.
+- `dispatch-pings`: runs the background draft alert pinger worker daemon.
 
 ## Useful Commands
 

@@ -280,6 +280,7 @@ impl Chatbot {
             .await;
 
         let is_first = self.photos.add_to_alert(alert.id, &photo_path).await?;
+        self.alerts.touch_ping(alert.id).await?;
 
         log::info!("File added to alert: {} for alert {}", photo_path, alert.id);
 

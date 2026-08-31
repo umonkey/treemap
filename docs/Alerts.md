@@ -7,7 +7,9 @@ The application features an integrated Telegram bot (`services/chatbot`) that en
 1. Submission via Telegram bot:
    - users interact with the Telegram bot to submit reports.
    - a reporting session allows users to send close-up and wide photos, precise GPS location, and a text description.
-   - multiple messages sent within a 10-minute window while in `draft` status accumulate into the active feedback session.
+   - multiple messages sent within a 1-week window while in `draft` status accumulate into the active feedback session.
+   - draft alerts track a `ping_at` timestamp (initially set to 10 minutes after creation or update). If incomplete, the `dispatch-pings` daemon enqueues reminder messages into `chatbot_outbox` for delivery via `dispatch-outbox`.
+   - draft alerts remain in `draft` status indefinitely until the user actively provides all required fields.
    - once completed and transitioned to `new`, the alert is locked and further communication creates a new alert.
 
 2. Map integration and retention:
@@ -49,7 +51,9 @@ The chatbot and its background dispatcher daemon are configured using file-based
 
 ### Production Supervision
 
-In production deployments (`compose.prod.yaml`), two separate processes run inside the chatbot container via Supervisor:
+In production deployments (`compose.prod.yaml`), separate processes run inside the chatbot container via Supervisor:
 
-1. `chatbot`: runs the interactive Telegram bot message REPL (`serve`).
-2. `dispatch-alerts`: runs the background report dispatcher daemon (`dispatch-alerts`).
+- `chatbot`: runs the interactive Telegram bot message REPL (`serve`).
+- `dispatch-alerts`: runs the background report dispatcher daemon (`dispatch-alerts`).
+- `dispatch-outbox`: runs the outbox queue worker daemon (`dispatch-outbox`).
+- `dispatch-pings`: runs the background draft alert pinger daemon (`dispatch-pings`).

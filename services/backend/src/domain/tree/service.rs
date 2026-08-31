@@ -338,7 +338,10 @@ impl TreeService {
             }
         }
 
-        info!("State for tree {tree_id} changed to {} by {user_id}.", value.as_str());
+        info!(
+            "State for tree {tree_id} changed to {} by {user_id}.",
+            value.as_str()
+        );
 
         Ok(updated)
     }

@@ -14,7 +14,7 @@ impl AlertRepository {
 
     pub async fn get_by_id(&self, id: i64) -> anyhow::Result<Option<Alert>> {
         let conn = self.db.connect().await?;
-        let sql = "SELECT id, created_at, created_by, chat_id, message_id, username, language_code, lat, lon, description, status, response_text, responded_at, reported_at FROM chatbot_alerts WHERE id = ?";
+        let sql = "SELECT id, created_at, created_by, chat_id, message_id, username, language_code, lat, lon, description, status, response_text, responded_at, reported_at, ping_at FROM chatbot_alerts WHERE id = ?";
         let mut stmt = conn.prepare(sql).await?;
         let mut rows = stmt
             .query(params_from_iter(vec![Value::Integer(id)]))
@@ -37,6 +37,7 @@ impl AlertRepository {
                 response_text: row.get(11)?,
                 responded_at: row.get(12)?,
                 reported_at: row.get(13)?,
+                ping_at: row.get(14)?,
             }))
         } else {
             Ok(None)
@@ -45,7 +46,7 @@ impl AlertRepository {
 
     pub async fn get_unreported(&self) -> anyhow::Result<Vec<Alert>> {
         let conn = self.db.connect().await?;
-        let sql = "SELECT id, created_at, created_by, chat_id, message_id, username, language_code, lat, lon, description, status, response_text, responded_at, reported_at FROM chatbot_alerts WHERE status = 'new' AND reported_at IS NULL ORDER BY created_at ASC";
+        let sql = "SELECT id, created_at, created_by, chat_id, message_id, username, language_code, lat, lon, description, status, response_text, responded_at, reported_at, ping_at FROM chatbot_alerts WHERE status = 'new' AND reported_at IS NULL ORDER BY created_at ASC";
         let mut stmt = conn.prepare(sql).await?;
         let mut rows = stmt
             .query(params_from_iter(std::iter::empty::<Value>()))
@@ -69,6 +70,7 @@ impl AlertRepository {
                 response_text: row.get(11)?,
                 responded_at: row.get(12)?,
                 reported_at: row.get(13)?,
+                ping_at: row.get(14)?,
             });
         }
 
@@ -99,7 +101,7 @@ impl AlertRepository {
 
         if !force_new {
             let sql = "SELECT id FROM chatbot_alerts 
-                       WHERE created_by = ? AND status = 'draft' AND created_at > (unixepoch() - 600) 
+                       WHERE created_by = ? AND status = 'draft' AND created_at > (unixepoch() - 604800) 
                        ORDER BY created_at DESC LIMIT 1";
             let mut stmt = conn.prepare(sql).await?;
             let mut rows = stmt
@@ -115,8 +117,8 @@ impl AlertRepository {
             }
         }
 
-        let sql = "INSERT INTO chatbot_alerts (created_at, created_by, chat_id, message_id, username, language_code, lat, lon, status) 
-                   VALUES (unixepoch(), ?, ?, ?, ?, ?, ?, ?, 'draft')";
+        let sql = "INSERT INTO chatbot_alerts (created_at, created_by, chat_id, message_id, username, language_code, lat, lon, status, ping_at) 
+                   VALUES (unixepoch(), ?, ?, ?, ?, ?, ?, ?, 'draft', unixepoch() + 600)";
 
         let params = vec![
             Value::Integer(user_id),
@@ -140,7 +142,8 @@ impl AlertRepository {
 
     pub async fn update_location(&self, id: i64, lat: f64, lon: f64) -> anyhow::Result<()> {
         let conn = self.db.connect().await?;
-        let sql = "UPDATE chatbot_alerts SET lat = ?, lon = ? WHERE id = ?";
+        let sql =
+            "UPDATE chatbot_alerts SET lat = ?, lon = ?, ping_at = unixepoch() + 600 WHERE id = ?";
         let params = vec![Value::Real(lat), Value::Real(lon), Value::Integer(id)];
         conn.execute(sql, params_from_iter(params)).await?;
         Ok(())
@@ -148,10 +151,66 @@ impl AlertRepository {
 
     pub async fn update_description(&self, id: i64, description: &str) -> anyhow::Result<()> {
         let conn = self.db.connect().await?;
-        let sql = "UPDATE chatbot_alerts SET description = ? WHERE id = ?";
+        let sql =
+            "UPDATE chatbot_alerts SET description = ?, ping_at = unixepoch() + 600 WHERE id = ?";
         let params = vec![Value::Text(description.to_string()), Value::Integer(id)];
         conn.execute(sql, params_from_iter(params)).await?;
         Ok(())
+    }
+
+    pub async fn touch_ping(&self, id: i64) -> anyhow::Result<()> {
+        let conn = self.db.connect().await?;
+        let sql = "UPDATE chatbot_alerts SET ping_at = unixepoch() + 600 WHERE id = ?";
+        conn.execute(sql, params_from_iter(vec![Value::Integer(id)]))
+            .await?;
+        Ok(())
+    }
+
+    pub async fn disable_ping(&self, id: i64) -> anyhow::Result<()> {
+        let conn = self.db.connect().await?;
+        let sql = "UPDATE chatbot_alerts SET ping_at = NULL WHERE id = ?";
+        conn.execute(sql, params_from_iter(vec![Value::Integer(id)]))
+            .await?;
+        Ok(())
+    }
+
+    pub async fn get_pending_pings(&self) -> anyhow::Result<Vec<Alert>> {
+        let conn = self.db.connect().await?;
+        let sql = "SELECT id, created_at, created_by, chat_id, message_id, username, language_code, lat, lon, description, status, response_text, responded_at, reported_at, ping_at
+                   FROM chatbot_alerts
+                   WHERE status = 'draft'
+                     AND ping_at IS NOT NULL
+                     AND ping_at <= unixepoch()
+                     AND created_at >= (unixepoch() - 604800)
+                   ORDER BY created_at ASC";
+        let mut stmt = conn.prepare(sql).await?;
+        let mut rows = stmt
+            .query(params_from_iter(std::iter::empty::<Value>()))
+            .await?;
+        let mut results = Vec::new();
+
+        while let Some(row) = rows.next().await? {
+            let status_str: String = row.get(10)?;
+            results.push(Alert {
+                id: row.get(0)?,
+                created_at: row.get(1)?,
+                created_by: row.get(2)?,
+                chat_id: row.get(3)?,
+                message_id: row.get(4)?,
+                username: row.get(5)?,
+                language_code: row.get(6)?,
+                lat: row.get(7)?,
+                lon: row.get(8)?,
+                description: row.get(9)?,
+                status: status_str.parse().unwrap_or_default(),
+                response_text: row.get(11)?,
+                responded_at: row.get(12)?,
+                reported_at: row.get(13)?,
+                ping_at: row.get(14)?,
+            });
+        }
+
+        Ok(results)
     }
 
     pub async fn update_status(&self, id: i64, status: AlertStatus) -> anyhow::Result<()> {
@@ -165,7 +224,7 @@ impl AlertRepository {
     pub async fn get_active_id_by_user_id(&self, user_id: i64) -> anyhow::Result<Option<i64>> {
         let conn = self.db.connect().await?;
         let sql = "SELECT id FROM chatbot_alerts 
-                   WHERE created_by = ? AND status = 'draft' AND created_at > (unixepoch() - 600) 
+                   WHERE created_by = ? AND status = 'draft' AND created_at > (unixepoch() - 604800) 
                    ORDER BY created_at DESC LIMIT 1";
         let mut stmt = conn.prepare(sql).await?;
         let mut rows = stmt
