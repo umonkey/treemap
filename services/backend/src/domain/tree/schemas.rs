@@ -1,4 +1,4 @@
-use super::models::Tree;
+use super::models::{Tree, TreeState};
 use crate::utils::{get_timestamp, split_words};
 use serde::{Deserialize, Serialize};
 
@@ -20,7 +20,7 @@ pub struct SearchQuery {
     pub noheight: bool,
     pub nodiameter: bool,
     pub hasimages: bool,
-    pub statuses: Vec<String>,
+    pub statuses: Vec<TreeState>,
     pub all: bool,
     pub address: Option<String>,
     pub species: Option<String>,
@@ -52,7 +52,7 @@ pub struct NewTreeDefaultsResponse {
     pub height: Option<f64>,
     pub circumference: Option<f64>,
     pub diameter: Option<f64>,
-    pub state: Option<String>,
+    pub state: Option<TreeState>,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -63,7 +63,7 @@ pub struct AddTreeRequest {
     pub height: Option<f64>,
     pub circumference: Option<f64>,
     pub diameter: Option<f64>,
-    pub state: String,
+    pub state: TreeState,
     pub user_id: u64,
     pub year: Option<i64>,
     pub address: Option<String>,
@@ -94,7 +94,7 @@ pub struct ReplaceTreeRequest {
     pub height: Option<f64>,
     pub notes: Option<String>,
     pub species: String,
-    pub state: String,
+    pub state: TreeState,
     pub year: Option<i64>,
     pub files: Vec<String>,
 }
@@ -119,7 +119,7 @@ pub struct UpdateTreeRequest {
     pub height: Option<f64>,
     pub circumference: Option<f64>,
     pub diameter: Option<f64>,
-    pub state: Option<String>,
+    pub state: Option<TreeState>,
     pub user_id: u64,
     pub year: Option<i64>,
     pub address: Option<String>,
@@ -162,22 +162,34 @@ impl SearchQuery {
                 || word.contains("hasphoto")
             {
                 res.hasimages = true;
-            } else if word.contains("state:alive") || word.contains("healthy") {
-                res.statuses.push("healthy".to_string());
-            } else if word.contains("deformed") {
-                res.statuses.push("deformed".to_string());
-            } else if word.contains("sick") {
-                res.statuses.push("sick".to_string());
+            } else if word.contains("state:alive") || word.contains("healthy") || word.contains("deformed") || word.contains("sick") {
+                if !res.statuses.contains(&TreeState::Alive) {
+                    res.statuses.push(TreeState::Alive);
+                }
             } else if word.contains("state:dead") || word.contains("dead") {
-                res.statuses.push("dead".to_string());
+                if !res.statuses.contains(&TreeState::Dead) {
+                    res.statuses.push(TreeState::Dead);
+                }
             } else if word.contains("state:stump") || word.contains("stump") {
-                res.statuses.push("stump".to_string());
+                if !res.statuses.contains(&TreeState::Stump) {
+                    res.statuses.push(TreeState::Stump);
+                }
             } else if word.contains("state:gone") || word.contains("gone") {
-                res.statuses.push("gone".to_string());
+                if !res.statuses.contains(&TreeState::Gone) {
+                    res.statuses.push(TreeState::Gone);
+                }
             } else if word.contains("state:replaced") || word.contains("replaced") {
-                res.statuses.push("replaced".to_string());
+                if !res.statuses.contains(&TreeState::Replaced) {
+                    res.statuses.push(TreeState::Replaced);
+                }
+            } else if word.contains("state:error") || word.contains("error") {
+                if !res.statuses.contains(&TreeState::Error) {
+                    res.statuses.push(TreeState::Error);
+                }
             } else if word.contains("state:unknown") {
-                res.statuses.push("unknown".to_string());
+                if !res.statuses.contains(&TreeState::Unknown) {
+                    res.statuses.push(TreeState::Unknown);
+                }
             } else if word.contains("incomplete") {
                 res.incomplete = true;
             } else if word == "has:addr" {
@@ -213,13 +225,11 @@ impl SearchQuery {
 
         if res.statuses.is_empty() {
             res.statuses = vec![
-                "sick".to_string(),
-                "dead".to_string(),
-                "deformed".to_string(),
-                "healthy".to_string(),
-                "stump".to_string(),
-                "gone".to_string(),
-                "unknown".to_string(),
+                TreeState::Alive,
+                TreeState::Dead,
+                TreeState::Stump,
+                TreeState::Gone,
+                TreeState::Unknown,
             ];
         }
 
@@ -338,7 +348,7 @@ impl SearchQuery {
     }
 
     fn is_tree_incomplete(&self, tree: &Tree, cutoff: u64) -> bool {
-        tree.state == "unknown"
+        tree.state == TreeState::Unknown
             || tree.height_updated_at < cutoff
             || tree.circumference_updated_at < cutoff
             || tree.diameter_updated_at < cutoff
@@ -377,7 +387,7 @@ mod tests {
             height: None,
             circumference: None,
             diameter: None,
-            state: "unknown".to_string(),
+            state: TreeState::Unknown,
             added_at: 0,
             updated_at: 0,
             updated_by: 0,
@@ -418,7 +428,7 @@ mod tests {
 
         assert!(query.r#match(
             &Tree {
-                state: "healthy".to_string(),
+                state: TreeState::Alive,
                 ..default_tree()
             },
             0
@@ -426,7 +436,7 @@ mod tests {
 
         assert!(!query.r#match(
             &Tree {
-                state: "sick".to_string(),
+                state: TreeState::Dead,
                 ..default_tree()
             },
             0
@@ -435,7 +445,7 @@ mod tests {
         let query = SearchQuery::from_string("state:alive");
         assert!(query.r#match(
             &Tree {
-                state: "healthy".to_string(),
+                state: TreeState::Alive,
                 ..default_tree()
             },
             0
@@ -555,7 +565,7 @@ mod tests {
 
         assert!(query.r#match(
             &Tree {
-                state: "deformed".to_string(),
+                state: TreeState::Alive,
                 ..default_tree()
             },
             0
@@ -563,7 +573,7 @@ mod tests {
 
         assert!(!query.r#match(
             &Tree {
-                state: "healthy".to_string(),
+                state: TreeState::Dead,
                 ..default_tree()
             },
             0
@@ -576,7 +586,7 @@ mod tests {
 
         assert!(query.r#match(
             &Tree {
-                state: "sick".to_string(),
+                state: TreeState::Alive,
                 ..default_tree()
             },
             0
@@ -584,7 +594,7 @@ mod tests {
 
         assert!(!query.r#match(
             &Tree {
-                state: "healthy".to_string(),
+                state: TreeState::Dead,
                 ..default_tree()
             },
             0
@@ -597,7 +607,7 @@ mod tests {
 
         assert!(query.r#match(
             &Tree {
-                state: "dead".to_string(),
+                state: TreeState::Dead,
                 ..default_tree()
             },
             0
@@ -605,7 +615,7 @@ mod tests {
 
         assert!(!query.r#match(
             &Tree {
-                state: "healthy".to_string(),
+                state: TreeState::Alive,
                 ..default_tree()
             },
             0
@@ -618,7 +628,7 @@ mod tests {
 
         assert!(query.r#match(
             &Tree {
-                state: "stump".to_string(),
+                state: TreeState::Stump,
                 ..default_tree()
             },
             0
@@ -626,7 +636,7 @@ mod tests {
 
         assert!(!query.r#match(
             &Tree {
-                state: "healthy".to_string(),
+                state: TreeState::Alive,
                 ..default_tree()
             },
             0
@@ -640,7 +650,7 @@ mod tests {
 
         assert!(query.r#match(
             &Tree {
-                state: "gone".to_string(),
+                state: TreeState::Gone,
                 ..default_tree()
             },
             0
@@ -648,7 +658,7 @@ mod tests {
 
         assert!(query.r#match(
             &Tree {
-                state: "healthy".to_string(),
+                state: TreeState::Alive,
                 ..default_tree()
             },
             0
@@ -661,7 +671,7 @@ mod tests {
 
         assert!(query.r#match(
             &Tree {
-                state: "replaced".to_string(),
+                state: TreeState::Replaced,
                 ..default_tree()
             },
             0
@@ -669,7 +679,7 @@ mod tests {
 
         assert!(!query.r#match(
             &Tree {
-                state: "healthy".to_string(),
+                state: TreeState::Alive,
                 ..default_tree()
             },
             0
@@ -682,7 +692,7 @@ mod tests {
 
         assert!(!query.r#match(
             &Tree {
-                state: "replaced".to_string(),
+                state: TreeState::Replaced,
                 ..default_tree()
             },
             0
@@ -695,7 +705,7 @@ mod tests {
 
         assert!(query.r#match(
             &Tree {
-                state: "unknown".to_string(),
+                state: TreeState::Unknown,
                 ..default_tree()
             },
             0
@@ -703,7 +713,7 @@ mod tests {
 
         assert!(!query.r#match(
             &Tree {
-                state: "healthy".to_string(),
+                state: TreeState::Alive,
                 ..default_tree()
             },
             0
@@ -716,7 +726,7 @@ mod tests {
 
         assert!(query.r#match(
             &Tree {
-                state: "gone".to_string(),
+                state: TreeState::Gone,
                 ..default_tree()
             },
             0
@@ -724,7 +734,7 @@ mod tests {
 
         assert!(query.r#match(
             &Tree {
-                state: "healthy".to_string(),
+                state: TreeState::Alive,
                 ..default_tree()
             },
             0
@@ -948,11 +958,6 @@ mod tests {
         let query = SearchQuery::from_string("no:diameter age:3600");
         let now = get_timestamp();
 
-        // 1. Updated 1 hour ago -> matches "no:diameter" because it is at the edge of age.
-        // Actually, no:diameter means "updated_at < now - age".
-        // If age is 3600, then cutoff is now - 3600.
-        // If updated_at is now - 3601, it matches.
-
         assert!(query.r#match(
             &Tree {
                 diameter_updated_at: now - 3601,
@@ -991,7 +996,7 @@ impl From<Tree> for NewTreeDefaultsResponse {
             height: None,
             circumference: None,
             diameter: None,
-            state: None,
+            state: Some(tree.state),
         }
     }
 }

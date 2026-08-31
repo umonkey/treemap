@@ -1,7 +1,7 @@
 //! This class reports distribution of trees by state.
 
 use super::schemas::TreesByStateReport;
-use crate::domain::tree::Tree;
+use crate::domain::tree::{Tree, TreeState};
 use crate::types::Result;
 use std::collections::HashMap;
 
@@ -25,9 +25,9 @@ impl TreesByStateReporter {
         let mut map: HashMap<String, usize> = HashMap::new();
 
         for tree in trees {
-            let state = match tree.state.as_str() {
-                "healthy" | "sick" | "deformed" => "alive".to_string(),
-                _ => tree.state.clone(),
+            let state = match tree.state {
+                TreeState::Alive => "alive".to_string(),
+                other => other.as_str().to_string(),
             };
             let count = map.entry(state).or_insert(0);
             *count += 1;
@@ -67,22 +67,22 @@ mod tests {
         let mut trees = vec![];
 
         trees.push(Tree {
-            state: "healthy".to_string(),
+            state: TreeState::Alive,
             ..Default::default()
         });
 
         trees.push(Tree {
-            state: "sick".to_string(),
+            state: TreeState::Alive,
             ..Default::default()
         });
 
         trees.push(Tree {
-            state: "healthy".to_string(),
+            state: TreeState::Alive,
             ..Default::default()
         });
 
         trees.push(Tree {
-            state: "gone".to_string(),
+            state: TreeState::Gone,
             ..Default::default()
         });
 

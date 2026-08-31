@@ -169,7 +169,7 @@ mod tests {
         service
             .db
             .execute_sql(
-                "INSERT INTO trees_props (id, tree_id, added_at, name, value, added_by) VALUES (1, 1, ?1, 'state', 'healthy', 1)",
+                "INSERT INTO trees_props (id, tree_id, added_at, name, value, added_by) VALUES (1, 1, ?1, 'state', 'alive', 1)",
                 &[Value::from(yesterday_ts + 3600)],
             )
             .await
@@ -178,7 +178,7 @@ mod tests {
         service
             .db
             .execute_sql(
-                "INSERT INTO trees_props (id, tree_id, added_at, name, value, added_by) VALUES (2, 2, ?1, 'state', 'healthy', 2)",
+                "INSERT INTO trees_props (id, tree_id, added_at, name, value, added_by) VALUES (2, 2, ?1, 'state', 'alive', 2)",
                 &[Value::from(today_ts + 3600)],
             )
             .await
@@ -187,7 +187,7 @@ mod tests {
         service
             .db
             .execute_sql(
-                "INSERT INTO trees_props (id, tree_id, added_at, name, value, added_by) VALUES (3, 3, ?1, 'state', 'healthy', 1)",
+                "INSERT INTO trees_props (id, tree_id, added_at, name, value, added_by) VALUES (3, 3, ?1, 'state', 'alive', 1)",
                 &[Value::from(today_ts + 7200)],
             )
             .await
@@ -227,7 +227,7 @@ mod tests {
         service
             .db
             .execute_sql(
-                "INSERT INTO trees_props (id, tree_id, added_at, name, value, added_by) VALUES (1, 1, ?1, 'state', 'healthy', 1)",
+                "INSERT INTO trees_props (id, tree_id, added_at, name, value, added_by) VALUES (1, 1, ?1, 'state', 'alive', 1)",
                 &[Value::from(yesterday_ts + 3600)],
             )
             .await
@@ -236,7 +236,7 @@ mod tests {
         service
             .db
             .execute_sql(
-                "INSERT INTO trees_props (id, tree_id, added_at, name, value, added_by) VALUES (2, 2, ?1, 'state', 'healthy', 2)",
+                "INSERT INTO trees_props (id, tree_id, added_at, name, value, added_by) VALUES (2, 2, ?1, 'state', 'alive', 2)",
                 &[Value::from(today_ts + 3600)],
             )
             .await
@@ -245,7 +245,7 @@ mod tests {
         service
             .db
             .execute_sql(
-                "INSERT INTO trees_props (id, tree_id, added_at, name, value, added_by) VALUES (3, 3, ?1, 'state', 'healthy', 1)",
+                "INSERT INTO trees_props (id, tree_id, added_at, name, value, added_by) VALUES (3, 3, ?1, 'state', 'alive', 1)",
                 &[Value::from(today_ts + 7200)],
             )
             .await

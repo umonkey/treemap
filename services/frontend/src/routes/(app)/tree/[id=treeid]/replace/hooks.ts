@@ -21,7 +21,7 @@ export const editor = (tree_id: string) => {
 	const height = writable<number | null>(0);
 	const diameter = writable<number | null>(0);
 	const circumference = writable<number | null>(0);
-	const currentState = writable<string>('healthy');
+	const currentState = writable<string>('alive');
 	const year = writable<number | null>(new Date().getFullYear());
 	const notes = writable<string | null>('');
 

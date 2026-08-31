@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS trees (
     `height` REAL NULL,
     `circumference` REAL NULL,
     `diameter` REAL NULL,
-    `state` TEXT NOT NULL DEFAULT "healthy",
+    `state` TEXT NOT NULL DEFAULT "alive",
     `added_at` INT NOT NULL,
     `updated_at` INT NOT NULL,
     `updated_by` INT NOT NULL,

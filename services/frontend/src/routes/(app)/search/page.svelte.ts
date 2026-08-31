@@ -36,11 +36,7 @@ class PageState {
 		if (this.noPhotos) parts.push('no:photo');
 
 		if (this.state) {
-			if (this.state === 'healthy') {
-				parts.push('state:alive');
-			} else {
-				parts.push(`state:${this.state}`);
-			}
+			parts.push(`state:${this.state}`);
 		}
 
 		if (this.age !== 31_536_000) {
@@ -134,11 +130,11 @@ class PageState {
 		const stateMatch = remaining.match(/\bstate:(\w+)/);
 		if (stateMatch) {
 			const s = stateMatch[1];
-			this.state = s === 'alive' ? 'healthy' : s;
+			this.state = s === 'healthy' ? 'alive' : s;
 			remaining = remaining.replace(stateMatch[0], '');
 		} else {
 			// Check legacy status keywords
-			const legacyStates = ['healthy', 'dead', 'stump', 'gone', 'replaced'];
+			const legacyStates = ['healthy', 'alive', 'error', 'dead', 'stump', 'gone', 'replaced'];
 			let found = false;
 			for (const s of legacyStates) {
 				const regex = new RegExp(`\\b${s}\\b`, 'i');

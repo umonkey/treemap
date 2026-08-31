@@ -13,6 +13,8 @@
 		'#000000',
 		'unknown',
 		'#ffd700',
+		'error',
+		'#ff0000',
 		'dead',
 		'#8b4513',
 		'placeholder',

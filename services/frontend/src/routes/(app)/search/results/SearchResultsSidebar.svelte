@@ -251,9 +251,12 @@
 						border-color: rgba(128, 128, 128, 0.5);
 					}
 
-					&.state-alive,
-					&.state-healthy {
+					&.state-alive {
 						border-left-color: green;
+					}
+
+					&.state-error {
+						border-left-color: red;
 					}
 
 					&.state-dead {

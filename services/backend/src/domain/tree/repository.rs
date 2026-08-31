@@ -31,7 +31,7 @@ impl TreeRepository {
                 id: row.require_u64("id")?,
                 lat: row.require_f64("lat")?,
                 lon: row.require_f64("lon")?,
-                state: row.require_string("state")?,
+                state: row.require_string("state")?.as_str().into(),
             });
         }
 
@@ -541,7 +541,7 @@ impl TreeRepository {
         }
 
         if old.state != new.state {
-            self.add_tree_prop(new.id, "state", &new.state, user_id)
+            self.add_tree_prop(new.id, "state", new.state.as_str(), user_id)
                 .await?;
         }
 
@@ -615,6 +615,7 @@ impl Injectable for TreeRepository {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::domain::tree::TreeState;
     use crate::services::AppState;
     use crate::services::ContextExt;
 
@@ -712,35 +713,35 @@ mod tests {
 
         repo.add(&Tree {
             id: 1,
-            state: "healthy".to_string(),
+            state: TreeState::Alive,
             ..Default::default()
         })
         .await
         .unwrap();
         repo.add(&Tree {
             id: 2,
-            state: "sick".to_string(),
+            state: TreeState::Alive,
             ..Default::default()
         })
         .await
         .unwrap();
         repo.add(&Tree {
             id: 3,
-            state: "gone".to_string(),
+            state: TreeState::Gone,
             ..Default::default()
         })
         .await
         .unwrap();
         repo.add(&Tree {
             id: 4,
-            state: "replaced".to_string(),
+            state: TreeState::Replaced,
             ..Default::default()
         })
         .await
         .unwrap();
         repo.add(&Tree {
             id: 5,
-            state: "stump".to_string(),
+            state: TreeState::Stump,
             ..Default::default()
         })
         .await

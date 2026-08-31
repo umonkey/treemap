@@ -35,7 +35,7 @@ pub fn trees_to_csv(trees: Vec<Tree>, filename: &str) -> Result<HttpResponse> {
             format!("#{}", tree.id),
             format!("{:.7}", tree.lat),
             format!("{:.7}", tree.lon),
-            tree.state,
+            tree.state.as_str().to_string(),
             tree.species,
             tree.height.unwrap_or(0.0).to_string(),
             tree.diameter.unwrap_or(0.0).to_string(),
@@ -60,6 +60,7 @@ pub fn trees_to_csv(trees: Vec<Tree>, filename: &str) -> Result<HttpResponse> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::domain::tree::TreeState;
 
     #[test]
     fn test_format_timestamp() {
@@ -73,7 +74,7 @@ mod tests {
             id: 42,
             lat: 40.1792,
             lon: 44.5091,
-            state: "healthy".to_string(),
+            state: TreeState::Alive,
             species: "Tilia cordata".to_string(),
             added_at: 1700000000,
             updated_at: 0,
@@ -90,7 +91,7 @@ mod tests {
 
         assert!(csv_content.contains("id,lat,lon"));
         assert!(csv_content.contains(
-            "#42,40.1792000,44.5091000,healthy,Tilia cordata,0,0,0,2023-11-14T22:13:20Z,"
+            "#42,40.1792000,44.5091000,alive,Tilia cordata,0,0,0,2023-11-14T22:13:20Z,"
         ));
     }
 }

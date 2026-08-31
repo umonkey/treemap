@@ -105,7 +105,7 @@ pub async fn add_trees_action(
             height: payload.height,
             circumference: payload.circumference,
             diameter: payload.diameter,
-            state: payload.state.clone(),
+            state: payload.state,
             user_id: *user_id,
             year: payload.year,
             files: payload.files.clone(),
@@ -304,7 +304,7 @@ pub async fn replace_tree_action(
             height: payload.height,
             circumference: payload.circumference,
             diameter: payload.diameter,
-            state: payload.state.clone(),
+            state: payload.state,
             year: payload.year,
             files: payload.files.clone(),
         })
@@ -344,7 +344,7 @@ pub async fn update_tree_action(
             height: payload.height,
             circumference: payload.circumference,
             diameter: payload.diameter,
-            state: payload.state.clone(),
+            state: payload.state,
             user_id: *user_id,
             year: payload.year,
             address: payload.address.clone(),
@@ -435,7 +435,7 @@ pub async fn update_tree_state_action(
     let tree = service
         .update_state(
             path.id,
-            payload.value.clone(),
+            payload.value,
             *user_id,
             payload.comment.clone(),
         )

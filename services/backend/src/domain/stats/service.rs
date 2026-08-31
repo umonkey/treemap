@@ -92,7 +92,7 @@ mod tests {
 
         service
             .db
-            .execute_sql("INSERT INTO trees (id, lat, lon, species, state, added_at, updated_at, updated_by, added_by) VALUES (1, 40.1, 44.1, 'Birch', 'healthy', 0, 0, 1, 1)", &[])
+            .execute_sql("INSERT INTO trees (id, lat, lon, species, state, added_at, updated_at, updated_by, added_by) VALUES (1, 40.1, 44.1, 'Birch', 'alive', 0, 0, 1, 1)", &[])
             .await
             .expect("Error adding tree.");
 
@@ -114,7 +114,7 @@ mod tests {
             .expect("Error getting stats.");
 
         assert_eq!(res.len(), 1);
-        assert_eq!(res[0].state, "healthy");
+        assert_eq!(res[0].state, "alive");
         assert_eq!(res[0].count, 1);
     }
 
@@ -130,7 +130,7 @@ mod tests {
 
         service
             .db
-            .execute_sql("INSERT INTO trees (id, lat, lon, species, address, state, added_at, updated_at, updated_by, added_by) VALUES (1, 40.1, 44.1, 'Birch', 'Main St', 'healthy', 0, 0, 1, 1)", &[])
+            .execute_sql("INSERT INTO trees (id, lat, lon, species, address, state, added_at, updated_at, updated_by, added_by) VALUES (1, 40.1, 44.1, 'Birch', 'Main St', 'alive', 0, 0, 1, 1)", &[])
             .await
             .expect("Error adding tree.");
 

@@ -271,7 +271,7 @@ impl McpService {
         let sql = r#"
             SELECT
                 COUNT(*) AS total_count,
-                SUM(CASE WHEN state IN ('healthy', 'sick', 'deformed') THEN 1 ELSE 0 END) AS alive_count,
+                SUM(CASE WHEN state = 'alive' THEN 1 ELSE 0 END) AS alive_count,
                 SUM(CASE WHEN state = 'dead' THEN 1 ELSE 0 END) AS dead_count,
                 SUM(CASE WHEN height_updated_at < ? THEN 1 ELSE 0 END) AS without_height_count,
                 SUM(CASE WHEN diameter_updated_at < ? THEN 1 ELSE 0 END) AS without_diameter_count,

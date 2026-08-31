@@ -15,11 +15,12 @@
 
 	const states = [
 		{ id: 'unknown', label: locale.stateUnknown() },
-		{ id: 'healthy', label: locale.stateHealthy() },
+		{ id: 'alive', label: locale.stateAlive() },
 		{ id: 'dead', label: locale.stateDead() },
 		{ id: 'gone', label: locale.stateGone() },
 		{ id: 'stump', label: locale.stateStump() },
-		{ id: 'replaced', label: locale.stateReplaced() }
+		{ id: 'replaced', label: locale.stateReplaced() },
+		{ id: 'error', label: locale.stateError() }
 	];
 </script>
 

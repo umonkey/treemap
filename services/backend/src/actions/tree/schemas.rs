@@ -1,4 +1,4 @@
-use crate::domain::tree::LatLon;
+use crate::domain::tree::{LatLon, TreeState};
 use crate::domain::tree_image::TreeImage;
 use serde::{Deserialize, Serialize};
 use std::cmp::min;
@@ -33,7 +33,7 @@ pub struct AddTreePayload {
     pub circumference: Option<f64>,
     pub diameter: Option<f64>,
     #[serde(default = "default_state")]
-    pub state: String,
+    pub state: TreeState,
     pub year: Option<i64>,
     pub address: Option<String>,
     #[serde(default)]
@@ -53,7 +53,7 @@ pub struct ReplaceTreeRequestPayload {
     pub height: Option<f64>,
     pub circumference: Option<f64>,
     pub diameter: Option<f64>,
-    pub state: String,
+    pub state: TreeState,
     pub year: Option<i64>,
     #[serde(default)]
     pub files: Vec<String>,
@@ -68,7 +68,7 @@ pub struct UpdateTreeRequestPayload {
     pub height: Option<f64>,
     pub circumference: Option<f64>,
     pub diameter: Option<f64>,
-    pub state: Option<String>,
+    pub state: Option<TreeState>,
     pub year: Option<i64>,
     pub address: Option<String>,
 }
@@ -96,7 +96,7 @@ pub struct UpdateLocationPayload {
 
 #[derive(Debug, Deserialize)]
 pub struct UpdateStatePayload {
-    pub value: String,
+    pub value: TreeState,
     pub comment: Option<String>,
 }
 
@@ -229,6 +229,6 @@ impl FileUploadResponse {
     }
 }
 
-fn default_state() -> String {
-    "unknown".to_string()
+fn default_state() -> TreeState {
+    TreeState::Unknown
 }

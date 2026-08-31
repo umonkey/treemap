@@ -1,7 +1,7 @@
 //! This class reports total area of the crowns.
 //! Ignores stumps and dead trees.
 
-use crate::domain::tree::Tree;
+use crate::domain::tree::{Tree, TreeState};
 use crate::services::*;
 use crate::types::*;
 
@@ -35,7 +35,7 @@ impl TreesAreaReporter {
     }
 
     fn get_tree_shadow(&self, tree: &Tree) -> f64 {
-        if !tree.is_existing() || tree.state == "dead" {
+        if !tree.is_existing() || tree.state == TreeState::Dead {
             return 0.0;
         }
 

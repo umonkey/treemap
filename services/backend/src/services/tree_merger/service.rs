@@ -3,7 +3,7 @@ use crate::domain::like::LikeRepository;
 use crate::domain::observation::ObservationRepository;
 use crate::domain::osm::OsmTreeRepository;
 use crate::domain::prop::{PropRecord, PropRepository};
-use crate::domain::tree::{DuplicateLocation, TreeRepository};
+use crate::domain::tree::{DuplicateLocation, TreeRepository, TreeState};
 use crate::domain::tree_image::TreeImageRepository;
 use crate::services::{Context, Injectable};
 use crate::types::*;
@@ -35,7 +35,7 @@ impl TreeMergerService {
 
         // Process each tree
         for tree in trees {
-            if tree.state == "replaced" {
+            if tree.state == TreeState::Replaced {
                 continue; // Skip trees that are not visible
             }
 
@@ -113,8 +113,8 @@ impl TreeMergerService {
             }
 
             // Merge state: ignore "gone"
-            if let Some(t) = latest_first.iter().find(|t| t.state != "gone") {
-                merged_tree.state = t.state.clone();
+            if let Some(t) = latest_first.iter().find(|t| t.state != TreeState::Gone) {
+                merged_tree.state = t.state;
             }
 
             // Merge height
@@ -218,7 +218,7 @@ impl TreeMergerService {
                             return false;
                         }
 
-                        if p.name == "state" && p.value == "replaced" {
+                        if p.name == "state" && p.value == TreeState::Replaced.as_str() {
                             return false;
                         }
 
@@ -330,7 +330,7 @@ impl Injectable for TreeMergerService {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::domain::tree::Tree;
+    use crate::domain::tree::{Tree, TreeState};
     use crate::infra::database::Database;
     use crate::services::AppState;
     use crate::services::ContextExt;
@@ -450,7 +450,7 @@ mod tests {
             height: Some(10.0),
             height_updated_at: now - 1000,
             updated_at: now - 1000,
-            state: "healthy".to_string(),
+            state: TreeState::Alive,
             ..Default::default()
         };
 
@@ -462,7 +462,7 @@ mod tests {
             height: Some(15.0),
             height_updated_at: now,
             updated_at: now,
-            state: "healthy".to_string(),
+            state: TreeState::Alive,
             ..Default::default()
         };
 
@@ -495,7 +495,7 @@ mod tests {
 
         // Verify secondary tree (ID 2)
         let secondary = service.trees.get(2).await.unwrap().unwrap();
-        assert_eq!(secondary.state, "replaced");
+        assert_eq!(secondary.state, TreeState::Replaced);
         assert_eq!(secondary.replaced_by, Some(1));
 
         // Verify comments moved
@@ -511,7 +511,7 @@ mod tests {
             lat: 10.0,
             lon: 10.0,
             species: "Valid Species".to_string(),
-            state: "gone".to_string(),
+            state: TreeState::Gone,
             updated_at: now - 100,
             ..Default::default()
         };
@@ -521,7 +521,7 @@ mod tests {
             lat: 10.0,
             lon: 10.0,
             species: "Unknown".to_string(),
-            state: "sick".to_string(),
+            state: TreeState::Alive,
             updated_at: now,
             ..Default::default()
         };
@@ -532,7 +532,7 @@ mod tests {
         service.merge_duplicates(10).await.unwrap();
 
         let main2 = service.trees.get(3).await.unwrap().unwrap();
-        assert_eq!(main2.state, "sick"); // Should take "sick" from tree4, ignoring "gone" from tree3
+        assert_eq!(main2.state, TreeState::Alive); // Should take alive from tree4, ignoring "gone" from tree3
         assert_eq!(main2.species, "Valid Species"); // Should take "Valid Species" from tree3, ignoring "Unknown" from tree4
     }
 
@@ -551,7 +551,7 @@ mod tests {
             lat: 40.0,
             lon: 44.0,
             osm_id: Some(101), // points to deleted OSM node
-            state: "healthy".to_string(),
+            state: TreeState::Alive,
             ..Default::default()
         };
 
@@ -560,7 +560,7 @@ mod tests {
             lat: 40.0,
             lon: 44.0,
             osm_id: Some(102), // points to visible OSM node
-            state: "replaced".to_string(),
+            state: TreeState::Replaced,
             replaced_by: Some(1),
             ..Default::default()
         };

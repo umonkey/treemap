@@ -26,7 +26,7 @@ export const DEFAULT_TREE = {
 	height: null,
 	circumference: null,
 	diameter: null,
-	state: 'healthy',
+	state: 'alive',
 	added_at: 0,
 	updated_at: 0,
 	added_by: 'user1',

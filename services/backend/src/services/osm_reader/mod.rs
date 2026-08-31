@@ -14,8 +14,7 @@
 //! See details in docs/OSM-Integration.md
 
 use crate::domain::osm::{OsmTreeRecord, OsmTreeRepository};
-use crate::domain::tree::Tree;
-use crate::domain::tree::TreeRepository;
+use crate::domain::tree::{Tree, TreeRepository, TreeState};
 use crate::infra::overpass::OverpassClient;
 use crate::services::{Context, Injectable};
 use crate::types::*;
@@ -23,7 +22,7 @@ use crate::utils::{get_timestamp, get_unique_id};
 use log::{debug, info};
 use std::sync::Arc;
 
-const DEFAULT_STATE: &str = "healthy";
+const DEFAULT_STATE: TreeState = TreeState::Alive;
 
 pub struct OsmReaderService {
     trees: Arc<TreeRepository>,
@@ -142,7 +141,7 @@ impl OsmReaderService {
             height: node.height,
             circumference: node.circumference,
             diameter: node.diameter_crown,
-            state: DEFAULT_STATE.to_string(),
+            state: DEFAULT_STATE,
             added_at: now,
             updated_at: now,
             updated_by: self.user_id,
@@ -161,7 +160,7 @@ impl OsmReaderService {
 
     // Delete a tree that was removed from OSM.
     async fn delete_tree(&self, tree: Tree) -> Result<()> {
-        if tree.state != "gone" && tree.state != "replaced" {
+        if tree.state != TreeState::Gone && tree.state != TreeState::Replaced {
             self.trees.mark_gone(tree.id, self.user_id).await?;
 
             info!(

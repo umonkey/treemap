@@ -64,8 +64,12 @@ export const formatSpecies = (value: string | null): string => {
 };
 
 export const formatState = (value: string | null): string => {
-	if (value === 'healthy') {
-		return locale.stateHealthy();
+	if (value === 'alive') {
+		return locale.stateAlive();
+	}
+
+	if (value === 'error') {
+		return locale.stateError();
 	}
 
 	if (value === 'dead') {

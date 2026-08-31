@@ -2,14 +2,108 @@
 
 use crate::infra::database::{Attributes, Value};
 use crate::types::Result;
-use serde::Serialize;
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use std::fmt;
+use std::str::FromStr;
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
+pub enum TreeState {
+    #[default]
+    Alive,
+    Dead,
+    Stump,
+    Gone,
+    Replaced,
+    Error,
+    Placeholder,
+    Unknown,
+}
+
+impl TreeState {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Alive => "alive",
+            Self::Dead => "dead",
+            Self::Stump => "stump",
+            Self::Gone => "gone",
+            Self::Replaced => "replaced",
+            Self::Error => "error",
+            Self::Placeholder => "placeholder",
+            Self::Unknown => "unknown",
+        }
+    }
+
+    #[allow(dead_code)]
+    pub fn is_alive(&self) -> bool {
+        matches!(self, Self::Alive)
+    }
+
+    pub fn is_existing(&self) -> bool {
+        !matches!(self, Self::Gone | Self::Stump | Self::Replaced)
+    }
+}
+
+impl fmt::Display for TreeState {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl From<&str> for TreeState {
+    fn from(s: &str) -> Self {
+        match s.to_lowercase().as_str() {
+            "alive" | "healthy" | "sick" | "deformed" => Self::Alive,
+            "dead" => Self::Dead,
+            "stump" => Self::Stump,
+            "gone" => Self::Gone,
+            "replaced" => Self::Replaced,
+            "error" => Self::Error,
+            "placeholder" => Self::Placeholder,
+            "unknown" => Self::Unknown,
+            _ => Self::Unknown,
+        }
+    }
+}
+
+impl From<String> for TreeState {
+    fn from(s: String) -> Self {
+        Self::from(s.as_str())
+    }
+}
+
+impl FromStr for TreeState {
+    type Err = std::convert::Infallible;
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        Ok(Self::from(s))
+    }
+}
+
+impl Serialize for TreeState {
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de> Deserialize<'de> for TreeState {
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let s = String::deserialize(deserializer)?;
+        Ok(Self::from(s))
+    }
+}
 
 #[derive(Clone, Debug, Serialize)]
 pub struct TreeLocation {
     pub id: u64,
     pub lat: f64,
     pub lon: f64,
-    pub state: String,
+    pub state: TreeState,
 }
 
 #[derive(Clone, Debug, Default, Serialize)]
@@ -23,7 +117,7 @@ pub struct Tree {
     pub height: Option<f64>,
     pub circumference: Option<f64>,
     pub diameter: Option<f64>,
-    pub state: String,
+    pub state: TreeState,
     pub added_at: u64,
     pub added_by: u64,
     pub updated_at: u64,
@@ -63,7 +157,7 @@ impl Tree {
             height: attributes.get_f64("height")?,
             circumference: attributes.get_f64("circumference")?,
             diameter: attributes.get_f64("diameter")?,
-            state: attributes.require_string("state")?,
+            state: TreeState::from(attributes.require_string("state")?.as_str()),
             added_at: attributes.require_u64("added_at")?,
             updated_at: attributes.require_u64("updated_at")?,
             updated_by: attributes.require_u64("updated_by")?,
@@ -104,7 +198,7 @@ impl Tree {
             ("height".to_string(), Value::from(self.height)),
             ("circumference".to_string(), Value::from(self.circumference)),
             ("diameter".to_string(), Value::from(self.diameter)),
-            ("state".to_string(), Value::from(self.state.clone())),
+            ("state".to_string(), Value::from(self.state.as_str())),
             ("added_at".to_string(), Value::from(self.added_at as i64)),
             (
                 "updated_at".to_string(),
@@ -163,7 +257,12 @@ impl Tree {
     }
 
     pub fn is_existing(&self) -> bool {
-        self.state != "gone" && self.state != "stump" && self.state != "replaced"
+        self.state.is_existing()
+    }
+
+    #[allow(dead_code)]
+    pub fn is_alive(&self) -> bool {
+        self.state.is_alive()
     }
 
     pub fn get_genus(&self) -> Option<String> {

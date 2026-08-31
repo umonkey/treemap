@@ -16,7 +16,7 @@
 	args={{
 		data: [
 			{
-				label: 'healthy',
+				label: 'alive',
 				value: 288
 			},
 			{

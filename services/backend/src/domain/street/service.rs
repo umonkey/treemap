@@ -7,7 +7,7 @@ use super::trees_by_girth::TreesByGirthReporter;
 use super::trees_by_height::TreesByHeightReporter;
 use super::trees_by_species::TreesBySpeciesReporter;
 use super::trees_by_state::TreesByStateReporter;
-use crate::domain::tree::{Tree, TreeRepository};
+use crate::domain::tree::{Tree, TreeRepository, TreeState};
 use crate::infra::database::{Database, Value};
 use crate::services::{Context, Injectable};
 use crate::types::Result;
@@ -74,7 +74,7 @@ impl StreetService {
         let substring = street.to_lowercase();
 
         for tree in self.trees.all().await? {
-            if tree.species.to_lowercase() == "error" {
+            if tree.state == TreeState::Error {
                 continue;
             }
 
@@ -93,7 +93,7 @@ impl StreetService {
         let substring = street.to_lowercase();
 
         for tree in self.trees.all().await? {
-            if tree.state == "replaced" || tree.species.to_lowercase() == "error" {
+            if tree.state == TreeState::Replaced || tree.state == TreeState::Error {
                 continue;
             }
 

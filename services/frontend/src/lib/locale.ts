@@ -245,8 +245,12 @@ class EnglishLocale {
 		return 'unknown';
 	}
 
-	public stateHealthy(): string {
+	public stateAlive(): string {
 		return 'alive';
+	}
+
+	public stateError(): string {
+		return 'error';
 	}
 
 	public stateDead(): string {
@@ -977,8 +981,12 @@ class RussianLocale extends EnglishLocale {
 		return 'неизвестно';
 	}
 
-	public stateHealthy(): string {
+	public stateAlive(): string {
 		return 'живое';
+	}
+
+	public stateError(): string {
+		return 'ошибка';
 	}
 
 	public stateDead(): string {
@@ -1709,8 +1717,12 @@ class ArmenianLocale extends EnglishLocale {
 		return 'անհայտ';
 	}
 
-	public stateHealthy(): string {
+	public stateAlive(): string {
 		return 'կենդանի';
+	}
+
+	public stateError(): string {
+		return 'սխալ';
 	}
 
 	public stateDead(): string {

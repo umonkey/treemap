@@ -110,7 +110,7 @@ describe('Search Results Page', () => {
 						...DEFAULT_TREE,
 						id: 'tree1',
 						species: 'Quercus robur',
-						state: 'healthy',
+						state: 'alive',
 						height: 12,
 						diameter: 8,
 						circumference: 1.5,
@@ -153,7 +153,7 @@ describe('Search Results Page', () => {
 
 		const tree1Card = screen.getByRole('button', { name: /Quercus robur alive/i });
 		expect(tree1Card).toBeTruthy();
-		expect(tree1Card.classList.contains('state-healthy')).toBe(true);
+		expect(tree1Card.classList.contains('state-alive')).toBe(true);
 		expect(tree1Card.classList.contains('selected')).toBe(false);
 		expect(tree1Card.getAttribute('aria-pressed')).toBe('false');
 		expect(items[0].contains(tree1Card)).toBe(true);
@@ -192,8 +192,8 @@ describe('Search Results Page', () => {
 			status: 200,
 			data: {
 				trees: [
-					{ ...DEFAULT_TREE, id: 'tree-healthy', species: 'Tree Healthy', state: 'healthy' },
 					{ ...DEFAULT_TREE, id: 'tree-alive', species: 'Tree Alive', state: 'alive' },
+					{ ...DEFAULT_TREE, id: 'tree-error', species: 'Tree Error', state: 'error' },
 					{ ...DEFAULT_TREE, id: 'tree-dead', species: 'Tree Dead', state: 'dead' },
 					{ ...DEFAULT_TREE, id: 'tree-stump', species: 'Tree Stump', state: 'stump' },
 					{ ...DEFAULT_TREE, id: 'tree-gone', species: 'Tree Gone', state: 'gone' },
@@ -209,11 +209,11 @@ describe('Search Results Page', () => {
 			expect(screen.getByText(/Search results \(6\)/i)).toBeTruthy();
 		});
 
-		const treeHealthy = screen.getByRole('button', { name: /Tree Healthy/i });
-		expect(treeHealthy.classList.contains('state-healthy')).toBe(true);
-
 		const treeAlive = screen.getByRole('button', { name: /Tree Alive/i });
 		expect(treeAlive.classList.contains('state-alive')).toBe(true);
+
+		const treeError = screen.getByRole('button', { name: /Tree Error/i });
+		expect(treeError.classList.contains('state-error')).toBe(true);
 
 		const treeDead = screen.getByRole('button', { name: /Tree Dead/i });
 		expect(treeDead.classList.contains('state-dead')).toBe(true);
@@ -233,7 +233,7 @@ describe('Search Results Page', () => {
 			status: 200,
 			data: {
 				trees: [
-					{ ...DEFAULT_TREE, id: 'tree1', species: 'Quercus robur', state: 'healthy' },
+					{ ...DEFAULT_TREE, id: 'tree1', species: 'Quercus robur', state: 'alive' },
 					{ ...DEFAULT_TREE, id: 'tree2', species: 'Placeholder tree', state: 'placeholder' }
 				],
 				users: []
@@ -392,7 +392,7 @@ describe('Search Results Page', () => {
 						...DEFAULT_TREE,
 						id: 'tree1',
 						species: 'Quercus robur',
-						state: 'healthy',
+						state: 'alive',
 						lat: 40.18,
 						lon: 44.51
 					}
@@ -429,7 +429,7 @@ describe('Search Results Page', () => {
 						...DEFAULT_TREE,
 						id: 'tree1',
 						species: 'Quercus robur',
-						state: 'healthy',
+						state: 'alive',
 						lat: 40.18,
 						lon: 44.51
 					},
@@ -481,7 +481,7 @@ describe('Search Results Page', () => {
 						...DEFAULT_TREE,
 						id: 'tree1',
 						species: 'Quercus robur',
-						state: 'healthy',
+						state: 'alive',
 						lat: 40.18,
 						lon: 44.51
 					}

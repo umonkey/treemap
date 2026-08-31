@@ -1,7 +1,7 @@
 use super::schemas::*;
 use crate::domain::comment::CommentService;
 use crate::domain::prop::{PropRecord, PropRepository};
-use crate::domain::tree::{Tree, TreeRepository};
+use crate::domain::tree::{Tree, TreeRepository, TreeState};
 use crate::domain::tree_image::TreeImageRepository;
 use crate::domain::user::UserRepository;
 use crate::infra::database::{Database, Value};
@@ -56,7 +56,7 @@ impl TreeService {
                 height: Some(0.0),
                 circumference: Some(0.0),
                 diameter: Some(0.0),
-                state: Some("healthy".to_string()),
+                state: Some(TreeState::Alive),
             }),
         }
     }
@@ -78,7 +78,7 @@ impl TreeService {
             let query = SearchQuery::from_string(search);
             for tree in trees.iter_mut() {
                 if !query.r#match(tree, user_id) {
-                    tree.state = "placeholder".to_string();
+                    tree.state = TreeState::Placeholder;
                     tree.circumference = Some(0.0);
                 }
             }
@@ -86,7 +86,7 @@ impl TreeService {
 
         if let Some(zoom) = request.zoom {
             if zoom < 15.0 {
-                trees.retain(|t| t.state != "placeholder");
+                trees.retain(|t| t.state != TreeState::Placeholder);
             }
         }
 
@@ -137,7 +137,7 @@ impl TreeService {
             height: req.height,
             circumference: fix_circumference(req.circumference),
             diameter: req.diameter,
-            state: req.state.to_string(),
+            state: req.state,
             added_at: now,
             added_by: req.user_id,
             updated_at: now,
@@ -160,7 +160,7 @@ impl TreeService {
 
         let trees: Vec<Tree> = vec![
             Tree {
-                state: "replaced".to_string(),
+                state: TreeState::Replaced,
                 replaced_by: Some(new.id),
                 ..old
             },
@@ -295,7 +295,7 @@ impl TreeService {
     pub async fn update_state(
         &self,
         tree_id: u64,
-        value: String,
+        value: TreeState,
         user_id: u64,
         comment: Option<String>,
     ) -> Result<Tree> {
@@ -309,7 +309,7 @@ impl TreeService {
                 .add(&PropRecord {
                     tree_id,
                     name: "state".to_string(),
-                    value: value.clone(),
+                    value: value.as_str().to_string(),
                     added_by: user_id,
                     ..Default::default()
                 })
@@ -320,7 +320,7 @@ impl TreeService {
             .trees
             .update(
                 &Tree {
-                    state: value.clone(),
+                    state: value,
                     ..tree.clone()
                 },
                 user_id,
@@ -338,7 +338,7 @@ impl TreeService {
             }
         }
 
-        info!("State for tree {tree_id} changed to {value} by {user_id}.");
+        info!("State for tree {tree_id} changed to {} by {user_id}.", value.as_str());
 
         Ok(updated)
     }
@@ -590,7 +590,7 @@ impl TreeService {
             height: req.height,
             circumference: fix_circumference(req.circumference),
             diameter: req.diameter,
-            state: req.state.to_string(),
+            state: req.state,
             added_at: now,
             added_by: req.user_id,
             updated_at: now,
@@ -621,7 +621,7 @@ impl TreeService {
 
     async fn exists_with_coordinates(&self, lat: f64, lon: f64) -> Result<bool> {
         for tree in self.trees.get_close(lat, lon, DISTANCE).await? {
-            if tree.state != "gone" {
+            if tree.state != TreeState::Gone {
                 debug!(
                     "Tree {} already exists at coordinates ({}, {})",
                     tree.id, lat, lon
@@ -643,11 +643,7 @@ impl TreeService {
     }
 
     fn is_visible(tree: &Tree) -> bool {
-        if tree.state == "replaced" {
-            return false;
-        }
-
-        if tree.species.to_lowercase().contains("error") {
+        if tree.state == TreeState::Replaced || tree.state == TreeState::Error {
             return false;
         }
 
@@ -733,7 +729,7 @@ mod tests {
 
         service
             .db
-            .execute_sql("INSERT INTO trees (id, lat, lon, species, state, added_at, updated_at, updated_by, added_by) VALUES (1, 40.1, 44.1, 'Fake Species', 'healthy', 0, 0, 1, 1)", &[])
+            .execute_sql("INSERT INTO trees (id, lat, lon, species, state, added_at, updated_at, updated_by, added_by) VALUES (1, 40.1, 44.1, 'Fake Species', 'alive', 0, 0, 1, 1)", &[])
             .await
             .expect("Error adding tree.");
 

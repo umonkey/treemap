@@ -2,7 +2,7 @@ DELETE FROM trees;
 
 INSERT
     INTO trees (id, lat, lon, species, added_at, updated_at, added_by, updated_by, state)
-    VALUES (1, 0.0, 0.0, 'Unknown', 0, 0, 0, 0, 'healthy');
+    VALUES (1, 0.0, 0.0, 'Unknown', 0, 0, 0, 0, 'alive');
 
 INSERT
     INTO trees (id, lat, lon, species, added_at, updated_at, added_by, updated_by, state)

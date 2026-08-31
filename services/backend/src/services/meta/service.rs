@@ -1,4 +1,4 @@
-use crate::domain::tree::Tree;
+use crate::domain::tree::{Tree, TreeState};
 use crate::services::{Context, Injectable};
 use crate::types::{Error, Result};
 use html_escape::encode_double_quoted_attribute_to_string;
@@ -100,16 +100,16 @@ impl MetaService {
     }
 
     fn format_description(tree: &Tree) -> String {
-        match tree.state.as_str() {
-            "gone" => format!(
+        match tree.state {
+            TreeState::Gone => format!(
                 "There once was a {} tree at {}, {}.",
                 tree.species, tree.lat, tree.lon
             ),
-            "stump" => format!(
+            TreeState::Stump => format!(
                 "What's left of a {} tree at {}, {}.",
                 tree.species, tree.lat, tree.lon
             ),
-            state => format!("A {} tree at {}, {}.", state, tree.lat, tree.lon),
+            state => format!("A {} tree at {}, {}.", state.as_str(), tree.lat, tree.lon),
         }
         .to_string()
     }
