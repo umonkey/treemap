@@ -24,7 +24,6 @@ export class SearchResultsSidebarLogic {
 	selectTree = (tree: ITree) => {
 		this.selectedTreeId = tree.id;
 		const ll = { lat: tree.lat, lng: tree.lon };
-		mapBus.emit('move', ll);
 		mapBus.emit('pin', ll);
 	};
 

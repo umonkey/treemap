@@ -181,7 +181,7 @@ describe('Search Results Page', () => {
 		// Clicking tree1 selects it
 		await user.click(tree1Card);
 
-		expect(mockedMapBusEmit).toHaveBeenCalledWith('move', { lat: 40.18, lng: 44.51 });
+		expect(mockedMapBusEmit).not.toHaveBeenCalledWith('move', expect.any(Object));
 		expect(mockedMapBusEmit).toHaveBeenCalledWith('pin', { lat: 40.18, lng: 44.51 });
 		expect(tree1Card.classList.contains('selected')).toBe(true);
 		expect(tree1Card.getAttribute('aria-pressed')).toBe('true');
@@ -382,7 +382,7 @@ describe('Search Results Page', () => {
 		});
 	});
 
-	test('emits move event with tree coordinates when a tree item is clicked', async () => {
+	test('emits pin event with tree coordinates when a tree item is clicked', async () => {
 		const user = userEvent.setup();
 		mockedSearchTrees.mockResolvedValueOnce({
 			status: 200,
@@ -410,7 +410,7 @@ describe('Search Results Page', () => {
 		const tree1Card = screen.getByRole('button', { name: /Quercus robur alive/i });
 		await user.click(tree1Card);
 
-		expect(mockedMapBusEmit).toHaveBeenCalledWith('move', { lat: 40.18, lng: 44.51 });
+		expect(mockedMapBusEmit).not.toHaveBeenCalledWith('move', expect.any(Object));
 		expect(mockedMapBusEmit).toHaveBeenCalledWith('pin', { lat: 40.18, lng: 44.51 });
 		expect(tree1Card.classList.contains('selected')).toBe(true);
 		expect(tree1Card.getAttribute('aria-pressed')).toBe('true');
@@ -458,14 +458,14 @@ describe('Search Results Page', () => {
 		tree1Card.focus();
 		await user.keyboard('{Enter}');
 
-		expect(mockedMapBusEmit).toHaveBeenCalledWith('move', { lat: 40.18, lng: 44.51 });
+		expect(mockedMapBusEmit).not.toHaveBeenCalledWith('move', expect.any(Object));
 		expect(mockedMapBusEmit).toHaveBeenCalledWith('pin', { lat: 40.18, lng: 44.51 });
 		expect(tree1Card.classList.contains('selected')).toBe(true);
 
 		tree2Card.focus();
 		await user.keyboard(' ');
 
-		expect(mockedMapBusEmit).toHaveBeenCalledWith('move', { lat: 40.19, lng: 44.52 });
+		expect(mockedMapBusEmit).not.toHaveBeenCalledWith('move', expect.any(Object));
 		expect(mockedMapBusEmit).toHaveBeenCalledWith('pin', { lat: 40.19, lng: 44.52 });
 		expect(tree2Card.classList.contains('selected')).toBe(true);
 		expect(tree1Card.classList.contains('selected')).toBe(false);
@@ -522,14 +522,14 @@ describe('Search Results Page', () => {
 			expect(mockedGoto).toHaveBeenCalledWith(routes.mapPreview('tree-123'));
 		});
 
-		test('selectTree sets selectedTreeId and emits map move', () => {
+		test('selectTree sets selectedTreeId and emits map pin', () => {
 			const logic = new SearchResultsSidebarLogic();
 			const tree = { ...DEFAULT_TREE, id: 'tree-123', lat: 40.18, lon: 44.51 };
 
 			logic.selectTree(tree);
 
 			expect(logic.selectedTreeId).toBe('tree-123');
-			expect(mockedMapBusEmit).toHaveBeenCalledWith('move', { lat: 40.18, lng: 44.51 });
+			expect(mockedMapBusEmit).not.toHaveBeenCalledWith('move', expect.any(Object));
 			expect(mockedMapBusEmit).toHaveBeenCalledWith('pin', { lat: 40.18, lng: 44.51 });
 		});
 
