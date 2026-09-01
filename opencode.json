@@ -4,6 +4,15 @@
     "treemap": {
       "type": "remote",
       "url": "https://api.treemaps.app/mcp"
+    },
+    "sentry": {
+      "type": "remote",
+      "url": "https://mcp.sentry.dev/mcp",
+      "enabled": true,
+      "oauth": false,
+      "headers": {
+          "Authorization": "Sentry-Bearer {env:SENTRY_AUTH_TOKEN}"
+      }
     }
   }
 }
