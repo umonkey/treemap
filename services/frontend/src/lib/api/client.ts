@@ -29,12 +29,24 @@ export async function request<T>(
 		}
 
 		if (response.status >= 400) {
-			const err: IRawError = await response.json();
+			let errorObj = {
+				code: 'http_error',
+				description: response.statusText || `HTTP error ${response.status}`
+			};
+
+			try {
+				const err: IRawError = await response.json();
+				if (err?.error) {
+					errorObj = err.error;
+				}
+			} catch {
+				// Non-JSON response body (e.g., HTML error page from gateway)
+			}
 
 			return {
 				status: response.status,
 				data: undefined,
-				error: err.error
+				error: errorObj
 			};
 		}
 
@@ -47,7 +59,7 @@ export async function request<T>(
 	} catch (e: any) {
 		const duration = Math.round(performance.now() - start);
 
-		console.error(`[api] Sent ${method} to /${path} in ${duration} ms`, e);
+		console.warn(`[api] Sent ${method} to /${path} in ${duration} ms`, e);
 
 		return {
 			status: 500,
