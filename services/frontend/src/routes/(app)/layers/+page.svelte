@@ -9,15 +9,15 @@
 <Dialog title={locale.title()} variant="bottom">
 	<div class="base-layers">
 		<SelectButton
-			value="basic"
-			label={locale.baseDetails()}
-			active={selectorState.base === 'basic'}
-			onClick={selectorState.setBase}
-		/>
-		<SelectButton
 			value="light"
 			label={locale.baseLight()}
 			active={selectorState.base === 'light'}
+			onClick={selectorState.setBase}
+		/>
+		<SelectButton
+			value="basic"
+			label={locale.baseDetails()}
+			active={selectorState.base === 'basic'}
 			onClick={selectorState.setBase}
 		/>
 		<SelectButton

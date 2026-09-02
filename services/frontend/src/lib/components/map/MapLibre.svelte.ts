@@ -22,7 +22,7 @@ import { mapMarkerStore } from '$lib/stores/mapMarker.svelte';
 import { mapPoiStore } from '$lib/stores/mapPoi.svelte';
 
 const BASIC_LAYER = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${config.mapTilerKey}&language=${locale.lang}`;
-const LIGHT_LAYER = `https://api.maptiler.com/maps/positron/style.json?key=${config.mapTilerKey}&language=${locale.lang}`;
+const LIGHT_LAYER = `https://api.maptiler.com/maps/base-v4-light/style.json?key=${config.mapTilerKey}&language=${locale.lang}`;
 const DRONE_LAYER = 'https://treemap-tiles.fra1.cdn.digitaloceanspaces.com/{z}/{x}/{y}.png';
 
 const GOOGLE_LAYER: StyleSpecification = {
@@ -40,7 +40,7 @@ const GOOGLE_LAYER: StyleSpecification = {
 
 class MapLibre {
 	map = $state.raw<Map>();
-	layer = $state<string | StyleSpecification>(BASIC_LAYER);
+	layer = $state<string | StyleSpecification>(LIGHT_LAYER);
 	droneLayer = $state<string | undefined>(undefined);
 	alertsLayer = $state<boolean>(true);
 	panoramasLayer = $state<boolean>(false);
@@ -218,12 +218,12 @@ class MapLibre {
 
 		const base = get(mapLayerStore).base;
 
-		if (base === 'light') {
-			this.layer = LIGHT_LAYER;
+		if (base === 'basic') {
+			this.layer = BASIC_LAYER;
 		} else if (base === 'google') {
 			this.layer = GOOGLE_LAYER;
 		} else {
-			this.layer = BASIC_LAYER;
+			this.layer = LIGHT_LAYER;
 		}
 
 		if (get(mapLayerStore).drone) {

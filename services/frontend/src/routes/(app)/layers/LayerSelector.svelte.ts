@@ -2,7 +2,7 @@ import { get } from 'svelte/store';
 import { mapLayerStore } from '$lib/stores/mapLayerStore';
 
 class SelectorState {
-	base = $state<string>('basic');
+	base = $state<string>('light');
 	drone = $state<boolean>(false);
 	alerts = $state<boolean>(true);
 	panoramas = $state<boolean>(false);
@@ -11,7 +11,7 @@ class SelectorState {
 
 	public constructor() {
 		const layers = get(mapLayerStore);
-		this.base = layers.base ?? 'basic';
+		this.base = layers.base ?? 'light';
 		this.drone = layers.drone ?? false;
 		this.alerts = layers.alerts ?? true;
 		this.panoramas = layers.panoramas ?? false;

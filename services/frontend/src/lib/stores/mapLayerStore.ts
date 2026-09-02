@@ -14,7 +14,7 @@ interface IMapLayers {
 
 const getDefaultState = (): IMapLayers => {
 	return {
-		base: 'basic',
+		base: 'light',
 		drone: false,
 		alerts: true,
 		panoramas: false,
