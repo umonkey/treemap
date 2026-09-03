@@ -16,7 +16,7 @@
 	{#if state.isValidGcp(gcp)}
 		<Marker lngLat={[gcp.lng, gcp.lat]}>
 			<div class="gcp-marker">
-				<span>{gcp.index}</span>
+				<span>{gcp.label}</span>
 			</div>
 		</Marker>
 	{/if}

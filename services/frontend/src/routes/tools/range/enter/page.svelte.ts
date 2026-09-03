@@ -24,7 +24,8 @@ export class RangeEnterState {
 					lat: g.lat,
 					lng: g.lng,
 					radius: 0,
-					index: i + 1
+					index: i + 1,
+					label: String.fromCharCode(65 + i)
 				});
 			}
 		}

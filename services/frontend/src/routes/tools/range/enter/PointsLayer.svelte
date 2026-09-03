@@ -15,10 +15,12 @@
 	const state = new PointsLayerLogic();
 </script>
 
-{#each trees as tree}
+{#each trees as tree, i}
 	{#if state.isValidPoint(tree)}
 		<Marker lngLat={[tree.lng, tree.lat]}>
-			<div class="recorded-tree-marker" title="Recorded Tree"></div>
+			<div class="recorded-tree-marker" title="Tree #{i + 1}">
+				<span>{i + 1}</span>
+			</div>
 		</Marker>
 	{/if}
 {/each}
@@ -40,11 +42,17 @@
 	}
 
 	.recorded-tree-marker {
-		width: 18px;
-		height: 18px;
+		width: 24px;
+		height: 24px;
 		background-color: #1b5e20;
+		color: #fff;
 		border: 2px solid #fff;
 		border-radius: 50%;
-		box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 12px;
+		font-weight: bold;
+		box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
 	}
 </style>

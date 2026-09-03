@@ -30,7 +30,7 @@
 	<div class="inputs-list">
 		{#each pageState.gcps as gcp, i}
 			<NumberInput
-				label={lang.gcpRadiusLabel(gcp.index)}
+				label={lang.gcpRadiusLabel(gcp.label)}
 				value={pageState.radii[i]}
 				min="0"
 				step="0.1"

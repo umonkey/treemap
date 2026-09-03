@@ -8,6 +8,7 @@ import type { ITriangulatedTree } from '../store.svelte';
 export interface IGcpWithRadius extends ILatLng {
 	radius: number;
 	index: number;
+	label: string;
 }
 
 export class RangeMapPreviewState {
