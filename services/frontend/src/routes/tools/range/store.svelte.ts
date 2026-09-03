@@ -11,6 +11,7 @@ export interface ITriangulatedTree {
 export class RangeToolStore {
 	gcps = $state<Array<ILatLng | null>>([null, null, null, null]);
 	trees = $state<ITriangulatedTree[]>([]);
+	selectedTree = $state<string | undefined>(undefined);
 
 	constructor() {
 		this.init();
@@ -56,6 +57,10 @@ export class RangeToolStore {
 		ls.write('range_tool_gcps', this.gcps);
 	};
 
+	setSelectedTree = (id: string | undefined) => {
+		this.selectedTree = id;
+	};
+
 	addTree = (location: ILatLng) => {
 		if (!location || Number.isNaN(location.lat) || Number.isNaN(location.lng)) return;
 		const newTree: ITriangulatedTree = {
@@ -70,11 +75,15 @@ export class RangeToolStore {
 
 	removeTree = (id: string) => {
 		this.trees = this.trees.filter((t) => t.id !== id);
+		if (this.selectedTree === id) {
+			this.selectedTree = undefined;
+		}
 		ls.write('range_tool_trees', this.trees);
 	};
 
 	clearTrees = () => {
 		this.trees = [];
+		this.selectedTree = undefined;
 		ls.write('range_tool_trees', this.trees);
 	};
 

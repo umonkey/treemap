@@ -3,6 +3,7 @@
 	import { PointsLayerLogic } from './PointsLayer.svelte.ts';
 	import type { ILatLng } from '$lib/types';
 	import type { ITriangulatedTree } from '../store.svelte';
+	import { rangeStore } from '../store.svelte';
 
 	const {
 		trees = [],
@@ -17,10 +18,16 @@
 
 {#each trees as tree, i}
 	{#if state.isValidPoint(tree)}
+		{@const isSelected = tree.id === rangeStore.selectedTree}
 		<Marker lngLat={[tree.lng, tree.lat]}>
-			<div class="recorded-tree-marker" title="Tree #{i + 1}">
+			<button
+				type="button"
+				class="recorded-tree-marker {isSelected ? 'selected' : ''}"
+				title="Tree #{i + 1}"
+				onclick={() => rangeStore.setSelectedTree(tree.id)}
+			>
 				<span>{i + 1}</span>
-			</div>
+			</button>
 		</Marker>
 	{/if}
 {/each}
@@ -42,8 +49,8 @@
 	}
 
 	.recorded-tree-marker {
-		width: 24px;
-		height: 24px;
+		width: 28px;
+		height: 28px;
 		background-color: #1b5e20;
 		color: #fff;
 		border: 2px solid #fff;
@@ -54,5 +61,20 @@
 		font-size: 12px;
 		font-weight: bold;
 		box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+		cursor: pointer;
+		padding: 0;
+		transition:
+			transform 0.2s,
+			box-shadow 0.2s;
+
+		&:hover {
+			transform: scale(1.1);
+		}
+
+		&.selected {
+			background-color: #d32f2f;
+			border: 3px solid #ffeb3b;
+			box-shadow: 0 0 8px rgba(211, 47, 47, 0.8);
+		}
 	}
 </style>

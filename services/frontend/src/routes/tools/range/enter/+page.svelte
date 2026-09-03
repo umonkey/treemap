@@ -3,9 +3,9 @@
 	import Button from '$lib/ui/button/Button.svelte';
 	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
 	import MapPreview from './MapPreview.svelte';
-	import TreeList from './TreeList.svelte';
+	import TreeSettings from './TreeSettings.svelte';
 	import { RangeEnterState } from './page.svelte.ts';
-	import { lang } from './lang';
+	import { lang } from './enterLang';
 
 	const pageState = new RangeEnterState();
 </script>
@@ -27,7 +27,7 @@
 			/>
 		</div>
 
-		<TreeList />
+		<TreeSettings />
 
 		<div class="inputs-list">
 			{#each pageState.gcps as gcp, i}

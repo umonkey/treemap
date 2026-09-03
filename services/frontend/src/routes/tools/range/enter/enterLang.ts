@@ -6,5 +6,6 @@ export const lang = {
 	back: 'Change GCP',
 	addTree: 'Add tree',
 	recordedTrees: 'Recorded Trees:',
-	removeTree: 'Remove'
+	removeTree: 'Remove',
+	keep: 'Keep'
 };

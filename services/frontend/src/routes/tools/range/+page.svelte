@@ -5,7 +5,7 @@
 	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
 	import MapPreview from './MapPreview.svelte';
 	import { RangeSetupState } from './page.svelte.ts';
-	import { lang } from './lang';
+	import { lang } from './setupLang';
 
 	const pageState = new RangeSetupState();
 </script>
