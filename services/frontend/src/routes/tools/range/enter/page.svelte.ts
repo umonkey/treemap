@@ -58,6 +58,13 @@ export class RangeEnterState {
 	});
 
 	trees = $derived(rangeStore.trees);
+	treesCount = $derived(rangeStore.trees.length);
+
+	handleDone = () => {
+		if (this.treesCount > 0) {
+			goto(routes.toolsRangeSubmit());
+		}
+	};
 
 	removeTree = (id: string) => {
 		rangeStore.removeTree(id);

@@ -44,9 +44,14 @@
 
 		<div class="actions">
 			<Button type="secondary" onClick={pageState.handleBack}>{lang.back}</Button>
-			{#if pageState.suggestedLocation}
-				<Button onClick={pageState.handleAddTree}>{lang.addTree}</Button>
-			{/if}
+			<div style="display: flex; gap: 0.5rem;">
+				{#if pageState.treesCount > 0}
+					<Button onClick={pageState.handleDone}>{lang.continue}</Button>
+				{/if}
+				{#if pageState.suggestedLocation}
+					<Button onClick={pageState.handleAddTree}>{lang.addTree}</Button>
+				{/if}
+			</div>
 		</div>
 	</div>
 </AuthWrapper>
