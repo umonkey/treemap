@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Button from '$lib/ui/button/Button.svelte';
 	import LocationInput from '$lib/ui/location-input/LocationInput.svelte';
+	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
 	import { RangeSetupState } from './page.svelte.ts';
 	import { lang } from './lang';
 
@@ -11,25 +12,27 @@
 	<title>{lang.title}</title>
 </svelte:head>
 
-<div class="range-setup">
-	<h1>{lang.title}</h1>
-	<p class="intro">{lang.intro}</p>
+<AuthWrapper permission="tree:create">
+	<div class="range-setup">
+		<h1>{lang.title}</h1>
+		<p class="intro">{lang.intro}</p>
 
-	<div class="gcp-list">
-		{#each pageState.gcps as gcp, i}
-			<LocationInput
-				label={lang.gcpLabel(i + 1)}
-				value={gcp}
-				onChange={(val) => pageState.setGcp(i, val)}
-				onClear={() => pageState.clearGcp(i)}
-			/>
-		{/each}
-	</div>
+		<div class="gcp-list">
+			{#each pageState.gcps as gcp, i}
+				<LocationInput
+					label={lang.gcpLabel(i + 1)}
+					value={gcp}
+					onChange={(val) => pageState.setGcp(i, val)}
+					onClear={() => pageState.clearGcp(i)}
+				/>
+			{/each}
+		</div>
 
-	<div class="actions">
-		<Button disabled={!pageState.canContinue} onClick={pageState.handleContinue}>Continue</Button>
+		<div class="actions">
+			<Button disabled={!pageState.canContinue} onClick={pageState.handleContinue}>Continue</Button>
+		</div>
 	</div>
-</div>
+</AuthWrapper>
 
 <style>
 	.range-setup {

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import NumberInput from '$lib/ui/number-input/NumberInput.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
+	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
 	import MapPreview from './MapPreview.svelte';
 	import TreeList from './TreeList.svelte';
 	import { RangeEnterState } from './page.svelte.ts';
@@ -13,40 +14,42 @@
 	<title>{lang.title}</title>
 </svelte:head>
 
-<div class="range-enter">
-	<h1>{lang.title}</h1>
-	<p class="intro">{lang.intro}</p>
+<AuthWrapper permission="tree:create">
+	<div class="range-enter">
+		<h1>{lang.title}</h1>
+		<p class="intro">{lang.intro}</p>
 
-	<div class="preview-container">
-		<MapPreview
-			gcps={pageState.mapGcpsWithIndex}
-			suggestedLocation={pageState.suggestedLocation}
-			trees={pageState.trees}
-		/>
-	</div>
-
-	<TreeList />
-
-	<div class="inputs-list">
-		{#each pageState.gcps as gcp, i}
-			<NumberInput
-				label={lang.gcpRadiusLabel(gcp.label)}
-				value={pageState.radii[i]}
-				min="0"
-				step="0.1"
-				placeholder="Distance in meters"
-				onChange={(val) => pageState.setRadius(i, val)}
+		<div class="preview-container">
+			<MapPreview
+				gcps={pageState.mapGcpsWithIndex}
+				suggestedLocation={pageState.suggestedLocation}
+				trees={pageState.trees}
 			/>
-		{/each}
-	</div>
+		</div>
 
-	<div class="actions">
-		<Button type="secondary" onClick={pageState.handleBack}>{lang.back}</Button>
-		{#if pageState.suggestedLocation}
-			<Button onClick={pageState.handleAddTree}>{lang.addTree}</Button>
-		{/if}
+		<TreeList />
+
+		<div class="inputs-list">
+			{#each pageState.gcps as gcp, i}
+				<NumberInput
+					label={lang.gcpRadiusLabel(gcp.label)}
+					value={pageState.radii[i]}
+					min="0"
+					step="0.1"
+					placeholder="Distance in meters"
+					onChange={(val) => pageState.setRadius(i, val)}
+				/>
+			{/each}
+		</div>
+
+		<div class="actions">
+			<Button type="secondary" onClick={pageState.handleBack}>{lang.back}</Button>
+			{#if pageState.suggestedLocation}
+				<Button onClick={pageState.handleAddTree}>{lang.addTree}</Button>
+			{/if}
+		</div>
 	</div>
-</div>
+</AuthWrapper>
 
 <style>
 	.range-enter {
