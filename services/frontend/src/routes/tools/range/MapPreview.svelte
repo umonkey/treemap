@@ -13,21 +13,6 @@
 	} = $props();
 
 	const state = new RangeMapPreviewState();
-
-	const validGcp = $derived(
-		gcps.find(
-			(g) => g && !Number.isNaN(g.lat) && !Number.isNaN(g.lng) && !(g.lat === 0 && g.lng === 0)
-		)
-	);
-	const mapCenter = $derived(
-		validGcp
-			? ([validGcp.lng, validGcp.lat] as [number, number])
-			: ([44.5152, 40.1872] as [number, number])
-	);
-
-	$effect(() => {
-		state.fitBounds(gcps);
-	});
 </script>
 
 <div class="map-preview-wrapper">
@@ -35,7 +20,7 @@
 		style={state.layer}
 		bind:map={state.map}
 		class="map"
-		center={mapCenter}
+		center={[44.5152, 40.1872]}
 		zoom={14}
 		onload={() => state.fitBounds(gcps)}
 		attributionControl={false}
