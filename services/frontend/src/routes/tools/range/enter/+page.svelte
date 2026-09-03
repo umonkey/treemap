@@ -23,7 +23,8 @@
 	<div class="inputs-list">
 		{#each state.gcps as gcp, i}
 			<NumberInput
-				label={lang.gcpRadiusLabel(gcp.index, gcp.lat, gcp.lng)}
+				label={lang.gcpRadiusLabel(gcp.index)}
+				hint={`${gcp.lat.toFixed(6)}, ${gcp.lng.toFixed(6)}`}
 				value={state.radii[i]}
 				min="0"
 				step="0.1"
