@@ -1,24 +1,24 @@
 import { routes, goto } from '$lib/routes';
-import type { ILatLng } from '$lib/types';
-import { ls } from '$lib/utils/localStorage';
-import { triangulateTree } from '$lib/utils/triangulation';
 import { locationStore } from '$lib/stores/locationStore';
 import { get } from 'svelte/store';
+import { rangeStore } from '../store.svelte';
+import { triangulateTree } from '$lib/utils/triangulation';
+import type { IGcpWithRadius } from './MapPreview.svelte.ts';
 
 export class RangeEnterState {
-	gcps = $state<Array<ILatLng & { radius: number; index: number }>>([]);
+	gcps = $state<IGcpWithRadius[]>([]);
 	radii = $state<number[]>([]);
 
 	constructor() {
-		const saved = ls.read('range_tool_gcps');
-		if (!Array.isArray(saved)) {
+		const validGcps = rangeStore.validGcps;
+		if (validGcps.length < 2) {
 			goto(routes.toolsRange());
 			return;
 		}
 
-		const validWithIndices: Array<ILatLng & { radius: number; index: number }> = [];
-		for (let i = 0; i < saved.length; i++) {
-			const g = saved[i];
+		const validWithIndices: IGcpWithRadius[] = [];
+		for (let i = 0; i < rangeStore.gcps.length; i++) {
+			const g = rangeStore.gcps[i];
 			if (g && !Number.isNaN(g.lat) && !Number.isNaN(g.lng) && !(g.lat === 0 && g.lng === 0)) {
 				validWithIndices.push({
 					lat: g.lat,
@@ -29,11 +29,6 @@ export class RangeEnterState {
 			}
 		}
 
-		if (validWithIndices.length < 2) {
-			goto(routes.toolsRange());
-			return;
-		}
-
 		this.gcps = validWithIndices;
 		this.radii = new Array(validWithIndices.length).fill(0);
 	}
@@ -42,12 +37,6 @@ export class RangeEnterState {
 		const next = [...this.radii];
 		next[index] = Math.max(0, val);
 		this.radii = next;
-
-		const nextGcps = this.gcps.map((g, i) => ({
-			...g,
-			radius: this.radii[i] || 0
-		}));
-		this.gcps = nextGcps;
 	};
 
 	mapGcpsWithIndex = $derived(
@@ -67,13 +56,20 @@ export class RangeEnterState {
 		return triangulateTree(inputGcps, operatorPos);
 	});
 
+	trees = $derived(rangeStore.trees);
+
+	removeTree = (id: string) => {
+		rangeStore.removeTree(id);
+	};
+
 	handleBack = () => {
 		goto(routes.toolsRange());
 	};
 
 	handleAddTree = () => {
 		if (this.suggestedLocation) {
-			goto(routes.treeAdd());
+			rangeStore.addTree(this.suggestedLocation);
+			this.radii = new Array(this.gcps.length).fill(0);
 		}
 	};
 }

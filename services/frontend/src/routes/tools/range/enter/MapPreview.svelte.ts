@@ -4,6 +4,7 @@ import { locale } from '$lib/locale';
 import type { ILatLng } from '$lib/types';
 import circle from '@turf/circle';
 import type { FeatureCollection, Feature, Polygon } from 'geojson';
+import type { ITriangulatedTree } from '../store.svelte';
 
 export interface IGcpWithRadius extends ILatLng {
 	radius: number;
@@ -15,11 +16,12 @@ export class RangeMapPreviewState {
 
 	layer = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${config.mapTilerKey}&language=${locale.lang}`;
 
-	fitBounds = (
+	fitBounds(
 		gcps: IGcpWithRadius[],
 		suggestedLocation?: ILatLng | null,
-		operatorPosition?: ILatLng | null
-	) => {
+		operatorPosition?: ILatLng | null,
+		trees?: ITriangulatedTree[]
+	): void {
 		if (!this.map) return;
 		const bounds = new LngLatBounds();
 		let hasPoints = false;
@@ -57,6 +59,15 @@ export class RangeMapPreviewState {
 			hasPoints = true;
 		}
 
+		if (trees && Array.isArray(trees)) {
+			for (const t of trees) {
+				if (t && !Number.isNaN(t.lat) && !Number.isNaN(t.lng)) {
+					bounds.extend([t.lng, t.lat]);
+					hasPoints = true;
+				}
+			}
+		}
+
 		if (hasPoints) {
 			requestAnimationFrame(() => {
 				if (this.map) {
@@ -64,9 +75,9 @@ export class RangeMapPreviewState {
 				}
 			});
 		}
-	};
+	}
 
-	getCircleGeoJson = (gcp: IGcpWithRadius): FeatureCollection | null => {
+	getCircleGeoJson(gcp: IGcpWithRadius): FeatureCollection | null {
 		if (
 			!gcp ||
 			gcp.radius <= 0 ||
@@ -88,5 +99,5 @@ export class RangeMapPreviewState {
 		} catch {
 			return null;
 		}
-	};
+	}
 }

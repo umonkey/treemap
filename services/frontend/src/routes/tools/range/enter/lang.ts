@@ -3,7 +3,9 @@ export const lang = {
 	intro:
 		'Enter the measured laser distance (in meters) from each Ground Control Point to the target tree.',
 	gcpRadiusLabel: (index: number) => `Distance to GCP ${index}, meters`,
-	suggestedLocation: 'Suggested Tree Location:',
+
 	back: 'Back to Setup',
-	saveTree: 'Add Tree at Triangulated Location'
+	addTree: 'Add tree',
+	recordedTrees: 'Recorded Trees:',
+	removeTree: 'Remove'
 };

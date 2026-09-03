@@ -4,7 +4,7 @@
 	import { RangeSetupState } from './page.svelte.ts';
 	import { lang } from './lang';
 
-	const state = new RangeSetupState();
+	const pageState = new RangeSetupState();
 </script>
 
 <svelte:head>
@@ -16,18 +16,18 @@
 	<p class="intro">{lang.intro}</p>
 
 	<div class="gcp-list">
-		{#each state.gcps as gcp, i}
+		{#each pageState.gcps as gcp, i}
 			<LocationInput
 				label={lang.gcpLabel(i + 1)}
 				value={gcp}
-				onChange={(val) => state.setGcp(i, val)}
-				onClear={() => state.clearGcp(i)}
+				onChange={(val) => pageState.setGcp(i, val)}
+				onClear={() => pageState.clearGcp(i)}
 			/>
 		{/each}
 	</div>
 
 	<div class="actions">
-		<Button disabled={!state.canContinue} onClick={state.handleContinue}>Continue</Button>
+		<Button disabled={!pageState.canContinue} onClick={pageState.handleContinue}>Continue</Button>
 	</div>
 </div>
 

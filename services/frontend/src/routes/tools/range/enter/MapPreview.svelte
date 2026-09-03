@@ -4,14 +4,17 @@
 	import TreeLayer from '$lib/components/map/TreeLayer.svelte';
 	import { RangeMapPreviewState, type IGcpWithRadius } from './MapPreview.svelte.ts';
 	import type { ILatLng } from '$lib/types';
+	import type { ITriangulatedTree } from '../store.svelte';
 	import { locationStore } from '$lib/stores/locationStore';
 
 	const {
 		gcps,
-		suggestedLocation
+		suggestedLocation,
+		trees = []
 	}: {
 		gcps: IGcpWithRadius[];
 		suggestedLocation?: ILatLng | null;
+		trees?: ITriangulatedTree[];
 	} = $props();
 
 	const state = new RangeMapPreviewState();
@@ -29,7 +32,7 @@
 	);
 
 	$effect(() => {
-		state.fitBounds(gcps, suggestedLocation, operatorPos);
+		state.fitBounds(gcps, suggestedLocation, operatorPos, trees);
 	});
 </script>
 
@@ -40,7 +43,7 @@
 		class="map"
 		center={mapCenter}
 		zoom={14}
-		onload={() => state.fitBounds(gcps, suggestedLocation, operatorPos)}
+		onload={() => state.fitBounds(gcps, suggestedLocation, operatorPos, trees)}
 		attributionControl={false}
 	>
 		<TreeLayer />
@@ -73,6 +76,14 @@
 						</GeoJSON>
 					{/if}
 				{/if}
+			{/if}
+		{/each}
+
+		{#each trees as tree}
+			{#if !Number.isNaN(tree.lat) && !Number.isNaN(tree.lng)}
+				<Marker lngLat={[tree.lng, tree.lat]}>
+					<div class="recorded-tree-marker" title="Recorded Tree"></div>
+				</Marker>
 			{/if}
 		{/each}
 
@@ -136,5 +147,14 @@
 		border: 3px solid #fff;
 		border-radius: 50%;
 		box-shadow: 0 0 6px rgba(0, 0, 0, 0.6);
+	}
+
+	.recorded-tree-marker {
+		width: 18px;
+		height: 18px;
+		background-color: #1b5e20;
+		border: 2px solid #fff;
+		border-radius: 50%;
+		box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 	}
 </style>

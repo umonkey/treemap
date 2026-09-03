@@ -1,43 +1,20 @@
 import { routes, goto } from '$lib/routes';
 import type { ILatLng } from '$lib/types';
-import { ls } from '$lib/utils/localStorage';
+import { rangeStore } from './store.svelte';
 
 export class RangeSetupState {
-	gcps = $state<Array<ILatLng | null>>([null, null, null, null]);
-
-	constructor() {
-		const saved = ls.read('range_tool_gcps');
-		if (Array.isArray(saved)) {
-			this.gcps = [0, 1, 2, 3].map((i) => {
-				const g = saved[i];
-				if (!g || Number.isNaN(g.lat) || Number.isNaN(g.lng) || (g.lat === 0 && g.lng === 0)) {
-					return null;
-				}
-				return g;
-			});
-		}
-	}
+	gcps = $derived(rangeStore.gcps);
 
 	setGcp = (index: number, val: ILatLng) => {
-		const next = [...this.gcps];
-		next[index] = val;
-		this.gcps = next;
-		ls.write('range_tool_gcps', this.gcps);
+		rangeStore.setGcp(index, val);
 	};
 
 	clearGcp = (index: number) => {
-		const next = [...this.gcps];
-		next[index] = null;
-		this.gcps = next;
-		ls.write('range_tool_gcps', this.gcps);
+		rangeStore.clearGcp(index);
 	};
 
-	validCount = $derived(
-		this.gcps.filter(
-			(g) => g && !Number.isNaN(g.lat) && !Number.isNaN(g.lng) && !(g.lat === 0 && g.lng === 0)
-		).length
-	);
-	canContinue = $derived(this.validCount >= 2);
+	validCount = $derived(rangeStore.validCount);
+	canContinue = $derived(rangeStore.canContinue);
 
 	handleContinue = () => {
 		if (this.canContinue) {
