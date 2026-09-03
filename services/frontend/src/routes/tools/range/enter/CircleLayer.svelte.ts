@@ -1,4 +1,4 @@
-import type { IGcpWithRadius } from './EnterMapPreview.svelte.ts';
+import type { IGcpWithRadius } from './MapPreview.svelte.ts';
 import circle from '@turf/circle';
 import type { FeatureCollection, Feature, Polygon } from 'geojson';
 

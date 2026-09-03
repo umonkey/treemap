@@ -7,10 +7,9 @@
 	import GcpLayer from '../GcpLayer.svelte';
 	import CircleLayer from './CircleLayer.svelte';
 	import PointsLayer from './PointsLayer.svelte';
-	import { RangeMapPreviewState, type IGcpWithRadius } from './EnterMapPreview.svelte.ts';
+	import { RangeMapPreviewState, type IGcpWithRadius } from './MapPreview.svelte.ts';
 	import type { ILatLng } from '$lib/types';
 	import type { ITriangulatedTree } from '../store.svelte';
-	import { locationStore } from '$lib/stores/locationStore';
 
 	const {
 		gcps,
@@ -23,18 +22,8 @@
 	} = $props();
 
 	const state = new RangeMapPreviewState();
-	const operatorPos = $derived($locationStore);
-
-	const validGcp = $derived(
-		gcps.find(
-			(g) => g && !Number.isNaN(g.lat) && !Number.isNaN(g.lng) && !(g.lat === 0 && g.lng === 0)
-		)
-	);
-	const mapCenter = $derived(
-		validGcp
-			? ([validGcp.lng, validGcp.lat] as [number, number])
-			: ([44.5152, 40.1872] as [number, number])
-	);
+	const operatorPos = $derived(state.operatorPos);
+	const mapCenter = $derived(state.getMapCenter(gcps));
 
 	$effect(() => {
 		state.fitBounds(gcps, suggestedLocation, operatorPos, trees);

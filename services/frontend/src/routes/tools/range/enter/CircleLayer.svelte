@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { GeoJSON, FillLayer, LineLayer } from 'svelte-maplibre';
 	import { CircleLayerLogic } from './CircleLayer.svelte.ts';
-	import type { IGcpWithRadius } from './EnterMapPreview.svelte.ts';
+	import type { IGcpWithRadius } from './MapPreview.svelte.ts';
 
 	const {
 		gcps

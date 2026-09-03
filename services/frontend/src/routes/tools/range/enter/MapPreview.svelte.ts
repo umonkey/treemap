@@ -4,6 +4,8 @@ import { locale } from '$lib/locale';
 import type { ILatLng } from '$lib/types';
 import circle from '@turf/circle';
 import type { ITriangulatedTree } from '../store.svelte';
+import { locationStore } from '$lib/stores/locationStore';
+import { get } from 'svelte/store';
 
 export interface IGcpWithRadius extends ILatLng {
 	radius: number;
@@ -16,12 +18,28 @@ export class RangeMapPreviewState {
 
 	layer = `https://api.maptiler.com/maps/base-v4-light/style.json?key=${config.mapTilerKey}&language=${locale.lang}`;
 
-	fitBounds(
+	get operatorPos() {
+		return get(locationStore);
+	}
+
+	getValidGcp = (gcps: IGcpWithRadius[]) =>
+		gcps.find(
+			(g) => g && !Number.isNaN(g.lat) && !Number.isNaN(g.lng) && !(g.lat === 0 && g.lng === 0)
+		);
+
+	getMapCenter = (gcps: IGcpWithRadius[]): [number, number] => {
+		const validGcp = this.getValidGcp(gcps);
+		return validGcp
+			? ([validGcp.lng, validGcp.lat] as [number, number])
+			: ([44.5152, 40.1872] as [number, number]);
+	};
+
+	fitBounds = (
 		gcps: IGcpWithRadius[],
 		suggestedLocation?: ILatLng | null,
 		operatorPosition?: ILatLng | null,
 		trees?: ITriangulatedTree[]
-	): void {
+	): void => {
 		if (!this.map) return;
 		const bounds = new LngLatBounds();
 		let hasPoints = false;
@@ -75,5 +93,5 @@ export class RangeMapPreviewState {
 				}
 			});
 		}
-	}
+	};
 }
