@@ -25,13 +25,15 @@
 
 		<div class="gcp-list">
 			{#each pageState.gcps as gcp, i}
-				{@const label = String.fromCharCode(65 + i)}
-				<LocationInput
-					label={lang.gcpLabel(label)}
-					value={gcp}
-					onChange={(val) => pageState.setGcp(i, val)}
-					onClear={() => pageState.clearGcp(i)}
-				/>
+				{#if i === 0 || (pageState.gcps[i - 1] !== null && !Number.isNaN(pageState.gcps[i - 1]?.lat) && !Number.isNaN(pageState.gcps[i - 1]?.lng) && !(pageState.gcps[i - 1]?.lat === 0 && pageState.gcps[i - 1]?.lng === 0))}
+					{@const label = String.fromCharCode(65 + i)}
+					<LocationInput
+						label={lang.gcpLabel(label)}
+						value={gcp}
+						onChange={(val) => pageState.setGcp(i, val)}
+						onClear={() => pageState.clearGcp(i)}
+					/>
+				{/if}
 			{/each}
 		</div>
 

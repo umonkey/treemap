@@ -49,7 +49,9 @@ export class RangeToolStore {
 
 	clearGcp = (index: number) => {
 		const next = [...this.gcps];
-		next[index] = null;
+		for (let i = index; i < next.length; i++) {
+			next[i] = null;
+		}
 		this.gcps = next;
 		ls.write('range_tool_gcps', this.gcps);
 	};
