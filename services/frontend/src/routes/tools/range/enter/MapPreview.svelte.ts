@@ -36,9 +36,8 @@ export class RangeMapPreviewState {
 
 	fitBounds = (
 		gcps: IGcpWithRadius[],
-		suggestedLocation?: ILatLng | null,
-		operatorPosition?: ILatLng | null,
-		trees?: ITriangulatedTree[]
+		trees?: ITriangulatedTree[],
+		suggestedLocation?: ILatLng | null
 	): void => {
 		if (!this.map) return;
 		const bounds = new LngLatBounds();
@@ -65,15 +64,6 @@ export class RangeMapPreviewState {
 			!Number.isNaN(suggestedLocation.lng)
 		) {
 			bounds.extend([suggestedLocation.lng, suggestedLocation.lat]);
-			hasPoints = true;
-		}
-
-		if (
-			operatorPosition &&
-			!Number.isNaN(operatorPosition.lat) &&
-			!Number.isNaN(operatorPosition.lng)
-		) {
-			bounds.extend([operatorPosition.lng, operatorPosition.lat]);
 			hasPoints = true;
 		}
 

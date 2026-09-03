@@ -22,11 +22,10 @@
 	} = $props();
 
 	const state = new RangeMapPreviewState();
-	const operatorPos = $derived(state.operatorPos);
 	const mapCenter = $derived(state.getMapCenter(gcps));
 
 	$effect(() => {
-		state.fitBounds(gcps, suggestedLocation, operatorPos, trees);
+		state.fitBounds(gcps, trees, suggestedLocation);
 	});
 </script>
 
@@ -37,7 +36,7 @@
 		class="map"
 		center={mapCenter}
 		zoom={14}
-		onload={() => state.fitBounds(gcps, suggestedLocation, operatorPos, trees)}
+		onload={() => state.fitBounds(gcps, trees, suggestedLocation)}
 		attributionControl={false}
 	>
 		<TreeLayer />
