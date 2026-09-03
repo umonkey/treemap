@@ -3,6 +3,8 @@
 	import type { ILatLng } from '$lib/types';
 	import FormElement from '$lib/ui/form-element/FormElement.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
+	import CheckIcon from '$lib/icons/CheckIcon.svelte';
+	import CrossIcon from '$lib/icons/CrossIcon.svelte';
 	import { mapBus } from '$lib/buses/mapBus';
 	import { onMount } from 'svelte';
 
@@ -46,16 +48,19 @@
 		<Button
 			type="secondary"
 			disabled={!lastCenter}
+			square
 			onClick={() => {
 				if (lastCenter) {
 					onChange?.(lastCenter);
 				}
 			}}
 		>
-			Select
+			<CheckIcon />
 		</Button>
-		{#if value && onClear}
-			<Button type="danger" onClick={onClear}>Clear</Button>
+		{#if onClear}
+			<Button type="danger" disabled={!value} square onClick={onClear}>
+				<CrossIcon />
+			</Button>
 		{/if}
 	</div>
 </FormElement>

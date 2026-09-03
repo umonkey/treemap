@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Button from '$lib/ui/button/Button.svelte';
+	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import LocationInput from '$lib/ui/location-input/LocationInput.svelte';
 	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
 	import MapPreview from './MapPreview.svelte';
@@ -34,9 +35,9 @@
 			{/each}
 		</div>
 
-		<div class="actions">
+		<Buttons>
 			<Button disabled={!pageState.canContinue} onClick={pageState.handleContinue}>Continue</Button>
-		</div>
+		</Buttons>
 	</div>
 </AuthWrapper>
 
@@ -70,11 +71,5 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
-	}
-
-	.actions {
-		display: flex;
-		justify-content: flex-end;
-		margin-top: 1rem;
 	}
 </style>
