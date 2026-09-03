@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { MapLibre, Marker } from 'svelte-maplibre';
+	import { MapLibre } from 'svelte-maplibre';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import TreeLayer from '$lib/components/map/TreeLayer.svelte';
+	import LocationTracker from '$lib/components/map/LocationTracker.svelte';
 	import GcpLayer from './GcpLayer.svelte';
 	import CircleLayer from './CircleLayer.svelte';
 	import PointsLayer from './PointsLayer.svelte';
@@ -54,11 +55,7 @@
 		<GcpLayer {gcps} />
 		<PointsLayer {trees} {suggestedLocation} />
 
-		{#if operatorPos && !Number.isNaN(operatorPos.lat) && !Number.isNaN(operatorPos.lng)}
-			<Marker lngLat={[operatorPos.lng, operatorPos.lat]}>
-				<div class="operator-marker" title="Operator Location"></div>
-			</Marker>
-		{/if}
+		<LocationTracker />
 	</MapLibre>
 </div>
 
@@ -75,14 +72,5 @@
 	:global(.map) {
 		width: 100%;
 		height: 100%;
-	}
-
-	.operator-marker {
-		width: 16px;
-		height: 16px;
-		background-color: #525f7a;
-		border: 2px solid #fff;
-		border-radius: 50%;
-		box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
 	}
 </style>
