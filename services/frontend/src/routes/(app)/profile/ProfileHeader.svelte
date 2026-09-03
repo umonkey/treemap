@@ -2,8 +2,6 @@
 	import HEADER_IMAGE from '$lib/assets/header.jpg';
 	import UserPic from '$lib/components/layout/UserPic.svelte';
 	import { locale } from '$lib/locale';
-	import { hasPermission } from '$lib/stores/authStore';
-	import Button from '$lib/ui/button/Button.svelte';
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import SignOutButton from './SignOutButton.svelte';
 
@@ -32,9 +30,6 @@
 
 		<Buttons>
 			<SignOutButton />
-			{#if $hasPermission('user:manage')}
-				<Button link="/admin">Admin</Button>
-			{/if}
 		</Buttons>
 	</div>
 </div>

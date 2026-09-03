@@ -92,9 +92,14 @@
 		}
 
 		&.square {
-			aspect-ratio: 1;
-			line-height: 14px;
-			padding: 7px;
+			aspect-ratio: 1 / 1;
+			flex-shrink: 0;
+			width: 34px;
+			height: 34px;
+			padding: 8px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
 			overflow: hidden;
 		}
 	}

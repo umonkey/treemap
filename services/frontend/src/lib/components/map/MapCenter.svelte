@@ -3,18 +3,26 @@
 	import { mapBus } from '$lib/buses/mapBus';
 	import CrossHair from '$lib/icons/CrossHair.svelte';
 	import { mapState } from './MapLibre.svelte.ts';
+	import { getMapContext } from 'svelte-maplibre';
+
+	const mapContext = getMapContext();
 
 	onMount(() => {
 		const update = () => {
-			if (mapState.map) {
-				const center = mapState.map.getCenter();
+			const map = mapContext?.map || mapState.map;
+			if (map) {
+				const center = map.getCenter();
 				mapBus.emit('center', { lat: center.lat, lng: center.lng });
 			}
 		};
 
-		mapState.map?.on('move', update);
+		const map = mapContext?.map || mapState.map;
+		map?.on('move', update);
+		update();
+
 		return () => {
-			mapState.map?.off('move', update);
+			const m = mapContext?.map || mapState.map;
+			m?.off('move', update);
 		};
 	});
 </script>

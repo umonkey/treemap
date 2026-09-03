@@ -4,6 +4,7 @@
 	import { locale } from '$lib/locale';
 	import SignInButton from '$lib/ui/sign-in-button/SignInButton.svelte';
 	import ProfileHeader from './ProfileHeader.svelte';
+	import ToolList from './ToolList.svelte';
 	import { pageState } from './page.svelte';
 
 	$effect(() => {
@@ -34,4 +35,6 @@
 	/>
 
 	<UserHeatMap id={pageState.data.user.id} />
+
+	<ToolList />
 {/if}
