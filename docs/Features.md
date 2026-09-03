@@ -82,3 +82,13 @@ The application provides advanced search and filtering capabilities to help user
 - Filtering: search trees by state, address, species, presence or absence of specific measurements, and data age such as recent photos.
 - List view: view matching trees in a structured list with quick selection to jump directly to map locations.
 - Data export: download the entire search result set as a CSV file for research, reporting, or external analysis.
+
+## Trilateration
+
+The application includes a trilateration tool that assists field arborists and volunteers in mapping trees located in obstructed environments where direct GPS positioning is impractical or inaccurate.
+
+- Purpose: enables high-accuracy tree positioning via laser range finder measurements from visible reference points when direct GPS is inaccurate or unavailable.
+- Reference landmarks: utilizes ground control points (GCPs) such as building corners or street infrastructure picked on an interactive map.
+- Survey flexibility: allows changing or updating GCPs on the fly when surveying broad areas or long avenues.
+- Batch creation: records multiple trees locally before batch-submitting default blank trees to the database.
+- Detailed documentation: refers to `Trilateration-feature.md` for full operational and architectural guidelines.
