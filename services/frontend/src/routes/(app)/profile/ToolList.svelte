@@ -4,17 +4,19 @@
 	const componentState = new ToolListLogic();
 </script>
 
-<h2>Available tools</h2>
+<div>
+	<h2>Available tools</h2>
 
-{#if componentState.items.length > 0}
-	<ul>
-		{#each componentState.items as item}
-			<li><a href={item.href}>{item.name}</a></li>
-		{/each}
-	</ul>
-{:else}
-	<p>No extra tools are available to you at this moment.</p>
-{/if}
+	{#if componentState.items.length > 0}
+		<ul>
+			{#each componentState.items as item}
+				<li><a href={item.href}>{item.name}</a></li>
+			{/each}
+		</ul>
+	{:else}
+		<p>No extra tools are available to you at this moment.</p>
+	{/if}
+</div>
 
 <style>
 	h2 {
