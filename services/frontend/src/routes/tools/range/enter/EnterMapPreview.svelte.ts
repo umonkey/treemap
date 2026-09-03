@@ -14,7 +14,7 @@ export interface IGcpWithRadius extends ILatLng {
 export class RangeMapPreviewState {
 	map = $state.raw<Map | undefined>(undefined);
 
-	layer = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${config.mapTilerKey}&language=${locale.lang}`;
+	layer = `https://api.maptiler.com/maps/base-v4-light/style.json?key=${config.mapTilerKey}&language=${locale.lang}`;
 
 	fitBounds(
 		gcps: IGcpWithRadius[],

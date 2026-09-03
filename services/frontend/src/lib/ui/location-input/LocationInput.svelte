@@ -3,7 +3,8 @@
 	import type { ILatLng } from '$lib/types';
 	import FormElement from '$lib/ui/form-element/FormElement.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
-	import LocationPickerDialog from './LocationPickerDialog.svelte';
+	import { mapBus } from '$lib/buses/mapBus';
+	import { onMount } from 'svelte';
 
 	const {
 		value,
@@ -19,7 +20,17 @@
 		onClear?: () => void;
 	} = $props();
 
-	let showPicker = $state(false);
+	let lastCenter = $state<ILatLng | null>(null);
+
+	onMount(() => {
+		const handler = (pos: ILatLng) => {
+			lastCenter = pos;
+		};
+		mapBus.on('center', handler);
+		return () => {
+			mapBus.off('center', handler);
+		};
+	});
 
 	const formatLocation = (ll?: ILatLng | null): string => {
 		if (!ll || Number.isNaN(ll.lat) || Number.isNaN(ll.lng)) return '';
@@ -32,23 +43,22 @@
 <FormElement label={label ?? locale.locationLabel()} {hint}>
 	<div class="group">
 		<input type="text" value={formattedLocation} readonly={true} placeholder="Not set" />
-		<Button type="secondary" onClick={() => (showPicker = true)}>Select on map</Button>
+		<Button
+			type="secondary"
+			disabled={!lastCenter}
+			onClick={() => {
+				if (lastCenter) {
+					onChange?.(lastCenter);
+				}
+			}}
+		>
+			Select
+		</Button>
 		{#if value && onClear}
 			<Button type="danger" onClick={onClear}>Clear</Button>
 		{/if}
 	</div>
 </FormElement>
-
-{#if showPicker}
-	<LocationPickerDialog
-		{value}
-		onSelect={(val) => {
-			onChange?.(val);
-			showPicker = false;
-		}}
-		onCancel={() => (showPicker = false)}
-	/>
-{/if}
 
 <style>
 	.group {

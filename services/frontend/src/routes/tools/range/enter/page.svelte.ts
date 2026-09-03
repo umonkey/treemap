@@ -3,7 +3,7 @@ import { locationStore } from '$lib/stores/locationStore';
 import { get } from 'svelte/store';
 import { rangeStore } from '../store.svelte';
 import { triangulateTree } from '$lib/utils/triangulation';
-import type { IGcpWithRadius } from './MapPreview.svelte.ts';
+import type { IGcpWithRadius } from './EnterMapPreview.svelte.ts';
 
 export class RangeEnterState {
 	gcps = $state<IGcpWithRadius[]>([]);

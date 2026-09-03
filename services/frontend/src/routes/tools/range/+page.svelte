@@ -2,6 +2,7 @@
 	import Button from '$lib/ui/button/Button.svelte';
 	import LocationInput from '$lib/ui/location-input/LocationInput.svelte';
 	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
+	import MapPreview from './MapPreview.svelte';
 	import { RangeSetupState } from './page.svelte.ts';
 	import { lang } from './lang';
 
@@ -17,10 +18,15 @@
 		<h1>{lang.title}</h1>
 		<p class="intro">{lang.intro}</p>
 
+		<div class="preview-container">
+			<MapPreview gcps={pageState.gcpsWithLabels} />
+		</div>
+
 		<div class="gcp-list">
 			{#each pageState.gcps as gcp, i}
+				{@const label = String.fromCharCode(65 + i)}
 				<LocationInput
-					label={lang.gcpLabel(i + 1)}
+					label={lang.gcpLabel(label)}
 					value={gcp}
 					onChange={(val) => pageState.setGcp(i, val)}
 					onClear={() => pageState.clearGcp(i)}
@@ -54,6 +60,10 @@
 		color: var(--pico-muted-color);
 		font-size: 0.95rem;
 		line-height: 1.4;
+	}
+
+	.preview-container {
+		width: 100%;
 	}
 
 	.gcp-list {
