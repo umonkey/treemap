@@ -1,7 +1,10 @@
 <script lang="ts">
-	import { MapLibre, GeoJSON, LineLayer, FillLayer, Marker } from 'svelte-maplibre';
+	import { MapLibre, Marker } from 'svelte-maplibre';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import TreeLayer from '$lib/components/map/TreeLayer.svelte';
+	import GcpLayer from './GcpLayer.svelte';
+	import CircleLayer from './CircleLayer.svelte';
+	import PointsLayer from './PointsLayer.svelte';
 	import { RangeMapPreviewState, type IGcpWithRadius } from './MapPreview.svelte.ts';
 	import type { ILatLng } from '$lib/types';
 	import type { ITriangulatedTree } from '../store.svelte';
@@ -47,55 +50,13 @@
 		attributionControl={false}
 	>
 		<TreeLayer />
-
-		{#each gcps as gcp}
-			{#if !Number.isNaN(gcp.lat) && !Number.isNaN(gcp.lng) && !(gcp.lat === 0 && gcp.lng === 0)}
-				<Marker lngLat={[gcp.lng, gcp.lat]}>
-					<div class="gcp-marker">
-						<span>{gcp.index}</span>
-					</div>
-				</Marker>
-
-				{#if gcp.radius > 0}
-					{@const gj = state.getCircleGeoJson(gcp)}
-					{#if gj}
-						<GeoJSON data={gj}>
-							<FillLayer
-								paint={{
-									'fill-color': '#0172ad',
-									'fill-opacity': 0.15
-								}}
-							/>
-							<LineLayer
-								paint={{
-									'line-color': '#0172ad',
-									'line-width': 2,
-									'line-opacity': 0.7
-								}}
-							/>
-						</GeoJSON>
-					{/if}
-				{/if}
-			{/if}
-		{/each}
-
-		{#each trees as tree}
-			{#if !Number.isNaN(tree.lat) && !Number.isNaN(tree.lng)}
-				<Marker lngLat={[tree.lng, tree.lat]}>
-					<div class="recorded-tree-marker" title="Recorded Tree"></div>
-				</Marker>
-			{/if}
-		{/each}
+		<CircleLayer {gcps} />
+		<GcpLayer {gcps} />
+		<PointsLayer {trees} {suggestedLocation} />
 
 		{#if operatorPos && !Number.isNaN(operatorPos.lat) && !Number.isNaN(operatorPos.lng)}
 			<Marker lngLat={[operatorPos.lng, operatorPos.lat]}>
 				<div class="operator-marker" title="Operator Location"></div>
-			</Marker>
-		{/if}
-
-		{#if suggestedLocation && !Number.isNaN(suggestedLocation.lat) && !Number.isNaN(suggestedLocation.lng)}
-			<Marker lngLat={[suggestedLocation.lng, suggestedLocation.lat]}>
-				<div class="suggested-tree-marker" title="Suggested Tree Location"></div>
 			</Marker>
 		{/if}
 	</MapLibre>
@@ -116,21 +77,6 @@
 		height: 100%;
 	}
 
-	.gcp-marker {
-		width: 24px;
-		height: 24px;
-		background-color: #000;
-		color: #fff;
-		border: 2px solid #fff;
-		border-radius: 50%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-size: 12px;
-		font-weight: bold;
-		box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
-	}
-
 	.operator-marker {
 		width: 16px;
 		height: 16px;
@@ -138,23 +84,5 @@
 		border: 2px solid #fff;
 		border-radius: 50%;
 		box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
-	}
-
-	.suggested-tree-marker {
-		width: 22px;
-		height: 22px;
-		background-color: #2e7d32;
-		border: 3px solid #fff;
-		border-radius: 50%;
-		box-shadow: 0 0 6px rgba(0, 0, 0, 0.6);
-	}
-
-	.recorded-tree-marker {
-		width: 18px;
-		height: 18px;
-		background-color: #1b5e20;
-		border: 2px solid #fff;
-		border-radius: 50%;
-		box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 	}
 </style>

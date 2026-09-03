@@ -3,7 +3,6 @@ import { config } from '$lib/env';
 import { locale } from '$lib/locale';
 import type { ILatLng } from '$lib/types';
 import circle from '@turf/circle';
-import type { FeatureCollection, Feature, Polygon } from 'geojson';
 import type { ITriangulatedTree } from '../store.svelte';
 
 export interface IGcpWithRadius extends ILatLng {
@@ -31,7 +30,7 @@ export class RangeMapPreviewState {
 				bounds.extend([g.lng, g.lat]);
 				hasPoints = true;
 				if (g.radius > 0) {
-					const c = circle([g.lng, g.lat], g.radius / 1000, { units: 'kilometers' });
+					const c = circle([g.lng, g.lat], g.radius, { units: 'meters' });
 					if (c.geometry?.coordinates?.[0]) {
 						for (const ring of c.geometry.coordinates[0]) {
 							bounds.extend(ring as [number, number]);
@@ -74,30 +73,6 @@ export class RangeMapPreviewState {
 					this.map.fitBounds(bounds, { padding: 40, animate: false });
 				}
 			});
-		}
-	}
-
-	getCircleGeoJson(gcp: IGcpWithRadius): FeatureCollection | null {
-		if (
-			!gcp ||
-			gcp.radius <= 0 ||
-			Number.isNaN(gcp.lat) ||
-			Number.isNaN(gcp.lng) ||
-			(gcp.lat === 0 && gcp.lng === 0)
-		) {
-			return null;
-		}
-		try {
-			const turfCircle = circle([gcp.lng, gcp.lat], gcp.radius / 1000, {
-				units: 'kilometers',
-				steps: 64
-			});
-			return {
-				type: 'FeatureCollection',
-				features: [turfCircle as Feature<Polygon>]
-			};
-		} catch {
-			return null;
 		}
 	}
 }
