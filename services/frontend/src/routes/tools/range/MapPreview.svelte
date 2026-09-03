@@ -3,6 +3,8 @@
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import TreeLayer from '$lib/components/map/TreeLayer.svelte';
 	import MapCenter from '$lib/components/map/MapCenter.svelte';
+	import LocateButton from '$lib/components/map/LocateButton.svelte';
+	import LocationTracker from '$lib/components/map/LocationTracker.svelte';
 	import GcpLayer from './GcpLayer.svelte';
 	import { RangeMapPreviewState, type IGcpWithRadius } from './MapPreview.svelte.ts';
 
@@ -28,6 +30,8 @@
 		<TreeLayer />
 		<GcpLayer {gcps} />
 		<MapCenter />
+		<LocateButton />
+		<LocationTracker />
 	</MapLibre>
 </div>
 

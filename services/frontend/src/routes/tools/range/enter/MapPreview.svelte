@@ -3,6 +3,7 @@
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import TreeLayer from '$lib/components/map/TreeLayer.svelte';
 	import LocationTracker from '$lib/components/map/LocationTracker.svelte';
+	import LocateButton from '$lib/components/map/LocateButton.svelte';
 	import GcpLayer from '../GcpLayer.svelte';
 	import CircleLayer from './CircleLayer.svelte';
 	import PointsLayer from './PointsLayer.svelte';
@@ -55,6 +56,7 @@
 		<GcpLayer {gcps} />
 		<PointsLayer {trees} {suggestedLocation} />
 
+		<LocateButton />
 		<LocationTracker />
 	</MapLibre>
 </div>
