@@ -81,10 +81,10 @@ def print_report(error):
         desc = "Very reliable for tree triangulation."
     elif error < 1.5:
         status = "ACCEPTABLE"
-        desc = "Geometry is solid, but GPS constraints may be tight."
+        desc = "Geometry is solid."
     else:
         status = "POOR"
-        desc = "Geometry is stressed. Check for GPS/visual conflicts."
+        desc = "Geometry is stressed. Check for visual conflicts."
 
     print(f"Status: {status}")
     print("-" * 50)
@@ -96,7 +96,7 @@ def print_report(error):
         print("likely in the OSM/Satellite Map, NOT your SfM data.")
     else:
         print("\nTRUST LEVEL: MEDIUM")
-        print("There is some tension between images and GPS.")
+        print("There is some tension between images.")
     print("="*50 + "\n")
 
 if __name__ == "__main__":

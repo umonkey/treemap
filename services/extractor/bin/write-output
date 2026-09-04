@@ -78,8 +78,7 @@ def main(dataset_dir, output_dir):
                 with open(reference_lla_path, 'r') as f:
                     ref_lla = json.load(f)
             else:
-                print(f"Warning: No reference_lla found for reconstruction {i}. Skipping.")
-                continue
+                ref_lla = {'latitude': 0.0, 'longitude': 0.0, 'altitude': 0.0}
 
         lat_ref = ref_lla['latitude']
         lon_ref = ref_lla['longitude']
@@ -151,14 +150,6 @@ def main(dataset_dir, output_dir):
 
             csv_data.append({
                 'SourceFile': os.path.abspath(dst_path),
-                'GPSLatitude': lat,
-                'GPSLatitudeRef': 'N' if lat >= 0 else 'S',
-                'GPSLongitude': lon,
-                'GPSLongitudeRef': 'E' if lon >= 0 else 'W',
-                'GPSAltitude': alt,
-                'GPSAltitudeRef': 0 if alt >= 0 else 1,
-                'GPSImgDirection': heading,
-                'GPSImgDirectionRef': 'T',
                 'XMP-GPano:PoseHeadingDegrees': heading,
                 'XMP-GPano:PosePitchDegrees': pitch,
                 'XMP-GPano:PoseRollDegrees': roll,

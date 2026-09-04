@@ -7,8 +7,8 @@ feature_process_size_panorama: 2048
 
 # Optimization: Sequential Matching
 matching_order_neighbors: 20  # Match ±8 frames in chronological sequence
-matching_gps_distance: 50      # Limit search for near images to 50m to avoid false matches and save time
-matching_gps_neighbors: 10    # Cap the number of GPS-based matches to 10 to prevent exhaustive searching
+matching_gps_distance: 0        # Disabled GPS matching
+matching_gps_neighbors: 0       # Disabled GPS matching
 
 # High point count for stability
 min_features: 4000
@@ -21,17 +21,11 @@ min_track_length: 3
 # Use masks to ignore the car hood
 use_masks: yes
 
-# --- Turn-Aware GPS Constraints ---
-# Active GPS Constraints
-bundle_use_gps: yes
+# --- Local Coordinate Reconstruction ---
+bundle_use_gps: no
 
-# Increased to 10.0 to provide sufficient anchor force on straight segments with adaptive DOP.
-gps_weight: 10.0
-bundle_gps_vertical_weight: 0.01
-
-# Disable the problematic Horizontal Prior
-align_method: naive
-align_orientation_prior: vertical
+align_method: none
+align_orientation_prior: none
 
 # Solver Stability: Frequent Global Bundle
 # This prevents drift from ever building up.

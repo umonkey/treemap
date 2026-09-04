@@ -19,7 +19,7 @@ time bin/download-dataset
 sync
 
 # (2) Extract frames.
-# This extracts a single frame every 3 meters, from the original video.
+# This extracts frames at fixed frame intervals from the original video.
 if [ ! -f $DATASET/frames_extracted.txt ]; then
     echo "=== Extracting frames ==="
     time bin/app extract $DATASET/video.mp4 $DATASET/images
@@ -73,19 +73,7 @@ else
     echo "Found previously extracted metadata."
 fi
 
-# (5) Apply Turn-Aware GPS Smoothing and metadata injection
-# Smoothen the coordinates to avoid consumer grade signal fluctuation,
-# using a turn-aware algorithm to avoid smoothing sharp turns.
-if [ ! -f $DATASET/smoothed_coordinates.txt ]; then
-    echo "=== Smoothing the GPS coordinates ==="
-    time bin/smooth-gps $DATASET/exif
-    time bin/upload-dataset $DATASET smoothed_coordinates.txt
-    sync
-else
-    echo "Found previously smoothed coordinates."
-fi
-
-# (6) Run the core SfM pipeline
+# (5) Run the core SfM pipeline
 if [ ! -f $DATASET/features_detected.txt ]; then
     echo "=== OpenSfM: detect_features ==="
     time opensfm detect_features $DATASET
@@ -122,7 +110,7 @@ else
     echo "Found previously reconstructed scene."
 fi
 
-# (7) Prune outlierpoints (500m+)
+# (6) Prune outlier points (500m+)
 if [ ! -f $DATASET/points_pruned.txt ]; then
     echo "=== Pruning remote points ==="
     bin/prune-points $DATASET
@@ -141,14 +129,14 @@ else
     echo "Found previously exported ply."
 fi
 
-# (8) Verify result quality
+# (7) Verify result quality
 echo "=== Verifying errors ==="
 bin/verify-error $DATASET
 
-# (9) Final output generation
+# (8) Final output generation
 echo "=== Writing output ==="
 bin/write-output $DATASET var/output
 
-# (10) Upload the results.
+# (9) Upload the results.
 echo "=== Uploading results ==="
 time bin/upload-results
