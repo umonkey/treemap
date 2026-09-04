@@ -51,7 +51,7 @@ class Writer:
         img.save(filename, "JPEG", exif=exif_bytes, quality=95)
 
         if self._total_frames:
-            percent = int((index + 1) / self._total_frames * 100)
+            percent = min(100, int((index + 1) / self._total_frames * 100))
             print(
                 f"Writing frame {index+1}/{self._total_frames} "
                 f"({percent}%) as {filename}"

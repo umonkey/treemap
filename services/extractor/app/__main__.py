@@ -63,7 +63,7 @@ def handle_extract(args):
 
         writer = Writer(
             folder=args.output_folder,
-            total_frames=len(target_indices),
+            total_frames=reader.total_frames,
         )
 
         missing_targets = []
