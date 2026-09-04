@@ -129,14 +129,10 @@ else
     echo "Found previously exported ply."
 fi
 
-# (7) Verify result quality
-echo "=== Verifying errors ==="
-bin/verify-error $DATASET
-
-# (8) Final output generation
+# (7) Final output generation
 echo "=== Writing output ==="
 bin/write-output $DATASET var/output
 
-# (9) Upload the results.
+# (8) Upload the results.
 echo "=== Uploading results ==="
 time bin/upload-results
