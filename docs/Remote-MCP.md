@@ -27,6 +27,15 @@ The MCP server provides several specialized tools for querying and analyzing tre
 - `get_street_stats`: returns detailed tree health counts and attribute update freshness breakdowns for a specific street.
   - street: the name of the street to query (required).
 
+- `list_alerts`: returns a list of citizen feedback alerts with optional filtering by status and ID, ensuring complete anonymity.
+  - since_id: only return alerts with ID greater than this value.
+  - status: filter by alert status (default new, pass empty string or null for all).
+  - limit: number of alerts to return (default 20, maximum 100).
+  - order: sort order by ID (`asc` or `desc`, default `asc`).
+
+- `get_alert`: returns details of a specific citizen feedback alert by ID, with complete anonymity.
+  - id: the ID of the alert to retrieve (required).
+
 ## Client Setup and Configuration
 
 To connect an MCP-compliant client (such as Claude Desktop, OpenCode, Cursor, or Cline) to the remote MCP server, add the server configuration to your client configuration file.

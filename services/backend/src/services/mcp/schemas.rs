@@ -124,6 +124,19 @@ pub struct McpTool {
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
+pub struct McpAlert {
+    pub id: u64,
+    pub created_at: u64,
+    pub status: String,
+    pub lat: Option<f64>,
+    pub lon: Option<f64>,
+    pub description: Option<String>,
+    pub preview_url: String,
+    pub photos: Vec<String>,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct McpTree {
     pub id: u64,
     pub url: String,

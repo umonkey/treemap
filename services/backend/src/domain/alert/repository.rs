@@ -30,6 +30,43 @@ impl AlertRepository {
         self.fetch(&sql, params).await
     }
 
+    pub async fn get_filtered(
+        &self,
+        since_id: Option<u64>,
+        status: Option<&str>,
+        limit: u64,
+        order_asc: bool,
+    ) -> Result<Vec<Alert>> {
+        let order_str = if order_asc { "ASC" } else { "DESC" };
+
+        let sql = format!(
+            "SELECT * FROM `{}` WHERE (? IS NULL OR id > ?) AND (? IS NULL OR status = ?) ORDER BY id {} LIMIT ?",
+            TABLE, order_str
+        );
+
+        let params = vec![
+            match since_id {
+                Some(id) => Value::from(id as i64),
+                None => Value::Null,
+            },
+            match since_id {
+                Some(id) => Value::from(id as i64),
+                None => Value::Null,
+            },
+            match status {
+                Some(s) => Value::from(s.to_string()),
+                None => Value::Null,
+            },
+            match status {
+                Some(s) => Value::from(s.to_string()),
+                None => Value::Null,
+            },
+            Value::from(limit as i64),
+        ];
+
+        self.fetch(&sql, &params).await
+    }
+
     async fn query_single(&self, query: SelectQuery) -> Result<Option<Alert>> {
         match self.db.get_record(query).await {
             Ok(Some(props)) => Ok(Some(Alert::from_attributes(&props)?)),

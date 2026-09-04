@@ -1,4 +1,7 @@
+use crate::domain::alert::AlertRepository;
+use crate::domain::alert_photo::AlertPhotoRepository;
 use crate::domain::tree::TreeRepository;
+use crate::infra::config::Config;
 use crate::infra::database::{Database, Value as DbValue};
 use crate::services::mcp::schemas::*;
 use crate::services::{Context, Injectable};
@@ -37,6 +40,9 @@ GROUP BY address_normalized
 
 pub struct McpService {
     repo: Arc<TreeRepository>,
+    alert_repo: Arc<AlertRepository>,
+    photo_repo: Arc<AlertPhotoRepository>,
+    config: Arc<Config>,
     db: Arc<Database>,
 }
 
@@ -166,6 +172,50 @@ impl McpService {
                     "required": ["street"]
                 }),
             },
+            McpTool {
+                name: "list_alerts".to_string(),
+                description: "Returns a list of citizen feedback alerts with optional filtering by status and ID, ensuring complete anonymity.".to_string(),
+                input_schema: json!({
+                    "type": "object",
+                    "properties": {
+                        "since_id": {
+                            "type": "integer",
+                            "description": "Only return alerts with ID greater than this value"
+                        },
+                        "status": {
+                            "type": "string",
+                            "description": "Filter by alert status (default 'new', pass empty or null for all)",
+                            "default": "new"
+                        },
+                        "limit": {
+                            "type": "integer",
+                            "description": "Number of alerts to return (default 20, maximum 100)",
+                            "minimum": 1,
+                            "maximum": 100
+                        },
+                        "order": {
+                            "type": "string",
+                            "description": "Sort order by ID: asc or desc (default asc)",
+                            "enum": ["asc", "desc"],
+                            "default": "asc"
+                        }
+                    }
+                }),
+            },
+            McpTool {
+                name: "get_alert".to_string(),
+                description: "Returns details of a specific citizen feedback alert by ID, with complete anonymity.".to_string(),
+                input_schema: json!({
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer",
+                            "description": "The ID of the alert to retrieve"
+                        }
+                    },
+                    "required": ["id"]
+                }),
+            },
         ];
 
         JsonRpcResponse::success(id, json!({ "tools": tools }))
@@ -185,6 +235,8 @@ impl McpService {
             Some("list_widest") => self.handle_list_widest(arguments).await,
             Some("list_streets") => self.handle_list_streets(arguments).await,
             Some("get_street_stats") => self.handle_get_street_stats(arguments).await,
+            Some("list_alerts") => self.handle_list_alerts(arguments).await,
+            Some("get_alert") => self.handle_get_alert(arguments).await,
             _ => {
                 return JsonRpcResponse::error(id, METHOD_NOT_FOUND, "Tool not found");
             }
@@ -325,12 +377,137 @@ impl McpService {
             Err(e) => CallToolResult::error_text(format!("Database error: {}", e)),
         }
     }
+
+    async fn handle_list_alerts(&self, args: JsonValue) -> CallToolResult {
+        let since_id = args.get("since_id").and_then(|v| v.as_u64());
+
+        let status = match args.get("status") {
+            Some(JsonValue::String(s)) if s.is_empty() => None,
+            Some(JsonValue::String(s)) => Some(s.as_str()),
+            Some(JsonValue::Null) => None,
+            None => Some("new"),
+            _ => Some("new"),
+        };
+
+        let limit = args
+            .get("limit")
+            .and_then(|v| v.as_u64())
+            .unwrap_or(20)
+            .min(100);
+
+        let order = args.get("order").and_then(|v| v.as_str()).unwrap_or("asc");
+
+        let order_asc = order != "desc";
+
+        match self
+            .alert_repo
+            .get_filtered(since_id, status, limit, order_asc)
+            .await
+        {
+            Ok(alerts) => {
+                let alert_ids: Vec<u64> = alerts.iter().map(|a| a.id).collect();
+
+                let photos_map = self
+                    .photo_repo
+                    .get_by_alert_ids(&alert_ids)
+                    .await
+                    .unwrap_or_default();
+
+                let files_base_url = &self.config.files_base_url;
+
+                let website_url = &self.config.website_url;
+
+                let mcp_alerts: Vec<McpAlert> = alerts
+                    .into_iter()
+                    .map(|alert| {
+                        let raw_photos = photos_map.get(&alert.id).cloned().unwrap_or_default();
+
+                        let photos = raw_photos
+                            .into_iter()
+                            .map(|path| format!("{}{}", files_base_url, path))
+                            .collect();
+
+                        let preview_url = format!("{}/alert/{}/preview", website_url, alert.id);
+
+                        McpAlert {
+                            id: alert.id,
+                            created_at: alert.created_at,
+                            status: alert.status,
+                            lat: alert.lat,
+                            lon: alert.lon,
+                            description: alert.description,
+                            preview_url,
+                            photos,
+                        }
+                    })
+                    .collect();
+
+                CallToolResult::success(vec![McpContent::text(
+                    serde_json::to_string_pretty(&mcp_alerts).unwrap_or_else(|_| "[]".to_string()),
+                )])
+            }
+            Err(e) => CallToolResult::error_text(format!("Database error: {}", e)),
+        }
+    }
+
+    async fn handle_get_alert(&self, args: JsonValue) -> CallToolResult {
+        let id = match args.get("id").and_then(|v| v.as_u64()) {
+            Some(i) => i,
+            None => {
+                return CallToolResult::error_text("Missing or invalid 'id' argument".to_string())
+            }
+        };
+
+        match self.alert_repo.get(id).await {
+            Ok(Some(alert)) => {
+                let raw_photos: Vec<String> = self
+                    .photo_repo
+                    .get_by_alert(alert.id)
+                    .await
+                    .unwrap_or_default()
+                    .into_iter()
+                    .map(|p| p.photo_path)
+                    .collect();
+
+                let files_base_url = &self.config.files_base_url;
+
+                let website_url = &self.config.website_url;
+
+                let photos = raw_photos
+                    .into_iter()
+                    .map(|path| format!("{}{}", files_base_url, path))
+                    .collect();
+
+                let preview_url = format!("{}/alert/{}/preview", website_url, alert.id);
+
+                let mcp_alert = McpAlert {
+                    id: alert.id,
+                    created_at: alert.created_at,
+                    status: alert.status,
+                    lat: alert.lat,
+                    lon: alert.lon,
+                    description: alert.description,
+                    preview_url,
+                    photos,
+                };
+
+                CallToolResult::success(vec![McpContent::text(
+                    serde_json::to_string_pretty(&mcp_alert).unwrap_or_else(|_| "{}".to_string()),
+                )])
+            }
+            Ok(None) => CallToolResult::error_text("Alert not found".to_string()),
+            Err(e) => CallToolResult::error_text(format!("Database error: {}", e)),
+        }
+    }
 }
 
 impl Injectable for McpService {
     fn inject(ctx: &dyn Context) -> Result<Self> {
         Ok(Self {
             repo: Arc::new(ctx.build::<TreeRepository>()?),
+            alert_repo: Arc::new(ctx.build::<AlertRepository>()?),
+            photo_repo: Arc::new(ctx.build::<AlertPhotoRepository>()?),
+            config: ctx.config(),
             db: ctx.database(),
         })
     }
