@@ -22,7 +22,7 @@ sync
 # This extracts a single frame every 3 meters, from the original video.
 if [ ! -f $DATASET/frames_extracted.txt ]; then
     echo "=== Extracting frames ==="
-    time bin/app extract --distance 3 --offset "${GPX_OFFSET:-0.0}" $DATASET/video.mp4 $DATASET/track.gpx $DATASET/images
+    time bin/app extract $DATASET/video.mp4 $DATASET/images
     time bin/upload-dataset $DATASET frames_extracted.txt
     sync
 else

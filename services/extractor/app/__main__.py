@@ -5,9 +5,8 @@ import sys
 
 import av
 
-from . import Locator, Reader, Writer
+from . import Reader, Writer
 from .exceptions import UsageException
-from .locator import NoCoordinates
 from .map_match import run_map_match
 from .masks import create_masks
 
@@ -52,34 +51,19 @@ def handle_create_masks(args):
 
 def handle_extract(args):
     try:
-        locator = Locator(args.gpx_path)
-        reader = Reader(args.video_path, timestamp=args.timestamp)
+        try:
+            frame_interval = int(os.environ.get("FRAME_INTERVAL", "10"))
+        except ValueError:
+            raise UsageException("FRAME_INTERVAL must be an integer")
+        if frame_interval <= 0:
+            raise UsageException("FRAME_INTERVAL must be greater than 0")
 
-        target_indices = []
-        last_lat, last_lon = None, None
-
-        print("Planning...")
-        for index in range(reader.total_frames):
-            frame_offset_seconds = (
-                index / reader.fps if reader.fps > 0 else 0.0
-            )
-            lookup_offset = frame_offset_seconds + args.offset
-            try:
-                lat, lon, gps_time = locator.locate(lookup_offset)
-                if (
-                    last_lat is None
-                    or Writer.get_distance(last_lat, last_lon, lat, lon)
-                    >= args.distance
-                ):
-                    last_lat, last_lon = lat, lon
-                    target_indices.append(index)
-            except NoCoordinates:
-                pass
+        reader = Reader(args.video_path)
+        target_indices = list(range(0, reader.total_frames, frame_interval))
 
         writer = Writer(
-            distance=args.distance,
             folder=args.output_folder,
-            total_frames=reader.total_frames,
+            total_frames=len(target_indices),
         )
 
         missing_targets = []
@@ -97,60 +81,30 @@ def handle_extract(args):
             )
 
         print(f"Extracting {len(target_indices)} frames...")
-        for (target_idx, out_idx), (
-            index,
-            frame,
-            frame_offset_seconds,
-            current_real_time,
-        ) in zip(
-            missing_targets,
-            reader.read(indices=[t[0] for t in missing_targets]),
-        ):
-            try:
-                lookup_offset = frame_offset_seconds + args.offset
-                lat, lon, gps_time = locator.locate(lookup_offset)
-                frame_time = current_real_time
+        if missing_targets:
+            missing_indices = [t[0] for t in missing_targets]
+            for (target_idx, out_idx), (index, frame, frame_time) in zip(
+                missing_targets,
+                reader.read(indices=missing_indices),
+            ):
                 writer.write_frame(
                     index,
                     frame,
-                    frame_time or gps_time,
-                    lat,
-                    lon,
-                    gps_time,
+                    frame_time,
                     output_index=out_idx,
                 )
-            except NoCoordinates:
-                # print(f"No coordinates for frame {index}")
-                pass
     except UsageException as e:
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Map video frames to GPX coordinates.")
+    parser = argparse.ArgumentParser(description="Extract video frames.")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    extract_parser = subparsers.add_parser(
-        "extract", help="Extract frames from video and map to GPX"
-    )
+    extract_parser = subparsers.add_parser("extract", help="Extract frames from video")
     extract_parser.add_argument("video_path", help="Path to the video file")
-    extract_parser.add_argument("gpx_path", help="Path to the GPX file")
     extract_parser.add_argument("output_folder", help="Folder to save extracted frames")
-    extract_parser.add_argument(
-        "--offset", type=float, default=0.0, help="Time offset in seconds"
-    )
-    extract_parser.add_argument(
-        "--distance",
-        type=float,
-        default=3.0,
-        help="Minimum distance between frames in meters",
-    )
-    extract_parser.add_argument(
-        "--timestamp",
-        type=str,
-        help="Manually specify the video creation date (e.g., 2026-04-27T12:44:15Z)",
-    )
     extract_parser.set_defaults(func=handle_extract)
 
     match_parser = subparsers.add_parser(
