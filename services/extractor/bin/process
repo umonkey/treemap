@@ -110,16 +110,6 @@ else
     echo "Found previously reconstructed scene."
 fi
 
-# (6) Prune outlier points (500m+)
-if [ ! -f $DATASET/points_pruned.txt ]; then
-    echo "=== Pruning remote points ==="
-    bin/prune-points $DATASET
-    time bin/upload-dataset $DATASET points_pruned.txt
-    sync
-else
-    echo "Found previously pruned points."
-fi
-
 if [ ! -f $DATASET/ply_exported.txt ]; then
     echo "=== OpenSfM: export_ply ==="
     time opensfm export_ply $DATASET
@@ -129,10 +119,10 @@ else
     echo "Found previously exported ply."
 fi
 
-# (7) Final output generation
+# (6) Final output generation
 echo "=== Writing output ==="
 bin/write-output $DATASET var/output
 
-# (8) Upload the results.
+# (7) Upload the results.
 echo "=== Uploading results ==="
 time bin/upload-results
