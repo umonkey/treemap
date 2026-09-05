@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # This file reads `trajectory.geojson`,
+# filters shots by minimum distance (MIN_DISTANCE environment variable, default 5.0m),
 # finds matching source images, geo-tags them and puts them in the `var/dataset/output` folder,
 # then creates a file `images.json` with information on all images.
 
@@ -19,8 +20,28 @@ except ImportError:
 import csv
 import glob
 import json
+import math
 import shutil
 import subprocess
+
+
+def haversine_distance(lat1, lon1, lat2, lon2):
+    """Calculate the great-circle distance between two points
+
+    on the Earth (specified in decimal degrees). Returns distance in meters.
+    """
+    R = 6371000.0  # Earth radius in meters
+    phi1 = math.radians(lat1)
+    phi2 = math.radians(lat2)
+    dphi = math.radians(lat2 - lat1)
+    dlambda = math.radians(lon2 - lon1)
+
+    a = (
+        math.sin(dphi / 2.0) ** 2
+        + math.cos(phi1) * math.cos(phi2) * math.sin(dlambda / 2.0) ** 2
+    )
+    c = 2.0 * math.atan2(math.sqrt(a), math.sqrt(1.0 - a))
+    return R * c
 
 
 def main(dataset_dir, output_dir):
@@ -30,15 +51,8 @@ def main(dataset_dir, output_dir):
     for f in glob.glob(os.path.join(output_dir, "*.jpg")):
         os.remove(f)
 
-    # Copy all images to output directory to fill holes
-    print("Copying all images to output directory...")
-    images_src_dir = os.path.join(dataset_dir, "images")
-    if os.path.exists(images_src_dir):
-        for img_path in glob.glob(os.path.join(images_src_dir, "*")):
-            if os.path.isfile(img_path):
-                shutil.copy2(
-                    img_path, os.path.join(output_dir, os.path.basename(img_path))
-                )
+    min_distance = float(os.environ.get("MIN_DISTANCE", "5.0"))
+    print(f"Minimum distance filter between output images: {min_distance} meters")
 
     trajectory_path = os.path.join(dataset_dir, "trajectory.geojson")
 
@@ -55,6 +69,8 @@ def main(dataset_dir, output_dir):
     with open(trajectory_path, "r") as f:
         geojson_data = json.load(f)
 
+    # Collect and sort point features by frame index
+    point_features = []
     for feat in geojson_data.get("features", []):
         if feat.get("geometry", {}).get("type") != "Point":
             continue
@@ -63,7 +79,28 @@ def main(dataset_dir, output_dir):
         shot_id = props.get("shot_id")
         if not shot_id or shot_id in processed_shots or len(coords) < 3:
             continue
+        point_features.append((props.get("index", 0), shot_id, coords, props))
+
+    point_features.sort(key=lambda x: x[0])
+
+    last_lat, last_lon = None, None
+    written_count = 0
+    skipped_count = 0
+
+    for idx, shot_id, coords, props in point_features:
         processed_shots.add(shot_id)
+        lon, lat, alt = coords[0], coords[1], coords[2]
+
+        # Check distance from last written shot
+        if min_distance > 0 and last_lat is not None and last_lon is not None:
+            dist = haversine_distance(last_lat, last_lon, lat, lon)
+            if dist < min_distance:
+                skipped_count += 1
+                continue
+
+        # Accept this shot
+        last_lat, last_lon = lat, lon
+        written_count += 1
 
         src_path = os.path.join(dataset_dir, "images", shot_id)
         dst_path = os.path.join(output_dir, shot_id)
@@ -74,7 +111,6 @@ def main(dataset_dir, output_dir):
 
         shutil.copy2(src_path, dst_path)
 
-        lon, lat, alt = coords[0], coords[1], coords[2]
         heading = props.get("heading", 0.0)
         pitch = props.get("pitch", 0.0)
         roll = props.get("roll", 0.0)
@@ -109,6 +145,10 @@ def main(dataset_dir, output_dir):
                 "roll": float(roll),
             }
         )
+
+    print(
+        f"Distance filtering complete: kept {written_count} shots, skipped {skipped_count} shots (MIN_DISTANCE={min_distance}m)."
+    )
 
     if not csv_data:
         print("Error: No valid image shots found in trajectory.geojson.")
