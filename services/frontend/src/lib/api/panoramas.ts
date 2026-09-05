@@ -3,7 +3,6 @@ import { getAuthHeaders, request } from './client';
 
 export type PanoramaStatus =
 	| 'NEEDS_FILES'
-	| 'NEEDS_SYNC'
 	| 'NEEDS_PROCESSING'
 	| 'NEEDS_PROCESSING_FINISH'
 	| 'NEEDS_CLEAN_RESTART'
@@ -145,28 +144,6 @@ export async function finishPanoramaTrackUpload(id: string): Promise<IResponse<P
 	});
 }
 
-export interface WebVideoUrlResponse {
-	url: string;
-}
-
-export async function getPanoramaWebVideo(id: string): Promise<IResponse<WebVideoUrlResponse>> {
-	return await request<WebVideoUrlResponse>('GET', `api/panoramas/${id}/web-video`, {
-		headers: getAuthHeaders()
-	});
-}
-
-export interface ITrackPoint {
-	lat: number;
-	lng: number;
-	offset: number;
-	timestamp: string;
-}
-
-export async function getPanoramaTrackData(id: string): Promise<IResponse<ITrackPoint[]>> {
-	return await request<ITrackPoint[]>('GET', `api/panoramas/${id}/track.json`, {
-		headers: getAuthHeaders()
-	});
-}
 
 export async function getPanoramasGeoJSON(
 	n: number,

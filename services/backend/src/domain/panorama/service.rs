@@ -187,9 +187,6 @@ impl PanoramaService {
 
         if let Some(gpx_offset) = data.gpx_offset {
             panorama.gpx_offset = Some(gpx_offset);
-            if panorama.status == PanoramaStatus::NeedsSync {
-                panorama.status = PanoramaStatus::NeedsProcessing;
-            }
         }
 
         if let Some(lat_offset) = data.lat_offset {

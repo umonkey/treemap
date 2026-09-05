@@ -10,7 +10,6 @@
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import VideoUploader from './VideoUploader.svelte';
 	import TrackUploader from './TrackUploader.svelte';
-	import VideoSync from './VideoSync.svelte';
 	import PanoramaPreview from './PanoramaPreview.svelte';
 
 	const id = $derived(page.params.id as string);
@@ -104,8 +103,6 @@
 					We could not process the uploaded file: {pageState.panorama.failure_reason ||
 						'Please contact technical support.'}
 				</p>
-			{:else if pageState.panorama.status === 'NEEDS_SYNC'}
-				<VideoSync panoramaId={id} {pageState} />
 			{:else if pageState.panorama.status === 'NEEDS_PROCESSING' || pageState.panorama.status === 'NEEDS_PROCESSING_FINISH'}
 				<p>
 					We are now processing your dataset: extracting images, correcting their position, etc.

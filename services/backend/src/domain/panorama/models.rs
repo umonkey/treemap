@@ -7,7 +7,6 @@ use std::str::FromStr;
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum PanoramaStatus {
     NeedsFiles,
-    NeedsSync,
     NeedsProcessing,
     NeedsProcessingFinish,
     NeedsCleanRestart,
@@ -19,7 +18,6 @@ impl fmt::Display for PanoramaStatus {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let s = match self {
             Self::NeedsFiles => "NEEDS_FILES",
-            Self::NeedsSync => "NEEDS_SYNC",
             Self::NeedsProcessing => "NEEDS_PROCESSING",
             Self::NeedsProcessingFinish => "NEEDS_PROCESSING_FINISH",
             Self::NeedsCleanRestart => "NEEDS_CLEAN_RESTART",
@@ -37,7 +35,6 @@ impl FromStr for PanoramaStatus {
         match s.to_uppercase().as_str() {
             "NEEDS_FILES" | "DRAFT" => Ok(Self::NeedsFiles),
             "NEEDS_TRANSCODING" | "NEEDS_TRANSCODING_FINISH" => Ok(Self::NeedsProcessing),
-            "NEEDS_SYNC" => Ok(Self::NeedsSync),
             "NEEDS_PROCESSING" => Ok(Self::NeedsProcessing),
             "NEEDS_PROCESSING_FINISH" => Ok(Self::NeedsProcessingFinish),
             "NEEDS_CLEAN_RESTART" => Ok(Self::NeedsCleanRestart),
