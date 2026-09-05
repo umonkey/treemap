@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Download source video and track from the S3 file storage.
 #
 # The source S3 folder is defined in the `DATASET_URL` variable.

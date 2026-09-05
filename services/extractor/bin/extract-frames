@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # This script extracts frames from the source video at fixed intervals.
 #
 # The video is read from `var/dataset/video.mp4` and the frames are written

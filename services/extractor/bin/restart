@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Remove generated files for a panorama to restart processing.
 
 if [ -z "$1" ]; then
