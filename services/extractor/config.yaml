@@ -40,6 +40,14 @@ bundle_interval: 15
 retriangulation: yes
 retriangulation_ratio: 2.0
 
+# Enable cross-checking features to further reduce the banana effect.
+matching_symmetric: yes
+matching_lowes_ratio: 0.75
+
+# Ignore moving objects.
+robust_matching_threshold: 0.004
+robust_matching_min_inliers: 25
+
 bundle_max_iterations: 25       # Limit solver iterations and prevent memory spikes
 local_bundle_radius: 15
 bundle_new_points_ratio: 1.2    # Optimized for linear street-view sequences to reduce compute time and improve alignment stability
