@@ -1,0 +1,31 @@
+#!/bin/bash
+# This script runs the feature matching step of the OpenSfM pipeline.
+# It uses previously detected features to match images to each other.
+#
+# The output is a sequence of files `var/dataset/matches/frame_*.jpg_matches.pkl.gz`
+
+set -e
+
+if [ -z "$DATASET" ]; then
+    echo "DATASET variable not set, cannot continue."
+    exit 1
+fi
+
+# The name of the flag file to skip the process in case of a rerun.
+LOCK=features_matched.txt
+
+if [ -f $DATASET/$LOCK ]; then
+    echo "Found existing feature matches, reusing."
+    exit 0
+fi
+
+cat config.yaml > $DATASET/config.yaml
+
+mkdir -p $DATASET/features $DATASET/logs
+
+echo "=== Matching SfM features ==="
+time opensfm match_features $DATASET | tee $DATASET/logs/match_features.log
+sync
+
+# Upload the results so that if next step crashes, we don't have to re-run this.
+time bin/upload-dataset $DATASET $LOCK

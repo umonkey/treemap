@@ -1,0 +1,33 @@
+#!/bin/sh
+# This script extracts frames from the source video at fixed intervals.
+#
+# The video is read from `var/dataset/video.mp4` and the frames are written
+# to `var/dataset/images/frame_*.jpg`.
+
+if [ -z "$DATASET" ]; then
+    echo "DATASET variable not set, cannot continue."
+    exit 1
+fi
+
+if [ ! -f "$DATASET/video.mp4" ]; then
+    echo "File $DATASET/video.mp4 not found, cannot extract frames."
+    exit 1
+fi
+
+# The name of the flag file to skip the process in case of a rerun.
+LOCK=frames_extracted.txt
+
+if [ -f $DATASET/$LOCK ]; then
+    echo "Source frames already extracted."
+    exit 0
+fi
+
+mkdir -p $DATASET/images
+
+echo "Extracting frames..."
+time bin/app extract $DATASET/video.mp4 $DATASET/images
+
+# Upload the results so that if next step crashes, we don't have to re-run this.
+time bin/upload-dataset $DATASET $LOCK
+
+sync

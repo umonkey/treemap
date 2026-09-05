@@ -1,0 +1,37 @@
+#!/bin/bash
+# This script extracts EXIF metadata from each frames into a separate JSON
+# file that OpenSfM can work with.
+#
+# The video is read from `var/dataset/video.mp4` and the metadata is written
+# to `var/dataset/exif/frame_*.jpg.exif`.
+
+set -e
+
+if [ -z "$DATASET" ]; then
+    echo "DATASET variable not set, cannot continue."
+    exit 1
+fi
+
+if [ ! -f "$DATASET/images/frame_000001.jpg" ]; then
+    echo "Source frames not extracted, cannot continue."
+    exit 1
+fi
+
+# The name of the flag file to skip the process in case of a rerun.
+LOCK=metadata_extracted.txt
+
+if [ -f $DATASET/$LOCK ]; then
+    echo "Found existing metadata, reusing."
+    exit 0
+fi
+
+cat config.yaml > $DATASET/config.yaml
+
+mkdir -p $DATASET/exif
+
+echo "=== Extracting frame metadata ==="
+time opensfm extract_metadata $DATASET
+sync
+
+# Upload the results so that if next step crashes, we don't have to re-run this.
+time bin/upload-dataset $DATASET $LOCK
