@@ -20,7 +20,7 @@ cat config.yaml > $DATASET/config.yaml
 mkdir -p $DATASET/features $DATASET/logs
 
 echo "=== Reconstructing the SfM scene ==="
-time opensfm reconstruct $DATASET | tee $DATASET/logs/reconstruct.log
+time opensfm reconstruct $DATASET 2>&1 | tee $DATASET/logs/reconstruct.log
 sync
 
 # Upload the results so that if next step crashes, we don't have to re-run this.

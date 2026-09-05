@@ -16,6 +16,7 @@ LOCK=features_matched.txt
 
 if [ -f $DATASET/$LOCK ]; then
     echo "Found existing feature matches, reusing."
+    echo "Remove $DATASET/$LOCK to restart."
     exit 0
 fi
 
@@ -24,7 +25,7 @@ cat config.yaml > $DATASET/config.yaml
 mkdir -p $DATASET/features $DATASET/logs
 
 echo "=== Matching SfM features ==="
-time opensfm match_features $DATASET | tee $DATASET/logs/match_features.log
+time opensfm match_features $DATASET 2>&1 | tee $DATASET/logs/match_features.log
 sync
 
 # Upload the results so that if next step crashes, we don't have to re-run this.

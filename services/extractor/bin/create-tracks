@@ -20,7 +20,7 @@ cat config.yaml > $DATASET/config.yaml
 mkdir -p $DATASET/features $DATASET/logs
 
 echo "=== Creating SfM tracks ==="
-time opensfm create_tracks $DATASET | tee $DATASET/logs/create_tracks.log
+time opensfm create_tracks $DATASET 2>&1 | tee $DATASET/logs/create_tracks.log
 sync
 
 # Upload the results so that if next step crashes, we don't have to re-run this.
