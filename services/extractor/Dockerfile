@@ -79,6 +79,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 ENV VIRTUAL_ENV="/opt/venv"
 ENV PYTHONUNBUFFERED=1
 ENV MPLCONFIGDIR="/tmp/matplotlib"
+ENV DATASET=var/dataset
 
 # 9. Copy custom code.
 WORKDIR /app
