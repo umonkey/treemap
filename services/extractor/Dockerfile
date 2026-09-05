@@ -67,7 +67,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -g 1000 extractor && \
-    useradd -u 1000 -g extractor -s /bin/bash extractor
+    useradd -u 1000 -g extractor -s /bin/bash extractor && \
+    mkdir -p /tmp/matplotlib && \
+    chown -R extractor:extractor /tmp/matplotlib
 
 # 7. Copy the entire virtual environment
 COPY --from=builder /opt/venv /opt/venv
