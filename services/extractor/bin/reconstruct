@@ -12,6 +12,7 @@ LOCK=reconstructed.txt
 
 if [ -f $DATASET/$LOCK ]; then
     echo "Found existing reconstruction, reusing."
+    echo "Resrart with: rm -rf $DATASET/$LOCK $DATASET/reconstruction.json"
     exit 0
 fi
 

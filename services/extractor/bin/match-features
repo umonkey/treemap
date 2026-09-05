@@ -16,7 +16,7 @@ LOCK=features_matched.txt
 
 if [ -f $DATASET/$LOCK ]; then
     echo "Found existing feature matches, reusing."
-    echo "Remove $DATASET/$LOCK to restart."
+    echo "Restart with: rm -rf $DATASET/$LOCK $DATASET/matches"
     exit 0
 fi
 
