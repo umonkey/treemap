@@ -21,6 +21,7 @@ bin/detect-features
 bin/match-features
 bin/create-tracks
 bin/reconstruct
+bin/align-trajectory
 
 # Final output generation
 echo "=== Writing output ==="

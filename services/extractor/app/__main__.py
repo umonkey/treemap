@@ -9,6 +9,7 @@ from . import Reader, Writer
 from .exceptions import UsageException
 from .map_match import run_map_match
 from .masks import create_masks
+from .trajectory import run_align_trajectory
 
 
 def handle_match(args):
@@ -46,6 +47,17 @@ def handle_create_masks(args):
         sys.exit(1)
     except Exception as e:
         print(f"Error during mask creation: {e}", file=sys.stderr)
+        sys.exit(1)
+
+
+def handle_align_trajectory(args):
+    try:
+        run_align_trajectory(args.dataset_path)
+    except UsageException as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
+    except Exception as e:
+        print(f"Error during trajectory alignment: {e}", file=sys.stderr)
         sys.exit(1)
 
 
@@ -136,6 +148,14 @@ def main():
         help="Height fraction of the black mask part",
     )
     create_masks_parser.set_defaults(func=handle_create_masks)
+
+    align_trajectory_parser = subparsers.add_parser(
+        "align-trajectory", help="Align SfM reconstruction trajectory with GPS track"
+    )
+    align_trajectory_parser.add_argument(
+        "dataset_path", help="Path to dataset directory"
+    )
+    align_trajectory_parser.set_defaults(func=handle_align_trajectory)
 
     args = parser.parse_args()
     args.func(args)
