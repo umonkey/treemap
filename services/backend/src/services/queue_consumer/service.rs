@@ -1,5 +1,4 @@
 use super::schemas::*;
-use crate::domain::panorama::PanoramaDispatcher;
 use crate::domain::photo::PhotoService;
 use crate::domain::tree::TreeService;
 use crate::domain::user::*;
@@ -18,7 +17,6 @@ pub struct QueueConsumer {
     trees: Arc<TreeService>,
     photos: Arc<PhotoService>,
     users: Arc<UserService>,
-    dispatcher: Arc<PanoramaDispatcher>,
 }
 
 impl QueueConsumer {
@@ -86,10 +84,6 @@ impl QueueConsumer {
                     .await?;
             }
 
-            Ok(Some(QueueCommand::TranscodePanorama(id))) => {
-                self.dispatcher.start_transcoding(id).await?;
-            }
-
             Ok(None) => {
                 debug!("Unknown message: {msg}");
             }
@@ -110,7 +104,6 @@ impl Injectable for QueueConsumer {
             trees: Arc::new(ctx.build::<TreeService>()?),
             photos: Arc::new(ctx.build::<PhotoService>()?),
             users: Arc::new(ctx.build::<UserService>()?),
-            dispatcher: Arc::new(ctx.build::<PanoramaDispatcher>()?),
         })
     }
 }

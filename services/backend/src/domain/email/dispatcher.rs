@@ -19,12 +19,7 @@ impl EmailDispatcher {
         let mut handlebars = Handlebars::new();
         let active_dir = "templates/email";
 
-        for name in &[
-            "panorama_transcoding_failed",
-            "panorama_processing_failed",
-            "panorama_sync",
-            "panorama_ready",
-        ] {
+        for name in &["panorama_processing_failed", "panorama_ready"] {
             let html_path = format!("{}/{}.html.hbs", active_dir, name);
             let txt_path = format!("{}/{}.txt.hbs", active_dir, name);
 
@@ -98,21 +93,12 @@ impl EmailDispatcher {
 
         let subject_string;
         let subject = match template_name {
-            "panorama_transcoding_failed" => "Panorama Transcoding Failed",
             "panorama_processing_failed" => {
                 let name = data_with_url
                     .get("name")
                     .and_then(|v| v.as_str())
                     .unwrap_or("");
                 subject_string = format!("Panorama processing failed: {name}");
-                &subject_string
-            }
-            "panorama_sync" => {
-                let name = data_with_url
-                    .get("name")
-                    .and_then(|v| v.as_str())
-                    .unwrap_or("");
-                subject_string = format!("Panorama ready for sync: {name}");
                 &subject_string
             }
             "panorama_ready" => {
@@ -197,7 +183,7 @@ mod tests {
 
         let html_res = dispatcher
             .handlebars
-            .render("panorama_transcoding_failed_html", &data_with_url);
+            .render("panorama_processing_failed_html", &data_with_url);
         assert!(html_res.is_ok());
         let html = html_res.unwrap();
         assert!(html.contains("123"));
@@ -206,7 +192,7 @@ mod tests {
 
         let txt_res = dispatcher
             .handlebars
-            .render("panorama_transcoding_failed_txt", &data_with_url);
+            .render("panorama_processing_failed_txt", &data_with_url);
         assert!(txt_res.is_ok());
         let txt = txt_res.unwrap();
         assert!(txt.contains("123"));

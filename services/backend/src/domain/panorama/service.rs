@@ -4,9 +4,7 @@ use super::models::{
 use super::repository::PanoramaRepository;
 use crate::actions::panorama::PanoramaImageRead;
 use crate::domain::tree::Bounds;
-use crate::infra::queue::Queue;
 use crate::infra::storage::{CompletedPart, PanoramaBucket, PanoramaSourceBucket};
-use crate::services::queue_consumer::TranscodePanorama;
 use crate::services::{Context, Injectable};
 use crate::types::*;
 use crate::utils::{get_timestamp, get_unique_id};
@@ -17,7 +15,6 @@ pub struct PanoramaService {
     repo: Arc<PanoramaRepository>,
     storage: Arc<PanoramaSourceBucket>,
     panoramas: Arc<PanoramaBucket>,
-    queue: Arc<Queue>,
 }
 
 impl PanoramaService {
@@ -129,8 +126,6 @@ impl PanoramaService {
             source_video_path: None,
             gpx_path: None,
             web_video_path: None,
-            transcode_arn: None,
-            transcode_status: None,
             video_timestamp: None,
             gpx_offset: None,
             lat_offset: 0.0,
@@ -225,7 +220,7 @@ impl PanoramaService {
             && panorama.gpx_path.is_some()
             && panorama.status == PanoramaStatus::NeedsFiles
         {
-            panorama.status = PanoramaStatus::NeedsTranscoding;
+            panorama.status = PanoramaStatus::NeedsProcessing;
         }
         self.repo.update(id, &panorama).await?;
 
@@ -262,7 +257,7 @@ impl PanoramaService {
             && panorama.gpx_path.is_some()
             && panorama.status == PanoramaStatus::NeedsFiles
         {
-            panorama.status = PanoramaStatus::NeedsTranscoding;
+            panorama.status = PanoramaStatus::NeedsProcessing;
         }
         self.repo.update(id, &panorama).await?;
 
@@ -301,9 +296,6 @@ impl PanoramaService {
             .await?;
 
         let panorama = self.verify_video_upload(id).await?;
-
-        let msg = TranscodePanorama(id);
-        self.queue.push(&msg.encode()).await?;
 
         Ok(panorama)
     }
@@ -370,7 +362,6 @@ impl Injectable for PanoramaService {
             repo: Arc::new(ctx.build::<PanoramaRepository>()?),
             storage: ctx.panoramas_source(),
             panoramas: ctx.panoramas(),
-            queue: ctx.queue(),
         })
     }
 }

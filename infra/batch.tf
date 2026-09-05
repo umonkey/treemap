@@ -1,12 +1,6 @@
 # Set up AWS Batch processing pipelines.
 #
-# We have two types of jobs:
-#
-# (1) The transcoder job uses ffmpeg to downsample huge videos into 360p,
-# normally takes up to 10 minutes, and doesn't need much resources, as
-# ffmpeg cannot be parallelized heavily.
-#
-# (2) The extractor job runs the full OpenSfM pipeline, see `services/extractor`
+# The extractor job runs the full OpenSfM pipeline, see `services/extractor`
 # for details, the entry point is `bin/process`.  This normally takes 30 to 60 minutes.
 #
 # We don't use spot instances as the jobs are rather long running and are getting
@@ -88,29 +82,6 @@ resource "aws_batch_job_queue" "treemap" {
   }
 }
 
-resource "aws_batch_job_definition" "transcoder" {
-  name                  = "treemap-transcoder"
-  type                  = "container"
-  platform_capabilities = ["EC2"]
-
-  retry_strategy {
-    attempts = 3
-  }
-
-  container_properties = jsonencode({
-    image = "ghcr.io/umonkey/treemap-transcoder:latest"
-    resourceRequirements = [
-      {
-        value = "2"
-        type  = "VCPU"
-      },
-      {
-        value = "4096"
-        type  = "MEMORY"
-      }
-    ]
-  })
-}
 
 resource "aws_batch_job_definition" "extractor" {
   name                  = "treemap-extractor"

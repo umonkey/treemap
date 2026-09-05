@@ -3,8 +3,6 @@ import { getAuthHeaders, request } from './client';
 
 export type PanoramaStatus =
 	| 'NEEDS_FILES'
-	| 'NEEDS_TRANSCODING'
-	| 'NEEDS_TRANSCODING_FINISH'
 	| 'NEEDS_SYNC'
 	| 'NEEDS_PROCESSING'
 	| 'NEEDS_PROCESSING_FINISH'
@@ -23,8 +21,6 @@ export interface Panorama {
 	source_video_path?: string | null;
 	gpx_path?: string | null;
 	web_video_path?: string | null;
-	transcode_arn?: string | null;
-	transcode_status?: string | null;
 	video_timestamp?: number | null;
 	gpx_offset?: number | null;
 	lat_offset: number;
