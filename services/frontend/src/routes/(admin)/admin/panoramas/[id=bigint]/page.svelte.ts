@@ -1,4 +1,9 @@
-import { getPanorama, exportPanorama, deletePanoramaHints, type Panorama } from '$lib/api/panoramas';
+import {
+	getPanorama,
+	exportPanorama,
+	deletePanoramaHints,
+	type Panorama
+} from '$lib/api/panoramas';
 import { panoBus } from '$lib/buses/panoBus';
 import type { IError } from '$lib/types';
 

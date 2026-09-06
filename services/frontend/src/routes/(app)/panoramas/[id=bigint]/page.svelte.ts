@@ -8,10 +8,8 @@ import {
 	type PanoramaHint
 } from '$lib/api/panoramas';
 import { mapRaysStore } from '$lib/stores/mapRays.svelte';
-import { mapMarkerStore } from '$lib/stores/mapMarker.svelte';
 import { mapBus } from '$lib/buses/mapBus';
 import { panoBus } from '$lib/buses/panoBus';
-import { LngLat } from 'maplibre-gl';
 
 class PageState {
 	id = $state<string>('');
@@ -100,7 +98,7 @@ class PageState {
 			this.image = imageRes.data;
 
 			const ll = { lat: this.image.lat, lng: this.image.lon };
-			mapMarkerStore.center = new LngLat(ll.lng, ll.lat);
+			mapBus.emit('pin', ll);
 			mapBus.emit('map-once', ll);
 		}
 
@@ -113,7 +111,7 @@ class PageState {
 		this.id = '';
 		this.image = null;
 		this.trees = [];
-		mapMarkerStore.center = undefined;
+		mapBus.emit('pin', undefined);
 		mapRaysStore.rays = [];
 	};
 }

@@ -3,12 +3,10 @@ import { mapBus } from '$lib/buses/mapBus';
 import { showError } from '$lib/errors';
 import { extendBounds } from '$lib/map';
 import { goto, routes } from '$lib/routes';
-import { mapMarkerStore } from '$lib/stores/mapMarker.svelte';
 import { mapPoiStore } from '$lib/stores/mapPoi.svelte';
 import { mapZoom } from '$lib/stores/mapStore';
 import type { IBounds } from '$lib/types';
 import { Debouncer } from '$lib/utils/debounce';
-import { LngLat } from 'maplibre-gl';
 import { get } from 'svelte/store';
 
 type Properties = {
@@ -81,7 +79,7 @@ export class PanoramicLayerState {
 		const id = feature.properties.id;
 
 		const [lng, lat] = feature.geometry.coordinates;
-		mapMarkerStore.center = new LngLat(lng, lat);
+		mapBus.emit('pin', { lat, lng });
 		mapBus.emit('move', { lat, lng });
 
 		console.debug(`[PanoramicLayer] Image ${id} clicked.`);

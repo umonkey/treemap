@@ -11,14 +11,12 @@ import { Debouncer } from '$lib/utils/debounce';
 import {
 	type LngLatBounds,
 	LngLatBounds as LngLatBounds2,
-	LngLat,
 	type Map,
 	type MapLibreEvent,
 	type StyleSpecification
 } from 'maplibre-gl';
 import { get } from 'svelte/store';
 import { MapBouncer } from './MapBouncer';
-import { mapMarkerStore } from '$lib/stores/mapMarker.svelte';
 import { mapPoiStore } from '$lib/stores/mapPoi.svelte';
 
 const BASIC_LAYER = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${config.mapTilerKey}&language=${locale.lang}`;
@@ -161,7 +159,7 @@ class MapLibre {
 			const result = mapPoiStore.getNearest(this.center, 5);
 			if (result) {
 				const { poi: nearestPoi, distance: minDistance } = result;
-				mapMarkerStore.center = new LngLat(nearestPoi.lon, nearestPoi.lat);
+				mapBus.emit('pin', { lat: nearestPoi.lat, lng: nearestPoi.lon });
 				mapBus.emit('move', { lat: nearestPoi.lat, lng: nearestPoi.lon });
 				console.debug(`Snapping to nearest POI (${minDistance.toFixed(1)}m)`);
 				goto(nearestPoi.url);
@@ -186,15 +184,10 @@ class MapLibre {
 		this.handleMoveRequest(ll);
 	};
 
-	private handlePinRequest = (ll: ILatLng | undefined) => {
-		mapMarkerStore.center = ll ? new LngLat(ll.lng, ll.lat) : undefined;
-	};
-
 	public onMount = () => {
 		mapBus.on('fit', this.handleFit);
 		mapBus.on('move', this.handleMoveRequest);
 		mapBus.on('map-once', this.handleMapOnceRequest);
-		mapBus.on('pin', this.handlePinRequest);
 
 		const unsub = mapLayerStore.subscribe(() => {
 			this.updateLayers();
@@ -208,7 +201,6 @@ class MapLibre {
 			mapBus.off('fit', this.handleFit);
 			mapBus.off('move', this.handleMoveRequest);
 			mapBus.off('map-once', this.handleMapOnceRequest);
-			mapBus.off('pin', this.handlePinRequest);
 			unsub();
 		};
 	};

@@ -89,7 +89,9 @@
 									<button
 										type="button"
 										class="clear-link"
-										disabled={pageState.isClearingHints || !pageState.panorama.hints_count || pageState.panorama.hints_count === 0}
+										disabled={pageState.isClearingHints ||
+											!pageState.panorama.hints_count ||
+											pageState.panorama.hints_count === 0}
 										onclick={() => pageState.clearHints(id)}
 									>
 										{pageState.isClearingHints ? 'Clearing...' : 'Clear'}
