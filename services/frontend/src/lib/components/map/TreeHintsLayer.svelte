@@ -1,13 +1,22 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { GeoJSON, LineLayer } from 'svelte-maplibre';
-	import { treeHintsLayerState } from './TreeHintsLayer.svelte.ts';
+	import { TreeHintsLayerLogic } from './TreeHintsLayer.svelte.ts';
+	import { mapState } from './MapLibre.svelte.ts';
 
-	onMount(treeHintsLayerState.onMount);
+	const componentState = new TreeHintsLayerLogic();
+
+	onMount(componentState.onMount);
+
+	$effect(() => {
+		if (mapState.treeHintsLayer && !componentState.data) {
+			componentState.reload();
+		}
+	});
 </script>
 
-{#if treeHintsLayerState.data}
-	<GeoJSON data={treeHintsLayerState.data}>
+{#if mapState.treeHintsLayer && componentState.data}
+	<GeoJSON data={componentState.data}>
 		<LineLayer
 			id="tree-hints"
 			paint={{

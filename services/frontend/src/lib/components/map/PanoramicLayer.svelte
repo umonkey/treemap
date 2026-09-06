@@ -1,13 +1,27 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { CircleLayer, GeoJSON, LineLayer } from 'svelte-maplibre';
-	import { panoramicLayerState } from './PanoramicLayer.svelte.ts';
+	import { PanoramicLayerLogic } from './PanoramicLayer.svelte.ts';
+	import { mapState } from './MapLibre.svelte.ts';
+	import { mapPoiStore } from '$lib/stores/mapPoi.svelte';
 
-	onMount(panoramicLayerState.onMount);
+	const componentState = new PanoramicLayerLogic();
+
+	onMount(componentState.onMount);
+
+	$effect(() => {
+		if (mapState.panoramasLayer) {
+			if (!componentState.data) {
+				componentState.reload();
+			}
+		} else {
+			mapPoiStore.panoramas = [];
+		}
+	});
 </script>
 
-{#if panoramicLayerState.data}
-	<GeoJSON data={panoramicLayerState.data}>
+{#if mapState.panoramasLayer && componentState.data}
+	<GeoJSON data={componentState.data}>
 		<LineLayer
 			id="panoramas-sequences"
 			filter={['==', ['get', 'kind'], 'sequence']}
@@ -29,7 +43,7 @@
 				'circle-stroke-width': 1,
 				'circle-stroke-color': '#ffffff'
 			}}
-			onclick={panoramicLayerState.handleClick}
+			onclick={componentState.handleClick}
 		/>
 	</GeoJSON>
 {/if}

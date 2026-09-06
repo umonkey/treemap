@@ -8,6 +8,7 @@ import { mapZoom } from '$lib/stores/mapStore';
 import type { IBounds } from '$lib/types';
 import { Debouncer } from '$lib/utils/debounce';
 import { get } from 'svelte/store';
+import { mapState } from './MapLibre.svelte.ts';
 
 type Properties = {
 	id: string;
@@ -30,13 +31,13 @@ type Collection = {
 	features: Feature[];
 };
 
-export class PanoramicLayerState {
+export class PanoramicLayerLogic {
 	data = $state.raw<Collection | undefined>(undefined);
 	bounds = $state<IBounds | undefined>(undefined);
 	fetchDebouncer = new Debouncer(200);
 
-	private reload = () => {
-		if (!this.bounds) {
+	public reload = () => {
+		if (!this.bounds || !mapState.panoramasLayer) {
 			return;
 		}
 
@@ -99,8 +100,9 @@ export class PanoramicLayerState {
 			this.bounds = undefined;
 			mapBus.off('bounds', this.handleBounds);
 			mapBus.off('reload', this.reload);
+			mapPoiStore.panoramas = [];
 		};
 	};
 }
 
-export const panoramicLayerState = new PanoramicLayerState();
+export { PanoramicLayerLogic as PanoramicLayerState };

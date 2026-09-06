@@ -85,13 +85,9 @@
 
 		<AlertLayer />
 
-		{#if mapState.panoramasLayer}
-			<PanoramicLayer />
-		{/if}
+		<PanoramicLayer />
 
-		{#if mapState.treeHintsLayer}
-			<TreeHintsLayer />
-		{/if}
+		<TreeHintsLayer />
 
 		{#if mapState.moving && mapState.zoom > 18 && ($mapMode === undefined || $mapMode === 'preview')}
 			<MapCenter />

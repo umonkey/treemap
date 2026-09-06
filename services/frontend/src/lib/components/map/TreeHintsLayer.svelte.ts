@@ -5,6 +5,7 @@ import { showError } from '$lib/errors';
 import { extendBounds } from '$lib/map';
 import type { IBounds } from '$lib/types';
 import { Debouncer } from '$lib/utils/debounce';
+import { mapState } from './MapLibre.svelte.ts';
 
 type Collection = {
 	type: 'FeatureCollection';
@@ -12,13 +13,13 @@ type Collection = {
 	features: any[];
 };
 
-export class TreeHintsLayerState {
+export class TreeHintsLayerLogic {
 	data = $state.raw<Collection | undefined>(undefined);
 	bounds = $state<IBounds | undefined>(undefined);
 	fetchDebouncer = new Debouncer(200);
 
-	private reload = () => {
-		if (!this.bounds) {
+	public reload = () => {
+		if (!this.bounds || !mapState.treeHintsLayer) {
 			return;
 		}
 
@@ -51,10 +52,11 @@ export class TreeHintsLayerState {
 
 		return () => {
 			this.bounds = undefined;
+			this.data = undefined;
 			mapBus.off('bounds', this.handleBounds);
 			panoBus.off('reload', this.reload);
 		};
 	};
 }
 
-export const treeHintsLayerState = new TreeHintsLayerState();
+export { TreeHintsLayerLogic as TreeHintsLayerState };
