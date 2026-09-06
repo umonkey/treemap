@@ -35,7 +35,6 @@ impl FromStr for PanoramaStatus {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
             "NEEDS_FILES" | "DRAFT" => Ok(Self::NeedsFiles),
-            "NEEDS_TRANSCODING" | "NEEDS_TRANSCODING_FINISH" => Ok(Self::NeedsProcessing),
             "NEEDS_PROCESSING" => Ok(Self::NeedsProcessing),
             "NEEDS_PROCESSING_FINISH" => Ok(Self::NeedsProcessingFinish),
             "NEEDS_CLEAN_RESTART" => Ok(Self::NeedsCleanRestart),
@@ -281,6 +280,16 @@ mod tests {
 
         // Unknown or removed statuses should map to Failure
         assert_eq!(
+            "NEEDS_TRANSCODING".parse::<PanoramaStatus>().unwrap(),
+            PanoramaStatus::Failure
+        );
+        assert_eq!(
+            "NEEDS_TRANSCODING_FINISH"
+                .parse::<PanoramaStatus>()
+                .unwrap(),
+            PanoramaStatus::Failure
+        );
+        assert_eq!(
             "NEEDS_SYNC".parse::<PanoramaStatus>().unwrap(),
             PanoramaStatus::Failure
         );
@@ -293,6 +302,9 @@ mod tests {
     #[test]
     fn test_panorama_status_serde() {
         let status: PanoramaStatus = serde_json::from_str("\"NEEDS_SYNC\"").unwrap();
+        assert_eq!(status, PanoramaStatus::Failure);
+
+        let status: PanoramaStatus = serde_json::from_str("\"NEEDS_TRANSCODING\"").unwrap();
         assert_eq!(status, PanoramaStatus::Failure);
 
         let status: PanoramaStatus = serde_json::from_str("\"SUCCESS\"").unwrap();
