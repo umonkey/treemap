@@ -259,7 +259,6 @@ CREATE TABLE IF NOT EXISTS panoramas (
     `visible` INT NOT NULL DEFAULT 0,
     `source_video_path` TEXT NULL,
     `gpx_path` TEXT NULL,
-    `web_video_path` TEXT NULL,
     `video_timestamp` REAL NULL,
     `lat_offset` REAL NOT NULL DEFAULT 0.0,
     `lon_offset` REAL NOT NULL DEFAULT 0.0,

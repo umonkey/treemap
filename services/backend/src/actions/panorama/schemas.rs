@@ -24,7 +24,6 @@ pub struct PanoramaRead {
     pub visible: bool,
     pub source_video_path: Option<String>,
     pub gpx_path: Option<String>,
-    pub web_video_path: Option<String>,
     pub video_timestamp: Option<f64>,
     pub lat_offset: f64,
     pub lon_offset: f64,
@@ -82,11 +81,6 @@ pub struct CompleteMultipartRequest {
 
 #[derive(Debug, Serialize)]
 pub struct UploadUrlResponse {
-    pub url: String,
-}
-
-#[derive(Debug, Serialize)]
-pub struct WebVideoUrlResponse {
     pub url: String,
 }
 
@@ -152,7 +146,6 @@ impl From<Panorama> for PanoramaRead {
             visible: p.visible,
             source_video_path: p.source_video_path,
             gpx_path: p.gpx_path,
-            web_video_path: p.web_video_path,
             video_timestamp: p.video_timestamp,
             lat_offset: p.lat_offset,
             lon_offset: p.lon_offset,

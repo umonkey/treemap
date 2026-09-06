@@ -168,7 +168,6 @@ Table panoramas {
   visible int [not null, default: 0]
   source_video_path text
   gpx_path text
-  web_video_path text
   video_timestamp real
   lat_offset real [not null, default: 0.0]
   lon_offset real [not null, default: 0.0]

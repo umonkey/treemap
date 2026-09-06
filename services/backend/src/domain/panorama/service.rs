@@ -125,7 +125,6 @@ impl PanoramaService {
             visible: false,
             source_video_path: None,
             gpx_path: None,
-            web_video_path: None,
             video_timestamp: None,
             lat_offset: 0.0,
             lon_offset: 0.0,
@@ -229,12 +228,6 @@ impl PanoramaService {
         let panorama = self.get_panorama(id).await?;
         let path = panorama.gpx_path.ok_or(Error::FileNotFound)?;
         self.storage.read_file(&path).await
-    }
-
-    pub async fn get_web_video_url(&self, id: u64) -> Result<String> {
-        let panorama = self.get_panorama(id).await?;
-        let path = panorama.web_video_path.ok_or(Error::PanoramaNotFound)?;
-        self.storage.create_read_url(&path).await
     }
 
     pub async fn verify_track_upload(&self, id: u64) -> Result<Panorama> {

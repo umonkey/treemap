@@ -19,7 +19,6 @@ export interface Panorama {
 	visible: boolean;
 	source_video_path?: string | null;
 	gpx_path?: string | null;
-	web_video_path?: string | null;
 	video_timestamp?: number | null;
 	lat_offset: number;
 	lon_offset: number;
@@ -27,7 +26,6 @@ export interface Panorama {
 	failure_reason?: string | null;
 	has_video?: boolean;
 	has_track?: boolean;
-	has_web_video?: boolean;
 }
 
 export interface CreatePanorama {

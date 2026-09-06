@@ -57,7 +57,6 @@ pub struct Panorama {
     pub visible: bool,
     pub source_video_path: Option<String>,
     pub gpx_path: Option<String>,
-    pub web_video_path: Option<String>,
     pub video_timestamp: Option<f64>,
     pub lat_offset: f64,
     pub lon_offset: f64,
@@ -90,7 +89,6 @@ impl Panorama {
             visible: attrs.get_bool("visible")?.unwrap_or(false),
             source_video_path: attrs.get_string("source_video_path")?,
             gpx_path: attrs.get_string("gpx_path")?,
-            web_video_path: attrs.get_string("web_video_path")?,
             video_timestamp: attrs.get_f64("video_timestamp")?,
             lat_offset: attrs.get_f64("lat_offset")?.unwrap_or(0.0),
             lon_offset: attrs.get_f64("lon_offset")?.unwrap_or(0.0),
@@ -120,7 +118,6 @@ impl Panorama {
             Value::from(self.source_video_path.clone()),
         );
         attrs.insert("gpx_path", Value::from(self.gpx_path.clone()));
-        attrs.insert("web_video_path", Value::from(self.web_video_path.clone()));
         attrs.insert("video_timestamp", Value::from(self.video_timestamp));
         attrs.insert("lat_offset", Value::from(self.lat_offset));
         attrs.insert("lon_offset", Value::from(self.lon_offset));
