@@ -83,9 +83,7 @@
 
 		<TreeLayer />
 
-		{#if mapState.alertsLayer}
-			<AlertLayer />
-		{/if}
+		<AlertLayer />
 
 		{#if mapState.panoramasLayer}
 			<PanoramicLayer />

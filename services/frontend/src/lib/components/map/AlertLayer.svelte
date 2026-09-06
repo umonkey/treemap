@@ -1,13 +1,15 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { CircleLayer, GeoJSON } from 'svelte-maplibre';
-	import { alertLayerState } from './AlertLayer.svelte.ts';
+	import { AlertLayerLogic } from './AlertLayer.svelte.ts';
 
-	onMount(alertLayerState.onMount);
+	const componentState = new AlertLayerLogic();
+
+	onMount(componentState.onMount);
 </script>
 
-{#if alertLayerState.markers}
-	<GeoJSON data={alertLayerState.markers}>
+{#if componentState.enabled && componentState.markers}
+	<GeoJSON data={componentState.markers}>
 		<CircleLayer
 			id="chatbot-alerts"
 			paint={{
@@ -16,7 +18,7 @@
 				'circle-opacity': ['+', 0.1, ['*', ['get', 'weight'], 0.5]],
 				'circle-stroke-width': 0
 			}}
-			onclick={alertLayerState.handleClick}
+			onclick={componentState.handleClick}
 		/>
 	</GeoJSON>
 {/if}

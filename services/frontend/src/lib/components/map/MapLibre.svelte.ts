@@ -40,7 +40,6 @@ class MapLibre {
 	map = $state.raw<Map>();
 	layer = $state<string | StyleSpecification>(LIGHT_LAYER);
 	droneLayer = $state<string | undefined>(undefined);
-	alertsLayer = $state<boolean>(true);
 	panoramasLayer = $state<boolean>(false);
 	treeHintsLayer = $state<boolean>(false);
 
@@ -224,7 +223,6 @@ class MapLibre {
 			this.droneLayer = undefined;
 		}
 
-		this.alertsLayer = get(mapLayerStore).alerts !== false;
 		this.panoramasLayer = get(mapLayerStore).panoramas === true;
 		this.treeHintsLayer = get(mapLayerStore).treeHints === true;
 	};

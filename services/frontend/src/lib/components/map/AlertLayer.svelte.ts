@@ -2,15 +2,30 @@ import { getActiveAlertsGeoJSON, type IAlertCollection } from '$lib/api/alerts';
 import { mapBus } from '$lib/buses/mapBus';
 import { showError } from '$lib/errors';
 import { goto, routes } from '$lib/routes';
+import { mapLayerStore } from '$lib/stores/mapLayerStore';
 import { mapPoiStore } from '$lib/stores/mapPoi.svelte';
 import { Debouncer } from '$lib/utils/debounce';
 import { getMapContext } from 'svelte-maplibre';
+import { get } from 'svelte/store';
 
-class AlertLayerState {
+export class AlertLayerLogic {
 	markers = $state.raw<IAlertCollection | undefined>(undefined);
+	enabled = $state<boolean>(true);
 	fetchDebouncer = new Debouncer(100);
 
+	get alerts(): boolean {
+		return this.enabled;
+	}
+
+	constructor() {
+		this.enabled = get(mapLayerStore).alerts !== false;
+	}
+
 	private reload = () => {
+		if (!this.enabled) {
+			return;
+		}
+
 		this.fetchDebouncer.run(() => {
 			getActiveAlertsGeoJSON()
 				.then(({ status, data }) => {
@@ -62,14 +77,26 @@ class AlertLayerState {
 
 		const reload = () => this.reload();
 
+		const unsub = mapLayerStore.subscribe((layers) => {
+			const wasEnabled = this.enabled;
+			this.enabled = layers.alerts !== false;
+			if (!wasEnabled && this.enabled && !this.markers) {
+				this.reload();
+			}
+		});
+
 		mapBus.on('reload', reload);
 
-		reload();
+		if (this.enabled) {
+			this.reload();
+		}
 
 		return () => {
+			unsub();
 			mapBus.off('reload', reload);
+			mapPoiStore.alerts = [];
 		};
 	};
 }
 
-export const alertLayerState = new AlertLayerState();
+export type AlertLayerState = AlertLayerLogic;
