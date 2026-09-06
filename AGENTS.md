@@ -49,6 +49,7 @@ The project uses a `Makefile` for high-level tasks:
 ## Development Workflow
 
 - When creating plans, arrange them so that each step focuses on one service: frontend, backend, caddy or documentation. This ensures that the domain-specific skills (such as `svelte` or `rust`) are triggered and applied effectively to the relevant sub-tasks.
+- Never run tests, linters or other checks before implementing any code.
 - Markdown formatting: whenever a Markdown file is added or updated, it must be formatted according to the `markdown` skill. Run `make format-docs` after any changes to files in the `docs/` folder.
 - No exploration scripts: never create code files or scripts (e.g., for fetching web pages, querying the database, or system introspection) for the purpose of exploration. Use existing tools (grep, glob, read, bash for direct cli) to gather information.
 - No automatic commits. Never execute git commit, git push or similar version control commands automatically.
