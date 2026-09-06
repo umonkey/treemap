@@ -205,6 +205,7 @@ export interface PanoramaHint {
 	image_id: string;
 	angle: number;
 	tree_id?: string | null;
+	distance?: number | null;
 }
 
 export async function getPanoramasImageHints(id: string): Promise<IResponse<PanoramaHint[]>> {

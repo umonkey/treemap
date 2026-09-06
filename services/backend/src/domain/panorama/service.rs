@@ -416,18 +416,22 @@ impl PanoramaService {
             .await?
             .into_iter()
             .filter(|tree| tree.is_existing())
-            .filter(|tree| haversine_distance_m(lat, lon, tree.lat, tree.lon) <= 10.0)
-            .map(|tree| {
+            .filter_map(|tree| {
+                let distance = haversine_distance_m(lat, lon, tree.lat, tree.lon);
+                if distance > 10.0 {
+                    return None;
+                }
                 let bearing = bearing_deg(lat, lon, tree.lat, tree.lon);
                 let angle = (bearing - image.heading + 360.0) % 360.0;
-                (
+                Some((
                     angle,
                     PanoramaHintRead {
                         image_id: image_id.to_string(),
                         angle,
                         tree_id: Some(tree.id.to_string()),
+                        distance: Some(distance),
                     },
-                )
+                ))
             })
             .collect();
 
