@@ -143,3 +143,50 @@ def calculate_frame_interval(
         return 1
     val = fps * target_distance / s
     return max(1, round(val))
+
+
+def get_track_average_speed(dataset_dir: str) -> Optional[float]:
+    """
+    Gets the track average speed (in m/s) from track.gpx.
+    """
+    import os
+
+    gpx_path = os.path.join(dataset_dir, "track.gpx")
+    if os.path.exists(gpx_path):
+        try:
+            points = parse_gpx(gpx_path)
+            speed = calculate_moving_speed(points)
+            if speed is not None:
+                return speed
+        except Exception:
+            pass
+
+    return None
+
+
+def determine_track_distance(
+    speed_mps: Optional[float], env_distance: Optional[str] = None
+) -> Tuple[float, str, bool]:
+    """
+    Determines the extraction distance based on track average speed.
+    - If env_distance is provided and valid, it overrides the default.
+    - If speed_mps > 40 km/h (approx 11.111 m/s), it is a driving track -> default 5.0m.
+    - Otherwise, it is a walking/other track -> default 3.0m.
+
+    Returns:
+        (min_distance, track_type, is_overridden)
+    """
+    if env_distance is not None and env_distance.strip() != "":
+        try:
+            return float(env_distance), "custom", True
+        except ValueError:
+            pass
+
+    # Threshold: 40 km/h = 40 / 3.6 m/s = 11.1111... m/s
+    is_driving = False
+    if speed_mps is not None and speed_mps > (40.0 / 3.6):
+        is_driving = True
+
+    track_type = "driving" if is_driving else "walking"
+    min_distance = 5.0 if is_driving else 3.0
+    return min_distance, track_type, False

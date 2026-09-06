@@ -1,11 +1,18 @@
 #!/usr/bin/env python3
 # This file reads `trajectory.geojson`,
-# filters shots by minimum distance (MIN_DISTANCE environment variable, default 5.0m),
-# finds matching source images, geo-tags them and puts them in the `var/dataset/output` folder,
+# filters shots by minimum distance
+# filters shots by minimum distance (default: 5.0m driving, 3.0m walking),
+# finds matching source images, geo-tags them and puts them in `var/dataset/output`,
 # then creates a file `images.json` with information on all images.
 
 import os
 import sys
+
+# Ensure app package is in path
+parent_dir = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..")
+)
+sys.path.insert(0, parent_dir)
 
 try:
     import numpy as np  # noqa: F401
@@ -17,31 +24,17 @@ except ImportError:
         os.execv(venv_py, [venv_py] + sys.argv)
     raise
 
-import csv
-import glob
-import json
-import math
-import shutil
-import subprocess
+import csv  # noqa: E402
+import glob  # noqa: E402
+import json  # noqa: E402
+import shutil  # noqa: E402
+import subprocess  # noqa: E402
 
-
-def haversine_distance(lat1, lon1, lat2, lon2):
-    """Calculate the great-circle distance between two points
-
-    on the Earth (specified in decimal degrees). Returns distance in meters.
-    """
-    R = 6371000.0  # Earth radius in meters
-    phi1 = math.radians(lat1)
-    phi2 = math.radians(lat2)
-    dphi = math.radians(lat2 - lat1)
-    dlambda = math.radians(lon2 - lon1)
-
-    a = (
-        math.sin(dphi / 2.0) ** 2
-        + math.cos(phi1) * math.cos(phi2) * math.sin(dlambda / 2.0) ** 2
-    )
-    c = 2.0 * math.atan2(math.sqrt(a), math.sqrt(1.0 - a))
-    return R * c
+from app.speed import (  # noqa: E402
+    determine_track_distance,
+    get_track_average_speed,
+    haversine_distance,
+)
 
 
 def main(dataset_dir, output_dir):
@@ -51,8 +44,28 @@ def main(dataset_dir, output_dir):
     for f in glob.glob(os.path.join(output_dir, "*.jpg")):
         os.remove(f)
 
-    min_distance = float(os.environ.get("MIN_DISTANCE", "5.0"))
-    print(f"Minimum distance filter between output images: {min_distance} meters")
+    speed_mps = get_track_average_speed(dataset_dir)
+    env_dist = os.environ.get("MIN_DISTANCE")
+    min_distance, track_type, is_overridden = determine_track_distance(
+        speed_mps, env_dist
+    )
+
+    speed_str = (
+        f"{speed_mps:.2f} m/s ({speed_mps * 3.6:.1f} km/h)"
+        if speed_mps is not None
+        else "unknown"
+    )
+    print(f"Track Average Speed: {speed_str} -> Classified as: {track_type} track")
+    if is_overridden:
+        print(
+            f"Minimum distance filter: {min_distance} meters "
+            "(explicitly overridden via MIN_DISTANCE)"
+        )
+    else:
+        print(
+            f"Minimum distance filter: {min_distance} meters "
+            f"(default for {track_type} track)"
+        )
 
     trajectory_path = os.path.join(dataset_dir, "trajectory.geojson")
 
@@ -147,7 +160,8 @@ def main(dataset_dir, output_dir):
         )
 
     print(
-        f"Distance filtering complete: kept {written_count} shots, skipped {skipped_count} shots (MIN_DISTANCE={min_distance}m)."
+        f"Distance filtering complete: kept {written_count} shots, "
+        f"skipped {skipped_count} shots (MIN_DISTANCE={min_distance}m)."
     )
 
     if not csv_data:

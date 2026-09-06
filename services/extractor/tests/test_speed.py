@@ -6,6 +6,8 @@ from typing import cast
 from app.speed import (
     calculate_frame_interval,
     calculate_moving_speed,
+    determine_track_distance,
+    get_track_average_speed,
     haversine_distance,
 )
 
@@ -76,6 +78,61 @@ class TestSpeed(unittest.TestCase):
             self.assertEqual(loaded["frame_interval"], 15)
             self.assertEqual(loaded["fps"], 30.0)
             self.assertEqual(loaded["average_speed"], 2.0)
+
+    def test_determine_track_distance(self):
+        # > 40 km/h (15 m/s) -> driving (5.0m)
+        dist, t_type, overridden = determine_track_distance(15.0)
+        self.assertEqual(dist, 5.0)
+        self.assertEqual(t_type, "driving")
+        self.assertFalse(overridden)
+
+        # <= 40 km/h (10 m/s = 36 km/h) -> walking (3.0m)
+        dist, t_type, overridden = determine_track_distance(10.0)
+        self.assertEqual(dist, 3.0)
+        self.assertEqual(t_type, "walking")
+        self.assertFalse(overridden)
+
+        # Exactly 40 km/h (40 / 3.6 m/s) -> walking (3.0m)
+        dist, t_type, overridden = determine_track_distance(40.0 / 3.6)
+        self.assertEqual(dist, 3.0)
+        self.assertEqual(t_type, "walking")
+        self.assertFalse(overridden)
+
+        # None speed -> walking (3.0m)
+        dist, t_type, overridden = determine_track_distance(None)
+        self.assertEqual(dist, 3.0)
+        self.assertEqual(t_type, "walking")
+        self.assertFalse(overridden)
+
+        # Environment override
+        dist, t_type, overridden = determine_track_distance(15.0, env_distance="6.5")
+        self.assertEqual(dist, 6.5)
+        self.assertEqual(t_type, "custom")
+        self.assertTrue(overridden)
+
+    def test_get_track_average_speed_gpx(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            gpx_path = os.path.join(tmpdir, "track.gpx")
+            gpx_content = """<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1">
+  <trk>
+    <trkseg>
+      <trkpt lat="0.0" lon="0.0">
+        <time>2026-06-07T12:00:00Z</time>
+      </trkpt>
+      <trkpt lat="0.0001" lon="0.0">
+        <time>2026-06-07T12:00:02Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+</gpx>
+"""
+            with open(gpx_path, "w") as f:
+                f.write(gpx_content)
+
+            speed = get_track_average_speed(tmpdir)
+            self.assertIsNotNone(speed)
+            self.assertGreater(cast(float, speed), 0.0)
 
 
 if __name__ == "__main__":
