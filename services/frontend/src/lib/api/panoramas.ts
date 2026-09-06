@@ -144,7 +144,6 @@ export async function finishPanoramaTrackUpload(id: string): Promise<IResponse<P
 	});
 }
 
-
 export async function getPanoramasGeoJSON(
 	n: number,
 	e: number,
