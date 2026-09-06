@@ -16,7 +16,7 @@ fn usage() {
     println!("Commands:");
     println!("  backup-database       -- create a database backup");
     println!("  dispatch-emails       -- run the email dispatcher daemon");
-    println!("  dispatch-panoramas    -- process draft panoramas transcode status");
+    println!("  dispatch-panoramas    -- process draft panoramas");
     println!("  dispatch-queue        -- run the queue consumer daemon");
     println!("  merge-duplicates [N]  -- automated duplicate tree resolution");
     println!("  migrate-timestamps    -- backfill update timestamps");

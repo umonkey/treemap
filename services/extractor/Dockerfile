@@ -67,7 +67,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -g 1000 extractor && \
-    useradd -u 1000 -g extractor -s /bin/bash extractor
+    useradd -u 1000 -g extractor -s /bin/bash extractor && \
+    mkdir -p /tmp/matplotlib && \
+    chown -R extractor:extractor /tmp/matplotlib
 
 # 7. Copy the entire virtual environment
 COPY --from=builder /opt/venv /opt/venv
@@ -77,17 +79,18 @@ ENV PATH="/opt/venv/bin:$PATH"
 ENV VIRTUAL_ENV="/opt/venv"
 ENV PYTHONUNBUFFERED=1
 ENV MPLCONFIGDIR="/tmp/matplotlib"
+ENV DATASET=var/dataset
 
 # 9. Copy custom code.
 WORKDIR /app
 COPY app /app/app
 COPY bin /app/bin
 COPY pyproject.toml uv.lock /app
-COPY config.yaml /app
+COPY config.yaml.dist /app
 
 # 10. Final verification checks
 RUN python3 -c "import opensfm; print('OpenSfM Python package successfully installed')" && \
-    python3 -c "import av, gpxpy, piexif, PIL, requests; print('App dependencies successfully imported')" && \
+    python3 -c "import av, piexif, PIL, requests; print('App dependencies successfully imported')" && \
     opensfm --help > /dev/null && \
     ffmpeg -version > /dev/null && \
     aws --version > /dev/null

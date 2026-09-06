@@ -14,7 +14,6 @@ This folder contains a tree mapping application. The application is API-first, w
   - `frontend`: contains the static frontend written with TypeScript and SvelteKit 5, client side rendering only.
   - `landing`: static landing page.
   - `streetview`: Street View processing pipelines.
-  - `transcoder`: video transcode and sequence processor.
 - `tools`: contains some additional scripts used for non-regular manual tasks.
 
 

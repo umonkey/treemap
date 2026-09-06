@@ -12,8 +12,7 @@
 
 	const statusLabels: Record<string, string> = {
 		NEEDS_PROCESSING_FINISH: 'processing',
-		SUCCESS: 'ready',
-		NEEDS_TRANSCODING_FINISH: 'transcoding'
+		SUCCESS: 'ready'
 	};
 
 	function getStatusLabel(status: string): string {

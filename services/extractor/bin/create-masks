@@ -1,2 +1,25 @@
 #!/bin/bash
-exec python3 -m app create-masks "$@"
+# Create masks for extracted frames.
+#
+# The frames contain image from all directions, but the bottom part is static,
+# e.g. the car or the operator holding the camera, which confuses OpenSfM.
+#
+# To prevent that, we create a mask for each frame which excludes the bottom
+# part of the image (35%) from analysis.
+
+if [ -z "$DATASET" ]; then
+    echo "DATASET not set, cannot continue."
+    exit 1
+fi
+
+LOCK=masks_created.txt
+
+if [ -f $DATASET/$LOCK ]; then
+    echo "Found previously created masks, reusing."
+    exit 0
+fi
+
+echo "=== Creating masks ==="
+bin/app create-masks $DATASET
+
+bin/upload-dataset $DATASET $LOCK

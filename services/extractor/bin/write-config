@@ -1,0 +1,32 @@
+#!/usr/bin/env python3
+# Generates config.yaml in the dataset directory from config.yaml.dist using os.sched_getaffinity(0).
+
+import os
+import pathlib
+
+def main():
+    try:
+        cores = len(os.sched_getaffinity(0))
+    except (AttributeError, NotImplementedError, OSError):
+        try:
+            cores = os.cpu_count() or 4
+        except Exception:
+            cores = 4
+
+    dataset = os.environ.get('DATASET', 'var/dataset')
+    pathlib.Path(dataset).mkdir(parents=True, exist_ok=True)
+    target = pathlib.Path(dataset) / 'config.yaml'
+
+    dist_path = pathlib.Path('config.yaml.dist')
+    if not dist_path.exists():
+        # Fallback if running from a subdirectory
+        dist_path = pathlib.Path('../config.yaml.dist')
+
+    content = dist_path.read_text(encoding='utf-8')
+    content = content.replace('${PROCESSES}', str(cores))
+    target.write_text(content, encoding='utf-8')
+
+    print(f"Generated {target} with processes={cores}")
+
+if __name__ == '__main__':
+    main()

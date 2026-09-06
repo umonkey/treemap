@@ -1,0 +1,31 @@
+#!/bin/bash
+# This script runs the feature detection step of the OpenSfM pipeline.
+#
+# The output is a sequence of files `var/dataset/features/frame_*.jpg.features.npz`
+
+set -e
+
+if [ -z "$DATASET" ]; then
+    echo "DATASET variable not set, cannot continue."
+    exit 1
+fi
+
+# The name of the flag file to skip the process in case of a rerun.
+LOCK=features_detected.txt
+
+if [ -f $DATASET/$LOCK ]; then
+    echo "Found existing features, reusing."
+    echo "To restart: rm -rf $DATASET/$LOCK $DATASET/features $DATASET/features_matched.txt"
+    exit 0
+fi
+
+[ -f "$DATASET/config.yaml" ] || bin/write-config
+
+mkdir -p $DATASET/features $DATASET/logs
+
+echo "=== Extracting SfM features ==="
+time opensfm detect_features $DATASET 2>&1 | tee $DATASET/logs/detect_features.log
+sync
+
+# Upload the results so that if next step crashes, we don't have to re-run this.
+time bin/upload-dataset $DATASET $LOCK

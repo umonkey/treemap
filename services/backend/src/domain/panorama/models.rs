@@ -7,9 +7,6 @@ use std::str::FromStr;
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum PanoramaStatus {
     NeedsFiles,
-    NeedsTranscoding,
-    NeedsTranscodingFinish,
-    NeedsSync,
     NeedsProcessing,
     NeedsProcessingFinish,
     NeedsCleanRestart,
@@ -21,9 +18,6 @@ impl fmt::Display for PanoramaStatus {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let s = match self {
             Self::NeedsFiles => "NEEDS_FILES",
-            Self::NeedsTranscoding => "NEEDS_TRANSCODING",
-            Self::NeedsTranscodingFinish => "NEEDS_TRANSCODING_FINISH",
-            Self::NeedsSync => "NEEDS_SYNC",
             Self::NeedsProcessing => "NEEDS_PROCESSING",
             Self::NeedsProcessingFinish => "NEEDS_PROCESSING_FINISH",
             Self::NeedsCleanRestart => "NEEDS_CLEAN_RESTART",
@@ -40,9 +34,7 @@ impl FromStr for PanoramaStatus {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_uppercase().as_str() {
             "NEEDS_FILES" | "DRAFT" => Ok(Self::NeedsFiles),
-            "NEEDS_TRANSCODING" => Ok(Self::NeedsTranscoding),
-            "NEEDS_TRANSCODING_FINISH" => Ok(Self::NeedsTranscodingFinish),
-            "NEEDS_SYNC" => Ok(Self::NeedsSync),
+            "NEEDS_TRANSCODING" | "NEEDS_TRANSCODING_FINISH" => Ok(Self::NeedsProcessing),
             "NEEDS_PROCESSING" => Ok(Self::NeedsProcessing),
             "NEEDS_PROCESSING_FINISH" => Ok(Self::NeedsProcessingFinish),
             "NEEDS_CLEAN_RESTART" => Ok(Self::NeedsCleanRestart),
@@ -66,8 +58,6 @@ pub struct Panorama {
     pub source_video_path: Option<String>,
     pub gpx_path: Option<String>,
     pub web_video_path: Option<String>,
-    pub transcode_arn: Option<String>,
-    pub transcode_status: Option<String>,
     pub video_timestamp: Option<f64>,
     pub gpx_offset: Option<f64>,
     pub lat_offset: f64,
@@ -102,8 +92,6 @@ impl Panorama {
             source_video_path: attrs.get_string("source_video_path")?,
             gpx_path: attrs.get_string("gpx_path")?,
             web_video_path: attrs.get_string("web_video_path")?,
-            transcode_arn: attrs.get_string("transcode_arn")?,
-            transcode_status: attrs.get_string("transcode_status")?,
             video_timestamp: attrs.get_f64("video_timestamp")?,
             gpx_offset: attrs.get_f64("gpx_offset")?,
             lat_offset: attrs.get_f64("lat_offset")?.unwrap_or(0.0),
@@ -135,11 +123,6 @@ impl Panorama {
         );
         attrs.insert("gpx_path", Value::from(self.gpx_path.clone()));
         attrs.insert("web_video_path", Value::from(self.web_video_path.clone()));
-        attrs.insert("transcode_arn", Value::from(self.transcode_arn.clone()));
-        attrs.insert(
-            "transcode_status",
-            Value::from(self.transcode_status.clone()),
-        );
         attrs.insert("video_timestamp", Value::from(self.video_timestamp));
         attrs.insert("gpx_offset", Value::from(self.gpx_offset));
         attrs.insert("lat_offset", Value::from(self.lat_offset));

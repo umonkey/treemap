@@ -64,7 +64,9 @@ The application integrates 360° street panoramas to support remote inventorying
 - Track/layer navigation: allows switching between map layers and panorama sequences effortlessly.
 - Armchair mapping: supports remote auditing and asset tagging from desktop or mobile devices.
 - Panorama hints: provides navigational cues across adjacent panorama nodes and sequences.
-- Coordinate offsets: assists in fine-tuning spatial alignment between GPS tracks and imagery frames.
+- Automated trajectory alignment: aligns video frames with GPS tracks automatically without manual synchronization or preview transcoding.
+- Ray casting sightlines: projects viewer viewing direction onto the map to triangulate ground control points and verify alignments.
+- Coordinate offsets: assists in fine-tuning spatial alignment between GPS tracks and imagery frames to match base map features.
 
 ## Role-Based Access Control (RBAC)
 

@@ -1,0 +1,32 @@
+#!/bin/bash
+# This script aligns the OpenSfM reconstruction trajectory with the GPS track.
+
+set -e
+
+if [ -n "$1" ]; then
+    DATASET="$1"
+fi
+
+if [ -z "$DATASET" ]; then
+    echo "DATASET variable not set, cannot continue."
+    exit 1
+fi
+
+# The name of the flag file to skip the process in case of a rerun.
+LOCK=trajectory_aligned.txt
+
+if [ -f $DATASET/$LOCK ]; then
+    echo "Found existing trajectory alignment, reusing."
+    exit 0
+fi
+
+[ -f "$DATASET/config.yaml" ] || bin/write-config
+
+mkdir -p $DATASET/logs
+
+echo "=== Aligning trajectory ==="
+time bin/app align-trajectory $DATASET 2>&1 | tee $DATASET/logs/align_trajectory.log
+sync
+
+# Upload the results so that if next step crashes, we don't have to re-run this.
+time bin/upload-dataset $DATASET $LOCK

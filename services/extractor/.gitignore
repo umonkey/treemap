@@ -16,3 +16,4 @@ wheels/
 /projects
 /.envrc
 /var
+/config.yaml

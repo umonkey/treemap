@@ -1,0 +1,73 @@
+# NOTE: This file is a template and contains environment variable placeholders.
+# It is NOT directly usable by OpenSfM until processed with envsubst (via bin/write-config).
+
+# OpenSfM Configuration for 8K Sequential Frames
+
+# Optimization: Resize images for feature extraction
+# 2048 is sufficient for accurate camera poses and saves processing time.
+feature_process_size: 2048
+feature_process_size_panorama: 2048
+
+# Define the in-sequence distance when matching ordered image sequences,
+# e.g. not a random bunch of images, but frames extracted from a walking
+# or driving video.  Setting this to 10 means a frame is matched to the
+# next 10 and previous 10 images in the sequence.  This speeds up processing
+# significantly, compared to all-vs-all matching.
+matching_order_neighbors: 12
+
+# Disable GPS usage altogether.  We only use local reconstruction.
+bundle_use_gps: no
+
+# Use the BOW (bag of words) to catch when the track re-visits a location,
+# e.g. when the track loops or you drive the same street backwards.
+matching_bow_neighbors: 20
+bow_words_to_query: 50
+
+
+# High point count for stability
+min_features: 4000
+min_features_panorama: 4000
+
+# Minimum number of frames a feature must be seen in to create a track.
+# Increasing this significantly reduces memory by filtering out noise.
+min_track_length: 2
+
+# Use masks to ignore the car hood
+use_masks: yes
+
+align_method: none
+align_orientation_prior: none
+
+# Fixing the banana effect.
+bundle_interval: 15
+retriangulation: yes
+retriangulation_ratio: 2.0
+
+# Enable cross-checking features to further reduce the banana effect.
+matching_symmetric: yes
+matching_lowes_ratio: 0.75
+
+# Ignore moving objects.
+robust_matching_threshold: 0.004
+robust_matching_min_inliers: 25
+
+bundle_max_iterations: 25       # Limit solver iterations and prevent memory spikes
+local_bundle_radius: 15
+bundle_new_points_ratio: 1.2    # Optimized for linear street-view sequences to reduce compute time and improve alignment stability
+
+# Memory-efficient solver for large datasets
+ceres_linear_solver: ITERATIVE_SCHUR
+
+# Rigidity settings
+triangulation_min_ray_angle: 1.0  # Higher angle ensures more stable depth/triangulation for features like trees
+
+# This must be set to "no" for 360 images, which we are working with.
+optimize_camera_parameters: no
+
+# Setting this to "yes" can optimize performance but introduces the ladder effect.
+reconstruction_clustering: no
+
+# Performance
+processes: ${PROCESSES}
+reconstruction_cluster_size: 500
+reconstruction_cluster_overlap: 50

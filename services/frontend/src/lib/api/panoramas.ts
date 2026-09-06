@@ -3,9 +3,6 @@ import { getAuthHeaders, request } from './client';
 
 export type PanoramaStatus =
 	| 'NEEDS_FILES'
-	| 'NEEDS_TRANSCODING'
-	| 'NEEDS_TRANSCODING_FINISH'
-	| 'NEEDS_SYNC'
 	| 'NEEDS_PROCESSING'
 	| 'NEEDS_PROCESSING_FINISH'
 	| 'NEEDS_CLEAN_RESTART'
@@ -23,8 +20,6 @@ export interface Panorama {
 	source_video_path?: string | null;
 	gpx_path?: string | null;
 	web_video_path?: string | null;
-	transcode_arn?: string | null;
-	transcode_status?: string | null;
 	video_timestamp?: number | null;
 	gpx_offset?: number | null;
 	lat_offset: number;
@@ -145,29 +140,6 @@ export async function uploadPanoramaTrackFile(url: string, file: File): Promise<
 
 export async function finishPanoramaTrackUpload(id: string): Promise<IResponse<Panorama>> {
 	return await request<Panorama>('POST', `api/panoramas/${id}/track`, {
-		headers: getAuthHeaders()
-	});
-}
-
-export interface WebVideoUrlResponse {
-	url: string;
-}
-
-export async function getPanoramaWebVideo(id: string): Promise<IResponse<WebVideoUrlResponse>> {
-	return await request<WebVideoUrlResponse>('GET', `api/panoramas/${id}/web-video`, {
-		headers: getAuthHeaders()
-	});
-}
-
-export interface ITrackPoint {
-	lat: number;
-	lng: number;
-	offset: number;
-	timestamp: string;
-}
-
-export async function getPanoramaTrackData(id: string): Promise<IResponse<ITrackPoint[]>> {
-	return await request<ITrackPoint[]>('GET', `api/panoramas/${id}/track.json`, {
 		headers: getAuthHeaders()
 	});
 }

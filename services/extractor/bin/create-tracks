@@ -1,0 +1,27 @@
+#!/bin/bash
+
+set -e
+
+if [ -z "$DATASET" ]; then
+    echo "DATASET variable not set, cannot continue."
+    exit 1
+fi
+
+# The name of the flag file to skip the process in case of a rerun.
+LOCK=tracks_created.txt
+
+if [ -f $DATASET/$LOCK ]; then
+    echo "Found existing tracks, reusing."
+    exit 0
+fi
+
+[ -f "$DATASET/config.yaml" ] || bin/write-config
+
+mkdir -p $DATASET/features $DATASET/logs
+
+echo "=== Creating SfM tracks ==="
+time opensfm create_tracks $DATASET 2>&1 | tee $DATASET/logs/create_tracks.log
+sync
+
+# Upload the results so that if next step crashes, we don't have to re-run this.
+time bin/upload-dataset $DATASET $LOCK

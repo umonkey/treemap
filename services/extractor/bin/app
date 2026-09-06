@@ -1,2 +1,7 @@
 #!/bin/bash
-exec python3 -m app $@
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+if [ -f "$DIR/.venv/bin/python3" ]; then
+    exec "$DIR/.venv/bin/python3" -m app "$@"
+else
+    exec python3 -m app "$@"
+fi

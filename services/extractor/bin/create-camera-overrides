@@ -1,2 +1,24 @@
 #!/bin/bash
-exec python3 -m app create-camera-overrides "$@"
+# OpenSfM needs camera information for each image, like FOV etc.
+# Instead of specifying that for each image, create a single
+# catch-all file which applies to the whole dataset.
+
+if [ -z "$DATASET" ]; then
+    echo "DATASET not set, cannot continue."
+    exit 1
+fi
+
+if [ ! -f $DATASET/video.mp4 ]; then
+    echo "File $DATASET/video.mp4 not found, cannot continue."
+    exit 1
+fi
+
+if [ -f $DATASET/camera_models_overrides.json ]; then
+    echo "Found camera overrides, reusing."
+    exit 0
+fi
+
+bin/app create-camera-overrides $DATASET/video.mp4 > $DATASET/camera_models_overrides.json
+
+# Store the check-point.
+bin/upload-dataset $DATASET camera_overrides_created.txt

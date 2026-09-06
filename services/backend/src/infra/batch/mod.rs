@@ -74,55 +74,6 @@ impl BatchClient {
         })
     }
 
-    pub async fn transcode(&self, job_name: &str, dataset_url: &str) -> Result<String> {
-        let envs = vec![
-            KeyValuePair::builder()
-                .name("AWS_ACCESS_KEY_ID")
-                .value(&self.files_key)
-                .build(),
-            KeyValuePair::builder()
-                .name("AWS_SECRET_ACCESS_KEY")
-                .value(&self.files_secret)
-                .build(),
-            KeyValuePair::builder()
-                .name("AWS_REGION")
-                .value(&self.files_region)
-                .build(),
-            KeyValuePair::builder()
-                .name("AWS_ENDPOINT_URL")
-                .value(&self.files_endpoint)
-                .build(),
-            KeyValuePair::builder()
-                .name("DATASET_URL")
-                .value(dataset_url)
-                .build(),
-        ];
-
-        let container_overrides = ContainerOverrides::builder()
-            .set_environment(Some(envs))
-            .build();
-
-        let output = self
-            .client
-            .submit_job()
-            .job_name(job_name)
-            .job_queue(&self.job_queue)
-            .job_definition("treemap-transcoder")
-            .container_overrides(container_overrides)
-            .send()
-            .await
-            .map_err(|e| {
-                error!("Error submitting batch job {job_name}: {e}");
-                Error::Config(format!("Failed to submit batch job: {e}"))
-            })?;
-
-        let arn = output.job_arn().ok_or_else(|| {
-            Error::Config("Batch job submission did not return job ARN".to_string())
-        })?;
-
-        Ok(arn.to_string())
-    }
-
     #[allow(dead_code)]
     pub async fn extract(
         &self,

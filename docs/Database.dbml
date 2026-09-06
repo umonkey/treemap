@@ -169,8 +169,6 @@ Table panoramas {
   source_video_path text
   gpx_path text
   web_video_path text
-  transcode_arn text
-  transcode_status text
   video_timestamp real
   gpx_offset real
   lat_offset real [not null, default: 0.0]
