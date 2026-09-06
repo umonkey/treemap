@@ -25,7 +25,12 @@ fi
 mkdir -p $DATASET/images
 
 echo "Extracting frames..."
-time bin/app extract $DATASET/video.mp4 $DATASET/images
+GPX_ARG=""
+if [ -f "$DATASET/track.gpx" ]; then
+    GPX_ARG="--gpx $DATASET/track.gpx"
+fi
+
+time bin/app extract $DATASET/video.mp4 $DATASET/images $GPX_ARG
 
 # Upload the results so that if next step crashes, we don't have to re-run this.
 time bin/upload-dataset $DATASET $LOCK

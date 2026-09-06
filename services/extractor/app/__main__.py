@@ -9,6 +9,12 @@ from . import Reader, Writer
 from .exceptions import UsageException
 from .map_match import run_map_match
 from .masks import create_masks
+from .speed import (
+    calculate_frame_interval,
+    calculate_moving_speed,
+    get_video_fps,
+    parse_gpx,
+)
 from .trajectory import run_align_trajectory
 
 
@@ -63,25 +69,49 @@ def handle_align_trajectory(args):
 
 def handle_extract(args):
     try:
-        try:
-            frame_interval = int(os.environ.get("FRAME_INTERVAL", "10"))
-        except ValueError:
-            raise UsageException("FRAME_INTERVAL must be an integer")
-        if frame_interval <= 0:
-            raise UsageException("FRAME_INTERVAL must be greater than 0")
+        video_path = args.video_path
+        output_folder = args.output_folder
+        dataset_path = os.path.dirname(output_folder)
 
-        reader = Reader(args.video_path)
+        gpx_path = args.gpx
+        if not gpx_path:
+            candidate1 = os.path.join(dataset_path, "track.gpx")
+            candidate2 = os.path.join(os.path.dirname(video_path), "track.gpx")
+            if os.path.exists(candidate1):
+                gpx_path = candidate1
+            elif os.path.exists(candidate2):
+                gpx_path = candidate2
+                dataset_path = os.path.dirname(video_path)
+
+        reader = Reader(video_path)
+        fps = reader.fps
+        if fps <= 0:
+            fps = get_video_fps(video_path)
+
+        speed = None
+        if gpx_path and os.path.exists(gpx_path):
+            points = parse_gpx(gpx_path)
+            speed = calculate_moving_speed(points)
+
+        frame_interval = calculate_frame_interval(fps, speed, target_distance=1.0)
+        avg_speed = speed if speed is not None else 1.2
+
+        print(f"Video FPS: {fps:.2f}")
+        print(f"Average Speed: {avg_speed:.2f} m/s (from GPX: {speed is not None})")
+        print(f"Calculated Frame Interval: {frame_interval} (target distance: 1.0m)")
+
+        os.makedirs(dataset_path, exist_ok=True)
         target_indices = list(range(0, reader.total_frames, frame_interval))
 
         writer = Writer(
-            folder=args.output_folder,
+            folder=output_folder,
             total_frames=reader.total_frames,
         )
 
         missing_targets = []
         for i, target_idx in enumerate(target_indices):
             out_idx = i + 1
-            filename = os.path.join(args.output_folder, f"frame_{out_idx:06d}.jpg")
+            filename = os.path.join(output_folder, f"frame_{out_idx:06d}.jpg")
             if not os.path.exists(filename):
                 missing_targets.append((target_idx, out_idx))
 
@@ -108,6 +138,35 @@ def handle_extract(args):
     except UsageException as e:
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
+    except Exception as e:
+        print(f"Error during extraction: {e}", file=sys.stderr)
+        sys.exit(1)
+
+
+def handle_calculate_frame_interval(args):
+    try:
+        video_path = args.video_path
+        fps = get_video_fps(video_path)
+        gpx_path = args.gpx
+        if not gpx_path and os.path.exists(
+            os.path.join(os.path.dirname(video_path), "track.gpx")
+        ):
+            gpx_path = os.path.join(os.path.dirname(video_path), "track.gpx")
+
+        speed = None
+        if gpx_path and os.path.exists(gpx_path):
+            points = parse_gpx(gpx_path)
+            speed = calculate_moving_speed(points)
+
+        frame_interval = calculate_frame_interval(fps, speed, target_distance=1.0)
+        avg_speed = speed if speed is not None else 1.2
+
+        print(f"Video FPS: {fps:.2f}")
+        print(f"Average Speed: {avg_speed:.2f} m/s")
+        print(f"Frame Interval: {frame_interval}")
+    except Exception as e:
+        print(f"Error calculating frame interval: {e}", file=sys.stderr)
+        sys.exit(1)
 
 
 def main():
@@ -117,7 +176,15 @@ def main():
     extract_parser = subparsers.add_parser("extract", help="Extract frames from video")
     extract_parser.add_argument("video_path", help="Path to the video file")
     extract_parser.add_argument("output_folder", help="Folder to save extracted frames")
+    extract_parser.add_argument("--gpx", help="Path to GPX track file")
     extract_parser.set_defaults(func=handle_extract)
+
+    calc_fi_parser = subparsers.add_parser(
+        "calculate-frame-interval", help="Calculate frame interval from video and GPX"
+    )
+    calc_fi_parser.add_argument("video_path", help="Path to the video file")
+    calc_fi_parser.add_argument("--gpx", help="Path to GPX track file")
+    calc_fi_parser.set_defaults(func=handle_calculate_frame_interval)
 
     match_parser = subparsers.add_parser(
         "match", help="Map match geotagged images to road network"

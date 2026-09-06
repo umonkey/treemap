@@ -7,11 +7,12 @@ import json
 import math
 import os
 import re
-import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
+
+from .speed import parse_gpx
 
 
 def lla_to_enu(
@@ -207,63 +208,11 @@ def get_heading_pitch_roll(r_c2w: np.ndarray) -> Tuple[float, float, float]:
     return heading, pitch, roll
 
 
-def parse_iso_time(time_str: str) -> datetime:
-    """Parse ISO 8601 timestamp string into a UTC datetime object."""
-    clean_str = time_str.strip().replace("Z", "+00:00")
-    dt = datetime.fromisoformat(clean_str)
-    if dt.tzinfo is None:
-        dt = dt.replace(tzinfo=timezone.utc)
-    return dt.astimezone(timezone.utc)
-
-
 def format_utc_time(dt: datetime) -> str:
     """Format UTC datetime to ISO 8601 string ending with Z."""
     if dt.microsecond != 0:
         return dt.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
     return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-
-def parse_gpx(gpx_path: str) -> List[Tuple[float, float, float, float]]:
-    """
-    Parse a GPX file using xml.etree.ElementTree.
-
-    Returns:
-        List of (timestamp_epoch_sec, lat, lon, ele) sorted by timestamp.
-    """
-    tree = ET.parse(gpx_path)
-    root = tree.getroot()
-
-    points: List[Tuple[float, float, float, float]] = []
-    for elem in root.iter():
-        if elem.tag.endswith("trkpt"):
-            try:
-                lat = float(elem.attrib["lat"])
-                lon = float(elem.attrib["lon"])
-            except (KeyError, ValueError):
-                continue
-
-            ele = 0.0
-            t_epoch: Optional[float] = None
-
-            for child in elem:
-                tag = child.tag.split("}")[-1]
-                if tag == "ele" and child.text:
-                    try:
-                        ele = float(child.text)
-                    except ValueError:
-                        pass
-                elif tag == "time" and child.text:
-                    try:
-                        dt = parse_iso_time(child.text)
-                        t_epoch = dt.timestamp()
-                    except Exception:
-                        pass
-
-            if t_epoch is not None:
-                points.append((t_epoch, lat, lon, ele))
-
-    points.sort(key=lambda p: p[0])
-    return points
 
 
 def run_align_trajectory(dataset_path: str) -> None:
@@ -326,13 +275,6 @@ def run_align_trajectory(dataset_path: str) -> None:
         print("Warning: No shots found in reconstruction, skipping alignment.")
         return
 
-    # Determine frame interval and fps
-    try:
-        frame_interval = int(os.environ.get("FRAME_INTERVAL", "10"))
-    except ValueError:
-        frame_interval = 10
-
-    fps = 30.0
     video_duration: Optional[float] = None
     video_path = os.path.join(dataset_path, "video.mp4")
     if os.path.exists(video_path):
@@ -341,22 +283,14 @@ def run_align_trajectory(dataset_path: str) -> None:
 
             container = av.open(video_path)
             stream = container.streams.video[0]
-            if stream.average_rate:
-                fps = float(stream.average_rate)
             if stream.duration and stream.time_base:
                 video_duration = float(stream.duration * stream.time_base)
             container.close()
         except Exception:
             pass
 
-    if "FPS" in os.environ:
-        try:
-            fps = float(os.environ["FPS"])
-        except ValueError:
-            pass
-
-    # Extract shot indices and camera centers
-    shot_items: List[Tuple[int, str, np.ndarray, np.ndarray]] = []
+    # Extract shot indices, camera centers, and capture times
+    shot_items: List[Tuple[int, str, np.ndarray, np.ndarray, float]] = []
     for shot_id, shot_data in shots.items():
         m = re.findall(r"\d+", shot_id)
         index = int(m[-1]) if m else 1
@@ -366,7 +300,8 @@ def run_align_trajectory(dataset_path: str) -> None:
 
         r_cam = rodrigues(r_vec)
         c_sfm = -r_cam.T @ t_vec
-        shot_items.append((index, shot_id, c_sfm, r_cam))
+        capture_time = float(shot_data.get("capture_time", 0.0))
+        shot_items.append((index, shot_id, c_sfm, r_cam, capture_time))
 
     # Sort shots by frame index
     shot_items.sort(key=lambda s: s[0])
@@ -376,12 +311,15 @@ def run_align_trajectory(dataset_path: str) -> None:
     shot_ids = [s[1] for s in shot_items]
     c_sfm_arr = np.array([s[2] for s in shot_items], dtype=np.float64)
     r_cam_arr = [s[3] for s in shot_items]
+    capture_times = np.array([s[4] for s in shot_items], dtype=np.float64)
 
     # Calculate frame timestamps relative to video start:
-    # t_i = (index - 1) * frame_interval / fps
-    sfm_t = np.array(
-        [(idx - 1) * frame_interval / fps for idx in indices], dtype=np.float64
-    )
+    if len(capture_times) > 0 and np.any(capture_times > 0):
+        sfm_t = capture_times - capture_times[0]
+    else:
+        # Fallback if capture_time is missing: assume 30 fps and frame_interval 10
+        sfm_t = np.array([(idx - 1) * 10 / 30.0 for idx in indices], dtype=np.float64)
+
     if video_duration is None:
         video_duration = float(sfm_t[-1] - sfm_t[0]) if len(sfm_t) > 1 else 0.0
 

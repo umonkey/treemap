@@ -41,7 +41,7 @@ class TestExtractor(unittest.TestCase):
         self.assertEqual(dt_orig, "2026:06:07 12:34:56")
 
         sub_sec = exif_ifd[piexif.ExifIFD.SubSecTimeOriginal].decode("utf-8")
-        self.assertEqual(sub_sec, "12")  # 123456 // 10000 = 12
+        self.assertEqual(sub_sec, "123456")
 
     def test_reader_parse_timestamp(self):
         reader = Reader.__new__(Reader)

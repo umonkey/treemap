@@ -34,10 +34,10 @@ class Writer:
                     "%Y:%m:%d %H:%M:%S"
                 ).encode("utf-8"),
                 piexif.ExifIFD.SubSecTimeOriginal: (
-                    f"{timestamp.microsecond // 10000:02d}".encode("utf-8")
+                    f"{timestamp.microsecond:06d}".encode("utf-8")
                 ),
                 piexif.ExifIFD.SubSecTimeDigitized: (
-                    f"{timestamp.microsecond // 10000:02d}".encode("utf-8")
+                    f"{timestamp.microsecond:06d}".encode("utf-8")
                 ),
             },
             "GPS": {},
