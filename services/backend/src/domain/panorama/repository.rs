@@ -47,6 +47,20 @@ impl PanoramaRepository {
         self.db.delete(query).await
     }
 
+    pub async fn count_hints_by_panorama_id(&self, panorama_id: u64) -> Result<u64> {
+        let sql = format!(
+            "SELECT COUNT(1) AS cnt FROM `{}` WHERE `image_id` IN (SELECT `id` FROM `{}` WHERE `panorama_id` = ?)",
+            HINTS_TABLE, IMAGES_TABLE
+        );
+        let params = &[Value::from(panorama_id as i64)];
+        let records = self.db.fetch_sql(&sql, params).await?;
+        if let Some(record) = records.first() {
+            record.require_u64("cnt")
+        } else {
+            Ok(0)
+        }
+    }
+
     pub async fn delete_hints_by_panorama_id(&self, panorama_id: u64) -> Result<u64> {
         let sql = format!(
             "DELETE FROM `{}` WHERE `image_id` IN (SELECT `id` FROM `{}` WHERE `panorama_id` = ?)",

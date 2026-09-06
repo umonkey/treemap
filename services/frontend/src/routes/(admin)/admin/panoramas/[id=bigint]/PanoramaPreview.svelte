@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { AttributionControl, CircleLayer, GeoJSON, LineLayer, MapLibre } from 'svelte-maplibre';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import PanoramaViewer from '$lib/components/panoramas/PanoramaViewer.svelte';
@@ -10,6 +11,8 @@
 		$props();
 
 	const componentState = new PanoramaPreviewState();
+
+	onMount(componentState.onMount);
 
 	$effect(() => {
 		componentState.reload(panoramaId);

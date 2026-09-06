@@ -6,6 +6,7 @@ import {
 	type PanoramaImage
 } from '$lib/api/panoramas';
 import { mapRaysStore } from '$lib/stores/mapRays.svelte';
+import { panoBus } from '$lib/buses/panoBus';
 import { config } from '$lib/env';
 import { showError } from '$lib/errors';
 import { locale } from '$lib/locale';
@@ -21,8 +22,22 @@ export class PanoramaPreviewState {
 	selectedImage = $state<PanoramaImage | undefined>(undefined);
 	loadingImage = $state<boolean>(false);
 	yaw = $state<number>(0);
+	private currentPanoramaId = $state<string | undefined>(undefined);
 
 	layer = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${config.mapTilerKey}&language=${locale.lang}`;
+
+	public onMount = () => {
+		panoBus.on('reload', this.handleReloadBus);
+		return () => {
+			panoBus.off('reload', this.handleReloadBus);
+		};
+	};
+
+	private handleReloadBus = () => {
+		if (this.currentPanoramaId) {
+			this.reload(this.currentPanoramaId);
+		}
+	};
 
 	fitBounds = () => {
 		if (!this.map) return;
@@ -151,6 +166,7 @@ export class PanoramaPreviewState {
 	};
 
 	reload = async (panoramaId: string) => {
+		this.currentPanoramaId = panoramaId;
 		this.geoJsonData = undefined;
 		this.hintsGeoJsonData = undefined;
 		this.selectedImageId = undefined;

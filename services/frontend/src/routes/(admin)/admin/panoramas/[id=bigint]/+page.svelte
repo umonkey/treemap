@@ -82,6 +82,23 @@
 						</tr>
 
 						<tr>
+							<th>Hints:</th>
+							<td>
+								<div class="hints-cell">
+									<span>{pageState.panorama.hints_count ?? 0}</span>
+									<button
+										type="button"
+										class="clear-link"
+										disabled={pageState.isClearingHints || !pageState.panorama.hints_count || pageState.panorama.hints_count === 0}
+										onclick={() => pageState.clearHints(id)}
+									>
+										{pageState.isClearingHints ? 'Clearing...' : 'Clear'}
+									</button>
+								</div>
+							</td>
+						</tr>
+
+						<tr>
 							<th>Processing job status</th>
 							<td>{pageState.panorama.processing_status ?? 'unknown'}</td>
 						</tr>
@@ -150,5 +167,35 @@
 	.panorama-details th {
 		width: 250px;
 		font-weight: bold;
+	}
+
+	.hints-cell {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+
+	button.clear-link {
+		background: none;
+		border: none;
+		padding: 0;
+		margin: 0;
+		font: inherit;
+		font-size: 0.9rem;
+		line-height: inherit;
+		color: var(--link-color);
+		text-decoration: underline;
+		cursor: pointer;
+	}
+
+	button.clear-link:hover:not(:disabled) {
+		text-decoration: none;
+	}
+
+	button.clear-link:disabled {
+		opacity: 0.4;
+		cursor: default;
+		text-decoration: none;
 	}
 </style>

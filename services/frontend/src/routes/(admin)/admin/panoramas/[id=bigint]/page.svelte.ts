@@ -1,9 +1,11 @@
-import { getPanorama, exportPanorama, type Panorama } from '$lib/api/panoramas';
+import { getPanorama, exportPanorama, deletePanoramaHints, type Panorama } from '$lib/api/panoramas';
+import { panoBus } from '$lib/buses/panoBus';
 import type { IError } from '$lib/types';
 
 export class PageState {
 	panorama = $state<Panorama | undefined>(undefined);
 	isLoading = $state<boolean>(false);
+	isClearingHints = $state<boolean>(false);
 	error = $state<IError | undefined>(undefined);
 	private pollInterval: ReturnType<typeof setInterval> | null = null;
 
@@ -59,6 +61,28 @@ export class PageState {
 			a.click();
 			document.body.removeChild(a);
 			URL.revokeObjectURL(url);
+		} else {
+			this.error = res.error;
+		}
+	};
+
+	clearHints = async (id: string) => {
+		if (
+			!confirm(
+				'Are you sure you want to delete all hints for this panorama? This action cannot be undone.'
+			)
+		) {
+			return;
+		}
+		this.isClearingHints = true;
+		this.error = undefined;
+		const res = await deletePanoramaHints(id);
+		this.isClearingHints = false;
+		if (res.status === 204 || res.status === 200) {
+			if (this.panorama) {
+				this.panorama.hints_count = 0;
+			}
+			panoBus.emit('reload');
 		} else {
 			this.error = res.error;
 		}

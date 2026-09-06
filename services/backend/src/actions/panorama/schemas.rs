@@ -29,6 +29,7 @@ pub struct PanoramaRead {
     pub lon_offset: f64,
     pub processing_status: Option<String>,
     pub failure_reason: Option<String>,
+    pub hints_count: Option<usize>,
 }
 
 #[derive(Debug, Serialize)]
@@ -151,6 +152,7 @@ impl From<Panorama> for PanoramaRead {
             lon_offset: p.lon_offset,
             processing_status: p.processing_status,
             failure_reason: p.failure_reason,
+            hints_count: None,
         }
     }
 }

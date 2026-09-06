@@ -359,6 +359,15 @@ impl PanoramaService {
         Ok((panorama, images))
     }
 
+    pub async fn count_hints_by_panorama(&self, panorama_id: u64) -> Result<u64> {
+        self.repo.count_hints_by_panorama_id(panorama_id).await
+    }
+
+    pub async fn delete_panorama_hints(&self, panorama_id: u64) -> Result<u64> {
+        self.get_panorama(panorama_id).await?;
+        self.repo.delete_hints_by_panorama_id(panorama_id).await
+    }
+
     pub async fn get_image_hints(&self, image_id: u64) -> Result<Vec<PanoramaHint>> {
         self.repo.find_hints_by_image_id(image_id).await
     }

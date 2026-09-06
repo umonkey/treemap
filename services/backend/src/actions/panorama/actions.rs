@@ -40,7 +40,10 @@ pub async fn get_panorama_action(
 ) -> Result<Json<PanoramaRead>> {
     let id = path.into_inner();
     let panorama = service.get_panorama(id).await?;
-    Ok(Json(panorama.into()))
+    let hints_count = service.count_hints_by_panorama(id).await?;
+    let mut res = PanoramaRead::from(panorama);
+    res.hints_count = Some(hints_count as usize);
+    Ok(Json(res))
 }
 
 #[get("/{id}/geo.json")]
@@ -114,7 +117,10 @@ pub async fn update_panorama_action(
 ) -> Result<Json<PanoramaRead>> {
     let id = path.into_inner();
     let panorama = service.update_panorama(id, body.into_inner()).await?;
-    Ok(Json(panorama.into()))
+    let hints_count = service.count_hints_by_panorama(id).await?;
+    let mut res = PanoramaRead::from(panorama);
+    res.hints_count = Some(hints_count as usize);
+    Ok(Json(res))
 }
 
 #[post("/{id}/restart")]
@@ -330,5 +336,16 @@ pub async fn delete_panorama_image_hints_action(
 ) -> Result<HttpResponse> {
     let image_id = path.into_inner();
     service.delete_image_hints(image_id).await?;
+    Ok(HttpResponse::NoContent().finish())
+}
+
+#[delete("/{id}/hints")]
+pub async fn delete_panorama_hints_action(
+    _user: RequirePermission<PanoEdit>,
+    service: Injected<PanoramaService>,
+    path: Path<u64>,
+) -> Result<HttpResponse> {
+    let id = path.into_inner();
+    service.delete_panorama_hints(id).await?;
     Ok(HttpResponse::NoContent().finish())
 }
