@@ -45,9 +45,16 @@ impl MetaService {
             .as_str(),
         );
 
-        if let Some(image) = tree.thumbnail_id {
-            html.push_str(format!("<meta name=\"og:image\" content=\"https://yerevan.treemaps.app/v1/files/{image}.jpg\">").as_str());
-        }
+        html.push_str(
+            format!(
+                "<meta property=\"og:image\" content=\"https://yerevan.treemaps.app/v1/trees/{}/card.jpg\">",
+                tree.id
+            )
+            .as_str(),
+        );
+        html.push_str("<meta property=\"og:image:width\" content=\"1200\">");
+        html.push_str("<meta property=\"og:image:height\" content=\"630\">");
+        html.push_str("<meta property=\"og:image:type\" content=\"image/jpeg\">");
 
         html.push_str("<meta name=\"twitter:card\" content=\"summary_large_image\">");
         html.push_str("<meta property=\"twitter:domain\" content=\"yerevan.treemaps.app\">");
@@ -72,10 +79,13 @@ impl MetaService {
             )
             .as_str(),
         );
-
-        if let Some(image) = tree.thumbnail_id {
-            html.push_str(format!("<meta name=\"twitter:image\" content=\"https://yerevan.treemaps.app/v1/files/{image}.jpg\">").as_str());
-        }
+        html.push_str(
+            format!(
+                "<meta name=\"twitter:image\" content=\"https://yerevan.treemaps.app/v1/trees/{}/card.jpg\">",
+                tree.id
+            )
+            .as_str(),
+        );
 
         self.inject_meta(&html).await
     }

@@ -41,6 +41,12 @@ pub struct Secrets {
     pub smtp_user: Option<String>,
     pub smtp_secret: Option<String>,
     pub from_email: Option<String>,
+
+    // MapTiler API Key.
+    pub maptiler_key: Option<String>,
+
+    // Mapbox API Token.
+    pub mapbox_token: Option<String>,
 }
 
 impl Secrets {
@@ -70,6 +76,12 @@ impl Secrets {
                 .or_else(|| Self::get(path, "SECRET"))
                 .or_else(|| Self::get(path, "SMTP_PASSWORD")),
             from_email: Self::get(path, "FROM_EMAIL").or_else(|| Self::get(path, "SMTP_FROM")),
+            maptiler_key: Self::get(path, "MAPTILER_KEY")
+                .or_else(|| Self::get(path, "PUBLIC_MAPTILER_KEY"))
+                .or_else(|| config.maptiler_key.clone()),
+            mapbox_token: Self::get(path, "MAPBOX_TOKEN")
+                .or_else(|| Self::get(path, "MAPBOX_KEY"))
+                .or_else(|| config.mapbox_token.clone()),
         })
     }
 
