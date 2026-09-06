@@ -26,7 +26,6 @@ pub struct PanoramaRead {
     pub gpx_path: Option<String>,
     pub web_video_path: Option<String>,
     pub video_timestamp: Option<f64>,
-    pub gpx_offset: Option<f64>,
     pub lat_offset: f64,
     pub lon_offset: f64,
     pub processing_status: Option<String>,
@@ -38,7 +37,6 @@ pub struct PanoramaMetaExport {
     pub title: String,
     pub storage_key: String,
     pub created_at: i64,
-    pub gpx_offset: Option<f64>,
     pub lat_offset: f64,
     pub lon_offset: f64,
 }
@@ -156,7 +154,6 @@ impl From<Panorama> for PanoramaRead {
             gpx_path: p.gpx_path,
             web_video_path: p.web_video_path,
             video_timestamp: p.video_timestamp,
-            gpx_offset: p.gpx_offset,
             lat_offset: p.lat_offset,
             lon_offset: p.lon_offset,
             processing_status: p.processing_status,
@@ -171,7 +168,6 @@ impl From<Panorama> for PanoramaMetaExport {
             title: p.title,
             storage_key: p.storage_key,
             created_at: p.created_at,
-            gpx_offset: p.gpx_offset,
             lat_offset: p.lat_offset,
             lon_offset: p.lon_offset,
         }

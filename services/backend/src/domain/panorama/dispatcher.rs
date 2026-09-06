@@ -44,12 +44,11 @@ impl PanoramaDispatcher {
         let dataset_url = format!("s3://{}/{}/", self.storage.name(), id);
         let result_url = format!("s3://{}/{}/", self.panoramas.name(), id);
         let job_name = format!("extract-{id}");
-        let gpx_offset = panorama.gpx_offset.unwrap_or(0.0);
         let mask_size = 0.35;
 
         let arn = self
             .batch
-            .extract(&job_name, gpx_offset, mask_size, &dataset_url, &result_url)
+            .extract(&job_name, mask_size, &dataset_url, &result_url)
             .await?;
 
         log::info!("Assigned processing ARN {} to panorama {}", arn, id);

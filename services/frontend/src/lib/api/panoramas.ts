@@ -21,7 +21,6 @@ export interface Panorama {
 	gpx_path?: string | null;
 	web_video_path?: string | null;
 	video_timestamp?: number | null;
-	gpx_offset?: number | null;
 	lat_offset: number;
 	lon_offset: number;
 	processing_status?: string | null;
@@ -38,7 +37,6 @@ export interface CreatePanorama {
 export interface UpdatePanorama {
 	title?: string;
 	visible?: boolean;
-	gpx_offset?: number;
 	lat_offset?: number;
 	lon_offset?: number;
 }
@@ -245,7 +243,6 @@ export interface PanoramaMetaExport {
 	title: string;
 	storage_key: string;
 	created_at: number;
-	gpx_offset?: number | null;
 	lat_offset: number;
 	lon_offset: number;
 }

@@ -127,7 +127,6 @@ impl PanoramaService {
             gpx_path: None,
             web_video_path: None,
             video_timestamp: None,
-            gpx_offset: None,
             lat_offset: 0.0,
             lon_offset: 0.0,
             processing_arn: None,
@@ -183,10 +182,6 @@ impl PanoramaService {
 
         if let Some(visible) = data.visible {
             panorama.visible = visible;
-        }
-
-        if let Some(gpx_offset) = data.gpx_offset {
-            panorama.gpx_offset = Some(gpx_offset);
         }
 
         if let Some(lat_offset) = data.lat_offset {

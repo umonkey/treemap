@@ -82,11 +82,6 @@
 						</tr>
 
 						<tr>
-							<th>GPS Time Offset</th>
-							<td>{pageState.panorama.gpx_offset ?? 'not set'}</td>
-						</tr>
-
-						<tr>
 							<th>Processing job status</th>
 							<td>{pageState.panorama.processing_status ?? 'unknown'}</td>
 						</tr>

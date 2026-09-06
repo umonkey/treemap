@@ -59,7 +59,6 @@ pub struct Panorama {
     pub gpx_path: Option<String>,
     pub web_video_path: Option<String>,
     pub video_timestamp: Option<f64>,
-    pub gpx_offset: Option<f64>,
     pub lat_offset: f64,
     pub lon_offset: f64,
     pub processing_arn: Option<String>,
@@ -93,7 +92,6 @@ impl Panorama {
             gpx_path: attrs.get_string("gpx_path")?,
             web_video_path: attrs.get_string("web_video_path")?,
             video_timestamp: attrs.get_f64("video_timestamp")?,
-            gpx_offset: attrs.get_f64("gpx_offset")?,
             lat_offset: attrs.get_f64("lat_offset")?.unwrap_or(0.0),
             lon_offset: attrs.get_f64("lon_offset")?.unwrap_or(0.0),
             processing_arn: attrs.get_string("processing_arn")?,
@@ -124,7 +122,6 @@ impl Panorama {
         attrs.insert("gpx_path", Value::from(self.gpx_path.clone()));
         attrs.insert("web_video_path", Value::from(self.web_video_path.clone()));
         attrs.insert("video_timestamp", Value::from(self.video_timestamp));
-        attrs.insert("gpx_offset", Value::from(self.gpx_offset));
         attrs.insert("lat_offset", Value::from(self.lat_offset));
         attrs.insert("lon_offset", Value::from(self.lon_offset));
         attrs.insert("processing_arn", Value::from(self.processing_arn.clone()));
@@ -151,7 +148,6 @@ pub struct CreatePanorama {
 pub struct UpdatePanorama {
     pub title: Option<String>,
     pub visible: Option<bool>,
-    pub gpx_offset: Option<f64>,
     pub lat_offset: Option<f64>,
     pub lon_offset: Option<f64>,
 }

@@ -170,7 +170,6 @@ Table panoramas {
   gpx_path text
   web_video_path text
   video_timestamp real
-  gpx_offset real
   lat_offset real [not null, default: 0.0]
   lon_offset real [not null, default: 0.0]
   processing_arn text

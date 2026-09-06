@@ -78,7 +78,6 @@ impl BatchClient {
     pub async fn extract(
         &self,
         job_name: &str,
-        gpx_offset: f64,
         mask_size: f64,
         dataset_url: &str,
         result_url: &str,
@@ -99,10 +98,6 @@ impl BatchClient {
             KeyValuePair::builder()
                 .name("AWS_ENDPOINT_URL")
                 .value(&self.files_endpoint)
-                .build(),
-            KeyValuePair::builder()
-                .name("GPX_OFFSET")
-                .value(gpx_offset.to_string())
                 .build(),
             KeyValuePair::builder()
                 .name("MASK_SIZE")
