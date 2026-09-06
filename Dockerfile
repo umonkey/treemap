@@ -32,7 +32,6 @@ COPY services/backend/Cargo.toml services/backend/Cargo.lock ./
 # Create a dummy main.rs to build only dependencies.
 RUN mkdir src && echo "fn main() {}" > src/main.rs
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
-    --mount=type=cache,target=/app/target \
     cargo build --release
 RUN rm -rf src
 
@@ -42,7 +41,6 @@ COPY services/backend/dev dev
 COPY services/backend/templates templates
 RUN touch src/main.rs
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
-    --mount=type=cache,target=/app/target \
     cargo build --release && \
     cp target/release/treemap /app/treemap-bin
 
