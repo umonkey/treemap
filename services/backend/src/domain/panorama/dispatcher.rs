@@ -99,6 +99,7 @@ impl PanoramaDispatcher {
         if new_status == "SUCCEEDED" {
             self.pull_panoramas_images(panorama).await?;
             self.service.update_panorama_stats(panorama).await?;
+            self.delete_temporary_files(panorama.id).await?;
 
             panorama.status = PanoramaStatus::Success;
 
