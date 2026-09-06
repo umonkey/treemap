@@ -95,6 +95,8 @@
 				onMove={pageState.handleMove}
 				onTreeClick={pageState.handleTreeClick}
 				onImageClick={pageState.handleImageClick}
+				canAddHint={$mapLayerStore.treeHints && $hasPermission('pano:edit')}
+				onAddHint={pageState.handleAddTree}
 			/>
 			<div class="crosshair">
 				<CrossHair />

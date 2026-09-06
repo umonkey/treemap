@@ -11,16 +11,36 @@
 		onMove?: (angle: number) => void;
 		onTreeClick?: (treeId: string) => void;
 		onImageClick?: (imageId: string) => void;
+		onAddHint?: () => void;
+		canAddHint?: boolean;
 	}
 
-	const { image, angle = 0, trees = [], onMove, onTreeClick, onImageClick }: Props = $props();
+	const {
+		image,
+		angle = 0,
+		trees = [],
+		onMove,
+		onTreeClick,
+		onImageClick,
+		onAddHint,
+		canAddHint = false
+	}: Props = $props();
 
 	let container = $state<HTMLElement | null>(null);
 
 	$effect(() => {
 		if (container && image.url) {
 			const initialYaw = untrack(() => angle);
-			componentState.init(container, image, initialYaw, onMove, onTreeClick, onImageClick);
+			componentState.init(
+				container,
+				image,
+				initialYaw,
+				onMove,
+				onTreeClick,
+				onImageClick,
+				onAddHint,
+				canAddHint
+			);
 		}
 		return () => {
 			componentState.destroy();
@@ -29,6 +49,13 @@
 
 	$effect(() => {
 		componentState.setTrees(trees);
+	});
+
+	$effect(() => {
+		window.addEventListener('keydown', componentState.handleKeydown);
+		return () => {
+			window.removeEventListener('keydown', componentState.handleKeydown);
+		};
 	});
 
 	$effect(() => {

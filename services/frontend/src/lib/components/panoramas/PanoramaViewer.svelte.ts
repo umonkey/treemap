@@ -10,6 +10,8 @@ class PanoramaViewerLogic {
 	onMove?: (angle: number) => void;
 	onTreeClick?: (treeId: string) => void;
 	onImageClick?: (imageId: string) => void;
+	onAddHint?: () => void;
+	canAddHint = false;
 	trees = $state<PanoramaHint[]>([]);
 	isLoaded = $state(false);
 	private addedHotspotIds: string[] = [];
@@ -21,7 +23,9 @@ class PanoramaViewerLogic {
 		initialYaw: number = 0,
 		onMove?: (angle: number) => void,
 		onTreeClick?: (treeId: string) => void,
-		onImageClick?: (imageId: string) => void
+		onImageClick?: (imageId: string) => void,
+		onAddHint?: () => void,
+		canAddHint = false
 	) => {
 		this.unmountIcons();
 
@@ -36,6 +40,8 @@ class PanoramaViewerLogic {
 		this.onMove = onMove;
 		this.onTreeClick = onTreeClick;
 		this.onImageClick = onImageClick;
+		this.onAddHint = onAddHint;
+		this.canAddHint = canAddHint;
 
 		if (!image.url) return;
 
@@ -65,6 +71,16 @@ class PanoramaViewerLogic {
 			this.yaw = data.yaw;
 			this.onMove?.(this.yaw);
 		});
+	};
+
+	handleKeydown = (e: KeyboardEvent) => {
+		if (e.ctrlKey || e.metaKey || e.altKey) return;
+		const target = e.target as HTMLElement;
+		if (['INPUT', 'TEXTAREA', 'BUTTON'].includes(target?.tagName)) return;
+		if (e.code === 'Space' && this.canAddHint && this.onAddHint) {
+			e.preventDefault();
+			this.onAddHint();
+		}
 	};
 
 	setTrees = (trees: PanoramaHint[]) => {
