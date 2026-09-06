@@ -1,6 +1,6 @@
 ---
 name: markdown
-description: rules for formatting markdown documents and documentation. Use this whenever working with any files in the docs/ folder or any .md files.
+description: Formatting standards and Prettier post-processing rules for documentation. Use ONLY when authoring or editing markdown files in docs/ or architectural documentation.
 ---
 
 ## Markdown Formatting Rules
