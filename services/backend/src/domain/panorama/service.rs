@@ -199,20 +199,38 @@ impl PanoramaService {
         Ok(panorama)
     }
 
-    pub async fn verify_video_upload(&self, id: u64) -> Result<Panorama> {
-        let key = format!("{id}/video.mp4");
-        if !self.storage.exists(&key).await? {
-            return Err(Error::FileNotFound);
+    pub async fn check_and_update_files_status(&self, panorama: &mut Panorama) -> Result<()> {
+        let id = panorama.id;
+        let video_key = format!("{id}/video.mp4");
+        let track_key = format!("{id}/track.gpx");
+
+        if self.storage.exists(&video_key).await? {
+            panorama.source_video_path = Some(video_key);
         }
 
-        let mut panorama = self.get_panorama(id).await?;
-        panorama.source_video_path = Some(key);
+        if self.storage.exists(&track_key).await? {
+            panorama.gpx_path = Some(track_key);
+        }
+
         if panorama.source_video_path.is_some()
             && panorama.gpx_path.is_some()
             && panorama.status == PanoramaStatus::NeedsFiles
         {
             panorama.status = PanoramaStatus::NeedsProcessing;
         }
+
+        Ok(())
+    }
+
+    pub async fn verify_video_upload(&self, id: u64) -> Result<Panorama> {
+        let mut panorama = self.get_panorama(id).await?;
+
+        self.check_and_update_files_status(&mut panorama).await?;
+
+        if panorama.source_video_path.is_none() {
+            return Err(Error::FileNotFound);
+        }
+
         self.repo.update(id, &panorama).await?;
 
         Ok(panorama)
@@ -231,19 +249,14 @@ impl PanoramaService {
     }
 
     pub async fn verify_track_upload(&self, id: u64) -> Result<Panorama> {
-        let key = format!("{id}/track.gpx");
-        if !self.storage.exists(&key).await? {
+        let mut panorama = self.get_panorama(id).await?;
+
+        self.check_and_update_files_status(&mut panorama).await?;
+
+        if panorama.gpx_path.is_none() {
             return Err(Error::FileNotFound);
         }
 
-        let mut panorama = self.get_panorama(id).await?;
-        panorama.gpx_path = Some(key);
-        if panorama.source_video_path.is_some()
-            && panorama.gpx_path.is_some()
-            && panorama.status == PanoramaStatus::NeedsFiles
-        {
-            panorama.status = PanoramaStatus::NeedsProcessing;
-        }
         self.repo.update(id, &panorama).await?;
 
         Ok(panorama)
@@ -254,6 +267,8 @@ impl PanoramaService {
         id: u64,
         parts_count: i32,
     ) -> Result<(String, Vec<String>)> {
+        self.get_panorama(id).await?;
+
         let key = format!("{id}/video.mp4");
         let upload_id = self.storage.start_multipart_upload(&key).await?;
 

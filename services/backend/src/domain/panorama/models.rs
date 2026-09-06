@@ -11,6 +11,7 @@ pub enum PanoramaStatus {
     NeedsProcessingFinish,
     NeedsCleanRestart,
     Success,
+    #[serde(other)]
     Failure,
 }
 
@@ -39,8 +40,7 @@ impl FromStr for PanoramaStatus {
             "NEEDS_PROCESSING_FINISH" => Ok(Self::NeedsProcessingFinish),
             "NEEDS_CLEAN_RESTART" => Ok(Self::NeedsCleanRestart),
             "SUCCESS" | "PROCESSED" => Ok(Self::Success),
-            "FAILURE" => Ok(Self::Failure),
-            _ => Err(format!("Invalid panorama status: {s}")),
+            _ => Ok(Self::Failure),
         }
     }
 }
@@ -227,5 +227,75 @@ impl PanoramaHint {
         attrs.insert("angle", Value::from(self.angle));
         attrs.insert("user_id", Value::from(self.user_id as i64));
         attrs
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_panorama_status_from_str() {
+        assert_eq!(
+            "NEEDS_FILES".parse::<PanoramaStatus>().unwrap(),
+            PanoramaStatus::NeedsFiles
+        );
+        assert_eq!(
+            "DRAFT".parse::<PanoramaStatus>().unwrap(),
+            PanoramaStatus::NeedsFiles
+        );
+        assert_eq!(
+            "NEEDS_PROCESSING".parse::<PanoramaStatus>().unwrap(),
+            PanoramaStatus::NeedsProcessing
+        );
+        assert_eq!(
+            "NEEDS_TRANSCODING".parse::<PanoramaStatus>().unwrap(),
+            PanoramaStatus::NeedsProcessing
+        );
+        assert_eq!(
+            "NEEDS_TRANSCODING_FINISH"
+                .parse::<PanoramaStatus>()
+                .unwrap(),
+            PanoramaStatus::NeedsProcessing
+        );
+        assert_eq!(
+            "NEEDS_PROCESSING_FINISH".parse::<PanoramaStatus>().unwrap(),
+            PanoramaStatus::NeedsProcessingFinish
+        );
+        assert_eq!(
+            "NEEDS_CLEAN_RESTART".parse::<PanoramaStatus>().unwrap(),
+            PanoramaStatus::NeedsCleanRestart
+        );
+        assert_eq!(
+            "SUCCESS".parse::<PanoramaStatus>().unwrap(),
+            PanoramaStatus::Success
+        );
+        assert_eq!(
+            "PROCESSED".parse::<PanoramaStatus>().unwrap(),
+            PanoramaStatus::Success
+        );
+        assert_eq!(
+            "FAILURE".parse::<PanoramaStatus>().unwrap(),
+            PanoramaStatus::Failure
+        );
+
+        // Unknown or removed statuses should map to Failure
+        assert_eq!(
+            "NEEDS_SYNC".parse::<PanoramaStatus>().unwrap(),
+            PanoramaStatus::Failure
+        );
+        assert_eq!(
+            "UNKNOWN_STATUS".parse::<PanoramaStatus>().unwrap(),
+            PanoramaStatus::Failure
+        );
+    }
+
+    #[test]
+    fn test_panorama_status_serde() {
+        let status: PanoramaStatus = serde_json::from_str("\"NEEDS_SYNC\"").unwrap();
+        assert_eq!(status, PanoramaStatus::Failure);
+
+        let status: PanoramaStatus = serde_json::from_str("\"SUCCESS\"").unwrap();
+        assert_eq!(status, PanoramaStatus::Success);
     }
 }
