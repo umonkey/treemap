@@ -120,7 +120,7 @@ class PanoramaViewerLogic {
 					const imageId = trees[i].image_id as string;
 					this.viewer.addHotSpot({
 						id,
-						pitch: 0,
+						pitch: -5,
 						yaw: trees[i].angle,
 						type: 'info',
 						cssClass: 'image-marker-disc',
