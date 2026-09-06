@@ -65,4 +65,24 @@
 	:global(.pnlm-hotspot.tree-marker) {
 		cursor: default;
 	}
+
+	:global(.pnlm-hotspot-base.tree-marker-disc) {
+		width: 30px;
+		height: 30px;
+		border-radius: 50%;
+		background-color: #22c55e !important;
+		border: 2px solid #ffffff !important;
+		background-image: none !important;
+		box-sizing: border-box;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		pointer-events: none;
+	}
+
+	:global(.tree-marker-disc svg) {
+		width: 16px;
+		height: 16px;
+		color: #000000;
+	}
 </style>
