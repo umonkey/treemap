@@ -1,9 +1,11 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { CircleLayer, GeoJSON } from 'svelte-maplibre';
-	import { treeLayerState } from './TreeLayer.svelte.ts';
+	import { TreeLayerLogic } from './TreeLayer.svelte.ts';
 
-	onMount(treeLayerState.onMount);
+	const componentState = new TreeLayerLogic();
+
+	onMount(componentState.onMount);
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const crownColor: any = [
@@ -23,20 +25,20 @@
 	];
 </script>
 
-{#if treeLayerState.markers}
-	<GeoJSON data={treeLayerState.markers}>
+{#if componentState.markers}
+	<GeoJSON data={componentState.markers}>
 		<CircleLayer
 			id="tree-crowns-small"
 			maxzoom={15}
 			paint={{
 				'circle-color': crownColor,
-				'circle-radius': treeLayerState.crownRadiusSmall,
+				'circle-radius': componentState.crownRadiusSmall,
 				'circle-opacity': ['match', ['get', 'state'], ['stump', 'gone', 'placeholder'], 0.2, 0.5],
 				'circle-pitch-alignment': 'map',
 				'circle-pitch-scale': 'map'
 			}}
-			onclick={treeLayerState.handleClick}
-			oncontextmenu={treeLayerState.handleContextMenu}
+			onclick={componentState.handleClick}
+			oncontextmenu={componentState.handleContextMenu}
 		/>
 
 		<CircleLayer
@@ -44,13 +46,13 @@
 			minzoom={15}
 			paint={{
 				'circle-color': crownColor,
-				'circle-radius': treeLayerState.crownRadiusLarge,
+				'circle-radius': componentState.crownRadiusLarge,
 				'circle-opacity': ['match', ['get', 'state'], ['stump', 'gone', 'placeholder'], 0.2, 0.5],
 				'circle-pitch-alignment': 'map',
 				'circle-pitch-scale': 'map'
 			}}
-			onclick={treeLayerState.handleClick}
-			oncontextmenu={treeLayerState.handleContextMenu}
+			onclick={componentState.handleClick}
+			oncontextmenu={componentState.handleContextMenu}
 		/>
 
 		<CircleLayer
@@ -59,7 +61,7 @@
 			filter={['>', ['get', 'trunk'], 0]}
 			paint={{
 				'circle-color': '#000000',
-				'circle-radius': treeLayerState.trunkRadiusLarge,
+				'circle-radius': componentState.trunkRadiusLarge,
 				'circle-opacity': 0.8,
 				'circle-pitch-alignment': 'map',
 				'circle-pitch-scale': 'map'

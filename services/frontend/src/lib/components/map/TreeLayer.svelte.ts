@@ -32,7 +32,7 @@ type Collection = {
 	features: Feature[];
 };
 
-export class TreeLayerState {
+export class TreeLayerLogic {
 	bounds = $state<IBounds | undefined>(undefined);
 	zoom = $state<number | undefined>(undefined);
 	markers = $state.raw<Collection | undefined>(undefined);
@@ -75,6 +75,9 @@ export class TreeLayerState {
 		this.fetchDebouncer.run(() => {
 			getGeoJSON(n, e, s, w, search, zoom)
 				.then(({ status, data }) => {
+					if (!this.bounds) {
+						return;
+					}
 					if (status === 200 && data) {
 						const collection = data as unknown as Collection;
 						console.debug(`[TreeLayer] Received ${collection.features.length} features.`);
@@ -156,10 +159,12 @@ export class TreeLayerState {
 		return () => {
 			this.bounds = undefined;
 			this.zoom = undefined;
+			this.markers = undefined;
 			mapBus.off('bounds', this.handleBounds);
 			mapBus.off('reload', this.reload);
+			mapPoiStore.trees = [];
 		};
 	};
 }
 
-export const treeLayerState = new TreeLayerState();
+export { TreeLayerLogic as TreeLayerState };
