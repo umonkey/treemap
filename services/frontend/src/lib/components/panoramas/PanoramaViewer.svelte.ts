@@ -7,6 +7,7 @@ class PanoramaViewerLogic {
 	viewer: Pannellum.Viewer | null = null;
 	yaw = $state(0);
 	onMove?: (angle: number) => void;
+	onTreeClick?: (treeId: string) => void;
 	trees = $state<PanoramaHint[]>([]);
 	isLoaded = $state(false);
 	private addedHotspotIds: string[] = [];
@@ -16,7 +17,8 @@ class PanoramaViewerLogic {
 		container: HTMLElement,
 		image: PanoramaImage,
 		initialYaw: number = 0,
-		onMove?: (angle: number) => void
+		onMove?: (angle: number) => void,
+		onTreeClick?: (treeId: string) => void
 	) => {
 		this.unmountIcons();
 
@@ -29,6 +31,7 @@ class PanoramaViewerLogic {
 		this.addedHotspotIds = [];
 		this.yaw = initialYaw;
 		this.onMove = onMove;
+		this.onTreeClick = onTreeClick;
 
 		if (!image.url) return;
 
@@ -93,7 +96,8 @@ class PanoramaViewerLogic {
 				this.addedHotspotIds.push(id);
 				if (trees[i].tree_id) {
 					// Auto-generated tree pointer: green disc with a white tree icon,
-					// displayed at horizon level.
+					// displayed at horizon level. Clicking it opens the tree preview.
+					const treeId = trees[i].tree_id as string;
 					this.viewer.addHotSpot({
 						id,
 						pitch: 0,
@@ -103,7 +107,8 @@ class PanoramaViewerLogic {
 						createTooltipFunc: (div) => {
 							const instance = mount(TreeIcon, { target: div });
 							this.mountedIcons.set(id, instance);
-						}
+						},
+						clickHandlerFunc: () => this.onTreeClick?.(treeId)
 					});
 				} else {
 					// Manual hint: vertical line marker.

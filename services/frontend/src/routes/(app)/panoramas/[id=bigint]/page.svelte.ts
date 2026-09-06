@@ -22,6 +22,10 @@ class PageState {
 		await goto(routes.home());
 	};
 
+	public handleTreeClick = async (treeId: string) => {
+		await goto(routes.mapPreview(treeId));
+	};
+
 	public handleAddTree = async () => {
 		if (!this.id || this.isBusy) return;
 

@@ -9,16 +9,17 @@
 		angle?: number;
 		trees?: PanoramaHint[];
 		onMove?: (angle: number) => void;
+		onTreeClick?: (treeId: string) => void;
 	}
 
-	const { image, angle = 0, trees = [], onMove }: Props = $props();
+	const { image, angle = 0, trees = [], onMove, onTreeClick }: Props = $props();
 
 	let container = $state<HTMLElement | null>(null);
 
 	$effect(() => {
 		if (container && image.url) {
 			const initialYaw = untrack(() => angle);
-			componentState.init(container, image, initialYaw, onMove);
+			componentState.init(container, image, initialYaw, onMove, onTreeClick);
 		}
 		return () => {
 			componentState.destroy();
@@ -77,7 +78,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		pointer-events: none;
+		cursor: pointer;
 	}
 
 	:global(.tree-marker-disc svg) {

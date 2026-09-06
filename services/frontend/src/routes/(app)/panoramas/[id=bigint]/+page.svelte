@@ -93,6 +93,7 @@
 				trees={$mapLayerStore.treeHints ? pageState.trees : []}
 				angle={pageState.angle}
 				onMove={pageState.handleMove}
+				onTreeClick={pageState.handleTreeClick}
 			/>
 			<div class="crosshair">
 				<CrossHair />
