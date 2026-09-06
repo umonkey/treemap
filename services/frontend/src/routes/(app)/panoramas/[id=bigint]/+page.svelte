@@ -77,7 +77,7 @@
 			<button
 				type="button"
 				class="control delete"
-				onclick={pageState.handleDeleteTrees}
+				onclick={pageState.handleDeleteHints}
 				disabled={pageState.isBusy}
 				aria-label="Delete Trees"
 			>

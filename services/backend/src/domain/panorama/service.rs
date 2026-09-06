@@ -2,8 +2,9 @@ use super::models::{
     CreatePanorama, Panorama, PanoramaHint, PanoramaImage, PanoramaStatus, UpdatePanorama,
 };
 use super::repository::PanoramaRepository;
-use crate::actions::panorama::PanoramaImageRead;
+use crate::actions::panorama::{PanoramaHintRead, PanoramaImageRead};
 use crate::domain::tree::Bounds;
+use crate::domain::tree::TreeRepository;
 use crate::infra::storage::{CompletedPart, PanoramaBucket, PanoramaSourceBucket};
 use crate::services::{Context, Injectable};
 use crate::types::*;
@@ -11,10 +12,32 @@ use crate::utils::{get_timestamp, get_unique_id};
 use serde_json::json;
 use std::sync::Arc;
 
+const EARTH_RADIUS_M: f64 = 6_371_000.0;
+
+/// Great-circle distance in meters between two coordinates.
+fn haversine_distance_m(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> f64 {
+    let d_lat = (lat2 - lat1).to_radians();
+    let d_lon = (lon2 - lon1).to_radians();
+    let a = (d_lat / 2.0).sin().powi(2)
+        + lat1.to_radians().cos() * lat2.to_radians().cos() * (d_lon / 2.0).sin().powi(2);
+    2.0 * EARTH_RADIUS_M * a.sqrt().atan2((1.0 - a).sqrt())
+}
+
+/// Initial bearing from one coordinate to another, in degrees (0-360, clockwise from north).
+fn bearing_deg(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> f64 {
+    let lat1 = lat1.to_radians();
+    let lat2 = lat2.to_radians();
+    let d_lon = (lon2 - lon1).to_radians();
+    let y = d_lon.sin() * lat2.cos();
+    let x = lat1.cos() * lat2.sin() - lat1.sin() * lat2.cos() * d_lon.cos();
+    (y.atan2(x).to_degrees() + 360.0) % 360.0
+}
+
 pub struct PanoramaService {
     repo: Arc<PanoramaRepository>,
     storage: Arc<PanoramaSourceBucket>,
     panoramas: Arc<PanoramaBucket>,
+    trees: Arc<TreeRepository>,
 }
 
 impl PanoramaService {
@@ -368,8 +391,51 @@ impl PanoramaService {
         self.repo.delete_hints_by_panorama_id(panorama_id).await
     }
 
-    pub async fn get_image_hints(&self, image_id: u64) -> Result<Vec<PanoramaHint>> {
-        self.repo.find_hints_by_image_id(image_id).await
+    pub async fn get_image_hints(&self, image_id: u64) -> Result<Vec<PanoramaHintRead>> {
+        let image = self
+            .repo
+            .get_image(image_id)
+            .await?
+            .ok_or(Error::FileNotFound)?;
+        let panorama = self.get_panorama(image.panorama_id).await?;
+
+        let mut hints: Vec<PanoramaHintRead> = self
+            .repo
+            .find_hints_by_image_id(image_id)
+            .await?
+            .into_iter()
+            .map(PanoramaHintRead::from)
+            .collect();
+
+        let lat = image.lat + panorama.lat_offset;
+        let lon = image.lng + panorama.lon_offset;
+
+        let mut tree_hints: Vec<(f64, PanoramaHintRead)> = self
+            .trees
+            .get_close(lat, lon, 10.0)
+            .await?
+            .into_iter()
+            .filter(|tree| tree.is_existing())
+            .filter(|tree| haversine_distance_m(lat, lon, tree.lat, tree.lon) <= 10.0)
+            .map(|tree| {
+                let bearing = bearing_deg(lat, lon, tree.lat, tree.lon);
+                let angle = (bearing - image.heading + 360.0) % 360.0;
+                (
+                    angle,
+                    PanoramaHintRead {
+                        image_id: image_id.to_string(),
+                        angle,
+                        tree_id: Some(tree.id.to_string()),
+                    },
+                )
+            })
+            .collect();
+
+        tree_hints.sort_by(|a, b| a.0.total_cmp(&b.0));
+
+        hints.extend(tree_hints.into_iter().map(|(_, hint)| hint));
+
+        Ok(hints)
     }
 
     pub async fn add_image_hint(&self, hint: PanoramaHint) -> Result<()> {
@@ -424,6 +490,7 @@ impl Injectable for PanoramaService {
             repo: Arc::new(ctx.build::<PanoramaRepository>()?),
             storage: ctx.panoramas_source(),
             panoramas: ctx.panoramas(),
+            trees: Arc::new(ctx.build::<TreeRepository>()?),
         })
     }
 }

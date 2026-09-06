@@ -306,8 +306,7 @@ pub async fn get_panorama_image_hints_action(
     path: Path<u64>,
 ) -> Result<Json<Vec<PanoramaHintRead>>> {
     let id = path.into_inner();
-    let hints = service.get_image_hints(id).await?;
-    let res = hints.into_iter().map(PanoramaHintRead::from).collect();
+    let res = service.get_image_hints(id).await?;
     Ok(Json(res))
 }
 

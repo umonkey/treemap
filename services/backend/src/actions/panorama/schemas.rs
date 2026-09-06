@@ -122,7 +122,7 @@ pub struct AddPanoramaHintRequest {
 pub struct PanoramaHintRead {
     pub image_id: String,
     pub angle: f64,
-    pub user_id: String,
+    pub tree_id: Option<String>,
 }
 
 impl From<PanoramaHint> for PanoramaHintRead {
@@ -130,7 +130,7 @@ impl From<PanoramaHint> for PanoramaHintRead {
         Self {
             image_id: h.image_id.to_string(),
             angle: h.angle,
-            user_id: h.user_id.to_string(),
+            tree_id: None,
         }
     }
 }
