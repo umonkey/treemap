@@ -1,6 +1,7 @@
 import { mount, unmount, untrack } from 'svelte';
 import type { PanoramaImage, PanoramaHint } from '$lib/api/panoramas';
 import TreeIcon from '$lib/icons/TreeIcon.svelte';
+import CameraIcon from '$lib/icons/CameraIcon.svelte';
 import 'pannellum';
 
 class PanoramaViewerLogic {
@@ -8,6 +9,7 @@ class PanoramaViewerLogic {
 	yaw = $state(0);
 	onMove?: (angle: number) => void;
 	onTreeClick?: (treeId: string) => void;
+	onImageClick?: (imageId: string) => void;
 	trees = $state<PanoramaHint[]>([]);
 	isLoaded = $state(false);
 	private addedHotspotIds: string[] = [];
@@ -18,7 +20,8 @@ class PanoramaViewerLogic {
 		image: PanoramaImage,
 		initialYaw: number = 0,
 		onMove?: (angle: number) => void,
-		onTreeClick?: (treeId: string) => void
+		onTreeClick?: (treeId: string) => void,
+		onImageClick?: (imageId: string) => void
 	) => {
 		this.unmountIcons();
 
@@ -32,6 +35,7 @@ class PanoramaViewerLogic {
 		this.yaw = initialYaw;
 		this.onMove = onMove;
 		this.onTreeClick = onTreeClick;
+		this.onImageClick = onImageClick;
 
 		if (!image.url) return;
 
@@ -109,6 +113,22 @@ class PanoramaViewerLogic {
 							this.mountedIcons.set(id, instance);
 						},
 						clickHandlerFunc: () => this.onTreeClick?.(treeId)
+					});
+				} else if (trees[i].image_id) {
+					// Sibling image pointer: light-blue disc with a camera icon.
+					// Clicking it opens the sibling panorama image.
+					const imageId = trees[i].image_id as string;
+					this.viewer.addHotSpot({
+						id,
+						pitch: 0,
+						yaw: trees[i].angle,
+						type: 'info',
+						cssClass: 'image-marker-disc',
+						createTooltipFunc: (div) => {
+							const instance = mount(CameraIcon, { target: div });
+							this.mountedIcons.set(id, instance);
+						},
+						clickHandlerFunc: () => this.onImageClick?.(imageId)
 					});
 				} else {
 					// Manual hint: vertical line marker.

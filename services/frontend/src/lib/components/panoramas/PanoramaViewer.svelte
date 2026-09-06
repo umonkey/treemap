@@ -10,16 +10,17 @@
 		trees?: PanoramaHint[];
 		onMove?: (angle: number) => void;
 		onTreeClick?: (treeId: string) => void;
+		onImageClick?: (imageId: string) => void;
 	}
 
-	const { image, angle = 0, trees = [], onMove, onTreeClick }: Props = $props();
+	const { image, angle = 0, trees = [], onMove, onTreeClick, onImageClick }: Props = $props();
 
 	let container = $state<HTMLElement | null>(null);
 
 	$effect(() => {
 		if (container && image.url) {
 			const initialYaw = untrack(() => angle);
-			componentState.init(container, image, initialYaw, onMove, onTreeClick);
+			componentState.init(container, image, initialYaw, onMove, onTreeClick, onImageClick);
 		}
 		return () => {
 			componentState.destroy();
@@ -82,6 +83,26 @@
 	}
 
 	:global(.tree-marker-disc svg) {
+		width: 16px;
+		height: 16px;
+		color: #000000;
+	}
+
+	:global(.pnlm-hotspot-base.image-marker-disc) {
+		width: 30px;
+		height: 30px;
+		border-radius: 50%;
+		background-color: #60a5fa !important;
+		border: 2px solid #ffffff !important;
+		background-image: none !important;
+		box-sizing: border-box;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+	}
+
+	:global(.image-marker-disc svg) {
 		width: 16px;
 		height: 16px;
 		color: #000000;

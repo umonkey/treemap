@@ -94,6 +94,7 @@
 				angle={pageState.angle}
 				onMove={pageState.handleMove}
 				onTreeClick={pageState.handleTreeClick}
+				onImageClick={pageState.handleImageClick}
 			/>
 			<div class="crosshair">
 				<CrossHair />

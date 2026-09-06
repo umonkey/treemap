@@ -410,6 +410,31 @@ impl PanoramaService {
         let lat = image.lat + panorama.lat_offset;
         let lon = image.lng + panorama.lon_offset;
 
+        let mut pointers: Vec<(f64, PanoramaHintRead)> = Vec::new();
+
+        // Adjacent images in the same panorama (previous and next in capture order)
+        let (prev, next) = self
+            .repo
+            .get_adjacent_images(image.panorama_id, image_id)
+            .await?;
+        for sibling in [prev, next].into_iter().flatten() {
+            let s_lat = sibling.lat + panorama.lat_offset;
+            let s_lon = sibling.lng + panorama.lon_offset;
+            let distance = haversine_distance_m(lat, lon, s_lat, s_lon);
+            let bearing = bearing_deg(lat, lon, s_lat, s_lon);
+            let angle = (bearing - image.heading + 360.0) % 360.0;
+            pointers.push((
+                angle,
+                PanoramaHintRead {
+                    angle,
+                    tree_id: None,
+                    distance: Some(distance),
+                    image_id: Some(sibling.id.to_string()),
+                },
+            ));
+        }
+
+        // Nearby existing trees
         let mut tree_hints: Vec<(f64, PanoramaHintRead)> = self
             .trees
             .get_close(lat, lon, 10.0)
@@ -426,18 +451,19 @@ impl PanoramaService {
                 Some((
                     angle,
                     PanoramaHintRead {
-                        image_id: image_id.to_string(),
                         angle,
                         tree_id: Some(tree.id.to_string()),
                         distance: Some(distance),
+                        image_id: None,
                     },
                 ))
             })
             .collect();
 
-        tree_hints.sort_by(|a, b| a.0.total_cmp(&b.0));
+        pointers.append(&mut tree_hints);
+        pointers.sort_by(|a, b| a.0.total_cmp(&b.0));
 
-        hints.extend(tree_hints.into_iter().map(|(_, hint)| hint));
+        hints.extend(pointers.into_iter().map(|(_, hint)| hint));
 
         Ok(hints)
     }

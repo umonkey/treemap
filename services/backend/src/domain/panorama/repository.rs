@@ -93,6 +93,39 @@ impl PanoramaRepository {
         records.iter().map(PanoramaImage::from_attributes).collect()
     }
 
+    pub async fn get_adjacent_images(
+        &self,
+        panorama_id: u64,
+        image_id: u64,
+    ) -> Result<(Option<PanoramaImage>, Option<PanoramaImage>)> {
+        let prev_sql = format!(
+            "SELECT * FROM `{}` WHERE `panorama_id` = ? AND `id` < ? AND `hidden` = 0 ORDER BY `id` DESC LIMIT 1",
+            IMAGES_TABLE
+        );
+        let next_sql = format!(
+            "SELECT * FROM `{}` WHERE `panorama_id` = ? AND `id` > ? AND `hidden` = 0 ORDER BY `id` ASC LIMIT 1",
+            IMAGES_TABLE
+        );
+        let params = &[
+            Value::from(panorama_id as i64),
+            Value::from(image_id as i64),
+        ];
+
+        let prev_records = self.db.fetch_sql(&prev_sql, params).await?;
+        let next_records = self.db.fetch_sql(&next_sql, params).await?;
+
+        let prev = prev_records
+            .first()
+            .map(PanoramaImage::from_attributes)
+            .transpose()?;
+        let next = next_records
+            .first()
+            .map(PanoramaImage::from_attributes)
+            .transpose()?;
+
+        Ok((prev, next))
+    }
+
     pub async fn find_by_bounds(&self, bounds: Bounds) -> Result<Vec<Panorama>> {
         let sql = format!(
             "SELECT * FROM `{}` WHERE `min_lat` <= ? AND `max_lat` >= ? AND `min_lon` <= ? AND `max_lon` >= ? AND `status` = 'SUCCESS' AND `visible` = 1",

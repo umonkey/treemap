@@ -26,11 +26,14 @@ class PageState {
 		await goto(routes.mapPreview(treeId));
 	};
 
+	public handleImageClick = async (imageId: string) => {
+		await goto(routes.panorama(imageId));
+	};
+
 	public handleAddTree = async () => {
 		if (!this.id || this.isBusy) return;
 
 		const newTree: PanoramaHint = {
-			image_id: this.id,
 			angle: this.angle
 		};
 
@@ -68,7 +71,8 @@ class PageState {
 		}
 
 		// Only remove the manual hints, keep the auto-generated tree pointers
-		this.trees = this.trees.filter((t) => t.tree_id);
+		// and sibling image pointers
+		this.trees = this.trees.filter((t) => t.tree_id || t.image_id);
 
 		this.isBusy = false;
 		panoBus.emit('reload');
