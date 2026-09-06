@@ -77,7 +77,7 @@
 			<button
 				type="button"
 				class="control delete"
-				onclick={pageState.handleDeleteTrees}
+				onclick={pageState.handleDeleteHints}
 				disabled={pageState.isBusy}
 				aria-label="Delete Trees"
 			>
@@ -93,6 +93,10 @@
 				trees={$mapLayerStore.treeHints ? pageState.trees : []}
 				angle={pageState.angle}
 				onMove={pageState.handleMove}
+				onTreeClick={pageState.handleTreeClick}
+				onImageClick={pageState.handleImageClick}
+				canAddHint={$mapLayerStore.treeHints && $hasPermission('pano:edit')}
+				onAddHint={pageState.handleAddTree}
 			/>
 			<div class="crosshair">
 				<CrossHair />

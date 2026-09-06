@@ -1,21 +1,34 @@
-import { untrack } from 'svelte';
+import { mount, unmount, untrack } from 'svelte';
 import type { PanoramaImage, PanoramaHint } from '$lib/api/panoramas';
+import TreeIcon from '$lib/icons/TreeIcon.svelte';
+import CameraIcon from '$lib/icons/CameraIcon.svelte';
 import 'pannellum';
 
 class PanoramaViewerLogic {
 	viewer: Pannellum.Viewer | null = null;
 	yaw = $state(0);
 	onMove?: (angle: number) => void;
+	onTreeClick?: (treeId: string) => void;
+	onImageClick?: (imageId: string) => void;
+	onAddHint?: () => void;
+	canAddHint = false;
 	trees = $state<PanoramaHint[]>([]);
 	isLoaded = $state(false);
 	private addedHotspotIds: string[] = [];
+	private mountedIcons = new Map<string, Record<string, unknown>>();
 
 	init = (
 		container: HTMLElement,
 		image: PanoramaImage,
 		initialYaw: number = 0,
-		onMove?: (angle: number) => void
+		onMove?: (angle: number) => void,
+		onTreeClick?: (treeId: string) => void,
+		onImageClick?: (imageId: string) => void,
+		onAddHint?: () => void,
+		canAddHint = false
 	) => {
+		this.unmountIcons();
+
 		if (this.viewer) {
 			this.viewer.destroy();
 			this.viewer = null;
@@ -25,6 +38,10 @@ class PanoramaViewerLogic {
 		this.addedHotspotIds = [];
 		this.yaw = initialYaw;
 		this.onMove = onMove;
+		this.onTreeClick = onTreeClick;
+		this.onImageClick = onImageClick;
+		this.onAddHint = onAddHint;
+		this.canAddHint = canAddHint;
 
 		if (!image.url) return;
 
@@ -56,6 +73,16 @@ class PanoramaViewerLogic {
 		});
 	};
 
+	handleKeydown = (e: KeyboardEvent) => {
+		if (e.ctrlKey || e.metaKey || e.altKey) return;
+		const target = e.target as HTMLElement;
+		if (['INPUT', 'TEXTAREA', 'BUTTON'].includes(target?.tagName)) return;
+		if (e.code === 'Space' && this.canAddHint && this.onAddHint) {
+			e.preventDefault();
+			this.onAddHint();
+		}
+	};
+
 	setTrees = (trees: PanoramaHint[]) => {
 		this.trees = trees;
 
@@ -67,6 +94,7 @@ class PanoramaViewerLogic {
 				this.viewer.removeHotSpot(id);
 			}
 			this.addedHotspotIds = [];
+			this.unmountIcons();
 
 			// 2. Extra safety: remove anything else that might have stuck around
 			// Pannellum internally uses a list that can be accessed via getConfig().hotSpots
@@ -76,7 +104,7 @@ class PanoramaViewerLogic {
 				const current = [...config.hotSpots];
 				for (const hs of current) {
 					// Check for ID or class to identify our markers
-					if (hs.id && (hs.id.startsWith('tree-') || hs.cssClass === 'tree-marker')) {
+					if (hs.id && (hs.id.startsWith('tree-') || hs.cssClass?.startsWith('tree-marker'))) {
 						this.viewer.removeHotSpot(hs.id);
 					}
 				}
@@ -86,14 +114,49 @@ class PanoramaViewerLogic {
 			for (let i = 0; i < trees.length; i++) {
 				const id = `tree-${i}-${Math.random().toString(36).substr(2, 9)}`;
 				this.addedHotspotIds.push(id);
-				this.viewer.addHotSpot({
-					id,
-					pitch: 0,
-					yaw: trees[i].angle,
-					type: 'info',
-					text: 'Tree',
-					cssClass: 'tree-marker'
-				});
+				if (trees[i].tree_id) {
+					// Auto-generated tree pointer: green disc with a white tree icon,
+					// displayed at horizon level. Clicking it opens the tree preview.
+					const treeId = trees[i].tree_id as string;
+					this.viewer.addHotSpot({
+						id,
+						pitch: 0,
+						yaw: trees[i].angle,
+						type: 'info',
+						cssClass: 'tree-marker-disc',
+						createTooltipFunc: (div) => {
+							const instance = mount(TreeIcon, { target: div });
+							this.mountedIcons.set(id, instance);
+						},
+						clickHandlerFunc: () => this.onTreeClick?.(treeId)
+					});
+				} else if (trees[i].image_id) {
+					// Sibling image pointer: light-blue disc with a camera icon.
+					// Clicking it opens the sibling panorama image.
+					const imageId = trees[i].image_id as string;
+					this.viewer.addHotSpot({
+						id,
+						pitch: -5,
+						yaw: trees[i].angle,
+						type: 'info',
+						cssClass: 'image-marker-disc',
+						createTooltipFunc: (div) => {
+							const instance = mount(CameraIcon, { target: div });
+							this.mountedIcons.set(id, instance);
+						},
+						clickHandlerFunc: () => this.onImageClick?.(imageId)
+					});
+				} else {
+					// Manual hint: vertical line marker.
+					this.viewer.addHotSpot({
+						id,
+						pitch: 0,
+						yaw: trees[i].angle,
+						type: 'info',
+						text: 'Tree',
+						cssClass: 'tree-marker'
+					});
+				}
 			}
 
 			// 4. Force a resize/refresh if cleared to ensure UI updates
@@ -103,7 +166,15 @@ class PanoramaViewerLogic {
 		}
 	};
 
+	private unmountIcons = () => {
+		for (const instance of this.mountedIcons.values()) {
+			void unmount(instance);
+		}
+		this.mountedIcons.clear();
+	};
+
 	destroy = () => {
+		this.unmountIcons();
 		if (this.viewer) {
 			this.viewer.destroy();
 			this.viewer = null;

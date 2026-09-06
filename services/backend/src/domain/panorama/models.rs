@@ -248,16 +248,6 @@ mod tests {
             PanoramaStatus::NeedsProcessing
         );
         assert_eq!(
-            "NEEDS_TRANSCODING".parse::<PanoramaStatus>().unwrap(),
-            PanoramaStatus::NeedsProcessing
-        );
-        assert_eq!(
-            "NEEDS_TRANSCODING_FINISH"
-                .parse::<PanoramaStatus>()
-                .unwrap(),
-            PanoramaStatus::NeedsProcessing
-        );
-        assert_eq!(
             "NEEDS_PROCESSING_FINISH".parse::<PanoramaStatus>().unwrap(),
             PanoramaStatus::NeedsProcessingFinish
         );

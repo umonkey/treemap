@@ -10,3 +10,4 @@
 /.opencode/node_modules
 /.opencode/package*
 .envrc
+*.sqlite

@@ -3,7 +3,7 @@ import {
 	getPanoramasImage,
 	getPanoramasImageHints,
 	addPanoramaImageHint,
-	deletePanoramaImageHints,
+	deleteImageHints,
 	type PanoramaImage,
 	type PanoramaHint
 } from '$lib/api/panoramas';
@@ -22,13 +22,19 @@ class PageState {
 		await goto(routes.home());
 	};
 
+	public handleTreeClick = async (treeId: string) => {
+		await goto(routes.mapPreview(treeId));
+	};
+
+	public handleImageClick = async (imageId: string) => {
+		await goto(routes.panorama(imageId));
+	};
+
 	public handleAddTree = async () => {
 		if (!this.id || this.isBusy) return;
 
 		const newTree: PanoramaHint = {
-			image_id: this.id,
-			angle: this.angle,
-			user_id: '' // Will be set by backend
+			angle: this.angle
 		};
 
 		// Optimistic update
@@ -52,19 +58,21 @@ class PageState {
 		panoBus.emit('reload');
 	};
 
-	public handleDeleteTrees = async () => {
+	public handleDeleteHints = async () => {
 		if (!this.id || this.isBusy) return;
 
-		const oldTrees = this.trees;
-		this.trees = [];
 		this.isBusy = true;
 
-		const res = await deletePanoramaImageHints(this.id);
+		const res = await deleteImageHints(this.id);
+
 		if (res.error) {
-			this.trees = oldTrees;
 			this.isBusy = false;
 			return;
 		}
+
+		// Only remove the manual hints, keep the auto-generated tree pointers
+		// and sibling image pointers
+		this.trees = this.trees.filter((t) => t.tree_id || t.image_id);
 
 		this.isBusy = false;
 		panoBus.emit('reload');

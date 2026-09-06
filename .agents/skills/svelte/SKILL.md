@@ -1,130 +1,40 @@
 ---
 name: svelte
-description: Generates Svelte 5 components using a strict separated-logic pattern. Use this whenever creating, extending, or refactoring a Svelte component or page.
+description: Svelte 5 runes and separated-logic class architecture for services/frontend/. Use when creating, modifying, or refactoring *.svelte and *.svelte.ts files.
 ---
 
-## Core Architecture Directives
+# Svelte 5 Architecture Directives
 
-When generating or modifying a Svelte component or page, you MUST adhere strictly to the following rules. Do not use generic Svelte 4 or standard Svelte 5 script tag logic.
+Strictly adhere to the following rules when creating or modifying Svelte components or pages in `services/frontend/`.
 
-1. Client-Only Architecture: the application is client-side only (no SSR). Avoid using `+page.ts` or SvelteKit's standard `load` functions. All data fetching must happen within the logic class.
-2. File separation: every component or page MUST be split into exactly two files:
-   - For components: the markup file (`[ComponentName].svelte`) and the logic file (`[ComponentName].svelte.ts`).
-   - For pages: the markup file (`+page.svelte`) and the logic file (`page.svelte.ts`).
-3. Class-based logic: all reactive state and business logic must be encapsulated within a TypeScript class in the `.svelte.ts` file.
-4. State management: use the Svelte 5 `$state` rune for all reactive properties inside the class.
-5. Method signatures: all class methods MUST be defined using arrow functions to permanently bind `this` and preserve lexical scope.
-6. Pure constructors: the constructor must be strictly pure. It is entirely forbidden to execute side effects, API calls, or subscriptions within the constructor.
-   - If the component/page needs any data, use a dedicated `reload` or `init` method triggered via `$effect`.
-   - If the component/page needs code executed on mount, create the `onMount` method.
-7. Local instantiation: classes must be exported as classes (e.g., `export class PageState` or `export class ComponentNameLogic`) and instantiated locally inside the component or page `.svelte` file's `<script>` block (e.g., `const pageState = new PageState();` or `const componentState = new ComponentNameLogic();`).
-   - For components: strictly named `componentState`.
-   - For pages: strictly named `pageState`.
-8. Component placement and routing:
-   - Default (page-local): if a component is only utilized by a single page, you MUST co-locate the component files directly within that specific route's directory.
-   - Shared (domain): if a component is utilized by more than one page, you MUST place the component files in the `src/lib/components/<domain>/` directory.
-   - Pages: these rules do not apply to pages; they always reside in their respective route directory.
-   - Refactoring: if you are instructed to use a page-local component on a second page, you must first move its files to `src/lib/components/<domain>/` and update all existing import paths before proceeding.
-9. Style Directives:
-   - Embedded Styles Only: you MUST use the Svelte `<style>` block within the `.svelte` file for all component-specific or page-specific styling. Creating separate `.css` files per component is strictly forbidden.
-   - PicoCSS First: rely on PicoCSS for layout, typography, and basic component visuals. Avoid manual styling for standard elements (buttons, inputs, cards, etc.) unless specifically requested or required for custom behavior.
-10. Adhere strictly to idiomatic Svelte 5:
-    - Use runes: use `$state`, `$derived`, `$effect`, and `$props` exclusively.
-    - Snippets over slots: use Snippets (`{#snippet}`) and `{@render ...}` instead of the legacy `<slot>` system.
-    - Callback props over dispatch: use callback props (e.g., `onSave()`) instead of `createEventDispatcher`.
-11. Properties declaration (components only):
-    - Explicit Typing Required: you MUST use explicit typing on the destructuring assignment (e.g., `const { prop }: { prop: Type } = $props()`). Do NOT use the generic syntax `$props<Type>()` as it currently fails to correctly propagate type information to the linter.
-    - Default to `const`: use `const { ... }: { ... } = $props()` for standard, read-only data flow.
-    - Use `let` only for Binding: only switch to `let { ... }: { ... } = $props()` if the component requires at least one `$bindable()` prop.
-12. Verification Workflow: after implementing or modifying components/pages, you MUST verify the changes by running `make format` and `make lint check` within the `services/frontend` directory.
+## Core Invariants
 
-## Page Architecture
+1. Client-Only: CSR only (no SSR). Forbidden: `+page.ts` or SvelteKit `load` functions. All fetching occurs in the logic class.
+2. File Separation: exactly two files per entity:
+   - Components: `[Name].svelte` (markup) and `[Name].svelte.ts` (logic class).
+   - Pages: `+page.svelte` (markup) and `page.svelte.ts` (logic class).
+3. Class-Based Logic: state and business logic must reside in a TypeScript class using Svelte 5 `$state` runes.
+4. Method Signatures: all class methods MUST be arrow functions to preserve lexical `this`.
+5. Pure Constructors: constructors MUST NOT execute side effects, subscriptions, or API calls. Fetch via `reload()` or `init()` invoked from an `$effect` block; use `onMount()` for mounting logic.
+6. Instantiation: export classes as named exports. Instantiate locally in `<script lang="ts">`:
+   - Components: `const componentState = new ComponentNameLogic();`
+   - Pages: `const pageState = new PageState();`
+7. Placement:
+   - Page-local: single-page components stay in that route directory.
+   - Shared: multi-page components reside in `src/lib/components/<domain>/`.
+8. Styles: embedded `<style>` blocks only. No standalone `.css` files. Use PicoCSS variables first.
+9. Runes Only: use `$state`, `$derived`, `$effect`, and `$props` exclusively. No Svelte 4 legacy slots or event dispatchers.
+10. Prop Typing: strictly type destructuring: `const { prop }: { prop: Type } = $props()`. Generic syntax `$props<Type>()` is forbidden. Default to `const`; use `let` only for `$bindable()`.
+11. Pages: wrap contents in `<RoleGuard roles={['Scientist']}>` unless specified otherwise.
 
-1. All new pages must use a `RoleGuard` to wrap their contents. Unless specified otherwise, roles should be set to `['Scientist']`.
+## Implementation Templates & Reference
 
-## Implementation Template
+For full boilerplate implementations (Component Logic, Component Markup, Page Logic, Page Markup), read:
+`references/templates.md` (located inside this skill folder).
 
-You must use the following structure as your baseline.
+## Verification Workflow
 
-### 1. Component Logic (`[ComponentName].svelte.ts`)
-
-```typescript
-export class ComponentNameLogic {
-  // 1. Reactive state using runes
-  title = $state<string>("Default Title");
-  isActive = $state<boolean>(false);
-
-  constructor() {
-    // 2. Pure constructor: NO side effects allowed here.
-  }
-
-  // 3. Methods as arrow functions
-  toggleActive = () => {
-    this.isActive = !this.isActive;
-  };
-}
-```
-
-### 2. Component Markup (`[ComponentName].svelte`)
-
-```html
-<script lang="ts">
-  import { ComponentNameLogic } from "./[ComponentName].svelte.ts";
-
-  const componentState = new ComponentNameLogic();
-</script>
-
-<div>
-  <h1>{componentState.title}</h1>
-  <button onclick="{componentState.toggleActive}">
-    {componentState.isActive ? 'Deactivate' : 'Activate'}
-  </button>
-</div>
-
-<style>
-  /* 4. Embedded styles only, rely on PicoCSS for basics */
-  div {
-    margin-top: var(--pico-spacing);
-  }
-</style>
-```
-
-### 3. Page Logic (`page.svelte.ts`)
-
-```typescript
-export class PageState {
-  data = $state<any>(null);
-
-  reload = async (id: string) => {
-    // Data fetching logic here
-  };
-}
-```
-
-### 4. Page Markup (`+page.svelte`)
-
-```html
-<script lang="ts">
-  import { PageState } from "./page.svelte.ts";
-  import { page } from "$app/state";
-
-  const pageState = new PageState();
-
-  // Reactive extraction of non-optional arguments
-  const id = $derived(page.params.id as string);
-
-  $effect(() => {
-    // Trigger reload when ID changes
-    pageState.reload(id);
-  });
-</script>
-
-<article>
-  <header>Page Title</header>
-  {#if pageState.data}
-  <pre>{JSON.stringify(pageState.data, null, 2)}</pre>
-  {:else}
-  <p aria-busy="true">Loading...</p>
-  {/if}
-</article>
+After modifying components or pages, verify within `services/frontend/`:
+```bash
+make -C services/frontend format check lint
 ```

@@ -9,16 +9,38 @@
 		angle?: number;
 		trees?: PanoramaHint[];
 		onMove?: (angle: number) => void;
+		onTreeClick?: (treeId: string) => void;
+		onImageClick?: (imageId: string) => void;
+		onAddHint?: () => void;
+		canAddHint?: boolean;
 	}
 
-	const { image, angle = 0, trees = [], onMove }: Props = $props();
+	const {
+		image,
+		angle = 0,
+		trees = [],
+		onMove,
+		onTreeClick,
+		onImageClick,
+		onAddHint,
+		canAddHint = false
+	}: Props = $props();
 
 	let container = $state<HTMLElement | null>(null);
 
 	$effect(() => {
 		if (container && image.url) {
 			const initialYaw = untrack(() => angle);
-			componentState.init(container, image, initialYaw, onMove);
+			componentState.init(
+				container,
+				image,
+				initialYaw,
+				onMove,
+				onTreeClick,
+				onImageClick,
+				onAddHint,
+				canAddHint
+			);
 		}
 		return () => {
 			componentState.destroy();
@@ -27,6 +49,13 @@
 
 	$effect(() => {
 		componentState.setTrees(trees);
+	});
+
+	$effect(() => {
+		window.addEventListener('keydown', componentState.handleKeydown);
+		return () => {
+			window.removeEventListener('keydown', componentState.handleKeydown);
+		};
 	});
 
 	$effect(() => {
@@ -64,5 +93,45 @@
 
 	:global(.pnlm-hotspot.tree-marker) {
 		cursor: default;
+	}
+
+	:global(.pnlm-hotspot-base.tree-marker-disc) {
+		width: 30px;
+		height: 30px;
+		border-radius: 50%;
+		background-color: #22c55e !important;
+		border: 2px solid #ffffff !important;
+		background-image: none !important;
+		box-sizing: border-box;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+	}
+
+	:global(.tree-marker-disc svg) {
+		width: 16px;
+		height: 16px;
+		color: #000000;
+	}
+
+	:global(.pnlm-hotspot-base.image-marker-disc) {
+		width: 30px;
+		height: 30px;
+		border-radius: 50%;
+		background-color: #60a5fa !important;
+		border: 2px solid #ffffff !important;
+		background-image: none !important;
+		box-sizing: border-box;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+	}
+
+	:global(.image-marker-disc svg) {
+		width: 16px;
+		height: 16px;
+		color: #000000;
 	}
 </style>

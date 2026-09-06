@@ -1,6 +1,6 @@
 ---
 name: github-issues
-description: Instructions for creating GitHub issues using the gh CLI. Use this whenever creating or reporting issues in the repository.
+description: Creating and formatting GitHub issues via the gh CLI. Use when reporting bugs or drafting new issues. Do NOT use for git commit, push, or PR workflows.
 ---
 
 # GitHub Issues

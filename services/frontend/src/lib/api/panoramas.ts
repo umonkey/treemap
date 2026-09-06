@@ -202,9 +202,10 @@ export async function getPanoramaHints(id: string): Promise<IResponse<unknown>> 
 }
 
 export interface PanoramaHint {
-	image_id: string;
 	angle: number;
-	user_id: string;
+	tree_id?: string | null;
+	distance?: number | null;
+	image_id?: string | null;
 }
 
 export async function getPanoramasImageHints(id: string): Promise<IResponse<PanoramaHint[]>> {
@@ -223,7 +224,7 @@ export async function addPanoramaImageHint(id: string, angle: number): Promise<I
 	});
 }
 
-export async function deletePanoramaImageHints(id: string): Promise<IResponse<void>> {
+export async function deleteImageHints(id: string): Promise<IResponse<void>> {
 	return await request<void>('DELETE', `api/panoramas/images/${id}/hints`, {
 		headers: getAuthHeaders()
 	});

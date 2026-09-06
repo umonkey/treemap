@@ -1,6 +1,6 @@
 ---
 name: mcp-server
-description: Guidelines and architecture for implementing and extending the remote Model Context Protocol (MCP) server in Rust backend. Use this whenever working on MCP tools, endpoints, or protocol handling.
+description: Architecture and implementation rules for extending the internal Rust remote MCP server. Use ONLY when editing services/backend/src/services/mcp/**. Do NOT use when calling external MCP tools (treemap_*, sentry_*).
 ---
 
 # Remote Model Context Protocol (MCP) Server

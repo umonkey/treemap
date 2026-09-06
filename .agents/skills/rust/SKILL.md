@@ -1,13 +1,13 @@
 ---
 name: rust
-description: Coding style and formatting rules for Rust code. Use this whenever modifying any Rust files.
+description: Rust style, DI pattern, and error boundary standards for services/backend/ and services/chatbot/. Use when modifying any *.rs files or Cargo.toml.
 ---
 
 # Skill: rust
 
 ## Formatting rules
 
-- Multi-line statements (blocks or those using brackets) must have one empty line between them and other code on the same indentation level, above and beyond.
+- Multi-line statements (blocks or those using brackets) must have one empty line between them and other code on the same indentation level, both above and below.
 
 ## Dependency Injection Pattern
 
@@ -68,4 +68,4 @@ let mut rows = stmt.query(params_from_iter(std::iter::empty::<Value>())).await?;
 
 ## Development Workflow
 
-- After implementing the required changes, verify code integrity by running `make format check` using a sub-agent.
+- After implementing the required changes, verify code integrity by running `make format check` in the service directory.
