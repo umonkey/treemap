@@ -8,9 +8,8 @@ DATASET=var/dataset
 
 mkdir -p $DATASET/images var/output
 
-# OpenSfM expects the config in the dataset folder, put it there.
-# We have it in the root initially because the dataset folder might be mounted.
-cp config.yaml $DATASET/
+# OpenSfM expects the config in the dataset folder, generate it there.
+bin/write-config
 
 bin/download-dataset
 bin/extract-frames

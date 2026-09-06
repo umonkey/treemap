@@ -1,3 +1,6 @@
+# NOTE: This file is a template and contains environment variable placeholders.
+# It is NOT directly usable by OpenSfM until processed with envsubst (via bin/write-config).
+
 # OpenSfM Configuration for 8K Sequential Frames
 
 # Optimization: Resize images for feature extraction
@@ -65,6 +68,6 @@ optimize_camera_parameters: no
 reconstruction_clustering: no
 
 # Performance
-processes: 8
+processes: ${PROCESSES}
 reconstruction_cluster_size: 500
 reconstruction_cluster_overlap: 50

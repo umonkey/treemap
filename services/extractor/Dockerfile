@@ -86,7 +86,7 @@ WORKDIR /app
 COPY app /app/app
 COPY bin /app/bin
 COPY pyproject.toml uv.lock /app
-COPY config.yaml /app
+COPY config.yaml.dist /app
 
 # 10. Final verification checks
 RUN python3 -c "import opensfm; print('OpenSfM Python package successfully installed')" && \

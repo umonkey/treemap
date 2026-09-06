@@ -19,7 +19,7 @@ if [ -f $DATASET/$LOCK ]; then
     exit 0
 fi
 
-cat config.yaml > $DATASET/config.yaml
+[ -f "$DATASET/config.yaml" ] || bin/write-config
 
 mkdir -p $DATASET/features $DATASET/logs
 
