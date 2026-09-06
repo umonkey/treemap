@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { untrack } from 'svelte';
+	import { untrack, onMount } from 'svelte';
 	import { PageState } from './page.svelte.ts';
 	import { page } from '$app/state';
 	import Breadcrumbs from '$lib/components/admin/Breadcrumbs.svelte';
@@ -14,6 +14,8 @@
 
 	const id = $derived(page.params.id as string);
 	const pageState = new PageState();
+
+	onMount(pageState.onMount);
 
 	$effect(() => {
 		untrack(() => pageState.reload(id));

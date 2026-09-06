@@ -12,19 +12,45 @@ export class PageState {
 	isLoading = $state<boolean>(false);
 	isClearingHints = $state<boolean>(false);
 	error = $state<IError | undefined>(undefined);
+	currentId: string | undefined = undefined;
 	private pollInterval: ReturnType<typeof setInterval> | null = null;
 
-	reload = async (id: string) => {
+	reload = async (id: string, options?: { silent?: boolean }) => {
 		this.stopPolling();
-		this.isLoading = true;
+		this.currentId = id;
+		if (!options?.silent) {
+			this.isLoading = true;
+		}
 		this.error = undefined;
 		const res = await getPanorama(id);
-		this.isLoading = false;
+		if (!options?.silent) {
+			this.isLoading = false;
+		}
 		if (res.status === 200 && res.data) {
 			this.panorama = res.data;
 		} else {
 			this.error = res.error;
 		}
+	};
+
+	public onMount = () => {
+		window.addEventListener('focus', this.handleFocus);
+		document.addEventListener('visibilitychange', this.handleVisibilityChange);
+		return () => {
+			window.removeEventListener('focus', this.handleFocus);
+			document.removeEventListener('visibilitychange', this.handleVisibilityChange);
+		};
+	};
+
+	private handleFocus = () => {
+		if (document.visibilityState === 'hidden') return;
+		if (this.currentId && !this.isLoading && !this.isClearingHints) {
+			this.reload(this.currentId, { silent: true });
+		}
+	};
+
+	private handleVisibilityChange = () => {
+		this.handleFocus();
 	};
 
 	startPolling = (id: string) => {
