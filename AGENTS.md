@@ -54,3 +54,4 @@ The project uses a `Makefile` for high-level tasks:
 - No automatic commits. Never execute git commit, git push or similar version control commands automatically.
 - When asked for a solution, suggest the best one for this project, but mention alternatives.
 - Strict investigation constraints: focus exclusively on the files named or directly relevant to the user request. Never inspect git history (`git log`, `git show`, `git blame`), never query remote GitHub Actions runs (`gh run`), and never dump or inspect remote CI logs or artifacts unless explicitly and specifically requested to do so. Diagnose configuration and code directly from the workspace files.
+- Do not use LaTeX to display formulas, only terminal-friendly ASCII or Unicode characters.
