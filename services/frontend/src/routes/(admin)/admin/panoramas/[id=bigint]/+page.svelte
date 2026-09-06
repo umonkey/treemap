@@ -89,10 +89,14 @@
 				</table>
 			</div>
 
-			{#if !pageState.panorama.source_video_path}
-				<VideoUploader panoramaId={id} onUploadSuccess={() => pageState.reload(id)} />
-			{:else if !pageState.panorama.gpx_path}
-				<TrackUploader panoramaId={id} onUploadSuccess={() => pageState.reload(id)} />
+			{#if pageState.panorama.status === 'NEEDS_FILES'}
+				{#if !pageState.panorama.gpx_path}
+					<TrackUploader panoramaId={id} onUploadSuccess={() => pageState.reload(id)} />
+				{/if}
+
+				{#if !pageState.panorama.source_video_path}
+					<VideoUploader panoramaId={id} onUploadSuccess={() => pageState.reload(id)} />
+				{/if}
 			{:else if pageState.panorama.status === 'FAILURE'}
 				<p class="error">
 					We could not process the uploaded file: {pageState.panorama.failure_reason ||
