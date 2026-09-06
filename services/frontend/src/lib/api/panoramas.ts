@@ -196,6 +196,10 @@ export async function getPanoramasHints(
 	return await request<unknown>('GET', `api/panoramas/hints.json?${params.toString()}`);
 }
 
+export async function getPanoramaHints(id: string): Promise<IResponse<unknown>> {
+	return await request<unknown>('GET', `api/panoramas/${id}/hints.json`);
+}
+
 export interface PanoramaHint {
 	image_id: string;
 	angle: number;

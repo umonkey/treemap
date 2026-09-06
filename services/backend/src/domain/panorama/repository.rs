@@ -158,6 +158,31 @@ impl PanoramaRepository {
         Ok(res)
     }
 
+    pub async fn find_hints_by_panorama(
+        &self,
+        panorama_id: u64,
+    ) -> Result<Vec<(PanoramaHint, f64, f64, f64)>> {
+        let sql = format!(
+            "SELECT h.*, i.lat, i.lng, i.heading FROM `{}` h INNER JOIN `{}` i ON h.image_id = i.id WHERE i.panorama_id = ? AND i.hidden = 0",
+            HINTS_TABLE, IMAGES_TABLE
+        );
+
+        let params = &[Value::from(panorama_id as i64)];
+
+        let records = self.db.fetch_sql(&sql, params).await?;
+        let mut res = Vec::new();
+
+        for record in records {
+            let hint = PanoramaHint::from_attributes(&record)?;
+            let lat = record.require_f64("lat")?;
+            let lng = record.require_f64("lng")?;
+            let heading = record.require_f64("heading")?;
+            res.push((hint, lat, lng, heading));
+        }
+
+        Ok(res)
+    }
+
     pub async fn find_hints_by_image_id(&self, image_id: u64) -> Result<Vec<PanoramaHint>> {
         let query =
             SelectQuery::new(HINTS_TABLE).with_condition("image_id", Value::from(image_id as i64));

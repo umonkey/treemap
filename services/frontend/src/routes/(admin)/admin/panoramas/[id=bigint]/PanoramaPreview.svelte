@@ -67,6 +67,18 @@
 						{/if}
 					</GeoJSON>
 				{/if}
+				{#if componentState.hintsGeoJsonData}
+					<GeoJSON data={componentState.hintsGeoJsonData}>
+						<LineLayer
+							filter={['==', ['get', 'kind'], 'hint']}
+							paint={{
+								'line-color': '#22c55e',
+								'line-width': 2,
+								'line-opacity': 0.8
+							}}
+						/>
+					</GeoJSON>
+				{/if}
 			</MapLibre>
 		</div>
 		<div class="viewer-wrapper">

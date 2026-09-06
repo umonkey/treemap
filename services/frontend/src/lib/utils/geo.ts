@@ -1,17 +1,43 @@
-import type { ILatLng } from '$lib/types';
+export { getDistance } from './index';
 
-/**
- * Calculates approximate distance in meters between two points.
- * Uses linear approximation which is accurate enough for short distances (e.g. < 1km).
- */
-export const getDistance = (p1: ILatLng, p2: ILatLng): number => {
-	// Average latitude for Yerevan is ~40.18
-	const latMid = (p1.lat + p2.lat) / 2;
-	const m_per_deg_lat = 111132;
-	const m_per_deg_lng = 111320 * Math.cos((latMid * Math.PI) / 180);
+const M_PER_LAT = 111320;
+const R_EARTH = 6371000; // meters
 
-	const dLat = (p1.lat - p2.lat) * m_per_deg_lat;
-	const dLng = (p1.lng - p2.lng) * m_per_deg_lng;
+export function getOffsetDelta(lat: number, meters = 0.1) {
+	const deltaLat = meters / M_PER_LAT;
+	const cosLat = Math.cos((lat * Math.PI) / 180);
+	const mPerLng = M_PER_LAT * (Math.abs(cosLat) > 1e-6 ? cosLat : 1e-6);
+	const deltaLon = meters / mPerLng;
+	return { deltaLat, deltaLon };
+}
 
-	return Math.sqrt(dLat * dLat + dLng * dLng);
-};
+export function calculateDestination(
+	lat: number,
+	lng: number,
+	angle: number,
+	distanceMeters: number
+): [number, number] {
+	const brng = (angle * Math.PI) / 180;
+	const lat1 = (lat * Math.PI) / 180;
+	const lon1 = (lng * Math.PI) / 180;
+
+	const lat2 = Math.asin(
+		Math.sin(lat1) * Math.cos(distanceMeters / R_EARTH) +
+			Math.cos(lat1) * Math.sin(distanceMeters / R_EARTH) * Math.cos(brng)
+	);
+	const lon2 =
+		lon1 +
+		Math.atan2(
+			Math.sin(brng) * Math.sin(distanceMeters / R_EARTH) * Math.cos(lat1),
+			Math.cos(distanceMeters / R_EARTH) - Math.sin(lat1) * Math.sin(lat2)
+		);
+
+	return [(lon2 * 180) / Math.PI, (lat2 * 180) / Math.PI];
+}
+
+export function roundOffset(value: number, decimals = 7): number {
+	if (typeof value !== 'number' || Number.isNaN(value)) {
+		return 0;
+	}
+	return Number(value.toFixed(decimals));
+}

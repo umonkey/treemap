@@ -281,6 +281,19 @@ pub async fn get_panorama_hints_action(
         .json(geojson))
 }
 
+#[get("/{id}/hints.json")]
+pub async fn get_panorama_hints_by_id_action(
+    service: Injected<PanoramaService>,
+    path: Path<u64>,
+) -> Result<HttpResponse> {
+    let id = path.into_inner();
+    let geojson = service.get_panorama_hints_geojson(id).await?;
+
+    Ok(HttpResponse::Ok()
+        .content_type("application/geo+json")
+        .json(geojson))
+}
+
 #[get("/images/{id}/hints")]
 pub async fn get_panorama_image_hints_action(
     service: Injected<PanoramaService>,

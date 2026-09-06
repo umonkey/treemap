@@ -10,6 +10,8 @@
 	import NumberInput from '$lib/ui/number-input/NumberInput.svelte';
 	import Form from '$lib/ui/form/Form.svelte';
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
+	import PanoramaAligner from './PanoramaAligner.svelte';
+	import { roundOffset } from '$lib/utils/geo';
 
 	const id = $derived(page.params.id as string);
 	const pageState = new PageState();
@@ -46,20 +48,26 @@
 					onChange={(v) => (pageState.panorama!.title = v)}
 				/>
 
+				<PanoramaAligner
+					panoramaId={id}
+					bind:latOffset={pageState.panorama.lat_offset}
+					bind:lonOffset={pageState.panorama.lon_offset}
+				/>
+
 				<NumberInput
 					label="Latitude Offset"
 					value={pageState.panorama.lat_offset}
-					step={0.000001}
-					min={-Infinity}
-					onChange={(v) => (pageState.panorama!.lat_offset = v)}
+					step={0.0000001}
+					min={Number.NEGATIVE_INFINITY}
+					onChange={(v) => (pageState.panorama!.lat_offset = roundOffset(v))}
 				/>
 
 				<NumberInput
 					label="Longitude Offset"
 					value={pageState.panorama.lon_offset}
-					step={0.000001}
-					min={-Infinity}
-					onChange={(v) => (pageState.panorama!.lon_offset = v)}
+					step={0.0000001}
+					min={Number.NEGATIVE_INFINITY}
+					onChange={(v) => (pageState.panorama!.lon_offset = roundOffset(v))}
 				/>
 
 				<Buttons>

@@ -1,4 +1,10 @@
-import { getPanoramaGeoJSON, getPanoramasImage, type PanoramaImage } from '$lib/api/panoramas';
+import {
+	getPanorama,
+	getPanoramaGeoJSON,
+	getPanoramaHints,
+	getPanoramasImage,
+	type PanoramaImage
+} from '$lib/api/panoramas';
 import { mapRaysStore } from '$lib/stores/mapRays.svelte';
 import { config } from '$lib/env';
 import { showError } from '$lib/errors';
@@ -8,6 +14,7 @@ import { LngLatBounds, type Map } from 'maplibre-gl';
 
 export class PanoramaPreviewState {
 	geoJsonData = $state<FeatureCollection | undefined>(undefined);
+	hintsGeoJsonData = $state<FeatureCollection | undefined>(undefined);
 	loading = $state<boolean>(false);
 	map = $state.raw<Map | undefined>(undefined);
 	selectedImageId = $state<string | undefined>(undefined);
@@ -17,34 +24,36 @@ export class PanoramaPreviewState {
 
 	layer = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${config.mapTilerKey}&language=${locale.lang}`;
 
-	constructor() {
-		// Pure constructor
-	}
-
 	fitBounds = () => {
-		if (!this.map || !this.geoJsonData) return;
+		if (!this.map) return;
 
 		requestAnimationFrame(() => {
-			if (!this.map || !this.geoJsonData) return;
+			if (!this.map) return;
 
 			this.map.resize();
 
 			const bounds = new LngLatBounds();
-			for (const feature of this.geoJsonData.features) {
-				if (feature.geometry.type === 'Point') {
-					const [lng, lat] = feature.geometry.coordinates;
-					if (!isNaN(lat) && !isNaN(lng)) {
-						bounds.extend([lng, lat]);
-					}
-				} else if (feature.geometry.type === 'LineString') {
-					for (const coord of feature.geometry.coordinates) {
-						const [lng, lat] = coord;
-						if (!isNaN(lat) && !isNaN(lng)) {
+			const addFeatures = (fc?: FeatureCollection) => {
+				if (!fc?.features) return;
+				for (const feature of fc.features) {
+					if (feature.geometry.type === 'Point') {
+						const [lng, lat] = feature.geometry.coordinates;
+						if (!Number.isNaN(lat) && !Number.isNaN(lng)) {
 							bounds.extend([lng, lat]);
+						}
+					} else if (feature.geometry.type === 'LineString') {
+						for (const coord of feature.geometry.coordinates) {
+							const [lng, lat] = coord;
+							if (!Number.isNaN(lat) && !Number.isNaN(lng)) {
+								bounds.extend([lng, lat]);
+							}
 						}
 					}
 				}
-			}
+			};
+
+			addFeatures(this.geoJsonData);
+			addFeatures(this.hintsGeoJsonData);
 
 			if (!bounds.isEmpty()) {
 				this.map.fitBounds(bounds, { padding: 20, animate: false });
@@ -108,12 +117,12 @@ export class PanoramaPreviewState {
 		if (!this.geoJsonData || !this.geoJsonData.features) return;
 		const { lng, lat } = e.lngLat;
 		let closestImageId: string | undefined = undefined;
-		let minDistance = Infinity;
+		let minDistance = Number.POSITIVE_INFINITY;
 
 		for (const feature of this.geoJsonData.features) {
 			if (feature.properties?.kind === 'image' && feature.geometry.type === 'Point') {
 				const [featureLng, featureLat] = feature.geometry.coordinates;
-				if (!isNaN(featureLat) && !isNaN(featureLng)) {
+				if (!Number.isNaN(featureLat) && !Number.isNaN(featureLng)) {
 					const distance = this.calculateDistance(lat, lng, featureLat, featureLng);
 					if (distance < minDistance) {
 						minDistance = distance;
@@ -143,27 +152,68 @@ export class PanoramaPreviewState {
 
 	reload = async (panoramaId: string) => {
 		this.geoJsonData = undefined;
+		this.hintsGeoJsonData = undefined;
 		this.selectedImageId = undefined;
 		this.selectedImage = undefined;
 		this.yaw = 0;
 		mapRaysStore.rays = [];
 		this.loading = true;
-		const res = await getPanoramaGeoJSON(panoramaId);
+
+		const [geoRes, hintsRes, panoRes] = await Promise.all([
+			getPanoramaGeoJSON(panoramaId),
+			getPanoramaHints(panoramaId),
+			getPanorama(panoramaId)
+		]);
 		this.loading = false;
-		if (res.status === 200 && res.data) {
-			this.geoJsonData = res.data as FeatureCollection;
+
+		let latOffset = 0;
+		let lonOffset = 0;
+		if (panoRes.status === 200 && panoRes.data) {
+			latOffset = panoRes.data.lat_offset;
+			lonOffset = panoRes.data.lon_offset;
+		}
+
+		if (geoRes.status === 200 && geoRes.data) {
+			this.geoJsonData = geoRes.data as FeatureCollection;
+		}
+
+		if (hintsRes.status === 200 && hintsRes.data) {
+			const rawHints = hintsRes.data as FeatureCollection;
+			const shiftedFeatures = rawHints.features.map((feature) => {
+				if (feature.geometry?.type === 'LineString') {
+					const coords = feature.geometry.coordinates as [number, number][];
+					const shiftedCoords = coords.map(([lng, lat]) => [lng + lonOffset, lat + latOffset]);
+					return {
+						...feature,
+						geometry: {
+							...feature.geometry,
+							coordinates: shiftedCoords
+						}
+					};
+				}
+				return feature;
+			});
+			this.hintsGeoJsonData = {
+				type: 'FeatureCollection',
+				features: shiftedFeatures
+			};
+		}
+
+		if (this.geoJsonData || this.hintsGeoJsonData) {
 			this.fitBounds();
-			const firstImageFeature = this.geoJsonData.features.find(
-				(f) => f.properties?.kind === 'image'
-			);
-			if (firstImageFeature) {
-				const imageId = firstImageFeature.properties?.id ?? firstImageFeature.id;
-				if (imageId) {
-					this.selectImage(String(imageId));
+			if (this.geoJsonData) {
+				const firstImageFeature = this.geoJsonData.features.find(
+					(f) => f.properties?.kind === 'image'
+				);
+				if (firstImageFeature) {
+					const imageId = firstImageFeature.properties?.id ?? firstImageFeature.id;
+					if (imageId) {
+						this.selectImage(String(imageId));
+					}
 				}
 			}
 		} else {
-			showError(res.error?.description || 'Failed to load panorama preview');
+			showError(geoRes.error?.description || 'Failed to load panorama preview');
 		}
 	};
 }
