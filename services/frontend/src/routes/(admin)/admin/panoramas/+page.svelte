@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { pageState } from './page.svelte.ts';
+	import { PageState } from './page.svelte.ts';
 	import { formatDate } from '$lib/utils/strings';
 	import { storage_cost } from '$lib/utils/files';
 	import Breadcrumbs from '$lib/components/admin/Breadcrumbs.svelte';
@@ -8,6 +8,8 @@
 	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
 	import CheckInput from '$lib/ui/check-input/CheckInput.svelte';
 	import { hasPermission } from '$lib/stores/authStore';
+
+	const pageState = new PageState();
 
 	const canEdit = $derived($hasPermission('pano:edit'));
 
@@ -23,7 +25,9 @@
 	}
 
 	$effect(() => {
+		const cleanup = pageState.setup();
 		untrack(() => pageState.reload());
+		return cleanup;
 	});
 </script>
 

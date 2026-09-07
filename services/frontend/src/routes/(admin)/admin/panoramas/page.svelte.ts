@@ -2,16 +2,20 @@ import { getPanoramas, updatePanorama, type Panorama } from '$lib/api/panoramas'
 import type { IError } from '$lib/types';
 import { showError } from '$lib/errors';
 
-class PageState {
+export class PageState {
 	panoramas = $state<Panorama[]>([]);
 	isLoading = $state<boolean>(false);
 	error = $state<IError | undefined>(undefined);
 
-	reload = async () => {
-		this.isLoading = true;
+	reload = async (options?: { silent?: boolean }) => {
+		if (!options?.silent) {
+			this.isLoading = true;
+		}
 		this.error = undefined;
 		const res = await getPanoramas();
-		this.isLoading = false;
+		if (!options?.silent) {
+			this.isLoading = false;
+		}
 		if (res.status === 200 && res.data) {
 			this.panoramas = res.data;
 		} else {
@@ -31,6 +35,24 @@ class PageState {
 			await this.reload();
 		}
 	};
-}
 
-export const pageState = new PageState();
+	public setup = () => {
+		window.addEventListener('focus', this.handleFocus);
+		document.addEventListener('visibilitychange', this.handleVisibilityChange);
+		return () => {
+			window.removeEventListener('focus', this.handleFocus);
+			document.removeEventListener('visibilitychange', this.handleVisibilityChange);
+		};
+	};
+
+	private handleFocus = () => {
+		if (document.visibilityState === 'hidden') return;
+		if (!this.isLoading) {
+			this.reload({ silent: true });
+		}
+	};
+
+	private handleVisibilityChange = () => {
+		this.handleFocus();
+	};
+}

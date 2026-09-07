@@ -37,7 +37,7 @@ export class PanoramaInfoLogic {
 	formatProcessingTime = (seconds?: number | null): string => {
 		const s = seconds ?? 0;
 		const hours = s / 3600;
-		const cost = hours * 0.40;
+		const cost = hours * 0.4;
 		return `${hours.toFixed(1)} hours ≈ $${cost.toFixed(2)}`;
 	};
 }
