@@ -57,6 +57,9 @@ impl PanoramaDispatcher {
         panorama.processing_status = Some("SUBMITTED".to_string());
         panorama.status = PanoramaStatus::NeedsProcessingFinish;
 
+        let file_size = self.calculate_size(id).await?;
+        panorama.file_size = Some(file_size);
+
         self.repo.update(id, &panorama).await?;
 
         Ok(panorama)
@@ -123,6 +126,9 @@ impl PanoramaDispatcher {
                 panorama.id,
                 panorama.status
             );
+        } else if new_status == "FAILED" {
+            let file_size = self.calculate_size(panorama.id).await?;
+            panorama.file_size = Some(file_size);
         }
 
         self.repo.update(panorama.id, panorama).await?;
@@ -269,6 +275,9 @@ impl PanoramaDispatcher {
                         );
 
                         self.delete_temporary_files(panorama.id).await?;
+
+                        let file_size = self.calculate_size(panorama.id).await?;
+                        panorama.file_size = Some(file_size);
 
                         panorama.status = PanoramaStatus::NeedsProcessing;
                         self.repo.update(panorama.id, &panorama).await?;
