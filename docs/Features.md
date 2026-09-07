@@ -61,12 +61,14 @@ The application includes an integrated Model Context Protocol (MCP) server that 
 The application integrates 360° street panoramas to support remote inventorying, automated computer-vision pipelines, and armchair mapping.
 
 - Interactive 360 viewer: enables smooth exploration of equirectangular street imagery.
-- Track/layer navigation: allows switching between map layers and panorama sequences effortlessly.
-- Armchair mapping: supports remote auditing and asset tagging from desktop or mobile devices.
-- Panorama hints: provides navigational cues across adjacent panorama nodes and sequences.
-- Automated trajectory alignment: aligns video frames with GPS tracks automatically without manual synchronization or preview transcoding.
-- Ray casting sightlines: projects viewer viewing direction onto the map to triangulate ground control points and verify alignments.
+- Split-pane synchronization: displays the panorama and map side by side, keeping the viewer orientation and camera location synchronized in real time.
+- Armchair mapping: supports remote auditing, tree cataloging, and asset tagging directly from desktop or mobile devices.
+- Visual hints: displays overlays for mapped objects, such as trees and adjacent sequence nodes.
+- Tree inventory integration: allows viewing existing tree profiles, placing new trees, or triangulating coordinates across multiple frames without standing under dense canopies.
+- Automated trajectory alignment: aligns video frames with GPS tracks automatically using relative photogrammetry and robust similarity transformation without manual synchronization.
+- Ray casting sightlines: projects viewer viewing direction onto the map to triangulate landmarks and verify alignments.
 - Coordinate offsets: assists in fine-tuning spatial alignment between GPS tracks and imagery frames to match base map features.
+- Detailed documentation: refers to `Panoramas.md` for full operational and technical guidelines.
 
 ## Role-Based Access Control (RBAC)
 

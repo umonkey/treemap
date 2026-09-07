@@ -1,71 +1,83 @@
 # Street Panoramas
 
-The app has built in support for 360° street panoramas. This features processing of equirectangular videos with external GPX tracks, extracting still frames at regular intervals, reconstructing the 3D scene using OpenSfM, automatically aligning camera trajectories to the GPS track, and creating series of georeferenced images to display in the app.
+The platform supports 360° street-level panoramas to enable remote auditing, asset inventorying, and computer-vision pipelines directly from equirectangular video and GPS logs.
 
 ## Goals
 
-Street panoramas are designed for high-performance automated data extraction, remote inventorying, and automated computer-vision pipelines, rather than being limited to visual navigation. They provide comprehensive spatial context for analyzing urban assets and mapping features efficiently from the desktop or field.
+Street panoramas provide spatial context for urban asset management, remote fieldwork, and automated feature extraction. The pipeline is designed to work with affordable consumer hardware rather than specialized, industrial-grade surveying equipment.
+
+## Civic and Operational Value
+
+For municipalities, environmental non-profits, and civic mapping communities, street panoramas transform field operations:
+
+- Rapid city coverage: a single volunteer driving 20 to 40 km/h with an action camera can capture an entire neighborhood in an afternoon, replacing weeks of tree-by-tree foot surveys.
+- Armchair mapping: community members who cannot conduct physical field surveys can participate from home, placing tree markers and cataloging species directly in a browser.
+- Multi-year visual audit trail: re-surveying streets annually creates a historical record to evaluate canopy growth, pruning quality, storm damage, and tree mortality over time.
+- Open GIS compatibility: spatial data and camera trajectories export directly to open formats (GeoJSON and standard WGS84) for immediate use in QGIS, ArcGIS, or OpenStreetMap without proprietary vendor lock-in.
 
 ## User Features
 
-- Interactive 360 viewer: allows users to explore street-level equirectangular imagery smoothly.
-- Map layer navigation: enables switching between map views and panorama sequences seamlessly.
-- Armchair mapping: supports remote auditing and data collection from recorded imagery.
-- Panorama hints: guides users through sequences and highlights relevant features or adjacent nodes.
-- Spatial sequence alignment: aligns video frames and GPS tracks automatically for precise geospatial positioning.
-- Ray casting sightlines: projects viewer viewing direction onto the map for landmark triangulation and coordinate verification.
+- Interactive 360 viewer: inspect street-level equirectangular imagery with smooth panning and zooming.
+- Split-pane synchronization: a side-by-side viewer and map pane simultaneously display the panorama and camera position, keeping spatial orientation synchronized in real time.
+- Remote auditing: inventory urban assets, inspect tree canopies, and verify ground features from desktop.
+- Visual hints: display overlays for mapped objects, such as trees and adjacent sequence nodes.
+- Trajectory reconstruction: reconstruct camera motion and positions to georeference every extracted frame.
+- Sightline ray casting: project the current viewing direction onto the map to triangulate landmarks and verify positions.
+
+## Tree Inventory Workflow
+
+The panorama interface connects street imagery directly to the tree catalog:
+
+- Sighting trees: navigating to any frame displays existing tree markers as overlays in the 360 view.
+- Cross-frame triangulation: sighting the same tree trunk from two or more consecutive camera positions projects intersecting sightline rays onto the map, determining the exact trunk coordinates without standing under canopy obstructions.
+- Direct attribute editing: clicking an existing tree overlay opens its profile to update species, trunk circumference, crown diameter, health status, or maintenance needs.
+- New tree placement: clicking the ground level in the viewer or using ray intersections creates a new tree record at the projected coordinate.
+
+## Equipment and Setup
+
+Surveys require no expensive surveying rigs or calibrated vehicles:
+
+- Cameras: any consumer 360 camera that exports equirectangular video (such as Insta360 X3 or X4, DJI Osmo 360, or GoPro Max).
+- Mounting: a standard magnetic roof mount for vehicles, a seatpost mount for bicycles, or a handheld selfie stick for pedestrian alleys and parks.
+- Location tracking: any smartphone running a free GPX recording app (such as GPS Logger or myTracks). No dedicated GNSS antenna is required.
+
+## Operational Cost and Infrastructure
+
+- On-demand compute: processing runs on AWS Batch using EC2 spot or on-demand instances that scale to zero when idle, avoiding ongoing server overhead.
+- Predictable job costs: compute costs scale strictly with uploaded video duration, typically costing under two dollars per street sequence.
+- Storage efficiency: raw videos can be archived or deleted after frame extraction, while lightweight extracted frames and metadata are stored in standard S3-compatible buckets.
+
+## Limitations
+
+- Visual-only orientation: reconstruction relies exclusively on visual features across frames, requiring no compass or other IMU data.
+- Absolute accuracy: reconstructions preserve precise internal geometric rigidity, but global coordinates depend on the input GPS track (typically within ±3 meters).
+- Cloud processing: pipeline execution requires an AWS account configured with AWS Batch for background compute.
 
 ## Field Recording
 
-Recording imagery for the system involves capturing video and GPS tracks in the field:
+Data collection requires only a consumer 360 camera and a smartphone:
 
-- Video recording: record a video track with the highest available resolution and maximum available shutter speed to avoid motion blur. For armchair mapping, driving closer to the middle of the road works best; 30 fps at 60 km/h gives you a frame every 55 cm, so you do not need to drive very slowly.
-- GPS track logging: record a separate GPX track using an application like GPS Logger (Android) or myTracks (iPhone).
-- Clock synchronization: before recording, connect the camera app (e.g., DJI Mimo) to synchronize the camera clock with your phone. Automated trajectory alignment matches the motion profile of the video to the GPS track algorithmically, eliminating manual video-to-track synchronization in the user interface. Having accurate timestamps makes spatial correlation faster and more robust.
+- Video capture: record equirectangular video using the lowest available frame rate (for sharper individual frames) and the fastest shutter speed supported by ambient light (to prevent motion blur).
+- GPS logging: record a separate GPX track with any GPS logging app (such as GPS Logger). Device clocks do not need to be synchronized.
+- Loop closures in dense areas: when recording parks or dense courtyards, cross paths intentionally (using figure-8 trajectories or grid loops) to provide visual overlap that strengthens the 3D reconstruction.
+- Featureless surfaces: avoid walking too close to monotonous walls, fences, or uniform surfaces, as the lack of visual keypoints can cause trajectory distortions.
 
 ## Video Conversion
 
-The video file coming from the camera contains two video tracks with round videos (one for each lens) and a track with accelerometer data used for stabilizing the video later. You need to use DJI Studio to convert it.
+Source footage must be exported as an equirectangular video file. Direction lock is unnecessary because camera heading is computed during reconstruction, but horizon leveling is recommended.
 
-Load all your recorded `.osv` files into DJI Studio, enable direction lock, and export as a panoramic video in the highest possible quality. After processing, you will have an MP4 file with a stabilized equirectangular video.
+## Processing Pipeline
 
-## Processing Overview
+The ingestion and reconstruction workflow is fully automated:
 
-The workflow for adding new panoramas to the system is fully automated:
+- Upload: upload the video file (`.mp4`) and corresponding GPS log (`.gpx`). The processing job starts automatically.
+- Notifications: the system sends an email notification upon job completion or failure.
+- Failure recovery: if a run fails, the job can be restarted directly from the interface once the underlying issue is resolved.
+- Sequence preview: upon completion, administrators can inspect the reconstructed sequence in a private preview before publishing it to the public map.
+- Map fine-tuning: after publication, fine-tune alignment by sighting known reference landmarks (such as trees or building corners) to establish the best fit against the base map.
 
-- Upload: the user uploads an equirectangular 2:1 video file and a corresponding `.gpx` track.
-- Automated processing: once files are uploaded, the dataset queues directly for background processing in AWS Batch without manual video synchronization or intermediate preview transcoding.
-- Feature extraction and reconstruction: runs OpenSfM to reconstruct the local 3D scene from extracted frames using pure relative photogrammetry without GPS constraints.
-- Trajectory alignment: the pipeline matches the reconstructed camera trajectory to the GPX track via rigid similarity transformation (scale, yaw, translation) using robust loss to filter GPS noise.
-- Output generation: final georeferenced panorama frames and metadata are generated and uploaded to object storage.
-- Duration: processing normally takes 30 to 60 minutes per street depending on video length.
+## Data Ownership and Governance
 
-## Positional Accuracy and OpenSfM
-
-Consumer-grade GPS loggers (such as smartphone apps or action cameras) experience 6 to 12 meters of positional drift and urban multipath noise. Using raw GPS points directly during 3D reconstruction introduces severe distortions and bending (the banana effect).
-
-To prevent geometric distortion, OpenSfM is configured to perform pure relative photogrammetry (`bundle_use_gps: no`). It builds an internally rigid, non-deformed local 3D reconstruction purely from visual features and camera bundle adjustment.
-
-Once reconstruction is complete, the trajectory alignment tool (`bin/align-trajectory`) correlates the relative camera path with the timestamped GPX track. It uses a 2D Umeyama similarity transformation followed by iteratively reweighted least squares (IRLS) with Cauchy robust loss to determine time offset, scale, horizontal yaw, and translation. The entire camera graph is transformed as a single rigid Sim(3) block, preserving the ray collinearity and angular relationships necessary for accurate tree triangulation.
-
-## Global Positioning and Ground Control Point Alignment
-
-Although automated trajectory alignment resolves relative scale, heading, and geometry, it inherits any global translation offset present in the raw GPS track.
-
-To align the finished sequence with the base map:
-
-- Landmark selection: identify visible ground control points (GCPs) present in both the panorama imagery and OpenStreetMap, such as building corners or utility poles.
-- Ray casting: in the administrative panorama preview, looking at a landmark in the 360 viewer projects a sightline ray onto the map. Sighting the same landmark from multiple camera positions creates intersecting rays indicating the actual ground position.
-- Sequence offsets: administrators enter `lat_offset` and `lon_offset` values on the panorama edit page to translate the entire sequence to match OpenStreetMap data.
-
-## Infrastructure
-
-We use AWS Batch to offload heavy processing from the main backend server to EC2 instances equipped with high-throughput GP3 storage. The extractor container performs frame extraction, OpenSfM reconstruction, trajectory alignment, and result bundling in a single automated job without requiring intermediate transcoding services.
-
-## Data Ownership
-
-All images and processed data are stored on the user's S3 compatible buckets, ensuring full data ownership.
-
-## Exporting Data
-
-Admins can download all information on a panorama in `json` format using the export feature. There is no way to import it back just yet.
+- Complete data sovereignty: all extracted imagery, trajectories, and point clouds reside in your own S3-compatible storage, ensuring complete data ownership and privacy control.
+- Staged publication: sequences remain private until explicitly approved by administrators, allowing quality review before public access.
+- Data export: administrators can export complete panorama sequence metadata and trajectories in JSON format for external GIS analysis or archiving.

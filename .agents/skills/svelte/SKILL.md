@@ -35,6 +35,7 @@ For full boilerplate implementations (Component Logic, Component Markup, Page Lo
 ## Verification Workflow
 
 After modifying components or pages, verify within `services/frontend/`:
+
 ```bash
 make -C services/frontend format check lint
 ```
