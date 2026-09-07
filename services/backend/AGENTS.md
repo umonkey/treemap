@@ -44,6 +44,7 @@ The binary also supports several CLI commands (run via `cargo run -- <command>`)
 - `osm-push`: send new trees to OSM.
 - `osm-push-changes`: send tree updates to OSM.
 - `dispatch-queue`: run the queue consumer daemon.
+- `scan-panoramas`: scan and calculate file sizes for panoramas.
 - `serve`: run the web server.
 - `update-tree-address N`: update street address for a single tree.
 - `update-tree-addresses`: update street address for all trees.

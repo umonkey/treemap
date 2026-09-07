@@ -27,6 +27,7 @@ export interface Panorama {
 	has_video?: boolean;
 	has_track?: boolean;
 	hints_count?: number | null;
+	file_size?: number | null;
 }
 
 export interface CreatePanorama {
@@ -146,8 +147,8 @@ export async function getPanoramasGeoJSON(
 	e: number,
 	s: number,
 	w: number,
-	points: boolean = true,
-	lines: boolean = true
+	points = true,
+	lines = true
 ): Promise<IResponse<unknown>> {
 	const params = new URLSearchParams({
 		n: n.toString(),

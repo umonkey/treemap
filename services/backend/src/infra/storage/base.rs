@@ -1,10 +1,16 @@
 use crate::types::Result;
 use async_trait::async_trait;
 
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct CompletedPart {
     pub part_number: i32,
     pub etag: String,
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct StorageFile {
+    pub path: String,
+    pub size: u64,
 }
 
 #[async_trait]
@@ -24,7 +30,7 @@ pub trait StorageDriver: Send + Sync {
     ) -> Result<String>;
     async fn delete_file(&self, bucket: &str, path: &str) -> Result<()>;
     async fn delete_files(&self, bucket: &str, paths: &[String]) -> Result<()>;
-    async fn list_files(&self, bucket: &str, prefix: &str) -> Result<Vec<String>>;
+    async fn list_files(&self, bucket: &str, prefix: &str) -> Result<Vec<StorageFile>>;
     async fn complete_multipart_upload(
         &self,
         bucket: &str,

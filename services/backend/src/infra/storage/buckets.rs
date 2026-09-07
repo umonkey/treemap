@@ -1,6 +1,6 @@
 //! Defines wrappers for the different storage buckets.
 
-use super::base::{CompletedPart, StorageDriver};
+use super::base::{CompletedPart, StorageDriver, StorageFile};
 use crate::infra::config::Config;
 use crate::types::*;
 use std::sync::Arc;
@@ -75,7 +75,7 @@ impl Bucket {
         self.driver.delete_files(&self.bucket, paths).await
     }
 
-    pub async fn list_files(&self, prefix: &str) -> Result<Vec<String>> {
+    pub async fn list_files(&self, prefix: &str) -> Result<Vec<StorageFile>> {
         self.driver.list_files(&self.bucket, prefix).await
     }
 }
@@ -142,7 +142,7 @@ impl FileBucket {
         self.storage.delete_files(paths).await
     }
 
-    pub async fn list_files(&self, prefix: &str) -> Result<Vec<String>> {
+    pub async fn list_files(&self, prefix: &str) -> Result<Vec<StorageFile>> {
         self.storage.list_files(prefix).await
     }
 }
@@ -243,7 +243,7 @@ impl PanoramaSourceBucket {
         self.storage.delete_files(paths).await
     }
 
-    pub async fn list_files(&self, prefix: &str) -> Result<Vec<String>> {
+    pub async fn list_files(&self, prefix: &str) -> Result<Vec<StorageFile>> {
         self.storage.list_files(prefix).await
     }
 }
@@ -330,7 +330,7 @@ impl PanoramaBucket {
         self.storage.delete_files(paths).await
     }
 
-    pub async fn list_files(&self, prefix: &str) -> Result<Vec<String>> {
+    pub async fn list_files(&self, prefix: &str) -> Result<Vec<StorageFile>> {
         self.storage.list_files(prefix).await
     }
 }

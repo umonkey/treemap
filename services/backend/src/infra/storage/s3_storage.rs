@@ -2,7 +2,7 @@
 //! This is for the production.
 
 use super::aws_config::AwsConfig;
-use super::base::{CompletedPart, StorageDriver};
+use super::base::{CompletedPart, StorageDriver, StorageFile};
 use crate::infra::config::Config;
 use crate::infra::secrets::Secrets;
 use crate::types::*;
@@ -337,12 +337,12 @@ impl StorageDriver for S3StorageDriver {
         Ok(())
     }
 
-    async fn list_files(&self, bucket: &str, prefix: &str) -> Result<Vec<String>> {
+    async fn list_files(&self, bucket: &str, prefix: &str) -> Result<Vec<StorageFile>> {
         debug!(
             "Listing files in {} with prefix {} from S3.",
             bucket, prefix
         );
-        let mut keys = Vec::new();
+        let mut files = Vec::new();
         let mut continuation_token = None;
 
         loop {
@@ -359,8 +359,9 @@ impl StorageDriver for S3StorageDriver {
 
             if let Some(contents) = res.contents {
                 for object in contents {
+                    let size = object.size().unwrap_or(0).max(0) as u64;
                     if let Some(key) = object.key {
-                        keys.push(key);
+                        files.push(StorageFile { path: key, size });
                     }
                 }
             }
@@ -372,6 +373,6 @@ impl StorageDriver for S3StorageDriver {
             }
         }
 
-        Ok(keys)
+        Ok(files)
     }
 }

@@ -1,0 +1,5 @@
+BEGIN;
+
+ALTER TABLE panoramas ADD COLUMN file_size INT NULL;
+
+COMMIT;

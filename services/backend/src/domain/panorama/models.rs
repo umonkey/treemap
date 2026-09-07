@@ -51,6 +51,7 @@ pub struct Panorama {
     pub created_at: i64,
     pub created_by: u64,
     pub image_count: i32,
+    pub file_size: Option<u64>,
     pub status: PanoramaStatus,
     pub title: String,
     pub visible: bool,
@@ -80,6 +81,7 @@ impl Panorama {
             created_at: attrs.require_i64("created_at")?,
             created_by: attrs.require_u64("created_by")?,
             image_count: attrs.require_u64("image_count")? as i32,
+            file_size: attrs.get_u64("file_size")?,
             status: attrs
                 .require_string("status")?
                 .parse()
@@ -109,6 +111,7 @@ impl Panorama {
         attrs.insert("created_at", Value::from(self.created_at));
         attrs.insert("created_by", Value::from(self.created_by as i64));
         attrs.insert("image_count", Value::from(self.image_count as i64));
+        attrs.insert("file_size", Value::from(self.file_size));
         attrs.insert("status", Value::from(self.status.to_string()));
         attrs.insert("title", Value::from(self.title.clone()));
         attrs.insert("visible", Value::from(self.visible));

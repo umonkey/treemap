@@ -1,7 +1,7 @@
 //! Implements the local file system storage driver.
 //! This is very limited and should only be used for unit testing.
 
-use super::base::{CompletedPart, StorageDriver};
+use super::base::{CompletedPart, StorageDriver, StorageFile};
 use crate::infra::config::Config;
 use crate::types::*;
 use async_trait::async_trait;
@@ -82,6 +82,55 @@ impl StorageDriver for LocalStorageDriver {
         Ok(fs::metadata(file_path).await.is_ok())
     }
 
+    async fn list_files(&self, bucket: &str, prefix: &str) -> Result<Vec<StorageFile>> {
+        let bucket_folder = std::path::PathBuf::from(format!("{}/{}", self.folder, bucket));
+        let search_path = bucket_folder.join(prefix);
+        let mut files = Vec::new();
+
+        if let Ok(metadata) = tokio::fs::metadata(&search_path).await {
+            if search_path.is_file() {
+                if let Ok(rel) = search_path.strip_prefix(&bucket_folder) {
+                    if let Some(rel_str) = rel.to_str() {
+                        files.push(StorageFile {
+                            path: rel_str.replace('\\', "/"),
+                            size: metadata.len(),
+                        });
+                    }
+                }
+            } else {
+                let mut stack = vec![search_path];
+                while let Some(dir) = stack.pop() {
+                    let mut entries = match fs::read_dir(&dir).await {
+                        Ok(entries) => entries,
+                        Err(_) => continue,
+                    };
+                    while let Some(entry) = entries
+                        .next_entry()
+                        .await
+                        .map_err(|_| Error::FileDownload)?
+                    {
+                        let path = entry.path();
+                        if path.is_dir() {
+                            stack.push(path);
+                        } else if path.is_file() {
+                            if let Ok(metadata) = fs::metadata(&path).await {
+                                if let Ok(rel) = path.strip_prefix(&bucket_folder) {
+                                    if let Some(rel_str) = rel.to_str() {
+                                        files.push(StorageFile {
+                                            path: rel_str.replace('\\', "/"),
+                                            size: metadata.len(),
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        Ok(files)
+    }
+
     async fn start_multipart_upload(&self, _bucket: &str, _path: &str) -> Result<String> {
         Err(Error::FileUpload)
     }
@@ -137,46 +186,5 @@ impl StorageDriver for LocalStorageDriver {
         }
 
         Ok(())
-    }
-
-    async fn list_files(&self, bucket: &str, prefix: &str) -> Result<Vec<String>> {
-        let bucket_folder = std::path::PathBuf::from(format!("{}/{}", self.folder, bucket));
-        let search_path = bucket_folder.join(prefix);
-        let mut files = Vec::new();
-
-        if tokio::fs::metadata(&search_path).await.is_ok() {
-            if search_path.is_file() {
-                if let Ok(rel) = search_path.strip_prefix(&bucket_folder) {
-                    if let Some(rel_str) = rel.to_str() {
-                        files.push(rel_str.replace('\\', "/"));
-                    }
-                }
-            } else {
-                let mut stack = vec![search_path];
-                while let Some(dir) = stack.pop() {
-                    let mut entries = match fs::read_dir(&dir).await {
-                        Ok(entries) => entries,
-                        Err(_) => continue,
-                    };
-                    while let Some(entry) = entries
-                        .next_entry()
-                        .await
-                        .map_err(|_| Error::FileDownload)?
-                    {
-                        let path = entry.path();
-                        if path.is_dir() {
-                            stack.push(path);
-                        } else if path.is_file() {
-                            if let Ok(rel) = path.strip_prefix(&bucket_folder) {
-                                if let Some(rel_str) = rel.to_str() {
-                                    files.push(rel_str.replace('\\', "/"));
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        Ok(files)
     }
 }

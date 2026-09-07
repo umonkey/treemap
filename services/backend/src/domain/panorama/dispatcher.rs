@@ -100,6 +100,8 @@ impl PanoramaDispatcher {
             self.pull_panoramas_images(panorama).await?;
             self.service.update_panorama_stats(panorama).await?;
             self.delete_temporary_files(panorama.id).await?;
+            let file_size = self.calculate_size(panorama.id).await?;
+            panorama.file_size = Some(file_size);
 
             panorama.status = PanoramaStatus::Success;
 
@@ -139,7 +141,8 @@ impl PanoramaDispatcher {
 
         let filtered_source_files: Vec<String> = source_files
             .into_iter()
-            .filter(|file| !file.ends_with(".mp4") && !file.ends_with(".gpx"))
+            .filter(|file| !file.path.ends_with(".mp4") && !file.path.ends_with(".gpx"))
+            .map(|file| file.path)
             .collect();
 
         let count = filtered_source_files.len();
@@ -152,6 +155,36 @@ impl PanoramaDispatcher {
             count,
             id
         );
+
+        Ok(())
+    }
+
+    pub async fn calculate_size(&self, id: u64) -> Result<u64> {
+        let prefix = format!("{}/", id);
+        let source_files = self.storage.list_files(&prefix).await?;
+        let panorama_files = self.panoramas.list_files(&prefix).await?;
+
+        let total_size = source_files.iter().map(|f| f.size).sum::<u64>()
+            + panorama_files.iter().map(|f| f.size).sum::<u64>();
+
+        Ok(total_size)
+    }
+
+    pub async fn scan_panoramas(&self) -> Result<()> {
+        let panoramas = self.repo.all().await?;
+
+        for mut panorama in panoramas {
+            if panorama.file_size.unwrap_or(0) == 0 {
+                let size = self.calculate_size(panorama.id).await?;
+                panorama.file_size = Some(size);
+                self.repo.update(panorama.id, &panorama).await?;
+                log::info!(
+                    "Panorama {} file size calculated: {} bytes",
+                    panorama.id,
+                    size
+                );
+            }
+        }
 
         Ok(())
     }

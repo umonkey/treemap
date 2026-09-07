@@ -11,6 +11,7 @@
 	import VideoUploader from './VideoUploader.svelte';
 	import TrackUploader from './TrackUploader.svelte';
 	import PanoramaPreview from './PanoramaPreview.svelte';
+	import PanoramaInfo from './PanoramaInfo.svelte';
 
 	const id = $derived(page.params.id as string);
 	const pageState = new PageState();
@@ -68,47 +69,7 @@
 		{:else if pageState.isLoading}
 			<p aria-busy="true">Loading panorama...</p>
 		{:else if pageState.panorama}
-			<div class="panorama-details">
-				<table>
-					<tbody>
-						{#if pageState.panorama.failure_reason}
-							<tr>
-								<th>Failure Reason</th>
-								<td class="error">{pageState.panorama.failure_reason}</td>
-							</tr>
-						{/if}
-
-						<tr>
-							<th>Images:</th>
-							<td>{pageState.panorama.image_count}</td>
-						</tr>
-
-						<tr>
-							<th>Hints:</th>
-							<td>
-								<div class="hints-cell">
-									<span>{pageState.panorama.hints_count ?? 0}</span>
-									<button
-										type="button"
-										class="clear-link"
-										disabled={pageState.isClearingHints ||
-											!pageState.panorama.hints_count ||
-											pageState.panorama.hints_count === 0}
-										onclick={() => pageState.clearHints(id)}
-									>
-										{pageState.isClearingHints ? 'Clearing...' : 'Clear'}
-									</button>
-								</div>
-							</td>
-						</tr>
-
-						<tr>
-							<th>Processing job status</th>
-							<td>{pageState.panorama.processing_status ?? 'unknown'}</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
+			<PanoramaInfo panorama={pageState.panorama} />
 
 			{#if pageState.panorama.status === 'NEEDS_FILES'}
 				{#if !pageState.panorama.gpx_path}
@@ -152,54 +113,5 @@
 		flex-direction: column;
 		gap: 1rem;
 		margin-top: 1rem;
-	}
-
-	.panorama-details table {
-		width: 100%;
-		border-collapse: collapse;
-		margin-bottom: 2rem;
-	}
-
-	.panorama-details th,
-	.panorama-details td {
-		padding: 0.5rem 1rem;
-		border-bottom: 1px solid light-dark(#ddd, #444);
-		text-align: left;
-		vertical-align: top;
-	}
-
-	.panorama-details th {
-		width: 250px;
-		font-weight: bold;
-	}
-
-	.hints-cell {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 1rem;
-	}
-
-	button.clear-link {
-		background: none;
-		border: none;
-		padding: 0;
-		margin: 0;
-		font: inherit;
-		font-size: 0.9rem;
-		line-height: inherit;
-		color: var(--link-color);
-		text-decoration: underline;
-		cursor: pointer;
-	}
-
-	button.clear-link:hover:not(:disabled) {
-		text-decoration: none;
-	}
-
-	button.clear-link:disabled {
-		opacity: 0.4;
-		cursor: default;
-		text-decoration: none;
 	}
 </style>

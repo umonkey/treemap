@@ -254,6 +254,7 @@ CREATE TABLE IF NOT EXISTS panoramas (
     `created_at` INT NOT NULL,
     `created_by` INT NOT NULL,
     `image_count` INT NOT NULL DEFAULT 0,
+    `file_size` INT NULL,
     `status` TEXT NOT NULL DEFAULT 'NEEDS_FILES',
     `title` TEXT NOT NULL,
     `visible` INT NOT NULL DEFAULT 0,

@@ -196,6 +196,7 @@ impl PanoramaService {
             created_at: get_timestamp() as i64,
             created_by: user_id,
             image_count: 0,
+            file_size: None,
             status: PanoramaStatus::NeedsFiles,
             title: data.title,
             visible: false,
@@ -234,6 +235,7 @@ impl PanoramaService {
         panorama.points_json = None;
         panorama.failure_reason = None;
         panorama.image_count = 0;
+        panorama.file_size = None;
         panorama.lat_offset = 0.0;
         panorama.lon_offset = 0.0;
         panorama.visible = false;

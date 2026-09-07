@@ -25,6 +25,7 @@ fn usage() {
     println!("  osm-push-changes      -- send tree updates to OSM");
     println!("  osm-push-delete       -- remove deleted trees from OSM");
     println!("  osm-remap-duplicates  -- fix OSM IDs for merged trees");
+    println!("  scan-panoramas        -- scan and calculate file sizes for panoramas");
     println!("  serve                 -- run the web server");
     println!("  update-tree-address N -- update street address for a single tree");
     println!("  update-tree-addresses -- update street address for all trees");
@@ -71,6 +72,10 @@ async fn main() -> std::io::Result<()> {
         }
         "dispatch-panoramas" => {
             dispatch_panoramas_command().await;
+            return Ok(());
+        }
+        "scan-panoramas" => {
+            scan_panoramas_command().await;
             return Ok(());
         }
         "merge-duplicates" => {

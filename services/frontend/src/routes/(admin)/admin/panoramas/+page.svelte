@@ -2,6 +2,7 @@
 	import { untrack } from 'svelte';
 	import { pageState } from './page.svelte.ts';
 	import { formatDate } from '$lib/utils/strings';
+	import { storage_cost } from '$lib/utils/files';
 	import Breadcrumbs from '$lib/components/admin/Breadcrumbs.svelte';
 	import PageHeader from '$lib/ui/header/PageHeader.svelte';
 	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
@@ -9,6 +10,8 @@
 	import { hasPermission } from '$lib/stores/authStore';
 
 	const canEdit = $derived($hasPermission('pano:edit'));
+
+	const totalBytes = $derived(pageState.panoramas.reduce((acc, p) => acc + (p.file_size ?? 0), 0));
 
 	const statusLabels: Record<string, string> = {
 		NEEDS_PROCESSING_FINISH: 'processing',
@@ -48,6 +51,7 @@
 							<th class="col-visible">Visible</th>
 							<th class="col-title">Title</th>
 							<th class="col-images">Images</th>
+							<th class="col-size">Size, GB</th>
 							<th class="col-status">Status</th>
 						</tr>
 					</thead>
@@ -66,11 +70,17 @@
 									<a href="/admin/panoramas/{pano.id}">{pano.title}</a>
 								</td>
 								<td class="col-images">{pano.image_count}</td>
+								<td class="col-size">{Math.round((pano.file_size ?? 0) / (1024 * 1024 * 1024))}</td>
 								<td class="col-status">{getStatusLabel(pano.status)}</td>
 							</tr>
 						{/each}
 					</tbody>
 				</table>
+				<div class="panorama-summary">
+					Total file size: {Math.round(totalBytes / (1024 * 1024 * 1024))} GB ~= {storage_cost(
+						totalBytes
+					)}/mo
+				</div>
 			</div>
 		{:else}
 			<p>No panoramas found.</p>
@@ -88,11 +98,14 @@
 		border-collapse: collapse;
 	}
 
+	td {
+		text-align: left;
+	}
+
 	.panorama-list th,
 	.panorama-list td {
 		padding: 8px;
 		border-bottom: 1px solid light-dark(#ddd, #444);
-		text-align: left;
 	}
 
 	.panorama-list tr.disabled {
@@ -107,9 +120,15 @@
 		width: 100%;
 	}
 
-	.col-images {
+	.col-images,
+	.col-size {
 		white-space: nowrap;
 		text-align: right;
+	}
+
+	.panorama-summary {
+		margin-top: 1rem;
+		font-weight: bold;
 	}
 
 	.col-status,
