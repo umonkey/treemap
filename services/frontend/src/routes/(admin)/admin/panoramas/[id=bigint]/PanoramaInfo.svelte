@@ -48,10 +48,12 @@
 				<td>{panorama.processing_status ?? 'unknown'}</td>
 			</tr>
 
-			<tr>
-				<th>Processing time:</th>
-				<td>{componentState.formatProcessingTime(panorama.processing_time)}</td>
-			</tr>
+			{#if panorama.status === 'SUCCESS' || panorama.status === 'FAILURE'}
+				<tr>
+					<th>Processing time:</th>
+					<td>{componentState.formatProcessingTime(panorama.processing_time)}</td>
+				</tr>
+			{/if}
 
 			<tr>
 				<th>Total file size:</th>
