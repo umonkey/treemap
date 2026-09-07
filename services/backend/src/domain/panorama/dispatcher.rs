@@ -78,10 +78,11 @@ impl PanoramaDispatcher {
             return Ok(());
         }
 
-        let (new_status, status_reason) = self.batch.get_job_status(arn).await.map_err(|e| {
-            log::error!("Error getting processing status for {arn}: {e}");
-            e
-        })?;
+        let (new_status, status_reason, running_time) =
+            self.batch.get_job_status(arn).await.map_err(|e| {
+                log::error!("Error getting processing status for {arn}: {e}");
+                e
+            })?;
 
         if new_status == status {
             return Ok(());
@@ -95,6 +96,11 @@ impl PanoramaDispatcher {
         );
 
         panorama.processing_status = Some(new_status.clone());
+
+        if new_status == "SUCCEEDED" || new_status == "FAILED" {
+            let current_time = panorama.processing_time.unwrap_or(0);
+            panorama.processing_time = Some(current_time + running_time);
+        }
 
         if new_status == "SUCCEEDED" {
             self.pull_panoramas_images(panorama).await?;

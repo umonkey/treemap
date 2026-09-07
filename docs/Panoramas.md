@@ -46,6 +46,7 @@ Surveys require no expensive surveying rigs or calibrated vehicles:
 - On-demand compute: processing runs on AWS Batch using EC2 spot or on-demand instances that scale to zero when idle, avoiding ongoing server overhead.
 - Predictable job costs: compute costs scale strictly with uploaded video duration, typically costing under two dollars per street sequence.
 - Storage efficiency: raw videos can be archived or deleted after frame extraction, while lightweight extracted frames and metadata are stored in standard S3-compatible buckets.
+- Cost accountability: the platform tracks ongoing resource expenses per panorama in the administration interface, reporting total accumulated processing time and compute cost (assuming standard hourly rates) alongside monthly S3 storage cost projections.
 
 ## Limitations
 

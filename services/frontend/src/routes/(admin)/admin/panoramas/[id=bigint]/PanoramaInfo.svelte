@@ -49,6 +49,11 @@
 			</tr>
 
 			<tr>
+				<th>Processing time:</th>
+				<td>{componentState.formatProcessingTime(panorama.processing_time)}</td>
+			</tr>
+
+			<tr>
 				<th>Total file size:</th>
 				<td>
 					{componentState.formatFileSizeGb(panorama.file_size)}

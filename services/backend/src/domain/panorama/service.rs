@@ -197,6 +197,7 @@ impl PanoramaService {
             created_by: user_id,
             image_count: 0,
             file_size: None,
+            processing_time: None,
             status: PanoramaStatus::NeedsFiles,
             title: data.title,
             visible: false,

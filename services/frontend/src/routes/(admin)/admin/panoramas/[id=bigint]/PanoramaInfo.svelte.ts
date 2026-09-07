@@ -33,4 +33,11 @@ export class PanoramaInfoLogic {
 		const cost = storage_cost(size);
 		return `${gb} GB ≈ ${cost}/mo`;
 	};
+
+	formatProcessingTime = (seconds?: number | null): string => {
+		const s = seconds ?? 0;
+		const hours = s / 3600;
+		const cost = hours * 0.40;
+		return `${hours.toFixed(1)} hours ≈ $${cost.toFixed(2)}`;
+	};
 }

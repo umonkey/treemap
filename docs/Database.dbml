@@ -163,6 +163,8 @@ Table panoramas {
   created_at int [not null]
   created_by int [not null]
   image_count int [not null, default: 0]
+  file_size int
+  processing_time int
   status text [not null, default: 'NEEDS_FILES']
   title text [not null]
   visible int [not null, default: 0]

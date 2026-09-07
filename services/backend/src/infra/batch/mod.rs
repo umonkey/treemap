@@ -139,7 +139,7 @@ impl BatchClient {
         Ok(arn.to_string())
     }
 
-    pub async fn get_job_status(&self, arn: &str) -> Result<(String, Option<String>)> {
+    pub async fn get_job_status(&self, arn: &str) -> Result<(String, Option<String>, u64)> {
         let output = self
             .client
             .describe_jobs()
@@ -163,7 +163,33 @@ impl BatchClient {
 
         let status_reason = job.status_reason().map(|s| s.to_string());
 
-        Ok((status, status_reason))
+        let mut total_ms: i64 = 0;
+        let attempts = job.attempts();
+        if !attempts.is_empty() {
+            let len = attempts.len();
+            for (idx, attempt) in attempts.iter().enumerate() {
+                let start = attempt.started_at();
+                let mut stop = attempt.stopped_at();
+                if stop.is_none() && idx == len - 1 {
+                    stop = job.stopped_at();
+                }
+                if let (Some(start), Some(stop)) = (start, stop) {
+                    if stop > start {
+                        total_ms += stop - start;
+                    }
+                }
+            }
+        } else {
+            if let (Some(start), Some(stop)) = (job.started_at(), job.stopped_at()) {
+                if stop > start {
+                    total_ms += stop - start;
+                }
+            }
+        }
+
+        let running_time = (total_ms.max(0) as f64 / 1000.0).round() as u64;
+
+        Ok((status, status_reason, running_time))
     }
 }
 
