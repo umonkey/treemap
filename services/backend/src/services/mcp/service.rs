@@ -3,6 +3,7 @@ use crate::domain::alert_photo::AlertPhotoRepository;
 use crate::domain::tree::TreeRepository;
 use crate::infra::config::Config;
 use crate::infra::database::{Database, Value as DbValue};
+use crate::infra::nominatim::NominatimClient;
 use crate::services::mcp::schemas::*;
 use crate::services::{Context, Injectable};
 use crate::types::*;
@@ -44,6 +45,7 @@ pub struct McpService {
     photo_repo: Arc<AlertPhotoRepository>,
     config: Arc<Config>,
     db: Arc<Database>,
+    nominatim: Arc<NominatimClient>,
 }
 
 impl McpService {
@@ -216,6 +218,24 @@ impl McpService {
                     "required": ["id"]
                 }),
             },
+            McpTool {
+                name: "get_address".to_string(),
+                description: "Resolves a street address for the given coordinates using Nominatim (OpenStreetMap).".to_string(),
+                input_schema: json!({
+                    "type": "object",
+                    "properties": {
+                        "lat": {
+                            "type": "number",
+                            "description": "Latitude of the location"
+                        },
+                        "lon": {
+                            "type": "number",
+                            "description": "Longitude of the location"
+                        }
+                    },
+                    "required": ["lat", "lon"]
+                }),
+            },
         ];
 
         JsonRpcResponse::success(id, json!({ "tools": tools }))
@@ -237,6 +257,7 @@ impl McpService {
             Some("get_street_stats") => self.handle_get_street_stats(arguments).await,
             Some("list_alerts") => self.handle_list_alerts(arguments).await,
             Some("get_alert") => self.handle_get_alert(arguments).await,
+            Some("get_address") => self.handle_get_address(arguments).await,
             _ => {
                 return JsonRpcResponse::error(id, METHOD_NOT_FOUND, "Tool not found");
             }
@@ -499,6 +520,36 @@ impl McpService {
             Err(e) => CallToolResult::error_text(format!("Database error: {}", e)),
         }
     }
+
+    async fn handle_get_address(&self, args: JsonValue) -> CallToolResult {
+        let lat = match args.get("lat").and_then(|v| v.as_f64()) {
+            Some(v) => v,
+            None => {
+                return CallToolResult::error_text("Missing or invalid 'lat' argument".to_string())
+            }
+        };
+
+        let lon = match args.get("lon").and_then(|v| v.as_f64()) {
+            Some(v) => v,
+            None => {
+                return CallToolResult::error_text("Missing or invalid 'lon' argument".to_string())
+            }
+        };
+
+        match self.nominatim.get_street_address(lat, lon).await {
+            Ok(Some(address)) => {
+                let result = json!({ "address": address });
+
+                CallToolResult::success(vec![McpContent::text(
+                    serde_json::to_string_pretty(&result).unwrap_or_else(|_| "{}".to_string()),
+                )])
+            }
+            Ok(None) => CallToolResult::error_text(
+                "Address not found for the given coordinates".to_string(),
+            ),
+            Err(e) => CallToolResult::error_text(format!("Nominatim error: {}", e)),
+        }
+    }
 }
 
 impl Injectable for McpService {
@@ -509,6 +560,7 @@ impl Injectable for McpService {
             photo_repo: Arc::new(ctx.build::<AlertPhotoRepository>()?),
             config: ctx.config(),
             db: ctx.database(),
+            nominatim: Arc::new(ctx.build::<NominatimClient>()?),
         })
     }
 }
