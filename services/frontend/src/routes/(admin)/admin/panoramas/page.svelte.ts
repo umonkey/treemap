@@ -1,6 +1,7 @@
 import { getPanoramas, updatePanorama, type Panorama } from '$lib/api/panoramas';
 import type { IError } from '$lib/types';
 import { showError } from '$lib/errors';
+import { onPageFocus } from '$lib/utils/onPageFocus';
 
 export class PageState {
 	panoramas = $state<Panorama[]>([]);
@@ -37,22 +38,10 @@ export class PageState {
 	};
 
 	public setup = () => {
-		window.addEventListener('focus', this.handleFocus);
-		document.addEventListener('visibilitychange', this.handleVisibilityChange);
-		return () => {
-			window.removeEventListener('focus', this.handleFocus);
-			document.removeEventListener('visibilitychange', this.handleVisibilityChange);
-		};
-	};
-
-	private handleFocus = () => {
-		if (document.visibilityState === 'hidden') return;
-		if (!this.isLoading) {
-			this.reload({ silent: true });
-		}
-	};
-
-	private handleVisibilityChange = () => {
-		this.handleFocus();
+		return onPageFocus(() => {
+			if (!this.isLoading) {
+				this.reload({ silent: true });
+			}
+		});
 	};
 }

@@ -1,5 +1,6 @@
 import { getPanorama, exportPanorama, type Panorama } from '$lib/api/panoramas';
 import type { IError } from '$lib/types';
+import { onPageFocus } from '$lib/utils/onPageFocus';
 
 export class PageState {
 	panorama = $state<Panorama | undefined>(undefined);
@@ -26,24 +27,12 @@ export class PageState {
 		}
 	};
 
-	public onMount = () => {
-		window.addEventListener('focus', this.handleFocus);
-		document.addEventListener('visibilitychange', this.handleVisibilityChange);
-		return () => {
-			window.removeEventListener('focus', this.handleFocus);
-			document.removeEventListener('visibilitychange', this.handleVisibilityChange);
-		};
-	};
-
-	private handleFocus = () => {
-		if (document.visibilityState === 'hidden') return;
-		if (this.currentId && !this.isLoading) {
-			this.reload(this.currentId, { silent: true });
-		}
-	};
-
-	private handleVisibilityChange = () => {
-		this.handleFocus();
+	public setup = () => {
+		return onPageFocus(() => {
+			if (this.currentId && !this.isLoading) {
+				this.reload(this.currentId, { silent: true });
+			}
+		});
 	};
 
 	startPolling = (id: string) => {
