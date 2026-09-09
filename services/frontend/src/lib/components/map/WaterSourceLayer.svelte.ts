@@ -27,7 +27,12 @@ type WaterCollection = {
 export class WaterSourceLayerLogic {
 	bounds = $state<IBounds | undefined>(undefined);
 	markers = $state.raw<WaterCollection | undefined>(undefined);
+	enabled = $state<boolean>(true);
 	fetchDebouncer = new Debouncer(150);
+
+	constructor() {
+		this.enabled = get(mapLayerStore).water !== false;
+	}
 
 	// Radius in pixels for a 50 meter disc on the ground, interpolated by zoom.
 	//
@@ -52,7 +57,7 @@ export class WaterSourceLayerLogic {
 			return;
 		}
 
-		if (get(mapLayerStore).water === false) {
+		if (!this.enabled) {
 			return;
 		}
 
@@ -106,11 +111,20 @@ export class WaterSourceLayerLogic {
 		mapBus.on('bounds', this.handleBounds);
 		mapBus.on('reload', this.reload);
 
+		const unsub = mapLayerStore.subscribe((layers) => {
+			const wasEnabled = this.enabled;
+			this.enabled = layers.water !== false;
+			if (!wasEnabled && this.enabled && !this.markers) {
+				this.reload();
+			}
+		});
+
 		return () => {
 			this.bounds = undefined;
 			this.markers = undefined;
 			mapBus.off('bounds', this.handleBounds);
 			mapBus.off('reload', this.reload);
+			unsub();
 		};
 	};
 }

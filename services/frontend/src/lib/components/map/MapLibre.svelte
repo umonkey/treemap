@@ -93,9 +93,7 @@
 
 		<TreeHintsLayer />
 
-		{#if mapState.waterLayer}
-			<WaterSourceLayer />
-		{/if}
+		<WaterSourceLayer />
 
 		{#if mapState.moving && mapState.zoom > 18 && ($mapMode === undefined || $mapMode === 'preview')}
 			<MapCenter />

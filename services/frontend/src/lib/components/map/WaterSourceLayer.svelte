@@ -8,7 +8,7 @@
 	onMount(componentState.onMount);
 </script>
 
-{#if componentState.markers}
+{#if componentState.enabled && componentState.markers}
 	<GeoJSON data={componentState.markers}>
 		<CircleLayer
 			id="water-source-discs"

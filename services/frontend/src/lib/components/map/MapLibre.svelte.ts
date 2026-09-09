@@ -42,7 +42,6 @@ class MapLibre {
 	droneLayer = $state<string | undefined>(undefined);
 	panoramasLayer = $state<boolean>(false);
 	treeHintsLayer = $state<boolean>(false);
-	waterLayer = $state<boolean>(true);
 
 	hasMoved = false;
 	moving = $state(false);
@@ -226,7 +225,6 @@ class MapLibre {
 
 		this.panoramasLayer = get(mapLayerStore).panoramas === true;
 		this.treeHintsLayer = get(mapLayerStore).treeHints === true;
-		this.waterLayer = get(mapLayerStore).water !== false;
 	};
 }
 
