@@ -4,6 +4,7 @@ import { showError } from '$lib/errors';
 import { extendBounds } from '$lib/map';
 import { goto, routes } from '$lib/routes';
 import { mapLayerStore } from '$lib/stores/mapLayerStore';
+import { mapPoiStore } from '$lib/stores/mapPoi.svelte';
 import type { IBounds } from '$lib/types';
 import { Debouncer } from '$lib/utils/debounce';
 import { get } from 'svelte/store';
@@ -69,9 +70,15 @@ export class WaterSourceLayerLogic {
 					if (!this.bounds) {
 						return;
 					}
+
 					if (status === 200 && data) {
 						console.debug(`[WaterSourceLayer] Received ${data.features.length} features.`);
 						this.markers = data as unknown as WaterCollection;
+						mapPoiStore.water = data.features.map((f) => ({
+							lat: f.geometry.coordinates[1],
+							lon: f.geometry.coordinates[0],
+							url: routes.waterDetails(f.properties.id)
+						}));
 					}
 				})
 				.catch((e) => {
@@ -124,6 +131,7 @@ export class WaterSourceLayerLogic {
 			this.markers = undefined;
 			mapBus.off('bounds', this.handleBounds);
 			mapBus.off('reload', this.reload);
+			mapPoiStore.water = [];
 			unsub();
 		};
 	};
