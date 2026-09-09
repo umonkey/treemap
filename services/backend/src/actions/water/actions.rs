@@ -1,6 +1,6 @@
 use super::schemas::*;
 use crate::domain::water::{AddWaterRequest, GetWaterRequest, UpdateWaterRequest, WaterService};
-use crate::services::app::UserId;
+use crate::services::app::{RequirePermission, WaterManage};
 use crate::services::Injected;
 use crate::types::Result;
 use actix_web::web::{Json, Path, Query};
@@ -8,7 +8,7 @@ use actix_web::{get, patch, post, HttpResponse};
 
 #[post("")]
 pub async fn add_water_action(
-    user_id: UserId,
+    user_id: RequirePermission<WaterManage>,
     payload: Json<AddWaterPayload>,
     service: Injected<WaterService>,
 ) -> Result<Json<WaterSourceRead>> {
@@ -25,7 +25,7 @@ pub async fn add_water_action(
 
 #[patch("/{id:\\d+}")]
 pub async fn update_water_action(
-    user_id: UserId,
+    user_id: RequirePermission<WaterManage>,
     path: Path<PathInfo>,
     payload: Json<UpdateWaterPayload>,
     service: Injected<WaterService>,

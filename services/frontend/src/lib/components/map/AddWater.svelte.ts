@@ -1,6 +1,6 @@
 import { goto, routes } from '$lib/routes';
 
-class AddWaterState {
+export class AddWaterState {
 	public toggle = (e: Event) => {
 		e.preventDefault();
 		goto(routes.waterAdd());
@@ -10,5 +10,3 @@ class AddWaterState {
 		return () => {};
 	};
 }
-
-export const addWaterState = new AddWaterState();

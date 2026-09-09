@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 	import { locale } from '$lib/locale';
 	import { goto, routes } from '$lib/routes';
+	import { hasPermission } from '$lib/stores/authStore';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import LocationIcon from '$lib/icons/LocationIcon.svelte';
 	import TagIcon from '$lib/icons/TagIcon.svelte';
@@ -31,7 +32,8 @@
 	buttons={[
 		{
 			title: locale.waterMoveButton(),
-			onClick: () => goto(routes.waterMove(id))
+			onClick: () => goto(routes.waterMove(id)),
+			disabled: !$hasPermission('water:manage')
 		}
 	]}
 >

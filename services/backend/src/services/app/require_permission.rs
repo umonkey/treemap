@@ -54,3 +54,8 @@ pub struct UserManage;
 impl Permission for UserManage {
     const NAME: &'static str = "user:manage";
 }
+
+pub struct WaterManage;
+impl Permission for WaterManage {
+    const NAME: &'static str = "water:manage";
+}
