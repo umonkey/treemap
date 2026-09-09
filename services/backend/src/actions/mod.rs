@@ -18,3 +18,4 @@ pub mod training;
 pub mod tree;
 pub mod upload;
 pub mod user;
+pub mod water;

@@ -10,6 +10,7 @@ interface StringList {
 	layerAlerts: () => string;
 	layerPanoramas: () => string;
 	layerTreeHints: () => string;
+	layerWater: () => string;
 	otherTitle: () => string;
 	optionStickyPoints: () => string;
 }
@@ -24,6 +25,7 @@ class English implements StringList {
 	layerAlerts = () => 'Alerts';
 	layerPanoramas = () => 'Panoramas';
 	layerTreeHints = () => 'Tree hints';
+	layerWater = () => 'Water sources';
 	otherTitle = () => 'Other options';
 	optionStickyPoints = () => 'Sticky points';
 }
@@ -38,6 +40,7 @@ class Russian extends English {
 	layerAlerts = () => 'Сигналы';
 	layerPanoramas = () => 'Панорамы';
 	layerTreeHints = () => 'Подсказки по деревьям';
+	layerWater = () => 'Источники воды';
 	otherTitle = () => 'Другие настройки';
 	optionStickyPoints = () => 'Прилипание к точкам';
 }
@@ -52,6 +55,7 @@ class Armenian extends English {
 	layerAlerts = () => 'Ահազանգեր';
 	layerPanoramas = () => 'Պանորամաներ';
 	layerTreeHints = () => 'Ծառերի հուշումներ';
+	layerWater = () => 'Ջրի աղբյուրներ';
 	otherTitle = () => 'Այլ կարգավորումներ';
 	optionStickyPoints = () => 'Կպչուն կետեր';
 }

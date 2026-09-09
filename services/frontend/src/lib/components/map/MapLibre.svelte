@@ -16,6 +16,8 @@
 	import AlertLayer from './AlertLayer.svelte';
 	import PanoramicLayer from './PanoramicLayer.svelte';
 	import TreeHintsLayer from './TreeHintsLayer.svelte';
+	import WaterSourceLayer from './WaterSourceLayer.svelte';
+	import AddWater from './AddWater.svelte';
 	import MapCenter from './MapCenter.svelte';
 	import MapInspect from './MapInspect.svelte';
 	import MapRays from './MapRays.svelte';
@@ -68,6 +70,8 @@
 
 		<Marker />
 
+		<AddWater />
+
 		<MapRays />
 
 		{#if mapState.droneLayer}
@@ -88,6 +92,10 @@
 		<PanoramicLayer />
 
 		<TreeHintsLayer />
+
+		{#if mapState.waterLayer}
+			<WaterSourceLayer />
+		{/if}
 
 		{#if mapState.moving && mapState.zoom > 18 && ($mapMode === undefined || $mapMode === 'preview')}
 			<MapCenter />

@@ -40,6 +40,7 @@ pub enum Error {
     UniqueId,
     UserAgentNotSet,
     UserNotFound,
+    WaterNotFound,
 }
 
 impl Error {
@@ -133,6 +134,9 @@ impl Error {
             Error::TreeNotFound => {
                 r#"{"error":{"code":"TreeNotFound","description":"The specified tree does not exist in the database."}}"#.to_string()
             }
+            Error::WaterNotFound => {
+                r#"{"error":{"code":"WaterNotFound","description":"The specified water source does not exist in the database."}}"#.to_string()
+            }
             Error::UniqueId => {
                 r#"{"error":{"code":"UniqueId","description":"Could not generate a unique id to assign to an object."}}"#.to_string()
             }
@@ -189,7 +193,8 @@ impl ResponseError for Error {
             | Error::FileNotFound
             | Error::PanoramaNotFound
             | Error::InstanceNotFound
-            | Error::TreeNotFound => StatusCode::NOT_FOUND,
+            | Error::TreeNotFound
+            | Error::WaterNotFound => StatusCode::NOT_FOUND,
             Error::BadAuthToken
             | Error::GoogleUserInfo
             | Error::MissingAuthorizationHeader
@@ -244,6 +249,7 @@ impl fmt::Display for Error {
             Error::UniqueId => write!(f, "UniqueId"),
             Error::UserAgentNotSet => write!(f, "UserAgentNotSet"),
             Error::UserNotFound => write!(f, "UserNotFound"),
+            Error::WaterNotFound => write!(f, "WaterNotFound"),
         }
     }
 }

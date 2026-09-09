@@ -48,6 +48,16 @@ Table trees_props {
   value text [not null]
 }
 
+Table water_source {
+  id int [pk]
+  created_at int [not null]
+  created_by int [not null]
+  updated_at int [not null]
+  lat real [not null]
+  lon real [not null]
+  status text [not null, default: 'operational']
+}
+
 Table uploads {
   id int [pk]
   added_at int [not null]

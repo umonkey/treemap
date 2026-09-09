@@ -24,6 +24,7 @@ use crate::actions::training::training_router;
 use crate::actions::tree::tree_router;
 use crate::actions::upload::upload_router;
 use crate::actions::user::user_router;
+use crate::actions::water::water_router;
 use crate::services::*;
 use actix_cors::Cors;
 use actix_files::{Files, NamedFile};
@@ -127,6 +128,7 @@ pub async fn serve_command() {
                     .service(web::scope("/streets").configure(street_router))
                     .service(web::scope("/training").configure(training_router))
                     .service(web::scope("/trees").configure(tree_router))
+                    .service(web::scope("/water").configure(water_router))
                     .service(web::scope("/users").configure(user_router)),
             )
             .service(

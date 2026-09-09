@@ -1,6 +1,7 @@
 use crate::domain::alert::Alert;
 use crate::domain::panorama::{Panorama, PanoramaImage};
 use crate::domain::tree::Tree;
+use crate::domain::water::WaterSource;
 use crate::utils::get_timestamp;
 use actix_web::HttpResponse;
 use serde_json::{json, Value};
@@ -35,6 +36,37 @@ pub fn respond_with_trees(trees: &[Tree]) -> HttpResponse {
                     "crown": crown,
                     "trunk": trunk,
                     "state": tree.state,
+                }
+            })
+        })
+        .collect();
+
+    let collection = json!({
+        "type": "FeatureCollection",
+        "features": features
+    });
+
+    HttpResponse::Ok()
+        .content_type("application/geo+json")
+        .json(collection)
+}
+
+/// Convert a list of water sources to a GeoJSON FeatureCollection response.
+pub fn respond_with_water(sources: &[WaterSource]) -> HttpResponse {
+    let features: Vec<_> = sources
+        .iter()
+        .map(|source| {
+            json!({
+                "type": "Feature",
+                "id": source.id.to_string(),
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [source.lon, source.lat]
+                },
+                "properties": {
+                    "id": source.id.to_string(),
+                    "status": source.status,
+                    "created_at": source.created_at,
                 }
             })
         })

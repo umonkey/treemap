@@ -47,6 +47,11 @@
 			onChange={selectorState.toggleTreeHints}
 		/>
 		<CheckInput
+			value={selectorState.water}
+			label={locale.layerWater()}
+			onChange={selectorState.toggleWater}
+		/>
+		<CheckInput
 			value={selectorState.alerts}
 			label={locale.layerAlerts()}
 			onChange={selectorState.toggleAlerts}

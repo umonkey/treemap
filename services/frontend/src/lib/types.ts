@@ -84,6 +84,15 @@ export interface IMarkers {
 	trees: ITree[];
 }
 
+export interface IWaterSource {
+	id: string;
+	lat: number;
+	lon: number;
+	status: string;
+	created_at: number;
+	updated_at: number;
+}
+
 export interface IStats {
 	count: number;
 }

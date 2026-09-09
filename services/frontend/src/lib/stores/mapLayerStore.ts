@@ -9,6 +9,7 @@ interface IMapLayers {
 	alerts: boolean;
 	panoramas: boolean;
 	treeHints: boolean;
+	water: boolean;
 	stickyPoints: boolean;
 }
 
@@ -19,6 +20,7 @@ const getDefaultState = (): IMapLayers => {
 		alerts: true,
 		panoramas: false,
 		treeHints: false,
+		water: true,
 		stickyPoints: true
 	};
 };
@@ -36,4 +38,5 @@ export const droneLayer = derived(mapLayerStore, ($mapStore) => $mapStore?.drone
 export const alertsLayer = derived(mapLayerStore, ($mapStore) => $mapStore?.alerts);
 export const panoramasLayer = derived(mapLayerStore, ($mapStore) => $mapStore?.panoramas);
 export const treeHintsLayer = derived(mapLayerStore, ($mapStore) => $mapStore?.treeHints);
+export const waterLayer = derived(mapLayerStore, ($mapStore) => $mapStore?.water);
 export const stickyPointsLayer = derived(mapLayerStore, ($mapStore) => $mapStore?.stickyPoints);

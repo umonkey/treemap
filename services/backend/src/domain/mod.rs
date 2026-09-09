@@ -25,3 +25,4 @@ pub mod tree;
 pub mod tree_image;
 pub mod upload;
 pub mod user;
+pub mod water;

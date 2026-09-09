@@ -40,6 +40,7 @@ describe('AlertLayerLogic', () => {
 			drone: false,
 			panoramas: false,
 			treeHints: false,
+			water: true,
 			stickyPoints: true
 		});
 		mapPoiStore.alerts = [];
@@ -64,6 +65,7 @@ describe('AlertLayerLogic', () => {
 			drone: false,
 			panoramas: false,
 			treeHints: false,
+			water: true,
 			stickyPoints: true
 		});
 		const logic2 = new AlertLayerLogic();
@@ -120,6 +122,7 @@ describe('AlertLayerLogic', () => {
 			drone: false,
 			panoramas: false,
 			treeHints: false,
+			water: true,
 			stickyPoints: true
 		});
 		const logicDisabled = new AlertLayerLogic();
@@ -164,6 +167,7 @@ describe('AlertLayerLogic', () => {
 			drone: false,
 			panoramas: false,
 			treeHints: false,
+			water: true,
 			stickyPoints: true
 		});
 		const logicSub = new AlertLayerLogic();
@@ -180,6 +184,7 @@ describe('AlertLayerLogic', () => {
 			drone: false,
 			panoramas: false,
 			treeHints: false,
+			water: true,
 			stickyPoints: true
 		});
 
