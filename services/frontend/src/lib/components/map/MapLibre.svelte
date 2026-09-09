@@ -66,14 +66,6 @@
 			{@render children()}
 		{/if}
 
-		<LayerButton />
-
-		<Marker />
-
-		<AddWater />
-
-		<MapRays />
-
 		{#if mapState.droneLayer}
 			<RasterTileSource id="drone-source" tiles={[mapState.droneLayer]} tileSize={128} scheme="tms">
 				<RasterLayer
@@ -84,6 +76,14 @@
 				/>
 			</RasterTileSource>
 		{/if}
+
+		<LayerButton />
+
+		<Marker />
+
+		<AddWater />
+
+		<MapRays />
 
 		<TreeLayer />
 
