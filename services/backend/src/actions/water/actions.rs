@@ -1,7 +1,5 @@
 use super::schemas::*;
-use crate::domain::water::{
-    AddWaterRequest, GetWaterRequest, UpdateWaterRequest, WaterService, WaterSource,
-};
+use crate::domain::water::{AddWaterRequest, GetWaterRequest, UpdateWaterRequest, WaterService};
 use crate::services::app::UserId;
 use crate::services::Injected;
 use crate::types::Result;
@@ -13,7 +11,7 @@ pub async fn add_water_action(
     user_id: UserId,
     payload: Json<AddWaterPayload>,
     service: Injected<WaterService>,
-) -> Result<Json<WaterSource>> {
+) -> Result<Json<WaterSourceRead>> {
     let source = service
         .add_source(AddWaterRequest {
             lat: payload.lat,
@@ -22,7 +20,7 @@ pub async fn add_water_action(
         })
         .await?;
 
-    Ok(Json(source))
+    Ok(Json(WaterSourceRead::from_source(&source)))
 }
 
 #[patch("/{id:\\d+}")]
@@ -31,7 +29,7 @@ pub async fn update_water_action(
     path: Path<PathInfo>,
     payload: Json<UpdateWaterPayload>,
     service: Injected<WaterService>,
-) -> Result<Json<WaterSource>> {
+) -> Result<Json<WaterSourceRead>> {
     let source = service
         .update_source(UpdateWaterRequest {
             id: path.id,
@@ -41,7 +39,7 @@ pub async fn update_water_action(
         })
         .await?;
 
-    Ok(Json(source))
+    Ok(Json(WaterSourceRead::from_source(&source)))
 }
 
 #[get("/geo.json")]
@@ -58,8 +56,8 @@ pub async fn get_water_json_action(
 pub async fn get_water_action(
     path: Path<PathInfo>,
     service: Injected<WaterService>,
-) -> Result<Json<WaterSource>> {
+) -> Result<Json<WaterSourceRead>> {
     let source = service.get_source(path.id).await?;
 
-    Ok(Json(source))
+    Ok(Json(WaterSourceRead::from_source(&source)))
 }

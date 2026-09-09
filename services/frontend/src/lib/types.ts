@@ -90,6 +90,7 @@ export interface IWaterSource {
 	lon: number;
 	status: string;
 	created_at: number;
+	created_by: string;
 	updated_at: number;
 }
 
