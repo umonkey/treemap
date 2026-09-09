@@ -169,6 +169,43 @@ class EnglishLocale {
 		return 'Quick add';
 	}
 
+	public waterAddTitle(): string {
+		return 'Add water source';
+	}
+
+	public waterAddButton(): string {
+		return 'Add';
+	}
+
+	public waterTitle(): string {
+		return 'Water source';
+	}
+
+	public waterMoveTitle(): string {
+		return 'Move water source';
+	}
+
+	public waterMoveButton(): string {
+		return 'Move';
+	}
+
+	public waterStatus(status: string): string {
+		switch (status) {
+			case 'operational':
+				return 'operational';
+			case 'dead':
+				return 'dead';
+			case 'gone':
+				return 'gone';
+			default:
+				return status;
+		}
+	}
+
+	public waterAddedAt(date: string): string {
+		return `Added: ${date}`;
+	}
+
 	public addRowConfirmButton(count: number): string {
 		return `Add ${count} trees`;
 	}
@@ -933,6 +970,43 @@ class RussianLocale extends EnglishLocale {
 		return 'Быстро добавить';
 	}
 
+	public override waterAddTitle(): string {
+		return 'Добавить источник воды';
+	}
+
+	public override waterAddButton(): string {
+		return 'Добавить';
+	}
+
+	public override waterTitle(): string {
+		return 'Источник воды';
+	}
+
+	public override waterMoveTitle(): string {
+		return 'Переместить источник воды';
+	}
+
+	public override waterMoveButton(): string {
+		return 'Переместить';
+	}
+
+	public override waterStatus(status: string): string {
+		switch (status) {
+			case 'operational':
+				return 'рабочий';
+			case 'dead':
+				return 'не работает';
+			case 'gone':
+				return 'удалён';
+			default:
+				return status;
+		}
+	}
+
+	public override waterAddedAt(date: string): string {
+		return `Добавлено: ${date}`;
+	}
+
 	public addCancelButton(): string {
 		return 'Отмена';
 	}
@@ -1663,6 +1737,43 @@ class ArmenianLocale extends EnglishLocale {
 
 	public addQuickAddButton(): string {
 		return 'Արագ ավելացնել';
+	}
+
+	public override waterAddTitle(): string {
+		return 'Ավելացնել ջրի աղբյուր';
+	}
+
+	public override waterAddButton(): string {
+		return 'Ավելացնել';
+	}
+
+	public override waterTitle(): string {
+		return 'Ջրի աղբյուր';
+	}
+
+	public override waterMoveTitle(): string {
+		return 'Տեղափոխել ջրի աղբյուրը';
+	}
+
+	public override waterMoveButton(): string {
+		return 'Տեղափոխել';
+	}
+
+	public override waterStatus(status: string): string {
+		switch (status) {
+			case 'operational':
+				return 'աշխատող';
+			case 'dead':
+				return 'չի աշխատում';
+			case 'gone':
+				return 'հեռացված';
+			default:
+				return status;
+		}
+	}
+
+	public override waterAddedAt(date: string): string {
+		return `Ավելացված: ${date}`;
 	}
 
 	public addCancelButton(): string {

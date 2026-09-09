@@ -96,3 +96,7 @@ The application includes a trilateration tool that assists field arborists and v
 - Survey flexibility: allows changing or updating GCPs on the fly when surveying broad areas or long avenues.
 - Batch creation: records multiple trees locally before batch-submitting default blank trees to the database.
 - Detailed documentation: refers to `Trilateration-feature.md` for full operational and architectural guidelines.
+
+## Water sources
+
+The application maintains a registry of water access points (fountains, hydrants, irrigation points) to support planting and maintenance planning, identify dry areas with high risk of tree decline, and automate the selection of spots for civic planting. Water sources are rendered on the map with a 50 meter coverage disc and a clickable dot, track an `operational`, `dead`, or `gone` lifecycle status, and can be added or moved by users with the `water:manage` permission. See `Water-sources.md` for full operational and technical guidelines.

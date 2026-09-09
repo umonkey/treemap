@@ -8,6 +8,7 @@
 	type ButtonDef = {
 		title: string;
 		onClick: () => void;
+		disabled?: boolean;
 	};
 
 	const {
@@ -64,7 +65,7 @@
 		{#if buttons}
 			<div class="actions">
 				{#each buttons as button}
-					<Button onClick={button.onClick}>{button.title}</Button>
+					<Button onClick={button.onClick} disabled={button.disabled}>{button.title}</Button>
 				{/each}
 			</div>
 		{/if}

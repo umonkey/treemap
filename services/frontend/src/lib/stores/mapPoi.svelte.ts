@@ -11,9 +11,10 @@ class MapPoiStore {
 	trees = $state.raw<IMapPoi[]>([]);
 	alerts = $state.raw<IMapPoi[]>([]);
 	panoramas = $state.raw<IMapPoi[]>([]);
+	water = $state.raw<IMapPoi[]>([]);
 
 	pois = $derived.by(() => {
-		return [...this.trees, ...this.alerts, ...this.panoramas];
+		return [...this.trees, ...this.alerts, ...this.panoramas, ...this.water];
 	});
 
 	getNearest = (center: ILatLng, maxDistance?: number) => {
