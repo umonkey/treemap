@@ -30,15 +30,21 @@ export class WaterSourceLayerLogic {
 	fetchDebouncer = new Debouncer(150);
 
 	// Radius in pixels for a 50 meter disc on the ground, interpolated by zoom.
+	//
+	// MapLibre renders `circle-radius` in pixels. To get a fixed ground size we
+	// convert meters to pixels using the pixel-per-meter scale at Yerevan's
+	// latitude (40.181389N) for MapLibre's 512px tiles:
+	//   px/m(z) = 512 * 2^z / (2 * PI * 6371008.8 * cos(lat))
+	// At zoom 10: 0.017142 px/m, at zoom 22: 70.216 px/m (ratio 2^12).
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public readonly radius50m: any = [
 		'interpolate',
 		['exponential', 2],
 		['zoom'],
 		10,
-		50 * 0.00428,
+		50 * 0.017142,
 		22,
-		50 * 17.534
+		50 * 70.216
 	];
 
 	private reload = () => {
