@@ -220,7 +220,7 @@ impl McpService {
             },
             McpTool {
                 name: "get_address".to_string(),
-                description: "Resolves a street address for the given coordinates using Nominatim (OpenStreetMap).".to_string(),
+                description: "Resolves a street address for the given coordinates using Nominatim (OpenStreetMap). Includes the building number by default; set include_building to false to get the street name only.".to_string(),
                 input_schema: json!({
                     "type": "object",
                     "properties": {
@@ -231,6 +231,11 @@ impl McpService {
                         "lon": {
                             "type": "number",
                             "description": "Longitude of the location"
+                        },
+                        "include_building": {
+                            "type": "boolean",
+                            "description": "Include the building number in the resolved address (default true)",
+                            "default": true
                         }
                     },
                     "required": ["lat", "lon"]
@@ -536,7 +541,12 @@ impl McpService {
             }
         };
 
-        match self.nominatim.get_street_address(lat, lon).await {
+        let include_building = args
+            .get("include_building")
+            .and_then(|v| v.as_bool())
+            .unwrap_or(true);
+
+        match self.nominatim.get_address(lat, lon, include_building).await {
             Ok(Some(address)) => {
                 let result = json!({ "address": address });
 

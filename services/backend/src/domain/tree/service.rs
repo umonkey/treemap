@@ -540,7 +540,7 @@ impl TreeService {
     async fn update_single_tree_address(&self, tree: &Tree) -> Result<()> {
         let address = match self
             .nominatim
-            .get_street_address(tree.lat, tree.lon)
+            .get_address(tree.lat, tree.lon, false)
             .await?
         {
             Some(value) => value,

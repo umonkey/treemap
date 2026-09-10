@@ -9,6 +9,7 @@ const ACCEPT_LANGUAGE: &str = "en-US,en;q=0.5";
 #[derive(Debug, Deserialize)]
 pub struct AddressInfo {
     road: Option<String>,
+    house_number: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -32,12 +33,19 @@ impl NominatimClient {
         }
     }
 
-    pub async fn get_street_address(&self, lat: f64, lon: f64) -> Result<Option<String>> {
-        // NB! Use zoom=16 to avoid street confusion.  With zoom=18 it often takes street
-        // names from the closes bigger building which can have address from the adjacent
-        // street.  With zoom=16 we get much better results.
+    pub async fn get_address(
+        &self,
+        lat: f64,
+        lon: f64,
+        include_building: bool,
+    ) -> Result<Option<String>> {
+        // NB! Building numbers are only returned at zoom>=18.  But with zoom=18 Nominatim
+        // often takes street names from the closest bigger building which can have address
+        // from the adjacent street.  With zoom=16 we get much better street-only results, so
+        // we only raise the zoom when a building number is explicitly requested.
+        let zoom = if include_building { 18 } else { 16 };
         let url = format!(
-            "https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lon}&zoom=16&addressdetails=1"
+            "https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lon}&zoom={zoom}&addressdetails=1"
         );
 
         debug!("Requesting address from Nominatim: {url}");
@@ -78,13 +86,17 @@ impl NominatimClient {
             }
         };
 
-        if let Some(value) = json.address.road {
-            info!("Resolved {lat},{lon} as: {value}");
-            Ok(Some(value))
-        } else {
-            info!("Could not resolve {lat},{lon} to an address.");
-            Ok(None)
-        }
+        let address = match (json.address.road, json.address.house_number) {
+            (Some(road), Some(number)) if include_building => format!("{road} {number}"),
+            (Some(road), _) => road,
+            (None, _) => {
+                info!("Could not resolve {lat},{lon} to an address.");
+                return Ok(None);
+            }
+        };
+
+        info!("Resolved {lat},{lon} as: {address}");
+        Ok(Some(address))
     }
 }
 
