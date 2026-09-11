@@ -53,6 +53,9 @@
 					image={componentState.selectedImage}
 					angle={componentState.yaw}
 					onMove={(angle) => componentState.handleViewerMove(angle)}
+					onAddHint={() => componentState.handleAddHint()}
+					onDeleteHints={() => componentState.handleDeleteHints()}
+					isBusy={componentState.isBusy}
 				/>
 			{:else}
 				<div class="placeholder">

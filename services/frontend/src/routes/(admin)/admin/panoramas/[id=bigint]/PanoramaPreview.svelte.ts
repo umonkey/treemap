@@ -1,5 +1,11 @@
-import { getPanoramasImage, type PanoramaImage } from '$lib/api/panoramas';
+import {
+	getPanoramasImage,
+	addPanoramaImageHint,
+	deleteImageHints,
+	type PanoramaImage
+} from '$lib/api/panoramas';
 import { mapBus } from '$lib/buses/mapBus';
+import { panoBus } from '$lib/buses/panoBus';
 import { mapRaysStore } from '$lib/stores/mapRays.svelte';
 import { config } from '$lib/env';
 import { showError } from '$lib/errors';
@@ -12,6 +18,7 @@ export class PanoramaPreviewState {
 	selectedImageId = $state<string | undefined>(undefined);
 	selectedImage = $state<PanoramaImage | undefined>(undefined);
 	loadingImage = $state<boolean>(false);
+	isBusy = $state<boolean>(false);
 	yaw = $state<number>(0);
 
 	layer = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${config.mapTilerKey}&language=${locale.lang}`;
@@ -80,6 +87,36 @@ export class PanoramaPreviewState {
 				}
 			];
 		}
+	};
+
+	handleAddHint = async () => {
+		if (!this.selectedImageId || this.isBusy) return;
+
+		this.isBusy = true;
+		const res = await addPanoramaImageHint(this.selectedImageId, this.yaw);
+		this.isBusy = false;
+
+		if (res.error) {
+			showError(res.error.description || 'Failed to add hint');
+			return;
+		}
+
+		panoBus.emit('reload');
+	};
+
+	handleDeleteHints = async () => {
+		if (!this.selectedImageId || this.isBusy) return;
+
+		this.isBusy = true;
+		const res = await deleteImageHints(this.selectedImageId);
+		this.isBusy = false;
+
+		if (res.error) {
+			showError(res.error.description || 'Failed to delete hints');
+			return;
+		}
+
+		panoBus.emit('reload');
 	};
 
 	reload = (panoramaId: string) => {
