@@ -4,7 +4,6 @@
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import PanoramaViewer from '$lib/components/panoramas/PanoramaViewer.svelte';
 	import MapRays from '$lib/components/map/MapRays.svelte';
-	import CrossHair from '$lib/icons/CrossHair.svelte';
 	import { PanoramaPreviewState } from './PanoramaPreview.svelte.ts';
 
 	const { panoramaId, minzoom = 18 }: { panoramaId: string; ratio?: string; minzoom?: number } =
@@ -91,9 +90,6 @@
 					angle={componentState.yaw}
 					onMove={(angle) => componentState.handleViewerMove(angle)}
 				/>
-				<div class="crosshair">
-					<CrossHair />
-				</div>
 			{:else}
 				<div class="placeholder">
 					<p aria-busy={componentState.loadingImage}>
@@ -124,9 +120,8 @@
 	.viewer-wrapper {
 		width: 100%;
 		aspect-ratio: 1 / 1;
-		border-radius: 8px;
 		overflow: hidden;
-		border: 1px solid var(--pico-muted-border-color, #ccc);
+		border: none;
 		position: relative;
 		background-color: var(--pico-card-background-color, #fff);
 	}
@@ -138,29 +133,6 @@
 		width: 100%;
 		height: 100%;
 		color: var(--pico-muted-color, #666);
-	}
-
-	.crosshair {
-		position: absolute;
-		left: 50%;
-		top: 50%;
-		z-index: 10;
-		transform: translate(-50%, -50%);
-		width: 50px;
-		height: 50px;
-		pointer-events: none;
-		color: white;
-		filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
-
-		:global(svg) {
-			width: 100%;
-			height: 100%;
-			fill: currentColor;
-		}
-
-		:global(.cls-1) {
-			fill: currentColor;
-		}
 	}
 
 	:global(.map),
