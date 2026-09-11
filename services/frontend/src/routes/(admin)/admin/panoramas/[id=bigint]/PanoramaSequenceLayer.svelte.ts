@@ -84,6 +84,7 @@ export class PanoramaSequenceLayerState {
 		if (!bounds.isEmpty()) {
 			const sw = bounds.getSouthWest();
 			const ne = bounds.getNorthEast();
+
 			mapBus.emit('fit', {
 				start: { lat: sw.lat, lng: sw.lng },
 				end: { lat: ne.lat, lng: ne.lng }

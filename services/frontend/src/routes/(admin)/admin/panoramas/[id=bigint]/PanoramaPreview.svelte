@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { AttributionControl, GeoJSON, LineLayer, MapLibre } from 'svelte-maplibre';
+	import { AttributionControl, MapLibre } from 'svelte-maplibre';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import PanoramaViewer from '$lib/components/panoramas/PanoramaViewer.svelte';
 	import MapRays from '$lib/components/map/MapRays.svelte';
 	import { PanoramaPreviewState } from './PanoramaPreview.svelte.ts';
+	import PanoramaHintsLayer from './PanoramaHintsLayer.svelte';
 	import PanoramaSequenceLayer from './PanoramaSequenceLayer.svelte';
 
 	const { panoramaId, minzoom = 18 }: { panoramaId: string; ratio?: string; minzoom?: number } =
@@ -12,11 +13,6 @@
 	const componentState = new PanoramaPreviewState();
 
 	const handleSelectImage = (id: string) => componentState.selectImage(id);
-
-	$effect(() => {
-		const cleanup = componentState.init();
-		return cleanup;
-	});
 
 	$effect(() => {
 		componentState.reload(panoramaId);
@@ -32,7 +28,7 @@
 				class="map"
 				center={[44.5152, 40.1872]}
 				zoom={13}
-				onload={componentState.fitBounds}
+				onload={componentState.handleMapLoad}
 				attributionControl={false}
 			>
 				<AttributionControl compact={true} position="bottom-left" />
@@ -43,18 +39,7 @@
 					selectedImageId={componentState.selectedImageId}
 					onSelectImage={handleSelectImage}
 				/>
-				{#if componentState.hintsGeoJsonData}
-					<GeoJSON data={componentState.hintsGeoJsonData}>
-						<LineLayer
-							filter={['==', ['get', 'kind'], 'hint']}
-							paint={{
-								'line-color': '#22c55e',
-								'line-width': 2,
-								'line-opacity': 0.8
-							}}
-						/>
-					</GeoJSON>
-				{/if}
+				<PanoramaHintsLayer {panoramaId} />
 			</MapLibre>
 		</div>
 		<div class="viewer-wrapper">
