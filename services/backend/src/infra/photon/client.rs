@@ -7,23 +7,28 @@ use serde::Deserialize;
 const ACCEPT_LANGUAGE: &str = "en-US,en;q=0.5";
 
 #[derive(Debug, Deserialize)]
-pub struct AddressInfo {
-    road: Option<String>,
-    house_number: Option<String>,
+pub struct FeatureProperties {
+    street: Option<String>,
+    housenumber: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Feature {
+    properties: FeatureProperties,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct ResponsePayload {
-    address: AddressInfo,
+    features: Vec<Feature>,
 }
 
-pub struct NominatimClient {
+pub struct PhotonClient {
     http: reqwest::Client,
     user_agent: String,
     referrer: String,
 }
 
-impl NominatimClient {
+impl PhotonClient {
     pub fn new(user_agent: String, referrer: String) -> Self {
         let http = reqwest::Client::new();
         Self {
@@ -34,16 +39,9 @@ impl NominatimClient {
     }
 
     pub async fn get_address(&self, lat: f64, lon: f64) -> Result<Option<String>> {
-        // Nominatim only returns building numbers at zoom>=18, but at that zoom it often
-        // takes street names from the closest bigger building, which can have an address
-        // from the adjacent street.  We fix zoom at 16 to get reliable street-level results
-        // and avoid that building-address confusion.  Building numbers are resolved by Photon.
-        let zoom = 16;
-        let url = format!(
-            "https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lon}&zoom={zoom}&addressdetails=1"
-        );
+        let url = format!("https://photon.komoot.io/reverse?lat={lat}&lon={lon}&limit=1&lang=en");
 
-        debug!("Requesting address from Nominatim: {url}");
+        debug!("Requesting address from Photon: {url}");
 
         let mut headers = HeaderMap::new();
         headers.insert(
@@ -62,13 +60,13 @@ impl NominatimClient {
             Ok(response) => response,
 
             Err(e) => {
-                error!("Error contacting Nominatim: {e}");
+                error!("Error contacting Photon: {e}");
                 return Err(Error::AddressNotFound);
             }
         };
 
         if response.status() != 200 {
-            error!("Nominatim query failed with status: {}", response.status());
+            error!("Photon query failed with status: {}", response.status());
             return Err(Error::AddressNotFound);
         }
 
@@ -76,25 +74,35 @@ impl NominatimClient {
             Ok(json) => json,
 
             Err(e) => {
-                error!("Error parsing Nominatim response: {e:?}");
+                error!("Error parsing Photon response: {e:?}");
                 return Err(Error::AddressNotFound);
             }
         };
 
-        let address = match (json.address.road, json.address.house_number) {
-            (Some(road), _) => road,
-            (None, _) => {
-                info!("Could not resolve {lat},{lon} to an address.");
+        let feature = match json.features.into_iter().next() {
+            Some(feature) => feature,
+
+            None => {
+                info!("Could not resolve {lat},{lon} to a building address.");
                 return Ok(None);
             }
         };
 
-        info!("Resolved {lat},{lon} at zoom {zoom} as: {address}");
+        let address = match (feature.properties.street, feature.properties.housenumber) {
+            (Some(street), Some(number)) => format!("{street} {number}"),
+            (Some(street), None) => street,
+            (None, _) => {
+                info!("Could not resolve {lat},{lon} to a building address.");
+                return Ok(None);
+            }
+        };
+
+        info!("Resolved {lat},{lon} via Photon as: {address}");
         Ok(Some(address))
     }
 }
 
-impl Default for NominatimClient {
+impl Default for PhotonClient {
     fn default() -> Self {
         Self::new(
             "TreeMap".to_string(),
@@ -103,7 +111,7 @@ impl Default for NominatimClient {
     }
 }
 
-impl Injectable for NominatimClient {
+impl Injectable for PhotonClient {
     fn inject(ctx: &dyn Context) -> Result<Self> {
         let config = ctx.config();
         let user_agent = format!(

@@ -4,11 +4,12 @@ use crate::domain::tree::TreeRepository;
 use crate::infra::config::Config;
 use crate::infra::database::{Database, Value as DbValue};
 use crate::infra::nominatim::NominatimClient;
+use crate::infra::photon::PhotonClient;
 use crate::services::mcp::schemas::*;
 use crate::services::{Context, Injectable};
 use crate::types::*;
 use crate::utils::get_timestamp;
-use log::debug;
+use log::{debug, warn};
 use serde_json::{json, Value as JsonValue};
 use std::sync::Arc;
 
@@ -46,6 +47,7 @@ pub struct McpService {
     config: Arc<Config>,
     db: Arc<Database>,
     nominatim: Arc<NominatimClient>,
+    photon: Arc<PhotonClient>,
 }
 
 impl McpService {
@@ -220,7 +222,7 @@ impl McpService {
             },
             McpTool {
                 name: "get_address".to_string(),
-                description: "Resolves a street address for the given coordinates using Nominatim (OpenStreetMap). Includes the building number by default; set include_building to false to get the street name only.".to_string(),
+                description: "Resolves an address for the given coordinates. Includes the building number by default; set include_building to false to get the street name only.".to_string(),
                 input_schema: json!({
                     "type": "object",
                     "properties": {
@@ -546,7 +548,29 @@ impl McpService {
             .and_then(|v| v.as_bool())
             .unwrap_or(true);
 
-        match self.nominatim.get_address(lat, lon, include_building).await {
+        if include_building {
+            match self.photon.get_address(lat, lon).await {
+                Ok(Some(address)) => {
+                    let result = json!({ "address": address });
+
+                    return CallToolResult::success(vec![McpContent::text(
+                        serde_json::to_string_pretty(&result).unwrap_or_else(|_| "{}".to_string()),
+                    )]);
+                }
+                Ok(None) => {
+                    debug!(
+                        "Photon found no building address for {lat},{lon}; falling back to Nominatim"
+                    );
+                }
+                Err(e) => {
+                    warn!(
+                        "Photon address lookup failed for {lat},{lon}: {e}; falling back to Nominatim"
+                    );
+                }
+            }
+        }
+
+        match self.nominatim.get_address(lat, lon).await {
             Ok(Some(address)) => {
                 let result = json!({ "address": address });
 
@@ -557,7 +581,7 @@ impl McpService {
             Ok(None) => CallToolResult::error_text(
                 "Address not found for the given coordinates".to_string(),
             ),
-            Err(e) => CallToolResult::error_text(format!("Nominatim error: {}", e)),
+            Err(e) => CallToolResult::error_text(format!("Address resolution error: {}", e)),
         }
     }
 }
@@ -571,6 +595,7 @@ impl Injectable for McpService {
             config: ctx.config(),
             db: ctx.database(),
             nominatim: Arc::new(ctx.build::<NominatimClient>()?),
+            photon: Arc::new(ctx.build::<PhotonClient>()?),
         })
     }
 }

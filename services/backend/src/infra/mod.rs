@@ -9,6 +9,7 @@ pub mod google_auth;
 pub mod nominatim;
 pub mod osm;
 pub mod overpass;
+pub mod photon;
 pub mod queue;
 pub mod secrets;
 pub mod storage;
