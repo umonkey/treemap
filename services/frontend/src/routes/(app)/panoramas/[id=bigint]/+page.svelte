@@ -4,19 +4,15 @@
 	import { formatDateTime } from '$lib/utils/strings';
 	import { mapLayerStore } from '$lib/stores/mapLayerStore';
 	import { hasPermission } from '$lib/stores/authStore';
-	import CloseIcon from '$lib/icons/CloseIcon.svelte';
-	import PlusIcon from '$lib/icons/PlusIcon.svelte';
-	import TrashIcon from '$lib/icons/TrashIcon.svelte';
-	import FullScreenIcon from '$lib/icons/FullScreenIcon.svelte';
-	import CrossHair from '$lib/icons/CrossHair.svelte';
 	import PanoramaViewer from '$lib/components/panoramas/PanoramaViewer.svelte';
 
 	const id = $derived(page.params.id as string);
-	let previewElement = $state<HTMLElement>();
 
 	const capturedAt = $derived(
 		pageState.image?.captured_at ? formatDateTime(pageState.image.captured_at) : ''
 	);
+
+	const canEdit = $derived($mapLayerStore.treeHints && $hasPermission('pano:edit'));
 
 	$effect(() => {
 		pageState.reload(id);
@@ -25,67 +21,13 @@
 	$effect(() => {
 		return pageState.cleanup;
 	});
-
-	function toggleFullscreen() {
-		if (!document.fullscreenElement) {
-			previewElement?.requestFullscreen();
-		} else {
-			document.exitFullscreen();
-		}
-	}
 </script>
 
 <svelte:head>
 	<title>360 Panorama</title>
 </svelte:head>
 
-<div class="preview" bind:this={previewElement}>
-	<div class="header">
-		<div class="top-left">
-			<button
-				type="button"
-				class="control fullscreen"
-				onclick={toggleFullscreen}
-				aria-label="Fullscreen"
-			>
-				<FullScreenIcon />
-			</button>
-		</div>
-		<div class="top-right">
-			<button
-				type="button"
-				class="control close"
-				onclick={pageState.handleClose}
-				aria-label="Close"
-			>
-				<CloseIcon />
-			</button>
-		</div>
-	</div>
-
-	{#if $mapLayerStore.treeHints && $hasPermission('pano:edit')}
-		<div class="middle-right">
-			<button
-				type="button"
-				class="control add"
-				onclick={pageState.handleAddTree}
-				disabled={pageState.isBusy}
-				aria-label="Add Tree"
-			>
-				<PlusIcon />
-			</button>
-			<button
-				type="button"
-				class="control delete"
-				onclick={pageState.handleDeleteHints}
-				disabled={pageState.isBusy}
-				aria-label="Delete Trees"
-			>
-				<TrashIcon />
-			</button>
-		</div>
-	{/if}
-
+<div class="preview">
 	<div class="content">
 		{#if pageState.image}
 			<PanoramaViewer
@@ -95,12 +37,11 @@
 				onMove={pageState.handleMove}
 				onTreeClick={pageState.handleTreeClick}
 				onImageClick={pageState.handleImageClick}
-				canAddHint={$mapLayerStore.treeHints && $hasPermission('pano:edit')}
-				onAddHint={pageState.handleAddTree}
+				onClose={pageState.handleClose}
+				onAddHint={canEdit ? pageState.handleAddTree : undefined}
+				onDeleteHints={canEdit ? pageState.handleDeleteHints : undefined}
+				isBusy={pageState.isBusy}
 			/>
-			<div class="crosshair">
-				<CrossHair />
-			</div>
 			{#if capturedAt}
 				<div class="control timestamp">
 					{capturedAt}
@@ -120,82 +61,6 @@
 		background-color: var(--map-menu-background);
 		box-sizing: border-box;
 		position: relative;
-
-		&:fullscreen {
-			width: 100vw;
-			height: 100vh;
-			border-radius: 0;
-			border: none;
-		}
-	}
-
-	.header {
-		position: absolute;
-		top: 10px;
-		left: 10px;
-		right: 10px;
-		display: flex;
-		align-items: flex-start;
-		justify-content: space-between;
-		background-color: transparent;
-		z-index: 1;
-	}
-
-	.middle-right {
-		position: absolute;
-		top: 50%;
-		right: 10px;
-		transform: translateY(-50%);
-		display: flex;
-		flex-direction: column;
-		background-color: white;
-		color: black;
-		border-radius: 4px;
-		overflow: hidden;
-		box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
-		z-index: 1;
-
-		.control + .control {
-			border-top: 1px solid #ddd;
-		}
-	}
-
-	.top-left,
-	.top-right {
-		display: flex;
-		flex-direction: column;
-		background-color: white;
-		color: black;
-		border-radius: 4px;
-		overflow: hidden;
-		box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
-	}
-
-	.control {
-		width: 29px;
-		height: 29px;
-		cursor: pointer;
-		background-color: transparent;
-		border: none;
-		color: inherit;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: 0;
-
-		&:hover {
-			background-color: rgba(0, 0, 0, 0.05);
-		}
-
-		&:disabled {
-			opacity: 0.5;
-			cursor: not-allowed;
-		}
-
-		:global(svg) {
-			width: 20px;
-			height: 20px;
-		}
 	}
 
 	.timestamp {
@@ -211,6 +76,10 @@
 		background-color: rgba(0, 0, 0, 0.75);
 		color: white;
 		border-radius: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border: none;
 
 		&:hover {
 			background-color: #000;
@@ -223,29 +92,6 @@
 		display: flex;
 		flex-direction: column;
 		position: relative;
-	}
-
-	.crosshair {
-		position: absolute;
-		left: 50%;
-		top: 50%;
-		z-index: 10;
-		transform: translate(-50%, -50%);
-		width: 50px;
-		height: 50px;
-		pointer-events: none;
-		color: white;
-		filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
-
-		:global(svg) {
-			width: 100%;
-			height: 100%;
-			fill: currentColor;
-		}
-
-		:global(.cls-1) {
-			fill: currentColor;
-		}
 	}
 
 	/* Mobile styles */
@@ -270,7 +116,7 @@
 			left: var(--gap);
 			width: 400px;
 			height: 300px;
-			border-right: 1px solid var(--color-dialog-border);
+			border: none;
 		}
 	}
 

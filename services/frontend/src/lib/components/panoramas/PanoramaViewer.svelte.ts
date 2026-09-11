@@ -11,7 +11,6 @@ class PanoramaViewerLogic {
 	onTreeClick?: (treeId: string) => void;
 	onImageClick?: (imageId: string) => void;
 	onAddHint?: () => void;
-	canAddHint = false;
 	trees = $state<PanoramaHint[]>([]);
 	isLoaded = $state(false);
 	private addedHotspotIds: string[] = [];
@@ -24,8 +23,7 @@ class PanoramaViewerLogic {
 		onMove?: (angle: number) => void,
 		onTreeClick?: (treeId: string) => void,
 		onImageClick?: (imageId: string) => void,
-		onAddHint?: () => void,
-		canAddHint = false
+		onAddHint?: () => void
 	) => {
 		this.unmountIcons();
 
@@ -41,7 +39,6 @@ class PanoramaViewerLogic {
 		this.onTreeClick = onTreeClick;
 		this.onImageClick = onImageClick;
 		this.onAddHint = onAddHint;
-		this.canAddHint = canAddHint;
 
 		if (!image.url) return;
 
@@ -77,9 +74,17 @@ class PanoramaViewerLogic {
 		if (e.ctrlKey || e.metaKey || e.altKey) return;
 		const target = e.target as HTMLElement;
 		if (['INPUT', 'TEXTAREA', 'BUTTON'].includes(target?.tagName)) return;
-		if (e.code === 'Space' && this.canAddHint && this.onAddHint) {
+		if (e.code === 'Space' && this.onAddHint) {
 			e.preventDefault();
 			this.onAddHint();
+		}
+	};
+
+	toggleFullscreen = (element?: HTMLElement | null) => {
+		if (!document.fullscreenElement) {
+			element?.requestFullscreen();
+		} else {
+			document.exitFullscreen();
 		}
 	};
 
