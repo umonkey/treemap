@@ -1,8 +1,10 @@
 import { getPanoramasImage, type PanoramaImage } from '$lib/api/panoramas';
+import { mapBus } from '$lib/buses/mapBus';
 import { mapRaysStore } from '$lib/stores/mapRays.svelte';
 import { config } from '$lib/env';
 import { showError } from '$lib/errors';
 import { locale } from '$lib/locale';
+import type { ILatLng } from '$lib/types';
 import type { Map } from 'maplibre-gl';
 
 export class PanoramaPreviewState {
@@ -20,6 +22,25 @@ export class PanoramaPreviewState {
 		requestAnimationFrame(() => {
 			this.map?.resize();
 		});
+	};
+
+	handleFit = ({ start, end }: { start: ILatLng; end: ILatLng }) => {
+		if (!this.map) return;
+
+		this.map.fitBounds(
+			[
+				[start.lng, start.lat],
+				[end.lng, end.lat]
+			],
+			{ padding: 20, animate: false }
+		);
+	};
+
+	public init = () => {
+		mapBus.on('fit', this.handleFit);
+		return () => {
+			mapBus.off('fit', this.handleFit);
+		};
 	};
 
 	selectImage = async (imageId: string) => {

@@ -17,6 +17,11 @@
 	$effect(() => {
 		componentState.reload(panoramaId);
 	});
+
+	$effect(() => {
+		const cleanup = componentState.init();
+		return cleanup;
+	});
 </script>
 
 <div class="panorama-preview">
