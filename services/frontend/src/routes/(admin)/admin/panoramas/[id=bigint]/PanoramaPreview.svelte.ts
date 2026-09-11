@@ -1,8 +1,10 @@
 import {
 	getPanoramasImage,
+	getPanoramasImageHints,
 	addPanoramaImageHint,
 	deleteImageHints,
-	type PanoramaImage
+	type PanoramaImage,
+	type PanoramaHint
 } from '$lib/api/panoramas';
 import { mapBus } from '$lib/buses/mapBus';
 import { panoBus } from '$lib/buses/panoBus';
@@ -17,6 +19,7 @@ export class PanoramaPreviewState {
 	map = $state.raw<Map | undefined>(undefined);
 	selectedImageId = $state<string | undefined>(undefined);
 	selectedImage = $state<PanoramaImage | undefined>(undefined);
+	hints = $state<PanoramaHint[]>([]);
 	loadingImage = $state<boolean>(false);
 	isBusy = $state<boolean>(false);
 	yaw = $state<number>(0);
@@ -53,12 +56,19 @@ export class PanoramaPreviewState {
 	selectImage = async (imageId: string) => {
 		this.selectedImageId = imageId;
 		this.selectedImage = undefined;
+		this.hints = [];
 		mapRaysStore.rays = [];
 		this.loadingImage = true;
-		const res = await getPanoramasImage(imageId);
+		const [res, hintsRes] = await Promise.all([
+			getPanoramasImage(imageId),
+			getPanoramasImageHints(imageId)
+		]);
 		this.loadingImage = false;
 		if (res.status === 200 && res.data) {
 			this.selectedImage = res.data;
+			if (hintsRes.data) {
+				this.hints = hintsRes.data;
+			}
 			const heading = (this.selectedImage.compass_angle + this.yaw + 360) % 360;
 			mapRaysStore.rays = [
 				{
@@ -92,14 +102,24 @@ export class PanoramaPreviewState {
 	handleAddHint = async () => {
 		if (!this.selectedImageId || this.isBusy) return;
 
+		const newHint: PanoramaHint = { angle: this.yaw };
+		this.hints = [...this.hints, newHint];
+
 		this.isBusy = true;
 		const res = await addPanoramaImageHint(this.selectedImageId, this.yaw);
-		this.isBusy = false;
 
 		if (res.error) {
+			this.hints = this.hints.filter((h) => h !== newHint);
+			this.isBusy = false;
 			showError(res.error.description || 'Failed to add hint');
 			return;
 		}
+
+		const hintsRes = await getPanoramasImageHints(this.selectedImageId);
+		if (hintsRes.data) {
+			this.hints = hintsRes.data;
+		}
+		this.isBusy = false;
 
 		panoBus.emit('reload');
 	};
@@ -109,13 +129,18 @@ export class PanoramaPreviewState {
 
 		this.isBusy = true;
 		const res = await deleteImageHints(this.selectedImageId);
-		this.isBusy = false;
 
 		if (res.error) {
+			this.isBusy = false;
 			showError(res.error.description || 'Failed to delete hints');
 			return;
 		}
 
+		// Only remove the manual hints, keep the auto-generated tree pointers
+		// and sibling image pointers
+		this.hints = this.hints.filter((h) => h.tree_id || h.image_id);
+
+		this.isBusy = false;
 		panoBus.emit('reload');
 	};
 
@@ -123,6 +148,7 @@ export class PanoramaPreviewState {
 		void panoramaId;
 		this.selectedImageId = undefined;
 		this.selectedImage = undefined;
+		this.hints = [];
 		this.yaw = 0;
 		mapRaysStore.rays = [];
 	};
