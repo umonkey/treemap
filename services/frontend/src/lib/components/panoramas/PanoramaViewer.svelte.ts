@@ -1,18 +1,27 @@
 import { mount, unmount, untrack } from 'svelte';
-import type { PanoramaImage, PanoramaHint } from '$lib/api/panoramas';
+import {
+	getPanoramasImageHints,
+	addPanoramaImageHint,
+	deleteImageHints,
+	type PanoramaImage,
+	type PanoramaHint
+} from '$lib/api/panoramas';
 import TreeIcon from '$lib/icons/TreeIcon.svelte';
 import CameraIcon from '$lib/icons/CameraIcon.svelte';
+import { panoBus } from '$lib/buses/panoBus';
+import { showError } from '$lib/errors';
+import { goto, routes } from '$lib/routes';
 import 'pannellum';
 
 class PanoramaViewerLogic {
 	viewer: Pannellum.Viewer | null = null;
 	yaw = $state(0);
 	onMove?: (angle: number) => void;
-	onTreeClick?: (treeId: string) => void;
-	onImageClick?: (imageId: string) => void;
-	onAddHint?: () => void;
 	trees = $state<PanoramaHint[]>([]);
 	isLoaded = $state(false);
+	isBusy = $state(false);
+	showHints = $state(false);
+	private currentImageId?: string;
 	private addedHotspotIds: string[] = [];
 	private mountedIcons = new Map<string, Record<string, unknown>>();
 
@@ -20,10 +29,7 @@ class PanoramaViewerLogic {
 		container: HTMLElement,
 		image: PanoramaImage,
 		initialYaw: number = 0,
-		onMove?: (angle: number) => void,
-		onTreeClick?: (treeId: string) => void,
-		onImageClick?: (imageId: string) => void,
-		onAddHint?: () => void
+		onMove?: (angle: number) => void
 	) => {
 		this.unmountIcons();
 
@@ -36,9 +42,6 @@ class PanoramaViewerLogic {
 		this.addedHotspotIds = [];
 		this.yaw = initialYaw;
 		this.onMove = onMove;
-		this.onTreeClick = onTreeClick;
-		this.onImageClick = onImageClick;
-		this.onAddHint = onAddHint;
 
 		if (!image.url) return;
 
@@ -74,9 +77,9 @@ class PanoramaViewerLogic {
 		if (e.ctrlKey || e.metaKey || e.altKey) return;
 		const target = e.target as HTMLElement;
 		if (['INPUT', 'TEXTAREA', 'BUTTON'].includes(target?.tagName)) return;
-		if (e.code === 'Space' && this.onAddHint) {
+		if (e.code === 'Space' && this.showHints) {
 			e.preventDefault();
-			this.onAddHint();
+			void this.handleAddHint();
 		}
 	};
 
@@ -86,6 +89,82 @@ class PanoramaViewerLogic {
 		} else {
 			document.exitFullscreen();
 		}
+	};
+
+	setHintsContext = (imageId: string, showHints: boolean) => {
+		const changed = this.currentImageId !== imageId || this.showHints !== showHints;
+		this.currentImageId = imageId;
+		this.showHints = showHints;
+		if (!changed) return;
+		if (showHints) {
+			void this.loadHints(imageId);
+		} else {
+			this.setTrees([]);
+		}
+	};
+
+	private loadHints = async (imageId: string) => {
+		const res = await getPanoramasImageHints(imageId);
+		if (this.currentImageId !== imageId) return;
+		if (res.status === 200 && res.data) {
+			this.setTrees(res.data);
+		} else {
+			this.setTrees([]);
+			showError(res.error?.description || 'Failed to load hints');
+		}
+	};
+
+	handleAddHint = async () => {
+		if (!this.currentImageId || this.isBusy) return;
+
+		const newHint: PanoramaHint = { angle: this.yaw };
+		this.trees = [...this.trees, newHint];
+
+		this.isBusy = true;
+		const res = await addPanoramaImageHint(this.currentImageId, this.yaw);
+
+		if (res.error) {
+			this.trees = this.trees.filter((t) => t !== newHint);
+			this.isBusy = false;
+			showError(res.error.description || 'Failed to add hint');
+			return;
+		}
+
+		const hintsRes = await getPanoramasImageHints(this.currentImageId);
+		if (hintsRes.data) {
+			this.trees = hintsRes.data;
+		}
+		this.isBusy = false;
+
+		panoBus.emit('reloadHints');
+	};
+
+	handleDeleteHints = async () => {
+		if (!this.currentImageId || this.isBusy) return;
+
+		this.isBusy = true;
+		const res = await deleteImageHints(this.currentImageId);
+
+		if (res.error) {
+			this.isBusy = false;
+			showError(res.error.description || 'Failed to delete hints');
+			return;
+		}
+
+		// Only remove the manual hints, keep the auto-generated tree pointers
+		// and sibling image pointers
+		this.trees = this.trees.filter((t) => t.tree_id || t.image_id);
+
+		this.isBusy = false;
+		panoBus.emit('reloadHints');
+	};
+
+	handleTreeClick = (treeId: string) => {
+		void goto(routes.mapPreview(treeId));
+	};
+
+	handleImageClick = (imageId: string) => {
+		void goto(routes.panorama(imageId));
 	};
 
 	setTrees = (trees: PanoramaHint[]) => {
@@ -133,7 +212,7 @@ class PanoramaViewerLogic {
 							const instance = mount(TreeIcon, { target: div });
 							this.mountedIcons.set(id, instance);
 						},
-						clickHandlerFunc: () => this.onTreeClick?.(treeId)
+						clickHandlerFunc: () => this.handleTreeClick(treeId)
 					});
 				} else if (trees[i].image_id) {
 					// Sibling image pointer: light-blue disc with a camera icon.
@@ -149,7 +228,7 @@ class PanoramaViewerLogic {
 							const instance = mount(CameraIcon, { target: div });
 							this.mountedIcons.set(id, instance);
 						},
-						clickHandlerFunc: () => this.onImageClick?.(imageId)
+						clickHandlerFunc: () => this.handleImageClick(imageId)
 					});
 				} else {
 					// Manual hint: vertical line marker.

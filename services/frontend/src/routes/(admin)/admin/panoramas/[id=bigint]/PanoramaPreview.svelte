@@ -51,12 +51,9 @@
 			{#if componentState.selectedImage}
 				<PanoramaViewer
 					image={componentState.selectedImage}
-					trees={componentState.hints}
 					angle={componentState.yaw}
 					onMove={(angle) => componentState.handleViewerMove(angle)}
-					onAddHint={() => componentState.handleAddHint()}
-					onDeleteHints={() => componentState.handleDeleteHints()}
-					isBusy={componentState.isBusy}
+					showHints={true}
 				/>
 			{:else}
 				<div class="placeholder">

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { PanoramaImage, PanoramaHint } from '$lib/api/panoramas';
+	import type { PanoramaImage } from '$lib/api/panoramas';
 	import { componentState } from './PanoramaViewer.svelte.ts';
 	import { untrack } from 'svelte';
 	import 'pannellum/build/pannellum.css';
@@ -12,28 +12,12 @@
 	interface Props {
 		image: PanoramaImage;
 		angle?: number;
-		trees?: PanoramaHint[];
+		showHints?: boolean;
 		onMove?: (angle: number) => void;
-		onTreeClick?: (treeId: string) => void;
-		onImageClick?: (imageId: string) => void;
-		onAddHint?: () => void;
-		onDeleteHints?: () => void;
 		onClose?: () => void;
-		isBusy?: boolean;
 	}
 
-	const {
-		image,
-		angle = 0,
-		trees = [],
-		onMove,
-		onTreeClick,
-		onImageClick,
-		onAddHint,
-		onDeleteHints,
-		onClose,
-		isBusy = false
-	}: Props = $props();
+	const { image, angle = 0, showHints = false, onMove, onClose }: Props = $props();
 
 	let container = $state<HTMLElement | null>(null);
 	let fullscreenElement = $state<HTMLElement | null>(null);
@@ -41,15 +25,7 @@
 	$effect(() => {
 		if (container && image.url) {
 			const initialYaw = untrack(() => angle);
-			componentState.init(
-				container,
-				image,
-				initialYaw,
-				onMove,
-				onTreeClick,
-				onImageClick,
-				onAddHint
-			);
+			componentState.init(container, image, initialYaw, onMove);
 		}
 		return () => {
 			componentState.destroy();
@@ -57,7 +33,7 @@
 	});
 
 	$effect(() => {
-		componentState.setTrees(trees);
+		componentState.setHintsContext(image.id, showHints);
 	});
 
 	$effect(() => {
@@ -99,30 +75,26 @@
 		{/if}
 	</div>
 
-	{#if onAddHint || onDeleteHints}
+	{#if showHints}
 		<div class="middle-right">
-			{#if onAddHint}
-				<button
-					type="button"
-					class="control add"
-					onclick={onAddHint}
-					disabled={isBusy}
-					aria-label="Add Tree"
-				>
-					<PlusIcon />
-				</button>
-			{/if}
-			{#if onDeleteHints}
-				<button
-					type="button"
-					class="control delete"
-					onclick={onDeleteHints}
-					disabled={isBusy}
-					aria-label="Delete Trees"
-				>
-					<TrashIcon />
-				</button>
-			{/if}
+			<button
+				type="button"
+				class="control add"
+				onclick={() => componentState.handleAddHint()}
+				disabled={componentState.isBusy}
+				aria-label="Add Tree"
+			>
+				<PlusIcon />
+			</button>
+			<button
+				type="button"
+				class="control delete"
+				onclick={() => componentState.handleDeleteHints()}
+				disabled={componentState.isBusy}
+				aria-label="Delete Trees"
+			>
+				<TrashIcon />
+			</button>
 		</div>
 	{/if}
 

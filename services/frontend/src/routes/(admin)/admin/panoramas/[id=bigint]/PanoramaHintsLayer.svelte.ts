@@ -11,6 +11,7 @@ export class PanoramaHintsLayerState {
 
 	public init = () => {
 		panoBus.on('reload', this.handleReloadBus);
+		panoBus.on('reloadHints', this.handleReloadBus);
 		const cleanupFocus = onPageFocus(() => {
 			if (this.currentPanoramaId && !this.loading) {
 				void this.reload(this.currentPanoramaId);
@@ -18,6 +19,7 @@ export class PanoramaHintsLayerState {
 		});
 		return () => {
 			panoBus.off('reload', this.handleReloadBus);
+			panoBus.off('reloadHints', this.handleReloadBus);
 			cleanupFocus();
 		};
 	};

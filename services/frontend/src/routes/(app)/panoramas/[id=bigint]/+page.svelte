@@ -32,15 +32,10 @@
 		{#if pageState.image}
 			<PanoramaViewer
 				image={pageState.image}
-				trees={$mapLayerStore.treeHints ? pageState.trees : []}
 				angle={pageState.angle}
+				showHints={canEdit}
 				onMove={pageState.handleMove}
-				onTreeClick={pageState.handleTreeClick}
-				onImageClick={pageState.handleImageClick}
 				onClose={pageState.handleClose}
-				onAddHint={canEdit ? pageState.handleAddTree : undefined}
-				onDeleteHints={canEdit ? pageState.handleDeleteHints : undefined}
-				isBusy={pageState.isBusy}
 			/>
 			{#if capturedAt}
 				<div class="control timestamp">

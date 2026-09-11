@@ -49,12 +49,14 @@ export class TreeHintsLayerLogic {
 	public onMount = () => {
 		mapBus.on('bounds', this.handleBounds);
 		panoBus.on('reload', this.reload);
+		panoBus.on('reloadHints', this.reload);
 
 		return () => {
 			this.bounds = undefined;
 			this.data = undefined;
 			mapBus.off('bounds', this.handleBounds);
 			panoBus.off('reload', this.reload);
+			panoBus.off('reloadHints', this.reload);
 		};
 	};
 }
