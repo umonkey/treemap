@@ -1,17 +1,22 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { AttributionControl, CircleLayer, GeoJSON, LineLayer, MapLibre } from 'svelte-maplibre';
+	import { AttributionControl, GeoJSON, LineLayer, MapLibre } from 'svelte-maplibre';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import PanoramaViewer from '$lib/components/panoramas/PanoramaViewer.svelte';
 	import MapRays from '$lib/components/map/MapRays.svelte';
 	import { PanoramaPreviewState } from './PanoramaPreview.svelte.ts';
+	import PanoramaSequenceLayer from './PanoramaSequenceLayer.svelte';
 
 	const { panoramaId, minzoom = 18 }: { panoramaId: string; ratio?: string; minzoom?: number } =
 		$props();
 
 	const componentState = new PanoramaPreviewState();
 
-	onMount(componentState.onMount);
+	const handleSelectImage = (id: string) => componentState.selectImage(id);
+
+	$effect(() => {
+		const cleanup = componentState.init();
+		return cleanup;
+	});
 
 	$effect(() => {
 		componentState.reload(panoramaId);
@@ -29,46 +34,15 @@
 				zoom={13}
 				onload={componentState.fitBounds}
 				attributionControl={false}
-				onclick={(e) => componentState.handleMapClick(e)}
 			>
 				<AttributionControl compact={true} position="bottom-left" />
 				<MapRays length={20} />
-				{#if componentState.geoJsonData}
-					<GeoJSON data={componentState.geoJsonData}>
-						<LineLayer
-							filter={['==', ['get', 'kind'], 'sequence']}
-							paint={{
-								'line-color': '#007aff',
-								'line-width': 4
-							}}
-						/>
-						<CircleLayer
-							{minzoom}
-							filter={['==', ['get', 'kind'], 'image']}
-							onclick={(e) => componentState.handleCircleClick(e)}
-							paint={{
-								'circle-color': '#007aff',
-								'circle-radius': 5,
-								'circle-stroke-width': 1,
-								'circle-stroke-color': '#ffffff'
-							}}
-						/>
-						{#if componentState.selectedImageId}
-							<CircleLayer
-								{minzoom}
-								filter={['==', ['get', 'id'], componentState.selectedImageId]}
-								paint={{
-									'circle-color': '#007aff',
-									'circle-radius': 10,
-									'circle-opacity': 0.5,
-									'circle-stroke-width': 2,
-									'circle-stroke-color': '#ffffff',
-									'circle-stroke-opacity': 0.8
-								}}
-							/>
-						{/if}
-					</GeoJSON>
-				{/if}
+				<PanoramaSequenceLayer
+					{panoramaId}
+					{minzoom}
+					selectedImageId={componentState.selectedImageId}
+					onSelectImage={handleSelectImage}
+				/>
 				{#if componentState.hintsGeoJsonData}
 					<GeoJSON data={componentState.hintsGeoJsonData}>
 						<LineLayer

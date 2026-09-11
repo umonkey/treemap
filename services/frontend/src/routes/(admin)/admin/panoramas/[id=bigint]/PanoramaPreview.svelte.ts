@@ -1,6 +1,5 @@
 import {
 	getPanorama,
-	getPanoramaGeoJSON,
 	getPanoramaHints,
 	getPanoramasImage,
 	type PanoramaImage
@@ -10,11 +9,11 @@ import { panoBus } from '$lib/buses/panoBus';
 import { config } from '$lib/env';
 import { showError } from '$lib/errors';
 import { locale } from '$lib/locale';
+import { onPageFocus } from '$lib/utils/onPageFocus';
 import type { FeatureCollection } from 'geojson';
 import { LngLatBounds, type Map } from 'maplibre-gl';
 
 export class PanoramaPreviewState {
-	geoJsonData = $state<FeatureCollection | undefined>(undefined);
 	hintsGeoJsonData = $state<FeatureCollection | undefined>(undefined);
 	loading = $state<boolean>(false);
 	map = $state.raw<Map | undefined>(undefined);
@@ -26,10 +25,16 @@ export class PanoramaPreviewState {
 
 	layer = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${config.mapTilerKey}&language=${locale.lang}`;
 
-	public onMount = () => {
+	public init = () => {
 		panoBus.on('reload', this.handleReloadBus);
+		const cleanupFocus = onPageFocus(() => {
+			if (this.currentPanoramaId && !this.loading) {
+				this.reload(this.currentPanoramaId, { preserveSelection: true });
+			}
+		});
 		return () => {
 			panoBus.off('reload', this.handleReloadBus);
+			cleanupFocus();
 		};
 	};
 
@@ -67,7 +72,6 @@ export class PanoramaPreviewState {
 				}
 			};
 
-			addFeatures(this.geoJsonData);
 			addFeatures(this.hintsGeoJsonData);
 
 			if (!bounds.isEmpty()) {
@@ -115,68 +119,17 @@ export class PanoramaPreviewState {
 		}
 	};
 
-	calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
-		const R = 6371000; // Earth radius in meters
-		const toRad = (deg: number) => (deg * Math.PI) / 180;
-		const dLat = toRad(lat2 - lat1);
-		const dLon = toRad(lon2 - lon1);
-		const a =
-			Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-			Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-		const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-		return R * c;
-	};
-
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	handleMapClick = (e: any) => {
-		if (!this.geoJsonData || !this.geoJsonData.features) return;
-		const { lng, lat } = e.lngLat;
-		let closestImageId: string | undefined = undefined;
-		let minDistance = Number.POSITIVE_INFINITY;
-
-		for (const feature of this.geoJsonData.features) {
-			if (feature.properties?.kind === 'image' && feature.geometry.type === 'Point') {
-				const [featureLng, featureLat] = feature.geometry.coordinates;
-				if (!Number.isNaN(featureLat) && !Number.isNaN(featureLng)) {
-					const distance = this.calculateDistance(lat, lng, featureLat, featureLng);
-					if (distance < minDistance) {
-						minDistance = distance;
-						const imageId = feature.properties?.id ?? feature.id;
-						if (imageId) {
-							closestImageId = String(imageId);
-						}
-					}
-				}
-			}
-		}
-
-		if (closestImageId !== undefined && minDistance <= 2.0) {
-			this.selectImage(closestImageId);
-		}
-	};
-
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	handleCircleClick = (e: any) => {
-		const feature = e.features?.[0];
-		if (!feature) return;
-		const imageId = feature.properties?.id ?? feature.id;
-		if (imageId) {
-			this.selectImage(String(imageId));
-		}
-	};
-
-	reload = async (panoramaId: string) => {
+	reload = async (panoramaId: string, options?: { preserveSelection?: boolean }) => {
 		this.currentPanoramaId = panoramaId;
-		this.geoJsonData = undefined;
-		this.hintsGeoJsonData = undefined;
-		this.selectedImageId = undefined;
-		this.selectedImage = undefined;
-		this.yaw = 0;
-		mapRaysStore.rays = [];
+		if (!options?.preserveSelection) {
+			this.selectedImageId = undefined;
+			this.selectedImage = undefined;
+			this.yaw = 0;
+			mapRaysStore.rays = [];
+		}
 		this.loading = true;
 
-		const [geoRes, hintsRes, panoRes] = await Promise.all([
-			getPanoramaGeoJSON(panoramaId),
+		const [hintsRes, panoRes] = await Promise.all([
 			getPanoramaHints(panoramaId),
 			getPanorama(panoramaId)
 		]);
@@ -187,10 +140,6 @@ export class PanoramaPreviewState {
 		if (panoRes.status === 200 && panoRes.data) {
 			latOffset = panoRes.data.lat_offset;
 			lonOffset = panoRes.data.lon_offset;
-		}
-
-		if (geoRes.status === 200 && geoRes.data) {
-			this.geoJsonData = geoRes.data as FeatureCollection;
 		}
 
 		if (hintsRes.status === 200 && hintsRes.data) {
@@ -213,23 +162,10 @@ export class PanoramaPreviewState {
 				type: 'FeatureCollection',
 				features: shiftedFeatures
 			};
-		}
-
-		if (this.geoJsonData || this.hintsGeoJsonData) {
 			this.fitBounds();
-			if (this.geoJsonData) {
-				const firstImageFeature = this.geoJsonData.features.find(
-					(f) => f.properties?.kind === 'image'
-				);
-				if (firstImageFeature) {
-					const imageId = firstImageFeature.properties?.id ?? firstImageFeature.id;
-					if (imageId) {
-						this.selectImage(String(imageId));
-					}
-				}
-			}
 		} else {
-			showError(geoRes.error?.description || 'Failed to load panorama preview');
+			this.hintsGeoJsonData = undefined;
+			showError(hintsRes.error?.description || 'Failed to load panorama hints');
 		}
 	};
 }
