@@ -121,21 +121,21 @@ class PanoramaViewerLogic {
 		if (!this.currentImageId || this.isBusy) return;
 
 		const newHint: PanoramaHint = { angle: this.yaw };
-		this.trees = [...this.trees, newHint];
+		this.setTrees([...this.trees, newHint]);
 
 		this.isBusy = true;
 		const res = await addPanoramaImageHint(this.currentImageId, this.yaw);
 
 		if (res.error) {
-			this.trees = this.trees.filter((t) => t !== newHint);
+			this.setTrees(this.trees.filter((t) => t !== newHint));
 			this.isBusy = false;
 			showError(res.error.description || 'Failed to add hint');
 			return;
 		}
 
 		const hintsRes = await getPanoramasImageHints(this.currentImageId);
-		if (hintsRes.data) {
-			this.trees = hintsRes.data;
+		if (hintsRes.status === 200 && hintsRes.data) {
+			this.setTrees(hintsRes.data);
 		}
 		this.isBusy = false;
 
@@ -156,7 +156,7 @@ class PanoramaViewerLogic {
 
 		// Only remove the manual hints, keep the auto-generated tree pointers
 		// and sibling image pointers
-		this.trees = this.trees.filter((t) => t.tree_id || t.image_id);
+		this.setTrees(this.trees.filter((t) => t.tree_id || t.image_id));
 
 		this.isBusy = false;
 		panoBus.emit('reloadHints');
