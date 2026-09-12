@@ -93,6 +93,14 @@ impl PanoramaRepository {
         records.iter().map(PanoramaImage::from_attributes).collect()
     }
 
+    pub async fn update_image(&self, image: &PanoramaImage) -> Result<()> {
+        let query = UpdateQuery::new(IMAGES_TABLE)
+            .with_condition("id", Value::from(image.id as i64))
+            .with_values(image.to_attributes());
+        self.db.update(query).await?;
+        Ok(())
+    }
+
     pub async fn get_adjacent_images(
         &self,
         panorama_id: u64,

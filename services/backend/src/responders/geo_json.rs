@@ -142,7 +142,8 @@ pub fn respond_with_panoramas(
                 "sequence_id": img.panorama_id.to_string(),
                 "captured_at": *created_at,
                 "compass_angle": img.heading,
-                "kind": "image"
+                "kind": "image",
+                "hidden": img.hidden,
             }
         }));
     }

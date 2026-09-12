@@ -7,17 +7,20 @@
 	import PlusIcon from '$lib/icons/PlusIcon.svelte';
 	import TrashIcon from '$lib/icons/TrashIcon.svelte';
 	import FullScreenIcon from '$lib/icons/FullScreenIcon.svelte';
+	import ShowIcon from '$lib/icons/ShowIcon.svelte';
+	import HideIcon from '$lib/icons/HideIcon.svelte';
 	import CrossHair from '$lib/icons/CrossHair.svelte';
 
 	interface Props {
 		image: PanoramaImage;
 		angle?: number;
 		showHints?: boolean;
+		canHide?: boolean;
 		onMove?: (angle: number) => void;
 		onClose?: () => void;
 	}
 
-	const { image, angle = 0, showHints = false, onMove, onClose }: Props = $props();
+	const { image, angle = 0, showHints = false, canHide = false, onMove, onClose }: Props = $props();
 
 	let container = $state<HTMLElement | null>(null);
 	let fullscreenElement = $state<HTMLElement | null>(null);
@@ -75,26 +78,44 @@
 		{/if}
 	</div>
 
-	{#if showHints}
+	{#if showHints || canHide}
 		<div class="middle-right">
-			<button
-				type="button"
-				class="control add"
-				onclick={() => componentState.handleAddHint()}
-				disabled={componentState.isBusy}
-				aria-label="Add Tree"
-			>
-				<PlusIcon />
-			</button>
-			<button
-				type="button"
-				class="control delete"
-				onclick={() => componentState.handleDeleteHints()}
-				disabled={componentState.isBusy}
-				aria-label="Delete Trees"
-			>
-				<TrashIcon />
-			</button>
+			{#if canHide}
+				<button
+					type="button"
+					class="control visibility"
+					onclick={() => componentState.handleToggleHidden()}
+					disabled={componentState.isBusy}
+					aria-label={componentState.isHidden ? 'Show image' : 'Hide image'}
+					title={componentState.isHidden ? 'Show image' : 'Hide image'}
+				>
+					{#if componentState.isHidden}
+						<ShowIcon />
+					{:else}
+						<HideIcon />
+					{/if}
+				</button>
+			{/if}
+			{#if showHints}
+				<button
+					type="button"
+					class="control add"
+					onclick={() => componentState.handleAddHint()}
+					disabled={componentState.isBusy}
+					aria-label="Add Tree"
+				>
+					<PlusIcon />
+				</button>
+				<button
+					type="button"
+					class="control delete"
+					onclick={() => componentState.handleDeleteHints()}
+					disabled={componentState.isBusy}
+					aria-label="Delete Trees"
+				>
+					<TrashIcon />
+				</button>
+			{/if}
 		</div>
 	{/if}
 

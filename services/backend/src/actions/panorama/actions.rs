@@ -2,7 +2,8 @@ use super::schemas::{
     AddPanoramaHintRequest, CompleteMultipartRequest, GetPanoramaHintsRequest,
     GetPanoramasGeoJSONRequest, MultipartUploadResponse, PanoramaExport, PanoramaHintRead,
     PanoramaImageExport, PanoramaImageRead, PanoramaMetaExport, PanoramaRead,
-    RestartPanoramaRequest, StartMultipartRequest, TrackPoint, UploadUrlResponse,
+    RestartPanoramaRequest, StartMultipartRequest, TrackPoint, UpdatePanoramaImageRequest,
+    UploadUrlResponse,
 };
 use crate::domain::panorama::{CreatePanorama, PanoramaHint, PanoramaService, UpdatePanorama};
 use crate::domain::tree::Bounds;
@@ -57,7 +58,6 @@ pub async fn get_panorama_geo_json_action(
 
     let images_with_offsets: Vec<_> = images
         .into_iter()
-        .filter(|img| !img.hidden)
         .map(|img| {
             (
                 img,
@@ -105,6 +105,20 @@ pub async fn get_panorama_image_action(
 ) -> Result<Json<PanoramaImageRead>> {
     let id = path.into_inner();
     let res = service.get_image_metadata(id).await?;
+    Ok(Json(res))
+}
+
+#[patch("/images/{id}")]
+pub async fn update_panorama_image_action(
+    _user: RequirePermission<PanoEdit>,
+    service: Injected<PanoramaService>,
+    path: Path<u64>,
+    body: Json<UpdatePanoramaImageRequest>,
+) -> Result<Json<PanoramaImageRead>> {
+    let id = path.into_inner();
+    let res = service
+        .update_image_hidden(id, body.into_inner().hidden)
+        .await?;
     Ok(Json(res))
 }
 

@@ -3,6 +3,7 @@ import {
 	getPanoramasImageHints,
 	addPanoramaImageHint,
 	deleteImageHints,
+	updatePanoramaImage,
 	type PanoramaImage,
 	type PanoramaHint
 } from '$lib/api/panoramas';
@@ -21,6 +22,7 @@ class PanoramaViewerLogic {
 	isLoaded = $state(false);
 	isBusy = $state(false);
 	showHints = $state(false);
+	isHidden = $state(false);
 	private currentImageId?: string;
 	private addedHotspotIds: string[] = [];
 	private mountedIcons = new Map<string, Record<string, unknown>>();
@@ -42,6 +44,7 @@ class PanoramaViewerLogic {
 		this.addedHotspotIds = [];
 		this.yaw = initialYaw;
 		this.onMove = onMove;
+		this.isHidden = image.hidden;
 
 		if (!image.url) return;
 
@@ -157,6 +160,24 @@ class PanoramaViewerLogic {
 
 		this.isBusy = false;
 		panoBus.emit('reloadHints');
+	};
+
+	handleToggleHidden = async () => {
+		if (!this.currentImageId || this.isBusy) return;
+
+		const newHidden = !this.isHidden;
+		this.isHidden = newHidden;
+		this.isBusy = true;
+		const res = await updatePanoramaImage(this.currentImageId, newHidden);
+		this.isBusy = false;
+
+		if (res.error) {
+			this.isHidden = !newHidden;
+			showError(res.error.description || 'Failed to update image visibility');
+			return;
+		}
+
+		panoBus.emit('reload');
 	};
 
 	handleTreeClick = (treeId: string) => {

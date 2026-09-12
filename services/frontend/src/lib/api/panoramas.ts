@@ -177,10 +177,24 @@ export interface PanoramaImage {
 	lon: number;
 	compass_angle: number;
 	url?: string;
+	hidden: boolean;
 }
 
 export async function getPanoramasImage(id: string): Promise<IResponse<PanoramaImage>> {
 	return await request<PanoramaImage>('GET', `api/panoramas/images/${id}`);
+}
+
+export async function updatePanoramaImage(
+	id: string,
+	hidden: boolean
+): Promise<IResponse<PanoramaImage>> {
+	return await request<PanoramaImage>('PATCH', `api/panoramas/images/${id}`, {
+		headers: {
+			...getAuthHeaders(),
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({ hidden })
+	});
 }
 
 export async function getPanoramasHints(

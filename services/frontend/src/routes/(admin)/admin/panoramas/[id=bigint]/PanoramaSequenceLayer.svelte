@@ -43,7 +43,8 @@
 			onclick={componentState.handleCircleClick}
 			paint={{
 				'circle-color': '#007aff',
-				'circle-radius': 5,
+				'circle-radius': ['case', ['get', 'hidden'], 7.5, 5],
+				'circle-opacity': ['case', ['get', 'hidden'], 0.25, 1],
 				'circle-stroke-width': 1,
 				'circle-stroke-color': '#ffffff'
 			}}

@@ -170,6 +170,26 @@ impl PanoramaService {
 
     pub async fn get_image_metadata(&self, id: u64) -> Result<PanoramaImageRead> {
         let image = self.repo.get_image(id).await?.ok_or(Error::FileNotFound)?;
+        self.build_image_read(image).await
+    }
+
+    pub async fn update_image_hidden(
+        &self,
+        image_id: u64,
+        hidden: bool,
+    ) -> Result<PanoramaImageRead> {
+        let mut image = self
+            .repo
+            .get_image(image_id)
+            .await?
+            .ok_or(Error::FileNotFound)?;
+
+        image.hidden = hidden;
+        self.repo.update_image(&image).await?;
+        self.build_image_read(image).await
+    }
+
+    async fn build_image_read(&self, image: PanoramaImage) -> Result<PanoramaImageRead> {
         let panorama = self.get_panorama(image.panorama_id).await?;
         let url = self
             .panoramas
@@ -185,6 +205,7 @@ impl PanoramaService {
             lon: image.lng + panorama.lon_offset,
             compass_angle: image.heading,
             url,
+            hidden: image.hidden,
         })
     }
 

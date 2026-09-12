@@ -54,6 +54,7 @@
 					angle={componentState.yaw}
 					onMove={(angle) => componentState.handleViewerMove(angle)}
 					showHints={true}
+					canHide={true}
 				/>
 			{:else}
 				<div class="placeholder">

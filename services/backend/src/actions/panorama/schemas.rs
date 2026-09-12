@@ -11,6 +11,7 @@ pub struct PanoramaImageRead {
     pub lon: f64,
     pub compass_angle: f64,
     pub url: Option<String>,
+    pub hidden: bool,
 }
 
 #[derive(Debug, Serialize)]
@@ -68,6 +69,11 @@ pub struct StartMultipartRequest {
 pub struct RestartPanoramaRequest {
     #[serde(default)]
     pub delete_temporary_files: bool,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct UpdatePanoramaImageRequest {
+    pub hidden: bool,
 }
 
 #[derive(Debug, Serialize)]
