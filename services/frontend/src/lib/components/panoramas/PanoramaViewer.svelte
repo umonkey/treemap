@@ -80,22 +80,6 @@
 
 	{#if showHints || canHide}
 		<div class="middle-right">
-			{#if canHide}
-				<button
-					type="button"
-					class="control visibility"
-					onclick={() => componentState.handleToggleHidden()}
-					disabled={componentState.isBusy}
-					aria-label={componentState.isHidden ? 'Show image' : 'Hide image'}
-					title={componentState.isHidden ? 'Show image' : 'Hide image'}
-				>
-					{#if componentState.isHidden}
-						<ShowIcon />
-					{:else}
-						<HideIcon />
-					{/if}
-				</button>
-			{/if}
 			{#if showHints}
 				<button
 					type="button"
@@ -114,6 +98,22 @@
 					aria-label="Delete Trees"
 				>
 					<TrashIcon />
+				</button>
+			{/if}
+			{#if canHide}
+				<button
+					type="button"
+					class="control visibility"
+					onclick={() => componentState.handleToggleHidden()}
+					disabled={componentState.isBusy}
+					aria-label={componentState.isHidden ? 'Show image' : 'Hide image'}
+					title={componentState.isHidden ? 'Show image' : 'Hide image'}
+				>
+					{#if componentState.isHidden}
+						<ShowIcon />
+					{:else}
+						<HideIcon />
+					{/if}
 				</button>
 			{/if}
 		</div>
