@@ -53,7 +53,7 @@
 					image={componentState.selectedImage}
 					angle={componentState.yaw}
 					onMove={(angle) => componentState.handleViewerMove(angle)}
-					showHints={true}
+					canEdit={true}
 					canHide={true}
 				/>
 			{:else}

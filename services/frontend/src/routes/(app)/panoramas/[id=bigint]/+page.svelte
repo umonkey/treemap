@@ -2,7 +2,6 @@
 	import { pageState } from './page.svelte.ts';
 	import { page } from '$app/state';
 	import { formatDateTime } from '$lib/utils/strings';
-	import { mapLayerStore } from '$lib/stores/mapLayerStore';
 	import { hasPermission } from '$lib/stores/authStore';
 	import PanoramaViewer from '$lib/components/panoramas/PanoramaViewer.svelte';
 
@@ -12,7 +11,7 @@
 		pageState.image?.captured_at ? formatDateTime(pageState.image.captured_at) : ''
 	);
 
-	const canEdit = $derived($mapLayerStore.treeHints && $hasPermission('pano:edit'));
+	const canEdit = $derived($hasPermission('pano:edit'));
 
 	$effect(() => {
 		pageState.reload(id);
@@ -33,7 +32,7 @@
 			<PanoramaViewer
 				image={pageState.image}
 				angle={pageState.angle}
-				showHints={canEdit}
+				{canEdit}
 				onMove={pageState.handleMove}
 				onClose={pageState.handleClose}
 			/>

@@ -14,13 +14,13 @@
 	interface Props {
 		image: PanoramaImage;
 		angle?: number;
-		showHints?: boolean;
+		canEdit?: boolean;
 		canHide?: boolean;
 		onMove?: (angle: number) => void;
 		onClose?: () => void;
 	}
 
-	const { image, angle = 0, showHints = false, canHide = false, onMove, onClose }: Props = $props();
+	const { image, angle = 0, canEdit = false, canHide = false, onMove, onClose }: Props = $props();
 
 	let container = $state<HTMLElement | null>(null);
 	let fullscreenElement = $state<HTMLElement | null>(null);
@@ -36,7 +36,7 @@
 	});
 
 	$effect(() => {
-		componentState.setHintsContext(image.id, showHints);
+		componentState.setHintsContext(image.id, canEdit);
 	});
 
 	$effect(() => {
@@ -78,9 +78,9 @@
 		{/if}
 	</div>
 
-	{#if showHints || canHide}
+	{#if canEdit || canHide}
 		<div class="middle-right">
-			{#if showHints}
+			{#if canEdit}
 				<button
 					type="button"
 					class="control add"

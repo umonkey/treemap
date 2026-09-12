@@ -21,7 +21,7 @@ class PanoramaViewerLogic {
 	trees = $state<PanoramaHint[]>([]);
 	isLoaded = $state(false);
 	isBusy = $state(false);
-	showHints = $state(false);
+	canEdit = $state(false);
 	isHidden = $state(false);
 	private currentImageId?: string;
 	private addedHotspotIds: string[] = [];
@@ -80,7 +80,7 @@ class PanoramaViewerLogic {
 		if (e.ctrlKey || e.metaKey || e.altKey) return;
 		const target = e.target as HTMLElement;
 		if (['INPUT', 'TEXTAREA', 'BUTTON'].includes(target?.tagName)) return;
-		if (e.code === 'Space' && this.showHints) {
+		if (e.code === 'Space' && this.canEdit) {
 			e.preventDefault();
 			void this.handleAddHint();
 		}
@@ -94,16 +94,11 @@ class PanoramaViewerLogic {
 		}
 	};
 
-	setHintsContext = (imageId: string, showHints: boolean) => {
-		const changed = this.currentImageId !== imageId || this.showHints !== showHints;
+	setHintsContext = (imageId: string, canEdit: boolean) => {
+		this.canEdit = canEdit;
+		if (this.currentImageId === imageId) return;
 		this.currentImageId = imageId;
-		this.showHints = showHints;
-		if (!changed) return;
-		if (showHints) {
-			void this.loadHints(imageId);
-		} else {
-			this.setTrees([]);
-		}
+		void this.loadHints(imageId);
 	};
 
 	private loadHints = async (imageId: string) => {
@@ -118,7 +113,7 @@ class PanoramaViewerLogic {
 	};
 
 	handleAddHint = async () => {
-		if (!this.currentImageId || this.isBusy) return;
+		if (!this.canEdit || !this.currentImageId || this.isBusy) return;
 
 		const newHint: PanoramaHint = { angle: this.yaw };
 		this.setTrees([...this.trees, newHint]);
@@ -143,7 +138,7 @@ class PanoramaViewerLogic {
 	};
 
 	handleDeleteHints = async () => {
-		if (!this.currentImageId || this.isBusy) return;
+		if (!this.canEdit || !this.currentImageId || this.isBusy) return;
 
 		this.isBusy = true;
 		const res = await deleteImageHints(this.currentImageId);
