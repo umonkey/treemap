@@ -24,6 +24,12 @@ const IMAGE_HINT_RADIUS_M: f64 = 10.0;
 /// Minimum angular separation between injected image pointers, in degrees.
 const IMAGE_HINT_MIN_ANGLE_DEG: f64 = 30.0;
 
+/// Maximum distance for injecting a nearby tree as a pointer.
+const TREE_HINT_RADIUS_M: f64 = 10.0;
+
+/// Minimum angular separation between injected tree pointers, in degrees.
+const TREE_HINT_MIN_ANGLE_DEG: f64 = 30.0;
+
 /// Delay before a panorama stats refresh message becomes visible.
 ///
 /// This gives the request transaction time to commit before the consumer reads
@@ -81,26 +87,22 @@ fn bounds_around(lat: f64, lon: f64, radius_m: f64) -> Bounds {
     }
 }
 
-/// Candidate image pointer retained while deduplicating by bearing.
+/// Candidate pointer retained while deduplicating by bearing.
 #[derive(Debug)]
-struct ImagePointer {
+struct HintCandidate {
     angle: f64,
     distance: f64,
-    image_id: u64,
+    id: u64,
 }
 
 /// Keeps the closest candidates that are at least `min_separation_deg` apart in
-/// bearing (circular). Candidates are consumed nearest-first, so a closer image
-/// wins when two fall within the minimum separation.
-fn dedup_by_angle(candidates: Vec<ImagePointer>, min_separation_deg: f64) -> Vec<ImagePointer> {
+/// bearing (circular). Candidates are consumed nearest-first, so a closer
+/// pointer wins when two fall within the minimum separation.
+fn dedup_by_angle(candidates: Vec<HintCandidate>, min_separation_deg: f64) -> Vec<HintCandidate> {
     let mut candidates = candidates;
-    candidates.sort_by(|a, b| {
-        a.distance
-            .total_cmp(&b.distance)
-            .then(a.image_id.cmp(&b.image_id))
-    });
+    candidates.sort_by(|a, b| a.distance.total_cmp(&b.distance).then(a.id.cmp(&b.id)));
 
-    let mut kept: Vec<ImagePointer> = Vec::new();
+    let mut kept: Vec<HintCandidate> = Vec::new();
 
     for candidate in candidates {
         let too_close = kept
@@ -534,7 +536,7 @@ impl PanoramaService {
         let mut pointers: Vec<(f64, PanoramaHintRead)> = Vec::new();
 
         // Other images within range, across any visible, successful panorama.
-        let image_candidates: Vec<ImagePointer> = self
+        let image_candidates: Vec<HintCandidate> = self
             .repo
             .find_images_by_bounds(bounds_around(lat, lon, IMAGE_HINT_RADIUS_M))
             .await?
@@ -555,10 +557,10 @@ impl PanoramaService {
                 let bearing = bearing_deg(lat, lon, s_lat, s_lon);
                 let angle = (bearing - image.heading + 360.0) % 360.0;
 
-                Some(ImagePointer {
+                Some(HintCandidate {
                     angle,
                     distance,
-                    image_id: sibling.id,
+                    id: sibling.id,
                 })
             })
             .collect();
@@ -570,38 +572,48 @@ impl PanoramaService {
                     angle: pointer.angle,
                     tree_id: None,
                     distance: Some(pointer.distance),
-                    image_id: Some(pointer.image_id.to_string()),
+                    image_id: Some(pointer.id.to_string()),
                 },
             ));
         }
 
-        // Nearby existing trees
-        let mut tree_hints: Vec<(f64, PanoramaHintRead)> = self
+        // Nearby existing trees, deduplicated by bearing (closest wins).
+        let tree_candidates: Vec<HintCandidate> = self
             .trees
-            .get_close(lat, lon, 10.0)
+            .get_by_bounds(bounds_around(lat, lon, TREE_HINT_RADIUS_M))
             .await?
             .into_iter()
             .filter(|tree| tree.is_existing())
             .filter_map(|tree| {
                 let distance = haversine_distance_m(lat, lon, tree.lat, tree.lon);
-                if distance > 10.0 {
+
+                if distance > TREE_HINT_RADIUS_M {
                     return None;
                 }
+
                 let bearing = bearing_deg(lat, lon, tree.lat, tree.lon);
                 let angle = (bearing - image.heading + 360.0) % 360.0;
-                Some((
+
+                Some(HintCandidate {
                     angle,
-                    PanoramaHintRead {
-                        angle,
-                        tree_id: Some(tree.id.to_string()),
-                        distance: Some(distance),
-                        image_id: None,
-                    },
-                ))
+                    distance,
+                    id: tree.id,
+                })
             })
             .collect();
 
-        pointers.append(&mut tree_hints);
+        for pointer in dedup_by_angle(tree_candidates, TREE_HINT_MIN_ANGLE_DEG) {
+            pointers.push((
+                pointer.angle,
+                PanoramaHintRead {
+                    angle: pointer.angle,
+                    tree_id: Some(pointer.id.to_string()),
+                    distance: Some(pointer.distance),
+                    image_id: None,
+                },
+            ));
+        }
+
         pointers.sort_by(|a, b| a.0.total_cmp(&b.0));
 
         hints.extend(pointers.into_iter().map(|(_, hint)| hint));
@@ -821,25 +833,25 @@ mod tests {
     #[test]
     fn dedup_by_angle_keeps_closest_and_separated() {
         let candidates = vec![
-            ImagePointer {
+            HintCandidate {
                 angle: 10.0,
                 distance: 5.0,
-                image_id: 100,
+                id: 100,
             },
-            ImagePointer {
+            HintCandidate {
                 angle: 20.0,
                 distance: 2.0,
-                image_id: 200,
+                id: 200,
             },
-            ImagePointer {
+            HintCandidate {
                 angle: 90.0,
                 distance: 8.0,
-                image_id: 300,
+                id: 300,
             },
         ];
 
         let kept = dedup_by_angle(candidates, 30.0);
-        let ids: Vec<u64> = kept.iter().map(|pointer| pointer.image_id).collect();
+        let ids: Vec<u64> = kept.iter().map(|pointer| pointer.id).collect();
 
         assert_eq!(ids, vec![200, 300]);
     }
@@ -847,21 +859,31 @@ mod tests {
     #[test]
     fn dedup_by_angle_treats_wrap_as_close() {
         let candidates = vec![
-            ImagePointer {
+            HintCandidate {
                 angle: 350.0,
                 distance: 1.0,
-                image_id: 1,
+                id: 1,
             },
-            ImagePointer {
+            HintCandidate {
                 angle: 5.0,
                 distance: 3.0,
-                image_id: 2,
+                id: 2,
             },
         ];
 
         let kept = dedup_by_angle(candidates, 30.0);
 
         assert_eq!(kept.len(), 1);
-        assert_eq!(kept[0].image_id, 1);
+        assert_eq!(kept[0].id, 1);
+    }
+
+    #[test]
+    fn bounds_around_widens_longitude_at_high_latitude() {
+        let bounds = bounds_around(40.0, 44.0, 10.0);
+
+        // At 40N a degree of longitude is shorter, so the longitude delta must be
+        // wider than the latitude delta to fully contain a 10m radius.
+        assert!(bounds.e - 44.0 > bounds.n - 40.0);
+        assert!(44.0 - bounds.w > 40.0 - bounds.s);
     }
 }
