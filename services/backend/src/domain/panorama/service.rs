@@ -18,6 +18,12 @@ use std::sync::Arc;
 
 const EARTH_RADIUS_M: f64 = 6_371_000.0;
 
+/// Maximum distance for injecting another image as a pointer.
+const IMAGE_HINT_RADIUS_M: f64 = 10.0;
+
+/// Minimum angular separation between injected image pointers, in degrees.
+const IMAGE_HINT_MIN_ANGLE_DEG: f64 = 30.0;
+
 /// Delay before a panorama stats refresh message becomes visible.
 ///
 /// This gives the request transaction time to commit before the consumer reads
@@ -50,6 +56,65 @@ fn bearing_deg(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> f64 {
     let y = d_lon.sin() * lat2.cos();
     let x = lat1.cos() * lat2.sin() - lat1.sin() * lat2.cos() * d_lon.cos();
     (y.atan2(x).to_degrees() + 360.0) % 360.0
+}
+
+/// Shortest absolute angular separation between two bearings, in degrees (0-180).
+fn angular_distance_deg(a: f64, b: f64) -> f64 {
+    let diff = (a - b).abs() % 360.0;
+
+    diff.min(360.0 - diff)
+}
+
+/// Bounding box that fully contains a circle of `radius_m` around a coordinate.
+///
+/// The longitude delta accounts for the shrinking distance-per-degree as
+/// latitude increases, so the box is not clipped in the longitude direction.
+fn bounds_around(lat: f64, lon: f64, radius_m: f64) -> Bounds {
+    let lat_delta = radius_m / 111_111.0;
+    let lon_delta = radius_m / (111_111.0 * lat.to_radians().cos().abs().max(1e-6));
+
+    Bounds {
+        n: lat + lat_delta,
+        s: lat - lat_delta,
+        e: lon + lon_delta,
+        w: lon - lon_delta,
+    }
+}
+
+/// Candidate image pointer retained while deduplicating by bearing.
+#[derive(Debug)]
+struct ImagePointer {
+    angle: f64,
+    distance: f64,
+    image_id: u64,
+}
+
+/// Keeps the closest candidates that are at least `min_separation_deg` apart in
+/// bearing (circular). Candidates are consumed nearest-first, so a closer image
+/// wins when two fall within the minimum separation.
+fn dedup_by_angle(candidates: Vec<ImagePointer>, min_separation_deg: f64) -> Vec<ImagePointer> {
+    let mut candidates = candidates;
+    candidates.sort_by(|a, b| {
+        a.distance
+            .total_cmp(&b.distance)
+            .then(a.image_id.cmp(&b.image_id))
+    });
+
+    let mut kept: Vec<ImagePointer> = Vec::new();
+
+    for candidate in candidates {
+        let too_close = kept
+            .iter()
+            .any(|kept| angular_distance_deg(kept.angle, candidate.angle) < min_separation_deg);
+
+        if too_close {
+            continue;
+        }
+
+        kept.push(candidate);
+    }
+
+    kept
 }
 
 pub struct PanoramaService {
@@ -468,24 +533,44 @@ impl PanoramaService {
 
         let mut pointers: Vec<(f64, PanoramaHintRead)> = Vec::new();
 
-        // Adjacent images in the same panorama (previous and next in capture order)
-        let (prev, next) = self
+        // Other images within range, across any visible, successful panorama.
+        let image_candidates: Vec<ImagePointer> = self
             .repo
-            .get_adjacent_images(image.panorama_id, image_id)
-            .await?;
-        for sibling in [prev, next].into_iter().flatten() {
-            let s_lat = sibling.lat + panorama.lat_offset;
-            let s_lon = sibling.lng + panorama.lon_offset;
-            let distance = haversine_distance_m(lat, lon, s_lat, s_lon);
-            let bearing = bearing_deg(lat, lon, s_lat, s_lon);
-            let angle = (bearing - image.heading + 360.0) % 360.0;
-            pointers.push((
-                angle,
-                PanoramaHintRead {
+            .find_images_by_bounds(bounds_around(lat, lon, IMAGE_HINT_RADIUS_M))
+            .await?
+            .into_iter()
+            .filter_map(|(sibling, _, lat_offset, lon_offset)| {
+                if sibling.id == image_id {
+                    return None;
+                }
+
+                let s_lat = sibling.lat + lat_offset;
+                let s_lon = sibling.lng + lon_offset;
+                let distance = haversine_distance_m(lat, lon, s_lat, s_lon);
+
+                if distance > IMAGE_HINT_RADIUS_M {
+                    return None;
+                }
+
+                let bearing = bearing_deg(lat, lon, s_lat, s_lon);
+                let angle = (bearing - image.heading + 360.0) % 360.0;
+
+                Some(ImagePointer {
                     angle,
+                    distance,
+                    image_id: sibling.id,
+                })
+            })
+            .collect();
+
+        for pointer in dedup_by_angle(image_candidates, IMAGE_HINT_MIN_ANGLE_DEG) {
+            pointers.push((
+                pointer.angle,
+                PanoramaHintRead {
+                    angle: pointer.angle,
                     tree_id: None,
-                    distance: Some(distance),
-                    image_id: Some(sibling.id.to_string()),
+                    distance: Some(pointer.distance),
+                    image_id: Some(pointer.image_id.to_string()),
                 },
             ));
         }
@@ -724,5 +809,59 @@ mod tests {
         assert_eq!(min_lon, None);
         assert_eq!(max_lon, None);
         assert_eq!(points_json, None);
+    }
+
+    #[test]
+    fn angular_distance_handles_wrap_around() {
+        assert_eq!(angular_distance_deg(10.0, 350.0), 20.0);
+        assert_eq!(angular_distance_deg(0.0, 180.0), 180.0);
+        assert_eq!(angular_distance_deg(45.0, 45.0), 0.0);
+    }
+
+    #[test]
+    fn dedup_by_angle_keeps_closest_and_separated() {
+        let candidates = vec![
+            ImagePointer {
+                angle: 10.0,
+                distance: 5.0,
+                image_id: 100,
+            },
+            ImagePointer {
+                angle: 20.0,
+                distance: 2.0,
+                image_id: 200,
+            },
+            ImagePointer {
+                angle: 90.0,
+                distance: 8.0,
+                image_id: 300,
+            },
+        ];
+
+        let kept = dedup_by_angle(candidates, 30.0);
+        let ids: Vec<u64> = kept.iter().map(|pointer| pointer.image_id).collect();
+
+        assert_eq!(ids, vec![200, 300]);
+    }
+
+    #[test]
+    fn dedup_by_angle_treats_wrap_as_close() {
+        let candidates = vec![
+            ImagePointer {
+                angle: 350.0,
+                distance: 1.0,
+                image_id: 1,
+            },
+            ImagePointer {
+                angle: 5.0,
+                distance: 3.0,
+                image_id: 2,
+            },
+        ];
+
+        let kept = dedup_by_angle(candidates, 30.0);
+
+        assert_eq!(kept.len(), 1);
+        assert_eq!(kept[0].image_id, 1);
     }
 }
