@@ -68,9 +68,8 @@ pub async fn get_panorama_geo_json_action(
         })
         .collect();
 
-    Ok(crate::responders::geo_json::respond_with_panoramas(
+    Ok(crate::responders::geo_json::respond_with_panorama(
         &images_with_offsets,
-        &[panorama],
     ))
 }
 

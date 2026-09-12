@@ -88,7 +88,8 @@ impl PanoramaRepository {
 
     pub async fn get_images(&self, panorama_id: u64) -> Result<Vec<PanoramaImage>> {
         let query = SelectQuery::new(IMAGES_TABLE)
-            .with_condition("panorama_id", Value::from(panorama_id as i64));
+            .with_condition("panorama_id", Value::from(panorama_id as i64))
+            .with_order("id");
         let records = self.db.get_records(query).await?;
         records.iter().map(PanoramaImage::from_attributes).collect()
     }
