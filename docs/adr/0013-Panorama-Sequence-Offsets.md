@@ -2,6 +2,7 @@
 
 - Date: 2026-06-24
 - Status: accepted
+- Superseded by: see [ADR 0026](0026-Panorama-Geometry-Precomputation.md)
 
 ## Context
 

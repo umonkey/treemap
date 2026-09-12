@@ -22,23 +22,11 @@ pub struct DatabaseQueue {
 #[async_trait]
 impl BaseQueueInterface for DatabaseQueue {
     async fn push(&self, payload: &str) -> Result<QueueMessage> {
-        let id = get_unique_id()?;
-        let now = get_timestamp();
+        self.push_with_delay(payload, 0).await
+    }
 
-        let msg = QueueMessage {
-            id: id.to_string(),
-            added_at: now,
-            available_at: now,
-            payload: payload.to_string(),
-            attempts: 0,
-        };
-
-        let query = InsertQuery::new(TABLE).with_values(msg.to_attributes());
-        self.db.add_record(query).await?;
-
-        debug!("Message {id} added to queue, payload: {payload}");
-
-        Ok(msg)
+    async fn push_delayed(&self, payload: &str, delay_secs: u64) -> Result<QueueMessage> {
+        self.push_with_delay(payload, delay_secs).await
     }
 
     async fn pop(&self) -> Result<Option<QueueMessage>> {
@@ -86,5 +74,25 @@ impl BaseQueueInterface for DatabaseQueue {
 impl DatabaseQueue {
     pub fn new(db: Arc<Database>) -> Self {
         Self { db }
+    }
+
+    async fn push_with_delay(&self, payload: &str, delay_secs: u64) -> Result<QueueMessage> {
+        let id = get_unique_id()?;
+        let now = get_timestamp();
+
+        let msg = QueueMessage {
+            id: id.to_string(),
+            added_at: now,
+            available_at: now + delay_secs,
+            payload: payload.to_string(),
+            attempts: 0,
+        };
+
+        let query = InsertQuery::new(TABLE).with_values(msg.to_attributes());
+        self.db.add_record(query).await?;
+
+        debug!("Message {id} added to queue with {delay_secs}s delay, payload: {payload}");
+
+        Ok(msg)
     }
 }

@@ -14,22 +14,23 @@ fn usage() {
     println!("Usage: treemap command");
     println!();
     println!("Commands:");
-    println!("  backup-database       -- create a database backup");
-    println!("  dispatch-emails       -- run the email dispatcher daemon");
-    println!("  dispatch-panoramas    -- process draft panoramas");
-    println!("  dispatch-queue        -- run the queue consumer daemon");
-    println!("  merge-duplicates [N]  -- automated duplicate tree resolution");
-    println!("  migrate-timestamps    -- backfill update timestamps");
-    println!("  osm-pull              -- get new trees from OpenStreetMap");
-    println!("  osm-push              -- send new trees to OSM");
-    println!("  osm-push-changes      -- send tree updates to OSM");
-    println!("  osm-push-delete       -- remove deleted trees from OSM");
-    println!("  osm-remap-duplicates  -- fix OSM IDs for merged trees");
-    println!("  scan-panoramas        -- scan and calculate file sizes for panoramas");
-    println!("  serve                 -- run the web server");
-    println!("  update-tree-address N -- update street address for a single tree");
-    println!("  update-tree-addresses -- update street address for all trees");
-    println!("  upload-files          -- move local files to S3");
+    println!("  backup-database         -- create a database backup");
+    println!("  dispatch-emails         -- run the email dispatcher daemon");
+    println!("  dispatch-panoramas      -- process draft panoramas");
+    println!("  dispatch-queue          -- run the queue consumer daemon");
+    println!("  merge-duplicates [N]    -- automated duplicate tree resolution");
+    println!("  migrate-timestamps      -- backfill update timestamps");
+    println!("  osm-pull                -- get new trees from OpenStreetMap");
+    println!("  osm-push                -- send new trees to OSM");
+    println!("  osm-push-changes        -- send tree updates to OSM");
+    println!("  osm-push-delete         -- remove deleted trees from OSM");
+    println!("  osm-remap-duplicates    -- fix OSM IDs for merged trees");
+    println!("  refresh-panorama-stats  -- recompute panorama geometry and bounds");
+    println!("  scan-panoramas          -- scan and calculate file sizes for panoramas");
+    println!("  serve                   -- run the web server");
+    println!("  update-tree-address N   -- update street address for a single tree");
+    println!("  update-tree-addresses   -- update street address for all trees");
+    println!("  upload-files            -- move local files to S3");
 }
 
 #[actix_web::main]
@@ -76,6 +77,10 @@ async fn main() -> std::io::Result<()> {
         }
         "scan-panoramas" => {
             scan_panoramas_command().await;
+            return Ok(());
+        }
+        "refresh-panorama-stats" => {
+            refresh_panorama_stats_command().await;
             return Ok(());
         }
         "merge-duplicates" => {

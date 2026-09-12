@@ -1,6 +1,8 @@
 use super::models::{Panorama, PanoramaHint, PanoramaImage};
 use crate::domain::tree::Bounds;
-use crate::infra::database::{Database, DeleteQuery, InsertQuery, SelectQuery, UpdateQuery, Value};
+use crate::infra::database::{
+    Attributes, Database, DeleteQuery, InsertQuery, SelectQuery, UpdateQuery, Value,
+};
 use crate::services::{Context, Injectable};
 use crate::types::*;
 use std::sync::Arc;
@@ -37,6 +39,29 @@ impl PanoramaRepository {
         let query = UpdateQuery::new(TABLE)
             .with_condition("id", Value::from(id as i64))
             .with_values(panorama.to_attributes());
+        self.db.update(query).await?;
+        Ok(())
+    }
+
+    pub async fn update_panorama_stats_fields(
+        &self,
+        id: u64,
+        min_lat: Option<f64>,
+        max_lat: Option<f64>,
+        min_lon: Option<f64>,
+        max_lon: Option<f64>,
+        points_json: Option<String>,
+    ) -> Result<()> {
+        let mut values = Attributes::default();
+        values.insert("min_lat", Value::from(min_lat));
+        values.insert("max_lat", Value::from(max_lat));
+        values.insert("min_lon", Value::from(min_lon));
+        values.insert("max_lon", Value::from(max_lon));
+        values.insert("points_json", Value::from(points_json));
+
+        let query = UpdateQuery::new(TABLE)
+            .with_condition("id", Value::from(id as i64))
+            .with_values(values);
         self.db.update(query).await?;
         Ok(())
     }

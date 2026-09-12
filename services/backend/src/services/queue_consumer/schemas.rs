@@ -27,12 +27,19 @@ pub struct UpdateUserpicMessage {
     pub file_id: u64,
 }
 
+// Recompute the pre-rendered track geometry and bounds for a panorama.
+#[derive(Debug, Deserialize, Serialize)]
+pub struct UpdatePanoramaStatsMessage {
+    pub id: u64,
+}
+
 #[derive(Debug, Serialize)]
 pub enum QueueCommand {
     ResizeImage(ResizeImageMessage),
     UpdateTreeAddress(UpdateTreeAddressMessage),
     AddPhoto(AddPhotoMessage),
     UpdateUserpic(UpdateUserpicMessage),
+    UpdatePanoramaStats(UpdatePanoramaStatsMessage),
 }
 
 impl ResizeImageMessage {
@@ -79,6 +86,18 @@ impl UpdateUserpicMessage {
             "params": {
                 "user_id": self.user_id,
                 "file_id": self.file_id,
+            },
+        })
+        .to_string()
+    }
+}
+
+impl UpdatePanoramaStatsMessage {
+    pub fn encode(&self) -> String {
+        json!({
+            "command": "UpdatePanoramaStats",
+            "params": {
+                "id": self.id,
             },
         })
         .to_string()

@@ -18,11 +18,13 @@ type Properties = {
 	image_count?: number;
 };
 
+type PanoramaGeometry =
+	{ type: 'Point'; coordinates: number[] } | { type: 'MultiLineString'; coordinates: number[][][] };
+
 type Feature = {
 	type: 'Feature';
 	id: string;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	geometry: any;
+	geometry: PanoramaGeometry;
 	properties: Properties;
 };
 
@@ -30,6 +32,20 @@ type Collection = {
 	type: 'FeatureCollection';
 	features: Feature[];
 };
+
+/**
+ * Normalize sequence coordinates to a MultiLineString sections array.
+ *
+ * Legacy API responses return depth-2 coordinates (a flat LineString), while
+ * the current backend returns depth-3 coordinates (an array of sections).
+ */
+export function fixSequenceFormat(coordinates: number[][] | number[][][]): number[][][] {
+	if (coordinates.length === 0) return [];
+
+	return typeof coordinates[0][0] === 'number'
+		? [coordinates as number[][]]
+		: (coordinates as number[][][]);
+}
 
 export class PanoramicLayerLogic {
 	data = $state.raw<Collection | undefined>(undefined);
@@ -49,13 +65,31 @@ export class PanoramicLayerLogic {
 				.then(({ status, data }) => {
 					if (status === 200 && data) {
 						const collection = data as unknown as Collection;
+
+						collection.features.forEach((feature) => {
+							if (feature.properties?.kind === 'sequence') {
+								feature.geometry = {
+									type: 'MultiLineString',
+									coordinates: fixSequenceFormat(
+										feature.geometry.coordinates as number[][] | number[][][]
+									)
+								};
+							}
+						});
+
 						console.debug(`[PanoramicLayer] Received ${collection.features.length} features.`);
 						this.data = collection;
-						mapPoiStore.panoramas = collection.features.map((f) => ({
-							lat: f.geometry.coordinates[1],
-							lon: f.geometry.coordinates[0],
-							url: routes.panorama(f.properties.id)
-						}));
+						mapPoiStore.panoramas = collection.features
+							.filter((f) => f.properties?.kind === 'image' && f.geometry?.type === 'Point')
+							.map((f) => {
+								const [lon, lat] = f.geometry.coordinates as [number, number];
+
+								return {
+									lat,
+									lon,
+									url: routes.panorama(f.properties.id)
+								};
+							});
 					}
 				})
 				.catch((e) => {

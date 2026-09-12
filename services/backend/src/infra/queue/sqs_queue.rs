@@ -19,28 +19,11 @@ pub struct SqsQueue {
 #[async_trait]
 impl BaseQueueInterface for SqsQueue {
     async fn push(&self, payload: &str) -> Result<QueueMessage> {
-        let output = self
-            .client
-            .send_message()
-            .queue_url(&self.queue_url)
-            .message_body(payload)
-            .send()
-            .await
-            .map_err(|e| {
-                error!("Error sending message to SQS: {e:?}");
-                Error::Queue
-            })?;
+        self.push_with_delay(payload, 0).await
+    }
 
-        let id = output.message_id.unwrap_or_default();
-        debug!("Message {id} added to SQS queue.");
-
-        Ok(QueueMessage {
-            id,
-            added_at: get_timestamp(),
-            available_at: get_timestamp(),
-            payload: payload.to_string(),
-            attempts: 0,
-        })
+    async fn push_delayed(&self, payload: &str, delay_secs: u64) -> Result<QueueMessage> {
+        self.push_with_delay(payload, delay_secs).await
     }
 
     async fn pop(&self) -> Result<Option<QueueMessage>> {
@@ -180,6 +163,32 @@ impl SqsQueue {
         Ok(Self {
             client,
             queue_url: sqs_url,
+        })
+    }
+
+    async fn push_with_delay(&self, payload: &str, delay_secs: u64) -> Result<QueueMessage> {
+        let output = self
+            .client
+            .send_message()
+            .queue_url(&self.queue_url)
+            .message_body(payload)
+            .delay_seconds(delay_secs as i32)
+            .send()
+            .await
+            .map_err(|e| {
+                error!("Error sending message to SQS: {e:?}");
+                Error::Queue
+            })?;
+
+        let id = output.message_id.unwrap_or_default();
+        debug!("Message {id} added to SQS queue with {delay_secs}s delay.");
+
+        Ok(QueueMessage {
+            id,
+            added_at: get_timestamp(),
+            available_at: get_timestamp(),
+            payload: payload.to_string(),
+            attempts: 0,
         })
     }
 }

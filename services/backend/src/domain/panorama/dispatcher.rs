@@ -107,7 +107,6 @@ impl PanoramaDispatcher {
 
         if new_status == "SUCCEEDED" {
             self.pull_panoramas_images(panorama).await?;
-            self.service.update_panorama_stats(panorama).await?;
             self.delete_temporary_files(panorama.id).await?;
             let file_size = self.calculate_size(panorama.id).await?;
             panorama.file_size = Some(file_size);
@@ -131,7 +130,14 @@ impl PanoramaDispatcher {
             panorama.file_size = Some(file_size);
         }
 
-        self.repo.update(panorama.id, panorama).await?;
+        let panorama_id = panorama.id;
+        let succeeded = new_status == "SUCCEEDED";
+
+        self.repo.update(panorama_id, panorama).await?;
+
+        if succeeded {
+            self.service.schedule_stats_refresh(panorama_id).await?;
+        }
 
         if new_status == "FAILED" {
             let msg = status_reason.unwrap_or_else(|| "Processing job failed".to_string());

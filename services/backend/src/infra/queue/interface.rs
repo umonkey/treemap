@@ -32,6 +32,10 @@ impl Queue {
         self.queue.push(payload).await
     }
 
+    pub async fn push_delayed(&self, payload: &str, delay_secs: u64) -> Result<QueueMessage> {
+        self.queue.push_delayed(payload, delay_secs).await
+    }
+
     pub async fn pop(&self) -> Result<Option<QueueMessage>> {
         self.queue.pop().await
     }

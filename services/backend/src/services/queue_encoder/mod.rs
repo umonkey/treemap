@@ -92,6 +92,17 @@ impl QueueCommand {
                 })))
             }
 
+            "UpdatePanoramaStats" => {
+                let id = params["id"].as_u64().ok_or("missing id").map_err(|e| {
+                    error!("Error extracting panorama id: {e}, payload={json}");
+                    Error::Queue
+                })?;
+
+                Ok(Some(QueueCommand::UpdatePanoramaStats(
+                    UpdatePanoramaStatsMessage { id },
+                )))
+            }
+
             _ => {
                 error!("Could not parse message: {json}");
                 Ok(None)
@@ -129,6 +140,33 @@ mod tests {
         assert_eq!(
             message.encode(),
             r#"{"command":"ResizeImage","params":{"id":12345}}"#
+        );
+    }
+
+    #[test]
+    fn test_decode_update_panorama_stats() {
+        let json = r#"{"command":"UpdatePanoramaStats","params":{"id":12345}}"#;
+
+        let command = QueueCommand::decode(json)
+            .expect("Error parsing command.")
+            .expect("No command found.");
+
+        match command {
+            QueueCommand::UpdatePanoramaStats(message) => {
+                assert_eq!(message.id, 12345);
+            }
+
+            _ => panic!("Expected UpdatePanoramaStats, got {command:?}"),
+        }
+    }
+
+    #[test]
+    fn test_encode_update_panorama_stats() {
+        let message = UpdatePanoramaStatsMessage { id: 12345 };
+
+        assert_eq!(
+            message.encode(),
+            r#"{"command":"UpdatePanoramaStats","params":{"id":12345}}"#
         );
     }
 }

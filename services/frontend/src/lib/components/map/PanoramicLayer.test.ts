@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { PanoramicLayerLogic } from './PanoramicLayer.svelte.ts';
+import { PanoramicLayerLogic, fixSequenceFormat } from './PanoramicLayer.svelte.ts';
 import { mapBus } from '$lib/buses/mapBus';
 import { mapPoiStore } from '$lib/stores/mapPoi.svelte';
 import { mapState } from './MapLibre.svelte.ts';
@@ -22,6 +22,37 @@ vi.mock('$lib/routes', async () => {
 			panorama: (id: string) => `/panorama/${id}`
 		}
 	};
+});
+
+describe('fixSequenceFormat', () => {
+	it('wraps depth-2 coordinates into a single section', () => {
+		const flat = [
+			[44.5, 40.1],
+			[44.6, 40.2]
+		];
+
+		expect(fixSequenceFormat(flat)).toEqual([
+			[
+				[44.5, 40.1],
+				[44.6, 40.2]
+			]
+		]);
+	});
+
+	it('passes depth-3 coordinates through unchanged', () => {
+		const sections = [
+			[
+				[44.5, 40.1],
+				[44.6, 40.2]
+			]
+		];
+
+		expect(fixSequenceFormat(sections)).toEqual(sections);
+	});
+
+	it('returns an empty array for empty coordinates', () => {
+		expect(fixSequenceFormat([])).toEqual([]);
+	});
 });
 
 describe('PanoramicLayerLogic', () => {
@@ -90,6 +121,55 @@ describe('PanoramicLayerLogic', () => {
 				url: '/panorama/pano-1'
 			}
 		]);
+
+		if (cleanup) cleanup();
+	});
+
+	it('normalizes a legacy LineString sequence feature to a MultiLineString', async () => {
+		const mockCollection = {
+			type: 'FeatureCollection' as const,
+			features: [
+				{
+					type: 'Feature' as const,
+					id: 'pano-seq-1',
+					geometry: {
+						type: 'LineString' as const,
+						coordinates: [
+							[44.5, 40.1],
+							[44.6, 40.2]
+						]
+					},
+					properties: {
+						id: 'pano-seq-1',
+						kind: 'sequence' as const,
+						captured_at: 123456789
+					}
+				}
+			]
+		};
+
+		vi.mocked(getPanoramasGeoJSON).mockResolvedValueOnce({
+			status: 200,
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			data: mockCollection as any
+		});
+
+		const cleanup = logic.onMount();
+		const bounds = { _sw: { lng: 44, lat: 40 }, _ne: { lng: 45, lat: 41 } } as unknown as IBounds;
+		mapBus.emit('bounds', bounds);
+
+		await new Promise((resolve) => setTimeout(resolve, 250));
+
+		const feature = logic.data?.features[0];
+
+		expect(feature?.geometry.type).toBe('MultiLineString');
+		expect(feature?.geometry.coordinates).toEqual([
+			[
+				[44.5, 40.1],
+				[44.6, 40.2]
+			]
+		]);
+		expect(mapPoiStore.panoramas).toEqual([]);
 
 		if (cleanup) cleanup();
 	});

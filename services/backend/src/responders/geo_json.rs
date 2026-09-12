@@ -1,5 +1,5 @@
 use crate::domain::alert::Alert;
-use crate::domain::panorama::{Panorama, PanoramaImage};
+use crate::domain::panorama::{group_visible, Panorama, PanoramaImage};
 use crate::domain::tree::Tree;
 use crate::domain::water::WaterSource;
 use crate::utils::get_timestamp;
@@ -129,30 +129,7 @@ pub fn respond_with_alerts(alerts: &[Alert], days: u64) -> HttpResponse {
 fn get_visible_groups(
     images: &[(PanoramaImage, i64, f64, f64)],
 ) -> Vec<Vec<&(PanoramaImage, i64, f64, f64)>> {
-    let mut groups = Vec::new();
-    let mut current: Vec<&(PanoramaImage, i64, f64, f64)> = Vec::new();
-    let mut current_panorama_id: Option<u64> = None;
-
-    for image in images {
-        let panorama_id = image.0.panorama_id;
-        let changed = current_panorama_id.is_some_and(|id| id != panorama_id);
-
-        if (image.0.hidden || changed) && !current.is_empty() {
-            groups.push(std::mem::take(&mut current));
-        }
-
-        current_panorama_id = Some(panorama_id);
-
-        if !image.0.hidden {
-            current.push(image);
-        }
-    }
-
-    if !current.is_empty() {
-        groups.push(current);
-    }
-
-    groups
+    group_visible(images, |t| t.0.panorama_id, |t| t.0.hidden)
 }
 
 /// Convert a single panorama's images to a GeoJSON FeatureCollection response.
@@ -251,35 +228,46 @@ pub fn respond_with_panoramas(
     }
 
     for pan in panoramas {
-        let coords: Value =
-            serde_json::from_str(&pan.points_json.clone().unwrap_or_default()).unwrap_or(json!([]));
-        let adjusted_coords = if let Value::Array(arr) = coords {
-            Value::Array(
-                arr.into_iter()
-                    .map(|pt| {
-                        if let Value::Array(pt_arr) = pt {
-                            if pt_arr.len() >= 2 {
-                                let lon = pt_arr[0].as_f64().unwrap_or(0.0) + pan.lon_offset;
-                                let lat = pt_arr[1].as_f64().unwrap_or(0.0) + pan.lat_offset;
-                                json!([lon, lat])
-                            } else {
-                                Value::Array(pt_arr)
-                            }
-                        } else {
-                            pt
-                        }
-                    })
-                    .collect(),
-            )
-        } else {
-            coords
+        let raw_points = match &pan.points_json {
+            Some(raw) if !raw.is_empty() => raw,
+            _ => continue,
         };
+
+        let coordinates: Value = match serde_json::from_str(raw_points) {
+            Ok(value) => value,
+            Err(_) => continue,
+        };
+
+        let Value::Array(sections) = coordinates else {
+            continue;
+        };
+
+        if sections.is_empty() {
+            continue;
+        }
+
+        if !matches!(sections.first(), Some(Value::Array(_))) {
+            continue;
+        }
+
+        let legacy = matches!(
+            sections.first(),
+            Some(Value::Array(first)) if first.first().is_some_and(Value::is_number)
+        );
+
+        // Depth-2 coordinates are a flat LineString: wrap them into one section.
+        let normalized = if legacy {
+            Value::Array(vec![Value::Array(sections)])
+        } else {
+            Value::Array(sections)
+        };
+
         features.push(json!({
             "type": "Feature",
             "id": pan.id.to_string(),
             "geometry": {
-                "type": "LineString",
-                "coordinates": adjusted_coords
+                "type": "MultiLineString",
+                "coordinates": normalized
             },
             "properties": {
                 "id": pan.id.to_string(),
@@ -378,5 +366,88 @@ mod tests {
         let groups = get_visible_groups(&images);
 
         assert_eq!(ids(&groups), vec![vec![1], vec![2]]);
+    }
+
+    fn panorama(id: u64, points_json: Option<&str>) -> Panorama {
+        Panorama {
+            id,
+            storage_key: id.to_string(),
+            created_at: 0,
+            created_by: 0,
+            image_count: 2,
+            file_size: None,
+            processing_time: None,
+            status: crate::domain::panorama::PanoramaStatus::Success,
+            title: "test".to_string(),
+            visible: true,
+            source_video_path: None,
+            gpx_path: None,
+            video_timestamp: None,
+            lat_offset: 0.0,
+            lon_offset: 0.0,
+            processing_arn: None,
+            processing_status: None,
+            failure_reason: None,
+            min_lat: None,
+            max_lat: None,
+            min_lon: None,
+            max_lon: None,
+            points_json: points_json.map(str::to_string),
+        }
+    }
+
+    #[tokio::test]
+    async fn respond_with_panoramas_emits_multi_line_string_sections() {
+        let panorama = panorama(
+            7,
+            Some("[[[44.0,40.0],[44.1,40.1]],[[44.2,40.2],[44.3,40.3]]]"),
+        );
+
+        let response = respond_with_panoramas(&[], &[panorama]);
+
+        let body = actix_web::body::to_bytes(response.into_body())
+            .await
+            .unwrap();
+        let value: Value = serde_json::from_slice(&body).unwrap();
+        let feature = &value["features"][0];
+
+        assert_eq!(feature["geometry"]["type"], "MultiLineString");
+        assert_eq!(
+            feature["geometry"]["coordinates"],
+            json!([[[44.0, 40.0], [44.1, 40.1]], [[44.2, 40.2], [44.3, 40.3]]])
+        );
+    }
+
+    #[tokio::test]
+    async fn respond_with_panoramas_normalizes_legacy_flat_points() {
+        let panorama = panorama(8, Some("[[44.0,40.0],[44.1,40.1]]"));
+
+        let response = respond_with_panoramas(&[], &[panorama]);
+
+        let body = actix_web::body::to_bytes(response.into_body())
+            .await
+            .unwrap();
+        let value: Value = serde_json::from_slice(&body).unwrap();
+        let feature = &value["features"][0];
+
+        assert_eq!(feature["geometry"]["type"], "MultiLineString");
+        assert_eq!(
+            feature["geometry"]["coordinates"],
+            json!([[[44.0, 40.0], [44.1, 40.1]]])
+        );
+    }
+
+    #[tokio::test]
+    async fn respond_with_panoramas_skips_panoramas_without_points() {
+        let panorama = panorama(9, None);
+
+        let response = respond_with_panoramas(&[], &[panorama]);
+
+        let body = actix_web::body::to_bytes(response.into_body())
+            .await
+            .unwrap();
+        let value: Value = serde_json::from_slice(&body).unwrap();
+
+        assert_eq!(value["features"].as_array().unwrap().len(), 0);
     }
 }
