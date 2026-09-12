@@ -2,6 +2,7 @@ import { goto, routes } from '$lib/routes';
 import { getPanoramasImage, type PanoramaImage } from '$lib/api/panoramas';
 import { mapRaysStore } from '$lib/stores/mapRays.svelte';
 import { mapBus } from '$lib/buses/mapBus';
+import { mapLayerStore } from '$lib/stores/mapLayerStore';
 
 class PageState {
 	id = $state<string>('');
@@ -29,6 +30,11 @@ class PageState {
 		if (this.id === id) return;
 		this.id = id;
 		this.image = null;
+
+		mapLayerStore.update((store) => {
+			store.panoramas = true;
+			return store;
+		});
 
 		const imageRes = await getPanoramasImage(id);
 
