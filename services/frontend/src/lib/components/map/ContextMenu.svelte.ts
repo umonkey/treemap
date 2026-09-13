@@ -48,6 +48,11 @@ export class ContextMenuLogic {
 		this.open = false;
 	};
 
+	public handleContextMenu = (e: MouseEvent) => {
+		e.preventDefault();
+		this.handleClose();
+	};
+
 	public handleNavigate = (url: string) => {
 		this.open = false;
 
