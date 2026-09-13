@@ -54,7 +54,7 @@ resource "digitalocean_project_resources" "treemap" {
 resource "digitalocean_droplet" "app" {
   name   = "cloud.treemaps.app"
   region = "fra1"
-  size   = "s-1vcpu-512mb-10gb"
+  size   = "s-1vcpu-1gb"
   image  = "195932981"
 }
 
