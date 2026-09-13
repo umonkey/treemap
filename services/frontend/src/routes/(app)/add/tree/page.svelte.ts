@@ -57,7 +57,7 @@ class PageState {
 	handleQuickAdd = async () => {
 		const id = await this.save();
 		if (id) {
-			goto(routes.treeAdd());
+			goto(routes.addTree());
 		}
 	};
 

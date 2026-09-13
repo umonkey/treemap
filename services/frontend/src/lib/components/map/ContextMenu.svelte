@@ -29,7 +29,7 @@
 			<button
 				type="button"
 				disabled={!$hasPermission('tree:create')}
-				onclick={() => componentState.handleNavigate(routes.treeAdd())}
+				onclick={() => componentState.handleNavigate(routes.addTree())}
 			>
 				<MapTreeIcon />
 				<span>{locale.addTitle()}</span>
@@ -45,7 +45,7 @@
 			<button
 				type="button"
 				disabled={!$hasPermission('water:manage')}
-				onclick={() => componentState.handleNavigate(routes.waterAdd())}
+				onclick={() => componentState.handleNavigate(routes.addWater())}
 			>
 				<WaterIcon />
 				<span>{locale.waterAddTitle()}</span>
