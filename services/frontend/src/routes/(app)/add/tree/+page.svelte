@@ -10,6 +10,7 @@
 	import { componentState } from '$lib/components/map/NearestTree.svelte.ts';
 	import { formatMeters } from '$lib/utils/trees';
 	import { mapMode } from '$lib/stores/mapMode';
+	import CloseOnEscape from '$lib/components/layout/CloseOnEscape.svelte';
 	import { onMount } from 'svelte';
 	import '$lib/styles/variables.css';
 
@@ -24,6 +25,8 @@
 <svelte:head>
 	<title>{locale.addTitle()} — {locale.appTitle()}</title>
 </svelte:head>
+
+<CloseOnEscape onClose={pageState.handleCancel} />
 
 <div class="panel">
 	<div class="header">

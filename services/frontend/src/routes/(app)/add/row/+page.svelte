@@ -10,6 +10,7 @@
 	import { mapRowState } from '$lib/stores/mapRowState.svelte';
 	import { get } from 'svelte/store';
 	import { mapStore } from '$lib/stores/mapStore';
+	import CloseOnEscape from '$lib/components/layout/CloseOnEscape.svelte';
 	import '$lib/styles/variables.css';
 
 	onMount(() => {
@@ -33,6 +34,8 @@
 <svelte:head>
 	<title>{locale.addTitle()} — {locale.appTitle()}</title>
 </svelte:head>
+
+<CloseOnEscape onClose={pageState.handleCancel} />
 
 <div class="panel">
 	<div class="header">

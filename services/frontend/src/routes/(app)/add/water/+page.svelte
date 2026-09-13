@@ -7,6 +7,7 @@
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
 	import { mapState } from '$lib/components/map/MapLibre.svelte.ts';
 	import { mapMode } from '$lib/stores/mapMode';
+	import CloseOnEscape from '$lib/components/layout/CloseOnEscape.svelte';
 	import { onMount } from 'svelte';
 	import '$lib/styles/variables.css';
 
@@ -21,6 +22,8 @@
 <svelte:head>
 	<title>{locale.waterAddTitle()} — {locale.appTitle()}</title>
 </svelte:head>
+
+<CloseOnEscape onClose={pageState.handleCancel} />
 
 <div class="panel">
 	<div class="header">

@@ -3,7 +3,7 @@ import { DEFAULT_TREE } from '$lib/constants';
 import { routes } from '$lib/routes';
 import { authStore } from '$lib/stores/authStore';
 import type { IAddTreesRequest, IResponse, ITreeList } from '$lib/types';
-import { cleanup, render, screen, waitFor } from '@testing-library/svelte';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import Page from './+page.svelte';
@@ -124,6 +124,31 @@ describe('add page', async () => {
 		});
 
 		await user.click(em);
+
+		await waitFor(() => expect(mockedGoto).toHaveBeenCalledWith(routes.map()));
+	});
+
+	test('handle escape', async () => {
+		authStore.set({
+			token: 'secret',
+			user: {
+				id: 'user1',
+				name: 'John Doe',
+				picture: 'https://example.com/picture.jpg',
+				email: 'john@example.com',
+				trees_count: 0,
+				comments_count: 0,
+				updates_count: 0,
+				files_count: 0,
+				last_active_at: 0
+			},
+			roles: [],
+			permissions: []
+		});
+
+		render(Page);
+
+		await fireEvent.keyDown(window, { key: 'Escape' });
 
 		await waitFor(() => expect(mockedGoto).toHaveBeenCalledWith(routes.map()));
 	});
