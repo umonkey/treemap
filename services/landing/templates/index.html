@@ -254,6 +254,16 @@
             }
         }
     </style>
+    {% if config.mode == "build" and config.extra.ga_measurement_id and config.extra.ga_measurement_id != "G-XXXXXXXXXX" %}
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ config.extra.ga_measurement_id }}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', '{{ config.extra.ga_measurement_id }}');
+    </script>
+    {% endif %}
 </head>
 <body>
     <nav class="sticky-nav container">

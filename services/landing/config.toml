@@ -9,3 +9,4 @@ taxonomies = []
 email = "vladimir@kanachyerevan.am"
 github_url = "https://github.com/umonkey/treemap"
 demo_url = "https://yerevan.treemaps.app/"
+ga_measurement_id = "G-4M3Q9RTB22"
