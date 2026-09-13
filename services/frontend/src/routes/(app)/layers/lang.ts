@@ -13,6 +13,7 @@ interface StringList {
 	layerWater: () => string;
 	otherTitle: () => string;
 	optionStickyPoints: () => string;
+	optionCenter: () => string;
 }
 
 class English implements StringList {
@@ -28,6 +29,7 @@ class English implements StringList {
 	layerWater = () => 'Water sources';
 	otherTitle = () => 'Other options';
 	optionStickyPoints = () => 'Sticky points';
+	optionCenter = () => 'Center crosshair';
 }
 
 class Russian extends English {
@@ -43,6 +45,7 @@ class Russian extends English {
 	layerWater = () => 'Источники воды';
 	otherTitle = () => 'Другие настройки';
 	optionStickyPoints = () => 'Прилипание к точкам';
+	optionCenter = () => 'Перекрестие в центре';
 }
 
 class Armenian extends English {
@@ -58,6 +61,7 @@ class Armenian extends English {
 	layerWater = () => 'Ջրի աղբյուրներ';
 	otherTitle = () => 'Այլ կարգավորումներ';
 	optionStickyPoints = () => 'Կպչուն կետեր';
+	optionCenter = () => 'Կենտրոնական խաչ';
 }
 
 const getLocale = (): StringList => {

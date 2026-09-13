@@ -8,7 +8,8 @@ class SelectorState {
 	panoramas = $state<boolean>(false);
 	treeHints = $state<boolean>(false);
 	water = $state<boolean>(true);
-	stickyPoints = $state<boolean>(true);
+	stickyPoints = $state<boolean>(false);
+	center = $state<boolean>(false);
 
 	public constructor() {
 		const layers = get(mapLayerStore);
@@ -18,7 +19,8 @@ class SelectorState {
 		this.panoramas = layers.panoramas ?? false;
 		this.treeHints = layers.treeHints ?? false;
 		this.water = layers.water ?? true;
-		this.stickyPoints = layers.stickyPoints ?? true;
+		this.stickyPoints = layers.stickyPoints ?? false;
+		this.center = layers.center ?? false;
 	}
 
 	public setBase = (value: string) => {
@@ -80,6 +82,15 @@ class SelectorState {
 
 		mapLayerStore.update((store) => {
 			store.stickyPoints = this.stickyPoints;
+			return store;
+		});
+	};
+
+	public toggleCenter = () => {
+		this.center = !this.center;
+
+		mapLayerStore.update((store) => {
+			store.center = this.center;
 			return store;
 		});
 	};

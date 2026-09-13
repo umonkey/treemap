@@ -25,6 +25,7 @@
 	import NearestTree from './NearestTree.svelte';
 	import MapRowPreview from './MapRowPreview.svelte';
 	import { mapMode } from '$lib/stores/mapMode';
+	import { centerLayer } from '$lib/stores/mapLayerStore';
 
 	const { children = undefined, onMove } = $props<{
 		children?: Snippet;
@@ -95,10 +96,7 @@
 
 		<WaterSourceLayer />
 
-		{#if mapState.moving && mapState.zoom > 18 && ($mapMode === undefined || $mapMode === 'preview')}
-			<MapCenter />
-			<NearestTree distance={5} label={false} />
-		{:else if $mapMode === 'move' || $mapMode === 'add' || $mapMode === 'add-row'}
+		{#if $mapMode === 'move' || $mapMode === 'add' || $mapMode === 'add-row'}
 			<MapCenter />
 			{#if $mapMode === 'move'}
 				<MoveLine />
@@ -107,6 +105,13 @@
 			{:else if $mapMode === 'add-row'}
 				<MapRowPreview />
 				<NearestTree />
+			{/if}
+		{:else if $mapMode === undefined || $mapMode === 'preview'}
+			{#if $centerLayer}
+				<MapCenter />
+			{/if}
+			{#if mapState.moving && mapState.zoom > 18}
+				<NearestTree distance={5} label={false} />
 			{/if}
 		{/if}
 	</MapLibre>

@@ -146,7 +146,7 @@ class MapLibre {
 
 		const mode = get(mapMode);
 		const isUserAction = !!e?.originalEvent;
-		const stickyPoints = get(mapLayerStore).stickyPoints !== false;
+		const stickyPoints = get(mapLayerStore).stickyPoints === true;
 
 		if (
 			isUserAction &&

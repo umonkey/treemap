@@ -66,6 +66,11 @@
 			label={locale.optionStickyPoints()}
 			onChange={selectorState.toggleStickyPoints}
 		/>
+		<CheckInput
+			value={selectorState.center}
+			label={locale.optionCenter()}
+			onChange={selectorState.toggleCenter}
+		/>
 	</div>
 </Dialog>
 
