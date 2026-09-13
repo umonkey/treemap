@@ -62,6 +62,9 @@
 		height: 100%;
 		width: 100%;
 		z-index: var(--z-menu);
+		-webkit-user-select: none;
+		user-select: none;
+		-webkit-touch-callout: none;
 
 		.menu {
 			background-color: var(--map-menu-background);
