@@ -36,16 +36,17 @@ const TREE_HINT_MIN_ANGLE_DEG: f64 = 30.0;
 /// the panorama, avoiding a race on SQS. The systemic fix is tracked separately.
 const STATS_REFRESH_DELAY_SECS: u64 = 1;
 
-/// Visible-only bounds, serialized sectioned geometry, and visible image count
-/// for a panorama.
-type PanoramaStats = (
-    Option<f64>,
-    Option<f64>,
-    Option<f64>,
-    Option<f64>,
-    Option<String>,
-    i32,
-);
+/// Visible-only bounds, sectioned geometry, visible image count, and total
+/// visible track length for a panorama.
+struct PanoramaStats {
+    min_lat: Option<f64>,
+    max_lat: Option<f64>,
+    min_lon: Option<f64>,
+    max_lon: Option<f64>,
+    points_json: Option<String>,
+    image_count: i32,
+    distance: f64,
+}
 
 /// Great-circle distance in meters between two coordinates.
 fn haversine_distance_m(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> f64 {
@@ -54,6 +55,14 @@ fn haversine_distance_m(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> f64 {
     let a = (d_lat / 2.0).sin().powi(2)
         + lat1.to_radians().cos() * lat2.to_radians().cos() * (d_lon / 2.0).sin().powi(2);
     2.0 * EARTH_RADIUS_M * a.sqrt().atan2((1.0 - a).sqrt())
+}
+
+/// Total great-circle length in meters of a `[lng, lat]` polyline.
+fn polyline_length_m(points: &[[f64; 2]]) -> f64 {
+    points
+        .windows(2)
+        .map(|pair| haversine_distance_m(pair[0][1], pair[0][0], pair[1][1], pair[1][0]))
+        .sum()
 }
 
 /// Initial bearing from one coordinate to another, in degrees (0-360, clockwise from north).
@@ -329,6 +338,7 @@ impl PanoramaService {
             min_lon: None,
             max_lon: None,
             points_json: None,
+            distance: 0.0,
         };
 
         self.repo.add(&panorama).await?;
@@ -349,6 +359,7 @@ impl PanoramaService {
         panorama.min_lon = None;
         panorama.max_lon = None;
         panorama.points_json = None;
+        panorama.distance = 0.0;
         panorama.failure_reason = None;
         panorama.image_count = 0;
         panorama.file_size = None;
@@ -643,20 +654,20 @@ impl PanoramaService {
             panorama.lon_offset
         );
 
-        let (min_lat, max_lat, min_lon, max_lon, points_json, image_count) =
-            calculate_panorama_stats(&images, panorama.lat_offset, panorama.lon_offset);
+        let stats = calculate_panorama_stats(&images, panorama.lat_offset, panorama.lon_offset);
 
-        info!("Panorama {id} stats computed: bounds=({min_lat:?}..{max_lat:?}, {min_lon:?}..{max_lon:?}), points_json={}.", if points_json.is_some() { "present" } else { "none" });
+        info!("Panorama {id} stats computed: bounds=({:?}..{:?}, {:?}..{:?}), points_json={}, distance={:.1}m.", stats.min_lat, stats.max_lat, stats.min_lon, stats.max_lon, if stats.points_json.is_some() { "present" } else { "none" }, stats.distance);
 
         self.repo
             .update_panorama_stats_fields(
                 id,
-                min_lat,
-                max_lat,
-                min_lon,
-                max_lon,
-                points_json,
-                image_count,
+                stats.min_lat,
+                stats.max_lat,
+                stats.min_lon,
+                stats.max_lon,
+                stats.points_json,
+                stats.image_count,
+                stats.distance,
             )
             .await
     }
@@ -677,13 +688,14 @@ impl PanoramaService {
     }
 }
 
-/// Computes visible-only bounds, sectioned geometry, and visible image count
-/// for a panorama.
+/// Computes visible-only bounds, sectioned geometry, visible image count, and
+/// total visible track length for a panorama.
 ///
 /// Coordinates have the panorama offsets already baked in. Sections are maximal
 /// runs of visible images with at least two points; hidden images split a
 /// section. When there are no sections, `points_json` is `None`. The returned
-/// count includes only visible images.
+/// count includes only visible images, and `distance` is the sum of the
+/// great-circle lengths of all sections in meters.
 fn calculate_panorama_stats(
     images: &[PanoramaImage],
     lat_offset: f64,
@@ -725,7 +737,20 @@ fn calculate_panorama_stats(
         Some(json!(sections).to_string())
     };
 
-    (min_lat, max_lat, min_lon, max_lon, points_json, image_count)
+    let distance: f64 = sections
+        .iter()
+        .map(|section| polyline_length_m(section))
+        .sum();
+
+    PanoramaStats {
+        min_lat,
+        max_lat,
+        min_lon,
+        max_lon,
+        points_json,
+        image_count,
+        distance,
+    }
 }
 
 impl Injectable for PanoramaService {
@@ -768,10 +793,10 @@ mod tests {
             image(5, 40.4, 44.4, false),
         ];
 
-        let (_, _, _, _, points_json, _) = calculate_panorama_stats(&images, 0.0, 0.0);
+        let stats = calculate_panorama_stats(&images, 0.0, 0.0);
 
         assert_eq!(
-            points_json,
+            stats.points_json,
             Some("[[[44.0,40.0],[44.1,40.1]],[[44.3,40.3],[44.4,40.4]]]".to_string())
         );
     }
@@ -784,28 +809,29 @@ mod tests {
             image(3, 40.2, 44.2, false),
         ];
 
-        let (min_lat, max_lat, min_lon, max_lon, points_json, _) =
-            calculate_panorama_stats(&images, 0.0, 0.0);
+        let stats = calculate_panorama_stats(&images, 0.0, 0.0);
 
-        assert_eq!(points_json, None);
-        assert_eq!(min_lat, Some(40.0));
-        assert_eq!(max_lat, Some(40.2));
-        assert_eq!(min_lon, Some(44.0));
-        assert_eq!(max_lon, Some(44.2));
+        assert_eq!(stats.points_json, None);
+        assert_eq!(stats.min_lat, Some(40.0));
+        assert_eq!(stats.max_lat, Some(40.2));
+        assert_eq!(stats.min_lon, Some(44.0));
+        assert_eq!(stats.max_lon, Some(44.2));
     }
 
     #[test]
     fn offsets_are_baked_into_coordinates_and_bounds() {
         let images = vec![image(1, 40.0, 44.0, false), image(2, 40.1, 44.1, false)];
 
-        let (min_lat, max_lat, min_lon, max_lon, points_json, _) =
-            calculate_panorama_stats(&images, 0.5, -1.0);
+        let stats = calculate_panorama_stats(&images, 0.5, -1.0);
 
-        assert_eq!(min_lat, Some(40.5));
-        assert_eq!(max_lat, Some(40.6));
-        assert_eq!(min_lon, Some(43.0));
-        assert_eq!(max_lon, Some(43.1));
-        assert_eq!(points_json, Some("[[[43.0,40.5],[43.1,40.6]]]".to_string()));
+        assert_eq!(stats.min_lat, Some(40.5));
+        assert_eq!(stats.max_lat, Some(40.6));
+        assert_eq!(stats.min_lon, Some(43.0));
+        assert_eq!(stats.max_lon, Some(43.1));
+        assert_eq!(
+            stats.points_json,
+            Some("[[[43.0,40.5],[43.1,40.6]]]".to_string())
+        );
     }
 
     #[test]
@@ -816,27 +842,25 @@ mod tests {
             image(3, 40.2, 44.2, false),
         ];
 
-        let (min_lat, max_lat, min_lon, max_lon, _, _) =
-            calculate_panorama_stats(&images, 0.0, 0.0);
+        let stats = calculate_panorama_stats(&images, 0.0, 0.0);
 
-        assert_eq!(min_lat, Some(40.0));
-        assert_eq!(max_lat, Some(40.2));
-        assert_eq!(min_lon, Some(44.0));
-        assert_eq!(max_lon, Some(44.2));
+        assert_eq!(stats.min_lat, Some(40.0));
+        assert_eq!(stats.max_lat, Some(40.2));
+        assert_eq!(stats.min_lon, Some(44.0));
+        assert_eq!(stats.max_lon, Some(44.2));
     }
 
     #[test]
     fn all_hidden_images_produce_no_stats() {
         let images = vec![image(1, 40.0, 44.0, true), image(2, 40.1, 44.1, true)];
 
-        let (min_lat, max_lat, min_lon, max_lon, points_json, _) =
-            calculate_panorama_stats(&images, 0.0, 0.0);
+        let stats = calculate_panorama_stats(&images, 0.0, 0.0);
 
-        assert_eq!(min_lat, None);
-        assert_eq!(max_lat, None);
-        assert_eq!(min_lon, None);
-        assert_eq!(max_lon, None);
-        assert_eq!(points_json, None);
+        assert_eq!(stats.min_lat, None);
+        assert_eq!(stats.max_lat, None);
+        assert_eq!(stats.min_lon, None);
+        assert_eq!(stats.max_lon, None);
+        assert_eq!(stats.points_json, None);
     }
 
     #[test]
@@ -849,9 +873,35 @@ mod tests {
             image(5, 40.4, 44.4, false),
         ];
 
-        let (_, _, _, _, _, image_count) = calculate_panorama_stats(&images, 0.0, 0.0);
+        let stats = calculate_panorama_stats(&images, 0.0, 0.0);
 
-        assert_eq!(image_count, 3);
+        assert_eq!(stats.image_count, 3);
+    }
+
+    #[test]
+    fn distance_sums_visible_section_lengths() {
+        let images = vec![image(1, 40.0, 44.0, false), image(2, 41.0, 44.0, false)];
+
+        let stats = calculate_panorama_stats(&images, 0.0, 0.0);
+
+        // One degree of latitude is about 111.2 km.
+        assert!((stats.distance - 111_195.0).abs() < 1_000.0);
+    }
+
+    #[test]
+    fn distance_ignores_hidden_images_and_singletons() {
+        let images = vec![
+            image(1, 40.0, 44.0, false),
+            image(2, 40.001, 44.0, false),
+            image(3, 40.002, 44.0, true),
+            image(4, 40.003, 44.0, false),
+        ];
+
+        let stats = calculate_panorama_stats(&images, 0.0, 0.0);
+
+        // Only the first two visible images form a section; the hidden image
+        // splits off the trailing singleton, which contributes nothing.
+        assert!((stats.distance - 111.19).abs() < 1.0);
     }
 
     #[test]

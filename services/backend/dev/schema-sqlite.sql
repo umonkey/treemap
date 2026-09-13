@@ -272,6 +272,7 @@ CREATE TABLE IF NOT EXISTS panoramas (
     `min_lon` REAL NULL,
     `max_lon` REAL NULL,
     `points_json` TEXT NULL,
+    `distance` REAL NOT NULL DEFAULT 0.0,
     PRIMARY KEY(`id`)
 );
 

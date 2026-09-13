@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import { PageState } from './page.svelte.ts';
-	import { formatDate } from '$lib/utils/strings';
+	import { formatDate, formatDistance } from '$lib/utils/strings';
 	import { storage_cost } from '$lib/utils/files';
 	import Breadcrumbs from '$lib/components/admin/Breadcrumbs.svelte';
 	import PageHeader from '$lib/ui/header/PageHeader.svelte';
@@ -55,6 +55,7 @@
 							<th class="col-visible">Visible</th>
 							<th class="col-title">Title</th>
 							<th class="col-images">Images</th>
+							<th class="col-length">Length</th>
 							<th class="col-size">Size, GB</th>
 							<th class="col-status">Status</th>
 						</tr>
@@ -74,6 +75,7 @@
 									<a href="/admin/panoramas/{pano.id}">{pano.title}</a>
 								</td>
 								<td class="col-images">{pano.image_count}</td>
+								<td class="col-length">{formatDistance(pano.distance)}</td>
 								<td class="col-size">{Math.round((pano.file_size ?? 0) / (1024 * 1024 * 1024))}</td>
 								<td class="col-status">{getStatusLabel(pano.status)}</td>
 							</tr>
@@ -125,7 +127,8 @@
 	}
 
 	.col-images,
-	.col-size {
+	.col-size,
+	.col-length {
 		white-space: nowrap;
 		text-align: right;
 	}

@@ -53,6 +53,7 @@ impl PanoramaRepository {
         max_lon: Option<f64>,
         points_json: Option<String>,
         image_count: i32,
+        distance: f64,
     ) -> Result<()> {
         let mut values = Attributes::default();
         values.insert("min_lat", Value::from(min_lat));
@@ -61,6 +62,7 @@ impl PanoramaRepository {
         values.insert("max_lon", Value::from(max_lon));
         values.insert("points_json", Value::from(points_json));
         values.insert("image_count", Value::from(image_count as i64));
+        values.insert("distance", Value::from(distance));
 
         let query = UpdateQuery::new(TABLE)
             .with_condition("id", Value::from(id as i64))

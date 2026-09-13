@@ -29,6 +29,7 @@ export interface Panorama {
 	hints_count?: number | null;
 	file_size?: number | null;
 	processing_time?: number | null;
+	distance: number;
 }
 
 export interface CreatePanorama {

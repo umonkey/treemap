@@ -69,6 +69,7 @@ pub struct Panorama {
     pub min_lon: Option<f64>,
     pub max_lon: Option<f64>,
     pub points_json: Option<String>,
+    pub distance: f64,
 }
 
 impl Panorama {
@@ -103,6 +104,7 @@ impl Panorama {
             min_lon: attrs.get_f64("min_lon")?,
             max_lon: attrs.get_f64("max_lon")?,
             points_json: attrs.get_string("points_json")?,
+            distance: attrs.get_f64("distance")?.unwrap_or(0.0),
         })
     }
 
@@ -137,6 +139,7 @@ impl Panorama {
         attrs.insert("min_lon", Value::from(self.min_lon));
         attrs.insert("max_lon", Value::from(self.max_lon));
         attrs.insert("points_json", Value::from(self.points_json.clone()));
+        attrs.insert("distance", Value::from(self.distance));
         attrs
     }
 }

@@ -393,6 +393,7 @@ mod tests {
             min_lon: None,
             max_lon: None,
             points_json: points_json.map(str::to_string),
+            distance: 0.0,
         }
     }
 
