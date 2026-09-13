@@ -64,7 +64,7 @@ export class SearchResultsSidebarLogic {
 		try {
 			const res = await searchTrees(query, this.zoom ?? get(mapStore).zoom, this.bounds);
 			if (res.status === 200 && res.data) {
-				this.trees = res.data.trees.filter((t) => t.state !== 'placeholder');
+				this.trees = res.data.trees.filter((t) => t.state !== 'placeholder' && t.state !== 'gone');
 				if (this.selectedTreeId && !this.trees.some((t) => t.id === this.selectedTreeId)) {
 					this.selectedTreeId = null;
 					mapBus.emit('pin', undefined);

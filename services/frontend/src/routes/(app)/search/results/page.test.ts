@@ -196,7 +196,6 @@ describe('Search Results Page', () => {
 					{ ...DEFAULT_TREE, id: 'tree-error', species: 'Tree Error', state: 'error' },
 					{ ...DEFAULT_TREE, id: 'tree-dead', species: 'Tree Dead', state: 'dead' },
 					{ ...DEFAULT_TREE, id: 'tree-stump', species: 'Tree Stump', state: 'stump' },
-					{ ...DEFAULT_TREE, id: 'tree-gone', species: 'Tree Gone', state: 'gone' },
 					{ ...DEFAULT_TREE, id: 'tree-replaced', species: 'Tree Replaced', state: 'replaced' }
 				],
 				users: []
@@ -206,7 +205,7 @@ describe('Search Results Page', () => {
 		render(Page);
 
 		await waitFor(() => {
-			expect(screen.getByText(/Search results \(6\)/i)).toBeTruthy();
+			expect(screen.getByText(/Search results \(5\)/i)).toBeTruthy();
 		});
 
 		const treeAlive = screen.getByRole('button', { name: /Tree Alive/i });
@@ -220,9 +219,6 @@ describe('Search Results Page', () => {
 
 		const treeStump = screen.getByRole('button', { name: /Tree Stump/i });
 		expect(treeStump.classList.contains('state-stump')).toBe(true);
-
-		const treeGone = screen.getByRole('button', { name: /Tree Gone/i });
-		expect(treeGone.classList.contains('state-gone')).toBe(true);
 
 		const treeReplaced = screen.getByRole('button', { name: /Tree Replaced/i });
 		expect(treeReplaced.classList.contains('state-replaced')).toBe(true);
@@ -258,6 +254,30 @@ describe('Search Results Page', () => {
 		expect(tree1Card).toBeTruthy();
 		expect(items[0].contains(tree1Card)).toBe(true);
 		expect(screen.queryByRole('button', { name: /Placeholder tree/i })).toBeNull();
+	});
+
+	test('filters out gone items from the results list', async () => {
+		mockedSearchTrees.mockResolvedValueOnce({
+			status: 200,
+			data: {
+				trees: [
+					{ ...DEFAULT_TREE, id: 'tree1', species: 'Quercus robur', state: 'alive' },
+					{ ...DEFAULT_TREE, id: 'tree2', species: 'Gone tree', state: 'gone' }
+				],
+				users: []
+			}
+		});
+
+		render(Page);
+
+		await waitFor(() => {
+			expect(screen.getByText(/Search results \(1\)/i)).toBeTruthy();
+		});
+
+		expect(screen.queryByRole('button', { name: /Gone tree/i })).toBeNull();
+
+		const tree1Card = screen.getByRole('button', { name: /Quercus robur alive/i });
+		expect(tree1Card).toBeTruthy();
 	});
 
 	test('displays no results when search returns empty list', async () => {
