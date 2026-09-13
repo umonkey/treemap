@@ -20,13 +20,8 @@
 {#if componentState.open}
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
-	<div
-		class="canvas"
-		in:fade={{ duration: 0 }}
-		out:fade={{ duration: 200 }}
-		onclick={componentState.handleClose}
-	>
-		<div class="menu">
+	<div class="canvas" onclick={componentState.handleClose}>
+		<div class="menu" out:fade={{ duration: 100 }}>
 			<button
 				type="button"
 				disabled={!$hasPermission('tree:create')}
@@ -66,13 +61,12 @@
 		left: 0;
 		height: 100%;
 		width: 100%;
-		background-color: rgba(0, 0, 0, 0.5);
-		backdrop-filter: blur(2px);
 		z-index: var(--z-menu);
 
 		.menu {
 			background-color: var(--map-menu-background);
 			border-radius: 8px;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 
 			position: fixed;
 			top: 50%;
