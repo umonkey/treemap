@@ -130,6 +130,14 @@
 		height: 100%;
 	}
 
+	.map-container :global(.maplibregl-canvas-container.maplibregl-interactive) {
+		cursor: crosshair;
+	}
+
+	.map-container :global(.maplibregl-canvas-container.maplibregl-interactive:active) {
+		cursor: grabbing;
+	}
+
 	:global(.maplibregl-ctrl-top-left) {
 		top: env(safe-area-inset-top);
 		left: env(safe-area-inset-left);
