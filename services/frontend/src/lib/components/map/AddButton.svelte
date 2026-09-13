@@ -1,5 +1,4 @@
 <script lang="ts">
-	import PlusIcon from '$lib/icons/PlusIcon.svelte';
 	import { locale } from '$lib/locale';
 	import { hasPermission } from '$lib/stores/authStore';
 	import { Control, getMapContext } from 'svelte-maplibre';
@@ -17,7 +16,18 @@
 			title={locale.addButton()}
 			onclick={() => mapContext.map && componentState.handleClick(mapContext.map)}
 		>
-			<PlusIcon />
+			<svg
+				class="add-icon"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="1.5"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"
+			>
+				<path d="M12 5v14M5 12h14" />
+			</svg>
 		</button>
 	</Control>
 {/if}
@@ -36,15 +46,20 @@
 		background-color: var(--map-primary-background);
 		color: #fff;
 		cursor: pointer;
-		box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
-		transition: filter 0.15s ease;
+		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+		transition: box-shadow 0.15s ease;
+	}
+
+	button.add-button:not(:disabled):hover,
+	button.add-button:not(:disabled):active {
+		background-color: var(--map-primary-background);
 	}
 
 	.add-button:hover {
-		filter: brightness(1.1);
+		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
 	}
 
-	.add-button :global(svg) {
+	.add-button .add-icon {
 		width: 24px;
 		height: 24px;
 	}
