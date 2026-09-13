@@ -38,10 +38,6 @@ export class MapMenuBridgeLogic {
 	public showMapMenu = (map: Map, point: Point, lngLat: LngLat) => {
 		const mode = get(mapMode);
 
-		if (mode === 'add' || mode === 'add-row' || mode === 'move') {
-			return;
-		}
-
 		if (this.isPoi(map, point)) {
 			return;
 		}
