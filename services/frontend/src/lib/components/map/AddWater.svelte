@@ -26,5 +26,6 @@
 <style>
 	button {
 		padding: 4px;
+		color: #000;
 	}
 </style>
