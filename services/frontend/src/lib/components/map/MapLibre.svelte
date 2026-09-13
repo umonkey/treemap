@@ -20,6 +20,7 @@
 	import AddWater from './AddWater.svelte';
 	import MapCenter from './MapCenter.svelte';
 	import MapInspect from './MapInspect.svelte';
+	import MapMenuBridge from './MapMenuBridge.svelte';
 	import MapRays from './MapRays.svelte';
 	import MoveLine from './MoveLine.svelte';
 	import NearestTree from './NearestTree.svelte';
@@ -60,6 +61,7 @@
 		<LocateButton />
 		<LocationTracker />
 		<MapInspect />
+		<MapMenuBridge />
 		<AttributionControl compact={true} position="bottom-left" />
 
 		{#if children}

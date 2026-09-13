@@ -6,21 +6,13 @@
 	import { routes } from '$lib/routes';
 	import { hasPermission } from '$lib/stores/authStore';
 	import { ContextMenuLogic } from './ContextMenu.svelte.ts';
-	import { mapState } from './MapLibre.svelte.ts';
 	import { fade } from 'svelte/transition';
+	import { onMount } from 'svelte';
 	import '$lib/styles/colors.css';
 
 	const componentState = new ContextMenuLogic();
 
-	$effect(() => {
-		const map = mapState.map;
-		if (map) {
-			componentState.mount(map);
-			return () => {
-				componentState.unmount(map);
-			};
-		}
-	});
+	onMount(componentState.onMount);
 </script>
 
 <svelte:window onkeydown={componentState.handleKeyDown} />
