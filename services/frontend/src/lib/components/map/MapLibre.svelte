@@ -17,9 +17,10 @@
 	import PanoramicLayer from './PanoramicLayer.svelte';
 	import TreeHintsLayer from './TreeHintsLayer.svelte';
 	import WaterSourceLayer from './WaterSourceLayer.svelte';
-	import AddWater from './AddWater.svelte';
+	import AddButton from './AddButton.svelte';
 	import MapCenter from './MapCenter.svelte';
 	import MapInspect from './MapInspect.svelte';
+	import MapMenuBridge from './MapMenuBridge.svelte';
 	import MapRays from './MapRays.svelte';
 	import MoveLine from './MoveLine.svelte';
 	import NearestTree from './NearestTree.svelte';
@@ -60,6 +61,7 @@
 		<LocateButton />
 		<LocationTracker />
 		<MapInspect />
+		<MapMenuBridge />
 		<AttributionControl compact={true} position="bottom-left" />
 
 		{#if children}
@@ -81,7 +83,7 @@
 
 		<Marker />
 
-		<AddWater />
+		<AddButton />
 
 		<MapRays />
 
@@ -126,6 +128,14 @@
 	:global(.map) {
 		width: 100%;
 		height: 100%;
+	}
+
+	.map-container :global(.maplibregl-canvas-container.maplibregl-interactive) {
+		cursor: crosshair;
+	}
+
+	.map-container :global(.maplibregl-canvas-container.maplibregl-interactive:active) {
+		cursor: grabbing;
 	}
 
 	:global(.maplibregl-ctrl-top-left) {

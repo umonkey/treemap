@@ -16,7 +16,7 @@ vi.mock('$app/stores', () => ({
 	page: {
 		subscribe: (fn: (v: unknown) => void) => {
 			fn({
-				url: new URL('http://localhost/add'),
+				url: new URL('http://localhost/add/tree'),
 				params: {}
 			});
 			return () => {};
