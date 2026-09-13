@@ -15,13 +15,24 @@
 	$effect(() => componentState.subscribe());
 </script>
 
-<svelte:window onkeydown={componentState.handleKeyDown} />
+<svelte:window
+	onkeydown={componentState.handleKeyDown}
+	bind:innerWidth={componentState.viewport.width}
+	bind:innerHeight={componentState.viewport.height}
+/>
 
 {#if componentState.open}
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<div class="canvas" onclick={componentState.handleClose}>
-		<div class="menu" out:fade={{ duration: 100 }}>
+		<div
+			class="menu"
+			out:fade={{ duration: 100 }}
+			bind:clientWidth={componentState.menuSize.width}
+			bind:clientHeight={componentState.menuSize.height}
+			style:left="{componentState.clampedPosition?.x ?? 0}px"
+			style:top="{componentState.clampedPosition?.y ?? 0}px"
+		>
 			<button
 				type="button"
 				disabled={!$hasPermission('tree:create')}
@@ -72,9 +83,6 @@
 			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 
 			position: fixed;
-			top: 50%;
-			left: 50%;
-			transform: translate(-50%, -50%);
 
 			display: flex;
 			flex-direction: column;

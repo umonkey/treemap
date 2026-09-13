@@ -14,7 +14,9 @@
 			class="add-button"
 			type="button"
 			title={locale.addButton()}
-			onclick={() => mapContext.map && componentState.handleClick(mapContext.map)}
+			onclick={(e) =>
+				mapContext.map &&
+				componentState.handleClick(mapContext.map, e.currentTarget as HTMLElement)}
 		>
 			<svg
 				class="add-icon"

@@ -38,7 +38,14 @@ export class MapMenuBridgeLogic {
 			return;
 		}
 
-		menuBus.emit('showMap', { lat: lngLat.lat, lng: lngLat.lng });
+		const rect = map.getContainer().getBoundingClientRect();
+
+		menuBus.emit('showMap', {
+			lat: lngLat.lat,
+			lng: lngLat.lng,
+			x: rect.left + point.x,
+			y: rect.top + point.y
+		});
 	};
 
 	private handleContextMenu = (e: MapMouseEvent) => {

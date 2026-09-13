@@ -1,16 +1,40 @@
 import { mapBus } from '$lib/buses/mapBus';
-import { menuBus } from '$lib/buses/menuBus';
+import { menuBus, type IMapMenuEvent } from '$lib/buses/menuBus';
 import { goto } from '$lib/routes';
 import type { ILatLng } from '$lib/types';
+
+const MENU_MARGIN = 8;
 
 export class ContextMenuLogic {
 	open = $state(false);
 
 	private coords: ILatLng | undefined = undefined;
+	private position = $state<{ x: number; y: number } | undefined>(undefined);
 
-	private handleShow = (coords: ILatLng) => {
-		console.debug(`Showing menu for ${coords.lat},${coords.lng}`);
-		this.coords = coords;
+	viewport = $state({ width: 0, height: 0 });
+	menuSize = $state({ width: 0, height: 0 });
+
+	clampedPosition = $derived.by(() => {
+		if (!this.position) {
+			return undefined;
+		}
+
+		const maxX = Math.max(MENU_MARGIN, this.viewport.width - this.menuSize.width - MENU_MARGIN);
+		const maxY = Math.max(MENU_MARGIN, this.viewport.height - this.menuSize.height - MENU_MARGIN);
+
+		return {
+			x: Math.min(Math.max(this.position.x, MENU_MARGIN), maxX),
+			y: Math.min(Math.max(this.position.y, MENU_MARGIN), maxY)
+		};
+	});
+
+	private handleShow = (event: IMapMenuEvent) => {
+		console.debug(`Showing menu for ${event.lat},${event.lng}`);
+		this.coords = { lat: event.lat, lng: event.lng };
+		this.position =
+			event.x !== undefined && event.y !== undefined
+				? { x: event.x, y: event.y }
+				: { x: this.viewport.width / 2, y: this.viewport.height / 2 };
 		this.open = true;
 	};
 
