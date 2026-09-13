@@ -9,7 +9,8 @@
 		component: CanopyInput,
 		argTypes: {
 			value: { control: 'text' },
-			autofocus: { control: 'boolean' }
+			autofocus: { control: 'boolean' },
+			showDivider: { control: 'boolean' }
 		},
 		args: {
 			onChange: fn()
@@ -18,3 +19,4 @@
 </script>
 
 <Story name="Primary" args={{ value: 1.23 }} />
+<Story name="WithDivider" args={{ value: 4, showDivider: true }} />

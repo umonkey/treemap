@@ -20,6 +20,6 @@
 	canSave={crownState.canSave}
 	saving={crownState.saving}
 >
-	<CanopyInput value={null} autofocus onChange={crownState.handleChange} />
+	<CanopyInput value={null} autofocus showDivider onChange={crownState.handleChange} />
 	<ChangeHistory {id} name="diameter" />
 </TreeForm>

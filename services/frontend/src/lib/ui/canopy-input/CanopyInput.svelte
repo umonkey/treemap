@@ -6,10 +6,12 @@
 	const {
 		value,
 		autofocus,
+		showDivider = false,
 		onChange
 	}: {
 		value: number | null;
 		autofocus?: boolean;
+		showDivider?: boolean;
 		onChange: (value: number) => void;
 	} = $props();
 
@@ -28,7 +30,7 @@
 	};
 
 	const suggestion = $derived(
-		currentValue !== null && currentValue > 0 ? (currentValue / 2).toFixed(1) : null
+		showDivider && currentValue !== null && currentValue > 0 ? (currentValue / 2).toFixed(1) : null
 	);
 
 	const handleSuggestionClick = (v: string) => {
