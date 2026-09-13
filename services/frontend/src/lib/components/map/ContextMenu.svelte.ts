@@ -50,6 +50,13 @@ export class ContextMenuLogic {
 
 	public handleContextMenu = (e: MouseEvent) => {
 		e.preventDefault();
+
+		// Touch long-press also emits `contextmenu` (button 0). Only a real
+		// mouse right-click should dismiss the menu.
+		if (e.button !== 2) {
+			return;
+		}
+
 		this.handleClose();
 	};
 
