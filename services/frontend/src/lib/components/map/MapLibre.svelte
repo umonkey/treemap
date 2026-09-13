@@ -111,7 +111,7 @@
 				<MapCenter />
 			{/if}
 			{#if mapState.moving && mapState.zoom > 18}
-				<NearestTree distance={5} label={false} />
+				<NearestTree distance={5} label={false} count={1} />
 			{/if}
 		{/if}
 	</MapLibre>

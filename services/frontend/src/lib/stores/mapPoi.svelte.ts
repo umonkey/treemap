@@ -7,6 +7,11 @@ export interface IMapPoi {
 	url: string;
 }
 
+export interface INearestPoi {
+	poi: IMapPoi;
+	distance: number;
+}
+
 class MapPoiStore {
 	trees = $state.raw<IMapPoi[]>([]);
 	alerts = $state.raw<IMapPoi[]>([]);
@@ -42,6 +47,22 @@ class MapPoiStore {
 			poi: nearestPoi,
 			distance: minDistance
 		};
+	};
+
+	getNearestTrees = (center: ILatLng, count: number, maxDistance?: number): INearestPoi[] => {
+		if (count <= 0) {
+			return [];
+		}
+		const list: INearestPoi[] = [];
+		for (const poi of this.trees) {
+			const distance = getDistance(center, { lat: poi.lat, lng: poi.lon });
+			if (maxDistance !== undefined && distance > maxDistance) {
+				continue;
+			}
+			list.push({ poi, distance });
+		}
+		list.sort((a, b) => a.distance - b.distance);
+		return list.slice(0, count);
 	};
 }
 

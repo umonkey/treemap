@@ -6,37 +6,31 @@ import type { ILatLng } from '$lib/types';
 class ComponentState {
 	center = $state<ILatLng>(mapState.center);
 	maxDistance = $state<number>(100);
+	count = $state<number>(2);
 
-	nearest = $derived.by(() => {
+	nearestTrees = $derived.by(() => {
 		const center = this.center;
-		const result = mapPoiStore.getNearest(center, this.maxDistance);
+		const results = mapPoiStore.getNearestTrees(center, this.count, this.maxDistance);
 
-		if (!result) {
-			return undefined;
-		}
-
-		const { poi: nearestPoi, distance: minDistance } = result;
-
-		return {
-			poi: nearestPoi,
-			distance: minDistance,
-			midpoint: [(center.lng + nearestPoi.lon) / 2, (center.lat + nearestPoi.lat) / 2] as [
-				number,
-				number
-			],
+		return results.map(({ poi, distance }) => ({
+			poi,
+			distance,
+			midpoint: [(center.lng + poi.lon) / 2, (center.lat + poi.lat) / 2] as [number, number],
 			line: {
 				type: 'Feature' as const,
 				geometry: {
 					type: 'LineString' as const,
 					coordinates: [
 						[center.lng, center.lat],
-						[nearestPoi.lon, nearestPoi.lat]
+						[poi.lon, poi.lat]
 					]
 				},
 				properties: {}
 			}
-		};
+		}));
 	});
+
+	nearest = $derived(this.nearestTrees[0]);
 
 	private handleCenter = (ll: ILatLng) => {
 		this.center = ll;
