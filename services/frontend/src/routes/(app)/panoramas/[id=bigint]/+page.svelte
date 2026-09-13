@@ -4,6 +4,7 @@
 	import { formatDateTime } from '$lib/utils/strings';
 	import { hasPermission } from '$lib/stores/authStore';
 	import PanoramaViewer from '$lib/components/panoramas/PanoramaViewer.svelte';
+	import { mapBottomPadding } from '$lib/components/map/mapBottomPadding';
 
 	const id = $derived(page.params.id as string);
 
@@ -26,7 +27,7 @@
 	<title>360 Panorama</title>
 </svelte:head>
 
-<div class="preview">
+<div class="preview" use:mapBottomPadding>
 	<div class="content">
 		{#if pageState.image}
 			<PanoramaViewer
