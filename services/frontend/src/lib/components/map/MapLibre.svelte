@@ -19,7 +19,6 @@
 	import WaterSourceLayer from './WaterSourceLayer.svelte';
 	import AddButton from './AddButton.svelte';
 	import MapCenter from './MapCenter.svelte';
-	import MapInspect from './MapInspect.svelte';
 	import MapMenuBridge from './MapMenuBridge.svelte';
 	import MapRays from './MapRays.svelte';
 	import MoveLine from './MoveLine.svelte';
@@ -60,7 +59,6 @@
 	>
 		<LocateButton />
 		<LocationTracker />
-		<MapInspect />
 		<MapMenuBridge />
 		<AttributionControl compact={true} position="bottom-left" />
 

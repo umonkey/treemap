@@ -173,6 +173,10 @@ class EnglishLocale {
 		return 'Add water source';
 	}
 
+	public copyCoordinates(): string {
+		return 'Copy coordinates';
+	}
+
 	public waterAddButton(): string {
 		return 'Add';
 	}
@@ -974,6 +978,10 @@ class RussianLocale extends EnglishLocale {
 		return 'Добавить источник воды';
 	}
 
+	public override copyCoordinates(): string {
+		return 'Скопировать координаты';
+	}
+
 	public override waterAddButton(): string {
 		return 'Добавить';
 	}
@@ -1741,6 +1749,10 @@ class ArmenianLocale extends EnglishLocale {
 
 	public override waterAddTitle(): string {
 		return 'Ավելացնել ջրի աղբյուր';
+	}
+
+	public override copyCoordinates(): string {
+		return 'Պատճենել կոորդինատները';
 	}
 
 	public override waterAddButton(): string {

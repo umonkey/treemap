@@ -34,6 +34,20 @@ export class ContextMenuLogic {
 		goto(url);
 	};
 
+	public handleCopyCoordinates = async () => {
+		if (!this.coords) {
+			return;
+		}
+
+		try {
+			await navigator.clipboard.writeText(`${this.coords.lat},${this.coords.lng}`);
+		} catch (e) {
+			console.error('Failed to copy coordinates to clipboard', e);
+		} finally {
+			this.open = false;
+		}
+	};
+
 	public subscribe = () => {
 		menuBus.on('showMap', this.handleShow);
 

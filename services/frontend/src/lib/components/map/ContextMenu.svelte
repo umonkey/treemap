@@ -2,6 +2,7 @@
 	import MapTreeIcon from '$lib/icons/MapTreeIcon.svelte';
 	import Ruler from '$lib/icons/Ruler.svelte';
 	import WaterIcon from '$lib/icons/WaterIcon.svelte';
+	import LocationIcon from '$lib/icons/LocationIcon.svelte';
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
 	import { hasPermission } from '$lib/stores/authStore';
@@ -49,6 +50,10 @@
 			>
 				<WaterIcon />
 				<span>{locale.waterAddTitle()}</span>
+			</button>
+			<button type="button" class="separator" onclick={componentState.handleCopyCoordinates}>
+				<LocationIcon />
+				<span>{locale.copyCoordinates()}</span>
 			</button>
 		</div>
 	</div>
@@ -98,6 +103,11 @@
 
 				&:hover:not(:disabled) {
 					background-color: rgba(128, 128, 128, 0.2);
+				}
+
+				&.separator {
+					margin-top: 5px;
+					border-top: 1px solid rgba(128, 128, 128, 0.2);
 				}
 
 				&:disabled {
