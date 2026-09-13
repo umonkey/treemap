@@ -36,13 +36,15 @@ const TREE_HINT_MIN_ANGLE_DEG: f64 = 30.0;
 /// the panorama, avoiding a race on SQS. The systemic fix is tracked separately.
 const STATS_REFRESH_DELAY_SECS: u64 = 1;
 
-/// Visible-only bounds and serialized sectioned geometry for a panorama.
+/// Visible-only bounds, serialized sectioned geometry, and visible image count
+/// for a panorama.
 type PanoramaStats = (
     Option<f64>,
     Option<f64>,
     Option<f64>,
     Option<f64>,
     Option<String>,
+    i32,
 );
 
 /// Great-circle distance in meters between two coordinates.
@@ -634,19 +636,28 @@ impl PanoramaService {
         let images = self.repo.get_images(id).await?;
 
         info!(
-            "Refreshing panorama {id} stats: {} images, offset=({}, {}).",
+            "Refreshing panorama {id} stats: {}/{} visible images, offset=({}, {}).",
+            images.iter().filter(|img| !img.hidden).count(),
             images.len(),
             panorama.lat_offset,
             panorama.lon_offset
         );
 
-        let (min_lat, max_lat, min_lon, max_lon, points_json) =
+        let (min_lat, max_lat, min_lon, max_lon, points_json, image_count) =
             calculate_panorama_stats(&images, panorama.lat_offset, panorama.lon_offset);
 
         info!("Panorama {id} stats computed: bounds=({min_lat:?}..{max_lat:?}, {min_lon:?}..{max_lon:?}), points_json={}.", if points_json.is_some() { "present" } else { "none" });
 
         self.repo
-            .update_panorama_stats_fields(id, min_lat, max_lat, min_lon, max_lon, points_json)
+            .update_panorama_stats_fields(
+                id,
+                min_lat,
+                max_lat,
+                min_lon,
+                max_lon,
+                points_json,
+                image_count,
+            )
             .await
     }
 
@@ -666,11 +677,13 @@ impl PanoramaService {
     }
 }
 
-/// Computes visible-only bounds and sectioned geometry for a panorama.
+/// Computes visible-only bounds, sectioned geometry, and visible image count
+/// for a panorama.
 ///
 /// Coordinates have the panorama offsets already baked in. Sections are maximal
 /// runs of visible images with at least two points; hidden images split a
-/// section. When there are no sections, `points_json` is `None`.
+/// section. When there are no sections, `points_json` is `None`. The returned
+/// count includes only visible images.
 fn calculate_panorama_stats(
     images: &[PanoramaImage],
     lat_offset: f64,
@@ -693,6 +706,8 @@ fn calculate_panorama_stats(
         max_lon = Some(max_lon.map_or(lon, |value| value.max(lon)));
     }
 
+    let image_count = images.iter().filter(|img| !img.hidden).count() as i32;
+
     let sections: Vec<Vec<[f64; 2]>> = groups
         .into_iter()
         .filter(|group| group.len() >= 2)
@@ -710,7 +725,7 @@ fn calculate_panorama_stats(
         Some(json!(sections).to_string())
     };
 
-    (min_lat, max_lat, min_lon, max_lon, points_json)
+    (min_lat, max_lat, min_lon, max_lon, points_json, image_count)
 }
 
 impl Injectable for PanoramaService {
@@ -753,7 +768,7 @@ mod tests {
             image(5, 40.4, 44.4, false),
         ];
 
-        let (_, _, _, _, points_json) = calculate_panorama_stats(&images, 0.0, 0.0);
+        let (_, _, _, _, points_json, _) = calculate_panorama_stats(&images, 0.0, 0.0);
 
         assert_eq!(
             points_json,
@@ -769,7 +784,7 @@ mod tests {
             image(3, 40.2, 44.2, false),
         ];
 
-        let (min_lat, max_lat, min_lon, max_lon, points_json) =
+        let (min_lat, max_lat, min_lon, max_lon, points_json, _) =
             calculate_panorama_stats(&images, 0.0, 0.0);
 
         assert_eq!(points_json, None);
@@ -783,7 +798,7 @@ mod tests {
     fn offsets_are_baked_into_coordinates_and_bounds() {
         let images = vec![image(1, 40.0, 44.0, false), image(2, 40.1, 44.1, false)];
 
-        let (min_lat, max_lat, min_lon, max_lon, points_json) =
+        let (min_lat, max_lat, min_lon, max_lon, points_json, _) =
             calculate_panorama_stats(&images, 0.5, -1.0);
 
         assert_eq!(min_lat, Some(40.5));
@@ -801,7 +816,8 @@ mod tests {
             image(3, 40.2, 44.2, false),
         ];
 
-        let (min_lat, max_lat, min_lon, max_lon, _) = calculate_panorama_stats(&images, 0.0, 0.0);
+        let (min_lat, max_lat, min_lon, max_lon, _, _) =
+            calculate_panorama_stats(&images, 0.0, 0.0);
 
         assert_eq!(min_lat, Some(40.0));
         assert_eq!(max_lat, Some(40.2));
@@ -813,7 +829,7 @@ mod tests {
     fn all_hidden_images_produce_no_stats() {
         let images = vec![image(1, 40.0, 44.0, true), image(2, 40.1, 44.1, true)];
 
-        let (min_lat, max_lat, min_lon, max_lon, points_json) =
+        let (min_lat, max_lat, min_lon, max_lon, points_json, _) =
             calculate_panorama_stats(&images, 0.0, 0.0);
 
         assert_eq!(min_lat, None);
@@ -821,6 +837,21 @@ mod tests {
         assert_eq!(min_lon, None);
         assert_eq!(max_lon, None);
         assert_eq!(points_json, None);
+    }
+
+    #[test]
+    fn visible_image_count_excludes_hidden_images() {
+        let images = vec![
+            image(1, 40.0, 44.0, false),
+            image(2, 40.1, 44.1, true),
+            image(3, 40.2, 44.2, false),
+            image(4, 40.3, 44.3, true),
+            image(5, 40.4, 44.4, false),
+        ];
+
+        let (_, _, _, _, _, image_count) = calculate_panorama_stats(&images, 0.0, 0.0);
+
+        assert_eq!(image_count, 3);
     }
 
     #[test]

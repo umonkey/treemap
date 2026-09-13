@@ -21,7 +21,7 @@ We regenerate the geometry asynchronously whenever the inputs change. Hiding or 
 
 The bounding box endpoint emits one MultiLineString feature per panorama. Coordinates are an array of sections, each section an array of `[lng, lat]` positions in RFC 7946 order.
 
-Bounds are computed from visible images only, with offsets applied. When a panorama has no visible images, all four bounds and `points_json` are null. When it has visible images but no section of two or more points, only `points_json` is null.
+Bounds are computed from visible images only, with offsets applied. The `image_count` column is likewise recomputed as the number of visible images, so hiding an image decrements the stored count. When a panorama has no visible images, all four bounds and `points_json` are null. When it has visible images but no section of two or more points, only `points_json` is null.
 
 Legacy rows store the old depth-2 coordinate array without offsets. The frontend normalizes depth-2 coordinates into a single section when loading, and a one-time `refresh-panorama-stats` CLI command enqueues a refresh for every panorama.
 

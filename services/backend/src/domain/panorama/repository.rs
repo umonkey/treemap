@@ -43,6 +43,7 @@ impl PanoramaRepository {
         Ok(())
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub async fn update_panorama_stats_fields(
         &self,
         id: u64,
@@ -51,6 +52,7 @@ impl PanoramaRepository {
         min_lon: Option<f64>,
         max_lon: Option<f64>,
         points_json: Option<String>,
+        image_count: i32,
     ) -> Result<()> {
         let mut values = Attributes::default();
         values.insert("min_lat", Value::from(min_lat));
@@ -58,6 +60,7 @@ impl PanoramaRepository {
         values.insert("min_lon", Value::from(min_lon));
         values.insert("max_lon", Value::from(max_lon));
         values.insert("points_json", Value::from(points_json));
+        values.insert("image_count", Value::from(image_count as i64));
 
         let query = UpdateQuery::new(TABLE)
             .with_condition("id", Value::from(id as i64))
