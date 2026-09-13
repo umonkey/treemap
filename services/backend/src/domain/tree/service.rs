@@ -90,6 +90,10 @@ impl TreeService {
             }
         }
 
+        if request.search.is_some() {
+            trees.sort_by(Self::compare_search_results);
+        }
+
         debug!("Found {} visible trees.", trees.len());
 
         Ok(trees)
@@ -648,6 +652,24 @@ impl TreeService {
 
         true
     }
+
+    // Order search results by height, then crown diameter, then recency.
+    // Trees missing a metric sort after trees that have it.
+    fn compare_search_results(a: &Tree, b: &Tree) -> std::cmp::Ordering {
+        Self::compare_optional_desc(a.height, b.height)
+            .then_with(|| Self::compare_optional_desc(a.diameter, b.diameter))
+            .then_with(|| b.added_at.cmp(&a.added_at))
+            .then_with(|| b.id.cmp(&a.id))
+    }
+
+    fn compare_optional_desc(a: Option<f64>, b: Option<f64>) -> std::cmp::Ordering {
+        match (a, b) {
+            (Some(a), Some(b)) => b.total_cmp(&a),
+            (Some(_), None) => std::cmp::Ordering::Less,
+            (None, Some(_)) => std::cmp::Ordering::Greater,
+            (None, None) => std::cmp::Ordering::Equal,
+        }
+    }
 }
 
 impl Injectable for TreeService {
@@ -739,5 +761,97 @@ mod tests {
 
         assert_eq!(res.len(), 1);
         assert_eq!(res[0].species, "Fake Species");
+    }
+
+    #[test]
+    fn test_compare_search_results_orders_by_metrics() {
+        let mut trees = vec![
+            Tree {
+                id: 1,
+                height: Some(10.0),
+                diameter: Some(5.0),
+                added_at: 100,
+                ..Default::default()
+            },
+            Tree {
+                id: 2,
+                height: Some(20.0),
+                diameter: Some(1.0),
+                added_at: 50,
+                ..Default::default()
+            },
+            Tree {
+                id: 3,
+                height: None,
+                diameter: Some(9.0),
+                added_at: 200,
+                ..Default::default()
+            },
+            Tree {
+                id: 4,
+                height: Some(20.0),
+                diameter: Some(5.0),
+                added_at: 10,
+                ..Default::default()
+            },
+        ];
+
+        trees.sort_by(TreeService::compare_search_results);
+
+        let ids: Vec<u64> = trees.iter().map(|tree| tree.id).collect();
+
+        assert_eq!(ids, vec![4, 2, 1, 3]);
+    }
+
+    #[test]
+    fn test_compare_search_results_missing_height_sorts_last() {
+        let mut trees = vec![
+            Tree {
+                id: 1,
+                height: None,
+                diameter: Some(100.0),
+                added_at: 100,
+                ..Default::default()
+            },
+            Tree {
+                id: 2,
+                height: Some(1.0),
+                diameter: Some(1.0),
+                added_at: 1,
+                ..Default::default()
+            },
+        ];
+
+        trees.sort_by(TreeService::compare_search_results);
+
+        let ids: Vec<u64> = trees.iter().map(|tree| tree.id).collect();
+
+        assert_eq!(ids, vec![2, 1]);
+    }
+
+    #[test]
+    fn test_compare_search_results_ties_broken_by_id_desc() {
+        let mut trees = vec![
+            Tree {
+                id: 5,
+                height: Some(10.0),
+                diameter: Some(5.0),
+                added_at: 100,
+                ..Default::default()
+            },
+            Tree {
+                id: 6,
+                height: Some(10.0),
+                diameter: Some(5.0),
+                added_at: 100,
+                ..Default::default()
+            },
+        ];
+
+        trees.sort_by(TreeService::compare_search_results);
+
+        let ids: Vec<u64> = trees.iter().map(|tree| tree.id).collect();
+
+        assert_eq!(ids, vec![6, 5]);
     }
 }
