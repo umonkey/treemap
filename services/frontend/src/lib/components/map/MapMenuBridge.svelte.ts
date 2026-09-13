@@ -1,7 +1,5 @@
 import { menuBus } from '$lib/buses/menuBus';
-import { mapMode } from '$lib/stores/mapMode';
 import type { LngLat, Map, MapMouseEvent, MapTouchEvent, Point } from 'maplibre-gl';
-import { get } from 'svelte/store';
 
 const POI_LAYERS = [
 	'tree-crowns-small',
@@ -36,8 +34,6 @@ export class MapMenuBridgeLogic {
 	};
 
 	public showMapMenu = (map: Map, point: Point, lngLat: LngLat) => {
-		const mode = get(mapMode);
-
 		if (this.isPoi(map, point)) {
 			return;
 		}

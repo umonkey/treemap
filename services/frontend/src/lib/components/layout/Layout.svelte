@@ -1,8 +1,6 @@
 <script lang="ts">
 	import LeftSidebar from '$lib/components/layout/LeftSidebar.svelte';
 	import MobileNav from '$lib/components/layout/MobileNav.svelte';
-	import AddRow from '$lib/components/map/AddRow.svelte';
-	import AddTree from '$lib/components/map/AddTree.svelte';
 	import ContextMenu from '$lib/components/map/ContextMenu.svelte';
 	import MapLibre from '$lib/components/map/MapLibre.svelte';
 	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
@@ -25,10 +23,7 @@
 	<aside class="left"></aside>
 
 	<main>
-		<MapLibre>
-			<AddTree />
-			<AddRow />
-		</MapLibre>
+		<MapLibre />
 	</main>
 </div>
 

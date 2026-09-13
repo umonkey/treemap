@@ -17,7 +17,7 @@
 	import PanoramicLayer from './PanoramicLayer.svelte';
 	import TreeHintsLayer from './TreeHintsLayer.svelte';
 	import WaterSourceLayer from './WaterSourceLayer.svelte';
-	import AddWater from './AddWater.svelte';
+	import AddButton from './AddButton.svelte';
 	import MapCenter from './MapCenter.svelte';
 	import MapInspect from './MapInspect.svelte';
 	import MapMenuBridge from './MapMenuBridge.svelte';
@@ -83,7 +83,7 @@
 
 		<Marker />
 
-		<AddWater />
+		<AddButton />
 
 		<MapRays />
 
