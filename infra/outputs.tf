@@ -33,3 +33,14 @@ output "smtp_password" {
   description = "The ses_smtp_password_v4 from the access key"
   sensitive   = true
 }
+
+output "panoramas_sources_uploader_access_key_id" {
+  value       = aws_iam_access_key.panoramas_sources_uploader.id
+  description = "Access key ID for the panorama source videos uploader"
+}
+
+output "panoramas_sources_uploader_secret_access_key" {
+  value       = aws_iam_access_key.panoramas_sources_uploader.secret
+  description = "Secret access key for the panorama source videos uploader"
+  sensitive   = true
+}
