@@ -27,7 +27,7 @@
 	});
 </script>
 
-<div class="center">
+<div class="center" style="top: calc(50% - {mapState.bottomPadding / 2}px)">
 	<CrossHair />
 </div>
 

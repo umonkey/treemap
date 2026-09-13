@@ -8,6 +8,7 @@
 	import { mapState } from '$lib/components/map/MapLibre.svelte.ts';
 	import { mapMode } from '$lib/stores/mapMode';
 	import CloseOnEscape from '$lib/components/layout/CloseOnEscape.svelte';
+	import { mapBottomPadding } from '$lib/components/map/mapBottomPadding';
 	import { onMount } from 'svelte';
 	import '$lib/styles/variables.css';
 
@@ -25,7 +26,7 @@
 
 <CloseOnEscape onClose={pageState.handleCancel} />
 
-<div class="panel">
+<div class="panel" use:mapBottomPadding>
 	<div class="header">
 		<div class="title">
 			{locale.waterAddTitle()}

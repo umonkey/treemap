@@ -16,6 +16,7 @@
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import { formatSpecies, formatState, shortDetails } from '$lib/utils/trees';
 	import { previewState } from './MapPreview.svelte.ts';
+	import { mapBottomPadding } from '$lib/components/map/mapBottomPadding';
 	import '$lib/styles/variables.css';
 
 	let { id } = $props<{ id: string }>();
@@ -29,7 +30,12 @@
 	});
 </script>
 
-<div class="preview" class:expand={!!previewState.expand} class:loading={previewState.loading}>
+<div
+	class="preview"
+	class:expand={!!previewState.expand}
+	class:loading={previewState.loading}
+	use:mapBottomPadding
+>
 	{#if previewState.tree}
 		{@const tree = previewState.tree}
 		<div class="header">

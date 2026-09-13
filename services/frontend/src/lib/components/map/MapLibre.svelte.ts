@@ -50,6 +50,9 @@ class MapLibre {
 	bearing = $state<number>(0);
 	center = $state<ILatLng>(DEFAULT_MAP_CENTER);
 	bounds = $state<LngLatBounds>();
+	bottomPadding = $state<number>(0);
+
+	private paddingOwner: symbol | null = null;
 
 	mapBouncer = new MapBouncer();
 
@@ -68,6 +71,7 @@ class MapLibre {
 	public handleLoad = () => {
 		if (this.map) {
 			this.bounds = this.map.getBounds();
+			this.applyPadding();
 			console.debug('MapLibre load fired.');
 			this.handleMoveEnd();
 		}
@@ -92,14 +96,34 @@ class MapLibre {
 		}
 	};
 
+	public setBottomPadding = (px: number, owner: symbol) => {
+		const value = Math.max(0, Math.round(px));
+		this.paddingOwner = owner;
+		this.bottomPadding = value;
+		this.applyPadding();
+	};
+
+	public clearBottomPadding = (owner: symbol) => {
+		if (this.paddingOwner !== owner) return;
+		this.paddingOwner = null;
+		this.bottomPadding = 0;
+		this.applyPadding();
+	};
+
+	private applyPadding = () => {
+		this.map?.setPadding({ bottom: this.bottomPadding });
+	};
+
 	private updateStore = (bounds?: LngLatBounds) => {
 		this.storeDebouncer.run(() => {
 			mapStore.update((s) => {
 				const newState = { ...s, zoom: this.zoom, bearing: this.bearing };
 
 				if (bounds) {
-					const center = bounds.getCenter();
-					newState.center = { lat: center.lat, lng: center.lng };
+					const center = this.map?.getCenter();
+					if (center) {
+						newState.center = { lat: center.lat, lng: center.lng };
+					}
 				}
 
 				return newState;

@@ -56,6 +56,13 @@ Object.defineProperty(window, 'matchMedia', {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 window.URL.createObjectURL = (obj: Blob | MediaSource): string => 'blob:foobar';
 
+// JSDOM does not implement ResizeObserver, which is used by the map bottom padding action.
+global.ResizeObserver = vi.fn().mockImplementation(() => ({
+	observe: vi.fn(),
+	unobserve: vi.fn(),
+	disconnect: vi.fn()
+}));
+
 // Mock ServiceWorkers, also required by maplibre.
 global.Worker = vi.fn().mockImplementation((url: string) => {
 	return {

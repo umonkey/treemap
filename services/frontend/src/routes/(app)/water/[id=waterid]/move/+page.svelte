@@ -8,6 +8,7 @@
 	import TagIcon from '$lib/icons/TagIcon.svelte';
 	import Ruler from '$lib/icons/Ruler.svelte';
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
+	import { mapBottomPadding } from '$lib/components/map/mapBottomPadding';
 	import '$lib/styles/variables.css';
 
 	const id = $derived($page.params.id as string);
@@ -22,7 +23,7 @@
 	<title>{locale.waterMoveTitle()} — {locale.appTitle()}</title>
 </svelte:head>
 
-<div class="panel">
+<div class="panel" use:mapBottomPadding>
 	{#if pageState.source}
 		<div class="header">
 			<div class="title">

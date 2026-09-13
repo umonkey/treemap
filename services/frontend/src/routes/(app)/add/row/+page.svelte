@@ -11,6 +11,7 @@
 	import { get } from 'svelte/store';
 	import { mapStore } from '$lib/stores/mapStore';
 	import CloseOnEscape from '$lib/components/layout/CloseOnEscape.svelte';
+	import { mapBottomPadding } from '$lib/components/map/mapBottomPadding';
 	import '$lib/styles/variables.css';
 
 	onMount(() => {
@@ -37,7 +38,7 @@
 
 <CloseOnEscape onClose={pageState.handleCancel} />
 
-<div class="panel">
+<div class="panel" use:mapBottomPadding>
 	<div class="header">
 		<div class="title">
 			{locale.addRowTitle()}
