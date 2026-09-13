@@ -1,3 +1,4 @@
+import { mapBus } from '$lib/buses/mapBus';
 import { menuBus } from '$lib/buses/menuBus';
 import { goto } from '$lib/routes';
 import type { ILatLng } from '$lib/types';
@@ -5,8 +6,11 @@ import type { ILatLng } from '$lib/types';
 export class ContextMenuLogic {
 	open = $state(false);
 
+	private coords: ILatLng | undefined = undefined;
+
 	private handleShow = (coords: ILatLng) => {
 		console.debug(`Showing menu for ${coords.lat},${coords.lng}`);
+		this.coords = coords;
 		this.open = true;
 	};
 
@@ -22,6 +26,11 @@ export class ContextMenuLogic {
 
 	public handleNavigate = (url: string) => {
 		this.open = false;
+
+		if (this.coords) {
+			mapBus.emit('move', this.coords);
+		}
+
 		goto(url);
 	};
 
