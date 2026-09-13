@@ -7,12 +7,11 @@
 	import { hasPermission } from '$lib/stores/authStore';
 	import { ContextMenuLogic } from './ContextMenu.svelte.ts';
 	import { fade } from 'svelte/transition';
-	import { onMount } from 'svelte';
 	import '$lib/styles/colors.css';
 
 	const componentState = new ContextMenuLogic();
 
-	onMount(componentState.onMount);
+	$effect(() => componentState.subscribe());
 </script>
 
 <svelte:window onkeydown={componentState.handleKeyDown} />

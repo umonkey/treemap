@@ -25,7 +25,7 @@ export class ContextMenuLogic {
 		goto(url);
 	};
 
-	public onMount = () => {
+	public subscribe = () => {
 		menuBus.on('showMap', this.handleShow);
 
 		return () => {
