@@ -1,16 +1,14 @@
 #!/bin/bash
 # This script extracts frames from the source video at fixed intervals.
 #
-# The video is read from `var/dataset/video.mp4` and the frames are written
-# to `var/dataset/images/frame_*.jpg`.
+# The video is downloaded on demand from `$DATASET_URL/video.mp4`, and the
+# frames are written to `var/dataset/images/frame_*.jpg`.  The video is
+# deleted after extraction to free disk space (it is never needed again).
+
+set -e
 
 if [ -z "$DATASET" ]; then
     echo "DATASET variable not set, cannot continue."
-    exit 1
-fi
-
-if [ ! -f "$DATASET/video.mp4" ]; then
-    echo "File $DATASET/video.mp4 not found, cannot extract frames."
     exit 1
 fi
 
@@ -22,7 +20,22 @@ if [ -f "$DATASET/flags/$LOCK" ]; then
     exit 0
 fi
 
-mkdir -p $DATASET/images
+mkdir -p "$DATASET/images"
+
+# Download the source video (and GPS track) on demand.
+if [ ! -f "$DATASET/video.mp4" ]; then
+    if [ -z "$DATASET_URL" ]; then
+        echo "File $DATASET/video.mp4 not found and DATASET_URL not set, cannot extract frames."
+        exit 1
+    fi
+    echo "=== Downloading source video ==="
+    time aws s3 --endpoint-url="$AWS_ENDPOINT_URL" cp --no-progress "${DATASET_URL%/}/video.mp4" "$DATASET/video.mp4"
+fi
+
+if [ ! -f "$DATASET/track.gpx" ] && [ -n "$DATASET_URL" ]; then
+    echo "=== Downloading GPS track ==="
+    aws s3 --endpoint-url="$AWS_ENDPOINT_URL" cp --no-progress "${DATASET_URL%/}/track.gpx" "$DATASET/track.gpx" || echo "No track.gpx in the dataset."
+fi
 
 echo "Extracting frames..."
 GPX_ARG=""
@@ -31,6 +44,10 @@ if [ -f "$DATASET/track.gpx" ]; then
 fi
 
 time bin/app extract $DATASET/video.mp4 $DATASET/images $GPX_ARG
+
+# Free disk space before uploading; the video is no longer needed.
+rm -f "$DATASET/video.mp4"
+sync
 
 # Upload the results so that if next step crashes, we don't have to re-run this.
 time bin/upload-dataset $DATASET $LOCK

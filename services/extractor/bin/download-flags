@@ -1,0 +1,11 @@
+#!/bin/bash
+# Download only the pipeline flags to determine the resume point.
+
+if [ -n "$DATASET_URL" ]; then
+    BASE_URL="${DATASET_URL%/}"
+    echo "=== Downloading flags from: $BASE_URL/flags/ ==="
+    mkdir -p var/dataset/flags
+    time aws s3 --endpoint-url="$AWS_ENDPOINT_URL" sync --no-progress "$BASE_URL/flags/" var/dataset/flags/
+else
+    echo "Dataset URL not set, skipping flag download (debug run)."
+fi

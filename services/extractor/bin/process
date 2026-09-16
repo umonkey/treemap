@@ -13,8 +13,9 @@ bin/diagnose
 # OpenSfM expects the config in the dataset folder, generate it there.
 bin/write-config
 
-bin/download-dataset
+bin/download-flags
 bin/extract-frames
+bin/download-dataset
 bin/create-masks
 bin/create-camera-overrides
 bin/extract-metadata

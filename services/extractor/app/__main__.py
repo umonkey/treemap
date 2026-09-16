@@ -3,7 +3,7 @@ import json
 import os
 import sys
 
-import av
+from PIL import Image
 
 from . import Reader, Writer
 from .exceptions import UsageException
@@ -28,10 +28,8 @@ def handle_match(args):
 
 def handle_create_overrides(args):
     try:
-        with av.open(args.video_path) as container:
-            stream = container.streams.video[0]
-            width = stream.width
-            height = stream.height
+        with Image.open(args.image_path) as img:
+            width, height = img.size
         data = {
             "all": {
                 "projection_type": "spherical",
@@ -41,7 +39,7 @@ def handle_create_overrides(args):
         }
         print(json.dumps(data))
     except Exception as e:
-        print(f"Error reading video metadata: {e}", file=sys.stderr)
+        print(f"Error reading image metadata: {e}", file=sys.stderr)
         sys.exit(1)
 
 
@@ -199,9 +197,12 @@ def main():
     match_parser.set_defaults(func=handle_match)
 
     create_overrides_parser = subparsers.add_parser(
-        "create-camera-overrides", help="Create camera models overrides JSON from video"
+        "create-camera-overrides",
+        help="Create camera models overrides JSON from a frame image",
     )
-    create_overrides_parser.add_argument("video_path", help="Path to the video file")
+    create_overrides_parser.add_argument(
+        "image_path", help="Path to a reference frame image"
+    )
     create_overrides_parser.set_defaults(func=handle_create_overrides)
 
     create_masks_parser = subparsers.add_parser(

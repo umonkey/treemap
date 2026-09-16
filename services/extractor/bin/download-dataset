@@ -1,15 +1,18 @@
 #!/bin/bash
-# Download source video and track from the S3 file storage.
+# Download dataset files from the S3 file storage.
 #
 # The source S3 folder is defined in the `DATASET_URL` variable.
 # If the variable is not set, assume it is a debug run and we don't
 # need to download anything, use whatever is in the dataset folder already.
+#
+# The source video is excluded: `bin/extract-frames` downloads it on demand
+# and deletes it after extraction, so it must never be fetched here.
 
 if [ -n "$DATASET_URL" ]; then
     echo "=== Downloading dataset files ==="
     echo "Downloading from: $DATASET_URL"
     mkdir -p var/dataset/
-    time aws s3 --endpoint-url="$AWS_ENDPOINT_URL" sync --no-progress --size-only "$DATASET_URL" var/dataset/
+    time aws s3 --endpoint-url="$AWS_ENDPOINT_URL" sync --no-progress --size-only --exclude "*.mp4" "$DATASET_URL" var/dataset/
     sync
 else
     echo "Dataset URL not set, nothing to download.  Relying on existing local files (likely a debug run)."
