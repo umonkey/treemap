@@ -22,5 +22,3 @@ if command -v lscpu >/dev/null 2>&1; then
 else
     grep -E '^(processor|model name)' /proc/cpuinfo
 fi
-[ -r /sys/fs/cgroup/cpu.max ] && echo "cgroup cpu.max: $(cat /sys/fs/cgroup/cpu.max)"
-[ -r /sys/fs/cgroup/cpu/cpu.cfs_quota_us ] && echo "cgroup cpu.cfs_quota_us: $(cat /sys/fs/cgroup/cpu/cpu.cfs_quota_us)"
