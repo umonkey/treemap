@@ -25,6 +25,9 @@ check:
 shell:
 	docker run --rm -v $(PWD)/var:/app/var -u $(shell id -u):$(shell id -g) -e "DATASET_URL=$(DATASET_URL)" -e DATASET=var/dataset -e FRAME_ITERVAL=10 -it $(PACKAGE):latest bash
 
+logs:
+	aws logs tail --follow /aws/batch/job
+
 test-run:
 	docker run --rm -v $(PWD)/var:/app/var -u $(shell id -u):$(shell id -g) -e "GPX_OFFSET=471.3" -e "MASK_SIZE=0.35" -e "DATASET_URL=$(DATASET_URL)" -t $(PACKAGE):latest bin/process
 
