@@ -1,19 +1,18 @@
 use crate::domains::outbox::OutboxRepository;
+use crate::infra::telegram::TelegramClient;
 use std::sync::Arc;
 use std::time::Duration;
-use teloxide::prelude::*;
-use teloxide::types::{ChatId, InputFile, InputMedia, InputMediaPhoto, MessageId, ThreadId};
 
 pub struct OutboxDispatcher {
-    bot: Bot,
+    telegram: Arc<TelegramClient>,
     outbox: Arc<OutboxRepository>,
     poll_interval: Duration,
 }
 
 impl OutboxDispatcher {
-    pub fn new(token: String, outbox: Arc<OutboxRepository>) -> Self {
+    pub fn new(telegram: Arc<TelegramClient>, outbox: Arc<OutboxRepository>) -> Self {
         Self {
-            bot: Bot::new(token),
+            telegram,
             outbox,
             poll_interval: Duration::from_secs(10),
         }
@@ -49,37 +48,10 @@ impl OutboxDispatcher {
             );
 
             let urls = msg.attachment_urls();
-            let thread_id = msg.topic_id.map(|id| ThreadId(MessageId(id as i32)));
-            let send_res = if urls.is_empty() {
-                let mut req = self.bot.send_message(ChatId(msg.chat_id), msg.text.clone());
-                if let Some(t) = thread_id {
-                    req = req.message_thread_id(t);
-                }
-                req.await.map(|_| ())
-            } else if urls.len() == 1 {
-                let mut req = self
-                    .bot
-                    .send_photo(ChatId(msg.chat_id), InputFile::url(urls[0].parse()?))
-                    .caption(msg.text.clone());
-                if let Some(t) = thread_id {
-                    req = req.message_thread_id(t);
-                }
-                req.await.map(|_| ())
-            } else {
-                let mut media = Vec::new();
-                for (i, url) in urls.into_iter().take(10).enumerate() {
-                    let mut photo = InputMediaPhoto::new(InputFile::url(url.parse()?));
-                    if i == 0 {
-                        photo = photo.caption(msg.text.clone());
-                    }
-                    media.push(InputMedia::Photo(photo));
-                }
-                let mut req = self.bot.send_media_group(ChatId(msg.chat_id), media);
-                if let Some(t) = thread_id {
-                    req = req.message_thread_id(t);
-                }
-                req.await.map(|_| ())
-            };
+            let send_res = self
+                .telegram
+                .send_message(msg.chat_id, msg.topic_id, &msg.text, &urls)
+                .await;
 
             match send_res {
                 Ok(_) => {

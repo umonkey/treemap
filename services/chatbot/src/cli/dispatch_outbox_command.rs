@@ -1,5 +1,6 @@
 use crate::domains::outbox::OutboxRepository;
 use crate::infra::config::Config;
+use crate::infra::telegram::TelegramClient;
 use crate::services::outbox_dispatcher::OutboxDispatcher;
 use std::sync::Arc;
 
@@ -14,8 +15,10 @@ pub async fn dispatch_outbox_command() {
 
     let outbox = Arc::new(OutboxRepository::new(Arc::clone(&db)));
 
+    let telegram = Arc::new(TelegramClient::new(config.bot_token));
+
     log::info!("Starting Outbox Dispatcher daemon...");
 
-    let dispatcher = OutboxDispatcher::new(config.bot_token, outbox);
+    let dispatcher = OutboxDispatcher::new(telegram, outbox);
     dispatcher.run().await;
 }

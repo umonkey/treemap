@@ -19,23 +19,7 @@ impl OutboxRepository {
         text: &str,
         attachments: Option<&[String]>,
     ) -> anyhow::Result<i64> {
-        let (chat_id, topic_id) = match recipient.split_once(':') {
-            Some((chat, topic)) => {
-                let topic_id = topic.trim().parse::<i64>().map_err(|e| {
-                    anyhow::anyhow!("Invalid topic id in recipient '{}': {}", recipient, e)
-                })?;
-                let chat_id = chat.trim().parse::<i64>().map_err(|e| {
-                    anyhow::anyhow!("Invalid chat id in recipient '{}': {}", recipient, e)
-                })?;
-                (chat_id, Some(topic_id))
-            }
-            None => {
-                let chat_id = recipient.trim().parse::<i64>().map_err(|e| {
-                    anyhow::anyhow!("Invalid chat id in recipient '{}': {}", recipient, e)
-                })?;
-                (chat_id, None)
-            }
-        };
+        let (chat_id, topic_id) = crate::infra::telegram::parse_recipient(recipient)?;
 
         let conn = self.db.connect().await?;
         let att_json = attachments.map(serde_json::to_string).transpose()?;

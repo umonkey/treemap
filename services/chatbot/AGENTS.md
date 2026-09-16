@@ -38,7 +38,7 @@ The binary (`/app/bin/chatbot`) supports subcommands:
 - `dispatch-alerts`: runs the background alert dispatcher worker daemon.
 - `dispatch-outbox`: runs the outbox queue worker daemon to deliver pending messages.
 - `dispatch-pings`: runs the background draft alert pinger worker daemon.
-- `send-test-alert`: enqueues a test alert message for all configured recipients.
+- `send-test-alert`: sends a test alert message directly to all configured recipients via the Telegram client.
 
 ## Useful Commands
 
