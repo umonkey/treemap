@@ -1,9 +1,12 @@
 #!/bin/bash
 # This script extracts frames from the source video at fixed intervals.
 #
-# The video is downloaded on demand from `$DATASET_URL/video.mp4`, and the
-# frames are written to `var/dataset/images/frame_*.jpg`.  The video is
-# deleted after extraction to free disk space (it is never needed again).
+# The source video is streamed directly from S3 over HTTPS via a presigned
+# URL and is never copied to local disk: the source can be ~70 GB, which does
+# not fit safely in the AWS Batch container.  A local `$DATASET/video.mp4`,
+# when present, is used as an offline/debug fallback instead.
+#
+# The frames are written to `var/dataset/images/frame_*.jpg`.
 
 set -e
 
@@ -22,16 +25,24 @@ fi
 
 mkdir -p "$DATASET/images"
 
-# Download the source video (and GPS track) on demand.
-if [ ! -f "$DATASET/video.mp4" ]; then
-    if [ -z "$DATASET_URL" ]; then
-        echo "File $DATASET/video.mp4 not found and DATASET_URL not set, cannot extract frames."
-        exit 1
-    fi
-    echo "=== Downloading source video ==="
-    time aws s3 --endpoint-url="$AWS_ENDPOINT_URL" cp --no-progress "${DATASET_URL%/}/video.mp4" "$DATASET/video.mp4"
+# Resolve the source video: prefer a local file (offline/debug), otherwise
+# stream the S3 object via a presigned HTTPS URL, and never copy it to disk.
+if [ -f "$DATASET/video.mp4" ]; then
+    echo "=== Using local source video $DATASET/video.mp4 (offline/debug) ==="
+    VIDEO_SRC="$DATASET/video.mp4"
+elif [ -n "$DATASET_URL" ]; then
+    echo "=== Streaming source video from S3 (no local copy) ==="
+    # The presigned URL must stay valid for the whole extraction: FFmpeg may
+    # reopen the connection and re-validate the signature on every seek, so
+    # the TTL must exceed the extraction wall-clock time.  Default: 12 hours.
+    # SigV4 presigned URLs expire after at most 604800 seconds (7 days).
+    VIDEO_SRC="$(aws s3 presign --endpoint-url="$AWS_ENDPOINT_URL" --expires-in "${VIDEO_PRESIGN_TTL:-43200}" "${DATASET_URL%/}/video.mp4")"
+else
+    echo "File $DATASET/video.mp4 not found and DATASET_URL not set, cannot extract frames."
+    exit 1
 fi
 
+# Download the GPS track on demand (small, safe to keep locally).
 if [ ! -f "$DATASET/track.gpx" ] && [ -n "$DATASET_URL" ]; then
     echo "=== Downloading GPS track ==="
     aws s3 --endpoint-url="$AWS_ENDPOINT_URL" cp --no-progress "${DATASET_URL%/}/track.gpx" "$DATASET/track.gpx" || echo "No track.gpx in the dataset."
@@ -43,10 +54,8 @@ if [ -f "$DATASET/track.gpx" ]; then
     GPX_ARG="--gpx $DATASET/track.gpx"
 fi
 
-time bin/app extract $DATASET/video.mp4 $DATASET/images $GPX_ARG
+time bin/app extract "$VIDEO_SRC" "$DATASET/images" $GPX_ARG
 
-# Free disk space before uploading; the video is no longer needed.
-rm -f "$DATASET/video.mp4"
 sync
 
 # Upload the results so that if next step crashes, we don't have to re-run this.

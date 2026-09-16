@@ -9,13 +9,26 @@ import av
 
 class Reader:
     def __init__(self, video_path):
-        self._container = av.open(video_path)
+        is_remote = video_path.startswith(("http://", "https://"))
+        options = (
+            {
+                "reconnect": "1",
+                "reconnect_streamed": "1",
+                "reconnect_delay_max": "5",
+            }
+            if is_remote
+            else None
+        )
+        self._container = av.open(video_path, options=options)
         self._stream = self._container.streams.video[0]
         self._stream.thread_type = "AUTO"
         self._base_time = self._get_creation_time(self._container)
 
         self.total_frames = self._get_total_frames()
-        print(f"Opening {video_path} to read {self.total_frames} video frames.")
+        print(
+            f"Opening {video_path.split('?', 1)[0]} "
+            f"to read {self.total_frames} video frames."
+        )
 
     def _get_total_frames(self):
         """

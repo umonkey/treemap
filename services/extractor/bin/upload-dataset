@@ -1,6 +1,7 @@
 #!/bin/bash
-# Upload source video and track to the S3 file storage.
-# Skip if the files already exist (which is a debug only feature).
+# Upload dataset artifacts (frames, track and flags) to the S3 file storage.
+# The source video is never uploaded; it is streamed during extraction and must
+# not be copied into the dataset bucket even when a local debug copy exists.
 
 if [ -z "$2" ]; then
     echo "Usage: $0 dataset_path lock_file"
@@ -15,7 +16,7 @@ if [ -n "$DATASET_URL" ]; then
     BASE_URL="${DATASET_URL%/}"
 
     echo "Uploading dataset files to $BASE_URL ..."
-    aws s3 --endpoint-url="$AWS_ENDPOINT_URL" sync --no-progress "$DATASET/" "$BASE_URL/"
+    aws s3 --endpoint-url="$AWS_ENDPOINT_URL" sync --no-progress --exclude "video.mp4" "$DATASET/" "$BASE_URL/"
 
     mkdir -p "$DATASET/flags"
     echo yes > "$DATASET/flags/$LOCK"

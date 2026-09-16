@@ -74,10 +74,12 @@ def handle_extract(args):
         gpx_path = args.gpx
         if not gpx_path:
             candidate1 = os.path.join(dataset_path, "track.gpx")
-            candidate2 = os.path.join(os.path.dirname(video_path), "track.gpx")
+            candidate2 = None
+            if "://" not in video_path:
+                candidate2 = os.path.join(os.path.dirname(video_path), "track.gpx")
             if os.path.exists(candidate1):
                 gpx_path = candidate1
-            elif os.path.exists(candidate2):
+            elif candidate2 is not None and os.path.exists(candidate2):
                 gpx_path = candidate2
                 dataset_path = os.path.dirname(video_path)
 
