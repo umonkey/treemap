@@ -15,17 +15,36 @@ impl OutboxRepository {
     pub async fn enqueue(
         &self,
         alert_id: i64,
-        chat_id: i64,
+        recipient: &str,
         text: &str,
         attachments: Option<&[String]>,
     ) -> anyhow::Result<i64> {
+        let (chat_id, topic_id) = match recipient.split_once(':') {
+            Some((chat, topic)) => {
+                let topic_id = topic.trim().parse::<i64>().map_err(|e| {
+                    anyhow::anyhow!("Invalid topic id in recipient '{}': {}", recipient, e)
+                })?;
+                let chat_id = chat.trim().parse::<i64>().map_err(|e| {
+                    anyhow::anyhow!("Invalid chat id in recipient '{}': {}", recipient, e)
+                })?;
+                (chat_id, Some(topic_id))
+            }
+            None => {
+                let chat_id = recipient.trim().parse::<i64>().map_err(|e| {
+                    anyhow::anyhow!("Invalid chat id in recipient '{}': {}", recipient, e)
+                })?;
+                (chat_id, None)
+            }
+        };
+
         let conn = self.db.connect().await?;
         let att_json = attachments.map(serde_json::to_string).transpose()?;
-        let sql = "INSERT INTO chatbot_outbox (alert_id, chat_id, text, attachments, status, created_at, next_retry_at, attempts) 
-                   VALUES (?, ?, ?, ?, 'pending', unixepoch(), unixepoch(), 0)";
+        let sql = "INSERT INTO chatbot_outbox (alert_id, chat_id, topic_id, text, attachments, status, created_at, next_retry_at, attempts) 
+                   VALUES (?, ?, ?, ?, ?, 'pending', unixepoch(), unixepoch(), 0)";
         let params = vec![
             Value::Integer(alert_id),
             Value::Integer(chat_id),
+            topic_id.map(Value::Integer).unwrap_or(Value::Null),
             Value::Text(text.to_string()),
             att_json.map(Value::Text).unwrap_or(Value::Null),
         ];
@@ -38,7 +57,7 @@ impl OutboxRepository {
         conn.execute("BEGIN IMMEDIATE", params_from_iter(Vec::<Value>::new()))
             .await?;
 
-        let sql = "SELECT id, alert_id, chat_id, text, attachments, status, created_at, sent_at, next_retry_at, attempts, error_message 
+        let sql = "SELECT id, alert_id, chat_id, topic_id, text, attachments, status, created_at, sent_at, next_retry_at, attempts, error_message 
                    FROM chatbot_outbox 
                    WHERE status = 'pending' AND next_retry_at <= unixepoch() 
                    ORDER BY created_at ASC 
@@ -74,14 +93,15 @@ impl OutboxRepository {
                             id: row.get(0)?,
                             alert_id: row.get(1)?,
                             chat_id: row.get(2)?,
-                            text: row.get(3)?,
-                            attachments: row.get(4)?,
-                            status: row.get(5)?,
-                            created_at: row.get(6)?,
-                            sent_at: row.get(7)?,
-                            next_retry_at: row.get(8)?,
-                            attempts: row.get(9)?,
-                            error_message: row.get(10)?,
+                            topic_id: row.get(3)?,
+                            text: row.get(4)?,
+                            attachments: row.get(5)?,
+                            status: row.get(6)?,
+                            created_at: row.get(7)?,
+                            sent_at: row.get(8)?,
+                            next_retry_at: row.get(9)?,
+                            attempts: row.get(10)?,
+                            error_message: row.get(11)?,
                         })
                     })() {
                         Ok(msg) => messages.push(msg),

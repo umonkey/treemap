@@ -11,7 +11,7 @@ pub struct Config {
     pub files_secret: String,
     pub files_base_url: String,
     pub website_url: String,
-    pub report_recipients: Vec<i64>,
+    pub report_recipients: Vec<String>,
 }
 
 impl Config {
@@ -25,13 +25,7 @@ impl Config {
             .split(',')
             .map(|s| s.trim())
             .filter(|s| !s.is_empty())
-            .filter_map(|s| match s.parse::<i64>() {
-                Ok(id) => Some(id),
-                Err(e) => {
-                    log::warn!("Invalid report recipient ID '{}': {}", s, e);
-                    None
-                }
-            })
+            .map(|s| s.to_string())
             .collect();
 
         Self {

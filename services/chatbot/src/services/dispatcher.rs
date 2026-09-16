@@ -8,7 +8,7 @@ pub struct AlertDispatcher {
     alerts: Arc<AlertRepository>,
     photos: Arc<AlertPhotoRepository>,
     outbox: Arc<OutboxRepository>,
-    recipients: Vec<i64>,
+    recipients: Vec<String>,
     website_url: String,
     files_base_url: String,
     poll_interval: Duration,
@@ -20,7 +20,7 @@ impl AlertDispatcher {
         alerts: Arc<AlertRepository>,
         photos: Arc<AlertPhotoRepository>,
         outbox: Arc<OutboxRepository>,
-        recipients: Vec<i64>,
+        recipients: Vec<String>,
         website_url: String,
         files_base_url: String,
     ) -> Self {
@@ -113,16 +113,16 @@ impl AlertDispatcher {
                 alert.id
             );
 
-            for &recipient_id in &self.recipients {
+            for recipient in &self.recipients {
                 if let Err(e) = self
                     .outbox
-                    .enqueue(alert.id, recipient_id, &text, attachments_opt)
+                    .enqueue(alert.id, recipient, &text, attachments_opt)
                     .await
                 {
                     log::error!(
                         "Failed to enqueue alert {} for recipient {}: {:?}",
                         alert.id,
-                        recipient_id,
+                        recipient,
                         e
                     );
                 }

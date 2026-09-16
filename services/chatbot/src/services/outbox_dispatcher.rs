@@ -2,7 +2,7 @@ use crate::domains::outbox::OutboxRepository;
 use std::sync::Arc;
 use std::time::Duration;
 use teloxide::prelude::*;
-use teloxide::types::{ChatId, InputFile, InputMedia, InputMediaPhoto};
+use teloxide::types::{ChatId, InputFile, InputMedia, InputMediaPhoto, MessageId, ThreadId};
 
 pub struct OutboxDispatcher {
     bot: Bot,
@@ -49,17 +49,22 @@ impl OutboxDispatcher {
             );
 
             let urls = msg.attachment_urls();
+            let thread_id = msg.topic_id.map(|id| ThreadId(MessageId(id as i32)));
             let send_res = if urls.is_empty() {
-                self.bot
-                    .send_message(ChatId(msg.chat_id), msg.text.clone())
-                    .await
-                    .map(|_| ())
+                let mut req = self.bot.send_message(ChatId(msg.chat_id), msg.text.clone());
+                if let Some(t) = thread_id {
+                    req = req.message_thread_id(t);
+                }
+                req.await.map(|_| ())
             } else if urls.len() == 1 {
-                self.bot
+                let mut req = self
+                    .bot
                     .send_photo(ChatId(msg.chat_id), InputFile::url(urls[0].parse()?))
-                    .caption(msg.text.clone())
-                    .await
-                    .map(|_| ())
+                    .caption(msg.text.clone());
+                if let Some(t) = thread_id {
+                    req = req.message_thread_id(t);
+                }
+                req.await.map(|_| ())
             } else {
                 let mut media = Vec::new();
                 for (i, url) in urls.into_iter().take(10).enumerate() {
@@ -69,10 +74,11 @@ impl OutboxDispatcher {
                     }
                     media.push(InputMedia::Photo(photo));
                 }
-                self.bot
-                    .send_media_group(ChatId(msg.chat_id), media)
-                    .await
-                    .map(|_| ())
+                let mut req = self.bot.send_media_group(ChatId(msg.chat_id), media);
+                if let Some(t) = thread_id {
+                    req = req.message_thread_id(t);
+                }
+                req.await.map(|_| ())
             };
 
             match send_res {

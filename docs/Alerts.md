@@ -44,7 +44,7 @@ The chatbot and its background dispatcher daemon are configured using file-based
 
 - `CHATBOT_TOKEN`: api token for the Telegram bot (obtained via BotFather).
 - `CHATBOT_DATABASE`: path to the shared SQLite database file.
-- `REPORT_RECIPIENTS`: comma-separated list of Telegram chat IDs (moderators/curators) to receive private report notifications. (Note: Recipients must have previously initiated a chat with the bot by messaging `/start`).
+- `REPORT_RECIPIENTS`: comma-separated list of Telegram chat IDs (moderators/curators) to receive private report notifications. Each entry may optionally target a forum topic using the `chat_id:topic_id` format. (Note: Recipients must have previously initiated a chat with the bot by messaging `/start`).
 - `WEBSITE_URL`: base URL for report links in notifications (defaults to `http://localhost:5173` in development; configured as `https://yerevan.treemaps.app` in production).
 - `FILES_BUCKET`, `FILES_REGION`, `FILES_ENDPOINT`, `FILES_KEY`, `FILES_SECRET`: object storage credentials for uploaded report media.
 - `RUST_LOG`: logging level configuration (e.g., `info,chatbot=debug`).

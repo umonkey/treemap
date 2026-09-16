@@ -13,6 +13,7 @@ fn usage() {
     println!("  dispatch-alerts -- run the background alert dispatcher worker daemon");
     println!("  dispatch-outbox -- run the background outbox message dispatcher worker daemon");
     println!("  dispatch-pings  -- run the background draft alert pinger worker daemon");
+    println!("  send-test-alert -- enqueue a test alert message for all configured recipients");
     println!("  serve           -- run the interactive Telegram bot REPL");
 }
 
@@ -41,6 +42,9 @@ async fn main() {
         }
         "dispatch-pings" => {
             dispatch_pings_command().await;
+        }
+        "send-test-alert" => {
+            send_test_alert_command().await;
         }
         "serve" => {
             serve_command().await;

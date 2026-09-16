@@ -20,7 +20,7 @@ The chatbot is configured using the following environment variables:
 - `FILES_KEY`: access key for file storage.
 - `FILES_SECRET`: secret key for file storage.
 - `RUST_LOG`: logging level configuration.
-- `REPORT_RECIPIENTS`: comma-separated list of Telegram chat IDs to receive notifications when a completed citizen feedback report is ready.
+- `REPORT_RECIPIENTS`: comma-separated list of Telegram chat IDs to receive notifications when a completed citizen feedback report is ready. Each entry may optionally target a forum topic using the `chat_id:topic_id` format.
 - `WEBSITE_URL`: base URL for report links in notifications.
 
 ## Feedback Dispatcher and Draft Pinger
@@ -30,6 +30,7 @@ The application runs decoupled background workers (managed via supervisord):
 1. `dispatch-alerts`: periodically scans for pending citizen feedback reports with status `new` and dispatches them to all chat IDs in `REPORT_RECIPIENTS`.
 2. `dispatch-outbox`: delivers pending messages from the outbox queue with exponential backoff retries.
 3. `dispatch-pings`: scans for incomplete draft reports and enqueues reminder messages into the outbox when `ping_at` is reached. Draft reports remain in `draft` status indefinitely until completed.
+4. `send-test-alert`: enqueues a test alert message for every configured recipient; the `dispatch-outbox` daemon delivers it.
 
 To get started with the chatbot:
 
