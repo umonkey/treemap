@@ -17,7 +17,7 @@ fi
 # The name of the flag file to skip the process in case of a rerun.
 LOCK=frames_extracted.txt
 
-if [ -f $DATASET/$LOCK ]; then
+if [ -f "$DATASET/flags/$LOCK" ]; then
     echo "Source frames already extracted."
     exit 0
 fi

@@ -14,9 +14,9 @@ fi
 # The name of the flag file to skip the process in case of a rerun.
 LOCK=features_matched.txt
 
-if [ -f $DATASET/$LOCK ]; then
+if [ -f "$DATASET/flags/$LOCK" ]; then
     echo "Found existing feature matches, reusing."
-    echo "Restart with: rm -rf $DATASET/$LOCK $DATASET/matches"
+    echo "Restart with: rm -rf $DATASET/flags/$LOCK $DATASET/matches"
     exit 0
 fi
 

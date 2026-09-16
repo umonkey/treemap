@@ -10,9 +10,9 @@ fi
 # The name of the flag file to skip the process in case of a rerun.
 LOCK=reconstructed.txt
 
-if [ -f $DATASET/$LOCK ]; then
+if [ -f "$DATASET/flags/$LOCK" ]; then
     echo "Found existing reconstruction, reusing."
-    echo "Resrart with: rm -rf $DATASET/$LOCK $DATASET/reconstruction.json"
+    echo "Resrart with: rm -rf $DATASET/flags/$LOCK $DATASET/reconstruction.json"
     exit 0
 fi
 

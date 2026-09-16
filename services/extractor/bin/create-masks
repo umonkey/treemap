@@ -14,7 +14,7 @@ fi
 
 LOCK=masks_created.txt
 
-if [ -f $DATASET/$LOCK ]; then
+if [ -f "$DATASET/flags/$LOCK" ]; then
     echo "Found previously created masks, reusing."
     exit 0
 fi

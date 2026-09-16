@@ -6,7 +6,9 @@ exec 1>&2
 
 DATASET=var/dataset
 
-mkdir -p $DATASET/images var/output
+mkdir -p $DATASET/images $DATASET/flags var/output
+
+bin/diagnose
 
 # OpenSfM expects the config in the dataset folder, generate it there.
 bin/write-config

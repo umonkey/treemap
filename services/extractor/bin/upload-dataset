@@ -11,11 +11,15 @@ DATASET="$1"
 LOCK="$2"
 
 if [ -n "$DATASET_URL" ]; then
-    echo "Uploading dataset files to $DATASET_URL ..."
-    aws s3 --endpoint-url="$AWS_ENDPOINT_URL" sync --no-progress "$DATASET/" "$DATASET_URL"
+    # DATASET_URL always has a trailing slash; strip it to avoid '//' in S3 keys.
+    BASE_URL="${DATASET_URL%/}"
 
-    echo yes > "$DATASET/$LOCK"
-    aws s3 --endpoint-url="$AWS_ENDPOINT_URL" cp --no-progress "$DATASET/$LOCK" "$DATASET_URL/$LOCK"
+    echo "Uploading dataset files to $BASE_URL ..."
+    aws s3 --endpoint-url="$AWS_ENDPOINT_URL" sync --no-progress "$DATASET/" "$BASE_URL/"
+
+    mkdir -p "$DATASET/flags"
+    echo yes > "$DATASET/flags/$LOCK"
+    aws s3 --endpoint-url="$AWS_ENDPOINT_URL" cp --no-progress "$DATASET/flags/$LOCK" "$BASE_URL/flags/$LOCK"
 else
     echo "DATASET_URL not set, not uploading temporary files."
 fi

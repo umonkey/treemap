@@ -15,7 +15,7 @@ fi
 # The name of the flag file to skip the process in case of a rerun.
 LOCK=trajectory_aligned.txt
 
-if [ -f $DATASET/$LOCK ]; then
+if [ -f "$DATASET/flags/$LOCK" ]; then
     echo "Found existing trajectory alignment, reusing."
     exit 0
 fi

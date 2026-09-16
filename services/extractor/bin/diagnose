@@ -1,0 +1,26 @@
+#!/bin/bash
+# Print runtime environment diagnostics: RAM, disk, CPU, and mounts.
+
+echo "=== RAM info ==="
+free -h
+[ -r /sys/fs/cgroup/memory.max ] && echo "cgroup memory.max: $(cat /sys/fs/cgroup/memory.max)"
+[ -r /sys/fs/cgroup/memory/memory.limit_in_bytes ] && echo "cgroup memory limit: $(cat /sys/fs/cgroup/memory/memory.limit_in_bytes)"
+
+echo "=== Disk info ==="
+df -khl
+if command -v lsblk >/dev/null 2>&1; then
+    lsblk -o NAME,SIZE,FSTYPE,TYPE,MOUNTPOINT
+else
+    cat /proc/mounts
+fi
+[ -d "${DATASET:-var/dataset}" ] && du -sh "${DATASET:-var/dataset}" 2>/dev/null
+
+echo "=== CPU info ==="
+echo "nproc: $(nproc)"
+if command -v lscpu >/dev/null 2>&1; then
+    lscpu
+else
+    grep -E '^(processor|model name)' /proc/cpuinfo
+fi
+[ -r /sys/fs/cgroup/cpu.max ] && echo "cgroup cpu.max: $(cat /sys/fs/cgroup/cpu.max)"
+[ -r /sys/fs/cgroup/cpu/cpu.cfs_quota_us ] && echo "cgroup cpu.cfs_quota_us: $(cat /sys/fs/cgroup/cpu/cpu.cfs_quota_us)"
