@@ -41,7 +41,7 @@ resource "aws_launch_template" "treemap" {
 
     ebs {
       volume_type = "gp3"
-      volume_size = 100
+      volume_size = 200
       iops        = 3000
       throughput  = 125
     }
