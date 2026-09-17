@@ -6,6 +6,7 @@
 	import { PanoramaPreviewState } from './PanoramaPreview.svelte.ts';
 	import PanoramaHintsLayer from './PanoramaHintsLayer.svelte';
 	import PanoramaSequenceLayer from './PanoramaSequenceLayer.svelte';
+	import TrackLayer from './TrackLayer.svelte';
 
 	const { panoramaId, minzoom = 18 }: { panoramaId: string; ratio?: string; minzoom?: number } =
 		$props();
@@ -37,6 +38,7 @@
 				attributionControl={false}
 			>
 				<AttributionControl compact={true} position="bottom-left" />
+				<TrackLayer {panoramaId} />
 				<MapRays length={20} />
 				<PanoramaSequenceLayer
 					{panoramaId}
@@ -47,6 +49,7 @@
 				<PanoramaHintsLayer {panoramaId} />
 			</MapLibre>
 		</div>
+
 		<div class="viewer-wrapper">
 			{#if componentState.selectedImage}
 				<PanoramaViewer

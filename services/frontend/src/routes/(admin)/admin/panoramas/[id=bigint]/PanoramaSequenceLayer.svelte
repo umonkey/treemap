@@ -34,6 +34,7 @@
 {#if componentState.geoJsonData}
 	<GeoJSON data={componentState.geoJsonData}>
 		<LineLayer
+			id="panorama-sequence"
 			filter={['==', ['get', 'kind'], 'sequence']}
 			paint={{ 'line-color': '#007aff', 'line-width': 4 }}
 		/>

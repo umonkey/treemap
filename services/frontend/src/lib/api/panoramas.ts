@@ -299,3 +299,16 @@ export async function getPanoramaGeoJSON(id: string): Promise<IResponse<unknown>
 		headers: getAuthHeaders()
 	});
 }
+
+export interface PanoramaTrackPoint {
+	lat: number;
+	lng: number;
+	offset: number;
+	timestamp: string;
+}
+
+export async function getPanoramaTrack(id: string): Promise<IResponse<PanoramaTrackPoint[]>> {
+	return await request<PanoramaTrackPoint[]>('GET', `api/panoramas/${id}/track.json`, {
+		headers: getAuthHeaders()
+	});
+}
