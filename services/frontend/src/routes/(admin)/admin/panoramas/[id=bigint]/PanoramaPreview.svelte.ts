@@ -36,10 +36,21 @@ export class PanoramaPreviewState {
 		);
 	};
 
+	toggleFullscreen = (element?: HTMLElement | null) => {
+		if (!document.fullscreenElement) void element?.requestFullscreen();
+		else void document.exitFullscreen();
+	};
+
+	handleFullscreenChange = () => {
+		requestAnimationFrame(() => this.map?.resize());
+	};
+
 	public init = () => {
 		mapBus.on('fit', this.handleFit);
+		document.addEventListener('fullscreenchange', this.handleFullscreenChange);
 		return () => {
 			mapBus.off('fit', this.handleFit);
+			document.removeEventListener('fullscreenchange', this.handleFullscreenChange);
 		};
 	};
 

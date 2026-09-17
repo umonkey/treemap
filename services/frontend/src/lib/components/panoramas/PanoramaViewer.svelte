@@ -16,11 +16,20 @@
 		angle?: number;
 		canEdit?: boolean;
 		canHide?: boolean;
+		canFullScreen?: boolean;
 		onMove?: (angle: number) => void;
 		onClose?: () => void;
 	}
 
-	const { image, angle = 0, canEdit = false, canHide = false, onMove, onClose }: Props = $props();
+	const {
+		image,
+		angle = 0,
+		canEdit = false,
+		canHide = false,
+		canFullScreen = true,
+		onMove,
+		onClose
+	}: Props = $props();
 
 	let container = $state<HTMLElement | null>(null);
 	let fullscreenElement = $state<HTMLElement | null>(null);
@@ -60,14 +69,16 @@
 
 	<div class="header">
 		<div class="top-left">
-			<button
-				type="button"
-				class="control fullscreen"
-				onclick={() => componentState.toggleFullscreen(fullscreenElement)}
-				aria-label="Fullscreen"
-			>
-				<FullScreenIcon />
-			</button>
+			{#if canFullScreen}
+				<button
+					type="button"
+					class="control fullscreen"
+					onclick={() => componentState.toggleFullscreen(fullscreenElement)}
+					aria-label="Fullscreen"
+				>
+					<FullScreenIcon />
+				</button>
+			{/if}
 		</div>
 		{#if onClose}
 			<div class="top-right">
