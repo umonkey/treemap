@@ -113,10 +113,19 @@ impl PanoramaDispatcher {
 
             panorama.status = PanoramaStatus::Success;
 
+            let processing_time_hours = panorama.processing_time.unwrap_or(0) as f64 / 3600.0;
+            let file_size_gb = (panorama.file_size.unwrap_or(0) as f64 / (1024.0 * 1024.0 * 1024.0))
+                .round() as u64;
+
             self.notify_user(
                 panorama.created_by,
                 "panorama_ready",
-                json!({ "panorama_id": panorama.id, "name": panorama.title }),
+                json!({
+                    "panorama_id": panorama.id,
+                    "name": panorama.title,
+                    "processing_time_hours": format!("{:.1}", processing_time_hours),
+                    "file_size_gb": file_size_gb,
+                }),
             )
             .await;
 

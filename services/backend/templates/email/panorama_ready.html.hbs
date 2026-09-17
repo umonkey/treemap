@@ -6,7 +6,9 @@
 </head>
 <body>
     <p>Hello,</p>
-    <p>Your panorama <strong>{{ name }}</strong> (ID {{ panorama_id }}) has been processed successfully and is now published.</p>
+    <p>Your panorama <strong>{{ name }}</strong> has been processed successfully and is ready for review.</p>
+    <p>Processing time: {{ processing_time_hours }} hours</p>
+    <p>Storage size: {{ file_size_gb }} GB</p>
     <p><a href="{{ website_url }}/admin/panoramas/{{ panorama_id }}">{{ website_url }}/admin/panoramas/{{ panorama_id }}</a></p>
     <p>Best regards,<br>Tree Map Team</p>
 </body>

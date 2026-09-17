@@ -201,7 +201,9 @@ mod tests {
 
         let ready_data = serde_json::json!({
             "panorama_id": 456,
-            "name": "Test Panorama"
+            "name": "Test Panorama",
+            "processing_time_hours": "1.5",
+            "file_size_gb": 2
         });
 
         let mut ready_map = match &ready_data {
@@ -219,8 +221,10 @@ mod tests {
             .render("panorama_ready_html", &ready_data_with_url);
         assert!(ready_html_res.is_ok());
         let ready_html = ready_html_res.unwrap();
-        assert!(ready_html.contains("456"));
         assert!(ready_html.contains("Test Panorama"));
+        assert!(ready_html.contains("ready for review"));
+        assert!(ready_html.contains("Processing time: 1.5 hours"));
+        assert!(ready_html.contains("Storage size: 2 GB"));
         assert!(ready_html.contains(&dispatcher.website_url));
 
         let ready_txt_res = dispatcher
@@ -228,8 +232,10 @@ mod tests {
             .render("panorama_ready_txt", &ready_data_with_url);
         assert!(ready_txt_res.is_ok());
         let ready_txt = ready_txt_res.unwrap();
-        assert!(ready_txt.contains("456"));
         assert!(ready_txt.contains("Test Panorama"));
+        assert!(ready_txt.contains("ready for review"));
+        assert!(ready_txt.contains("Processing time: 1.5 hours"));
+        assert!(ready_txt.contains("Storage size: 2 GB"));
         assert!(ready_txt.contains(&dispatcher.website_url));
     }
 }
