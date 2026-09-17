@@ -13,7 +13,7 @@ class PageState {
 			if (res.status === 200 && res.data) {
 				this.source = res.data;
 
-				mapBus.emit('map-once', {
+				mapBus.emit('moveOnce', {
 					lat: res.data.lat,
 					lng: res.data.lon
 				});

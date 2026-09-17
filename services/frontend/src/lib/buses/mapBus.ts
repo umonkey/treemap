@@ -12,7 +12,7 @@ type MapBusEvent = {
 	move: ILatLng;
 
 	// Move the map to these coordinates, but only if it hasn't been moved yet.
-	'map-once': ILatLng;
+	moveOnce: ILatLng;
 
 	pin: ILatLng | undefined;
 

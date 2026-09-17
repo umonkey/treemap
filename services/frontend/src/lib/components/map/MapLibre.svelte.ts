@@ -196,10 +196,10 @@ class MapLibre {
 		this.center = ll;
 	};
 
-	private handleMapOnceRequest = (ll: ILatLng) => {
+	private handleMoveOnceRequest = (ll: ILatLng) => {
 		if (this.hasMoved) {
 			console.debug(
-				`Ignoring map-once request to ${ll.lat},${ll.lng} because the map has already moved.`
+				`Ignoring moveOnce request to ${ll.lat},${ll.lng} because the map has already moved.`
 			);
 			return;
 		}
@@ -210,7 +210,7 @@ class MapLibre {
 	public onMount = () => {
 		mapBus.on('fit', this.handleFit);
 		mapBus.on('move', this.handleMoveRequest);
-		mapBus.on('map-once', this.handleMapOnceRequest);
+		mapBus.on('moveOnce', this.handleMoveOnceRequest);
 
 		const unsub = mapLayerStore.subscribe(() => {
 			this.updateLayers();
@@ -223,7 +223,7 @@ class MapLibre {
 		return () => {
 			mapBus.off('fit', this.handleFit);
 			mapBus.off('move', this.handleMoveRequest);
-			mapBus.off('map-once', this.handleMapOnceRequest);
+			mapBus.off('moveOnce', this.handleMoveOnceRequest);
 			unsub();
 		};
 	};

@@ -49,7 +49,7 @@ class PreviewState {
 
 				const ll = { lat: this.tree.lat, lng: this.tree.lon };
 				mapBus.emit('pin', ll);
-				mapBus.emit('map-once', ll);
+				mapBus.emit('moveOnce', ll);
 			} else if (res.error) {
 				showError(res.error.description);
 			}
