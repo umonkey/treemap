@@ -1,14 +1,25 @@
 import { mapBus } from '$lib/buses/mapBus';
 import type { ILatLng } from '$lib/types';
 import { LngLatBounds, type Map } from 'maplibre-gl';
-import { mapState } from './MapLibre.svelte.ts';
 
 export class MapEventBridgeLogic {
 	private map: Map | undefined;
+	private moving = false;
+	private hasMoved = false;
+
+	private handleMoveStart = () => {
+		this.moving = true;
+	};
+
+	private handleMoveEnd = () => {
+		if (this.moving) {
+			this.hasMoved = true;
+		}
+
+		this.moving = false;
+	};
 
 	private handleFit = ({ start, end }: { start: ILatLng; end: ILatLng }) => {
-		mapState.hasMoved = true;
-
 		if (this.map) {
 			const bounds = new LngLatBounds();
 			console.debug(`[map.events] Fit called.`);
@@ -19,14 +30,17 @@ export class MapEventBridgeLogic {
 	};
 
 	private handleMove = (ll: ILatLng) => {
-		console.debug(`[map.events] Move to ${ll.lat},${ll.lng}`);
+		if (this.map) {
+			console.debug(`[map.events] Move to ${ll.lat},${ll.lng}`);
 
-		mapState.hasMoved = true;
-		this.map?.easeTo({ center: [ll.lng, ll.lat] });
+			this.map.easeTo({ center: [ll.lng, ll.lat] });
+		} else {
+			console.debug(`[map.events] Move to ${ll.lat},${ll.lng} (unable)`);
+		}
 	};
 
 	private handleMoveOnce = (ll: ILatLng) => {
-		if (mapState.hasMoved) {
+		if (this.hasMoved || this.moving) {
 			console.debug(`[map.events] Move (once) ignored to ${ll.lat},${ll.lng}`);
 			return;
 		}
@@ -36,12 +50,16 @@ export class MapEventBridgeLogic {
 
 	public mount = (map: Map) => {
 		this.map = map;
+		map.on('movestart', this.handleMoveStart);
+		map.on('moveend', this.handleMoveEnd);
 		mapBus.on('fit', this.handleFit);
 		mapBus.on('move', this.handleMove);
 		mapBus.on('moveOnce', this.handleMoveOnce);
 	};
 
 	public unmount = () => {
+		this.map?.off('movestart', this.handleMoveStart);
+		this.map?.off('moveend', this.handleMoveEnd);
 		mapBus.off('fit', this.handleFit);
 		mapBus.off('move', this.handleMove);
 		mapBus.off('moveOnce', this.handleMoveOnce);

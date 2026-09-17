@@ -52,7 +52,6 @@
 		maxPitch={0}
 		class="map"
 		bind:bounds={mapState.bounds}
-		onmovestart={mapState.handleMoveStart}
 		onmoveend={mapState.handleMoveEnd}
 		onzoom={mapState.handleZoom}
 		onrotate={mapState.handleRotate}

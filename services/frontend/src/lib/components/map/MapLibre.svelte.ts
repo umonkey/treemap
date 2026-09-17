@@ -6,12 +6,7 @@ import { mapLayerStore } from '$lib/stores/mapLayerStore';
 import { mapStore } from '$lib/stores/mapStore';
 import type { ILatLng } from '$lib/types';
 import { Debouncer } from '$lib/utils/debounce';
-import {
-	type LngLatBounds,
-	type Map,
-	type MapLibreEvent,
-	type StyleSpecification
-} from 'maplibre-gl';
+import { type LngLatBounds, type Map, type StyleSpecification } from 'maplibre-gl';
 import { get } from 'svelte/store';
 import { MapBouncer } from './MapBouncer';
 
@@ -39,7 +34,6 @@ class MapLibre {
 	panoramasLayer = $state<boolean>(false);
 	treeHintsLayer = $state<boolean>(false);
 
-	hasMoved = false;
 	zoom = $state<number>(13);
 	bearing = $state<number>(0);
 	center = $state<ILatLng>(DEFAULT_MAP_CENTER);
@@ -68,12 +62,6 @@ class MapLibre {
 			this.applyPadding();
 			console.debug('MapLibre load fired.');
 			this.handleMoveEnd();
-		}
-	};
-
-	public handleMoveStart = (e?: MapLibreEvent) => {
-		if (e?.originalEvent) {
-			this.hasMoved = true;
 		}
 	};
 
