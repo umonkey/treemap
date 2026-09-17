@@ -7,6 +7,7 @@ use crate::actions::user::UserList;
 use crate::domain::comment::CommentService;
 use crate::domain::like::LikeService;
 use crate::domain::observation::ObservationService;
+use crate::domain::panorama::PanoramaService;
 use crate::domain::prop::PropService;
 use crate::domain::tree::NewTreeDefaultsResponse;
 use crate::domain::tree::ReplaceTreeRequest;
@@ -25,6 +26,7 @@ use crate::types::{Error, Result};
 use crate::utils::{get_remote_addr, get_user_agent};
 use actix_web::web::{Bytes, Json, Path, Query};
 use actix_web::{delete, get, post, put, HttpRequest, HttpResponse};
+use log::warn;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -95,9 +97,10 @@ pub async fn add_photos_action(
 pub async fn add_trees_action(
     user_id: UserId,
     payload: Json<AddTreePayload>,
-    service: Injected<TreeService>,
+    trees_service: Injected<TreeService>,
+    panorama_service: Injected<PanoramaService>,
 ) -> Result<Json<TreeList>> {
-    let trees = service
+    let trees = trees_service
         .add_trees(AddTreeRequest {
             points: payload.points.clone(),
             species: payload.species.clone(),
@@ -112,6 +115,13 @@ pub async fn add_trees_action(
             address: payload.address.clone(),
         })
         .await?;
+
+    if let Err(error) = panorama_service.delete_recent_hints_by(*user_id).await {
+        warn!(
+            "Failed to clear recent panorama hints for user {}: {}",
+            *user_id, error
+        );
+    }
 
     Ok(Json(TreeList::from_trees(&trees)))
 }

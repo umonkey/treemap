@@ -1,0 +1,3 @@
+BEGIN;
+ALTER TABLE panoramas_hints ADD COLUMN created_at INT NOT NULL DEFAULT 0;
+COMMIT;

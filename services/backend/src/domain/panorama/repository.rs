@@ -5,6 +5,7 @@ use crate::infra::database::{
 };
 use crate::services::{Context, Injectable};
 use crate::types::*;
+use crate::utils::get_timestamp;
 use std::sync::Arc;
 
 const TABLE: &str = "panoramas";
@@ -244,7 +245,9 @@ impl PanoramaRepository {
     }
 
     pub async fn add_hint(&self, hint: &PanoramaHint) -> Result<()> {
-        let query = InsertQuery::new(HINTS_TABLE).with_values(hint.to_attributes());
+        let mut attrs = hint.to_attributes();
+        attrs.insert("created_at", Value::from(get_timestamp() as i64));
+        let query = InsertQuery::new(HINTS_TABLE).with_values(attrs);
         self.db.add_record(query).await?;
         Ok(())
     }
@@ -254,6 +257,15 @@ impl PanoramaRepository {
             DeleteQuery::new(HINTS_TABLE).with_condition("image_id", Value::from(image_id as i64));
         self.db.delete(query).await?;
         Ok(())
+    }
+
+    pub async fn delete_hints_by_user_since(&self, user_id: u64, since: u64) -> Result<u64> {
+        let sql = format!(
+            "DELETE FROM `{}` WHERE `user_id` = ? AND `created_at` >= ?",
+            HINTS_TABLE
+        );
+        let params = &[Value::from(user_id as i64), Value::from(since as i64)];
+        self.db.execute_sql(&sql, params).await
     }
 
     pub async fn transact(&self) -> Result<Self> {
@@ -269,5 +281,82 @@ impl PanoramaRepository {
 impl Injectable for PanoramaRepository {
     fn inject(ctx: &dyn Context) -> Result<Self> {
         Ok(Self { db: ctx.database() })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::services::AppState;
+    use crate::services::ContextExt;
+
+    async fn setup() -> Arc<PanoramaRepository> {
+        let state = AppState::new()
+            .await
+            .expect("Error creating app state.")
+            .session()
+            .await
+            .expect("Error creating session state.");
+
+        Arc::new(
+            state
+                .build::<PanoramaRepository>()
+                .expect("Error creating panorama repository."),
+        )
+    }
+
+    #[tokio::test]
+    async fn test_delete_hints_by_user_since() {
+        let repo = setup().await;
+        let user_id = 987_654_321;
+        let now = get_timestamp();
+
+        repo.add_hint(&PanoramaHint {
+            image_id: 1,
+            angle: 0.0,
+            user_id,
+        })
+        .await
+        .expect("Error adding a recent hint.");
+
+        let sql = format!(
+            "INSERT INTO `{}` (`image_id`, `angle`, `user_id`, `created_at`) VALUES (?, ?, ?, ?)",
+            HINTS_TABLE
+        );
+        let params = &[
+            Value::from(2_i64),
+            Value::from(0.0_f64),
+            Value::from(user_id as i64),
+            Value::from((now - 600) as i64),
+        ];
+        repo.db
+            .execute_sql(&sql, params)
+            .await
+            .expect("Error adding an old hint.");
+
+        let deleted = repo
+            .delete_hints_by_user_since(user_id, now - 300)
+            .await
+            .expect("Error deleting recent hints.");
+
+        assert_eq!(1, deleted);
+
+        let count_sql = format!(
+            "SELECT COUNT(1) AS cnt FROM `{}` WHERE `user_id` = ?",
+            HINTS_TABLE
+        );
+        let count_params = &[Value::from(user_id as i64)];
+        let records = repo
+            .db
+            .fetch_sql(&count_sql, count_params)
+            .await
+            .expect("Error counting hints.");
+        let remaining = records
+            .first()
+            .expect("Missing count record.")
+            .require_u64("cnt")
+            .expect("Error reading count.");
+
+        assert_eq!(1, remaining);
     }
 }

@@ -209,6 +209,7 @@ Table panoramas_hints {
   image_id int [not null]
   angle real [not null]
   user_id int [not null]
+  created_at int [not null, default: 0]
 }
 
 // Relationships

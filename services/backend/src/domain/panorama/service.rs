@@ -30,6 +30,9 @@ const TREE_HINT_RADIUS_M: f64 = 10.0;
 /// Minimum angular separation between injected tree pointers, in degrees.
 const TREE_HINT_MIN_ANGLE_DEG: f64 = 30.0;
 
+/// Time window for clearing a user's hints after a tree is added.
+const RECENT_HINT_WINDOW_SECONDS: u64 = 5 * 60;
+
 /// Delay before a panorama stats refresh message becomes visible.
 ///
 /// This gives the request transaction time to commit before the consumer reads
@@ -640,6 +643,11 @@ impl PanoramaService {
 
     pub async fn delete_image_hints(&self, image_id: u64) -> Result<()> {
         self.repo.delete_hints_by_image_id(image_id).await
+    }
+
+    pub async fn delete_recent_hints_by(&self, user_id: u64) -> Result<u64> {
+        let since = get_timestamp().saturating_sub(RECENT_HINT_WINDOW_SECONDS);
+        self.repo.delete_hints_by_user_since(user_id, since).await
     }
 
     pub async fn refresh_panorama_stats(&self, id: u64) -> Result<()> {
