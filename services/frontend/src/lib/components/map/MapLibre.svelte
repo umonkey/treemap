@@ -20,6 +20,7 @@
 	import AddButton from './AddButton.svelte';
 	import MapCenter from './MapCenter.svelte';
 	import MapMenuBridge from './MapMenuBridge.svelte';
+	import MapEventBridge from './MapEventBridge.svelte';
 	import MapRays from './MapRays.svelte';
 	import MoveLine from './MoveLine.svelte';
 	import NearestTree from './NearestTree.svelte';
@@ -62,6 +63,7 @@
 		<LocateButton />
 		<LocationTracker />
 		<MapMenuBridge />
+		<MapEventBridge />
 		<AttributionControl compact={true} position="bottom-left" />
 
 		{#if children}

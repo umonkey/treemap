@@ -10,7 +10,6 @@ import type { ILatLng } from '$lib/types';
 import { Debouncer } from '$lib/utils/debounce';
 import {
 	type LngLatBounds,
-	LngLatBounds as LngLatBounds2,
 	type Map,
 	type MapLibreEvent,
 	type StyleSpecification
@@ -83,16 +82,6 @@ class MapLibre {
 		if (e?.originalEvent) {
 			this.moving = true;
 			this.hasMoved = true;
-		}
-	};
-
-	public handleFit = ({ start, end }: { start: ILatLng; end: ILatLng }) => {
-		this.hasMoved = true;
-		if (this.map) {
-			const bounds = new LngLatBounds2();
-			bounds.extend([start.lng, start.lat]);
-			bounds.extend([end.lng, end.lat]);
-			this.map.fitBounds(bounds, { padding: 50 });
 		}
 	};
 
@@ -190,28 +179,7 @@ class MapLibre {
 		}
 	};
 
-	private handleMoveRequest = (ll: ILatLng) => {
-		console.debug(`Handling request to move the map to ${ll.lat},${ll.lng}`);
-		this.hasMoved = true;
-		this.center = ll;
-	};
-
-	private handleMoveOnceRequest = (ll: ILatLng) => {
-		if (this.hasMoved) {
-			console.debug(
-				`Ignoring moveOnce request to ${ll.lat},${ll.lng} because the map has already moved.`
-			);
-			return;
-		}
-
-		this.handleMoveRequest(ll);
-	};
-
 	public onMount = () => {
-		mapBus.on('fit', this.handleFit);
-		mapBus.on('move', this.handleMoveRequest);
-		mapBus.on('moveOnce', this.handleMoveOnceRequest);
-
 		const unsub = mapLayerStore.subscribe(() => {
 			this.updateLayers();
 		});
@@ -221,9 +189,6 @@ class MapLibre {
 		this.updateLayers();
 
 		return () => {
-			mapBus.off('fit', this.handleFit);
-			mapBus.off('move', this.handleMoveRequest);
-			mapBus.off('moveOnce', this.handleMoveOnceRequest);
 			unsub();
 		};
 	};
