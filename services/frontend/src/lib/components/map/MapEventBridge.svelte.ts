@@ -2,7 +2,7 @@ import { mapBus } from '$lib/buses/mapBus';
 import type { ILatLng } from '$lib/types';
 import { LngLatBounds, type Map } from 'maplibre-gl';
 
-export class MapEventBridgeLogic {
+export class MapEventBridge {
 	private map: Map | undefined;
 	private moving = false;
 	private hasMoved = false;
@@ -48,21 +48,25 @@ export class MapEventBridgeLogic {
 		this.handleMove(ll);
 	};
 
-	public mount = (map: Map) => {
+	public init = (map: Map) => {
+        console.debug('[map.events] Init.');
+
 		this.map = map;
 		map.on('movestart', this.handleMoveStart);
 		map.on('moveend', this.handleMoveEnd);
 		mapBus.on('fit', this.handleFit);
 		mapBus.on('move', this.handleMove);
 		mapBus.on('moveOnce', this.handleMoveOnce);
-	};
 
-	public unmount = () => {
-		this.map?.off('movestart', this.handleMoveStart);
-		this.map?.off('moveend', this.handleMoveEnd);
-		mapBus.off('fit', this.handleFit);
-		mapBus.off('move', this.handleMove);
-		mapBus.off('moveOnce', this.handleMoveOnce);
-		this.map = undefined;
+		return () => {
+            console.debug('[map.events] Destroy.');
+
+			map.off('movestart', this.handleMoveStart);
+			map.off('moveend', this.handleMoveEnd);
+			mapBus.off('fit', this.handleFit);
+			mapBus.off('move', this.handleMove);
+			mapBus.off('moveOnce', this.handleMoveOnce);
+			this.map = undefined;
+		};
 	};
 }
