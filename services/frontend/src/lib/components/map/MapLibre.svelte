@@ -23,6 +23,7 @@
 	import MapRays from './MapRays.svelte';
 	import MoveLine from './MoveLine.svelte';
 	import NearestTree from './NearestTree.svelte';
+	import NearestPoi from './NearestPoi.svelte';
 	import MapRowPreview from './MapRowPreview.svelte';
 	import { mapMode } from '$lib/stores/mapMode';
 	import { centerLayer } from '$lib/stores/mapLayerStore';
@@ -111,7 +112,7 @@
 				<MapCenter />
 			{/if}
 			{#if mapState.moving && mapState.zoom > 18}
-				<NearestTree distance={5} label={false} count={1} />
+				<NearestPoi distance={5} />
 			{/if}
 		{/if}
 	</MapLibre>
