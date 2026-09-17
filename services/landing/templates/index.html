@@ -5,10 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ section.title | default(value=config.title) }}</title>
     <meta name="description" content="{{ section.description | default(value=config.description) }}">
+    <link rel="canonical" href="{{ config.base_url }}/">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Tree Maps">
+    <meta property="og:title" content="{{ config.title }}">
+    <meta property="og:description" content="{{ config.description }}">
+    <meta property="og:url" content="{{ config.base_url }}/">
+    <meta property="og:image" content="{{ config.base_url }}/screenshot-01-home.png">
+    <meta property="og:image:width" content="1800">
+    <meta property="og:image:height" content="1125">
+    <meta property="og:image:alt" content="Tree Maps urban tree mapping dashboard">
+    <meta property="og:locale" content="en_US">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ config.title }}">
+    <meta name="twitter:description" content="{{ config.description }}">
+    <meta name="twitter:image" content="{{ config.base_url }}/screenshot-01-home.png">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://www.googletagmanager.com">
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
     <link rel="icon" href="/favicon.ico">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
     <link rel="stylesheet" href="/css/gallery.css">
     <style>
         :root {
@@ -264,6 +284,35 @@
       gtag('config', '{{ config.extra.ga_measurement_id }}');
     </script>
     {% endif %}
+    <script type="application/ld+json">
+    [
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Tree Maps",
+        "url": "{{ config.base_url }}/",
+        "sameAs": ["{{ config.extra.github_url }}"],
+        "email": "{{ config.extra.email }}"
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Tree Maps",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web",
+        "url": "{{ config.base_url }}/",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "isAccessibleForFree": true,
+        "sameAs": ["{{ config.extra.github_url }}"],
+        "description": "{{ config.description }}"
+      }
+    ]
+    </script>
+    <link rel="preload" as="image" href="/screenshot-01-home.webp" type="image/webp">
 </head>
 <body>
     <nav class="sticky-nav container">
@@ -286,10 +335,21 @@
         <section id="contact" class="cta-section">
             <h2>Start Your Own Tree Map</h2>
             <p>Deploy the platform for your city or organization.</p>
-            <a href="mailto:{{ config.extra.email }}" role="button" class="button-cta">{{ config.extra.email }}</a>
+            <a href="mailto:{{ config.extra.email }}" role="button" class="button-cta" data-ga-event="contact_click">{{ config.extra.email }}</a>
         </section>
 
     </main>
-    <script src="/js/gallery.js"></script>
+    <script src="/js/gallery.js" defer></script>
+    <script>
+    document.addEventListener('click', function (event) {
+      var el = event.target.closest('[data-ga-event]');
+      if (!el || typeof gtag !== 'function') return;
+      gtag('event', el.dataset.gaEvent, {
+        link_url: el.href,
+        link_text: (el.textContent || '').trim(),
+        transport_type: 'beacon'
+      });
+    });
+    </script>
 </body>
 </html>

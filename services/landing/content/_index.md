@@ -1,28 +1,28 @@
 +++
-title = "Tree Maps: Urban Forest Management Platform"
-description = "An open-source platform for urban forest management and data collection."
+title = "Tree Maps | Open-Source Urban Tree Mapping Software"
+description = "Tree Maps is an open-source urban forest inventory and tree mapping platform for municipalities, NGOs, and researchers. Collect, manage, and analyze city trees with GIS-ready data."
 +++
 
 <div class="hero-grid">
     <div class="hero-content">
-        <h1>Next-Generation<br/>Urban Tree Mapping</h1>
-        <p>An open-source geospatial platform designed for community initiatives, researchers, and municipalities to inventory, monitor, and protect urban ecosystems. Combining high-precision field data collection, automated background processing, and street-level verification tools, this application transforms community action into actionable ecological data for resilient urban planning.</p>
+        <h1>Open-Source<br/>Urban Tree Mapping</h1>
+        <p>An open-source urban forest inventory and GIS-ready tree mapping platform designed for municipalities, NGOs, and researchers to inventory, monitor, and protect urban ecosystems. Combining high-precision field data collection, automated background processing, and street-level verification tools, this application transforms community action into actionable ecological data for resilient urban planning.</p>
         <div class="hero-buttons">
-            <a href="https://yerevan.treemaps.app/" role="button" class="button-cta" target="_blank" rel="noopener noreferrer">View Demo</a>
-            <a href="https://github.com/umonkey/treemap" role="button" class="button-outline" target="_blank" rel="noopener noreferrer">GitHub Source</a>
+            <a href="https://yerevan.treemaps.app/?utm_source=treemaps_landing&utm_medium=referral&utm_campaign=view_demo" role="button" class="button-cta" target="_blank" rel="noopener noreferrer" data-ga-event="demo_click">View Demo</a>
+            <a href="https://github.com/umonkey/treemap" role="button" class="button-outline" target="_blank" rel="noopener noreferrer" data-ga-event="github_click">GitHub Source</a>
         </div>
     </div>
     <div class="hero-image">
         <div class="gallery" data-delay="5000">
-            <img src="/screenshot-01-home.png" alt="Home page">
-            <img src="/screenshot-02-tree-preview.png" alt="Tree preview">
-            <img src="/screenshot-03-context-menu.png" alt="Context menu">
-            <img src="/screenshot-04-edit-form.png" alt="Tree edit form">
-            <img src="/screenshot-05-gallery.png" alt="Tree details page">
-            <img src="/screenshot-06-map-features.png" alt="Map layer settings">
-            <img src="/screenshot-07-search.png" alt="Advanced search form">
-            <img src="/screenshot-08-streetview.png" alt="Tree triangulation via Street View">
-            <img src="/screenshot-09-streetview-sequences.png" alt="Street view sequence management">
+            <img src="/screenshot-01-home.webp" alt="Home page" width="1800" height="1125" decoding="async" loading="eager" fetchpriority="high">
+            <img src="/screenshot-02-tree-preview.webp" alt="Tree preview" width="1800" height="1125" decoding="async" loading="lazy">
+            <img src="/screenshot-03-context-menu.webp" alt="Context menu" width="1800" height="1125" decoding="async" loading="lazy">
+            <img src="/screenshot-04-edit-form.webp" alt="Tree edit form" width="1800" height="1125" decoding="async" loading="lazy">
+            <img src="/screenshot-05-gallery.webp" alt="Tree details page" width="1800" height="1125" decoding="async" loading="lazy">
+            <img src="/screenshot-06-map-features.webp" alt="Map layer settings" width="1800" height="1125" decoding="async" loading="lazy">
+            <img src="/screenshot-07-search.webp" alt="Advanced search form" width="1800" height="1125" decoding="async" loading="lazy">
+            <img src="/screenshot-08-streetview.webp" alt="Tree triangulation via Street View" width="1800" height="1125" decoding="async" loading="lazy">
+            <img src="/screenshot-09-streetview-sequences.webp" alt="Street view sequence management" width="1800" height="1125" decoding="async" loading="lazy">
         </div>
     </div>
 </div>
