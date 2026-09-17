@@ -41,6 +41,7 @@ class MapLibre {
 	bottomPadding = $state<number>(0);
 
 	private paddingOwner: symbol | null = null;
+	private paddingDeferred = false;
 
 	mapBouncer = new MapBouncer();
 
@@ -67,6 +68,9 @@ class MapLibre {
 
 	public setBottomPadding = (px: number, owner: symbol) => {
 		const value = Math.max(0, Math.round(px));
+		if (this.paddingOwner === owner && this.bottomPadding === value) {
+			return;
+		}
 		this.paddingOwner = owner;
 		this.bottomPadding = value;
 		this.applyPadding();
@@ -80,7 +84,30 @@ class MapLibre {
 	};
 
 	private applyPadding = () => {
-		this.map?.setPadding({ bottom: this.bottomPadding });
+		const map = this.map;
+
+		if (!map) {
+			return;
+		}
+
+		// setPadding() is implemented via jumpTo(), which calls map.stop() and
+		// cancels any in-flight easeTo. Defer the padding change until the
+		// camera settles so it never interrupts a programmatic move.
+		if (map.isMoving()) {
+			if (!this.paddingDeferred) {
+				this.paddingDeferred = true;
+
+				map.once('moveend', () => {
+					this.paddingDeferred = false;
+					this.applyPadding();
+				});
+			}
+			return;
+		}
+
+        console.debug(`[map] Set bottom padding to ${this.bottomPadding}`);
+
+		map.setPadding({ bottom: this.bottomPadding });
 	};
 
 	private updateStore = (bounds?: LngLatBounds) => {

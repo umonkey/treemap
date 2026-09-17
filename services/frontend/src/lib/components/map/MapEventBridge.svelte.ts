@@ -8,10 +8,12 @@ export class MapEventBridge {
 	private hasMoved = false;
 
 	private handleMoveStart = () => {
+		console.debug('[map.events] moveStart');
 		this.moving = true;
 	};
 
 	private handleMoveEnd = () => {
+		console.debug('[map.events] moveEnd');
 		if (this.moving) {
 			this.hasMoved = true;
 		}
@@ -49,7 +51,7 @@ export class MapEventBridge {
 	};
 
 	public init = (map: Map) => {
-        console.debug('[map.events] Init.');
+		console.debug('[map.events] Init.');
 
 		this.map = map;
 		map.on('movestart', this.handleMoveStart);
@@ -59,7 +61,7 @@ export class MapEventBridge {
 		mapBus.on('moveOnce', this.handleMoveOnce);
 
 		return () => {
-            console.debug('[map.events] Destroy.');
+			console.debug('[map.events] Destroy.');
 
 			map.off('movestart', this.handleMoveStart);
 			map.off('moveend', this.handleMoveEnd);

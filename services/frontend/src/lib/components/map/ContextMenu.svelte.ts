@@ -60,14 +60,14 @@ export class ContextMenuLogic {
 		this.handleClose();
 	};
 
-	public handleNavigate = (url: string) => {
+	public handleNavigate = async (url: string) => {
 		this.open = false;
 
 		if (this.coords) {
 			mapBus.emit('move', this.coords);
 		}
 
-		goto(url);
+		await goto(url);
 	};
 
 	public handleCopyCoordinates = async () => {
