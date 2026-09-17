@@ -3,9 +3,7 @@ import { DEFAULT_MAP_CENTER } from '$lib/constants';
 import { config } from '$lib/env';
 import { locale } from '$lib/locale';
 import { mapLayerStore } from '$lib/stores/mapLayerStore';
-import { mapMode } from '$lib/stores/mapMode';
 import { mapStore } from '$lib/stores/mapStore';
-import { goto } from '$lib/routes';
 import type { ILatLng } from '$lib/types';
 import { Debouncer } from '$lib/utils/debounce';
 import {
@@ -16,7 +14,6 @@ import {
 } from 'maplibre-gl';
 import { get } from 'svelte/store';
 import { MapBouncer } from './MapBouncer';
-import { mapPoiStore } from '$lib/stores/mapPoi.svelte';
 
 const BASIC_LAYER = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${config.mapTilerKey}&language=${locale.lang}`;
 const LIGHT_LAYER = `https://api.maptiler.com/maps/base-v4-light/style.json?key=${config.mapTilerKey}&language=${locale.lang}`;
@@ -43,8 +40,6 @@ class MapLibre {
 	treeHintsLayer = $state<boolean>(false);
 
 	hasMoved = false;
-	moving = $state(false);
-	zoomChanged = false;
 	zoom = $state<number>(13);
 	bearing = $state<number>(0);
 	center = $state<ILatLng>(DEFAULT_MAP_CENTER);
@@ -77,10 +72,7 @@ class MapLibre {
 	};
 
 	public handleMoveStart = (e?: MapLibreEvent) => {
-		this.zoomChanged = false;
-
 		if (e?.originalEvent) {
-			this.moving = true;
 			this.hasMoved = true;
 		}
 	};
@@ -121,7 +113,6 @@ class MapLibre {
 	};
 
 	public handleZoom = () => {
-		this.zoomChanged = true;
 		this.updateStore();
 	};
 
@@ -129,9 +120,7 @@ class MapLibre {
 		this.updateStore();
 	};
 
-	public handleMoveEnd = (e?: MapLibreEvent) => {
-		this.moving = false;
-
+	public handleMoveEnd = () => {
 		if (!this.bounds) {
 			console.debug('Bounds not set, ignoring MapLibre move.');
 			return;
@@ -155,27 +144,6 @@ class MapLibre {
 
 		if (this.onMove) {
 			this.onMove(this.center);
-		}
-
-		const mode = get(mapMode);
-		const isUserAction = !!e?.originalEvent;
-		const stickyPoints = get(mapLayerStore).stickyPoints === true;
-
-		if (
-			isUserAction &&
-			stickyPoints &&
-			!this.zoomChanged &&
-			(mode === undefined || mode === 'preview') &&
-			this.zoom > 18
-		) {
-			const result = mapPoiStore.getNearest(this.center, 5);
-			if (result) {
-				const { poi: nearestPoi, distance: minDistance } = result;
-				mapBus.emit('pin', { lat: nearestPoi.lat, lng: nearestPoi.lon });
-				mapBus.emit('move', { lat: nearestPoi.lat, lng: nearestPoi.lon });
-				console.debug(`Snapping to nearest POI (${minDistance.toFixed(1)}m)`);
-				goto(nearestPoi.url);
-			}
 		}
 	};
 

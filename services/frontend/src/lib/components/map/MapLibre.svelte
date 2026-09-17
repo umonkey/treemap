@@ -113,9 +113,7 @@
 			{#if $centerLayer}
 				<MapCenter />
 			{/if}
-			{#if mapState.moving && mapState.zoom > 18}
-				<NearestPoi distance={5} />
-			{/if}
+			<NearestPoi zoom={mapState.zoom} distance={5} />
 		{/if}
 	</MapLibre>
 
