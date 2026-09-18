@@ -7,6 +7,7 @@ use crate::actions::alert::alert_router;
 use crate::actions::comment::comment_router;
 use crate::actions::default::default_action;
 use crate::actions::duplicate::duplicate_router;
+use crate::actions::export::export_router;
 use crate::actions::file::file_router;
 use crate::actions::health::health_router;
 use crate::actions::heatmap::heatmap_router;
@@ -109,7 +110,8 @@ pub async fn serve_command() {
                 web::scope("/api")
                     .wrap(DefaultHeaders::new().add(("Cache-Control", "no-store")))
                     .wrap(Transaction)
-                    .service(web::scope("/panoramas").configure(panorama_router)),
+                    .service(web::scope("/panoramas").configure(panorama_router))
+                    .service(web::scope("/export").configure(export_router)),
             )
             .service(
                 web::scope("/v1")

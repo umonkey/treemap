@@ -42,7 +42,11 @@ class EnglishLocale {
 	}
 
 	public sideAbout(): string {
-		return 'About this app';
+		return 'About';
+	}
+
+	public sideData(): string {
+		return 'Data';
 	}
 
 	public sideBugs(): string {
@@ -842,6 +846,10 @@ class RussianLocale extends EnglishLocale {
 		return 'О нас';
 	}
 
+	public sideData(): string {
+		return 'Данные';
+	}
+
 	public sideBugs(): string {
 		return 'Баги';
 	}
@@ -1621,6 +1629,10 @@ class ArmenianLocale extends EnglishLocale {
 
 	public sideAbout(): string {
 		return 'Այս ծրագրի մասին';
+	}
+
+	public sideData(): string {
+		return 'Տվյալներ';
 	}
 
 	public sidePrivacy(): string {

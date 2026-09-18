@@ -166,6 +166,14 @@ impl BackupBucket {
     pub async fn write_file(&self, path: &str, data: &[u8], public: bool) -> Result<()> {
         self.storage.write_file(path, data, public).await
     }
+
+    pub async fn list_files(&self, prefix: &str) -> Result<Vec<StorageFile>> {
+        self.storage.list_files(prefix).await
+    }
+
+    pub async fn create_read_url(&self, path: &str) -> Result<String> {
+        self.storage.create_read_url(path).await
+    }
 }
 
 pub struct PanoramaSourceBucket {

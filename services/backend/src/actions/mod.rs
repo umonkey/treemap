@@ -2,6 +2,7 @@ pub mod alert;
 pub mod comment;
 pub mod default;
 pub mod duplicate;
+pub mod export;
 pub mod file;
 pub mod health;
 pub mod heatmap;

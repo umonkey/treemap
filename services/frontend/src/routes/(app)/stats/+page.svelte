@@ -25,15 +25,6 @@
 		<li><a href={routes.statsMismatch()}>Trees with unknown species</a></li>
 		<li><a href="/duplicates">Trees with similar coordinates</a></li>
 	</ul>
-
-	<h2>Other data</h2>
-
-	<p>
-		You can also download the full dataset in SQLite format using <a
-			href="https://www.dropbox.com/scl/fo/e28bfrhn73wkfj535lrrj/AFhMhMhG-fq4b5k6RYcW6KU?rlkey=x85yktv1q59aiu2qdnanocllg&st=p8rjna9v&dl=0"
-			>this link</a
-		>.
-	</p>
 </Dialog>
 
 <style>

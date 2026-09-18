@@ -44,6 +44,7 @@ export const routes = {
 	searchSpecies: (query: string) => build('/search/results', { query: `species:"${query}"` }),
 	searchState: (query: string) => build('/search/results', { query: `state:"${query}"` }),
 	stats: () => '/stats',
+	data: () => '/export',
 	panorama: (id: string) => `/panoramas/${id}`,
 	panoramaDetect: (id: string) => `/panoramas/${id}/detect`,
 	statsCircumference: () => '/stats/circumference',

@@ -262,6 +262,12 @@ export interface IUploadTicket {
 	url: string;
 }
 
+export interface IExportFile {
+	name: string;
+	url: string;
+	size: number;
+}
+
 export type DuplicateList = {
 	duplicates: {
 		lat: number;

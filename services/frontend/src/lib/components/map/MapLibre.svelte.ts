@@ -105,7 +105,7 @@ class MapLibre {
 			return;
 		}
 
-        console.debug(`[map] Set bottom padding to ${this.bottomPadding}`);
+		console.debug(`[map] Set bottom padding to ${this.bottomPadding}`);
 
 		map.setPadding({ bottom: this.bottomPadding });
 	};
