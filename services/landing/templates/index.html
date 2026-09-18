@@ -8,8 +8,8 @@
     <link rel="canonical" href="{{ config.base_url }}/">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Tree Maps">
-    <meta property="og:title" content="{{ config.title }}">
-    <meta property="og:description" content="{{ config.description }}">
+    <meta property="og:title" content="{{ section.title | default(value=config.title) }}">
+    <meta property="og:description" content="{{ section.description | default(value=config.description) }}">
     <meta property="og:url" content="{{ config.base_url }}/">
     <meta property="og:image" content="{{ config.base_url }}/screenshot-01-home.png">
     <meta property="og:image:width" content="1800">
@@ -17,8 +17,8 @@
     <meta property="og:image:alt" content="Tree Maps urban tree mapping dashboard">
     <meta property="og:locale" content="en_US">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{{ config.title }}">
-    <meta name="twitter:description" content="{{ config.description }}">
+    <meta name="twitter:title" content="{{ section.title | default(value=config.title) }}">
+    <meta name="twitter:description" content="{{ section.description | default(value=config.description) }}">
     <meta name="twitter:image" content="{{ config.base_url }}/screenshot-01-home.png">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
@@ -308,7 +308,7 @@
         },
         "isAccessibleForFree": true,
         "sameAs": ["{{ config.extra.github_url }}"],
-        "description": "{{ config.description }}"
+        "description": "{{ section.description | default(value=config.description) }}"
       }
     ]
     </script>

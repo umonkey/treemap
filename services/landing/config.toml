@@ -1,6 +1,6 @@
 base_url = "https://www.treemaps.app"
 title = "Tree Maps | Open-Source Urban Tree Mapping Software"
-description = "Tree Maps is an open-source urban forest inventory and tree mapping platform for municipalities, NGOs, and researchers. Collect, manage, and analyze city trees with GIS-ready data."
+description = "Open-source urban tree mapping software for municipal tree inventory and urban forest inventory. GIS-ready tools for cities, NGOs, and researchers."
 compile_sass = false
 minify_html = true
 taxonomies = []

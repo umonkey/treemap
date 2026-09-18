@@ -1,12 +1,12 @@
 +++
 title = "Tree Maps | Open-Source Urban Tree Mapping Software"
-description = "Tree Maps is an open-source urban forest inventory and tree mapping platform for municipalities, NGOs, and researchers. Collect, manage, and analyze city trees with GIS-ready data."
+description = "Open-source urban tree mapping software for municipal tree inventory and urban forest inventory. GIS-ready tools for cities, NGOs, and researchers."
 +++
 
 <div class="hero-grid">
     <div class="hero-content">
         <h1>Open-Source<br/>Urban Tree Mapping</h1>
-        <p>An open-source urban forest inventory and GIS-ready tree mapping platform designed for municipalities, NGOs, and researchers to inventory, monitor, and protect urban ecosystems. Combining high-precision field data collection, automated background processing, and street-level verification tools, this application transforms community action into actionable ecological data for resilient urban planning.</p>
+        <p>An open-source urban tree mapping platform for municipal tree inventory and urban forest inventory, designed for cities, NGOs, and researchers to map, monitor, and protect urban ecosystems. Combining high-precision field data collection, automated background processing, and street-level verification tools, this application transforms community action into actionable ecological data for resilient urban planning.</p>
         <div class="hero-buttons">
             <a href="https://yerevan.treemaps.app/?utm_source=treemaps_landing&utm_medium=referral&utm_campaign=view_demo" role="button" class="button-cta" target="_blank" rel="noopener noreferrer" data-ga-event="demo_click">View Demo</a>
             <a href="https://github.com/umonkey/treemap" role="button" class="button-outline" target="_blank" rel="noopener noreferrer" data-ga-event="github_click">GitHub Source</a>
