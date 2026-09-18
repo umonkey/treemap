@@ -70,7 +70,6 @@ export const routes = {
 	treeObservations: (id: string) => `/tree/${id}/observations`,
 	treeReplace: (id: string) => `/tree/${id}/replace`,
 	treeUploadPhotos: (id: string) => `/tree/${id}/upload`,
-	layers: () => '/layers',
 	addWater: () => '/add/water',
 	waterDetails: (id: string) => `/water/${id}`,
 	waterMove: (id: string) => `/water/${id}/move`,

@@ -1,7 +1,8 @@
 import { get } from 'svelte/store';
 import { mapLayerStore } from '$lib/stores/mapLayerStore';
 
-class SelectorState {
+export class LayerSelector {
+	open = $state<boolean>(false);
 	base = $state<string>('light');
 	drone = $state<boolean>(false);
 	alerts = $state<boolean>(true);
@@ -11,7 +12,7 @@ class SelectorState {
 	stickyPoints = $state<boolean>(false);
 	center = $state<boolean>(false);
 
-	public constructor() {
+	public init = () => {
 		const layers = get(mapLayerStore);
 		this.base = layers.base ?? 'light';
 		this.drone = layers.drone ?? false;
@@ -21,7 +22,32 @@ class SelectorState {
 		this.water = layers.water ?? true;
 		this.stickyPoints = layers.stickyPoints ?? false;
 		this.center = layers.center ?? false;
-	}
+	};
+
+	public toggle = () => {
+		this.open = !this.open;
+	};
+
+	public close = () => {
+		this.open = false;
+	};
+
+	public handleBackdropClick = (event: MouseEvent) => {
+		if (event.target !== event.currentTarget) {
+			return;
+		}
+
+		this.close();
+	};
+
+	public handleBackdropContextMenu = (event: MouseEvent) => {
+		if (event.target !== event.currentTarget) {
+			return;
+		}
+
+		event.preventDefault();
+		this.close();
+	};
 
 	public setBase = (value: string) => {
 		this.base = value;
@@ -95,5 +121,3 @@ class SelectorState {
 		});
 	};
 }
-
-export const selectorState = new SelectorState();

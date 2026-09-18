@@ -5,7 +5,7 @@
 	import { RasterLayer, RasterTileSource } from 'svelte-maplibre';
 	import 'maplibre-gl/dist/maplibre-gl.css';
 	import { type Snippet, onMount } from 'svelte';
-	import LayerButton from './LayerButton.svelte';
+	import LayerSelector from './LayerSelector.svelte';
 	import LocateButton from './LocateButton.svelte';
 	import LocationTracker from './LocationTracker.svelte';
 	import { mapState } from './MapLibre.svelte.ts';
@@ -80,7 +80,7 @@
 			</RasterTileSource>
 		{/if}
 
-		<LayerButton />
+		<LayerSelector />
 
 		<Marker />
 
