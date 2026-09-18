@@ -55,41 +55,6 @@ class PageState {
 		console.debug(`Age set to: ${this.age}`);
 	};
 
-	handleMissingHeightChange = (value: boolean) => {
-		mapLayerStore.update((store) => {
-			store.missingHeight = value;
-			return store;
-		});
-	};
-
-	handleMissingDiameterChange = (value: boolean) => {
-		mapLayerStore.update((store) => {
-			store.missingDiameter = value;
-			return store;
-		});
-	};
-
-	handleMissingCircumferenceChange = (value: boolean) => {
-		mapLayerStore.update((store) => {
-			store.missingCircumference = value;
-			return store;
-		});
-	};
-
-	handleMissingObservationsChange = (value: boolean) => {
-		mapLayerStore.update((store) => {
-			store.missingObservations = value;
-			return store;
-		});
-	};
-
-	handleMissingPhotosChange = (value: boolean) => {
-		mapLayerStore.update((store) => {
-			store.missingPhotos = value;
-			return store;
-		});
-	};
-
 	handleStateChange = (value: string) => {
 		this.state = value;
 		this.rebuildQuery();

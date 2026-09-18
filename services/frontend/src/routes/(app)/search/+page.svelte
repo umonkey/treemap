@@ -1,15 +1,14 @@
 <script lang="ts">
 	import Dialog from '$lib/components/layout/Dialog.svelte';
+	import ToolSelector from '$lib/components/search/ToolSelector.svelte';
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
-	import { mapLayerStore } from '$lib/stores/mapLayerStore';
 	import SearchBar from './SearchBar.svelte';
 
 	import SpeciesInput from '$lib/ui/species-input/SpeciesInput.svelte';
 	import StreetInput from '$lib/ui/street-input/StreetInput.svelte';
 	import AgeInput from './AgeInput.svelte';
 	import StateInput from '$lib/ui/state-input/StateInput.svelte';
-	import CheckInput from '$lib/ui/check-input/CheckInput.svelte';
 	import { pageState } from './page.svelte';
 
 	const buttons = [
@@ -43,34 +42,6 @@
 	</div>
 
 	<div class="form">
-		<div class="checks">
-			<CheckInput
-				label={locale.searchMissingHeight()}
-				value={$mapLayerStore.missingHeight}
-				onChange={pageState.handleMissingHeightChange}
-			/>
-			<CheckInput
-				label={locale.searchMissingCanopy()}
-				value={$mapLayerStore.missingDiameter}
-				onChange={pageState.handleMissingDiameterChange}
-			/>
-			<CheckInput
-				label={locale.searchMissingCircumference()}
-				value={$mapLayerStore.missingCircumference}
-				onChange={pageState.handleMissingCircumferenceChange}
-			/>
-			<CheckInput
-				label={locale.searchMissingObservations()}
-				value={$mapLayerStore.missingObservations}
-				onChange={pageState.handleMissingObservationsChange}
-			/>
-			<CheckInput
-				label={locale.searchMissingPhotos()}
-				value={$mapLayerStore.missingPhotos}
-				onChange={pageState.handleMissingPhotosChange}
-			/>
-		</div>
-
 		<StateInput value={pageState.state} onChange={pageState.handleStateChange} />
 
 		<SpeciesInput
@@ -78,7 +49,11 @@
 			onChange={pageState.handleSpeciesChange}
 			nosuggestions={true}
 		/>
+
 		<StreetInput value={pageState.street} onChange={pageState.handleStreetChange} />
+
+		<ToolSelector />
+
 		<AgeInput value={pageState.age} onChange={pageState.handleAgeChange} />
 	</div>
 </Dialog>
@@ -95,17 +70,5 @@
 		display: flex;
 		flex-direction: column;
 		gap: calc(2 * var(--gap));
-	}
-
-	.checks {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: var(--gap);
-	}
-
-	@media (max-width: 600px) {
-		.checks {
-			grid-template-columns: 1fr;
-		}
 	}
 </style>
