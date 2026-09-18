@@ -42,7 +42,12 @@ describe('AlertLayerLogic', () => {
 			treeHints: false,
 			water: true,
 			stickyPoints: true,
-			center: true
+			center: true,
+			missingHeight: false,
+			missingDiameter: false,
+			missingCircumference: false,
+			missingObservations: false,
+			missingPhotos: false
 		});
 		mapPoiStore.alerts = [];
 		vi.mocked(getActiveAlertsGeoJSON).mockResolvedValue({
@@ -68,7 +73,12 @@ describe('AlertLayerLogic', () => {
 			treeHints: false,
 			water: true,
 			stickyPoints: true,
-			center: true
+			center: true,
+			missingHeight: false,
+			missingDiameter: false,
+			missingCircumference: false,
+			missingObservations: false,
+			missingPhotos: false
 		});
 		const logic2 = new AlertLayerLogic();
 		expect(logic2.enabled).toBe(false);
@@ -126,7 +136,12 @@ describe('AlertLayerLogic', () => {
 			treeHints: false,
 			water: true,
 			stickyPoints: true,
-			center: true
+			center: true,
+			missingHeight: false,
+			missingDiameter: false,
+			missingCircumference: false,
+			missingObservations: false,
+			missingPhotos: false
 		});
 		const logicDisabled = new AlertLayerLogic();
 		const apiSpy = vi.mocked(getActiveAlertsGeoJSON);
@@ -172,7 +187,12 @@ describe('AlertLayerLogic', () => {
 			treeHints: false,
 			water: true,
 			stickyPoints: true,
-			center: true
+			center: true,
+			missingHeight: false,
+			missingDiameter: false,
+			missingCircumference: false,
+			missingObservations: false,
+			missingPhotos: false
 		});
 		const logicSub = new AlertLayerLogic();
 		const apiSpy = vi.mocked(getActiveAlertsGeoJSON);
@@ -190,7 +210,12 @@ describe('AlertLayerLogic', () => {
 			treeHints: false,
 			water: true,
 			stickyPoints: true,
-			center: true
+			center: true,
+			missingHeight: false,
+			missingDiameter: false,
+			missingCircumference: false,
+			missingObservations: false,
+			missingPhotos: false
 		});
 
 		expect(logicSub.enabled).toBe(true);

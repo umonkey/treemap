@@ -2,6 +2,7 @@
 	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
+	import { mapLayerStore } from '$lib/stores/mapLayerStore';
 	import SearchBar from './SearchBar.svelte';
 
 	import SpeciesInput from '$lib/ui/species-input/SpeciesInput.svelte';
@@ -45,28 +46,28 @@
 		<div class="checks">
 			<CheckInput
 				label={locale.searchMissingHeight()}
-				value={pageState.noHeight}
-				onChange={pageState.handleNoHeightChange}
+				value={$mapLayerStore.missingHeight}
+				onChange={pageState.handleMissingHeightChange}
 			/>
 			<CheckInput
 				label={locale.searchMissingCanopy()}
-				value={pageState.noCanopy}
-				onChange={pageState.handleNoCanopyChange}
+				value={$mapLayerStore.missingDiameter}
+				onChange={pageState.handleMissingDiameterChange}
 			/>
 			<CheckInput
 				label={locale.searchMissingCircumference()}
-				value={pageState.noCircumference}
-				onChange={pageState.handleNoCircumferenceChange}
+				value={$mapLayerStore.missingCircumference}
+				onChange={pageState.handleMissingCircumferenceChange}
 			/>
 			<CheckInput
 				label={locale.searchMissingObservations()}
-				value={pageState.noObservations}
-				onChange={pageState.handleNoObservationsChange}
+				value={$mapLayerStore.missingObservations}
+				onChange={pageState.handleMissingObservationsChange}
 			/>
 			<CheckInput
 				label={locale.searchMissingPhotos()}
-				value={pageState.noPhotos}
-				onChange={pageState.handleNoPhotosChange}
+				value={$mapLayerStore.missingPhotos}
+				onChange={pageState.handleMissingPhotosChange}
 			/>
 		</div>
 

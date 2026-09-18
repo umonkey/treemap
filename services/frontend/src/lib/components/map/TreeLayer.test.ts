@@ -2,10 +2,30 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { TreeLayerLogic } from './TreeLayer.svelte.ts';
 import { mapBus } from '$lib/buses/mapBus';
 import { menuBus } from '$lib/buses/menuBus';
+import { mapLayerStore } from '$lib/stores/mapLayerStore';
 import { mapPoiStore } from '$lib/stores/mapPoi.svelte';
+import { searchStore } from '$lib/stores/searchStore';
 import { getGeoJSON } from '$lib/api/trees';
 import * as routesModule from '$lib/routes';
 import type { IBounds, IMarkers } from '$lib/types';
+
+const resetMapLayerStore = () => {
+	mapLayerStore.set({
+		base: 'light',
+		drone: false,
+		alerts: true,
+		panoramas: false,
+		treeHints: false,
+		water: true,
+		stickyPoints: false,
+		center: false,
+		missingHeight: false,
+		missingDiameter: false,
+		missingCircumference: false,
+		missingObservations: false,
+		missingPhotos: false
+	});
+};
 
 vi.mock('$lib/api/trees', () => ({
 	getGeoJSON: vi.fn()
@@ -30,6 +50,8 @@ describe('TreeLayerLogic', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
 		mapPoiStore.trees = [];
+		resetMapLayerStore();
+		searchStore.set(undefined);
 		vi.mocked(getGeoJSON).mockResolvedValue({
 			status: 200,
 			data: { trees: [] } as unknown as IMarkers
@@ -127,6 +149,43 @@ describe('TreeLayerLogic', () => {
 		await new Promise((resolve) => setTimeout(resolve, 150));
 
 		expect(apiSpy).toHaveBeenCalled();
+
+		if (cleanup) cleanup();
+	});
+
+	it('passes the combined search query to getGeoJSON when missing filters are set', async () => {
+		searchStore.set('oak');
+		mapLayerStore.update((store) => {
+			store.missingHeight = true;
+			return store;
+		});
+
+		const cleanup = logic.onMount();
+		const bounds = { n: 41, e: 45, s: 40, w: 44, zoom: 16 } as unknown as IBounds;
+		mapBus.emit('bounds', bounds);
+		await new Promise((resolve) => setTimeout(resolve, 150));
+
+		expect(vi.mocked(getGeoJSON)).toHaveBeenCalledWith(41.5, 45.5, 39.5, 43.5, 'oak no:height', 16);
+
+		if (cleanup) cleanup();
+	});
+
+	it('reloads when a missing filter flag changes', async () => {
+		const cleanup = logic.onMount();
+		const bounds = { n: 41, e: 45, s: 40, w: 44, zoom: 16 } as unknown as IBounds;
+		mapBus.emit('bounds', bounds);
+		await new Promise((resolve) => setTimeout(resolve, 150));
+
+		const apiSpy = vi.mocked(getGeoJSON);
+		apiSpy.mockClear();
+
+		mapLayerStore.update((store) => {
+			store.missingPhotos = true;
+			return store;
+		});
+		await new Promise((resolve) => setTimeout(resolve, 150));
+
+		expect(apiSpy).toHaveBeenCalledWith(41.5, 45.5, 39.5, 43.5, 'no:photo', 16);
 
 		if (cleanup) cleanup();
 	});

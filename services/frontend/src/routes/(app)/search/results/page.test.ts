@@ -3,6 +3,7 @@ import { searchTrees } from '$lib/api/trees';
 import { mapBus } from '$lib/buses/mapBus';
 import { DEFAULT_MAP_CENTER, DEFAULT_TREE } from '$lib/constants';
 import { routes } from '$lib/routes';
+import { mapLayerStore } from '$lib/stores/mapLayerStore';
 import { mapMode } from '$lib/stores/mapMode';
 import { mapStore } from '$lib/stores/mapStore';
 import { searchStore } from '$lib/stores/searchStore';
@@ -82,11 +83,30 @@ const mockedMapBusEmit = vi.mocked(mapBus.emit);
 const mockedMapBusOn = vi.mocked(mapBus.on);
 const mockedMapBusOff = vi.mocked(mapBus.off);
 
+const resetMapLayerStore = () => {
+	mapLayerStore.set({
+		base: 'light',
+		drone: false,
+		alerts: true,
+		panoramas: false,
+		treeHints: false,
+		water: true,
+		stickyPoints: false,
+		center: false,
+		missingHeight: false,
+		missingDiameter: false,
+		missingCircumference: false,
+		missingObservations: false,
+		missingPhotos: false
+	});
+};
+
 describe('Search Results Page', () => {
 	beforeEach(() => {
 		mockedGoto.mockClear();
 		mockedMapBusEmit.mockClear();
 		mockedSearchTrees.mockReset();
+		resetMapLayerStore();
 		searchStore.set(undefined);
 		mapStore.set({
 			center: DEFAULT_MAP_CENTER,
@@ -399,6 +419,27 @@ describe('Search Results Page', () => {
 
 		await waitFor(() => {
 			expect(mockedSearchTrees).toHaveBeenCalledWith('oak', 16, newBounds);
+		});
+	});
+
+	test('applies persisted missing filters to the search query', async () => {
+		mapLayerStore.update((store) => {
+			store.missingPhotos = true;
+			return store;
+		});
+
+		mockedSearchTrees.mockResolvedValue({
+			status: 200,
+			data: {
+				trees: [{ ...DEFAULT_TREE, id: 'tree1', species: 'Quercus robur' }],
+				users: []
+			}
+		});
+
+		render(Page);
+
+		await waitFor(() => {
+			expect(mockedSearchTrees).toHaveBeenCalledWith('oak no:photo', 15, undefined);
 		});
 	});
 

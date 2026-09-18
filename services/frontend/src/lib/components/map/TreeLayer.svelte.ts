@@ -4,6 +4,7 @@ import { menuBus } from '$lib/buses/menuBus';
 import { showError } from '$lib/errors';
 import { extendBounds } from '$lib/map';
 import { goto, routes } from '$lib/routes';
+import { combineQuery, missingQuery } from '$lib/stores/mapLayerStore';
 import { mapPoiStore } from '$lib/stores/mapPoi.svelte';
 import { mapZoom } from '$lib/stores/mapStore';
 import { searchStore } from '$lib/stores/searchStore';
@@ -67,7 +68,7 @@ export class TreeLayerLogic {
 			return;
 		}
 
-		const search = get(searchStore);
+		const search = combineQuery(get(searchStore), get(missingQuery));
 		const zoom = this.zoom ?? get(mapZoom);
 
 		const { n, e, s, w } = extendBounds(this.bounds);
@@ -156,12 +157,21 @@ export class TreeLayerLogic {
 		mapBus.on('bounds', this.handleBounds);
 		mapBus.on('reload', this.reload);
 
+		let previousMissing = get(missingQuery);
+		const unsubMissing = missingQuery.subscribe((value) => {
+			if (value !== previousMissing) {
+				previousMissing = value;
+				this.reload();
+			}
+		});
+
 		return () => {
 			this.bounds = undefined;
 			this.zoom = undefined;
 			this.markers = undefined;
 			mapBus.off('bounds', this.handleBounds);
 			mapBus.off('reload', this.reload);
+			unsubMissing();
 			mapPoiStore.trees = [];
 		};
 	};

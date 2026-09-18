@@ -1,4 +1,6 @@
 import { goto, routes } from '$lib/routes';
+import { mapLayerStore } from '$lib/stores/mapLayerStore';
+import { get } from 'svelte/store';
 
 class PageState {
 	query = $state<string>('');
@@ -6,11 +8,6 @@ class PageState {
 	species = $state<string | null>(null);
 	age = $state<number>(31_536_000); // 1 year
 
-	noHeight = $state<boolean>(false);
-	noCanopy = $state<boolean>(false);
-	noCircumference = $state<boolean>(false);
-	noObservations = $state<boolean>(false);
-	noPhotos = $state<boolean>(false);
 	state = $state<string>('');
 	keywords = $state<string>('');
 
@@ -28,12 +25,6 @@ class PageState {
 		if (this.species) {
 			parts.push(`species:"${this.species}"`);
 		}
-
-		if (this.noHeight) parts.push('no:height');
-		if (this.noCanopy) parts.push('no:diameter');
-		if (this.noCircumference) parts.push('no:circumference');
-		if (this.noObservations) parts.push('no:observations');
-		if (this.noPhotos) parts.push('no:photo');
 
 		if (this.state) {
 			parts.push(`state:${this.state}`);
@@ -64,29 +55,39 @@ class PageState {
 		console.debug(`Age set to: ${this.age}`);
 	};
 
-	handleNoHeightChange = (value: boolean) => {
-		this.noHeight = value;
-		this.rebuildQuery();
+	handleMissingHeightChange = (value: boolean) => {
+		mapLayerStore.update((store) => {
+			store.missingHeight = value;
+			return store;
+		});
 	};
 
-	handleNoCanopyChange = (value: boolean) => {
-		this.noCanopy = value;
-		this.rebuildQuery();
+	handleMissingDiameterChange = (value: boolean) => {
+		mapLayerStore.update((store) => {
+			store.missingDiameter = value;
+			return store;
+		});
 	};
 
-	handleNoCircumferenceChange = (value: boolean) => {
-		this.noCircumference = value;
-		this.rebuildQuery();
+	handleMissingCircumferenceChange = (value: boolean) => {
+		mapLayerStore.update((store) => {
+			store.missingCircumference = value;
+			return store;
+		});
 	};
 
-	handleNoObservationsChange = (value: boolean) => {
-		this.noObservations = value;
-		this.rebuildQuery();
+	handleMissingObservationsChange = (value: boolean) => {
+		mapLayerStore.update((store) => {
+			store.missingObservations = value;
+			return store;
+		});
 	};
 
-	handleNoPhotosChange = (value: boolean) => {
-		this.noPhotos = value;
-		this.rebuildQuery();
+	handleMissingPhotosChange = (value: boolean) => {
+		mapLayerStore.update((store) => {
+			store.missingPhotos = value;
+			return store;
+		});
 	};
 
 	handleStateChange = (value: string) => {
@@ -149,24 +150,59 @@ class PageState {
 		}
 
 		const noHeightRegex = /\bno:height\b/i;
-		this.noHeight = noHeightRegex.test(remaining);
-		if (this.noHeight) remaining = remaining.replace(noHeightRegex, '');
+		if (noHeightRegex.test(remaining)) {
+			if (!get(mapLayerStore).missingHeight) {
+				mapLayerStore.update((store) => {
+					store.missingHeight = true;
+					return store;
+				});
+			}
+			remaining = remaining.replace(noHeightRegex, '');
+		}
 
-		const noCanopyRegex = /\bno:diameter\b/i;
-		this.noCanopy = noCanopyRegex.test(remaining);
-		if (this.noCanopy) remaining = remaining.replace(noCanopyRegex, '');
+		const noDiameterRegex = /\bno:diameter\b/i;
+		if (noDiameterRegex.test(remaining)) {
+			if (!get(mapLayerStore).missingDiameter) {
+				mapLayerStore.update((store) => {
+					store.missingDiameter = true;
+					return store;
+				});
+			}
+			remaining = remaining.replace(noDiameterRegex, '');
+		}
 
 		const noCircumferenceRegex = /\bno:circumference\b/i;
-		this.noCircumference = noCircumferenceRegex.test(remaining);
-		if (this.noCircumference) remaining = remaining.replace(noCircumferenceRegex, '');
+		if (noCircumferenceRegex.test(remaining)) {
+			if (!get(mapLayerStore).missingCircumference) {
+				mapLayerStore.update((store) => {
+					store.missingCircumference = true;
+					return store;
+				});
+			}
+			remaining = remaining.replace(noCircumferenceRegex, '');
+		}
 
 		const noObservationsRegex = /\bno:observations\b/i;
-		this.noObservations = noObservationsRegex.test(remaining);
-		if (this.noObservations) remaining = remaining.replace(noObservationsRegex, '');
+		if (noObservationsRegex.test(remaining)) {
+			if (!get(mapLayerStore).missingObservations) {
+				mapLayerStore.update((store) => {
+					store.missingObservations = true;
+					return store;
+				});
+			}
+			remaining = remaining.replace(noObservationsRegex, '');
+		}
 
 		const noPhotosRegex = /\b(no:photo|noimage|nophoto)\b/i;
-		this.noPhotos = noPhotosRegex.test(remaining);
-		if (this.noPhotos) remaining = remaining.replace(noPhotosRegex, '');
+		if (noPhotosRegex.test(remaining)) {
+			if (!get(mapLayerStore).missingPhotos) {
+				mapLayerStore.update((store) => {
+					store.missingPhotos = true;
+					return store;
+				});
+			}
+			remaining = remaining.replace(noPhotosRegex, '');
+		}
 
 		this.keywords = remaining.replace(/\s+/g, ' ').trim();
 	};

@@ -2,6 +2,7 @@ import { getSearchTreesCSV, searchTrees } from '$lib/api/trees';
 import { mapBus } from '$lib/buses/mapBus';
 import { showError } from '$lib/errors';
 import { goto, routes } from '$lib/routes';
+import { combineQuery, missingQuery } from '$lib/stores/mapLayerStore';
 import { mapMode } from '$lib/stores/mapMode';
 import { mapStore } from '$lib/stores/mapStore';
 import { searchStore } from '$lib/stores/searchStore';
@@ -18,7 +19,11 @@ export class SearchResultsSidebarLogic {
 	zoom = $state<number | undefined>(undefined);
 
 	getDownloadUrl = () => {
-		return getSearchTreesCSV(this.query, this.zoom ?? get(mapStore).zoom, this.bounds);
+		return getSearchTreesCSV(
+			combineQuery(this.query, get(missingQuery)) ?? '',
+			this.zoom ?? get(mapStore).zoom,
+			this.bounds
+		);
 	};
 
 	selectTree = (tree: ITree) => {
@@ -48,8 +53,9 @@ export class SearchResultsSidebarLogic {
 		this.error = null;
 
 		const initialBounds = this.bounds;
+		const effective = combineQuery(query, get(missingQuery));
 
-		if (!query.trim()) {
+		if (!effective) {
 			this.trees = [];
 			this.selectedTreeId = null;
 			this.loading = false;
@@ -62,7 +68,7 @@ export class SearchResultsSidebarLogic {
 		this.loading = true;
 
 		try {
-			const res = await searchTrees(query, this.zoom ?? get(mapStore).zoom, this.bounds);
+			const res = await searchTrees(effective, this.zoom ?? get(mapStore).zoom, this.bounds);
 			if (res.status === 200 && res.data) {
 				this.trees = res.data.trees.filter((t) => t.state !== 'placeholder' && t.state !== 'gone');
 				if (this.selectedTreeId && !this.trees.some((t) => t.id === this.selectedTreeId)) {
@@ -118,7 +124,7 @@ export class SearchResultsSidebarLogic {
 	handleBounds = (bounds: IBounds) => {
 		this.bounds = bounds;
 		this.zoom = bounds.zoom;
-		if (this.query.trim()) {
+		if (this.query.trim() || get(missingQuery)) {
 			void this.reload(this.query, bounds.zoom, bounds);
 		}
 	};
@@ -130,8 +136,20 @@ export class SearchResultsSidebarLogic {
 		mapMode.set('search');
 		mapBus.on('bounds', this.handleBounds);
 
+		let previousMissing = get(missingQuery);
+		const unsubMissing = missingQuery.subscribe((value) => {
+			if (value === previousMissing) {
+				return;
+			}
+			previousMissing = value;
+			if (this.query.trim() || value) {
+				void this.reload(this.query, this.zoom, this.bounds);
+			}
+		});
+
 		return () => {
 			mapBus.off('bounds', this.handleBounds);
+			unsubMissing();
 			this.selectedTreeId = null;
 			this.bounds = undefined;
 			this.zoom = undefined;
