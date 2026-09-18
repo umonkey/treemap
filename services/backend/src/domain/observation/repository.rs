@@ -25,6 +25,12 @@ impl ObservationRepository {
         Ok(())
     }
 
+    pub async fn all(&self) -> Result<Vec<Observation>> {
+        let records = self.db.get_records(SelectQuery::new(TABLE)).await?;
+
+        records.iter().map(Observation::from_attributes).collect()
+    }
+
     pub async fn update(&self, observation: &Observation) -> Result<()> {
         let query = crate::infra::database::UpdateQuery::new(TABLE)
             .with_values(observation.to_attributes())

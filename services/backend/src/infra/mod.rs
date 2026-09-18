@@ -5,6 +5,7 @@ pub mod batch;
 pub mod config;
 pub mod database;
 pub mod email;
+pub mod export;
 pub mod google_auth;
 pub mod nominatim;
 pub mod osm;

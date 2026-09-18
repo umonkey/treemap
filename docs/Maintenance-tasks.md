@@ -28,3 +28,9 @@ treemap osm-remap-duplicates
 ```
 
 See [Duplicates.md](./Duplicates.md) for more details.
+
+## Anonymized data export
+
+The application publishes an anonymized copy of the whole database for public research and analysis.
+
+See [Database-export.md](./Database-export.md) for the output format, schedule, and verification steps.

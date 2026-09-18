@@ -32,6 +32,10 @@ impl WaterRepository {
         self.fetch(query, params).await
     }
 
+    pub async fn all(&self) -> Result<Vec<WaterSource>> {
+        self.query_multiple(SelectQuery::new(TABLE)).await
+    }
+
     pub async fn add(&self, source: &WaterSource) -> Result<()> {
         let query = InsertQuery::new(TABLE).with_values(source.to_attributes());
 
@@ -59,7 +63,6 @@ impl WaterRepository {
         }
     }
 
-    #[allow(dead_code)]
     async fn query_multiple(&self, query: SelectQuery) -> Result<Vec<WaterSource>> {
         let records = self.db.get_records(query).await?;
 

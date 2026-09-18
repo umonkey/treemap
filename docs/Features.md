@@ -87,6 +87,15 @@ The application provides advanced search and filtering capabilities to help user
 - List view: view matching trees in a structured list with quick selection to jump directly to map locations.
 - Data export: download the entire search result set as a CSV file for research, reporting, or external analysis.
 
+## Anonymized data export
+
+The application publishes an anonymized copy of the whole tree database for public research and analysis. The export is generated automatically and contains no personally identifiable information.
+
+- Output: a gzipped SQLite file at `export/YYYY-MM-DD.sqlite.gz` in the backup bucket.
+- Schedule: generated daily at 04:00 by the `cron-daily` script, immediately after the database backup.
+- Anonymization: removes user ids, notes, and addresses while keeping coordinates, species, measurements, and timestamps.
+- Details: see [Database-export.md](./Database-export.md).
+
 ## Trilateration
 
 The application includes a trilateration tool that assists field arborists and volunteers in mapping trees located in obstructed environments where direct GPS positioning is impractical or inaccurate.

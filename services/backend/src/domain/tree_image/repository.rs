@@ -23,6 +23,10 @@ impl TreeImageRepository {
         }
     }
 
+    pub async fn all(&self) -> Result<Vec<TreeImage>> {
+        self.query_multiple(SelectQuery::new(TABLE)).await
+    }
+
     pub async fn add(&self, image: &TreeImage) -> Result<()> {
         let query = InsertQuery::new(TABLE).with_values(image.to_attributes());
 

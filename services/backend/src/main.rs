@@ -18,6 +18,7 @@ fn usage() {
     println!("  dispatch-emails         -- run the email dispatcher daemon");
     println!("  dispatch-panoramas      -- process draft panoramas");
     println!("  dispatch-queue          -- run the queue consumer daemon");
+    println!("  export-database         -- create an anonymized data export");
     println!("  merge-duplicates [N]    -- automated duplicate tree resolution");
     println!("  migrate-timestamps      -- backfill update timestamps");
     println!("  osm-pull                -- get new trees from OpenStreetMap");
@@ -127,6 +128,10 @@ async fn main() -> std::io::Result<()> {
         }
         "dispatch-queue" => {
             dispatch_queue_command().await;
+            return Ok(());
+        }
+        "export-database" => {
+            export_database_command().await;
             return Ok(());
         }
 
