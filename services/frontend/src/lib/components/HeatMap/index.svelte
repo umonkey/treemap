@@ -57,6 +57,7 @@
 
 	.heatmap {
 		height: 110px; /* add 10 px for the scroll bar, make the user able to access the bottom row */
+		min-height: 110px;
 		width: 100%;
 		overflow-x: scroll;
 	}
