@@ -27,6 +27,11 @@ export class ToolListLogic {
 			});
 		}
 
+		list.push({
+			name: 'Training',
+			href: '/learn'
+		});
+
 		return list;
 	});
 }

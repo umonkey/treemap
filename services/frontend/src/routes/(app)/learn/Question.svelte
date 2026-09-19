@@ -53,15 +53,18 @@
 
 	<div class="answers">
 		{#each question.options as option}
-			<button type="button" onclick={() => onSelect(option)} class:selected={option === selected}
-				>{option}</button
+			<button
+				type="button"
+				onclick={() => onSelect(option)}
+				class:option={true}
+				class:selected={option === selected}>{option}</button
 			>
 		{/each}
 	</div>
 
 	{#if currentState === 'guessing'}
 		<div class="actions">
-			<button class="button" type="button" disabled={!selected} onclick={onConfirm}
+			<button class="button confirm" type="button" disabled={!selected} onclick={onConfirm}
 				>{locale.learnConfirm()}</button
 			>
 		</div>
@@ -70,7 +73,9 @@
 			<div class="message">
 				<p><strong>{locale.learnCorrect()}</strong></p>
 			</div>
-			<button type="button" class="button" onclick={onContinue}>{locale.learnContinue()}</button>
+			<button type="button" class="button correct" onclick={onContinue}
+				>{locale.learnContinue()}</button
+			>
 		</div>
 	{:else}
 		<div class="result wrong">
@@ -97,19 +102,6 @@
 		flex-direction: row;
 		flex-wrap: wrap;
 		gap: var(--gap);
-
-		button {
-			background-color: var(--form-background);
-			color: var(--color);
-			border: solid 1px var(--sep-color);
-			padding: var(--gap);
-			border-radius: 6px;
-			cursor: pointer;
-
-			&.selected {
-				background-color: var(--icon-color-secondary);
-			}
-		}
 	}
 
 	.actions {
@@ -137,12 +129,32 @@
 				line-height: 1.5;
 			}
 		}
+	}
 
-		button {
-			background-color: var(--color-learn-correct-bg);
-			border-color: var(--color-learn-correct-bg);
-			color: var(--color-learn-correct-fg);
+	button {
+		background-color: var(--form-background);
+		color: var(--color);
+		border: solid 1px var(--sep-color);
+		padding: var(--gap);
+		border-radius: 6px;
+		cursor: pointer;
+	}
+
+	button.correct,
+	button.confirm {
+		background-color: var(--color-learn-correct-bg);
+		border-color: var(--color-learn-correct-bg);
+		color: var(--color-learn-correct-fg);
+		width: 100%;
+
+		&:disabled {
+			background-color: rgba(128, 128, 128, 0.5);
+			border-color: transparent;
 		}
+	}
+
+	button.option.selected {
+		background-color: var(--icon-color-secondary);
 	}
 
 	.result.wrong {
@@ -169,11 +181,9 @@
 			left: 0;
 			border-top-left-radius: 8px;
 			border-top-right-radius: 8px;
-			font-size: 20px;
 
 			button {
 				width: 100%;
-				font-size: 18px;
 			}
 		}
 	}

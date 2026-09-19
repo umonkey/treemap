@@ -40,3 +40,14 @@
 <h1>{title()}</h1>
 <p>{locale.learnScore(correct, total)}</p>
 <button type="button" class="button" onclick={onRetry}>{locale.learnRetry()}</button>
+
+<style>
+	button {
+		background-color: var(--form-background);
+		color: var(--color);
+		border: solid 1px var(--sep-color);
+		padding: var(--gap);
+		border-radius: 6px;
+		cursor: pointer;
+	}
+</style>
