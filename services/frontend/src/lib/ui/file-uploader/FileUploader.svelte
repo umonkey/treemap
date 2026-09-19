@@ -2,7 +2,7 @@
 	import CameraIcon from '$lib/icons/CameraIcon.svelte';
 	import GalleryIcon from '$lib/icons/GalleryIcon.svelte';
 	import FileUploaderDisplay from '$lib/ui/file-uploader-display/FileUploaderDisplay.svelte';
-	import { load } from './hooks';
+	import { FileUploader } from './FileUploader.svelte.ts';
 
 	const {
 		label,
@@ -18,12 +18,15 @@
 		single?: boolean;
 	} = $props();
 
-	const { items, handleChange, handleRetry } = $derived(
-		load({
-			onBusy,
-			onChange
-		})
-	);
+	const componentState = new FileUploader();
+
+	$effect(() => {
+		onBusy(componentState.busy);
+	});
+
+	$effect(() => {
+		onChange(componentState.uploads);
+	});
 </script>
 
 {#if label}
@@ -37,7 +40,7 @@
 		<input
 			type="file"
 			accept="image/jpeg,image/png,image/heic,image/heif,image/webp"
-			onchange={handleChange}
+			onchange={componentState.handleChange}
 			capture="environment"
 			multiple={!single}
 		/>
@@ -49,18 +52,18 @@
 		<input
 			type="file"
 			accept="image/jpeg,image/png,image/heic,image/heif,image/webp"
-			onchange={handleChange}
+			onchange={componentState.handleChange}
 			multiple={!single}
 		/>
 	</label>
 
 	<FileUploaderDisplay
-		items={$items.map((item) => ({
+		items={componentState.items.map((item) => ({
 			src: URL.createObjectURL(item.file),
 			busy: item.uploading,
 			error: item.error
 		}))}
-		onRetry={handleRetry}
+		onRetry={componentState.handleRetry}
 	/>
 
 	<div class="filler"></div>

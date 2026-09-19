@@ -7,7 +7,9 @@
 	import FileUploader from '$lib/ui/file-uploader/FileUploader.svelte';
 	import Form from '$lib/ui/form/Form.svelte';
 	import TextInput from '$lib/ui/text-input/TextInput.svelte';
-	import { pageState } from './page.svelte';
+	import { SettingsPage } from './page.svelte.ts';
+
+	const pageState = new SettingsPage();
 
 	$effect(() => {
 		pageState.reload();

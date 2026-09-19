@@ -2,7 +2,7 @@ import { getMe, updateSettings } from '$lib/api/users';
 import { goto, routes } from '$lib/routes';
 import type { IMeResponse } from '$lib/types';
 
-class PageState {
+export class SettingsPage {
 	loading = $state<boolean>(true);
 	saving = $state<boolean>(false);
 	error = $state<string | null>(null);
@@ -68,5 +68,3 @@ class PageState {
 		this.name = value;
 	};
 }
-
-export const pageState = new PageState();
