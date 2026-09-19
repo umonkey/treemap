@@ -20,7 +20,7 @@
 
 <style>
 	h2 {
-		margin-top: 40px;
+		margin: 0.5rem 0;
 		font-weight: 400;
 		font-size: 20px;
 		opacity: 0.75;

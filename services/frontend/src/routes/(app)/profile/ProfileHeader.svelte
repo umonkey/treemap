@@ -1,42 +1,33 @@
 <script lang="ts">
-	import HEADER_IMAGE from '$lib/assets/header.jpg';
 	import UserPic from '$lib/components/layout/UserPic.svelte';
-	import { locale } from '$lib/locale';
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import SignOutButton from './SignOutButton.svelte';
 
-	const { name, userpic, trees_count, updates_count, files_count } = $props<{
+	const { name, userpic } = $props<{
 		name: string;
 		userpic: string;
-		trees_count: number;
-		updates_count: number;
-		files_count: number;
 	}>();
 </script>
 
-<div class="header">
-	<img class="header" src={HEADER_IMAGE} alt="header background" />
-
-	<div class="container signedIn">
+<div class="container">
+	<div class="header">
 		<UserPic src={userpic} alt="userpic" class="userpic-header" />
 
-		<h1>{name}</h1>
+		<div class="data">
+			<h1>Welcome, {name}</h1>
 
-		<div class="stats">
-			{locale.profileTrees(trees_count)}, {locale.profileUpdates(updates_count)}, {locale.profilePhotos(
-				files_count
-			)}.
+			<Buttons>
+				<SignOutButton />
+			</Buttons>
 		</div>
-
-		<Buttons>
-			<SignOutButton />
-		</Buttons>
 	</div>
 </div>
 
 <style>
-	img.header {
-		width: 100%;
+	.header {
+		display: flex;
+		flex-direction: row;
+		gap: 1rem;
 	}
 
 	:global(.userpic-header) {
@@ -53,34 +44,26 @@
 	}
 
 	.container {
-		padding: 0 var(--gap);
 		position: relative;
 		z-index: 2;
-
-		&.signedIn {
-			margin-top: -45px;
-		}
 	}
 
 	h1 {
 		font-weight: 800;
 		font-size: 24px;
-		margin: 10px 0 5px;
+		margin: 0;
 	}
 
-	.stats {
-		margin: var(--gap) 0;
+	.data {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
 	}
 
-	@media (max-width: 480px) {
-		img.header {
-			height: 40vw;
-		}
-	}
-
-	@media (min-width: 481px) {
-		img.header {
-			height: 200px;
+	@media (max-width: 1023px) {
+		h1 {
+			font-size: 1.25rem;
+			margin: 0;
 		}
 	}
 </style>

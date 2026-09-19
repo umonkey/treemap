@@ -26,13 +26,7 @@
 {:else if pageState.error}
 	<p>{pageState.error.description}</p>
 {:else if pageState.data}
-	<ProfileHeader
-		name={pageState.data.user.name}
-		userpic={pageState.data.user.picture}
-		trees_count={pageState.data.user.trees_count}
-		updates_count={pageState.data.user.updates_count}
-		files_count={pageState.data.user.files_count}
-	/>
+	<ProfileHeader name={pageState.data.user.name} userpic={pageState.data.user.picture} />
 
 	<UserHeatMap id={pageState.data.user.id} />
 

@@ -22,34 +22,36 @@
 	const { title, data, docs }: Props = $props();
 </script>
 
-{#if title}
-	<h2>{title}</h2>
-{/if}
+<div>
+	{#if title}
+		<h2>{title}</h2>
+	{/if}
 
-<div class="heatmap">
-	<table>
-		<tbody>
-			{#each formatData(data) as row, rowIndex}
-				<tr>
-					<td class="dow"><span>{days[rowIndex]}</span></td>
-					{#each row as cell}
-						<td class="cell" title={cell.title}>
-							<div class={`grade${cell.grade}`}></div>
-						</td>
-					{/each}
-				</tr>
-			{/each}
-		</tbody>
-	</table>
+	<div class="heatmap">
+		<table>
+			<tbody>
+				{#each formatData(data) as row, rowIndex}
+					<tr>
+						<td class="dow"><span>{days[rowIndex]}</span></td>
+						{#each row as cell}
+							<td class="cell" title={cell.title}>
+								<div class={`grade${cell.grade}`}></div>
+							</td>
+						{/each}
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
+
+	{#if docs}
+		<div class="docs"><a href={docs} target="_blank">{locale.learnContributions()}</a></div>
+	{/if}
 </div>
-
-{#if docs}
-	<div class="docs"><a href={docs} target="_blank">{locale.learnContributions()}</a></div>
-{/if}
 
 <style>
 	h2 {
-		margin-top: 40px;
+		margin: 0.5rem 0;
 		font-weight: 400;
 		font-size: 20px;
 		opacity: 0.75;
