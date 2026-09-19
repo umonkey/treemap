@@ -27,6 +27,8 @@ impl MetaService {
             .as_str(),
         );
 
+        html.push_str("<meta name=\"robots\" content=\"noindex\">");
+
         html.push_str(
             format!("<meta name=\"og:url\" content=\"{}\">", Self::escape(&url)).as_str(),
         );
