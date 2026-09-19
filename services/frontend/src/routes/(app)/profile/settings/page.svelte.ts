@@ -63,8 +63,4 @@ export class SettingsPage {
 	handleFileChange = (value: string[]) => {
 		this.files = value;
 	};
-
-	handleNameChange = (value: string) => {
-		this.name = value;
-	};
 }

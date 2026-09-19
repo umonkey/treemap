@@ -1,12 +1,12 @@
 <script lang="ts">
-	import WakeCheck from '$lib/components/screen-lock/WakeCheck.svelte';
 	import { locale } from '$lib/locale';
 	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import FileUploader from '$lib/ui/file-uploader/FileUploader.svelte';
 	import Form from '$lib/ui/form/Form.svelte';
-	import TextInput from '$lib/ui/text-input/TextInput.svelte';
+	import DisplayNameInput from './DisplayNameInput.svelte';
+	import WakeLockInput from './WakeLockInput.svelte';
 	import { SettingsPage } from './page.svelte.ts';
 
 	const pageState = new SettingsPage();
@@ -23,13 +23,9 @@
 		<p>{pageState.error}</p>
 	{:else if pageState.data}
 		<Form onSubmit={pageState.handleSave}>
-			<TextInput
-				label="Display name:"
-				value={pageState.name}
-				onChange={pageState.handleNameChange}
-			/>
+			<DisplayNameInput bind:value={pageState.name} />
 
-			<WakeCheck />
+			<WakeLockInput />
 
 			<FileUploader
 				label="Update profile picture:"

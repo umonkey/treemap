@@ -1,8 +1,8 @@
 <script lang="ts">
+	import { wakeLockState } from '$lib/components/screen-lock/state.svelte';
+	import { isWakeLockSupported } from '$lib/components/screen-lock/utils';
 	import { locale } from '$lib/locale';
 	import CheckInput from '$lib/ui/check-input/CheckInput.svelte';
-	import { wakeLockState } from './state.svelte';
-	import { isWakeLockSupported } from './utils';
 </script>
 
 {#if isWakeLockSupported()}
