@@ -5614,6 +5614,7 @@ dependencies = [
  "lettre",
  "libsql",
  "log 0.4.33",
+ "regex 1.13.1",
  "reqwest",
  "sentry",
  "sentry-log",

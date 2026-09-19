@@ -2,11 +2,35 @@ use crate::domain::tree::{Tree, TreeState};
 use crate::services::{Context, Injectable};
 use crate::types::{Error, Result};
 use html_escape::encode_double_quoted_attribute_to_string;
-use log::error;
-use std::sync::OnceLock;
+use log::{debug, error};
+use regex::Regex;
+use std::sync::{LazyLock, OnceLock};
 use tokio::fs;
 
 static INDEX_TEMPLATE: OnceLock<String> = OnceLock::new();
+
+/// Paths that should not be indexed by search engines.
+/// Matched against the request path (without the query string).
+const NOINDEX_PATTERNS: &[&str] = &[
+    r"^/tree(/.*)?$",
+    r"^/alert(/.*)?$",
+    r"^/water(/.*)?$",
+    r"^/panoramas(/.*)?$",
+    r"^/learn/?$",
+    r"^/updates/?$",
+    r"^/search/?$",
+    r"^/layers/?$",
+    r"^/profile(/.*)?$",
+    r"^/saved/?$",
+    r"^/add(/.*)?$",
+];
+
+static NOINDEX_REGEXES: LazyLock<Vec<Regex>> = LazyLock::new(|| {
+    NOINDEX_PATTERNS
+        .iter()
+        .map(|pattern| Regex::new(pattern).expect("invalid noindex regex"))
+        .collect()
+});
 
 pub struct MetaService {}
 
@@ -26,8 +50,6 @@ impl MetaService {
             )
             .as_str(),
         );
-
-        html.push_str("<meta name=\"robots\" content=\"noindex\">");
 
         html.push_str(
             format!("<meta name=\"og:url\" content=\"{}\">", Self::escape(&url)).as_str(),
@@ -122,6 +144,23 @@ impl MetaService {
         value
     }
 
+    /// Injects the robots meta tag appropriate for `path` into `html`.
+    pub fn inject_robots(&self, html: &str, path: &str) -> String {
+        if !Self::is_noindex(path) {
+            debug!("Not injecting meta in {path}");
+            return html.to_string();
+        }
+
+        html.replace(
+            "</head>",
+            "<meta name=\"robots\" content=\"noindex\"></head>",
+        )
+    }
+
+    fn is_noindex(path: &str) -> bool {
+        NOINDEX_REGEXES.iter().any(|regex| regex.is_match(path))
+    }
+
     async fn inject_meta(&self, html: &str) -> Result<String> {
         let path = "static/index.html";
 
@@ -144,5 +183,66 @@ impl MetaService {
 impl Injectable for MetaService {
     fn inject(_ctx: &dyn Context) -> Result<Self> {
         Ok(Self {})
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_inject_robots_noindex() {
+        let service = MetaService {};
+        let html = "<html><head></head><body></body></html>";
+
+        let result = service.inject_robots(html, "/tree/123");
+
+        assert!(result.contains("<meta name=\"robots\" content=\"noindex\">"));
+        assert!(result.contains("</head>"));
+    }
+
+    #[test]
+    fn test_inject_robots_indexable() {
+        let service = MetaService {};
+        let html = "<html><head></head><body></body></html>";
+
+        let result = service.inject_robots(html, "/stats");
+
+        assert_eq!(result, html);
+    }
+
+    #[test]
+    fn test_inject_robots_excluded_paths() {
+        let service = MetaService {};
+
+        for path in [
+            "/tree/123",
+            "/tree/123/preview",
+            "/tree/123/edit",
+            "/alert/123",
+            "/alert/123/preview",
+            "/water/123",
+            "/water/123/move",
+            "/panoramas/123",
+            "/learn",
+            "/updates",
+            "/search",
+            "/layers",
+        ] {
+            let result = service.inject_robots("<head></head>", path);
+
+            assert!(result.contains("noindex"), "expected noindex for {path}");
+        }
+    }
+
+    #[test]
+    fn test_inject_robots_indexable_paths() {
+        let service = MetaService {};
+
+        for path in ["/", "/stats", "/privacy"] {
+            let result = service.inject_robots("<head></head>", path);
+
+            assert!(!result.contains("noindex"), "expected indexable for {path}");
+        }
     }
 }

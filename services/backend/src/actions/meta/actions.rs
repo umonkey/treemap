@@ -7,7 +7,7 @@ use crate::services::Injected;
 use crate::types::*;
 use actix_web::http::header::{CacheControl, CacheDirective, Expires};
 use actix_web::web::Path;
-use actix_web::{get, HttpResponse};
+use actix_web::{get, HttpRequest, HttpResponse};
 use serde::Deserialize;
 use std::time::{Duration, SystemTime};
 
@@ -18,23 +18,26 @@ pub struct PathInfo {
 
 #[get("/{id:\\d+}")]
 pub async fn tree_page_action(
+    req: HttpRequest,
     tree_service: Injected<TreeService>,
     meta_service: Injected<MetaService>,
     path: Path<PathInfo>,
 ) -> Result<HttpResponse> {
-    serve_tree_meta(tree_service, meta_service, path.id).await
+    serve_tree_meta(req.path(), tree_service, meta_service, path.id).await
 }
 
 #[get("/{id:\\d+}/preview")]
 pub async fn tree_preview_action(
+    req: HttpRequest,
     tree_service: Injected<TreeService>,
     meta_service: Injected<MetaService>,
     path: Path<PathInfo>,
 ) -> Result<HttpResponse> {
-    serve_tree_meta(tree_service, meta_service, path.id).await
+    serve_tree_meta(req.path(), tree_service, meta_service, path.id).await
 }
 
 async fn serve_tree_meta(
+    path: &str,
     tree_service: Injected<TreeService>,
     meta_service: Injected<MetaService>,
     id: u64,
@@ -42,6 +45,7 @@ async fn serve_tree_meta(
     let tree = tree_service.get_tree(id).await?;
 
     let html = meta_service.get_tree(&tree).await?;
+    let html = meta_service.inject_robots(&html, path);
 
     let cache_control = CacheControl(vec![CacheDirective::Public, CacheDirective::MaxAge(60)]);
 
