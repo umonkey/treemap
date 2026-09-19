@@ -782,6 +782,10 @@ class EnglishLocale {
 		return 'Error saving settings. Local storage might be full or disabled.';
 	}
 
+	public toastSlowNetwork(): string {
+		return 'Your network connection is slow. The app may behave unexpectedly.';
+	}
+
 	public shortMonday(): string {
 		return 'Mon';
 	}
@@ -1567,6 +1571,10 @@ class RussianLocale extends EnglishLocale {
 		return 'Ошибка сохранения настроек. Возможно, хранилище переполнено или отключено.';
 	}
 
+	public toastSlowNetwork(): string {
+		return 'Медленное подключение к сети. Приложение может работать некорректно.';
+	}
+
 	public shortMonday(): string {
 		return 'Пн';
 	}
@@ -2258,6 +2266,10 @@ class ArmenianLocale extends EnglishLocale {
 
 	public override toastStorageError(): string {
 		return 'Կարգավորումները պահպանելու սխալ: Տեղական պահեստը կարող է լիքը լինել կամ անջատված:';
+	}
+
+	public toastSlowNetwork(): string {
+		return 'Ցանցային կապը դանդաղ է: Հավելվածը կարող է սխալ աշխատել:';
 	}
 }
 

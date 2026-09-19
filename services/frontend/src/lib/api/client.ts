@@ -2,6 +2,7 @@ import { config } from '$lib/env';
 import { authStore, isAuthenticated } from '$lib/stores/authStore';
 import type { IRawError, IResponse } from '$lib/types';
 import { Response } from '$lib/types_response';
+import { recordRequestDuration } from '$lib/utils/network';
 import { get } from 'svelte/store';
 
 export async function request<T>(
@@ -69,6 +70,8 @@ export async function request<T>(
 				description: (e as unknown as Error).message
 			}
 		};
+	} finally {
+		recordRequestDuration((performance.now() - start) / 1000);
 	}
 }
 

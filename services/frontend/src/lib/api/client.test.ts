@@ -1,5 +1,10 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { request } from './client';
+import { recordRequestDuration } from '$lib/utils/network';
+
+vi.mock('$lib/utils/network', () => ({
+	recordRequestDuration: vi.fn()
+}));
 
 describe('API Client request', () => {
 	const originalFetch = global.fetch;
@@ -29,6 +34,7 @@ describe('API Client request', () => {
 		expect(res.status).toBe(200);
 		expect(res.data).toEqual({ message: 'success' });
 		expect(res.error).toBeUndefined();
+		expect(recordRequestDuration).toHaveBeenCalledTimes(1);
 	});
 
 	it('should handle 204 No Content responses', async () => {
@@ -101,5 +107,6 @@ describe('API Client request', () => {
 			description: 'Load failed'
 		});
 		expect(console.warn).toHaveBeenCalledTimes(1);
+		expect(recordRequestDuration).toHaveBeenCalledTimes(1);
 	});
 });
