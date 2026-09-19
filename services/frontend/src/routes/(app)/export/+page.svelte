@@ -21,16 +21,16 @@
 	<div>
 		{#if lang === 'ru'}
 			<p>
-				Вы можете скачать всю базу данных (анонимизированную) одним файлом SQLite и делать с ней
-				что угодно.
+				Вы можете скачать всю базу данных (анонимизированную) одним файлом SQLite и делать с ней что
+				угодно.
 			</p>
 			<p>
 				Эти данные доступны под <a
 					href="https://opendatacommons.org/licenses/odbl/1-0/"
 					target="_blank"
 					rel="noopener noreferrer">Open Database License (ODbL) v1.0</a
-				>. Пожалуйста, при использовании укажите «Trees of Yerevan» и «OpenStreetMap contributors». Любая производная
-				база данных должна распространяться под этой же лицензией.
+				>. Пожалуйста, при использовании укажите «Trees of Yerevan» и «OpenStreetMap contributors».
+				Любая производная база данных должна распространяться под этой же лицензией.
 			</p>
 		{:else if lang === 'hy'}
 			<p>

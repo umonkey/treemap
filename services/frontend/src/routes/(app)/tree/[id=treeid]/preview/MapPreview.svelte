@@ -14,12 +14,23 @@
 	import { routes } from '$lib/routes';
 	import Button from '$lib/ui/button/Button.svelte';
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
-	import { formatSpecies, formatState, shortDetails } from '$lib/utils/trees';
+	import {
+		formatSpecies,
+		formatState,
+		measurementParts,
+		type MeasurementKind
+	} from '$lib/utils/trees';
 	import { previewState } from './MapPreview.svelte.ts';
 	import { mapBottomPadding } from '$lib/components/map/mapBottomPadding';
 	import '$lib/styles/variables.css';
 
 	let { id } = $props<{ id: string }>();
+
+	const measurementRoutes: Record<MeasurementKind, (id: string) => string> = {
+		height: routes.treeHeight,
+		diameter: routes.treeDiameter,
+		circumference: routes.treeCircumference
+	};
 
 	$effect(() => {
 		return previewState.init();
@@ -58,11 +69,13 @@
 					<div class="value">{tree.address}</div>
 				</div>
 			{/if}
-			<div class="line">
+			<div class="line measurements">
 				<div class="icon">
 					<TagIcon />
 				</div>
-				<div class="value">{shortDetails(tree)}</div>
+				{#each measurementParts(tree) as part}
+					<a class="measurement" href={measurementRoutes[part.kind](tree.id)}>{part.text}</a>
+				{/each}
 			</div>
 			<div class="line">
 				<div class="icon">
@@ -187,6 +200,21 @@
 					height: 20px;
 				}
 			}
+
+			.measurements {
+				white-space: normal;
+				overflow: visible;
+				flex-wrap: wrap;
+
+				.measurement {
+					background-color: rgba(128, 128, 128, 0.2);
+					border-radius: 0;
+					padding: 2px 6px;
+					color: inherit;
+					text-decoration: none;
+					cursor: pointer;
+				}
+			}
 		}
 	}
 
@@ -211,6 +239,10 @@
 			height: 100vh;
 			border-radius: 0px;
 			border-left: 1px solid var(--sep-color);
+
+			.measurements {
+				font-size: 0.9rem;
+			}
 
 			.title {
 				display: flex;

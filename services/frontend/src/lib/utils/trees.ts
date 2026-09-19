@@ -9,29 +9,26 @@ export const formatYear = (value: number | null): string => {
 	return value.toString();
 };
 
-export const shortDetails = (tree: ITree): string => {
-	const parts = [];
+export type MeasurementKind = 'height' | 'diameter' | 'circumference';
 
-	if (tree.height) {
-		parts.push(`H=${formatMeters(tree.height)}`);
-	} else {
-		parts.push('H=?');
-	}
-
-	if (tree.diameter) {
-		parts.push(`D=${formatMeters(tree.diameter)}`);
-	} else {
-		parts.push('D=?');
-	}
-
-	if (tree.circumference) {
-		parts.push(`C=${formatCentimeters(tree.circumference)}`);
-	} else {
-		parts.push('C=?');
-	}
-
-	return parts.join(' ');
+export type MeasurementPart = {
+	kind: MeasurementKind;
+	text: string;
 };
+
+export const measurementParts = (tree: ITree): MeasurementPart[] => [
+	{ kind: 'height', text: `H=${tree.height ? formatMeters(tree.height) : '?'}` },
+	{ kind: 'diameter', text: `D=${tree.diameter ? formatMeters(tree.diameter) : '?'}` },
+	{
+		kind: 'circumference',
+		text: `C=${tree.circumference ? formatCentimeters(tree.circumference) : '?'}`
+	}
+];
+
+export const shortDetails = (tree: ITree): string =>
+	measurementParts(tree)
+		.map((part) => part.text)
+		.join(' ');
 
 export const formatMeters = (value: number | undefined | null): string => {
 	if (!value) {
