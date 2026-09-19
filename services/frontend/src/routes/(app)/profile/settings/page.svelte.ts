@@ -1,12 +1,12 @@
 import { getMe, updateSettings } from '$lib/api/users';
-import { goto, routes } from '$lib/routes';
+import { showError, showWarning } from '$lib/errors';
 import type { IMeResponse } from '$lib/types';
+import { locale } from './DisplayNameInput.lang';
 
 export class SettingsPage {
 	loading = $state<boolean>(true);
 	saving = $state<boolean>(false);
 	error = $state<string | null>(null);
-	saveError = $state<string | null>(null);
 	data = $state<IMeResponse | null>(null);
 	files = $state<string[]>([]);
 	name = $state<string>('');
@@ -29,31 +29,14 @@ export class SettingsPage {
 		}
 	};
 
-	handleSave = async () => {
-		this.saving = true;
-		this.saveError = null;
-
-		try {
-			const res = await updateSettings({
-				name: this.name,
-				picture: this.files[0] ?? null
-			});
-
-			const { status, error: e } = res;
-
-			if (status === 202) {
-				console.info('Profile info updated.');
-				goto(routes.profile());
-			} else if (e) {
-				this.saveError = e.description;
-			}
-		} finally {
-			this.saving = false;
+	handleNameBlur = async (name: string) => {
+		if (!name.trim()) {
+			showWarning(locale.displayNameRequired());
+			this.name = this.data?.user.name ?? '';
+			return;
 		}
-	};
-
-	handleCancel = () => {
-		goto(routes.profile());
+		if (name === this.data?.user.name) return;
+		await this.save({ name });
 	};
 
 	handleFileBusy = (value: boolean) => {
@@ -61,6 +44,25 @@ export class SettingsPage {
 	};
 
 	handleFileChange = (value: string[]) => {
+		const previous = this.files[0];
 		this.files = value;
+		const next = value[0];
+		if (next && next !== previous) void this.save({ picture: next });
+	};
+
+	private save = async (payload: { name?: string; picture?: string }) => {
+		this.saving = true;
+		try {
+			const { status, error } = await updateSettings(payload);
+			if (status === 202) {
+				if (payload.name !== undefined && this.data) {
+					this.data = { ...this.data, user: { ...this.data.user, name: payload.name } };
+				}
+			} else if (error) {
+				showError(error.description);
+			}
+		} finally {
+			this.saving = false;
+		}
 	};
 }

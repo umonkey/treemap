@@ -64,29 +64,33 @@ export async function verifyToken(token: string): Promise<IResponse<IMeResponse>
 
 // Update user's display name and profile picture.
 export async function updateSettings({
-	name,
-	picture
+	name = null,
+	picture = null
 }: {
-	name: string;
-	picture: string | null;
-}): Promise<IResponse<void>> {
-	const res = await request<void>('PUT', 'v1/settings', {
-		body: JSON.stringify({ name, picture }),
+	name?: string | null;
+	picture?: string | null;
+} = {}): Promise<IResponse<void>> {
+	const body: Record<string, string> = {};
+	if (name !== null) body.name = name;
+	if (picture !== null) body.picture = picture;
+
+	const res = await request<void>('PATCH', 'v1/settings', {
+		body: JSON.stringify(body),
 		headers: {
 			'Content-Type': 'application/json',
 			...getAuthHeaders()
 		}
 	});
 
-	if (res.status === 200) {
+	if (res.status === 202) {
 		authStore.update((state) => {
 			if (state) {
 				return {
 					...state,
 					user: {
 						...state.user,
-						name,
-						picture: picture || state.user.picture
+						...(name !== null ? { name } : {}),
+						...(picture !== null ? { picture } : {})
 					}
 				};
 			}

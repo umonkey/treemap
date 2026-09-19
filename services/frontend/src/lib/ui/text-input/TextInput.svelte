@@ -9,7 +9,8 @@
 		multiline = false,
 		hint = '',
 		help,
-		onChange
+		onChange,
+		onBlur
 	} = $props<{
 		value?: string | number | null;
 		placeholder?: string;
@@ -19,6 +20,7 @@
 		hint?: string;
 		help?: string;
 		onChange: (value: string) => void;
+		onBlur?: (value: string) => void;
 	}>();
 
 	const handleChange = (e: Event) => {
@@ -27,12 +29,19 @@
 			onChange(em.value ?? '');
 		}
 	};
+
+	const handleBlur = (e: Event) => {
+		if (e.target) {
+			const em = e.target as HTMLInputElement;
+			onBlur?.(em.value ?? '');
+		}
+	};
 </script>
 
 <FormElement {label} {hint} {help}>
 	{#if multiline}
-		<textarea {placeholder} oninput={handleChange}>{value}</textarea>
+		<textarea {placeholder} oninput={handleChange} onblur={handleBlur}>{value}</textarea>
 	{:else}
-		<input {type} {value} {placeholder} oninput={handleChange} />
+		<input {type} {value} {placeholder} oninput={handleChange} onblur={handleBlur} />
 	{/if}
 </FormElement>

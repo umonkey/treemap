@@ -3,16 +3,16 @@ use crate::services::app::UserId;
 use crate::services::Injected;
 use crate::types::Result;
 use actix_web::web::Json;
-use actix_web::{put, HttpResponse};
+use actix_web::{patch, HttpResponse};
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
 struct RequestPayload {
-    pub name: String,
+    pub name: Option<String>,
     pub picture: Option<String>,
 }
 
-#[put("")]
+#[patch("")]
 pub async fn update_settings_action(
     user_id: UserId,
     settings_service: Injected<SettingsService>,
