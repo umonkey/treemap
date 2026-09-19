@@ -33,15 +33,26 @@
 				{#each formatData(data) as row, rowIndex}
 					<tr>
 						<td class="dow"><span>{days[rowIndex]}</span></td>
-						{#each row as cell}
-							<td class="cell" title={cell.title}>
-								<div class={`grade${cell.grade}`}></div>
-							</td>
-						{/each}
 					</tr>
 				{/each}
 			</tbody>
 		</table>
+
+		<div class="main">
+			<table>
+				<tbody>
+					{#each formatData(data) as row, rowIndex}
+						<tr>
+							{#each row as cell}
+								<td class="cell" title={cell.title}>
+									<div class={`grade${cell.grade}`}></div>
+								</td>
+							{/each}
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		</div>
 	</div>
 
 	{#if docs}
@@ -58,10 +69,29 @@
 	}
 
 	.heatmap {
-		height: 110px; /* add 10 px for the scroll bar, make the user able to access the bottom row */
-		min-height: 110px;
-		width: 100%;
-		overflow-x: scroll;
+		display: flex;
+		flex-direction: row;
+		gap: 0.5rem;
+		overflow: hidden;
+
+		font-size: 12px;
+		line-height: 12px;
+
+		td {
+			height: 12px;
+		}
+
+		.main {
+			height: 114px; /* add 10 px for the scroll bar, make the user able to access the bottom row */
+			min-height: 114px;
+			width: 100%;
+			overflow-x: scroll;
+			direction: rtl;
+		}
+	}
+
+	.docs {
+		margin: 0.5rem 0 0;
 	}
 
 	table {
