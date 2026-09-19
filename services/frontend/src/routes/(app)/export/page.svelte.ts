@@ -1,7 +1,7 @@
 import { getExportFiles } from '$lib/api/export';
 import type { IError, IExportFile } from '$lib/types';
 
-class PageState {
+export class ExportPage {
 	loading = $state<boolean>(true);
 	data = $state<IExportFile[]>([]);
 	error = $state<IError | undefined>(undefined);
@@ -24,5 +24,3 @@ class PageState {
 		}
 	};
 }
-
-export const pageState = new PageState();
