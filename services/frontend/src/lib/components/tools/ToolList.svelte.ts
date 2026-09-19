@@ -6,10 +6,17 @@ export class ToolListLogic {
 		const check = get(hasPermission);
 		const list: { name: string; href: string }[] = [];
 
-		if (check('user:manage') || check('pano:edit')) {
+		if (check('user:manage')) {
 			list.push({
-				name: 'Admin',
-				href: '/admin'
+				name: 'Manage Users',
+				href: '/admin/users'
+			});
+		}
+
+		if (check('pano:edit')) {
+			list.push({
+				name: 'Manage Panoramas',
+				href: '/admin/panoramas'
 			});
 		}
 
