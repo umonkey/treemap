@@ -1,4 +1,4 @@
-use crate::services::tree_merger::TreeMergerService;
+use crate::services::tree_merger::{TreeMergerService, DEFAULT_PROXIMITY_METERS};
 use crate::services::*;
 
 pub async fn merge_duplicates_command() {
@@ -24,10 +24,20 @@ pub async fn merge_duplicates_command() {
         .build::<TreeMergerService>()
         .expect("Error creating handler.");
 
-    let merged_pairs = merger
-        .merge_duplicates(limit)
+    let candidates = merger
+        .find_auto_merge_candidates(DEFAULT_PROXIMITY_METERS)
         .await
-        .expect("Error merging duplicates.");
+        .expect("Error finding duplicate candidates.");
+
+    let mut merged_pairs = Vec::new();
+
+    for (from, to) in candidates.into_iter().take(limit as usize) {
+        let pairs = merger
+            .merge_pair(from.id, to.id)
+            .await
+            .expect("Error merging duplicates.");
+        merged_pairs.extend(pairs);
+    }
 
     state
         .database

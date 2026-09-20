@@ -1,5 +1,5 @@
 use crate::domain::tree::DuplicatesResponse;
-use crate::services::tree_merger::TreeMergerService;
+use crate::services::tree_merger::{TreeMergerService, DEFAULT_PROXIMITY_METERS};
 use crate::services::Injected;
 use crate::types::Result;
 use actix_web::get;
@@ -9,6 +9,8 @@ use actix_web::web::Json;
 pub async fn get_duplicates_action(
     merger: Injected<TreeMergerService>,
 ) -> Result<Json<DuplicatesResponse>> {
-    let duplicates = merger.get_duplicates().await?;
+    let duplicates = merger
+        .find_manual_merge_candidates(DEFAULT_PROXIMITY_METERS)
+        .await?;
     Ok(Json(DuplicatesResponse::new(duplicates)))
 }

@@ -1,14 +1,17 @@
+use super::clustering::{
+    bbox_of, clusterize, filter_by_states, find_candidates, get_clustering_size,
+};
 use crate::domain::comment::CommentRepository;
 use crate::domain::like::LikeRepository;
 use crate::domain::observation::ObservationRepository;
 use crate::domain::osm::OsmTreeRepository;
 use crate::domain::prop::{PropRecord, PropRepository};
-use crate::domain::tree::{DuplicateLocation, TreeRepository, TreeState};
+use crate::domain::tree::{Tree, TreeLocation, TreeRepository, TreeState};
 use crate::domain::tree_image::TreeImageRepository;
 use crate::services::{Context, Injectable};
 use crate::types::*;
 use log::{debug, info};
-use std::collections::HashMap;
+use std::collections::HashSet;
 use std::sync::Arc;
 
 const EXCLUDED_MERGE_PROPS: &[&str] = &["replaced_by", "replaces"];
@@ -25,238 +28,283 @@ pub struct TreeMergerService {
 }
 
 impl TreeMergerService {
-    pub async fn get_duplicates(&self) -> Result<Vec<DuplicateLocation>> {
-        // Get all trees from the database
+    /// Finds pairs of trees where a gone or stump tree sits within `proximity`
+    /// meters of an alive tree. The alive tree is always the merge target.
+    pub async fn find_auto_merge_candidates(
+        &self,
+        proximity: f64,
+    ) -> Result<Vec<(TreeLocation, TreeLocation)>> {
         let trees = self.trees.get_lightweight_locations().await?;
+        let trees = filter_by_states(
+            trees,
+            &[TreeState::Alive, TreeState::Gone, TreeState::Stump],
+        );
 
-        // HashMap to store coordinate -> tree_ids mapping
-        // Key is (lat * 10,000,000, lon * 10,000,000)
-        let mut location_map: HashMap<(i64, i64), Vec<String>> = HashMap::new();
+        let Some(bbox) = bbox_of(&trees) else {
+            return Ok(Vec::new());
+        };
 
-        // Process each tree
-        for tree in trees {
-            if tree.state == TreeState::Replaced {
-                continue; // Skip trees that are not visible
-            }
+        let cell_size = get_clustering_size(&bbox, proximity);
+        let grid = clusterize(&trees, &bbox, cell_size);
 
-            // Round coordinates using OSM standard (7 decimal places)
-            let rounded_lat = (tree.lat * 10_000_000.0).round() as i64;
-            let rounded_lon = (tree.lon * 10_000_000.0).round() as i64;
+        let candidates = find_candidates(
+            &trees,
+            &grid,
+            &bbox,
+            cell_size,
+            proximity,
+            &[TreeState::Gone, TreeState::Stump],
+            &[TreeState::Alive],
+        );
 
-            // Add tree ID to the location
-            location_map
-                .entry((rounded_lat, rounded_lon))
-                .or_default()
-                .push(tree.id.to_string());
-        }
+        debug!("Found {} auto-merge candidates.", candidates.len());
 
-        // Collect locations with more than 1 tree
-        let mut duplicates = Vec::new();
-
-        for (coords, tree_ids) in location_map {
-            if tree_ids.len() > 1 {
-                let lat = coords.0 as f64 / 10_000_000.0;
-                let lon = coords.1 as f64 / 10_000_000.0;
-                duplicates.push(DuplicateLocation::new(lat, lon, tree_ids));
-            }
-        }
-
-        debug!("Returning {} duplicate locations.", duplicates.len());
-
-        Ok(duplicates)
+        Ok(candidates)
     }
 
-    pub async fn merge_duplicates(&self, limit: u64) -> Result<Vec<(u64, u64)>> {
-        let duplicate_groups = self.get_duplicates().await?;
-        let groups_to_process = duplicate_groups.into_iter().take(limit as usize);
-        let mut merged_pairs = Vec::new();
+    /// Finds pairs of alive trees within `proximity` meters of each other.
+    /// Unordered pairs are deduplicated and oriented with the lower id as the
+    /// target (main) tree.
+    pub async fn find_manual_merge_candidates(
+        &self,
+        proximity: f64,
+    ) -> Result<Vec<(TreeLocation, TreeLocation)>> {
+        let trees = self.trees.get_lightweight_locations().await?;
+        let trees = filter_by_states(trees, &[TreeState::Alive]);
 
-        for group in groups_to_process {
-            let tree_ids: Vec<u64> = group
-                .tree_ids
-                .iter()
-                .filter_map(|id| id.parse::<u64>().ok())
-                .collect();
+        let Some(bbox) = bbox_of(&trees) else {
+            return Ok(Vec::new());
+        };
 
-            if tree_ids.len() < 2 {
+        let cell_size = get_clustering_size(&bbox, proximity);
+        let grid = clusterize(&trees, &bbox, cell_size);
+
+        let candidates = find_candidates(
+            &trees,
+            &grid,
+            &bbox,
+            cell_size,
+            proximity,
+            &[TreeState::Alive],
+            &[TreeState::Alive],
+        );
+
+        let mut seen = HashSet::new();
+        let mut pairs = Vec::new();
+
+        for (a, b) in candidates {
+            let key = if a.id < b.id {
+                (a.id, b.id)
+            } else {
+                (b.id, a.id)
+            };
+
+            if !seen.insert(key) {
                 continue;
             }
 
-            let mut trees = self.trees.get_multiple(&tree_ids).await?;
-
-            if trees.is_empty() {
-                continue;
-            }
-
-            // (3) Should pick the lowest id (first created)
-            trees.sort_by_key(|t| t.id);
-            let main_tree = trees[0].clone();
-            let secondary_trees = &trees[1..];
-
-            let mut merged_tree = main_tree.clone();
-
-            // (4) Should merge all props, latest takes precedence
-            // scalar props: species, height, circumference, diameter, notes, year, address
-
-            // Collect all trees sorted by updated_at DESC to find latest values
-            let mut latest_first = trees.clone();
-            latest_first.sort_by_key(|b| std::cmp::Reverse(b.updated_at));
-
-            // Merge species
-            if let Some(t) = latest_first.iter().find(|t| {
-                !t.species.is_empty()
-                    && t.species != "Unknown"
-                    && t.species != "Unknown species"
-                    && !t.species.to_lowercase().contains("unknown")
-            }) {
-                merged_tree.species = t.species.clone();
-            }
-
-            // Merge state: ignore "gone"
-            if let Some(t) = latest_first.iter().find(|t| t.state != TreeState::Gone) {
-                merged_tree.state = t.state;
-            }
-
-            // Merge height
-            if let Some(t) = trees
-                .iter()
-                .filter(|t| t.height.is_some() && t.height.unwrap_or(0.0) > 0.0)
-                .max_by_key(|t| t.height_updated_at)
-            {
-                merged_tree.height = t.height;
-                merged_tree.height_updated_at = t.height_updated_at;
-            }
-
-            // Merge circumference
-            if let Some(t) = trees
-                .iter()
-                .filter(|t| t.circumference.is_some() && t.circumference.unwrap_or(0.0) > 0.0)
-                .max_by_key(|t| t.circumference_updated_at)
-            {
-                merged_tree.circumference = t.circumference;
-                merged_tree.circumference_updated_at = t.circumference_updated_at;
-            }
-
-            // Merge diameter
-            if let Some(t) = trees
-                .iter()
-                .filter(|t| t.diameter.is_some() && t.diameter.unwrap_or(0.0) > 0.0)
-                .max_by_key(|t| t.diameter_updated_at)
-            {
-                merged_tree.diameter = t.diameter;
-                merged_tree.diameter_updated_at = t.diameter_updated_at;
-            }
-
-            // Merge notes
-            if let Some(t) = latest_first
-                .iter()
-                .find(|t| t.notes.as_ref().map(|n| !n.is_empty()).unwrap_or(false))
-            {
-                merged_tree.notes = t.notes.clone();
-            }
-
-            // Merge year
-            if let Some(t) = latest_first.iter().find(|t| t.year.is_some()) {
-                merged_tree.year = t.year;
-            }
-
-            // Merge address
-            if let Some(t) = latest_first
-                .iter()
-                .find(|t| t.address.as_ref().map(|a| !a.is_empty()).unwrap_or(false))
-            {
-                merged_tree.address = t.address.clone();
-            }
-
-            // Merge metadata updated_at
-            merged_tree.images_updated_at =
-                trees.iter().map(|t| t.images_updated_at).max().unwrap_or(0);
-            merged_tree.observations_updated_at = trees
-                .iter()
-                .map(|t| t.observations_updated_at)
-                .max()
-                .unwrap_or(0);
-
-            // Merge thumbnail_id: if main has none, take latest available
-            if merged_tree.thumbnail_id.is_none() {
-                if let Some(t) = trees
-                    .iter()
-                    .filter(|t| t.thumbnail_id.is_some())
-                    .max_by_key(|t| t.images_updated_at)
-                {
-                    merged_tree.thumbnail_id = t.thumbnail_id;
-                }
-            }
-
-            // Update main tree with merged values
-            self.trees.update(&merged_tree, self.bot_user_id).await?;
-
-            for secondary in secondary_trees {
-                // (5) Should move all photos into the main tree
-                self.files.reassign_all(secondary.id, main_tree.id).await?;
-
-                // Move comments
-                self.comments
-                    .reassign_all(secondary.id, main_tree.id)
-                    .await?;
-
-                // Move likes
-                self.likes.reassign_all(secondary.id, main_tree.id).await?;
-
-                // Move observations
-                self.observations
-                    .reassign_all(secondary.id, main_tree.id)
-                    .await?;
-
-                // Move props history
-                let secondary_props = self.props.find_by_tree(secondary.id).await?;
-
-                let prop_ids_to_move: Vec<u64> = secondary_props
-                    .into_iter()
-                    .filter(|p| {
-                        if EXCLUDED_MERGE_PROPS.contains(&p.name.as_str()) {
-                            return false;
-                        }
-
-                        if p.name == "state" && p.value == TreeState::Replaced.as_str() {
-                            return false;
-                        }
-
-                        true
-                    })
-                    .map(|p| p.id)
-                    .collect();
-
-                self.props
-                    .update_tree_id(prop_ids_to_move, main_tree.id)
-                    .await?;
-
-                // Add audit trail entry
-                self.props
-                    .add(&PropRecord {
-                        tree_id: main_tree.id,
-                        name: "merged_from".to_string(),
-                        value: secondary.id.to_string(),
-                        added_by: self.bot_user_id,
-                        ..Default::default()
-                    })
-                    .await?;
-
-                // (6) Should mark merged trees as replaced, with replaced_by pointing to the new tree.
-                self.trees
-                    .mark_as_merged(secondary.id, main_tree.id, self.bot_user_id)
-                    .await?;
-
-                info!("Tree {} merged into {}.", secondary.id, main_tree.id);
-
-                merged_pairs.push((secondary.id, main_tree.id));
-            }
-
-            // Recalculate stats for the main tree
-            self.trees.recalculate_stats(main_tree.id).await?;
+            // Orient the lower id as the target (main) tree.
+            let (from, to) = if a.id < b.id { (b, a) } else { (a, b) };
+            pairs.push((from, to));
         }
 
+        debug!("Found {} manual-merge candidates.", pairs.len());
+
+        Ok(pairs)
+    }
+
+    /// Merges the given secondary trees into the main tree.
+    async fn merge_group(&self, main_id: u64, secondary_ids: &[u64]) -> Result<Vec<(u64, u64)>> {
+        let mut ids = vec![main_id];
+        ids.extend_from_slice(secondary_ids);
+
+        let trees = self.trees.get_multiple(&ids).await?;
+
+        let Some(main_tree) = trees.iter().find(|t| t.id == main_id).cloned() else {
+            return Ok(Vec::new());
+        };
+
+        let mut secondary_trees: Vec<Tree> =
+            trees.iter().filter(|t| t.id != main_id).cloned().collect();
+        secondary_trees.sort_by_key(|t| t.id);
+
+        let mut merged_tree = main_tree.clone();
+
+        // (4) Should merge all props, latest takes precedence
+        // scalar props: species, height, circumference, diameter, notes, year, address
+
+        // Collect all trees sorted by updated_at DESC to find latest values
+        let mut latest_first = trees.clone();
+        latest_first.sort_by_key(|b| std::cmp::Reverse(b.updated_at));
+
+        // Merge species
+        if let Some(t) = latest_first.iter().find(|t| {
+            !t.species.is_empty()
+                && t.species != "Unknown"
+                && t.species != "Unknown species"
+                && !t.species.to_lowercase().contains("unknown")
+        }) {
+            merged_tree.species = t.species.clone();
+        }
+
+        // Merge state: ignore "gone"
+        if let Some(t) = latest_first.iter().find(|t| t.state != TreeState::Gone) {
+            merged_tree.state = t.state;
+        }
+
+        // Merge height
+        if let Some(t) = trees
+            .iter()
+            .filter(|t| t.height.is_some() && t.height.unwrap_or(0.0) > 0.0)
+            .max_by_key(|t| t.height_updated_at)
+        {
+            merged_tree.height = t.height;
+            merged_tree.height_updated_at = t.height_updated_at;
+        }
+
+        // Merge circumference
+        if let Some(t) = trees
+            .iter()
+            .filter(|t| t.circumference.is_some() && t.circumference.unwrap_or(0.0) > 0.0)
+            .max_by_key(|t| t.circumference_updated_at)
+        {
+            merged_tree.circumference = t.circumference;
+            merged_tree.circumference_updated_at = t.circumference_updated_at;
+        }
+
+        // Merge diameter
+        if let Some(t) = trees
+            .iter()
+            .filter(|t| t.diameter.is_some() && t.diameter.unwrap_or(0.0) > 0.0)
+            .max_by_key(|t| t.diameter_updated_at)
+        {
+            merged_tree.diameter = t.diameter;
+            merged_tree.diameter_updated_at = t.diameter_updated_at;
+        }
+
+        // Merge notes
+        if let Some(t) = latest_first
+            .iter()
+            .find(|t| t.notes.as_ref().map(|n| !n.is_empty()).unwrap_or(false))
+        {
+            merged_tree.notes = t.notes.clone();
+        }
+
+        // Merge year
+        if let Some(t) = latest_first.iter().find(|t| t.year.is_some()) {
+            merged_tree.year = t.year;
+        }
+
+        // Merge address
+        if let Some(t) = latest_first
+            .iter()
+            .find(|t| t.address.as_ref().map(|a| !a.is_empty()).unwrap_or(false))
+        {
+            merged_tree.address = t.address.clone();
+        }
+
+        // Merge metadata updated_at
+        merged_tree.images_updated_at =
+            trees.iter().map(|t| t.images_updated_at).max().unwrap_or(0);
+        merged_tree.observations_updated_at = trees
+            .iter()
+            .map(|t| t.observations_updated_at)
+            .max()
+            .unwrap_or(0);
+
+        // Merge thumbnail_id: if main has none, take latest available
+        if merged_tree.thumbnail_id.is_none() {
+            if let Some(t) = trees
+                .iter()
+                .filter(|t| t.thumbnail_id.is_some())
+                .max_by_key(|t| t.images_updated_at)
+            {
+                merged_tree.thumbnail_id = t.thumbnail_id;
+            }
+        }
+
+        // Update main tree with merged values
+        self.trees.update(&merged_tree, self.bot_user_id).await?;
+
+        let mut merged_pairs = Vec::new();
+
+        for secondary in &secondary_trees {
+            // (5) Should move all photos into the main tree
+            self.files.reassign_all(secondary.id, main_tree.id).await?;
+
+            // Move comments
+            self.comments
+                .reassign_all(secondary.id, main_tree.id)
+                .await?;
+
+            // Move likes
+            self.likes.reassign_all(secondary.id, main_tree.id).await?;
+
+            // Move observations
+            self.observations
+                .reassign_all(secondary.id, main_tree.id)
+                .await?;
+
+            // Move props history
+            let secondary_props = self.props.find_by_tree(secondary.id).await?;
+
+            let prop_ids_to_move: Vec<u64> = secondary_props
+                .into_iter()
+                .filter(|p| {
+                    if EXCLUDED_MERGE_PROPS.contains(&p.name.as_str()) {
+                        return false;
+                    }
+
+                    if p.name == "state" && p.value == TreeState::Replaced.as_str() {
+                        return false;
+                    }
+
+                    true
+                })
+                .map(|p| p.id)
+                .collect();
+
+            self.props
+                .update_tree_id(prop_ids_to_move, main_tree.id)
+                .await?;
+
+            // Add audit trail entry
+            self.props
+                .add(&PropRecord {
+                    tree_id: main_tree.id,
+                    name: "merged_from".to_string(),
+                    value: secondary.id.to_string(),
+                    added_by: self.bot_user_id,
+                    ..Default::default()
+                })
+                .await?;
+
+            // (6) Should mark merged trees as replaced, with replaced_by pointing to the new tree.
+            self.trees
+                .mark_as_merged(secondary.id, main_tree.id, self.bot_user_id)
+                .await?;
+
+            info!("Tree {} merged into {}.", secondary.id, main_tree.id);
+
+            merged_pairs.push((secondary.id, main_tree.id));
+        }
+
+        // Recalculate stats for the main tree
+        self.trees.recalculate_stats(main_tree.id).await?;
+
         Ok(merged_pairs)
+    }
+
+    /// Merges a single pair of trees, skipping pairs where either endpoint has
+    /// already been replaced.
+    pub async fn merge_pair(&self, from_id: u64, to_id: u64) -> Result<Vec<(u64, u64)>> {
+        let trees = self.trees.get_multiple(&[from_id, to_id]).await?;
+
+        if trees.iter().any(|t| t.state == TreeState::Replaced) {
+            return Ok(Vec::new());
+        }
+
+        self.merge_group(to_id, &[from_id]).await
     }
 
     pub async fn remap_osm_duplicates(&self) -> Result<Vec<(u64, u64)>> {
@@ -332,6 +380,7 @@ mod tests {
     use super::*;
     use crate::domain::tree::{Tree, TreeState};
     use crate::infra::database::Database;
+    use crate::services::tree_merger::DEFAULT_PROXIMITY_METERS;
     use crate::services::AppState;
     use crate::services::ContextExt;
     use crate::utils::{get_timestamp, osm_round_coord};
@@ -357,6 +406,21 @@ mod tests {
         (merger, state.database())
     }
 
+    async fn run_auto_merge(service: &TreeMergerService, limit: usize) -> Vec<(u64, u64)> {
+        let candidates = service
+            .find_auto_merge_candidates(DEFAULT_PROXIMITY_METERS)
+            .await
+            .unwrap();
+
+        let mut merged = Vec::new();
+
+        for (from, to) in candidates.into_iter().take(limit) {
+            merged.extend(service.merge_pair(from.id, to.id).await.unwrap());
+        }
+
+        merged
+    }
+
     #[test]
     fn test_coordinate_rounding() {
         // Test the coordinate rounding function (OSM standard 7 decimal places)
@@ -364,64 +428,6 @@ mod tests {
         assert_eq!(osm_round_coord(40.18138999), 40.1813900);
         assert_eq!(osm_round_coord(-123.4194001), -123.4194001);
         assert_eq!(osm_round_coord(-123.41940009), -123.4194001);
-    }
-
-    #[test]
-    fn test_duplicate_detection_logic() {
-        // Test tree coordinates that should be detected as duplicates
-        let test_trees = vec![
-            (1, 40.1813891, 44.5144444),   // Tree 1
-            (2, 40.1813891, 44.5144444),   // Tree 2 (exact duplicate)
-            (3, 40.1813899, 44.5144449),   // Tree 3 (close, different at 7th decimal)
-            (4, 38.7749000, -123.4194000), // Tree 4
-            (5, 38.7749000, -123.4194000), // Tree 5 (exact duplicate)
-            (6, 38.7749009, -123.4194009), // Tree 6 (close, different at 7th decimal)
-            (7, 39.7749000, -124.4194000), // Tree 7 (unique)
-        ];
-
-        let mut location_map: HashMap<String, Vec<u64>> = HashMap::new();
-
-        for (id, lat, lon) in test_trees {
-            let rounded_lat = osm_round_coord(lat);
-            let rounded_lon = osm_round_coord(lon);
-            let location_key = format!("{rounded_lat},{rounded_lon}");
-            location_map.entry(location_key).or_default().push(id);
-        }
-
-        // Collect duplicates
-        let mut duplicates = Vec::new();
-
-        for (location_key, tree_ids) in location_map {
-            if tree_ids.len() > 1 {
-                let coords: Vec<&str> = location_key.split(',').collect();
-                let lat = coords[0].parse::<f64>().expect("Error reading lat");
-                let lon = coords[1].parse::<f64>().expect("Error reading lon");
-                duplicates.push((lat, lon, tree_ids));
-            }
-        }
-
-        // Should have exactly 2 duplicate locations
-        assert_eq!(duplicates.len(), 2);
-
-        // Find the duplicate at (40.1813891, 44.5144444)
-        let duplicate1 = duplicates.iter().find(|(lat, lon, _)| {
-            (*lat - 40.1813891).abs() < 0.0000001 && (*lon - 44.5144444).abs() < 0.0000001
-        });
-        assert!(duplicate1.is_some());
-        let (_, _, tree_ids1) = duplicate1.expect("Error getting duplicates.");
-        assert_eq!(tree_ids1.len(), 2);
-        assert!(tree_ids1.contains(&1));
-        assert!(tree_ids1.contains(&2));
-
-        // Find the duplicate at (38.7749000, -123.4194000)
-        let duplicate2 = duplicates.iter().find(|(lat, lon, _)| {
-            (*lat - 38.7749000).abs() < 0.0000001 && (*lon + 123.4194000).abs() < 0.0000001
-        });
-        assert!(duplicate2.is_some());
-        let (_, _, tree_ids2) = duplicate2.expect("Error getting duplicates.");
-        assert_eq!(tree_ids2.len(), 2);
-        assert!(tree_ids2.contains(&4));
-        assert!(tree_ids2.contains(&5));
     }
 
     #[tokio::test]
@@ -439,7 +445,7 @@ mod tests {
             .await
             .unwrap();
 
-        // Create two duplicate trees
+        // Create two duplicate trees: the secondary is gone, the main is alive.
         let now = get_timestamp();
 
         let tree1 = Tree {
@@ -462,7 +468,7 @@ mod tests {
             height: Some(15.0),
             height_updated_at: now,
             updated_at: now,
-            state: TreeState::Alive,
+            state: TreeState::Gone,
             ..Default::default()
         };
 
@@ -483,7 +489,7 @@ mod tests {
             .unwrap();
 
         // Perform merge
-        let merged = service.merge_duplicates(10).await.unwrap();
+        let merged = run_auto_merge(&service, 10).await;
         assert_eq!(merged.len(), 1);
         assert_eq!(merged[0], (2, 1));
 
@@ -503,7 +509,7 @@ mod tests {
         assert_eq!(comments.len(), 1);
         assert_eq!(comments[0].message, "Secondary comment");
 
-        // --- Additional Test: Main tree is "gone" and secondary is "Unknown" species ---
+        // --- Additional Test: the alive tree becomes the main tree ---
         db.execute_sql("DELETE FROM trees", &[]).await.unwrap();
 
         let tree3 = Tree {
@@ -529,11 +535,223 @@ mod tests {
         service.trees.add(&tree3).await.unwrap();
         service.trees.add(&tree4).await.unwrap();
 
-        service.merge_duplicates(10).await.unwrap();
+        let merged = run_auto_merge(&service, 10).await;
+        assert_eq!(merged, vec![(3, 4)]);
 
-        let main2 = service.trees.get(3).await.unwrap().unwrap();
+        let main2 = service.trees.get(4).await.unwrap().unwrap();
         assert_eq!(main2.state, TreeState::Alive); // Should take alive from tree4, ignoring "gone" from tree3
         assert_eq!(main2.species, "Valid Species"); // Should take "Valid Species" from tree3, ignoring "Unknown" from tree4
+
+        let secondary2 = service.trees.get(3).await.unwrap().unwrap();
+        assert_eq!(secondary2.state, TreeState::Replaced);
+        assert_eq!(secondary2.replaced_by, Some(4));
+    }
+
+    #[tokio::test]
+    async fn test_merge_pair_uses_target_as_main() {
+        let (service, db) = setup().await;
+
+        db.execute_sql("DELETE FROM trees", &[]).await.unwrap();
+
+        let now = get_timestamp();
+
+        let lower = Tree {
+            id: 5,
+            lat: 40.0,
+            lon: 44.0,
+            species: "Lower".to_string(),
+            state: TreeState::Alive,
+            updated_at: now,
+            ..Default::default()
+        };
+
+        let higher = Tree {
+            id: 10,
+            lat: 40.0,
+            lon: 44.0,
+            species: "Higher".to_string(),
+            state: TreeState::Alive,
+            updated_at: now,
+            ..Default::default()
+        };
+
+        service.trees.add(&lower).await.unwrap();
+        service.trees.add(&higher).await.unwrap();
+
+        // Manual candidates orient the lower id as the target.
+        let candidates = service
+            .find_manual_merge_candidates(DEFAULT_PROXIMITY_METERS)
+            .await
+            .unwrap();
+
+        assert_eq!(candidates.len(), 1);
+        assert_eq!(candidates[0].0.id, 10);
+        assert_eq!(candidates[0].1.id, 5);
+
+        let merged = service.merge_pair(10, 5).await.unwrap();
+        assert_eq!(merged, vec![(10, 5)]);
+
+        let main = service.trees.get(5).await.unwrap().unwrap();
+        assert_eq!(main.state, TreeState::Alive);
+
+        let secondary = service.trees.get(10).await.unwrap().unwrap();
+        assert_eq!(secondary.state, TreeState::Replaced);
+        assert_eq!(secondary.replaced_by, Some(5));
+    }
+
+    #[tokio::test]
+    async fn test_merge_pair_skips_replaced_endpoint() {
+        let (service, db) = setup().await;
+
+        db.execute_sql("DELETE FROM trees", &[]).await.unwrap();
+
+        let alive = Tree {
+            id: 1,
+            lat: 40.0,
+            lon: 44.0,
+            state: TreeState::Alive,
+            ..Default::default()
+        };
+
+        let replaced = Tree {
+            id: 2,
+            lat: 40.0,
+            lon: 44.0,
+            state: TreeState::Replaced,
+            replaced_by: Some(1),
+            ..Default::default()
+        };
+
+        service.trees.add(&alive).await.unwrap();
+        service.trees.add(&replaced).await.unwrap();
+
+        assert!(service.merge_pair(2, 1).await.unwrap().is_empty());
+        assert!(service.merge_pair(1, 2).await.unwrap().is_empty());
+
+        // Neither tree was modified.
+        assert_eq!(
+            service.trees.get(1).await.unwrap().unwrap().state,
+            TreeState::Alive
+        );
+        assert_eq!(
+            service.trees.get(2).await.unwrap().unwrap().state,
+            TreeState::Replaced
+        );
+    }
+
+    #[tokio::test]
+    async fn test_auto_merge_state_policy() {
+        let (service, db) = setup().await;
+
+        db.execute_sql("DELETE FROM trees", &[]).await.unwrap();
+
+        let states = [
+            (1, TreeState::Alive),
+            (2, TreeState::Gone),
+            (3, TreeState::Stump),
+            (4, TreeState::Dead),
+            (5, TreeState::Error),
+            (6, TreeState::Placeholder),
+            (7, TreeState::Unknown),
+            (8, TreeState::Replaced),
+        ];
+
+        for (id, state) in states {
+            service
+                .trees
+                .add(&Tree {
+                    id,
+                    lat: 40.0,
+                    lon: 44.0,
+                    state,
+                    ..Default::default()
+                })
+                .await
+                .unwrap();
+        }
+
+        let candidates = service
+            .find_auto_merge_candidates(DEFAULT_PROXIMITY_METERS)
+            .await
+            .unwrap();
+
+        let mut pairs: Vec<(u64, u64)> = candidates
+            .iter()
+            .map(|(from, to)| (from.id, to.id))
+            .collect();
+        pairs.sort();
+
+        assert_eq!(pairs, vec![(2, 1), (3, 1)]);
+
+        let excluded = [
+            TreeState::Dead,
+            TreeState::Error,
+            TreeState::Placeholder,
+            TreeState::Unknown,
+            TreeState::Replaced,
+        ];
+
+        for (from, to) in &candidates {
+            assert!(!excluded.contains(&from.state));
+            assert!(!excluded.contains(&to.state));
+        }
+    }
+
+    #[tokio::test]
+    async fn test_manual_merge_state_policy() {
+        let (service, db) = setup().await;
+
+        db.execute_sql("DELETE FROM trees", &[]).await.unwrap();
+
+        let states = [
+            (1, TreeState::Alive),
+            (2, TreeState::Alive),
+            (3, TreeState::Dead),
+            (4, TreeState::Error),
+            (5, TreeState::Placeholder),
+            (6, TreeState::Unknown),
+            (7, TreeState::Replaced),
+            (8, TreeState::Gone),
+            (9, TreeState::Stump),
+        ];
+
+        for (id, state) in states {
+            service
+                .trees
+                .add(&Tree {
+                    id,
+                    lat: 40.0,
+                    lon: 44.0,
+                    state,
+                    ..Default::default()
+                })
+                .await
+                .unwrap();
+        }
+
+        let candidates = service
+            .find_manual_merge_candidates(DEFAULT_PROXIMITY_METERS)
+            .await
+            .unwrap();
+
+        assert_eq!(candidates.len(), 1);
+        assert_eq!(candidates[0].0.id, 2);
+        assert_eq!(candidates[0].1.id, 1);
+
+        let excluded = [
+            TreeState::Dead,
+            TreeState::Error,
+            TreeState::Placeholder,
+            TreeState::Unknown,
+            TreeState::Replaced,
+            TreeState::Gone,
+            TreeState::Stump,
+        ];
+
+        for (from, to) in &candidates {
+            assert!(!excluded.contains(&from.state));
+            assert!(!excluded.contains(&to.state));
+        }
     }
 
     #[tokio::test]

@@ -16,26 +16,29 @@
 			<p>{pageState.error.description}</p>
 		{:else if pageState.data && pageState.data.duplicates.length > 0}
 			<p>
-				This page lists trees that have been identified as duplicates, sharing the same coordinates.
+				This page lists trees that have been identified as duplicates, located within a meter of
+				each other.
 			</p>
 			<p>
-				Please enrich the first tree with data from the duplicates, then remove them (mark as gone).
+				Please enrich the target tree with data from the duplicate, then remove it (mark as gone).
 			</p>
 
-			<dl>
-				{#each pageState.data.duplicates as dup}
-					<dt>{dup.lat}, {dup.lon}</dt>
-					<dd>
-						<ol>
-							{#each dup.tree_ids as id}
-								<li>
-									<a href={routes.mapPreview(id)}>{id}</a>
-								</li>
-							{/each}
-						</ol>
-					</dd>
-				{/each}
-			</dl>
+			<table>
+				<thead>
+					<tr>
+						<th>From</th>
+						<th>To</th>
+					</tr>
+				</thead>
+				<tbody>
+					{#each pageState.data.duplicates as dup}
+						<tr>
+							<td><a href={routes.mapPreview(dup.from_id)}>{dup.from_id}</a></td>
+							<td><a href={routes.mapPreview(dup.to_id)}>{dup.to_id}</a></td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
 		{:else}
 			<p>Congratulations, there are no duplicate trees!</p>
 		{/if}
@@ -43,7 +46,7 @@
 </Dialog>
 
 <style>
-	dl {
+	table {
 		font-family: monospace;
 	}
 </style>

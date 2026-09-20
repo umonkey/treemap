@@ -13,7 +13,7 @@ UPDATE users SET files_count = (SELECT COUNT(1) FROM files WHERE files.added_by 
 
 ## Duplicate Resolution
 
-The application can automatically identify and merge duplicate trees located at the same coordinates.
+The application can automatically identify and merge duplicate trees located within a meter of each other.
 
 To run the merge process:
 

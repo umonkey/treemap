@@ -270,9 +270,8 @@ export interface IExportFile {
 
 export type DuplicateList = {
 	duplicates: {
-		lat: number;
-		lon: number;
-		tree_ids: string[];
+		from_id: string;
+		to_id: string;
 	}[];
 };
 
