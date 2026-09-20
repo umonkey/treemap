@@ -331,8 +331,19 @@ export async function unlikeTree(id: string): Promise<IResponse<void>> {
 }
 
 export async function getDuplicates(): Promise<IResponse<DuplicateList>> {
-	const res = await request<DuplicateList>('GET', 'v1/duplicates');
-	return res;
+	return await request<DuplicateList>('GET', 'v1/duplicates', {
+		headers: getAuthHeaders()
+	});
+}
+
+export async function mergeDuplicates(src: string, dst: string): Promise<IResponse<void>> {
+	return await request<void>('POST', 'v1/duplicates/merge', {
+		body: JSON.stringify({ src, dst }),
+		headers: {
+			'Content-Type': 'application/json',
+			...getAuthHeaders()
+		}
+	});
 }
 
 export async function searchTrees(

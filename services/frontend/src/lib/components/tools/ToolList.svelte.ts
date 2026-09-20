@@ -27,6 +27,13 @@ export class ToolListLogic {
 			});
 		}
 
+		if (check('tree:delete')) {
+			list.push({
+				name: 'Merge duplicate trees',
+				href: '/tools/merge'
+			});
+		}
+
 		list.push({
 			name: 'Training',
 			href: '/learn'

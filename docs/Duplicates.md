@@ -4,13 +4,30 @@ This document describes how the automated duplicate tree resolution works in the
 
 ## Overview
 
-The resolution process identifies trees at the same geographical location (rounded to 7 decimal places) and merges them into a single record to maintain data integrity and prevent UI clutter.
+The resolution process identifies trees located within a meter of each other and links them to maintain data integrity and prevent UI clutter.
+
+Candidate discovery uses proximity-based clustering instead of exact coordinate matching. The default proximity is 1 meter. A dynamic grid cell size is derived from the bounding box of the candidate dataset, and each tree is compared against its own cell plus the eight adjacent cells (a 3x3 neighborhood).
+
+## Candidate discovery
+
+Two kinds of candidate pairs are produced:
+
+- Auto-merge: a tree in the `gone` or `stump` state is paired with the closest `alive` tree within the proximity radius. The `alive` tree is always the merge target.
+- Manual-merge: an `alive` tree is paired with the closest other `alive` tree within the proximity radius. Unordered pairs are deduplicated, and the lower id is used as the target.
+
+The API returns `From` and `To` id pairs. `From` is the tree that gets merged away, and `To` is the tree that remains.
+
+## State policy
+
+Only `alive`, `gone`, and `stump` trees participate in auto-merge. `dead` trees are intentionally left untouched because they are standing and awaiting removal. The `replaced`, `error`, `placeholder`, and `unknown` states are excluded from both auto-merge and manual-merge.
 
 ## Merging Logic
 
-The process follows these rules when resolving a group of duplicate trees:
+The CLI currently only links trees: it marks the old tree as `replaced` and points its `replaced_by` to the surviving tree, without moving any properties or associated data. The property-merging rules below are retained in the code but are not invoked by the CLI at the moment.
 
-- Main tree selection: the tree with the lowest ID (earliest created) is chosen as the primary record. All other trees in the group are considered secondary.
+The process follows these rules when resolving a pair of duplicate trees:
+
+- Main tree selection: auto-merge always uses the `alive` tree as the main record, regardless of id. Manual pairs use the lower id as the target. All other trees are considered secondary.
 - Scalar property merging: for properties like height, circumference, and diameter, the value from the record with the latest update timestamp for that specific field is used.
 - State exclusion: when merging the tree state, "gone" is ignored. This prevents the system from marking a physical tree as missing just because a duplicate record was deleted on the OSM side.
 - Species exclusion: taxonomic names that are "Unknown" or contain "unknown" (case-insensitive) are ignored if a more specific name is available in the group.
@@ -38,7 +55,7 @@ Secondary trees are not deleted from the database. Instead:
 
 ## OSM Node Synchronization
 
-Local merging uses a "lowest ID first" heuristic, which may not always match decisions made by humans directly on OpenStreetMap. For example, a user might delete node A (our main tree) as a duplicate of node B (one of our secondary trees).
+Local merging uses an "alive tree first" heuristic, which may not always match decisions made by humans directly on OpenStreetMap. For example, a user might delete node A (our main tree) as a duplicate of node B (one of our secondary trees).
 
 To resolve this, the system provides a remapping mechanism:
 
@@ -48,13 +65,21 @@ To resolve this, the system provides a remapping mechanism:
 
 ## CLI Usage
 
-To run the duplicate resolution, use the following command:
+To link duplicate trees, use the following command:
 
 ```bash
-treemap merge-duplicates [limit]
+treemap merge-replaced-trees [limit]
 ```
 
-The limit argument is optional and defaults to 10 duplicate groups per run.
+The limit argument is optional and defaults to 10 candidate pairs per run. The command requests auto-merge candidates and links them one by one: the old tree is marked as `replaced` and its `replaced_by` points to the surviving tree. No properties or associated data are moved.
+
+By default the command performs a dry run and only lists the pairs it would link. Pass `--confirm` to actually link them:
+
+```bash
+treemap merge-replaced-trees --confirm [limit]
+```
+
+If a tree has already been replaced, the command fails.
 
 To fix OSM link mismatches after an OSM sync:
 

@@ -30,9 +30,9 @@
 	<div class="heatmap">
 		<table>
 			<tbody>
-				{#each formatData(data) as row, rowIndex}
+				{#each days as day}
 					<tr>
-						<td class="dow"><span>{days[rowIndex]}</span></td>
+						<td class="dow"><span>{day}</span></td>
 					</tr>
 				{/each}
 			</tbody>
@@ -41,7 +41,7 @@
 		<div class="main">
 			<table>
 				<tbody>
-					{#each formatData(data) as row, rowIndex}
+					{#each formatData(data) as row}
 						<tr>
 							{#each row as cell}
 								<td class="cell" title={cell.title}>

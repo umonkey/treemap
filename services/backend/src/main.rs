@@ -19,7 +19,7 @@ fn usage() {
     println!("  dispatch-panoramas      -- process draft panoramas");
     println!("  dispatch-queue          -- run the queue consumer daemon");
     println!("  export-database         -- create an anonymized data export");
-    println!("  merge-duplicates [N]    -- automated duplicate tree resolution");
+    println!("  merge-replaced-trees [N] -- link duplicate trees as replaced");
     println!("  migrate-timestamps      -- backfill update timestamps");
     println!("  osm-pull                -- get new trees from OpenStreetMap");
     println!("  osm-push                -- send new trees to OSM");
@@ -84,8 +84,8 @@ async fn main() -> std::io::Result<()> {
             refresh_panorama_stats_command().await;
             return Ok(());
         }
-        "merge-duplicates" => {
-            merge_duplicates_command().await;
+        "merge-replaced-trees" => {
+            merge_replaced_trees_command().await;
             return Ok(());
         }
         "migrate-timestamps" => {

@@ -76,5 +76,7 @@ export const routes = {
 	privacy: () => '/privacy',
 	toolsRange: () => '/tools/range',
 	toolsRangeEnter: () => '/tools/range/enter',
-	toolsRangeSubmit: () => '/tools/range/submit'
+	toolsRangeSubmit: () => '/tools/range/submit',
+	toolsMerge: () => '/tools/merge',
+	toolsMergePair: (src: string, dst: string) => `/tools/merge/${src}/${dst}`
 };
