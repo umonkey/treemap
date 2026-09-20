@@ -335,6 +335,16 @@ export async function getDuplicates(): Promise<IResponse<DuplicateList>> {
 	return res;
 }
 
+export async function mergeDuplicates(src: string, dst: string): Promise<IResponse<void>> {
+	return await request<void>('POST', 'v1/duplicates/merge', {
+		body: JSON.stringify({ src, dst }),
+		headers: {
+			'Content-Type': 'application/json',
+			...getAuthHeaders()
+		}
+	});
+}
+
 export async function searchTrees(
 	query: string,
 	zoom?: number,

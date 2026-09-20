@@ -40,6 +40,7 @@
 						<th>#</th>
 						<th>From</th>
 						<th>To</th>
+						<th>Actions</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -48,6 +49,9 @@
 							<td>{index + 1}</td>
 							<td><a href={routes.mapPreview(dup.from_id)}>{dup.from_id}</a></td>
 							<td><a href={routes.mapPreview(dup.to_id)}>{dup.to_id}</a></td>
+							<td>
+								<a href={routes.toolsMergePair(dup.from_id, dup.to_id)}>Merge</a>
+							</td>
 						</tr>
 					{/each}
 				</tbody>
