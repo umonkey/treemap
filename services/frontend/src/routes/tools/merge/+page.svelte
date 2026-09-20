@@ -37,13 +37,15 @@
 			<table>
 				<thead>
 					<tr>
+						<th>#</th>
 						<th>From</th>
 						<th>To</th>
 					</tr>
 				</thead>
 				<tbody>
-					{#each pageState.data.duplicates as dup}
+					{#each pageState.data.duplicates as dup, index}
 						<tr>
+							<td>{index + 1}</td>
 							<td><a href={routes.mapPreview(dup.from_id)}>{dup.from_id}</a></td>
 							<td><a href={routes.mapPreview(dup.to_id)}>{dup.to_id}</a></td>
 						</tr>
@@ -71,5 +73,18 @@
 
 	table {
 		font-family: monospace;
+		border-spacing: 0.5rem;
+		margin: 0 auto 0 0;
+		width: 100%;
+
+		th,
+		td {
+			text-align: left;
+		}
+
+		th:nth-child(1),
+		td:nth-child(1) {
+			text-align: right;
+		}
 	}
 </style>
