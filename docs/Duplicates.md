@@ -4,7 +4,7 @@ This document describes how the automated duplicate tree resolution works in the
 
 ## Overview
 
-The resolution process identifies trees located within a meter of each other and merges them into a single record to maintain data integrity and prevent UI clutter.
+The resolution process identifies trees located within a meter of each other and links them to maintain data integrity and prevent UI clutter.
 
 Candidate discovery uses proximity-based clustering instead of exact coordinate matching. The default proximity is 1 meter. A dynamic grid cell size is derived from the bounding box of the candidate dataset, and each tree is compared against its own cell plus the eight adjacent cells (a 3x3 neighborhood).
 
@@ -22,6 +22,8 @@ The API returns `From` and `To` id pairs. `From` is the tree that gets merged aw
 Only `alive`, `gone`, and `stump` trees participate in auto-merge. `dead` trees are intentionally left untouched because they are standing and awaiting removal. The `replaced`, `error`, `placeholder`, and `unknown` states are excluded from both auto-merge and manual-merge.
 
 ## Merging Logic
+
+The CLI currently only links trees: it marks the old tree as `replaced` and points its `replaced_by` to the surviving tree, without moving any properties or associated data. The property-merging rules below are retained in the code but are not invoked by the CLI at the moment.
 
 The process follows these rules when resolving a pair of duplicate trees:
 
@@ -63,19 +65,21 @@ To resolve this, the system provides a remapping mechanism:
 
 ## CLI Usage
 
-To run the duplicate resolution, use the following command:
+To link duplicate trees, use the following command:
 
 ```bash
-treemap merge-duplicates [limit]
+treemap merge-replaced-trees [limit]
 ```
 
-The limit argument is optional and defaults to 10 candidate pairs per run. The command requests auto-merge candidates and merges them one by one.
+The limit argument is optional and defaults to 10 candidate pairs per run. The command requests auto-merge candidates and links them one by one: the old tree is marked as `replaced` and its `replaced_by` points to the surviving tree. No properties or associated data are moved.
 
-By default the command performs a dry run and only lists the pairs it would merge. Pass `--confirm` to actually perform the merges:
+By default the command performs a dry run and only lists the pairs it would link. Pass `--confirm` to actually link them:
 
 ```bash
-treemap merge-duplicates --confirm [limit]
+treemap merge-replaced-trees --confirm [limit]
 ```
+
+If a tree has already been replaced, the command fails.
 
 To fix OSM link mismatches after an OSM sync:
 

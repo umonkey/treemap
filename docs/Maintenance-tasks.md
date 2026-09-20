@@ -18,7 +18,7 @@ The application can automatically identify and merge duplicate trees located wit
 To run the merge process:
 
 ```bash
-treemap merge-duplicates --confirm [limit]
+treemap merge-replaced-trees --confirm [limit]
 ```
 
 Without `--confirm` the command only lists the pairs it would merge.

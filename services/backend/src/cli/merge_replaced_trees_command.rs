@@ -1,7 +1,7 @@
 use crate::services::tree_merger::{TreeMergerService, DEFAULT_PROXIMITY_METERS};
 use crate::services::*;
 
-pub async fn merge_duplicates_command() {
+pub async fn merge_replaced_trees_command() {
     let args: Vec<String> = std::env::args().collect();
     let confirm = args.iter().any(|arg| arg == "--confirm");
 
@@ -41,14 +41,13 @@ pub async fn merge_duplicates_command() {
         return;
     }
 
-    let mut merged_pairs = Vec::new();
-
     for (from, to) in candidates {
-        let pairs = merger
-            .merge_pair(from.id, to.id)
+        merger
+            .link_replaced_tree(from.id, to.id)
             .await
-            .expect("Error merging duplicates.");
-        merged_pairs.extend(pairs);
+            .expect("Error linking replaced tree.");
+
+        println!("Tree {} marked as replaced by {}.", from.id, to.id);
     }
 
     state
@@ -56,8 +55,4 @@ pub async fn merge_duplicates_command() {
         .commit()
         .await
         .expect("Error committing transaction.");
-
-    for (old_id, new_id) in merged_pairs {
-        println!("Tree {} merged into {}.", old_id, new_id);
-    }
 }

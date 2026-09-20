@@ -95,9 +95,46 @@ impl TreeMergerService {
         Ok(pairs)
     }
 
+    /// Links a tree to its replacement without merging any properties.
+    ///
+    /// Marks the `from` tree as replaced and points its `replaced_by` to `to`.
+    /// Fails if the tree has already been replaced.
+    pub async fn link_replaced_tree(&self, from_id: u64, to_id: u64) -> Result<()> {
+        let trees = self.trees.get_multiple(&[from_id, to_id]).await?;
+
+        let Some(from) = trees.iter().find(|t| t.id == from_id) else {
+            return Err(Error::TreeNotFound);
+        };
+
+        let Some(to) = trees.iter().find(|t| t.id == to_id) else {
+            return Err(Error::TreeNotFound);
+        };
+
+        if from.state == TreeState::Replaced || from.replaced_by.is_some() {
+            return Err(Error::BadRequestMessage(format!(
+                "Tree {from_id} is already replaced."
+            )));
+        }
+
+        if to.state != TreeState::Alive {
+            return Err(Error::BadRequestMessage(format!(
+                "Tree {to_id} is not alive."
+            )));
+        }
+
+        self.trees
+            .mark_as_merged(from_id, to_id, self.bot_user_id)
+            .await?;
+
+        info!("Tree {} marked as replaced by {}.", from_id, to_id);
+
+        Ok(())
+    }
+
     /// Merges the `from` tree into the `to` tree.
     ///
     /// The source must not already be replaced, and the target must be alive.
+    #[allow(dead_code)]
     pub async fn merge_pair(&self, from_id: u64, to_id: u64) -> Result<Vec<(u64, u64)>> {
         let trees = self.trees.get_multiple(&[from_id, to_id]).await?;
 
@@ -598,6 +635,44 @@ mod tests {
             service.trees.get(2).await.unwrap().unwrap().state,
             TreeState::Replaced
         );
+    }
+
+    #[tokio::test]
+    async fn test_link_replaced_tree() {
+        let (service, db) = setup().await;
+
+        db.execute_sql("DELETE FROM trees", &[]).await.unwrap();
+
+        let alive = Tree {
+            id: 1,
+            lat: 40.0,
+            lon: 44.0,
+            state: TreeState::Alive,
+            ..Default::default()
+        };
+
+        let gone = Tree {
+            id: 2,
+            lat: 40.0,
+            lon: 44.0,
+            state: TreeState::Gone,
+            ..Default::default()
+        };
+
+        service.trees.add(&alive).await.unwrap();
+        service.trees.add(&gone).await.unwrap();
+
+        service.link_replaced_tree(2, 1).await.unwrap();
+
+        let linked = service.trees.get(2).await.unwrap().unwrap();
+        assert_eq!(linked.state, TreeState::Replaced);
+        assert_eq!(linked.replaced_by, Some(1));
+
+        // Linking the same tree again must fail.
+        assert!(service.link_replaced_tree(2, 1).await.is_err());
+
+        // Linking to a tree that is not alive must fail.
+        assert!(service.link_replaced_tree(1, 2).await.is_err());
     }
 
     #[tokio::test]
