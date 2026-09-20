@@ -1,15 +1,26 @@
 <script lang="ts">
-	import Dialog from '$lib/components/layout/Dialog.svelte';
+	import { untrack } from 'svelte';
+	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
 	import { routes } from '$lib/routes';
-	import { pageState } from './page.svelte';
+	import { PageState } from './page.svelte.ts';
+
+	const pageState = new PageState();
 
 	$effect(() => {
-		pageState.reload();
+		const cleanup = pageState.setup();
+		untrack(() => pageState.reload());
+		return cleanup;
 	});
 </script>
 
-<Dialog title="Duplicate Trees">
-	<div>
+<svelte:head>
+	<title>Merge duplicate trees</title>
+</svelte:head>
+
+<AuthWrapper>
+	<div class="merge">
+		<h1>Merge duplicate trees</h1>
+
 		{#if pageState.loading}
 			<p>Checking...</p>
 		{:else if pageState.error}
@@ -43,9 +54,21 @@
 			<p>Congratulations, there are no duplicate trees!</p>
 		{/if}
 	</div>
-</Dialog>
+</AuthWrapper>
 
 <style>
+	.merge {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+
+	h1 {
+		margin: 0;
+		font-size: 1.5rem;
+		font-weight: 500;
+	}
+
 	table {
 		font-family: monospace;
 	}

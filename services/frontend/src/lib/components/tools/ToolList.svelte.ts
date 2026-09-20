@@ -28,6 +28,11 @@ export class ToolListLogic {
 		}
 
 		list.push({
+			name: 'Merge duplicate trees',
+			href: '/tools/merge'
+		});
+
+		list.push({
 			name: 'Training',
 			href: '/learn'
 		});

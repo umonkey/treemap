@@ -23,7 +23,6 @@
 
 	<ul>
 		<li><a href={routes.statsMismatch()}>Trees with unknown species</a></li>
-		<li><a href="/duplicates">Trees with similar coordinates</a></li>
 	</ul>
 </Dialog>
 
