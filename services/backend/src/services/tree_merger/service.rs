@@ -134,7 +134,6 @@ impl TreeMergerService {
     /// Merges the `from` tree into the `to` tree.
     ///
     /// The source must not already be replaced, and the target must be alive.
-    #[allow(dead_code)]
     pub async fn merge_pair(&self, from_id: u64, to_id: u64) -> Result<Vec<(u64, u64)>> {
         let trees = self.trees.get_multiple(&[from_id, to_id]).await?;
 

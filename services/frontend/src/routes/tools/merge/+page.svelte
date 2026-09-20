@@ -17,7 +17,7 @@
 	<title>Merge duplicate trees</title>
 </svelte:head>
 
-<AuthWrapper>
+<AuthWrapper permission="tree:delete">
 	<div class="merge">
 		<h1>Merge duplicate trees</h1>
 
