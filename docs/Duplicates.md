@@ -71,6 +71,12 @@ treemap merge-duplicates [limit]
 
 The limit argument is optional and defaults to 10 candidate pairs per run. The command requests auto-merge candidates and merges them one by one.
 
+By default the command performs a dry run and only lists the pairs it would merge. Pass `--confirm` to actually perform the merges:
+
+```bash
+treemap merge-duplicates --confirm [limit]
+```
+
 To fix OSM link mismatches after an OSM sync:
 
 ```bash

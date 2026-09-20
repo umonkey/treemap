@@ -1,12 +1,10 @@
-use super::clustering::{
-    bbox_of, clusterize, filter_by_states, find_candidates, get_clustering_size,
-};
+use super::clustering::{clusterize, filter_by_states, find_candidates};
 use crate::domain::comment::CommentRepository;
 use crate::domain::like::LikeRepository;
 use crate::domain::observation::ObservationRepository;
 use crate::domain::osm::OsmTreeRepository;
 use crate::domain::prop::{PropRecord, PropRepository};
-use crate::domain::tree::{Tree, TreeLocation, TreeRepository, TreeState};
+use crate::domain::tree::{TreeLocation, TreeRepository, TreeState};
 use crate::domain::tree_image::TreeImageRepository;
 use crate::services::{Context, Injectable};
 use crate::types::*;
@@ -40,18 +38,10 @@ impl TreeMergerService {
             &[TreeState::Alive, TreeState::Gone, TreeState::Stump],
         );
 
-        let Some(bbox) = bbox_of(&trees) else {
-            return Ok(Vec::new());
-        };
-
-        let cell_size = get_clustering_size(&bbox, proximity);
-        let grid = clusterize(&trees, &bbox, cell_size);
+        let clustered = clusterize(trees, proximity);
 
         let candidates = find_candidates(
-            &trees,
-            &grid,
-            &bbox,
-            cell_size,
+            &clustered,
             proximity,
             &[TreeState::Gone, TreeState::Stump],
             &[TreeState::Alive],
@@ -72,18 +62,10 @@ impl TreeMergerService {
         let trees = self.trees.get_lightweight_locations().await?;
         let trees = filter_by_states(trees, &[TreeState::Alive]);
 
-        let Some(bbox) = bbox_of(&trees) else {
-            return Ok(Vec::new());
-        };
-
-        let cell_size = get_clustering_size(&bbox, proximity);
-        let grid = clusterize(&trees, &bbox, cell_size);
+        let clustered = clusterize(trees, proximity);
 
         let candidates = find_candidates(
-            &trees,
-            &grid,
-            &bbox,
-            cell_size,
+            &clustered,
             proximity,
             &[TreeState::Alive],
             &[TreeState::Alive],
@@ -113,28 +95,32 @@ impl TreeMergerService {
         Ok(pairs)
     }
 
-    /// Merges the given secondary trees into the main tree.
-    async fn merge_group(&self, main_id: u64, secondary_ids: &[u64]) -> Result<Vec<(u64, u64)>> {
-        let mut ids = vec![main_id];
-        ids.extend_from_slice(secondary_ids);
+    /// Merges the `from` tree into the `to` tree.
+    ///
+    /// The source must not already be replaced, and the target must be alive.
+    pub async fn merge_pair(&self, from_id: u64, to_id: u64) -> Result<Vec<(u64, u64)>> {
+        let trees = self.trees.get_multiple(&[from_id, to_id]).await?;
 
-        let trees = self.trees.get_multiple(&ids).await?;
-
-        let Some(main_tree) = trees.iter().find(|t| t.id == main_id).cloned() else {
+        let Some(from) = trees.iter().find(|t| t.id == from_id).cloned() else {
             return Ok(Vec::new());
         };
 
-        let mut secondary_trees: Vec<Tree> =
-            trees.iter().filter(|t| t.id != main_id).cloned().collect();
-        secondary_trees.sort_by_key(|t| t.id);
+        let Some(to) = trees.iter().find(|t| t.id == to_id).cloned() else {
+            return Ok(Vec::new());
+        };
 
-        let mut merged_tree = main_tree.clone();
+        if from.state == TreeState::Replaced || to.state != TreeState::Alive {
+            return Ok(Vec::new());
+        }
+
+        let all = vec![to.clone(), from.clone()];
+        let mut merged_tree = to.clone();
 
         // (4) Should merge all props, latest takes precedence
         // scalar props: species, height, circumference, diameter, notes, year, address
 
         // Collect all trees sorted by updated_at DESC to find latest values
-        let mut latest_first = trees.clone();
+        let mut latest_first = all.clone();
         latest_first.sort_by_key(|b| std::cmp::Reverse(b.updated_at));
 
         // Merge species
@@ -153,7 +139,7 @@ impl TreeMergerService {
         }
 
         // Merge height
-        if let Some(t) = trees
+        if let Some(t) = all
             .iter()
             .filter(|t| t.height.is_some() && t.height.unwrap_or(0.0) > 0.0)
             .max_by_key(|t| t.height_updated_at)
@@ -163,7 +149,7 @@ impl TreeMergerService {
         }
 
         // Merge circumference
-        if let Some(t) = trees
+        if let Some(t) = all
             .iter()
             .filter(|t| t.circumference.is_some() && t.circumference.unwrap_or(0.0) > 0.0)
             .max_by_key(|t| t.circumference_updated_at)
@@ -173,7 +159,7 @@ impl TreeMergerService {
         }
 
         // Merge diameter
-        if let Some(t) = trees
+        if let Some(t) = all
             .iter()
             .filter(|t| t.diameter.is_some() && t.diameter.unwrap_or(0.0) > 0.0)
             .max_by_key(|t| t.diameter_updated_at)
@@ -204,9 +190,8 @@ impl TreeMergerService {
         }
 
         // Merge metadata updated_at
-        merged_tree.images_updated_at =
-            trees.iter().map(|t| t.images_updated_at).max().unwrap_or(0);
-        merged_tree.observations_updated_at = trees
+        merged_tree.images_updated_at = all.iter().map(|t| t.images_updated_at).max().unwrap_or(0);
+        merged_tree.observations_updated_at = all
             .iter()
             .map(|t| t.observations_updated_at)
             .max()
@@ -214,7 +199,7 @@ impl TreeMergerService {
 
         // Merge thumbnail_id: if main has none, take latest available
         if merged_tree.thumbnail_id.is_none() {
-            if let Some(t) = trees
+            if let Some(t) = all
                 .iter()
                 .filter(|t| t.thumbnail_id.is_some())
                 .max_by_key(|t| t.images_updated_at)
@@ -226,85 +211,61 @@ impl TreeMergerService {
         // Update main tree with merged values
         self.trees.update(&merged_tree, self.bot_user_id).await?;
 
-        let mut merged_pairs = Vec::new();
+        // (5) Should move all photos into the main tree
+        self.files.reassign_all(from.id, to.id).await?;
 
-        for secondary in &secondary_trees {
-            // (5) Should move all photos into the main tree
-            self.files.reassign_all(secondary.id, main_tree.id).await?;
+        // Move comments
+        self.comments.reassign_all(from.id, to.id).await?;
 
-            // Move comments
-            self.comments
-                .reassign_all(secondary.id, main_tree.id)
-                .await?;
+        // Move likes
+        self.likes.reassign_all(from.id, to.id).await?;
 
-            // Move likes
-            self.likes.reassign_all(secondary.id, main_tree.id).await?;
+        // Move observations
+        self.observations.reassign_all(from.id, to.id).await?;
 
-            // Move observations
-            self.observations
-                .reassign_all(secondary.id, main_tree.id)
-                .await?;
+        // Move props history
+        let secondary_props = self.props.find_by_tree(from.id).await?;
 
-            // Move props history
-            let secondary_props = self.props.find_by_tree(secondary.id).await?;
+        let prop_ids_to_move: Vec<u64> = secondary_props
+            .into_iter()
+            .filter(|p| {
+                if EXCLUDED_MERGE_PROPS.contains(&p.name.as_str()) {
+                    return false;
+                }
 
-            let prop_ids_to_move: Vec<u64> = secondary_props
-                .into_iter()
-                .filter(|p| {
-                    if EXCLUDED_MERGE_PROPS.contains(&p.name.as_str()) {
-                        return false;
-                    }
+                if p.name == "state" && p.value == TreeState::Replaced.as_str() {
+                    return false;
+                }
 
-                    if p.name == "state" && p.value == TreeState::Replaced.as_str() {
-                        return false;
-                    }
+                true
+            })
+            .map(|p| p.id)
+            .collect();
 
-                    true
-                })
-                .map(|p| p.id)
-                .collect();
+        self.props.update_tree_id(prop_ids_to_move, to.id).await?;
 
-            self.props
-                .update_tree_id(prop_ids_to_move, main_tree.id)
-                .await?;
+        // Add audit trail entry
+        self.props
+            .add(&PropRecord {
+                tree_id: to.id,
+                name: "merged_from".to_string(),
+                value: from.id.to_string(),
+                added_by: self.bot_user_id,
+                ..Default::default()
+            })
+            .await?;
 
-            // Add audit trail entry
-            self.props
-                .add(&PropRecord {
-                    tree_id: main_tree.id,
-                    name: "merged_from".to_string(),
-                    value: secondary.id.to_string(),
-                    added_by: self.bot_user_id,
-                    ..Default::default()
-                })
-                .await?;
+        // (6) Should mark merged trees as replaced, with replaced_by pointing to the new tree.
+        self.trees
+            .mark_as_merged(from.id, to.id, self.bot_user_id)
+            .await?;
 
-            // (6) Should mark merged trees as replaced, with replaced_by pointing to the new tree.
-            self.trees
-                .mark_as_merged(secondary.id, main_tree.id, self.bot_user_id)
-                .await?;
-
-            info!("Tree {} merged into {}.", secondary.id, main_tree.id);
-
-            merged_pairs.push((secondary.id, main_tree.id));
-        }
+        info!("Tree {} merged into {}.", from.id, to.id);
 
         // Recalculate stats for the main tree
-        self.trees.recalculate_stats(main_tree.id).await?;
+        self.trees.recalculate_stats(to.id).await?;
 
-        Ok(merged_pairs)
-    }
-
-    /// Merges a single pair of trees, skipping pairs where either endpoint has
-    /// already been replaced.
-    pub async fn merge_pair(&self, from_id: u64, to_id: u64) -> Result<Vec<(u64, u64)>> {
-        let trees = self.trees.get_multiple(&[from_id, to_id]).await?;
-
-        if trees.iter().any(|t| t.state == TreeState::Replaced) {
-            return Ok(Vec::new());
-        }
-
-        self.merge_group(to_id, &[from_id]).await
+        Ok(vec![(from.id, to.id)])
     }
 
     pub async fn remap_osm_duplicates(&self) -> Result<Vec<(u64, u64)>> {

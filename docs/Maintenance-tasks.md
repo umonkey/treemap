@@ -18,8 +18,10 @@ The application can automatically identify and merge duplicate trees located wit
 To run the merge process:
 
 ```bash
-treemap merge-duplicates [limit]
+treemap merge-duplicates --confirm [limit]
 ```
+
+Without `--confirm` the command only lists the pairs it would merge.
 
 After merging, some local trees might be linked to OpenStreetMap nodes that were deleted on the OSM side. To fix these links, run:
 

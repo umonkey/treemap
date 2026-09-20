@@ -2,16 +2,18 @@ use crate::services::tree_merger::{TreeMergerService, DEFAULT_PROXIMITY_METERS};
 use crate::services::*;
 
 pub async fn merge_duplicates_command() {
-    let limit: u64 = match std::env::args().nth(2) {
-        Some(value) => match value.parse() {
-            Ok(limit) => limit,
-            Err(_) => {
-                println!("Error: limit must be a number.");
-                return;
-            }
-        },
-        None => 10,
-    };
+    let args: Vec<String> = std::env::args().collect();
+    let confirm = args.iter().any(|arg| arg == "--confirm");
+
+    let limit: u64 = args
+        .iter()
+        .skip(2)
+        .find_map(|arg| arg.parse().ok())
+        .unwrap_or(10);
+
+    if !confirm {
+        println!("Use --confirm to actually merge trees, otherwise just listing them.");
+    }
 
     let state = AppState::new()
         .await
@@ -29,9 +31,19 @@ pub async fn merge_duplicates_command() {
         .await
         .expect("Error finding duplicate candidates.");
 
+    let candidates: Vec<_> = candidates.into_iter().take(limit as usize).collect();
+
+    if !confirm {
+        for (from, to) in candidates {
+            println!("Would merge tree {} into {}.", from.id, to.id);
+        }
+
+        return;
+    }
+
     let mut merged_pairs = Vec::new();
 
-    for (from, to) in candidates.into_iter().take(limit as usize) {
+    for (from, to) in candidates {
         let pairs = merger
             .merge_pair(from.id, to.id)
             .await
