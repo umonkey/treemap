@@ -21,6 +21,15 @@ impl OutboxDispatcher {
     pub async fn run(self) {
         log::info!("OutboxDispatcher running daemon loop.");
 
+        match self.outbox.recover_stale_processing().await {
+            Ok(n) if n > 0 => log::warn!("Recovered {} stale processing outbox message(s).", n),
+            Ok(_) => {}
+            Err(e) => log::error!(
+                "Failed to recover stale processing outbox messages: {:?}",
+                e
+            ),
+        }
+
         loop {
             if let Err(e) = self.dispatch_once().await {
                 log::error!("Error in OutboxDispatcher tick: {:?}", e);
@@ -48,10 +57,19 @@ impl OutboxDispatcher {
             );
 
             let urls = msg.attachment_urls();
-            let send_res = self
-                .telegram
-                .send_message(msg.chat_id, msg.topic_id, &msg.text, &urls)
-                .await;
+            let telegram = Arc::clone(&self.telegram);
+            let chat_id = msg.chat_id;
+            let topic_id = msg.topic_id;
+            let text = msg.text.clone();
+
+            let send_res = match tokio::spawn(async move {
+                telegram.send_message(chat_id, topic_id, &text, &urls).await
+            })
+            .await
+            {
+                Ok(res) => res,
+                Err(join_err) => Err(anyhow::anyhow!("telegram send task failed: {join_err}")),
+            };
 
             match send_res {
                 Ok(_) => {

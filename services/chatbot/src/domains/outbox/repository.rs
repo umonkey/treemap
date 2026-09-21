@@ -127,6 +127,17 @@ impl OutboxRepository {
         Ok(messages)
     }
 
+    pub async fn recover_stale_processing(&self) -> anyhow::Result<u64> {
+        let conn = self.db.connect().await?;
+        let sql = "UPDATE chatbot_outbox
+                   SET status = 'pending', next_retry_at = unixepoch()
+                   WHERE status = 'processing'";
+        let affected = conn
+            .execute(sql, params_from_iter(Vec::<Value>::new()))
+            .await?;
+        Ok(affected)
+    }
+
     pub async fn mark_sent(&self, id: i64) -> anyhow::Result<()> {
         let conn = self.db.connect().await?;
         let sql = "UPDATE chatbot_outbox SET status = 'sent', sent_at = unixepoch() WHERE id = ?";

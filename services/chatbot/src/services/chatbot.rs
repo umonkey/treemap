@@ -263,7 +263,7 @@ impl Chatbot {
         alert: &Alert,
         photo: &teloxide::types::PhotoSize,
     ) -> anyhow::Result<bool> {
-        let file = self.bot.get_file(&photo.file.id).await?;
+        let file = self.bot.get_file(photo.file.id.clone()).await?;
         let mut buffer = Vec::new();
         self.bot.download_file(&file.path, &mut buffer).await?;
 
