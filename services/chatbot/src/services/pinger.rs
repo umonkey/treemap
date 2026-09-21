@@ -56,7 +56,7 @@ impl AlertPinger {
 
             if let Err(e) = self
                 .outbox
-                .enqueue(alert.id, &alert.chat_id.to_string(), &text, None)
+                .enqueue(&alert.chat_id.to_string(), &text, None)
                 .await
             {
                 log::error!(

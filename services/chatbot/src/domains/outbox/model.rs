@@ -2,7 +2,6 @@
 #[allow(dead_code)]
 pub struct OutboxMessage {
     pub id: i64,
-    pub alert_id: i64,
     pub chat_id: i64,
     pub topic_id: Option<i64>,
     pub text: String,

@@ -114,11 +114,7 @@ impl AlertDispatcher {
             );
 
             for recipient in &self.recipients {
-                if let Err(e) = self
-                    .outbox
-                    .enqueue(alert.id, recipient, &text, attachments_opt)
-                    .await
-                {
+                if let Err(e) = self.outbox.enqueue(recipient, &text, attachments_opt).await {
                     log::error!(
                         "Failed to enqueue alert {} for recipient {}: {:?}",
                         alert.id,

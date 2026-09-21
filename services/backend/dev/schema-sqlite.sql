@@ -359,7 +359,6 @@ CREATE INDEX IF NOT EXISTS `idx_chatbot_alerts_photos_alert_id` ON `chatbot_aler
 
 CREATE TABLE IF NOT EXISTS `chatbot_outbox` (
     `id` INTEGER PRIMARY KEY AUTOINCREMENT,
-    `alert_id` INTEGER NOT NULL,
     `chat_id` INTEGER NOT NULL,
     `topic_id` INTEGER,
     `text` TEXT NOT NULL,
@@ -369,8 +368,7 @@ CREATE TABLE IF NOT EXISTS `chatbot_outbox` (
     `sent_at` INTEGER,
     `next_retry_at` INTEGER NOT NULL,
     `attempts` INTEGER NOT NULL DEFAULT 0,
-    `error_message` TEXT,
-    FOREIGN KEY (`alert_id`) REFERENCES `chatbot_alerts` (`id`) ON DELETE CASCADE
+    `error_message` TEXT
 );
 CREATE INDEX IF NOT EXISTS `idx_chatbot_outbox_status_retry` ON `chatbot_outbox` (`status`, `next_retry_at`);
 
