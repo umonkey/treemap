@@ -12,16 +12,14 @@ COPY Cargo.toml Cargo.lock ./
 
 # STEP 1: build only dependencies.
 RUN mkdir src && echo "fn main() {}" > src/main.rs
-RUN --mount=type=cache,target=/usr/local/cargo/registry \
-    cargo build --release
+RUN cargo build --release
 RUN rm -rf src
 
 # Now build the main application.
 COPY src src
 COPY locales locales
 RUN touch src/main.rs
-RUN --mount=type=cache,target=/usr/local/cargo/registry \
-    cargo build --release && \
+RUN cargo build --release && \
     cp target/release/chatbot /app/chatbot-bin
 
 

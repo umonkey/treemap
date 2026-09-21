@@ -48,9 +48,7 @@ jobs:
           context: services/caddy
           push: ${{ github.ref == 'refs/heads/master' }}
           tags: ghcr.io/umonkey/treemap-caddy:latest
-          cache-from: |
-            type=gha,scope=caddy
-            ghcr.io/umonkey/treemap-caddy:latest
+          cache-from: type=gha,scope=caddy
           cache-to: type=gha,mode=max,scope=caddy
 
       - name: Deploy to cloud.treemaps.app

@@ -37,7 +37,5 @@ jobs:
           context: services/extractor
           push: ${{ github.ref == 'refs/heads/master' }}
           tags: ghcr.io/umonkey/treemap-extractor:latest
-          cache-from: |
-            type=gha,scope=extractor
-            ghcr.io/umonkey/treemap-extractor:latest
+          cache-from: type=gha,scope=extractor
           cache-to: type=gha,mode=max,scope=extractor

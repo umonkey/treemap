@@ -31,8 +31,7 @@ COPY services/backend/Cargo.toml services/backend/Cargo.lock ./
 # STEP 1: build the backend.
 # Create a dummy main.rs to build only dependencies.
 RUN mkdir src && echo "fn main() {}" > src/main.rs
-RUN --mount=type=cache,target=/usr/local/cargo/registry \
-    cargo build --release
+RUN cargo build --release
 RUN rm -rf src
 
 # Now build the main application.
@@ -40,8 +39,7 @@ COPY services/backend/src src
 COPY services/backend/dev dev
 COPY services/backend/templates templates
 RUN touch src/main.rs
-RUN --mount=type=cache,target=/usr/local/cargo/registry \
-    cargo build --release && \
+RUN cargo build --release && \
     cp target/release/treemap /app/treemap-bin
 
 
@@ -53,8 +51,7 @@ FROM docker.io/library/node:22-bookworm AS frontend-builder
 WORKDIR /app
 COPY services/frontend/package*.json ./
 RUN corepack enable
-RUN --mount=type=cache,target=/root/.npm \
-    npm ci
+RUN npm ci
 COPY services/frontend/. .
 RUN npm run build
 

@@ -54,8 +54,10 @@ jobs:
           context: .
           push: ${{ github.ref == 'refs/heads/master' }}
           tags: ghcr.io/umonkey/treemap:latest
-          cache-from: type=gha,scope=treemap
-          cache-to: type=gha,mode=max,scope=treemap
+          cache-from: |
+            type=registry,ref=ghcr.io/umonkey/treemap:buildcache
+            type=gha,scope=treemap
+          cache-to: ${{ github.event_name == 'pull_request' && 'type=gha,scope=treemap,mode=max' || 'type=registry,ref=ghcr.io/umonkey/treemap:buildcache,mode=max' }}
 
       - name: Deploy to cloud.treemaps.app
         if: github.ref == 'refs/heads/master'
