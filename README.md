@@ -62,3 +62,12 @@ If you are into machine learning and computer vision, we would love some help on
 Manually adding trees is the most time consuming thing so far.
 We would like to use video records of streets from a car mounted camera, to automatically detect trees and add them to the OSM map.
 We have [a ticket](https://github.com/umonkey/treemap/issues/61) for this, please join.
+
+## Similar projects
+
+- [New York City Tree Map](https://www.nycgovparks.org/tree-map)
+- [London's Public Realm Trees](https://apps.london.gov.uk/public-realm-trees/explore)
+- [Melbourne's Urban Forest Visual](http://melbourneurbanforestvisual.com.au/)
+- [Berlin's Tree Map](https://www.giessdenkiez.de/map)
+
+Know more?  Tell us.
