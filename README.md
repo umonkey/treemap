@@ -69,5 +69,6 @@ We have [a ticket](https://github.com/umonkey/treemap/issues/61) for this, pleas
 - [London's Public Realm Trees](https://apps.london.gov.uk/public-realm-trees/explore)
 - [Melbourne's Urban Forest Visual](http://melbourneurbanforestvisual.com.au/)
 - [Berlin's Tree Map](https://www.giessdenkiez.de/map)
+- [Paris' Tree Map](https://opendata.paris.fr/explore/dataset/les-arbres/map/)
 
 Know more?  Tell us.
