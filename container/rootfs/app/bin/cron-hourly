@@ -13,7 +13,7 @@ bin/treemap osm-push-delete 100
 
 # Push new trees.
 # Temporarily disabled for investigation.
-#bin/treemap osm-push && curl -s -o /dev/null 'https://hc-ping.com/8117cd7c-3ca9-42d4-b80a-06ccbde3b4e6'
+bin/treemap osm-push && curl -s -o /dev/null 'https://hc-ping.com/8117cd7c-3ca9-42d4-b80a-06ccbde3b4e6'
 
 # Push updates to existing trees.
 #bin/treemap osm-push-changes
