@@ -51,7 +51,7 @@ Users can submit citizen feedback and remarkable sightings through a dedicated T
 
 The application includes an integrated Model Context Protocol (MCP) server that exposes the tree database to AI agents through standardized tools.
 
-- Implementation: uses the MCP specification over JSON-RPC.
+- Implementation: uses the MCP Streamable HTTP transport over JSON-RPC with dual-era protocol support.
 - Tools: provides tools like `list_tallest`, `list_widest`, and `list_streets`.
 - Data analysis: enables AI agents to perform complex queries and generate statistics about the tree population.
 - Sorting: the `list_streets` tool supports custom sorting by name, count, or completeness.

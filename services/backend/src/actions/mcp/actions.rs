@@ -1,63 +1,53 @@
 use crate::actions::mcp::schemas::*;
-use crate::services::mcp::McpService;
-use crate::services::{AppState, Injected};
-use actix_web::{post, web, HttpResponse, Responder};
-use log::{debug, error};
-use uuid::Uuid;
+use crate::services::mcp::{McpEra, McpService};
+use crate::services::Injected;
+use actix_web::{delete, get, post, web, HttpRequest, HttpResponse};
+use log::debug;
+use serde_json::Value;
 
-#[derive(serde::Deserialize)]
-pub struct MessageQuery {
-    pub session_id: Uuid,
-}
-
-#[post("/message")]
-pub async fn message_handler(
-    state: web::Data<AppState>,
-    mcp_service: Injected<McpService>,
-    query: web::Query<MessageQuery>,
+#[post("")]
+pub async fn mcp_handler(
+    req: HttpRequest,
     payload: web::Json<JsonRpcRequest>,
-) -> impl Responder {
-    let session_id = query.session_id;
-    debug!("Looking up MCP session: {}", session_id);
-    let sender = match state.mcp.get_sender(session_id).await {
-        Some(s) => {
-            debug!("Found MCP session: {}", session_id);
-            s
-        }
-        None => {
-            debug!("MCP session not found: {}", session_id);
-            return HttpResponse::NotFound().finish();
-        }
-    };
-
+    mcp_service: Injected<McpService>,
+) -> HttpResponse {
     let request = payload.into_inner();
-    debug!("Processing MCP message for session: {}", session_id);
-    let response = match mcp_service.handle_message(request).await {
-        Some(resp) => resp,
-        None => {
-            debug!(
-                "MCP notification received for session: {}, returning Accepted",
-                session_id
-            );
-            return HttpResponse::Accepted().finish();
-        }
-    };
+    let era = detect_era(&request);
+    let id = request.id.clone().unwrap_or(Value::Null);
 
-    let response_json = match serde_json::to_string(&response) {
-        Ok(j) => j,
-        Err(e) => {
-            error!("Failed to serialize MCP response: {}", e);
-            return HttpResponse::InternalServerError().finish();
-        }
-    };
+    debug!("MCP incoming method: {}, era: {:?}", request.method, era);
 
-    if let Err(e) = sender.send(response_json) {
-        error!(
-            "Failed to send MCP response to session {}: {}",
-            session_id, e
-        );
-        return HttpResponse::InternalServerError().finish();
+    if era == McpEra::Modern {
+        if !is_known_modern_method(&request.method) {
+            return HttpResponse::NotFound().json(JsonRpcResponse::error(
+                id,
+                METHOD_NOT_FOUND,
+                "Method not found",
+            ));
+        }
+
+        if let Err(response) =
+            validate_modern_headers(&id, &request.method, request.params.as_ref(), req.headers())
+        {
+            return HttpResponse::BadRequest().json(response);
+        }
     }
 
-    HttpResponse::Ok().finish()
+    match mcp_service.handle_message(request, era).await {
+        Some(response) => HttpResponse::Ok().json(response),
+        None => {
+            debug!("MCP notification accepted");
+            HttpResponse::Accepted().finish()
+        }
+    }
+}
+
+#[get("")]
+pub async fn mcp_get_not_allowed() -> HttpResponse {
+    HttpResponse::MethodNotAllowed().finish()
+}
+
+#[delete("")]
+pub async fn mcp_delete_not_allowed() -> HttpResponse {
+    HttpResponse::MethodNotAllowed().finish()
 }

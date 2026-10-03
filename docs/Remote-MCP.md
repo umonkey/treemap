@@ -4,11 +4,14 @@ The application includes a built-in remote Model Context Protocol (MCP) server t
 
 ## Architecture and Transport
 
-The remote MCP server adheres to the Model Context Protocol specification version `2024-11-05` and implements Server-Sent Events (SSE) combined with HTTP POST for bidirectional communication.
+The remote MCP server implements the Streamable HTTP transport over a single endpoint and supports both protocol eras for maximum client compatibility.
 
-- SSE transport endpoint: `GET /mcp` initiates a new session, sends an initial `endpoint` event containing the message dispatch URL (`/mcp/message?session_id=<uuid>`), and maintains a 15-second keep-alive heartbeat.
-- JSON-RPC message endpoint: `POST /mcp/message?session_id=<uuid>` receives JSON-RPC 2.0 requests (such as `initialize`, `ping`, `tools/list`, and `tools/call`) and returns synchronous JSON-RPC responses.
-- Session management: active sessions are tracked in memory and cleaned up automatically via drop handlers when the client disconnects.
+- Transport: Streamable HTTP with a single endpoint, `POST /mcp`. It returns `Content-Type: application/json` for requests and `202 Accepted` with an empty body for notifications.
+- Modern era: the server implements the `2026-07-28` revision, including per-request `_meta` version and capability data, `server/discover`, required `MCP-Protocol-Version`, `Mcp-Method`, and `Mcp-Name` request headers, `resultType` on every result, and `ttlMs` plus `cacheScope` cache hints on list results.
+- Legacy era: the server answers `initialize` and `notifications/initialized` for the `2025-11-25`, `2025-06-18`, and `2025-03-26` revisions.
+- Stateless: the server is fully stateless, mints no `Mcp-Session-Id`, and keeps no server-side session state. All supported tools are synchronous request and response calls, so no `text/event-stream` response is ever emitted.
+- Unsupported methods: `GET /mcp` and `DELETE /mcp` return `405 Method Not Allowed`, and an unknown modern method returns `404 Not Found` so clients can distinguish this server from the deprecated HTTP+SSE transport.
+- Origin validation: the server does not enforce an `Origin` allowlist, matching the public API's permissive CORS posture. This deviates from the specification's MUST requirement for servers that validate origins.
 
 ## Available Tools
 
@@ -35,6 +38,11 @@ The MCP server provides several specialized tools for querying and analyzing tre
 
 - `get_alert`: returns details of a specific citizen feedback alert by ID, with complete anonymity.
   - id: the ID of the alert to retrieve (required).
+
+- `get_address`: resolves an address for the given coordinates, including the building number by default.
+  - lat: latitude of the location (required).
+  - lon: longitude of the location (required).
+  - include_building: whether to include the building number (default `true`).
 
 ## Client Setup and Configuration
 

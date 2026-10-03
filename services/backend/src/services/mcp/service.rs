@@ -50,11 +50,151 @@ pub struct McpService {
     photon: Arc<PhotonClient>,
 }
 
+pub fn tool_definitions() -> Vec<McpTool> {
+    vec![
+        McpTool {
+            name: "list_tallest".to_string(),
+            description: "Returns a list of the tallest trees in Yerevan, sorted by height descending.".to_string(),
+            input_schema: json!({
+                "type": "object",
+                "properties": {
+                    "limit": {
+                        "type": "integer",
+                        "description": "Number of trees to return (default 10)",
+                        "minimum": 1,
+                        "maximum": 100
+                    }
+                }
+            }),
+        },
+        McpTool {
+            name: "list_widest".to_string(),
+            description: "Returns a list of the widest trees in Yerevan (widest canopy). Results are sorted by crown diameter descending. Note: 'diameter' is crown diameter in meters, 'circumference' is trunk circumference in meters.".to_string(),
+            input_schema: json!({
+                "type": "object",
+                "properties": {
+                    "limit": {
+                        "type": "integer",
+                        "description": "Number of trees to return (default 10)",
+                        "minimum": 1,
+                        "maximum": 100
+                    }
+                }
+            }),
+        },
+        McpTool {
+            name: "list_streets".to_string(),
+            description: "Returns a list of streets with tree counts and completeness statistics.".to_string(),
+            input_schema: json!({
+                "type": "object",
+                "properties": {
+                    "limit": {
+                        "type": "integer",
+                        "description": "Number of streets to return (default 10)",
+                        "minimum": 1,
+                        "maximum": 100
+                    },
+                    "sort": {
+                        "type": "string",
+                        "description": "Sort by: street, count, or completeness",
+                        "enum": ["street", "count", "completeness"]
+                    }
+                }
+            }),
+        },
+        McpTool {
+            name: "get_street_stats".to_string(),
+            description: "Returns tree statistics for a specific street.".to_string(),
+            input_schema: json!({
+                "type": "object",
+                "properties": {
+                    "street": {
+                        "type": "string",
+                        "description": "The name of the street to get statistics for"
+                    }
+                },
+                "required": ["street"]
+            }),
+        },
+        McpTool {
+            name: "list_alerts".to_string(),
+            description: "Returns a list of citizen feedback alerts with optional filtering by status and ID, ensuring complete anonymity.".to_string(),
+            input_schema: json!({
+                "type": "object",
+                "properties": {
+                    "since_id": {
+                        "type": "integer",
+                        "description": "Only return alerts with ID greater than this value"
+                    },
+                    "status": {
+                        "type": "string",
+                        "description": "Filter by alert status (default 'new', pass empty or null for all)",
+                        "default": "new"
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "Number of alerts to return (default 20, maximum 100)",
+                        "minimum": 1,
+                        "maximum": 100
+                    },
+                    "order": {
+                        "type": "string",
+                        "description": "Sort order by ID: asc or desc (default asc)",
+                        "enum": ["asc", "desc"],
+                        "default": "asc"
+                    }
+                }
+            }),
+        },
+        McpTool {
+            name: "get_alert".to_string(),
+            description: "Returns details of a specific citizen feedback alert by ID, with complete anonymity.".to_string(),
+            input_schema: json!({
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "description": "The ID of the alert to retrieve"
+                    }
+                },
+                "required": ["id"]
+            }),
+        },
+        McpTool {
+            name: "get_address".to_string(),
+            description: "Resolves an address for the given coordinates. Includes the building number by default; set include_building to false to get the street name only.".to_string(),
+            input_schema: json!({
+                "type": "object",
+                "properties": {
+                    "lat": {
+                        "type": "number",
+                        "description": "Latitude of the location"
+                    },
+                    "lon": {
+                        "type": "number",
+                        "description": "Longitude of the location"
+                    },
+                    "include_building": {
+                        "type": "boolean",
+                        "description": "Include the building number in the resolved address (default true)",
+                        "default": true
+                    }
+                },
+                "required": ["lat", "lon"]
+            }),
+        },
+    ]
+}
+
 impl McpService {
-    pub async fn handle_message(&self, request: JsonRpcRequest) -> Option<JsonRpcResponse> {
+    pub async fn handle_message(
+        &self,
+        request: JsonRpcRequest,
+        era: McpEra,
+    ) -> Option<JsonRpcResponse> {
         debug!(
-            "MCP incoming method: {}, params: {:?}",
-            request.method, request.params
+            "MCP incoming method: {}, era: {:?}, params: {:?}",
+            request.method, era, request.params
         );
 
         let id = match request.id.clone() {
@@ -79,14 +219,17 @@ impl McpService {
         }
 
         let resp = match request.method.as_str() {
-            "initialize" => self.handle_initialize(id),
+            "initialize" => self.handle_initialize(id, request.params.as_ref()),
             "ping" => JsonRpcResponse::success(id, json!({})),
             "notifications/initialized" => {
                 debug!("Received notifications/initialized request");
                 JsonRpcResponse::success(id, json!({}))
             }
-            "tools/list" => self.handle_tools_list(id),
-            "tools/call" => self.handle_tools_call(id, request.params).await,
+            "server/discover" if era == McpEra::Modern => {
+                JsonRpcResponse::success(id, discover_result())
+            }
+            "tools/list" => self.handle_tools_list(id, era),
+            "tools/call" => self.handle_tools_call(id, request.params, era).await,
             _ => JsonRpcResponse::error(id, METHOD_NOT_FOUND, "Method not found"),
         };
 
@@ -94,161 +237,39 @@ impl McpService {
         Some(resp)
     }
 
-    fn handle_initialize(&self, id: JsonValue) -> JsonRpcResponse {
+    fn handle_initialize(&self, id: JsonValue, params: Option<&JsonValue>) -> JsonRpcResponse {
+        let requested = params
+            .and_then(|value| value.get("protocolVersion"))
+            .and_then(|value| value.as_str());
+        let version = negotiate_legacy_version(requested);
+
         JsonRpcResponse::success(
             id,
             json!({
-                "protocolVersion": "2024-11-05",
+                "protocolVersion": version,
                 "capabilities": {
                     "tools": {}
                 },
                 "serverInfo": {
-                    "name": "Trees of Yerevan",
+                    "name": SERVER_NAME,
                     "version": env!("CARGO_PKG_VERSION")
                 }
             }),
         )
     }
 
-    fn handle_tools_list(&self, id: JsonValue) -> JsonRpcResponse {
-        let tools = vec![
-            McpTool {
-                name: "list_tallest".to_string(),
-                description: "Returns a list of the tallest trees in Yerevan, sorted by height descending.".to_string(),
-                input_schema: json!({
-                    "type": "object",
-                    "properties": {
-                        "limit": {
-                            "type": "integer",
-                            "description": "Number of trees to return (default 10)",
-                            "minimum": 1,
-                            "maximum": 100
-                        }
-                    }
-                }),
-            },
-            McpTool {
-                name: "list_widest".to_string(),
-                description: "Returns a list of the widest trees in Yerevan (widest canopy). Results are sorted by crown diameter descending. Note: 'diameter' is crown diameter in meters, 'circumference' is trunk circumference in meters.".to_string(),
-                input_schema: json!({
-                    "type": "object",
-                    "properties": {
-                        "limit": {
-                            "type": "integer",
-                            "description": "Number of trees to return (default 10)",
-                            "minimum": 1,
-                            "maximum": 100
-                        }
-                    }
-                }),
-            },
-            McpTool {
-                name: "list_streets".to_string(),
-                description: "Returns a list of streets with tree counts and completeness statistics.".to_string(),
-                input_schema: json!({
-                    "type": "object",
-                    "properties": {
-                        "limit": {
-                            "type": "integer",
-                            "description": "Number of streets to return (default 10)",
-                            "minimum": 1,
-                            "maximum": 100
-                        },
-                        "sort": {
-                            "type": "string",
-                            "description": "Sort by: street, count, or completeness",
-                            "enum": ["street", "count", "completeness"]
-                        }
-                    }
-                }),
-            },
-            McpTool {
-                name: "get_street_stats".to_string(),
-                description: "Returns tree statistics for a specific street.".to_string(),
-                input_schema: json!({
-                    "type": "object",
-                    "properties": {
-                        "street": {
-                            "type": "string",
-                            "description": "The name of the street to get statistics for"
-                        }
-                    },
-                    "required": ["street"]
-                }),
-            },
-            McpTool {
-                name: "list_alerts".to_string(),
-                description: "Returns a list of citizen feedback alerts with optional filtering by status and ID, ensuring complete anonymity.".to_string(),
-                input_schema: json!({
-                    "type": "object",
-                    "properties": {
-                        "since_id": {
-                            "type": "integer",
-                            "description": "Only return alerts with ID greater than this value"
-                        },
-                        "status": {
-                            "type": "string",
-                            "description": "Filter by alert status (default 'new', pass empty or null for all)",
-                            "default": "new"
-                        },
-                        "limit": {
-                            "type": "integer",
-                            "description": "Number of alerts to return (default 20, maximum 100)",
-                            "minimum": 1,
-                            "maximum": 100
-                        },
-                        "order": {
-                            "type": "string",
-                            "description": "Sort order by ID: asc or desc (default asc)",
-                            "enum": ["asc", "desc"],
-                            "default": "asc"
-                        }
-                    }
-                }),
-            },
-            McpTool {
-                name: "get_alert".to_string(),
-                description: "Returns details of a specific citizen feedback alert by ID, with complete anonymity.".to_string(),
-                input_schema: json!({
-                    "type": "object",
-                    "properties": {
-                        "id": {
-                            "type": "integer",
-                            "description": "The ID of the alert to retrieve"
-                        }
-                    },
-                    "required": ["id"]
-                }),
-            },
-            McpTool {
-                name: "get_address".to_string(),
-                description: "Resolves an address for the given coordinates. Includes the building number by default; set include_building to false to get the street name only.".to_string(),
-                input_schema: json!({
-                    "type": "object",
-                    "properties": {
-                        "lat": {
-                            "type": "number",
-                            "description": "Latitude of the location"
-                        },
-                        "lon": {
-                            "type": "number",
-                            "description": "Longitude of the location"
-                        },
-                        "include_building": {
-                            "type": "boolean",
-                            "description": "Include the building number in the resolved address (default true)",
-                            "default": true
-                        }
-                    },
-                    "required": ["lat", "lon"]
-                }),
-            },
-        ];
+    fn handle_tools_list(&self, id: JsonValue, era: McpEra) -> JsonRpcResponse {
+        let tools = tool_definitions();
 
-        JsonRpcResponse::success(id, json!({ "tools": tools }))
+        JsonRpcResponse::success(id, tools_list_result(era, &tools))
     }
 
-    async fn handle_tools_call(&self, id: JsonValue, params: Option<JsonValue>) -> JsonRpcResponse {
+    async fn handle_tools_call(
+        &self,
+        id: JsonValue,
+        params: Option<JsonValue>,
+        era: McpEra,
+    ) -> JsonRpcResponse {
         let params = match params {
             Some(p) => p,
             None => return JsonRpcResponse::error(id, INVALID_PARAMS, "Missing params"),
@@ -270,10 +291,7 @@ impl McpService {
             }
         };
 
-        JsonRpcResponse::success(
-            id,
-            serde_json::to_value(&tool_result).unwrap_or_else(|_| json!({})),
-        )
+        JsonRpcResponse::success(id, call_tool_result_value(era, &tool_result))
     }
 
     async fn handle_list_tallest(&self, args: JsonValue) -> CallToolResult {
@@ -597,5 +615,30 @@ impl Injectable for McpService {
             nominatim: Arc::new(ctx.build::<NominatimClient>()?),
             photon: Arc::new(ctx.build::<PhotonClient>()?),
         })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn exposes_all_seven_tools() {
+        let tools = tool_definitions();
+        let names: Vec<&str> = tools.iter().map(|tool| tool.name.as_str()).collect();
+
+        assert_eq!(tools.len(), 7);
+        assert_eq!(
+            names,
+            vec![
+                "list_tallest",
+                "list_widest",
+                "list_streets",
+                "get_street_stats",
+                "list_alerts",
+                "get_alert",
+                "get_address",
+            ]
+        );
     }
 }

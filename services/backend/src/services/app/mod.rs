@@ -8,7 +8,6 @@ use crate::infra::storage::{
     create_driver, BackupBucket, FileBucket, PanoramaBucket, PanoramaSourceBucket,
 };
 use crate::infra::tokens::TokenService;
-use crate::services::mcp::McpSessionManager;
 use crate::types::*;
 use actix_web::HttpRequest;
 use std::sync::Arc;
@@ -29,8 +28,6 @@ pub trait Context {
     fn batch(&self) -> Arc<BatchClient>;
     #[allow(dead_code)]
     fn email(&self) -> Arc<EmailService>;
-    #[allow(dead_code)]
-    fn mcp(&self) -> Arc<McpSessionManager>;
 }
 
 pub trait Injectable {
@@ -81,7 +78,6 @@ pub struct AppState {
     pub panoramas: Arc<PanoramaBucket>,
     pub batch: Arc<BatchClient>,
     pub email: Arc<EmailService>,
-    pub mcp: Arc<McpSessionManager>,
 }
 
 impl AppState {
@@ -108,8 +104,6 @@ impl AppState {
         let email_repo = Arc::new(EmailRepository::new(database.clone()));
         let email = Arc::new(EmailService::new(email_repo));
 
-        let mcp = Arc::new(McpSessionManager::default());
-
         Ok(Self {
             database,
             config,
@@ -122,7 +116,6 @@ impl AppState {
             panoramas,
             batch,
             email,
-            mcp,
         })
     }
 
@@ -141,7 +134,6 @@ impl AppState {
             panoramas: self.panoramas.clone(),
             batch: self.batch.clone(),
             email: self.email.clone(),
-            mcp: self.mcp.clone(),
         })
     }
 
@@ -221,9 +213,5 @@ impl Context for AppState {
 
     fn email(&self) -> Arc<EmailService> {
         self.email.clone()
-    }
-
-    fn mcp(&self) -> Arc<McpSessionManager> {
-        self.mcp.clone()
     }
 }
