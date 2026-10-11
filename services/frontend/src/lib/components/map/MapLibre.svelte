@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { MAX_BOUNDS } from '$lib/constants';
 	import type { ILatLng } from '$lib/types';
+	import { LngLatBounds } from 'maplibre-gl';
 	import { AttributionControl, MapLibre } from 'svelte-maplibre';
 	import { RasterLayer, RasterTileSource } from 'svelte-maplibre';
 	import 'maplibre-gl/dist/maplibre-gl.css';
@@ -28,6 +28,8 @@
 	import MapRowPreview from './MapRowPreview.svelte';
 	import { mapMode } from '$lib/stores/mapMode';
 	import { centerLayer } from '$lib/stores/mapLayerStore';
+	import { hasStoredMapView } from '$lib/stores/mapStore';
+	import { settingsState } from '$lib/stores/settings.svelte';
 
 	const { children = undefined, onMove } = $props<{
 		children?: Snippet;
@@ -39,85 +41,108 @@
 	$effect(() => {
 		mapState.onMove = onMove;
 	});
+
+	let initialized = $state(false);
+
+	$effect(() => {
+		if (!settingsState.loaded || initialized) {
+			return;
+		}
+
+		if (!hasStoredMapView) {
+			const [w, s, e, n] = settingsState.bbox;
+			mapState.center = settingsState.center;
+			mapState.bounds = new LngLatBounds([w, s], [e, n]);
+		}
+
+		initialized = true;
+	});
 </script>
 
 <div class="map-container">
-	<MapLibre
-		style={mapState.layer}
-		bind:map={mapState.map}
-		bind:center={mapState.center}
-		bind:zoom={mapState.zoom}
-		bind:bearing={mapState.bearing}
-		pitch={0}
-		maxPitch={0}
-		class="map"
-		bind:bounds={mapState.bounds}
-		onmoveend={mapState.handleMoveEnd}
-		onzoom={mapState.handleZoom}
-		onrotate={mapState.handleRotate}
-		onload={mapState.handleLoad}
-		maxBounds={MAX_BOUNDS}
-		attributionControl={false}
-	>
-		<LocateButton />
-		<LocationTracker />
-		<MapMenuBridge />
-		<MapEventBridge />
-		<AttributionControl compact={true} position="bottom-left" />
+	{#if initialized}
+		<MapLibre
+			style={mapState.layer}
+			bind:map={mapState.map}
+			bind:center={mapState.center}
+			bind:zoom={mapState.zoom}
+			bind:bearing={mapState.bearing}
+			pitch={0}
+			maxPitch={0}
+			class="map"
+			bind:bounds={mapState.bounds}
+			onmoveend={mapState.handleMoveEnd}
+			onzoom={mapState.handleZoom}
+			onrotate={mapState.handleRotate}
+			onload={mapState.handleLoad}
+			maxBounds={settingsState.bbox}
+			attributionControl={false}
+		>
+			<LocateButton />
+			<LocationTracker />
+			<MapMenuBridge />
+			<MapEventBridge />
+			<AttributionControl compact={true} position="bottom-left" />
 
-		{#if children}
-			{@render children()}
-		{/if}
-
-		{#if mapState.droneLayer}
-			<RasterTileSource id="drone-source" tiles={[mapState.droneLayer]} tileSize={128} scheme="tms">
-				<RasterLayer
-					id="drone-layer"
-					paint={{
-						'raster-opacity': 0.75
-					}}
-				/>
-			</RasterTileSource>
-		{/if}
-
-		<LayerSelector />
-
-		<Marker />
-
-		<AddButton />
-
-		<MapRays />
-
-		<TreeLayer />
-
-		<AlertLayer />
-
-		<PanoramicLayer />
-
-		<TreeHintsLayer />
-
-		<WaterSourceLayer />
-
-		{#if $mapMode === 'move' || $mapMode === 'add' || $mapMode === 'add-row'}
-			<MapCenter />
-			{#if $mapMode === 'move'}
-				<MoveLine />
-			{:else if $mapMode === 'add'}
-				<NearestTree />
-			{:else if $mapMode === 'add-row'}
-				<MapRowPreview />
-				<NearestTree />
+			{#if children}
+				{@render children()}
 			{/if}
-		{:else if $mapMode === undefined || $mapMode === 'preview'}
-			{#if $centerLayer}
+
+			{#if mapState.droneLayer}
+				<RasterTileSource
+					id="drone-source"
+					tiles={[mapState.droneLayer]}
+					tileSize={128}
+					scheme="tms"
+				>
+					<RasterLayer
+						id="drone-layer"
+						paint={{
+							'raster-opacity': 0.75
+						}}
+					/>
+				</RasterTileSource>
+			{/if}
+
+			<LayerSelector />
+
+			<Marker />
+
+			<AddButton />
+
+			<MapRays />
+
+			<TreeLayer />
+
+			<AlertLayer />
+
+			<PanoramicLayer />
+
+			<TreeHintsLayer />
+
+			<WaterSourceLayer />
+
+			{#if $mapMode === 'move' || $mapMode === 'add' || $mapMode === 'add-row'}
 				<MapCenter />
+				{#if $mapMode === 'move'}
+					<MoveLine />
+				{:else if $mapMode === 'add'}
+					<NearestTree />
+				{:else if $mapMode === 'add-row'}
+					<MapRowPreview />
+					<NearestTree />
+				{/if}
+			{:else if $mapMode === undefined || $mapMode === 'preview'}
+				{#if $centerLayer}
+					<MapCenter />
+				{/if}
+				<NearestPoi zoom={mapState.zoom} distance={5} />
 			{/if}
-			<NearestPoi zoom={mapState.zoom} distance={5} />
-		{/if}
-	</MapLibre>
+		</MapLibre>
 
-	<Navigation />
-	<SearchControl />
+		<Navigation />
+		<SearchControl />
+	{/if}
 </div>
 
 <style>

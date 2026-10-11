@@ -1,7 +1,8 @@
-import { DEFAULT_MAP_CENTER } from '$lib/constants';
+import { DEFAULT_BBOX } from '$lib/constants';
 import { showError } from '$lib/errors';
 import { locale } from '$lib/locale';
 import type { ILatLng } from '$lib/types';
+import { bboxCenter } from '$lib/utils/geo';
 import { ls } from '$lib/utils/localStorage';
 import { derived, writable } from 'svelte/store';
 
@@ -13,9 +14,13 @@ type IMapStore = {
 	bearing: number;
 };
 
+const stored = ls.read<IMapStore>(STORE_ID);
+
+export const hasStoredMapView = stored !== undefined;
+
 export const mapStore = writable<IMapStore>(
-	ls.read(STORE_ID) || {
-		center: DEFAULT_MAP_CENTER,
+	stored || {
+		center: bboxCenter(DEFAULT_BBOX),
 		zoom: 15,
 		bearing: 0
 	}

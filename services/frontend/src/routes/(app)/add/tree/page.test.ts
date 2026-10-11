@@ -1,8 +1,9 @@
 import { addTree } from '$lib/api/trees';
-import { DEFAULT_TREE } from '$lib/constants';
+import { DEFAULT_BBOX, DEFAULT_TREE } from '$lib/constants';
 import { routes } from '$lib/routes';
 import { authStore } from '$lib/stores/authStore';
 import type { IAddTreesRequest, IResponse, ITreeList } from '$lib/types';
+import { bboxCenter } from '$lib/utils/geo';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
@@ -198,10 +199,11 @@ describe('add page', async () => {
 		await user.click(em);
 
 		expect(request).not.toBeNull();
-		// mapState default is 40.181389, 44.514444
+		// mapState default center is the midpoint of the fallback bbox.
+		const defaultCenter = bboxCenter(DEFAULT_BBOX);
 		expect((request as unknown as IAddTreesRequest)?.points[0]).toStrictEqual({
-			lat: 40.181389,
-			lon: 44.514444
+			lat: defaultCenter.lat,
+			lon: defaultCenter.lng
 		});
 
 		await waitFor(() => expect(mockedGoto).toHaveBeenCalledWith(routes.treeEdit('added1')));

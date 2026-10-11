@@ -1,6 +1,7 @@
 <script lang="ts">
 	import '@fontsource-variable/inter';
 	import { type BeforeInstallPromptEvent, pwaStore } from '$lib/stores/pwaStore';
+	import { settingsState } from '$lib/stores/settings.svelte';
 	import { autoStartUpload } from '$lib/upload';
 	import { validateStoredToken } from '$lib/utils/auth';
 	import { initBackgroundReminders } from '$lib/utils/notifications';
@@ -20,6 +21,7 @@
 
 	onMount(() => {
 		validateStoredToken();
+		settingsState.load();
 		autoStartUpload();
 		initBackgroundReminders();
 		shakeDetector.init();

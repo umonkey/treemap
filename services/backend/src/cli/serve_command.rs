@@ -17,7 +17,7 @@ use crate::actions::mcp::mcp_router;
 use crate::actions::me::me_router;
 use crate::actions::meta::meta_router;
 use crate::actions::panorama::panorama_router;
-use crate::actions::settings::settings_router;
+use crate::actions::settings::{app_settings_router, settings_router};
 use crate::actions::species::species_router;
 use crate::actions::stats::stats_router;
 use crate::actions::street::street_router;
@@ -111,7 +111,8 @@ pub async fn serve_command() {
                     .wrap(DefaultHeaders::new().add(("Cache-Control", "no-store")))
                     .wrap(Transaction)
                     .service(web::scope("/panoramas").configure(panorama_router))
-                    .service(web::scope("/export").configure(export_router)),
+                    .service(web::scope("/export").configure(export_router))
+                    .service(web::scope("/settings").configure(app_settings_router)),
             )
             .service(
                 web::scope("/v1")

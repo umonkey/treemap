@@ -1,0 +1,6 @@
+BEGIN;
+ALTER TABLE instances ADD COLUMN bbox_w REAL;
+ALTER TABLE instances ADD COLUMN bbox_s REAL;
+ALTER TABLE instances ADD COLUMN bbox_e REAL;
+ALTER TABLE instances ADD COLUMN bbox_n REAL;
+COMMIT;

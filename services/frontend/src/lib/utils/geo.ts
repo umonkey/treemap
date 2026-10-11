@@ -1,3 +1,4 @@
+import type { ILatLng } from '$lib/types';
 export { getDistance } from './index';
 
 const M_PER_LAT = 111320;
@@ -40,4 +41,8 @@ export function roundOffset(value: number, decimals = 7): number {
 		return 0;
 	}
 	return Number(value.toFixed(decimals));
+}
+
+export function bboxCenter(bbox: [number, number, number, number]): ILatLng {
+	return { lat: (bbox[1] + bbox[3]) / 2, lng: (bbox[0] + bbox[2]) / 2 };
 }

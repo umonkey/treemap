@@ -1,18 +1,13 @@
 import { ModeEnum } from '$lib/enums';
 import type { IMeResponse, ITree } from '$lib/types';
 
-export const DEFAULT_MAP_CENTER = { lat: 40.181389, lng: 44.514444 };
 export const DEFAULT_MODE = ModeEnum.Explorer;
 
-export const MAX_BOUNDS: [[number, number], [number, number]] = [
-	[
-		44.41675, // west
-		40.11426 // south
-	],
-	[
-		44.61444, // east
-		40.24785 // north
-	]
+export const DEFAULT_BBOX: [number, number, number, number] = [
+	44.41675, // west
+	40.11426, // south
+	44.61444, // east
+	40.24785 // north
 ];
 
 export const DEFAULT_TREE = {

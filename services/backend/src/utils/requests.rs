@@ -1,4 +1,6 @@
+use crate::types::{Error, Result};
 use actix_web::HttpRequest;
+use url::Url;
 
 enum CdnType {
     Cloudflare,
@@ -52,4 +54,24 @@ pub fn get_user_agent(request: &HttpRequest) -> Option<String> {
     }
 
     None
+}
+
+pub fn get_referer_domain(request: &HttpRequest) -> Result<String> {
+    let header = request
+        .headers()
+        .get("referer")
+        .ok_or_else(|| Error::BadRequestMessage("Missing Referer header.".to_string()))?;
+
+    let value = header
+        .to_str()
+        .map_err(|_| Error::BadRequestMessage("Invalid Referer header.".to_string()))?;
+
+    let url = Url::parse(value)
+        .map_err(|_| Error::BadRequestMessage("Invalid Referer URL.".to_string()))?;
+
+    let domain = url
+        .host_str()
+        .ok_or_else(|| Error::BadRequestMessage("Referer has no host.".to_string()))?;
+
+    Ok(domain.to_string())
 }

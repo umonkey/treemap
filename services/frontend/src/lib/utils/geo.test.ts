@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getOffsetDelta, calculateDestination, roundOffset } from './geo';
+import { getOffsetDelta, calculateDestination, roundOffset, bboxCenter } from './geo';
 
 describe('geo utils', () => {
 	it('computes offset delta correctly for 0.1m at equator', () => {
@@ -26,5 +26,10 @@ describe('geo utils', () => {
 		expect(roundOffset(Number.NaN, 7)).toBe(0);
 		// @ts-expect-error testing invalid input
 		expect(roundOffset(null, 7)).toBe(0);
+	});
+
+	it('computes the center of a bbox', () => {
+		expect(bboxCenter([2, 10, 6, 20])).toEqual({ lat: 15, lng: 4 });
+		expect(bboxCenter([0, 0, 0, 0])).toEqual({ lat: 0, lng: 0 });
 	});
 });

@@ -1,7 +1,7 @@
 import { goto } from '$app/navigation';
 import { searchTrees } from '$lib/api/trees';
 import { mapBus } from '$lib/buses/mapBus';
-import { DEFAULT_MAP_CENTER, DEFAULT_TREE } from '$lib/constants';
+import { DEFAULT_TREE } from '$lib/constants';
 import { routes } from '$lib/routes';
 import { mapLayerStore } from '$lib/stores/mapLayerStore';
 import { mapMode } from '$lib/stores/mapMode';
@@ -109,7 +109,7 @@ describe('Search Results Page', () => {
 		resetMapLayerStore();
 		searchStore.set(undefined);
 		mapStore.set({
-			center: DEFAULT_MAP_CENTER,
+			center: { lat: 40.181389, lng: 44.514444 },
 			zoom: 15,
 			bearing: 0
 		});

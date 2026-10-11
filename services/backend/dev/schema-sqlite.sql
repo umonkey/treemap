@@ -308,7 +308,11 @@ CREATE TABLE IF NOT EXISTS instances (
     name TEXT NOT NULL,
     description TEXT,
     email TEXT NOT NULL,
-    enabled INTEGER NOT NULL DEFAULT 1
+    enabled INTEGER NOT NULL DEFAULT 1,
+    bbox_w REAL,
+    bbox_s REAL,
+    bbox_e REAL,
+    bbox_n REAL
 );
 
 CREATE TABLE IF NOT EXISTS emails (

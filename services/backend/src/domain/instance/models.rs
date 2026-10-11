@@ -12,6 +12,10 @@ pub struct Instance {
     pub description: Option<String>,
     pub email: String,
     pub enabled: bool,
+    pub bbox_w: Option<f64>,
+    pub bbox_s: Option<f64>,
+    pub bbox_e: Option<f64>,
+    pub bbox_n: Option<f64>,
 }
 
 impl Instance {
@@ -23,7 +27,18 @@ impl Instance {
             description: attributes.get_string("description")?,
             email: attributes.require_string("email")?,
             enabled: attributes.require_i64("enabled")? != 0,
+            bbox_w: attributes.get_f64("bbox_w")?,
+            bbox_s: attributes.get_f64("bbox_s")?,
+            bbox_e: attributes.get_f64("bbox_e")?,
+            bbox_n: attributes.get_f64("bbox_n")?,
         })
+    }
+
+    pub fn bbox(&self) -> Option<[f64; 4]> {
+        match (self.bbox_w, self.bbox_s, self.bbox_e, self.bbox_n) {
+            (Some(w), Some(s), Some(e), Some(n)) => Some([w, s, e, n]),
+            _ => None,
+        }
     }
 
     #[allow(dead_code)]
@@ -41,6 +56,10 @@ impl Instance {
                 "enabled".to_string(),
                 Value::from(if self.enabled { 1 } else { 0 }),
             ),
+            ("bbox_w".to_string(), Value::from(self.bbox_w)),
+            ("bbox_s".to_string(), Value::from(self.bbox_s)),
+            ("bbox_e".to_string(), Value::from(self.bbox_e)),
+            ("bbox_n".to_string(), Value::from(self.bbox_n)),
         ])
     }
 }
