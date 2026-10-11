@@ -6,11 +6,13 @@
 
 	const {
 		visible,
+		position = undefined,
 		onMakeThumbnail,
 		onDelete,
 		onClose
 	}: {
 		visible: boolean;
+		position?: { x: number; y: number };
 		onMakeThumbnail: () => void;
 		onDelete: () => void;
 		onClose: () => void;
@@ -30,4 +32,4 @@
 	]);
 </script>
 
-<BaseContextMenu open={visible} {items} {onClose} />
+<BaseContextMenu open={visible} {items} {onClose} {position} />

@@ -9,14 +9,17 @@
 
 	let selectedFile = $state<ITreeFile | null>(null);
 	let menuVisible = $state(false);
+	let menuPosition = $state<{ x: number; y: number } | undefined>(undefined);
 
-	const openMenu = (file: ITreeFile) => {
+	const openMenu = (file: ITreeFile, event: MouseEvent) => {
 		selectedFile = file;
+		menuPosition = { x: event.clientX, y: event.clientY };
 		menuVisible = true;
 	};
 
 	const closeMenu = () => {
 		menuVisible = false;
+		menuPosition = undefined;
 		selectedFile = null;
 	};
 
@@ -54,14 +57,20 @@
 					{file.added_at ? formatDate(file.added_at) : ''} — {user?.name ?? 'unknown'}
 				</div>
 
-				<button class="menu-trigger" onclick={() => openMenu(file)} type="button">
+				<button class="menu-trigger" onclick={(event) => openMenu(file, event)} type="button">
 					<DotsIcon />
 				</button>
 			</div>
 		{/each}
 	</div>
 
-	<PhotoContextMenu visible={menuVisible} onClose={closeMenu} {onMakeThumbnail} {onDelete} />
+	<PhotoContextMenu
+		visible={menuVisible}
+		position={menuPosition}
+		onClose={closeMenu}
+		{onMakeThumbnail}
+		{onDelete}
+	/>
 {/if}
 
 <style>
