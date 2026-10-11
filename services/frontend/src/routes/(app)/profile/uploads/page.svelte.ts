@@ -25,10 +25,6 @@ class PageState {
 	restartQueue = () => {
 		restartUploadQueue();
 	};
-
-	deleteUpload = async (id: number) => {
-		await db.uploads.delete(id);
-	};
 }
 
 export const pageState = new PageState();

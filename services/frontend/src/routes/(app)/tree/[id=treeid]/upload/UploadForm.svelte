@@ -1,40 +1,19 @@
 <script lang="ts">
+	import { menuBus } from '$lib/buses/menuBus';
 	import DotsIcon from '$lib/icons/DotsIcon.svelte';
 	import { routes } from '$lib/routes';
 	import { getUser } from '$lib/stores/userStore';
 	import type { ITreeFile } from '$lib/types';
 	import { formatDate } from '$lib/utils/strings';
-	import PhotoContextMenu from './PhotoContextMenu.svelte';
 	import { pageState } from './page.svelte';
 
-	let selectedFile = $state<ITreeFile | null>(null);
-	let menuVisible = $state(false);
-	let menuPosition = $state<{ x: number; y: number } | undefined>(undefined);
-
 	const openMenu = (file: ITreeFile, event: MouseEvent) => {
-		selectedFile = file;
-		menuPosition = { x: event.clientX, y: event.clientY };
-		menuVisible = true;
-	};
-
-	const closeMenu = () => {
-		menuVisible = false;
-		menuPosition = undefined;
-		selectedFile = null;
-	};
-
-	const onMakeThumbnail = () => {
-		if (selectedFile) {
-			pageState.handleMakeThumbnail(selectedFile);
-		}
-		closeMenu();
-	};
-
-	const onDelete = () => {
-		if (selectedFile) {
-			pageState.handleDelete(selectedFile.id);
-		}
-		closeMenu();
+		menuBus.emit('showPhoto', {
+			fileId: file.id,
+			treeId: pageState.treeId,
+			x: event.clientX,
+			y: event.clientY
+		});
 	};
 </script>
 
@@ -63,14 +42,6 @@
 			</div>
 		{/each}
 	</div>
-
-	<PhotoContextMenu
-		visible={menuVisible}
-		position={menuPosition}
-		onClose={closeMenu}
-		{onMakeThumbnail}
-		{onDelete}
-	/>
 {/if}
 
 <style>
