@@ -1,7 +1,6 @@
 import { menuBus } from '$lib/buses/menuBus';
 
 class MenuState {
-	active = $state<boolean>(false);
 	id = $state<string | undefined>(undefined);
 
 	private handleShow = (id: string) => {
