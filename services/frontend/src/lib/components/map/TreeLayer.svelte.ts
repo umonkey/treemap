@@ -150,7 +150,15 @@ export class TreeLayerLogic {
 			navigator.vibrate(50);
 		}
 
-		menuBus.emit('show', treeId);
+		// svelte-maplibre layer callbacks receive a LayerClickInfo wrapper
+		// ({ map, event, features, ... }), not the raw MapLibre event.
+		const rect = e.map.getContainer().getBoundingClientRect();
+
+		menuBus.emit('show', {
+			id: treeId,
+			x: rect.left + e.event.point.x,
+			y: rect.top + e.event.point.y
+		});
 	};
 
 	public onMount = () => {

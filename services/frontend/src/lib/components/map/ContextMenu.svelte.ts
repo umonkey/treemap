@@ -1,23 +1,19 @@
 import { getSearchTreesGeoJSON } from '$lib/api/trees';
 import { mapBus } from '$lib/buses/mapBus';
 import { menuBus, type IMapMenuEvent } from '$lib/buses/menuBus';
+import type { IContextMenuPosition } from '$lib/components/menu/BaseContextMenu.svelte.ts';
 import { goto } from '$lib/routes';
 import { combineQuery, missingQuery } from '$lib/stores/mapLayerStore';
 import { searchStore } from '$lib/stores/searchStore';
 import type { IBounds, ILatLng } from '$lib/types';
 import { get } from 'svelte/store';
 
-const MENU_MARGIN = 8;
-
 export class ContextMenuLogic {
 	open = $state(false);
 
 	private coords: ILatLng | undefined = undefined;
-	private position = $state<{ x: number; y: number } | undefined>(undefined);
+	position = $state<IContextMenuPosition | undefined>(undefined);
 	private bounds = $state<IBounds | undefined>(undefined);
-
-	viewport = $state({ width: 0, height: 0 });
-	menuSize = $state({ width: 0, height: 0 });
 
 	downloadUrl = $derived(
 		getSearchTreesGeoJSON(
@@ -27,27 +23,11 @@ export class ContextMenuLogic {
 		)
 	);
 
-	clampedPosition = $derived.by(() => {
-		if (!this.position) {
-			return undefined;
-		}
-
-		const maxX = Math.max(MENU_MARGIN, this.viewport.width - this.menuSize.width - MENU_MARGIN);
-		const maxY = Math.max(MENU_MARGIN, this.viewport.height - this.menuSize.height - MENU_MARGIN);
-
-		return {
-			x: Math.min(Math.max(this.position.x, MENU_MARGIN), maxX),
-			y: Math.min(Math.max(this.position.y, MENU_MARGIN), maxY)
-		};
-	});
-
 	private handleShow = (event: IMapMenuEvent) => {
 		console.debug(`Showing menu for ${event.lat},${event.lng}`);
 		this.coords = { lat: event.lat, lng: event.lng };
 		this.position =
-			event.x !== undefined && event.y !== undefined
-				? { x: event.x, y: event.y }
-				: { x: this.viewport.width / 2, y: this.viewport.height / 2 };
+			event.x !== undefined && event.y !== undefined ? { x: event.x, y: event.y } : undefined;
 		this.open = true;
 	};
 
@@ -55,26 +35,8 @@ export class ContextMenuLogic {
 		this.bounds = bounds;
 	};
 
-	public handleKeyDown = (e: KeyboardEvent) => {
-		if (e.key === 'Escape') {
-			this.handleClose();
-		}
-	};
-
 	public handleClose = () => {
 		this.open = false;
-	};
-
-	public handleContextMenu = (e: MouseEvent) => {
-		e.preventDefault();
-
-		// Touch long-press also emits `contextmenu` (button 0). Only a real
-		// mouse right-click should dismiss the menu.
-		if (e.button !== 2) {
-			return;
-		}
-
-		this.handleClose();
 	};
 
 	public handleNavigate = async (url: string) => {

@@ -48,11 +48,11 @@
 		}
 	};
 
-	const handleLongTap = (e: Event) => {
+	const handleLongTap = (e: MouseEvent) => {
 		e.preventDefault();
 
 		if (id) {
-			menuBus.emit('show', id);
+			menuBus.emit('show', { id, x: e.clientX, y: e.clientY });
 		}
 	};
 </script>

@@ -3,6 +3,8 @@
 	import MobileNav from '$lib/components/layout/MobileNav.svelte';
 	import ContextMenu from '$lib/components/map/ContextMenu.svelte';
 	import MapLibre from '$lib/components/map/MapLibre.svelte';
+	import PhotoContextMenu from '$lib/components/photos/PhotoContextMenu.svelte';
+	import UploadContextMenu from '$lib/components/photos/UploadContextMenu.svelte';
 	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
 
 	import { page } from '$app/stores';
@@ -33,6 +35,8 @@
 <MobileNav />
 <TreeContextMenu />
 <ContextMenu />
+<PhotoContextMenu />
+<UploadContextMenu />
 
 <style>
 	/**

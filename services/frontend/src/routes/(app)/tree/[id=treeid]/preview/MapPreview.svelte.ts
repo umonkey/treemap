@@ -33,9 +33,9 @@ class PreviewState {
 		mapBus.emit('pin', undefined);
 	};
 
-	public handleContextMenu = () => {
+	public handleContextMenu = (e: MouseEvent) => {
 		if (this.tree) {
-			menuBus.emit('show', this.tree.id);
+			menuBus.emit('show', { id: this.tree.id, x: e.clientX, y: e.clientY });
 		}
 	};
 

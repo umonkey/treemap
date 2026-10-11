@@ -9,7 +9,7 @@
 		onMenu
 	}: {
 		upload: IUpload;
-		onMenu: (upload: IUpload) => void;
+		onMenu: (upload: IUpload, event: MouseEvent) => void;
 	} = $props();
 
 	let objectUrl = $state<string>('');
@@ -42,7 +42,7 @@
 		</div>
 	</a>
 
-	<button class="menu-trigger" onclick={() => onMenu(upload)} type="button">
+	<button class="menu-trigger" onclick={(event) => onMenu(upload, event)} type="button">
 		<DotsIcon />
 	</button>
 </div>

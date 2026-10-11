@@ -1,36 +1,28 @@
 <script lang="ts">
 	import AutoUploadCheckbox from '$lib/components/AutoUploadCheckbox.svelte';
+	import { menuBus } from '$lib/buses/menuBus';
+	import type { IUpload } from '$lib/db';
 	import { uploadStore } from '$lib/stores/upload';
 	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import { onMount } from 'svelte';
-	import UploadRow from './UploadRow.svelte';
-	import UploadContextMenu from './UploadContextMenu.svelte';
 	import { locale } from './lang';
 	import { pageState } from './page.svelte';
-	import type { IUpload } from '$lib/db';
-
-	let selectedUpload = $state<IUpload | null>(null);
-	let menuVisible = $state(false);
+	import UploadRow from './UploadRow.svelte';
 
 	onMount(pageState.onMount);
 
-	const openMenu = (upload: IUpload) => {
-		selectedUpload = upload;
-		menuVisible = true;
-	};
-
-	const closeMenu = () => {
-		menuVisible = false;
-		selectedUpload = null;
-	};
-
-	const onDelete = () => {
-		if (selectedUpload?.id !== undefined) {
-			pageState.deleteUpload(selectedUpload.id);
+	const openMenu = (upload: IUpload, event: MouseEvent) => {
+		if (upload.id === undefined) {
+			return;
 		}
-		closeMenu();
+
+		menuBus.emit('showUpload', {
+			uploadId: upload.id,
+			x: event.clientX,
+			y: event.clientY
+		});
 	};
 </script>
 
@@ -63,8 +55,6 @@
 	{:else}
 		<p>{locale.uploadsEmpty()}</p>
 	{/if}
-
-	<UploadContextMenu visible={menuVisible} onClose={closeMenu} {onDelete} />
 </AuthWrapper>
 
 <style>

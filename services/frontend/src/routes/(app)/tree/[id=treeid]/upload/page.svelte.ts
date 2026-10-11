@@ -1,8 +1,6 @@
-import { changeTreeThumbnail, getTree } from '$lib/api/trees';
-import { deleteFile } from '$lib/api/uploads';
+import { getTree } from '$lib/api/trees';
 import { DEFAULT_TREE } from '$lib/constants';
-import { showError } from '$lib/errors';
-import type { ITree, ITreeFile } from '$lib/types';
+import type { ITree } from '$lib/types';
 import { error } from '@sveltejs/kit';
 
 class PageState {
@@ -44,22 +42,6 @@ class PageState {
 		this.hasFiles = filesCount > 0;
 		this.busy = false;
 		this.canSubmit = true;
-	};
-
-	handleMakeThumbnail = async (file: ITreeFile) => {
-		const res = await changeTreeThumbnail(this.tree.id, file.id);
-
-		if (res.status >= 400) {
-			showError(res.error?.description || `Error ${res.status} changing thumbnail.`);
-		}
-	};
-
-	handleDelete = async (id: string) => {
-		const res = await deleteFile(id);
-
-		if (res.status >= 400) {
-			showError(res.error?.description || `Error ${res.status} deleting file.`);
-		}
 	};
 }
 
