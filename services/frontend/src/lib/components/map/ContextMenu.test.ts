@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ContextMenuLogic } from './ContextMenu.svelte.ts';
+import { mapBus } from '$lib/buses/mapBus';
 import { menuBus } from '$lib/buses/menuBus';
+import { searchStore } from '$lib/stores/searchStore';
 
 vi.mock('$lib/routes', () => ({
 	goto: vi.fn().mockResolvedValue(undefined)
@@ -55,5 +57,32 @@ describe('ContextMenuLogic', () => {
 		expect(logic.clampedPosition).toEqual({ x: 100, y: 200 });
 
 		cleanup();
+	});
+
+	it('builds a GeoJSON download URL from the viewport and search query', () => {
+		searchStore.set('liriodendron');
+
+		const cleanup = logic.subscribe();
+		mapBus.emit('bounds', { n: 41, e: 45, s: 40, w: 44, zoom: 16 });
+
+		const url = logic.downloadUrl;
+		expect(url).toContain('v1/trees/search.json');
+		expect(url).toContain('n=41');
+		expect(url).toContain('e=45');
+		expect(url).toContain('s=40');
+		expect(url).toContain('w=44');
+		expect(url).toContain('zoom=16');
+		expect(url).toContain('search=liriodendron');
+
+		cleanup();
+		searchStore.set(undefined);
+	});
+
+	it('closes the menu when a download starts', () => {
+		logic.open = true;
+
+		logic.handleDownload();
+
+		expect(logic.open).toBe(false);
 	});
 });

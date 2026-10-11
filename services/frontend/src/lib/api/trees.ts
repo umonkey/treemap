@@ -381,3 +381,16 @@ export function getSearchTreesCSV(query: string, zoom?: number, bounds?: IBounds
 
 	return `${config.apiRoot}v1/trees/search.csv?${params.toString()}`;
 }
+
+export function getSearchTreesGeoJSON(query: string, zoom?: number, bounds?: IBounds): string {
+	const params = new URLSearchParams({
+		n: (bounds ? bounds.n : 90).toString(),
+		e: (bounds ? bounds.e : 180).toString(),
+		s: (bounds ? bounds.s : -90).toString(),
+		w: (bounds ? bounds.w : -180).toString(),
+		zoom: (zoom ?? 10).toString(),
+		search: query
+	});
+
+	return `${config.apiRoot}v1/trees/search.json?${params.toString()}`;
+}

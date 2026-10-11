@@ -51,6 +51,55 @@ pub fn respond_with_trees(trees: &[Tree]) -> HttpResponse {
         .json(collection)
 }
 
+/// Convert a list of trees to a downloadable GeoJSON FeatureCollection response.
+///
+/// Unlike [`respond_with_trees`], which is tuned for map rendering, this emits a
+/// data-export schema with explicit units and sets an attachment
+/// `Content-Disposition`.
+pub fn respond_with_trees_download(trees: &[Tree]) -> HttpResponse {
+    let features: Vec<_> = trees
+        .iter()
+        .map(|tree| {
+            json!({
+                "type": "Feature",
+                "id": tree.id.to_string(),
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [tree.lon, tree.lat]
+                },
+                "properties": {
+                    "id": tree.id.to_string(),
+                    "species": tree.species,
+                    "state": tree.state,
+                    "height_m": tree.height,
+                    "crown_diameter_m": tree.diameter,
+                    "trunk_circumference_cm": tree.circumference,
+                }
+            })
+        })
+        .collect();
+
+    let collection = json!({
+        "type": "FeatureCollection",
+        "name": "trees_of_yerevan",
+        "crs": {
+            "type": "name",
+            "properties": {
+                "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+            }
+        },
+        "features": features
+    });
+
+    HttpResponse::Ok()
+        .content_type("application/geo+json")
+        .insert_header((
+            "Content-Disposition",
+            "attachment; filename=\"trees.geojson\"",
+        ))
+        .json(collection)
+}
+
 /// Convert a list of water sources to a GeoJSON FeatureCollection response.
 pub fn respond_with_water(sources: &[WaterSource]) -> HttpResponse {
     let features: Vec<_> = sources
@@ -450,5 +499,59 @@ mod tests {
         let value: Value = serde_json::from_slice(&body).unwrap();
 
         assert_eq!(value["features"].as_array().unwrap().len(), 0);
+    }
+
+    #[tokio::test]
+    async fn respond_with_trees_download_emits_attachment_geojson() {
+        let tree = Tree {
+            id: 42,
+            lat: 40.1792,
+            lon: 44.5091,
+            state: crate::domain::tree::TreeState::Alive,
+            species: "Tilia cordata".to_string(),
+            height: Some(12.5),
+            diameter: Some(4.0),
+            circumference: Some(125.0),
+            ..Default::default()
+        };
+
+        let response = respond_with_trees_download(&[tree]);
+
+        assert_eq!(response.status(), actix_web::http::StatusCode::OK);
+        assert_eq!(
+            response.headers().get("content-type").unwrap(),
+            "application/geo+json"
+        );
+
+        let disposition = response
+            .headers()
+            .get("content-disposition")
+            .unwrap()
+            .to_str()
+            .unwrap();
+        assert!(disposition.contains("attachment"));
+        assert!(disposition.contains("trees.geojson"));
+
+        let body = actix_web::body::to_bytes(response.into_body())
+            .await
+            .unwrap();
+        let value: Value = serde_json::from_slice(&body).unwrap();
+
+        assert_eq!(value["type"], "FeatureCollection");
+        assert_eq!(value["name"], "trees_of_yerevan");
+        assert_eq!(value["features"].as_array().unwrap().len(), 1);
+
+        let feature = &value["features"][0];
+        assert_eq!(feature["geometry"]["type"], "Point");
+        assert_eq!(
+            feature["geometry"]["coordinates"],
+            json!([44.5091, 40.1792])
+        );
+        assert_eq!(feature["properties"]["id"], "42");
+        assert_eq!(feature["properties"]["species"], "Tilia cordata");
+        assert_eq!(feature["properties"]["state"], "alive");
+        assert_eq!(feature["properties"]["height_m"], 12.5);
+        assert_eq!(feature["properties"]["crown_diameter_m"], 4.0);
+        assert_eq!(feature["properties"]["trunk_circumference_cm"], 125.0);
     }
 }

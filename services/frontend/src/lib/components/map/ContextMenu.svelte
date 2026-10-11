@@ -3,6 +3,7 @@
 	import Ruler from '$lib/icons/Ruler.svelte';
 	import WaterIcon from '$lib/icons/WaterIcon.svelte';
 	import LocationIcon from '$lib/icons/LocationIcon.svelte';
+	import DownloadIcon from '$lib/icons/DownloadIcon.svelte';
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
 	import { hasPermission } from '$lib/stores/authStore';
@@ -61,7 +62,16 @@
 				<WaterIcon />
 				<span>{locale.waterAddTitle()}</span>
 			</button>
-			<button type="button" class="separator" onclick={componentState.handleCopyCoordinates}>
+			<a
+				class="download separator"
+				href={componentState.downloadUrl}
+				download
+				onclick={componentState.handleDownload}
+			>
+				<DownloadIcon />
+				<span>{locale.downloadData()}</span>
+			</a>
+			<button type="button" onclick={componentState.handleCopyCoordinates}>
 				<LocationIcon />
 				<span>{locale.copyCoordinates()}</span>
 			</button>
@@ -93,7 +103,8 @@
 			padding: 0;
 			white-space: nowrap;
 
-			button {
+			button,
+			a {
 				display: flex;
 				flex-direction: row;
 				align-items: center;
@@ -106,9 +117,12 @@
 				border: none;
 				border-radius: 0;
 				box-shadow: none;
+				box-sizing: border-box;
 				text-align: left;
+				text-decoration: none;
 				cursor: pointer;
 				transition: background-color 0.15s ease;
+				font-size: 1rem;
 
 				&:hover:not(:disabled) {
 					background-color: rgba(128, 128, 128, 0.2);
@@ -119,15 +133,15 @@
 					border-top: 1px solid rgba(128, 128, 128, 0.2);
 				}
 
-				&:disabled {
-					opacity: 0.4;
-					cursor: default;
-				}
-
 				:global(svg) {
 					width: 20px;
 					height: 20px;
 				}
+			}
+
+			button:disabled {
+				opacity: 0.4;
+				cursor: default;
 			}
 		}
 	}

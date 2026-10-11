@@ -1,7 +1,11 @@
+import { getSearchTreesGeoJSON } from '$lib/api/trees';
 import { mapBus } from '$lib/buses/mapBus';
 import { menuBus, type IMapMenuEvent } from '$lib/buses/menuBus';
 import { goto } from '$lib/routes';
-import type { ILatLng } from '$lib/types';
+import { combineQuery, missingQuery } from '$lib/stores/mapLayerStore';
+import { searchStore } from '$lib/stores/searchStore';
+import type { IBounds, ILatLng } from '$lib/types';
+import { get } from 'svelte/store';
 
 const MENU_MARGIN = 8;
 
@@ -10,9 +14,18 @@ export class ContextMenuLogic {
 
 	private coords: ILatLng | undefined = undefined;
 	private position = $state<{ x: number; y: number } | undefined>(undefined);
+	private bounds = $state<IBounds | undefined>(undefined);
 
 	viewport = $state({ width: 0, height: 0 });
 	menuSize = $state({ width: 0, height: 0 });
+
+	downloadUrl = $derived(
+		getSearchTreesGeoJSON(
+			combineQuery(get(searchStore), get(missingQuery)) ?? '',
+			this.bounds?.zoom,
+			this.bounds
+		)
+	);
 
 	clampedPosition = $derived.by(() => {
 		if (!this.position) {
@@ -36,6 +49,10 @@ export class ContextMenuLogic {
 				? { x: event.x, y: event.y }
 				: { x: this.viewport.width / 2, y: this.viewport.height / 2 };
 		this.open = true;
+	};
+
+	private handleBounds = (bounds: IBounds) => {
+		this.bounds = bounds;
 	};
 
 	public handleKeyDown = (e: KeyboardEvent) => {
@@ -84,11 +101,17 @@ export class ContextMenuLogic {
 		}
 	};
 
+	public handleDownload = () => {
+		this.open = false;
+	};
+
 	public subscribe = () => {
 		menuBus.on('showMap', this.handleShow);
+		mapBus.on('bounds', this.handleBounds);
 
 		return () => {
 			menuBus.off('showMap', this.handleShow);
+			mapBus.off('bounds', this.handleBounds);
 		};
 	};
 }

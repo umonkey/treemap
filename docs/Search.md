@@ -25,4 +25,5 @@ Matching trees are displayed efficiently to support both field work and desk aud
 Users can export search results for research, reporting, or external processing:
 
 - CSV download: enables downloading the entire search result set in comma-separated values (CSV) format.
+- GeoJSON download: from the map context menu, downloads the trees currently visible in the viewport (with any active search or filter) as a GeoJSON FeatureCollection.
 - Research utility: provides structured data attributes suitable for statistical analysis, GIS integration, and administrative reporting.

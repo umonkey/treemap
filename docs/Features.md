@@ -86,6 +86,7 @@ The application provides advanced search and filtering capabilities to help user
 - Filtering: search trees by state, address, species, presence or absence of specific measurements, and data age such as recent photos.
 - List view: view matching trees in a structured list with quick selection to jump directly to map locations.
 - Data export: download the entire search result set as a CSV file for research, reporting, or external analysis.
+- GeoJSON export: download the trees currently visible in the map viewport, with any active search or filter applied, as a GeoJSON file from the map context menu.
 
 ## Anonymized data export
 

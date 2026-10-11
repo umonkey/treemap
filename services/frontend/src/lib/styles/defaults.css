@@ -3,6 +3,15 @@ body {
 	height: 100%;
 }
 
+/* Form controls don't inherit the document font from `:root`; without this the
+   browser falls back to the system font (e.g. "Ubuntu Sans") instead of Inter. */
+button,
+input,
+select,
+textarea {
+	font-family: inherit;
+}
+
 body {
 	background-color: var(--background-color);
 	color: var(--text-color);
