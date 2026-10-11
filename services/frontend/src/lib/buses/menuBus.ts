@@ -9,8 +9,14 @@ export interface IMapMenuEvent {
 	y?: number; // viewport-relative screen Y
 }
 
+export interface ITreeMenuEvent {
+	id: string;
+	x?: number; // viewport-relative screen X
+	y?: number; // viewport-relative screen Y
+}
+
 type MenuBusEvent = {
-	show: string;
+	show: ITreeMenuEvent;
 	showMap: IMapMenuEvent;
 };
 

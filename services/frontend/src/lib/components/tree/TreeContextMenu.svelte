@@ -59,4 +59,9 @@
 	});
 </script>
 
-<BaseContextMenu open={menuState.id !== undefined} {items} onClose={menuState.handleClose} />
+<BaseContextMenu
+	open={menuState.id !== undefined}
+	position={menuState.position}
+	{items}
+	onClose={menuState.handleClose}
+/>

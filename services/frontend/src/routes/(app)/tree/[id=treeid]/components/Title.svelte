@@ -22,8 +22,8 @@
 		padded?: boolean;
 	}>();
 
-	const onMenu = () => {
-		menuBus.emit('show', id);
+	const onMenu = (e: MouseEvent) => {
+		menuBus.emit('show', { id, x: e.clientX, y: e.clientY });
 	};
 </script>
 

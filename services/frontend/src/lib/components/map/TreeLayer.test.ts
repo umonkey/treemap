@@ -238,6 +238,12 @@ describe('TreeLayerLogic', () => {
 		vi.stubGlobal('navigator', { vibrate: vibrateSpy });
 
 		const event = {
+			event: { point: { x: 100, y: 50 } },
+			map: {
+				getContainer: () => ({
+					getBoundingClientRect: () => ({ left: 10, top: 20 })
+				})
+			},
 			features: [
 				{
 					properties: { id: 'tree-1' },
@@ -248,7 +254,7 @@ describe('TreeLayerLogic', () => {
 
 		await logic.handleContextMenu(event);
 
-		expect(menuEmit).toHaveBeenCalledWith('show', 'tree-1');
+		expect(menuEmit).toHaveBeenCalledWith('show', { id: 'tree-1', x: 110, y: 70 });
 		expect(vibrateSpy).toHaveBeenCalledWith(50);
 	});
 
