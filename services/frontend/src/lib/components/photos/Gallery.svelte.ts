@@ -5,7 +5,7 @@ import type { IGalleryItem, ITreeFile } from '$lib/types';
 import { formatDate } from '$lib/utils/strings';
 import { get } from 'svelte/store';
 
-class GalleryState {
+export class Gallery {
 	loading = $state<boolean>(true);
 	error = $state<string | null>(null);
 	slides = $state<IGalleryItem[]>([]);
@@ -32,7 +32,7 @@ class GalleryState {
 		}
 	};
 
-	private formatSlides(files: ITreeFile[]): IGalleryItem[] {
+	private formatSlides = (files: ITreeFile[]): IGalleryItem[] => {
 		return files.map((file: ITreeFile): IGalleryItem => {
 			return {
 				id: file.id,
@@ -41,9 +41,9 @@ class GalleryState {
 				label: this.added_at(file)
 			};
 		});
-	}
+	};
 
-	private added_at(file: ITreeFile): string {
+	private added_at = (file: ITreeFile): string => {
 		if (!file.added_at || !file.added_by) {
 			return '';
 		}
@@ -56,7 +56,5 @@ class GalleryState {
 
 		const date = formatDate(file.added_at);
 		return `${date} by ${user.name}`;
-	}
+	};
 }
-
-export const galleryState = new GalleryState();

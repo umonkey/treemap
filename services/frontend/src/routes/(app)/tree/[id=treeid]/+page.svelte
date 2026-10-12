@@ -49,10 +49,8 @@
 
 			<TreeTabs tree={pageState.tree.id} active="details" />
 
-			<Gallery
-				id={pageState.tree.id}
-				initialImageId={$page.url.searchParams.get('image') || undefined}
-			/>
+			<Gallery id={pageState.tree.id} />
+
 			<Actions tree={pageState.tree} />
 			<Properties tree={pageState.tree} />
 			<Observations observation={pageState.observation || null} />
