@@ -3,7 +3,6 @@
 	import { page } from '$app/state';
 	import { mapBottomPadding } from '$lib/components/map/mapBottomPadding';
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
-	import LocationIcon from '$lib/icons/LocationIcon.svelte';
 	import SpinnerIcon from '$lib/icons/SpinnerIcon.svelte';
 	import { locale } from '$lib/locale';
 	import { formatSpecies } from '$lib/utils/trees';
@@ -36,27 +35,27 @@
 	<title>{title}</title>
 </svelte:head>
 
-<div class="tree" class:expand={!!state.expand} class:loading={state.loading} use:mapBottomPadding>
+<div class="tree" class:loading={state.loading} use:mapBottomPadding>
 	{#if state.tree}
 		{@const tree = state.tree}
 
 		<div class="header">
-			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
-			<div class="title" onclick={state.toggleExpand}>{formatSpecies(tree.species)}</div>
+			<div class="title">{formatSpecies(tree.species)}</div>
 			<button class="close" aria-label={locale.editCancel()} onclick={state.handleClose}
 				><CloseIcon /></button
 			>
 		</div>
 
-		{#if tree.address}
-			<div class="props">
-				<div class="line">
-					<div class="icon"><LocationIcon /></div>
-					<div class="value">{tree.address}</div>
-				</div>
-			</div>
-		{/if}
+		<div class="subtitle">
+			<div class="addr">{tree.address}</div>
+			<button
+				class="id"
+				type="button"
+				title={locale.copyId()}
+				aria-label={locale.copyId()}
+				onclick={state.copyId}>#{tree.id}</button
+			>
+		</div>
 
 		<TreeTabs {tree} />
 	{:else if state.loading}
@@ -134,29 +133,6 @@
 			overflow: hidden;
 			text-overflow: ellipsis;
 		}
-
-		.props {
-			opacity: 0.7;
-			display: flex;
-			flex-direction: column;
-			gap: 5px;
-
-			.line {
-				white-space: nowrap;
-				overflow: hidden;
-				text-overflow: ellipsis;
-
-				display: flex;
-				flex-direction: row;
-				align-items: center;
-				gap: var(--gap);
-
-				.icon {
-					width: 20px;
-					height: 20px;
-				}
-			}
-		}
 	}
 
 	.content {
@@ -164,6 +140,29 @@
 		flex-direction: column;
 		gap: var(--gap);
 		min-height: 0;
+	}
+
+	.subtitle {
+		display: flex;
+		flex-direction: row;
+		gap: 1rem;
+		opacity: 0.5;
+
+		.addr {
+			flex: 1 1;
+		}
+
+		.id {
+			opacity: 0.5;
+			margin: 0;
+			padding: 0;
+			border: none;
+			background: none;
+			color: inherit;
+			font: inherit;
+			line-height: inherit;
+			cursor: pointer;
+		}
 	}
 
 	/* Make it narrow on large mobile devices */
@@ -223,11 +222,9 @@
 				transition: max-height 0.2s ease-in-out;
 			}
 
-			&.expand {
-				.content {
-					max-height: 80dvh;
-					overflow-y: auto;
-				}
+			.content {
+				max-height: 80dvh;
+				overflow-y: auto;
 			}
 		}
 	}

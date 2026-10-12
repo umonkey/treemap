@@ -38,6 +38,18 @@ export class TreeLayoutState {
 		this.expand = !this.expand;
 	};
 
+	public copyId = async () => {
+		if (!this.tree) {
+			return;
+		}
+
+		try {
+			await navigator.clipboard.writeText(this.tree.id);
+		} catch (e) {
+			console.error('Failed to copy tree id to clipboard', e);
+		}
+	};
+
 	public handleClose = async () => {
 		if (this.id) {
 			await goto(routes.mapPreview(this.id));

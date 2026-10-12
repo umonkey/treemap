@@ -2,7 +2,6 @@
 	import { getContext } from 'svelte';
 	import { page } from '$app/state';
 	import Observations from '$lib/components/observation/Observations.svelte';
-	import Comment from '$lib/components/tree/Comment.svelte';
 	import Actions from '../components/Actions.svelte';
 	import Properties from '../components/Properties.svelte';
 	import { TREE_CONTEXT_KEY, type TreeLayoutState } from '../layout.svelte.ts';
@@ -29,13 +28,11 @@
 	<hr />
 	<Actions {tree} />
 
-	<div class="extras">
-		<Observations observation={previewContentState.observations} />
-
-		{#each previewContentState.comments as comment}
-			<Comment {comment} />
-		{/each}
-	</div>
+	{#if previewContentState.observations}
+		<div class="extras">
+			<Observations observation={previewContentState.observations} />
+		</div>
+	{/if}
 {/if}
 
 <style>

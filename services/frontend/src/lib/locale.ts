@@ -181,6 +181,10 @@ class EnglishLocale {
 		return 'Copy coordinates';
 	}
 
+	public copyId(): string {
+		return 'Copy id';
+	}
+
 	public downloadData(): string {
 		return 'Download data';
 	}
@@ -1006,6 +1010,10 @@ class RussianLocale extends EnglishLocale {
 		return 'Скопировать координаты';
 	}
 
+	public override copyId(): string {
+		return 'Скопировать идентификатор';
+	}
+
 	public override downloadData(): string {
 		return 'Скачать данные';
 	}
@@ -1797,6 +1805,10 @@ class ArmenianLocale extends EnglishLocale {
 
 	public override copyCoordinates(): string {
 		return 'Պատճենել կոորդինատները';
+	}
+
+	public override copyId(): string {
+		return 'Պատճենել նույնացուցիչը';
 	}
 
 	public override downloadData(): string {

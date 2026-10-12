@@ -1,13 +1,11 @@
-import { getTreeComments } from '$lib/api/comments';
 import { getObservations } from '$lib/api/observations';
 import { mapBus } from '$lib/buses/mapBus';
 import { goto, routes } from '$lib/routes';
 import { mapMode } from '$lib/stores/mapMode';
-import type { IComment, IObservation } from '$lib/types';
+import type { IObservation } from '$lib/types';
 
 class PreviewContentState {
 	observations = $state<IObservation | null>(null);
-	comments = $state<IComment[]>([]);
 	expand = $state<boolean>(false);
 	loading = $state<boolean>(false);
 
@@ -22,7 +20,6 @@ class PreviewContentState {
 
 	public clear = () => {
 		this.observations = null;
-		this.comments = [];
 		this.expand = false;
 	};
 
@@ -34,14 +31,6 @@ class PreviewContentState {
 				this.observations = res.data;
 			} else {
 				this.observations = null;
-			}
-		});
-
-		getTreeComments(id).then((res) => {
-			if (res.status === 200 && res.data) {
-				this.comments = res.data.comments.sort((a, b) => b.added_at - a.added_at);
-			} else {
-				this.comments = [];
 			}
 		});
 	};
