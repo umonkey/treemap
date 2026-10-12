@@ -1,36 +1,19 @@
 import { addComment, getTreeComments } from '$lib/api/comments';
 import { getObservations } from '$lib/api/observations';
-import { getTree } from '$lib/api/trees';
-import { mapBus } from '$lib/buses/mapBus';
 import { showError, showInfo } from '$lib/errors';
 import { locale } from '$lib/locale';
 import { addUsers } from '$lib/stores/userStore';
-import type { IComment, ILatLng, IObservation, ITree } from '$lib/types';
+import type { IComment, IObservation } from '$lib/types';
 
 class PageState {
 	id = $state<string>();
-	tree = $state<ITree>();
 	comments = $state<IComment[]>([]);
 	observation = $state<IObservation>();
 
 	public reload = (id: string) => {
 		this.id = id;
-		this.tree = undefined;
 		this.comments = [];
 		this.observation = undefined;
-
-		getTree(id).then((res) => {
-			if (res.status === 200 && res.data) {
-				this.tree = res.data;
-
-				this.moveMap({
-					lat: res.data.lat,
-					lng: res.data.lon
-				});
-			} else if (res.error) {
-				showError(res.error.description);
-			}
-		});
 
 		this.loadComments();
 
@@ -55,7 +38,7 @@ class PageState {
 	};
 
 	public handleSubmitComment = async (message: string): Promise<boolean> => {
-		const treeId = this.tree?.id;
+		const treeId = this.id;
 
 		if (!treeId) {
 			return false;
@@ -77,12 +60,6 @@ class PageState {
 			showError('Exception adding a comment.');
 			return false;
 		}
-	};
-
-	private moveMap = (ll: ILatLng) => {
-		console.debug(`Moving map center once to ${ll.lat},${ll.lng}`);
-
-		mapBus.emit('moveOnce', ll);
 	};
 }
 

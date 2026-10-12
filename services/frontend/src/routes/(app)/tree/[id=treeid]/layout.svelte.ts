@@ -1,0 +1,53 @@
+import { getTree } from '$lib/api/trees';
+import { mapBus } from '$lib/buses/mapBus';
+import { showError } from '$lib/errors';
+import { goto, routes } from '$lib/routes';
+import type { IError, ISingleTree } from '$lib/types';
+
+export const TREE_CONTEXT_KEY = Symbol('tree-layout');
+
+export class TreeLayoutState {
+	id = $state<string>();
+	tree = $state<ISingleTree>();
+	loading = $state(false);
+	error = $state<IError>();
+	expand = $state(false);
+
+	public reload = (id: string) => {
+		this.id = id;
+		this.tree = undefined;
+		this.error = undefined;
+		this.loading = true;
+
+		getTree(id).then((res) => {
+			if (res.status === 200 && res.data) {
+				this.tree = res.data;
+
+				const ll = { lat: this.tree.lat, lng: this.tree.lon };
+				mapBus.emit('pin', ll);
+				mapBus.emit('moveOnce', ll);
+			} else if (res.error) {
+				this.error = res.error;
+				showError(res.error.description);
+			}
+			this.loading = false;
+		});
+	};
+
+	public toggleExpand = () => {
+		this.expand = !this.expand;
+	};
+
+	public handleClose = async () => {
+		if (this.id) {
+			await goto(routes.mapPreview(this.id));
+		}
+	};
+
+	/** Cleanup leaves the map pin behind. */
+	public init = () => {
+		return () => {
+			mapBus.emit('pin', undefined);
+		};
+	};
+}

@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import TreeForm from '$lib/components/forms/TreeForm.svelte';
 	import { locale } from '$lib/locale';
 	import { isAuthenticated } from '$lib/stores/authStore';
 	import { getUser } from '$lib/stores/userStore';
 	import type { IObservation } from '$lib/types';
+	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
+	import Button from '$lib/ui/button/Button.svelte';
+	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import CheckInput from '$lib/ui/check-input/CheckInput.svelte';
 	import HelpButton from '$lib/ui/help-button/HelpButton.svelte';
 	import { pageState } from './page.svelte';
@@ -47,13 +49,7 @@
 {#if pageState.loading}
 	<p>Loading...</p>
 {:else}
-	<TreeForm
-		{id}
-		title="Observations"
-		onSubmit={pageState.handleSubmit}
-		onCancel={pageState.handleCancel}
-		saving={pageState.saving}
-	>
+	<AuthWrapper>
 		<div class="observation-status">
 			{#if pageState.observation.created_at > 0 && pageState.observation.created_by}
 				<p>Last observation made on {date} by {user?.name ?? 'unknown user'}</p>
@@ -83,14 +79,20 @@
 				{/each}
 			</tbody>
 		</table>
-	</TreeForm>
+
+		<Buttons>
+			<Button onClick={pageState.handleSubmit} disabled={pageState.saving}
+				>{locale.confirm()}</Button
+			>
+			<Button type="secondary" onClick={pageState.handleCancel}>{locale.editCancel()}</Button>
+		</Buttons>
+	</AuthWrapper>
 {/if}
 
 <style>
 	.observation-table {
 		width: 100%;
 		border-collapse: collapse;
-		margin-bottom: var(--gap-large);
 
 		tr {
 			border: none;
@@ -120,7 +122,6 @@
 	}
 
 	.observation-status {
-		margin-bottom: var(--gap-large);
 		color: var(--text-color-secondary);
 		font-size: 0.9em;
 	}

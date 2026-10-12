@@ -1,12 +1,5 @@
 <script lang="ts">
-	import MapPreview from './MapPreview.svelte';
-	import { page } from '$app/stores';
-
-	const id = $derived($page.params.id as string);
+	import PreviewContent from './PreviewContent.svelte';
 </script>
 
-<svelte:head>
-	<title>Tree {id} - Trees of Yerevan</title>
-</svelte:head>
-
-<MapPreview {id} />
+<PreviewContent />

@@ -85,8 +85,8 @@
 
 		gap: calc(var(--gap) * 1.5);
 		justify-content: left;
-		margin: var(--gap) 0;
-		padding: 0 var(--gap);
+		margin: 0;
+		padding: 0;
 
 		.icon {
 			width: 20px;

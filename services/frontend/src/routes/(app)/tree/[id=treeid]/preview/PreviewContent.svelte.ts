@@ -1,15 +1,12 @@
 import { getTreeComments } from '$lib/api/comments';
 import { getObservations } from '$lib/api/observations';
-import { getTree } from '$lib/api/trees';
 import { mapBus } from '$lib/buses/mapBus';
 import { menuBus } from '$lib/buses/menuBus';
-import { showError } from '$lib/errors';
 import { goto, routes } from '$lib/routes';
 import { mapMode } from '$lib/stores/mapMode';
-import type { IComment, IObservation, ITree } from '$lib/types';
+import type { IComment, IObservation } from '$lib/types';
 
-class PreviewState {
-	tree = $state<ITree>();
+class PreviewContentState {
 	observations = $state<IObservation | null>(null);
 	comments = $state<IComment[]>([]);
 	expand = $state<boolean>(false);
@@ -25,36 +22,17 @@ class PreviewState {
 	};
 
 	public clear = () => {
-		this.tree = undefined;
 		this.observations = null;
 		this.comments = [];
 		this.expand = false;
-
-		mapBus.emit('pin', undefined);
 	};
 
-	public handleContextMenu = (e: MouseEvent) => {
-		if (this.tree) {
-			menuBus.emit('show', { id: this.tree.id, x: e.clientX, y: e.clientY });
-		}
+	public handleContextMenu = (id: string, e: MouseEvent) => {
+		menuBus.emit('show', { id, x: e.clientX, y: e.clientY });
 	};
 
 	public reload = (id: string) => {
 		console.debug(`Reloading preview for tree ${id}`);
-		this.loading = true;
-
-		getTree(id).then((res) => {
-			if (res.status === 200 && res.data) {
-				this.tree = res.data;
-
-				const ll = { lat: this.tree.lat, lng: this.tree.lon };
-				mapBus.emit('pin', ll);
-				mapBus.emit('moveOnce', ll);
-			} else if (res.error) {
-				showError(res.error.description);
-			}
-			this.loading = false;
-		});
 
 		getObservations(id).then((res) => {
 			if (res.status === 200 && res.data) {
@@ -91,4 +69,4 @@ class PreviewState {
 	};
 }
 
-export const previewState = new PreviewState();
+export const previewContentState = new PreviewContentState();
