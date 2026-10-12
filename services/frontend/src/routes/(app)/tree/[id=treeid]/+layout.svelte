@@ -201,23 +201,31 @@
 		}
 	}
 
-	/** On mobile, the content needs expansion. **/
+	/**
+	 * On mobile, the panel is collapsed by default: it hugs whatever chrome it
+	 * holds. Expanding reveals the content, letting the panel grow with it, up
+	 * to 80dvh; beyond that the content scrolls.
+	 **/
 	@media screen and (max-width: 1023px) {
 		.tree {
 			position: fixed;
 			bottom: var(--bottom-nav-height);
-			height: calc(266px);
+			max-height: 80dvh;
 			padding-bottom: var(--gap);
-			transition: height 0.2s ease-in-out;
 			border-width: 0;
 			overflow: hidden;
 
 			animation: slideUp 0.2s ease-out;
 
-			&.expand {
-				height: 80dvh;
+			.content {
+				max-height: 0;
+				overflow: hidden;
+				transition: max-height 0.2s ease-in-out;
+			}
 
+			&.expand {
 				.content {
+					max-height: 80dvh;
 					overflow-y: auto;
 				}
 			}
