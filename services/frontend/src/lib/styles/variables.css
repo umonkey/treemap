@@ -26,6 +26,7 @@
 	--bottom-nav-height: 50px;
 	--narrow-width: 600px;
 	--sidebar-width-desktop: 400px;
+	--sidebar-width-desktop-wide: min(700px, 50vw);
 
 	/* Other sizes */
 	--gap: 10px;

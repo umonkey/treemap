@@ -5,6 +5,7 @@
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
 	import SpinnerIcon from '$lib/icons/SpinnerIcon.svelte';
 	import { locale } from '$lib/locale';
+	import { routes } from '$lib/routes';
 	import { formatSpecies } from '$lib/utils/trees';
 	import TreeTabs from './components/TreeTabs.svelte';
 	import { TREE_CONTEXT_KEY, TreeLayoutState } from './layout.svelte.ts';
@@ -15,6 +16,11 @@
 	setContext(TREE_CONTEXT_KEY, state);
 
 	const id = $derived(page.params.id as string);
+
+	// The sidebar is wide everywhere except the preview tab, whose content is
+	// narrow. Preview is the layout's own special case: it is where the close
+	// button goes.
+	const wide = $derived(page.url.pathname !== routes.mapPreview(id));
 
 	$effect(() => {
 		return state.init();
@@ -35,7 +41,7 @@
 	<title>{title}</title>
 </svelte:head>
 
-<div class="tree" class:loading={state.loading} use:mapBottomPadding>
+<div class="tree" class:wide class:loading={state.loading} use:mapBottomPadding>
 	{#if state.tree}
 		{@const tree = state.tree}
 
@@ -186,6 +192,10 @@
 			height: 100vh;
 			border-radius: 0px;
 			border-left: 1px solid var(--sep-color);
+
+			&.wide {
+				width: var(--sidebar-width-desktop-wide);
+			}
 
 			.title {
 				display: flex;
