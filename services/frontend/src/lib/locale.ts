@@ -378,6 +378,10 @@ class EnglishLocale {
 		return 'Map';
 	}
 
+	public treeTabsPreview(): string {
+		return 'Preview';
+	}
+
 	public treeTabsObservations(): string {
 		return 'Observations';
 	}
@@ -1161,6 +1165,10 @@ class RussianLocale extends EnglishLocale {
 
 	public treeTabsMap(): string {
 		return 'Карта';
+	}
+
+	public treeTabsPreview(): string {
+		return 'Обзор';
 	}
 
 	public treeTabsObservations(): string {
@@ -1950,6 +1958,10 @@ class ArmenianLocale extends EnglishLocale {
 
 	public treeTabsMap(): string {
 		return 'Քարտեզ';
+	}
+
+	public treeTabsPreview(): string {
+		return 'Նախադիտում';
 	}
 
 	public treeTabsObservations(): string {

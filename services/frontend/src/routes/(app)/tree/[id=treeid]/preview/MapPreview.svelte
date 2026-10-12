@@ -22,6 +22,7 @@
 	} from '$lib/utils/trees';
 	import { previewState } from './MapPreview.svelte.ts';
 	import { mapBottomPadding } from '$lib/components/map/mapBottomPadding';
+	import TreeTabs from '../components/TreeTabs.svelte';
 	import '$lib/styles/variables.css';
 
 	let { id } = $props<{ id: string }>();
@@ -84,6 +85,8 @@
 				<div class="value">{formatState(tree.state)}</div>
 			</div>
 		</div>
+
+		<TreeTabs tree={tree.id} active="preview" />
 
 		<GalleryPreview id={tree.id} />
 

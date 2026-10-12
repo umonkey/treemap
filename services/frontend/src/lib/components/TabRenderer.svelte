@@ -29,6 +29,8 @@
 
 <style>
 	.tabs {
+		width: 100%;
+		max-width: 100%;
 		border-bottom: solid 1px var(--sep-color);
 		font-size: 14px;
 		font-weight: 400;
@@ -39,8 +41,12 @@
 			padding: 0;
 			display: flex;
 			flex-direction: row;
+			overflow-x: auto;
+			overflow-y: hidden;
 
 			li {
+				flex-shrink: 0;
+				white-space: nowrap;
 				line-height: 30px;
 				cursor: pointer;
 				color: var(--text-color-inactive);
