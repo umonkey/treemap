@@ -3,13 +3,12 @@
 	import { locale } from '$lib/locale';
 	import { isAuthenticated } from '$lib/stores/authStore';
 	import { getUser } from '$lib/stores/userStore';
-	import type { IObservation } from '$lib/types';
 	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
-	import Button from '$lib/ui/button/Button.svelte';
-	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import CheckInput from '$lib/ui/check-input/CheckInput.svelte';
 	import HelpButton from '$lib/ui/help-button/HelpButton.svelte';
-	import { pageState } from './page.svelte';
+	import { ObservationsPage, type ObservationField } from './page.svelte';
+
+	const pageState = new ObservationsPage();
 
 	const id = $derived(page.params.id);
 
@@ -26,7 +25,7 @@
 			: ''
 	);
 
-	const fields = [
+	const fields: { id: ObservationField; label: string }[] = [
 		{ id: 'bark_damage', label: locale.observationBarkDamage() },
 		{ id: 'dry_branches', label: locale.observationDryBranches() },
 		{ id: 'leaking', label: locale.observationLeaking() },
@@ -66,7 +65,8 @@
 							<CheckInput
 								id={field.id}
 								disabled={!$isAuthenticated}
-								bind:value={pageState.observation[field.id as keyof IObservation] as boolean}
+								bind:value={pageState.observation[field.id]}
+								onChange={(value) => pageState.handleChange(field.id, value)}
 							/>
 						</td>
 						<td class="label-cell">
@@ -79,13 +79,6 @@
 				{/each}
 			</tbody>
 		</table>
-
-		<Buttons>
-			<Button onClick={pageState.handleSubmit} disabled={pageState.saving}
-				>{locale.confirm()}</Button
-			>
-			<Button type="secondary" onClick={pageState.handleCancel}>{locale.editCancel()}</Button>
-		</Buttons>
 	</AuthWrapper>
 {/if}
 

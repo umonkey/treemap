@@ -36,12 +36,6 @@
 {/if}
 
 <style>
-	.extras {
-		display: flex;
-		flex-direction: column;
-		gap: var(--gap);
-	}
-
 	hr {
 		margin: 0;
 		padding: 0;

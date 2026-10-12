@@ -15,8 +15,9 @@
 		gallery.reload(id);
 	});
 
-	const handleLoad = (e) => {
-		e.target.style.opacity = '1';
+	const handleLoad = (e: Event) => {
+		const target = e.currentTarget as HTMLImageElement;
+		target.style.opacity = '1';
 	};
 </script>
 
