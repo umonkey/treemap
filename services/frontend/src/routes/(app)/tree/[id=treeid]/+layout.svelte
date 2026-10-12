@@ -68,7 +68,7 @@
 			</div>
 		{/if}
 
-		<TreeTabs tree={tree.id} {active} />
+		<TreeTabs {tree} {active} />
 	{:else if state.loading}
 		<div class="loading-state"><SpinnerIcon /></div>
 	{/if}

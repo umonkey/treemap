@@ -8,6 +8,7 @@
 			id: string;
 			title: string;
 			url: string;
+			badge?: string | number;
 		}[];
 	} = $props();
 
@@ -22,7 +23,14 @@
 <nav class="tabs">
 	<ul>
 		{#each tabs as tab}
-			<li class:active={cls(tab.id)}><a href={tab.url}>{tab.title}</a></li>
+			<li class:active={cls(tab.id)}>
+				<a href={tab.url}>
+					{tab.title}
+					{#if tab.badge}
+						<span class="badge">{tab.badge}</span>
+					{/if}
+				</a>
+			</li>
 		{/each}
 	</ul>
 </nav>
@@ -59,10 +67,27 @@
 				padding: 0 calc(1.5 * var(--gap));
 
 				a {
-					display: block;
+					display: flex;
+					align-items: center;
+					gap: 6px;
 					text-decoration: none;
 					color: inherit;
 					border-bottom: 3px solid transparent;
+				}
+
+				.badge {
+					display: inline-block;
+					background-color: #080;
+					color: #fff;
+					font-size: 11px;
+					font-weight: 600;
+					padding: 0 6px;
+					border-radius: 5px;
+					line-height: 16px;
+					height: 16px;
+					min-width: 16px;
+					flex-shrink: 0;
+					text-align: center;
 				}
 
 				&:hover {
