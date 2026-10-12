@@ -25,16 +25,6 @@
 		if (id) state.reload(id);
 	});
 
-	const active = $derived.by(() => {
-		const path = page.url.pathname;
-		if (path.endsWith('/preview')) return 'preview';
-		if (path.endsWith('/360')) return '360';
-		if (path.endsWith('/observations')) return 'observations';
-		if (path.endsWith('/photos')) return 'photos';
-		if (path.endsWith('/history')) return 'history';
-		return 'details';
-	});
-
 	const title = $derived(
 		state.tree
 			? `${formatSpecies(state.tree.species)} — ${state.tree.address} — ${locale.appTitle()}`
@@ -68,7 +58,7 @@
 			</div>
 		{/if}
 
-		<TreeTabs {tree} {active} />
+		<TreeTabs {tree} />
 	{:else if state.loading}
 		<div class="loading-state"><SpinnerIcon /></div>
 	{/if}

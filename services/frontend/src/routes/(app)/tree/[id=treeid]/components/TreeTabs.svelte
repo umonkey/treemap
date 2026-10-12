@@ -1,10 +1,11 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import TabRenderer from '$lib/components/TabRenderer.svelte';
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
 	import type { ISingleTree } from '$lib/types';
 
-	const { tree, active }: { tree: ISingleTree; active: string } = $props();
+	const { tree }: { tree: ISingleTree } = $props();
 
 	const photos = $derived(tree.files?.length ?? 0);
 
@@ -31,6 +32,8 @@
 			url: routes.treeHistory(tree.id)
 		}
 	]);
+
+	const active = $derived(tabs.find((tab) => tab.url === page.url.pathname)?.id);
 </script>
 
 <TabRenderer {active} {tabs} />
