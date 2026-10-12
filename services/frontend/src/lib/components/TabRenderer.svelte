@@ -43,6 +43,12 @@
 			flex-direction: row;
 			overflow-x: auto;
 			overflow-y: hidden;
+			scrollbar-width: none;
+			-ms-overflow-style: none;
+
+			&::-webkit-scrollbar {
+				display: none;
+			}
 
 			li {
 				flex-shrink: 0;
