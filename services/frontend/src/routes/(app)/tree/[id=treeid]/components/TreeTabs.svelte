@@ -17,11 +17,6 @@
 			url: routes.treeDetails(tree)
 		},
 		{
-			id: '360',
-			title: locale.treeTabsStreetView(),
-			url: routes.treeStreetView(tree)
-		},
-		{
 			id: 'observations',
 			title: locale.treeTabsObservations(),
 			url: routes.treeObservations(tree)
