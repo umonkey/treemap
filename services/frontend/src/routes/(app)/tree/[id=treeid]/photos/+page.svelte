@@ -9,5 +9,5 @@
 {#if layoutState.tree}
 	{@const tree = layoutState.tree}
 
-	<Gallery id={tree.id} />
+	<Gallery id={tree.id} count={tree.files?.length} />
 {/if}

@@ -2,9 +2,14 @@
 	import FALLBACK from '$lib/assets/tree.jpg';
 	import { Gallery } from './Gallery.svelte.ts';
 
-	const { id }: { id: string } = $props();
+	const { id, count }: { id: string; count?: number | undefined } = $props();
 
 	const gallery = new Gallery();
+
+	// The files are fetched here, but the caller usually already knows how many
+	// photos to expect: reserve that many tiles while loading so the grid does
+	// not jump once the images arrive.
+	const placeholders = $derived(gallery.loading ? (count ?? 0) : 0);
 
 	$effect(() => {
 		gallery.reload(id);
@@ -12,9 +17,7 @@
 </script>
 
 <div class="gallery">
-	{#if gallery.loading && gallery.slides.length === 0}
-		<!-- Loading files -->
-	{:else if gallery.error}
+	{#if gallery.error}
 		<p>{gallery.error}</p>
 	{:else}
 		<div class="grid">
@@ -29,7 +32,13 @@
 					<img src={item.small} alt="Tree" />
 				</a>
 			{:else}
-				<div class="tile"><img src={FALLBACK} alt="No photos of this tree." /></div>
+				{#if placeholders > 0}
+					{#each Array(placeholders).keys() as index (index)}
+						<div class="tile placeholder"></div>
+					{/each}
+				{:else if !gallery.loading}
+					<div class="tile"><img src={FALLBACK} alt="No photos of this tree." /></div>
+				{/if}
 			{/each}
 		</div>
 	{/if}
@@ -58,6 +67,10 @@
 		height: 100%;
 		object-fit: cover;
 		color: transparent;
+		background-color: rgba(0, 0, 0, 0.2);
+	}
+
+	.tile.placeholder {
 		background-color: rgba(0, 0, 0, 0.2);
 	}
 </style>
