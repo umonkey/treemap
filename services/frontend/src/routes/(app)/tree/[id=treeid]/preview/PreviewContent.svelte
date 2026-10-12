@@ -3,11 +3,6 @@
 	import { page } from '$app/state';
 	import Observations from '$lib/components/observation/Observations.svelte';
 	import Comment from '$lib/components/tree/Comment.svelte';
-	import { handleShareTree } from '$lib/hooks/shareTree';
-	import SettingsIcon from '$lib/icons/SettingsIcon.svelte';
-	import ShareIcon from '$lib/icons/ShareIcon.svelte';
-	import Button from '$lib/ui/button/Button.svelte';
-	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import Actions from '../components/Actions.svelte';
 	import Properties from '../components/Properties.svelte';
 	import { TREE_CONTEXT_KEY, type TreeLayoutState } from '../layout.svelte.ts';
@@ -31,19 +26,8 @@
 	{@const tree = layoutState.tree}
 
 	<Properties {tree} />
-	<hr/>
+	<hr />
 	<Actions {tree} />
-
-	<Buttons>
-		<Button type="secondary" onClick={() => handleShareTree(tree.id)} square><ShareIcon /></Button>
-		<Button
-			type="secondary"
-			onClick={(e) => previewContentState.handleContextMenu(tree.id, e)}
-			square
-		>
-			<SettingsIcon />
-		</Button>
-	</Buttons>
 
 	<div class="extras">
 		<Observations observation={previewContentState.observations} />

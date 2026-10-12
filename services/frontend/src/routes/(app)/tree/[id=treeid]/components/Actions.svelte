@@ -1,10 +1,11 @@
 <script lang="ts">
+	import { menuBus } from '$lib/buses/menuBus';
 	import { FEATURES } from '$lib/features';
-	import CameraIcon from '$lib/icons/CameraIcon.svelte';
 	import HeartIcon from '$lib/icons/HeartIcon.svelte';
 	import HeartSolidIcon from '$lib/icons/HeartSolidIcon.svelte';
 	import OpenStreetMapIcon from '$lib/icons/OpenStreetMapIcon.svelte';
 	import SaveIcon from '$lib/icons/SaveIcon.svelte';
+	import SettingsIcon from '$lib/icons/SettingsIcon.svelte';
 	import WikiIcon from '$lib/icons/WikipediaIcon.svelte';
 	import { like, preloadMeLikes, unlike } from '$lib/likes';
 	import { routes } from '$lib/routes';
@@ -34,6 +35,10 @@
 			await unlike(tree.id);
 		}
 	};
+
+	const onMenu = (e: MouseEvent) => {
+		menuBus.emit('show', { id: tree.id, x: e.clientX, y: e.clientY });
+	};
 </script>
 
 <div class="actions">
@@ -42,8 +47,6 @@
 			>{#if isTreeLiked}<HeartSolidIcon />{:else}<HeartIcon />{/if}</a
 		>
 	</div>
-
-	<div class="icon"><a href={routes.treeUploadPhotos(tree.id)}><CameraIcon /></a></div>
 
 	{#if tree.species}
 		<div class="icon">
@@ -66,6 +69,10 @@
 	{#if FEATURES.bookmarks}
 		<div class="icon"><SaveIcon /></div>
 	{/if}
+
+	<div class="icon">
+		<button type="button" onclick={onMenu}><SettingsIcon /></button>
+	</div>
 
 	<div class="sep"></div>
 
@@ -116,6 +123,17 @@
 
 		.liked {
 			color: #ff3040;
+		}
+
+		button {
+			background: none;
+			border: none;
+			color: inherit;
+			padding: 0;
+			margin: 0;
+			cursor: pointer;
+			width: 100%;
+			height: 100%;
 		}
 	}
 

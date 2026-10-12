@@ -1,7 +1,6 @@
 import { getTreeComments } from '$lib/api/comments';
 import { getObservations } from '$lib/api/observations';
 import { mapBus } from '$lib/buses/mapBus';
-import { menuBus } from '$lib/buses/menuBus';
 import { goto, routes } from '$lib/routes';
 import { mapMode } from '$lib/stores/mapMode';
 import type { IComment, IObservation } from '$lib/types';
@@ -25,10 +24,6 @@ class PreviewContentState {
 		this.observations = null;
 		this.comments = [];
 		this.expand = false;
-	};
-
-	public handleContextMenu = (id: string, e: MouseEvent) => {
-		menuBus.emit('show', { id, x: e.clientX, y: e.clientY });
 	};
 
 	public reload = (id: string) => {
