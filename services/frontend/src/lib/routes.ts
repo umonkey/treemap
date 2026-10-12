@@ -67,6 +67,7 @@ export const routes = {
 	treeHeight: (id: string) => `/tree/${id}/height`,
 	treeHistory: (id: string) => `/tree/${id}/history`,
 	treeMove: (id: string) => `/tree/${id}/move`,
+	treeComments: (id: string) => `/tree/${id}/comments`,
 	treeObservations: (id: string) => `/tree/${id}/observations`,
 	treePhotos: (id: string) => `/tree/${id}/photos`,
 	treeReplace: (id: string) => `/tree/${id}/replace`,

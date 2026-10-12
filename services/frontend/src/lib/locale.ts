@@ -386,6 +386,10 @@ class EnglishLocale {
 		return 'Photos';
 	}
 
+	public treeTabsComments(): string {
+		return 'Comments';
+	}
+
 	public treeTabsObservations(): string {
 		return 'Observations';
 	}
@@ -462,10 +466,6 @@ class EnglishLocale {
 		return 'No comments for this tree yet.';
 	}
 
-	public commentPrompt(): string {
-		return 'Would you like to leave a comment?';
-	}
-
 	public commentLabel(): string {
 		return 'Comment';
 	}
@@ -483,7 +483,7 @@ class EnglishLocale {
 	}
 
 	public commentHint(): string {
-		return 'Some hints or suggested edits.';
+		return 'Suggest edits, maintenance or spot recent issues.';
 	}
 
 	public contextReplace(): string {
@@ -1179,6 +1179,10 @@ class RussianLocale extends EnglishLocale {
 		return 'Фото';
 	}
 
+	public treeTabsComments(): string {
+		return 'Комментарии';
+	}
+
 	public treeTabsObservations(): string {
 		return 'Наблюдения';
 	}
@@ -1255,10 +1259,6 @@ class RussianLocale extends EnglishLocale {
 		return 'Нет комментариев для этого дерева.';
 	}
 
-	public commentPrompt(): string {
-		return 'Желаете оставить комментарий?';
-	}
-
 	public commentLabel(): string {
 		return 'Комментарий';
 	}
@@ -1276,7 +1276,7 @@ class RussianLocale extends EnglishLocale {
 	}
 
 	public commentHint(): string {
-		return 'Оставьте подсказки или предложения по исправлению.';
+		return 'Предложите правки, уход или отметьте недавние проблемы.';
 	}
 
 	public contextReplace(): string {
@@ -1976,6 +1976,10 @@ class ArmenianLocale extends EnglishLocale {
 		return 'Ֆոտո';
 	}
 
+	public treeTabsComments(): string {
+		return 'Մեկնաբանություններ';
+	}
+
 	public treeTabsObservations(): string {
 		return 'Դիտարկումներ';
 	}
@@ -2052,10 +2056,6 @@ class ArmenianLocale extends EnglishLocale {
 		return 'Այս ծառի մասին դեռևս մեկնաբանություններ չկան:';
 	}
 
-	public commentPrompt(): string {
-		return 'Կցանկանայի՞ք մեկնաբանություն թողնել:';
-	}
-
 	public commentLabel(): string {
 		return 'Մեկնաբանություն';
 	}
@@ -2073,7 +2073,7 @@ class ArmenianLocale extends EnglishLocale {
 	}
 
 	public commentHint(): string {
-		return 'Որոշ խորհուրդներ կամ առաջարկվող խմբագրումներ:';
+		return 'Առաջարկեք խմբագրումներ, խնամք կամ նշեք վերջին խնդիրները:';
 	}
 
 	public contextEditTree(): string {

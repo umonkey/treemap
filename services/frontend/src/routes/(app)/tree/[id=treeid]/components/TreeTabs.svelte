@@ -8,6 +8,7 @@
 	const { tree }: { tree: ISingleTree } = $props();
 
 	const photos = $derived(tree.files?.length ?? 0);
+	const comments = $derived(tree.comment_count ?? 0);
 
 	const tabs = $derived([
 		{
@@ -20,6 +21,12 @@
 			title: locale.treeTabsPhotos(),
 			url: routes.treePhotos(tree.id),
 			badge: photos > 0 ? photos : undefined
+		},
+		{
+			id: 'comments',
+			title: locale.treeTabsComments(),
+			url: routes.treeComments(tree.id),
+			badge: comments > 0 ? comments : undefined
 		},
 		{
 			id: 'observations',
