@@ -42,7 +42,7 @@
 	<title>{title}</title>
 </svelte:head>
 
-<Overlay onClick={close}>
+<Overlay onClick={close} backdrop="none">
 	<form class="dialog" class:variant-bottom={variant === 'bottom'}>
 		{#if header}
 			{@render header()}
@@ -243,6 +243,27 @@
 			max-height: none;
 			flex: 1;
 			padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+		}
+	}
+
+	/** Dock the dialog to the left on desktop, full height, overlaying the sidebar. **/
+	@media screen and (min-width: 1024px) {
+		.dialog {
+			top: 0;
+			left: 0;
+			transform: none;
+			margin-left: 0;
+			width: 50vw;
+			max-width: 700px;
+			height: 100%;
+			border-radius: 0;
+			box-shadow: none;
+		}
+
+		.body {
+			flex: 1;
+			min-height: 0;
+			max-height: none;
 		}
 	}
 

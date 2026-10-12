@@ -1,13 +1,18 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 
-	const { children, onClick } = $props<{
+	const {
+		children,
+		onClick,
+		backdrop = 'dim'
+	}: {
 		children: Snippet;
 		onClick?: () => void;
-	}>();
+		backdrop?: 'dim' | 'none';
+	} = $props();
 </script>
 
-<div class="overlay">
+<div class="overlay" class:no-dim={backdrop === 'none'}>
 	{#if onClick}
 		<button class="backdrop" onclick={onClick} aria-label="Dismiss"></button>
 	{/if}
@@ -29,6 +34,12 @@
 		backdrop-filter: blur(2px);
 		overflow: hidden;
 		animation: fadeIn 0.2s ease-out;
+	}
+
+	.overlay.no-dim {
+		background: transparent;
+		backdrop-filter: none;
+		animation: none;
 	}
 
 	.backdrop {
