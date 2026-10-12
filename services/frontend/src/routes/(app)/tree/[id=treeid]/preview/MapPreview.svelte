@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Observations from '$lib/components/observation/Observations.svelte';
-	import GalleryPreview from '$lib/components/photos/GalleryPreview.svelte';
 	import Comment from '$lib/components/tree/Comment.svelte';
 	import { handleShareTree } from '$lib/hooks/shareTree';
 	import BatteryIcon from '$lib/icons/BatteryIcon.svelte';
@@ -61,15 +60,20 @@
 			>
 		</div>
 
-		<div class="props">
-			{#if tree.address}
+		{#if tree.address}
+			<div class="props">
 				<div class="line">
 					<div class="icon">
 						<LocationIcon />
 					</div>
 					<div class="value">{tree.address}</div>
 				</div>
-			{/if}
+			</div>
+		{/if}
+
+		<TreeTabs tree={tree.id} active="preview" />
+
+		<div class="props">
 			<div class="line measurements">
 				<div class="icon">
 					<TagIcon />
@@ -86,12 +90,7 @@
 			</div>
 		</div>
 
-		<TreeTabs tree={tree.id} active="preview" />
-
-		<GalleryPreview id={tree.id} />
-
 		<Buttons>
-			<Button link={routes.treeDetails(tree.id)}>{locale.mapPreviewDetails()}</Button>
 			<Button type="secondary" onClick={() => handleShareTree(tree.id)} square><ShareIcon /></Button
 			>
 			<Button type="secondary" onClick={previewState.handleContextMenu} square
