@@ -2,7 +2,6 @@
 	import { getContext } from 'svelte';
 	import { page } from '$app/state';
 	import Observations from '$lib/components/observation/Observations.svelte';
-	import Gallery from '$lib/components/photos/Gallery.svelte';
 	import Comment from '$lib/components/tree/Comment.svelte';
 	import { locale } from '$lib/locale';
 	import CommentForm from './components/CommentForm.svelte';
@@ -21,8 +20,6 @@
 </script>
 
 {#if tree}
-	<Gallery id={tree.id} />
-
 	<Observations observation={pageState.observation || null} />
 	<Description text={tree.notes} />
 

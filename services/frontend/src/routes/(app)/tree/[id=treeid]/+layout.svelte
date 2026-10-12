@@ -30,6 +30,7 @@
 		if (path.endsWith('/preview')) return 'preview';
 		if (path.endsWith('/360')) return '360';
 		if (path.endsWith('/observations')) return 'observations';
+		if (path.endsWith('/photos')) return 'photos';
 		if (path.endsWith('/history')) return 'history';
 		return 'details';
 	});

@@ -12,9 +12,9 @@
 			url: routes.mapPreview(tree)
 		},
 		{
-			id: 'details',
-			title: locale.treeTabsDetails(),
-			url: routes.treeDetails(tree)
+			id: 'photos',
+			title: locale.treeTabsPhotos(),
+			url: routes.treePhotos(tree)
 		},
 		{
 			id: 'observations',

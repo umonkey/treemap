@@ -382,6 +382,10 @@ class EnglishLocale {
 		return 'Preview';
 	}
 
+	public treeTabsPhotos(): string {
+		return 'Photos';
+	}
+
 	public treeTabsObservations(): string {
 		return 'Observations';
 	}
@@ -1169,6 +1173,10 @@ class RussianLocale extends EnglishLocale {
 
 	public treeTabsPreview(): string {
 		return 'Обзор';
+	}
+
+	public treeTabsPhotos(): string {
+		return 'Фото';
 	}
 
 	public treeTabsObservations(): string {
@@ -1962,6 +1970,10 @@ class ArmenianLocale extends EnglishLocale {
 
 	public treeTabsPreview(): string {
 		return 'Նախադիտում';
+	}
+
+	public treeTabsPhotos(): string {
+		return 'Ֆոտո';
 	}
 
 	public treeTabsObservations(): string {

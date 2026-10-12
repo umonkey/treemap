@@ -57,5 +57,7 @@
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
+		color: transparent;
+		background-color: rgba(0, 0, 0, 0.2);
 	}
 </style>
