@@ -85,7 +85,7 @@
 		top: 50%;
 		transform: translateY(-50%);
 
-		background-color: var(--color-dialog-background);
+		background-color: var(--map-menu-background);
 		border-radius: 10px;
 		overflow: hidden;
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
