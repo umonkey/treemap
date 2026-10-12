@@ -25,14 +25,14 @@
 	{@const tree = layoutState.tree}
 
 	<Properties {tree} />
-	<hr />
-	<Actions {tree} />
 
 	{#if previewContentState.observations}
-		<div class="extras">
-			<Observations observation={previewContentState.observations} />
-		</div>
+		<Observations observation={previewContentState.observations} />
 	{/if}
+
+	<hr />
+
+	<Actions {tree} />
 {/if}
 
 <style>
