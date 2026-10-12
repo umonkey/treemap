@@ -166,7 +166,7 @@
 		.panel {
 			top: 0;
 			left: 0;
-			width: 300px;
+			width: var(--sidebar-width-desktop);
 			height: 100vh;
 			border-radius: 0px;
 			border-right: 1px solid var(--sep-color);

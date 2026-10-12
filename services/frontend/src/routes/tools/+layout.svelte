@@ -32,7 +32,7 @@
 
 	@media screen and (min-width: 1024px) {
 		.tools-layout {
-			margin-left: 300px;
+			margin-left: var(--sidebar-width-desktop);
 		}
 	}
 

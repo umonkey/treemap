@@ -65,7 +65,7 @@
 	@media screen and (min-width: 1024px) {
 		aside {
 			display: block;
-			flex-basis: 300px;
+			flex-basis: var(--sidebar-width-desktop);
 			flex-shrink: 0;
 			flex-grow: 0;
 		}
