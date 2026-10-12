@@ -467,7 +467,7 @@ class EnglishLocale {
 	}
 
 	public commentLabel(): string {
-		return 'Comment';
+		return 'Type your comment:';
 	}
 
 	public commentSignIn(): string {
@@ -1260,7 +1260,7 @@ class RussianLocale extends EnglishLocale {
 	}
 
 	public commentLabel(): string {
-		return 'Комментарий';
+		return 'Введите комментарий:';
 	}
 
 	public commentSignIn(): string {
@@ -2057,7 +2057,7 @@ class ArmenianLocale extends EnglishLocale {
 	}
 
 	public commentLabel(): string {
-		return 'Մեկնաբանություն';
+		return 'Մուտքագրեք ձեր մեկնաբանությունը:';
 	}
 
 	public commentSignIn(): string {

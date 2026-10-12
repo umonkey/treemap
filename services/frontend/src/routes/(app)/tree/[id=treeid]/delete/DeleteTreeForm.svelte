@@ -3,7 +3,7 @@
 	import TreeForm from '$lib/components/forms/TreeForm.svelte';
 	import { locale } from '$lib/locale';
 	import ChangeHistory from '../components/ChangeHistory.svelte';
-	import CommentInput from '../components/CommentInput.svelte';
+	import CommentInput from '../comments/CommentInput.svelte';
 	import TreeSheet from '../components/TreeSheet.svelte';
 
 	const { id }: { id: string } = $props();

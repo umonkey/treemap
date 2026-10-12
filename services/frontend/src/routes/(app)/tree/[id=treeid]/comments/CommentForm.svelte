@@ -5,7 +5,7 @@
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import Form from '$lib/ui/form/Form.svelte';
 	import SignInButton from '$lib/ui/sign-in-button/SignInButton.svelte';
-	import CommentInput from '../components/CommentInput.svelte';
+	import CommentInput from './CommentInput.svelte';
 
 	const { onSubmit, authenticated } = $props<{
 		onSubmit: (message: string) => Promise<boolean>;
