@@ -14,6 +14,10 @@
 	$effect(() => {
 		gallery.reload(id);
 	});
+
+	const handleLoad = (e) => {
+		e.target.style.opacity = '1';
+	};
 </script>
 
 <div class="gallery">
@@ -29,7 +33,7 @@
 					rel="noopener noreferrer"
 					title={item.label}
 				>
-					<img src={item.small} alt="Tree" />
+					<img src={item.small} loading="lazy" alt="Tree" onload={handleLoad} />
 				</a>
 			{:else}
 				{#if placeholders > 0}
@@ -68,6 +72,8 @@
 		object-fit: cover;
 		color: transparent;
 		background-color: rgba(0, 0, 0, 0.2);
+		opacity: 0;
+		transition: opacity 0.1s ease-in-out;
 	}
 
 	.tile.placeholder {
