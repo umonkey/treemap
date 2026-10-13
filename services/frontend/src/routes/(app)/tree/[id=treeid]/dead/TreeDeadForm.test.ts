@@ -96,6 +96,6 @@ describe('TreeDeadForm', async () => {
 		await user.click(confirm);
 
 		expect(saved).toBe(true);
-		expect(mockedGoto).toHaveBeenCalledWith('/tree/tree1/upload');
+		expect(mockedGoto).toHaveBeenCalledWith('/tree/tree1/photos');
 	});
 });

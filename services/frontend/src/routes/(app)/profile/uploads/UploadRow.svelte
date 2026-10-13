@@ -28,7 +28,7 @@
 </script>
 
 <div class="upload-item">
-	<a href={routes.treeUploadPhotos(upload.tree_id)} class="link">
+	<a href={routes.treePhotos(upload.tree_id)} class="link">
 		{#if objectUrl}
 			<img src={objectUrl} alt="Thumbnail" class="thumbnail" />
 		{/if}

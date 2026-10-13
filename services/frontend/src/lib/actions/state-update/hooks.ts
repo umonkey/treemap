@@ -46,7 +46,7 @@ export const stateUpdater = (tree_id: string, state: string) => {
 			.then((res) => {
 				if (res.status === 200 && res.data) {
 					addTrees([res.data]);
-					goto(routes.treeUploadPhotos(tree_id));
+					goto(routes.treePhotos(tree_id));
 				} else if (res.error) {
 					error.set(res.error.description);
 				}
