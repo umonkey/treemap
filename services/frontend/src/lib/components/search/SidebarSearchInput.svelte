@@ -57,7 +57,7 @@
 		align-items: center;
 		gap: 0;
 
-		background-color: var(--input-bg);
+		background-color: rgba(128, 128, 128, 0.5);
 		border-radius: 8px;
 
 		:global(svg) {
