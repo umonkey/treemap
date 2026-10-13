@@ -30,7 +30,7 @@
 		routes.treeCircumference(id),
 		routes.treeDead(id),
 		routes.treeDiameter(id),
-		routes.treeHeight(id),
+		routes.treeHeight(id)
 	]);
 
 	$effect(() => {

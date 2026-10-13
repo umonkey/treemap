@@ -1,9 +1,10 @@
 <script lang="ts">
 	import Overlay from '$lib/components/layout/Overlay.svelte';
+	import SidebarSearchInput from '$lib/components/search/SidebarSearchInput.svelte';
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
 	import type { Snippet } from 'svelte';
-	import { handleClose } from './Dialog.svelte.ts';
+	import { DialogState } from './Dialog.svelte.ts';
 
 	type ButtonDef = {
 		title: string;
@@ -29,11 +30,17 @@
 		variant?: 'standard' | 'bottom';
 	}>();
 
+	const state = new DialogState();
+
+	$effect(() => {
+		return state.init();
+	});
+
 	const close = () => {
 		if (onCancel) {
 			onCancel();
 		} else {
-			handleClose();
+			state.handleClose();
 		}
 	};
 </script>
@@ -47,9 +54,17 @@
 		{#if header}
 			{@render header()}
 		{:else}
+			<div class="search">
+				<SidebarSearchInput
+					value={state.query}
+					onInput={state.handleInput}
+					onSearch={state.handleSearch}
+					onClose={close}
+				/>
+			</div>
 			<div class="title">
 				<div class="button"></div>
-				<h1>{title}</h1>
+				<h2>{title}</h2>
 				<div class="button">
 					<button type="button" onclick={close}>
 						<CloseIcon />
@@ -126,14 +141,17 @@
 		height: var(--dialog-footer-size);
 	}
 
-	h1 {
+	h2 {
 		font-size: 1rem;
 		font-weight: 400;
 		line-height: 40px;
 		text-align: center;
 		margin: 0;
-
 		flex: 1 0 auto;
+	}
+
+	.search {
+		display: none;
 	}
 
 	.body {
@@ -202,11 +220,7 @@
 					height: auto;
 					min-height: 40px;
 
-					.button:first-child {
-						display: none;
-					}
-
-					.button:last-child {
+					.button {
 						flex-basis: 30px;
 						height: 30px;
 
@@ -216,7 +230,7 @@
 						}
 					}
 
-					h1 {
+					h2 {
 						text-align: left;
 						font-size: 120%;
 						line-height: 30px;
@@ -258,6 +272,28 @@
 			height: 100%;
 			border-radius: 0;
 			box-shadow: none;
+		}
+
+		.search {
+			display: block;
+			padding: 0.5rem 1rem;
+			box-sizing: border-box;
+		}
+
+		.title {
+			height: auto;
+			padding: 0 1rem;
+			background-color: transparent;
+
+			.button {
+				display: none;
+			}
+
+			h2 {
+				text-align: left;
+				font-size: 120%;
+				line-height: 1.5;
+			}
 		}
 
 		.body {
