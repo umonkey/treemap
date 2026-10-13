@@ -63,7 +63,6 @@
 				/>
 			</div>
 			<div class="title">
-				<div class="button"></div>
 				<h2>{title}</h2>
 				<div class="button">
 					<button type="button" onclick={close}>
@@ -108,9 +107,9 @@
 
 	.button {
 		flex: 0 0 auto;
-		min-width: 40px;
+		min-width: 30px;
 		display: block;
-		height: 40px;
+		height: 30px;
 
 		:global(svg) {
 			width: 22px;
@@ -133,8 +132,7 @@
 	}
 
 	.title {
-		padding: 0.5rem 0;
-		height: var(--dialog-header-size);
+		padding: var(--gap);
 	}
 
 	.actions {
@@ -142,12 +140,16 @@
 	}
 
 	h2 {
-		font-size: 1rem;
+		font-size: 120%;
 		font-weight: 400;
-		line-height: 40px;
-		text-align: center;
+		line-height: 30px;
+		text-align: left;
 		margin: 0;
 		flex: 1 0 auto;
+
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	.search {
@@ -156,7 +158,7 @@
 
 	.body {
 		margin: 0 auto;
-		padding: 1rem;
+		padding: var(--gap);
 		width: 100%;
 		box-sizing: border-box;
 
@@ -179,8 +181,8 @@
 		background-color: transparent;
 		border: none;
 		border-radius: 5px;
-		height: 40px;
-		width: 40px;
+		height: 30px;
+		width: 30px;
 		cursor: pointer;
 		opacity: 0.5;
 	}
@@ -195,11 +197,12 @@
 	@media screen and (max-width: 1023px) {
 		.dialog {
 			width: 100vw;
-			height: calc(100dvh - var(--bottom-nav-height));
-			border-radius: 0;
+			height: auto;
+			max-height: 80dvh;
+			border-radius: 8px 8px 0 0;
 
 			transform: none;
-			top: 0;
+			top: auto;
 			left: 0;
 			bottom: 0;
 
@@ -252,6 +255,10 @@
 			}
 		}
 
+		.title {
+			background-color: var(--map-menu-background);
+		}
+
 		.body {
 			min-height: auto;
 			max-height: none;
@@ -276,24 +283,15 @@
 
 		.search {
 			display: block;
-			padding: 0.5rem 1rem;
+			padding: var(--gap);
 			box-sizing: border-box;
 		}
 
 		.title {
-			height: auto;
-			padding: 0 1rem;
 			background-color: transparent;
 
 			.button {
 				display: none;
-			}
-
-			h2 {
-				text-align: left;
-				font-size: 120%;
-				line-height: 1.5;
-				margin-top: 1rem;
 			}
 		}
 
