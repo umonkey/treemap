@@ -10,12 +10,12 @@ export type Thumbnail = {
 	error: boolean;
 };
 
-class ComponentState {
+export class PhotoUploader {
 	thumbnails = $state<Thumbnail[]>([]);
 	private treeId = '';
 	private onChange: (files: number) => void = () => {};
 
-	init(treeId: string, onChange: (files: number) => void) {
+	init = (treeId: string, onChange: (files: number) => void) => {
 		this.treeId = treeId;
 		this.onChange = onChange;
 
@@ -53,7 +53,7 @@ class ComponentState {
 				if (t.src) URL.revokeObjectURL(t.src);
 			});
 		};
-	}
+	};
 
 	private appendFile = async (file: File) => {
 		await addPhotoToUploadQueue(this.treeId, file);
@@ -106,5 +106,3 @@ class ComponentState {
 		}
 	};
 }
-
-export const componentState = new ComponentState();

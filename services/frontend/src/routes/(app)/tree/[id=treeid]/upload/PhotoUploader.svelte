@@ -3,7 +3,7 @@
 	import GalleryIcon from '$lib/icons/GalleryIcon.svelte';
 	import FileUploaderDisplay from '$lib/ui/file-uploader-display/FileUploaderDisplay.svelte';
 	import { restartUploadQueue } from '$lib/upload';
-	import { componentState as state } from './PhotoUploader.svelte.ts';
+	import { PhotoUploader } from './PhotoUploader.svelte.ts';
 
 	const {
 		label,
@@ -16,6 +16,8 @@
 		onChange: (files: number) => void;
 		small?: boolean;
 	} = $props();
+
+	const state = new PhotoUploader();
 
 	$effect(() => {
 		return state.init(treeId, onChange);
