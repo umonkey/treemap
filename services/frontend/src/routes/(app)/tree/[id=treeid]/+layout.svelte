@@ -21,7 +21,7 @@
 
 	// The sidebar is wide on the content tabs, but narrow where the content is:
 	// the preview page and the move view.
-	const narrowPaths = $derived([routes.treeDetails(id), routes.treeMove(id)]);
+	const narrowPaths = $derived([routes.treeDetails(id), routes.treeMove(id), routes.treeComments(id), routes.treeObservations(id), routes.treeHistory(id)]);
 
 	$effect(() => {
 		sidebarState.wide = !narrowPaths.includes(page.url.pathname);
