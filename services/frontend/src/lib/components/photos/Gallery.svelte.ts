@@ -119,8 +119,7 @@ export class Gallery {
 					id: `example-${index}`,
 					small: url,
 					large: url,
-					label: locale.photoExample(),
-					example: true
+					label: locale.photoExample()
 				};
 			}
 		);

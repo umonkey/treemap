@@ -68,14 +68,13 @@
 			{#each gallery.slides as item (item.id)}
 				<a
 					class="tile"
-					class:example={item.example}
 					href={item.large}
 					target="_blank"
 					rel="noopener noreferrer"
 					title={item.label}
 				>
 					<img src={item.small} loading="lazy" alt="Tree" onload={handleLoad} />
-					{#if item.example}
+					{#if item.label}
 						<span class="badge">{item.label}</span>
 					{/if}
 				</a>
@@ -139,7 +138,7 @@
 		background-color: rgba(0, 0, 0, 0.2);
 	}
 
-	.tile.example .badge {
+	.tile .badge {
 		position: absolute;
 		bottom: 4px;
 		left: 4px;
@@ -147,7 +146,7 @@
 		border-radius: 4px;
 		background-color: rgba(0, 0, 0, 0.55);
 		color: #fff;
-		font-size: 0.7rem;
+		font-size: 0.8rem;
 		line-height: 1.2;
 	}
 </style>

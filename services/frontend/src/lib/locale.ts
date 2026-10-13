@@ -1412,7 +1412,7 @@ class RussianLocale extends EnglishLocale {
 	}
 
 	public photoExample(): string {
-		return 'Пример фото';
+		return 'Пример';
 	}
 
 	public measureTitle(): string {
@@ -2213,7 +2213,7 @@ class ArmenianLocale extends EnglishLocale {
 	}
 
 	public photoExample(): string {
-		return 'Օրինակ լուսանկար';
+		return 'Օրինակ';
 	}
 
 	public measureTitle(): string {
