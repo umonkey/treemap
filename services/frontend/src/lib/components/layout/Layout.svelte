@@ -9,6 +9,7 @@
 
 	import { page } from '$app/stores';
 	import { searchStore } from '$lib/stores/searchStore';
+	import { sidebarState } from '$lib/stores/sidebar.svelte';
 
 	const { children } = $props();
 
@@ -22,7 +23,7 @@
 </script>
 
 <div class="layout">
-	<aside class="left"></aside>
+	<aside class="left" class:wide={sidebarState.wide}></aside>
 
 	<main>
 		<MapLibre />
@@ -68,6 +69,10 @@
 			flex-basis: var(--sidebar-width-desktop);
 			flex-shrink: 0;
 			flex-grow: 0;
+
+			&.wide {
+				flex-basis: var(--sidebar-width-desktop-wide);
+			}
 		}
 	}
 

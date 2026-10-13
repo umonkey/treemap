@@ -8,6 +8,7 @@
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
 	import { formatSpecies } from '$lib/utils/trees';
+	import { sidebarState } from '$lib/stores/sidebar.svelte';
 	import TreeTabs from './components/TreeTabs.svelte';
 	import { TREE_CONTEXT_KEY, TreeLayoutState } from './layout.svelte.ts';
 
@@ -21,7 +22,13 @@
 	// The sidebar is wide on the content tabs, but narrow where the content is:
 	// the preview page and the move view.
 	const narrowPaths = $derived([routes.treeDetails(id), routes.treeMove(id)]);
-	const wide = $derived(!narrowPaths.includes(page.url.pathname));
+
+	$effect(() => {
+		sidebarState.wide = !narrowPaths.includes(page.url.pathname);
+		return () => {
+			sidebarState.wide = false;
+		};
+	});
 
 	// The sidebar close button returns to the map from the tree root, and to the
 	// tree root from any other tree tab.
@@ -46,7 +53,7 @@
 	<title>{title}</title>
 </svelte:head>
 
-<div class="tree" class:wide class:loading={state.loading} use:mapBottomPadding>
+<div class="tree" class:wide={sidebarState.wide} class:loading={state.loading} use:mapBottomPadding>
 	{#if state.tree}
 		{@const tree = state.tree}
 
