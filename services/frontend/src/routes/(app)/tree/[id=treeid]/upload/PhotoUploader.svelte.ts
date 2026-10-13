@@ -1,6 +1,5 @@
 import { db } from '$lib/db';
-import { showError } from '$lib/errors';
-import { addPhotoToUploadQueue } from '$lib/upload';
+import { queuePhoto } from '$lib/upload';
 import { liveQuery } from 'dexie';
 
 export type Thumbnail = {
@@ -55,32 +54,13 @@ export class PhotoUploader {
 		};
 	};
 
-	private appendFile = async (file: File) => {
-		await addPhotoToUploadQueue(this.treeId, file);
-	};
-
 	handleChange = async (event: Event) => {
 		const target = event.target as HTMLInputElement;
 		const files = target.files;
 
 		if (files && files.length > 0) {
-			const fileList = Array.from(files);
-
-			for (const file of fileList) {
-				try {
-					// On some mobile devices (like Samsung S21+), the File object might be invalidated
-					// if the input is cleared or if we wait too long. Reading it into an ArrayBuffer
-					// ensures we have a stable copy of the data.
-					const buffer = await file.arrayBuffer();
-					const solidifiedFile = new File([buffer], file.name, { type: file.type });
-
-					await this.appendFile(solidifiedFile);
-				} catch (e) {
-					console.error('Failed to append file:', e);
-					showError(
-						`Failed to add photo "${file.name}": ${e instanceof Error ? e.message : 'Unknown error'}`
-					);
-				}
+			for (const file of Array.from(files)) {
+				await queuePhoto(this.treeId, file);
 			}
 
 			target.value = ''; // Reset to allow selecting the same file again.
@@ -96,11 +76,7 @@ export class PhotoUploader {
 			if (item.kind === 'file') {
 				const file = item.getAsFile();
 				if (file && file.type.startsWith('image/')) {
-					const buffer = await file.arrayBuffer();
-					const solidifiedFile = new File([buffer], file.name || 'pasted-image', {
-						type: file.type
-					});
-					await this.appendFile(solidifiedFile);
+					await queuePhoto(this.treeId, file, file.name || 'pasted-image');
 				}
 			}
 		}

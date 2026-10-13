@@ -79,6 +79,24 @@ export async function addPhotoToUploadQueue(tree_id: string, file: File) {
 		});
 }
 
+/** Save a stable in-memory copy of a File (mobile File-invalidation workaround). */
+export async function solidifyFile(file: File, name = file.name): Promise<File> {
+	const buffer = await file.arrayBuffer();
+	return new File([buffer], name, { type: file.type });
+}
+
+/** Solidify a photo and add it to the upload queue, reporting failures to the user. */
+export async function queuePhoto(treeId: string, file: File, name = file.name): Promise<void> {
+	try {
+		await addPhotoToUploadQueue(treeId, await solidifyFile(file, name));
+	} catch (e) {
+		console.error('Failed to append file:', e);
+		showError(
+			`Failed to add photo "${file.name}": ${e instanceof Error ? e.message : 'Unknown error'}`
+		);
+	}
+}
+
 // Trigger processing if auto-upload is enabled.
 export const autoStartUpload = async () => {
 	await db.uploads.where('status').equals('completed').delete();

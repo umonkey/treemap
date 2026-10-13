@@ -1,6 +1,9 @@
 <script lang="ts">
 	import FALLBACK from '$lib/assets/tree.jpg';
+	import SpinnerIcon from '$lib/icons/SpinnerIcon.svelte';
+	import CameraUploader from './CameraUploader.svelte';
 	import { Gallery } from './Gallery.svelte.ts';
+	import GalleryUploader from './GalleryUploader.svelte';
 
 	const { id, count }: { id: string; count?: number | undefined } = $props();
 
@@ -15,6 +18,10 @@
 		gallery.reload(id);
 	});
 
+	$effect(() => {
+		return gallery.watchQueue(id);
+	});
+
 	const handleLoad = (e: Event) => {
 		const target = e.currentTarget as HTMLImageElement;
 		target.style.opacity = '1';
@@ -24,8 +31,22 @@
 <div class="gallery">
 	{#if gallery.error}
 		<p>{gallery.error}</p>
-	{:else}
-		<div class="grid">
+	{/if}
+
+	<div class="grid">
+		<CameraUploader treeId={id} />
+		<GalleryUploader treeId={id} />
+
+		{#each gallery.queue as item (item.id)}
+			<div class="tile queued" class:busy={item.busy}>
+				<img src={item.src} alt="Uploading" onload={handleLoad} />
+				{#if item.busy}
+					<div class="spinner"><SpinnerIcon /></div>
+				{/if}
+			</div>
+		{/each}
+
+		{#if !gallery.error}
 			{#each gallery.slides as item (item.id)}
 				<a
 					class="tile"
@@ -41,12 +62,12 @@
 					{#each Array(placeholders).keys() as index (index)}
 						<div class="tile placeholder"></div>
 					{/each}
-				{:else if !gallery.loading}
+				{:else if !gallery.loading && gallery.queue.length === 0}
 					<div class="tile"><img src={FALLBACK} alt="No photos of this tree." /></div>
 				{/if}
 			{/each}
-		</div>
-	{/if}
+		{/if}
+	</div>
 </div>
 
 <style>
@@ -61,9 +82,20 @@
 	}
 
 	.tile {
+		position: relative;
 		display: block;
 		aspect-ratio: 1/1;
 		overflow: hidden;
+	}
+
+	.tile.queued .spinner {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 25%;
+		background-color: rgba(0, 0, 0, 0.5);
 	}
 
 	.tile img {
