@@ -293,6 +293,7 @@
 				text-align: left;
 				font-size: 120%;
 				line-height: 1.5;
+				margin-top: 1rem;
 			}
 		}
 
