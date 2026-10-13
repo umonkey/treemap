@@ -1,6 +1,6 @@
 <script lang="ts">
-	import FALLBACK from '$lib/assets/tree.jpg';
 	import SpinnerIcon from '$lib/icons/SpinnerIcon.svelte';
+	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
 	import CameraUploader from './CameraUploader.svelte';
 	import { Gallery } from './Gallery.svelte.ts';
@@ -18,6 +18,11 @@
 	// photos to expect: reserve that many tiles while loading so the grid does
 	// not jump once the images arrive.
 	const placeholders = $derived(gallery.loading ? (count ?? 0) : 0);
+
+	// No photos to show once loading settled, nothing is queued and no error is up.
+	const isEmpty = $derived(
+		!gallery.error && !gallery.loading && gallery.slides.length === 0 && gallery.queue.length === 0
+	);
 
 	$effect(() => {
 		gallery.reload(id, species ?? '');
@@ -40,6 +45,10 @@
 <div class="gallery">
 	{#if gallery.error}
 		<p>{gallery.error}</p>
+	{/if}
+
+	{#if isEmpty}
+		<p class="empty">{locale.noPhotos()}</p>
 	{/if}
 
 	<div class="grid">
@@ -71,13 +80,9 @@
 					{/if}
 				</a>
 			{:else}
-				{#if placeholders > 0}
-					{#each Array(placeholders).keys() as index (index)}
-						<div class="tile placeholder"></div>
-					{/each}
-				{:else if !gallery.loading && gallery.queue.length === 0}
-					<div class="tile"><img src={FALLBACK} alt="No photos of this tree." /></div>
-				{/if}
+				{#each Array(placeholders).keys() as index (index)}
+					<div class="tile placeholder"></div>
+				{/each}
 			{/each}
 		{/if}
 	</div>
@@ -86,6 +91,10 @@
 <style>
 	.gallery {
 		width: 100%;
+	}
+
+	.empty {
+		margin: 0 0 8px;
 	}
 
 	.grid {
