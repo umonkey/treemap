@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Logo from '$lib/assets/trees-of-yerevan.svelte';
 	import UserPic from '$lib/components/layout/UserPic.svelte';
+	import SidebarSearchInput from '$lib/components/search/SidebarSearchInput.svelte';
 	import BellIcon from '$lib/icons/BellIcon.svelte';
 	import ChartIcon from '$lib/icons/ChartIcon.svelte';
 	import MegaphoneIcon from '$lib/icons/MegaphoneIcon.svelte';
@@ -31,6 +32,15 @@
 			<button class="close-btn" onclick={componentState.close}>
 				<CloseIcon />
 			</button>
+		</div>
+
+		<div class="search">
+			<SidebarSearchInput
+				value={componentState.query}
+				onInput={componentState.handleInput}
+				onSearch={componentState.handleSearch}
+				onClose={componentState.handleClose}
+			/>
 		</div>
 
 		<ul>
@@ -143,7 +153,7 @@
 		flex-direction: column;
 		gap: calc(var(--gap) * 2);
 
-		padding: calc(2 * var(--gap));
+		padding: var(--gap);
 		padding-bottom: calc(2 * var(--gap));
 		border-right: 1px solid var(--sep-color);
 
@@ -156,9 +166,13 @@
 			display: none;
 		}
 
+		.search {
+			display: none;
+		}
+
 		ul {
 			margin: 0;
-			padding: 0 var(--gap);
+			padding: 0;
 			list-style-type: none;
 			flex: 0 0;
 
@@ -317,6 +331,11 @@
 	}
 
 	@media screen and (min-width: 1024px) {
+		.canvas .search {
+			display: block;
+			padding: 0;
+		}
+
 		.overlay {
 			z-index: 1;
 		}

@@ -230,7 +230,7 @@
 			width: var(--sidebar-width-desktop);
 			height: 100vh;
 			border-radius: 0px;
-			border-left: 1px solid var(--sep-color);
+			border-left: 0;
 
 			&.wide {
 				width: var(--sidebar-width-desktop-wide);
