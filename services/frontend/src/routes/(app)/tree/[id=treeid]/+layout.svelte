@@ -26,7 +26,11 @@
 		routes.treeMove(id),
 		routes.treeComments(id),
 		routes.treeObservations(id),
-		routes.treeHistory(id)
+		routes.treeHistory(id),
+		routes.treeCircumference(id),
+		routes.treeDead(id),
+		routes.treeDiameter(id),
+		routes.treeHeight(id),
 	]);
 
 	$effect(() => {
