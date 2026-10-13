@@ -1,4 +1,5 @@
 import { getTreeFiles } from '$lib/api/trees';
+import { uploadBus } from '$lib/buses/upload';
 import { db } from '$lib/db';
 import { routes } from '$lib/routes';
 import { getUser } from '$lib/stores/userStore';
@@ -23,22 +24,50 @@ export class Gallery {
 	reload = async (id: string) => {
 		if (this.currentId === id) return;
 		this.currentId = id;
-		this.loading = true;
+		await this.fetch(id, false);
+	};
+
+	private fetch = async (id: string, silent: boolean) => {
+		if (!silent) this.loading = true;
 
 		try {
 			const res = await getTreeFiles(id);
 			if (res.status === 200 && res.data) {
 				this.slides = this.formatSlides(res.data);
 				this.error = null;
-			} else if (res.error) {
+			} else if (res.error && !silent) {
 				this.error = res.error.description;
 			}
 		} catch (err) {
 			console.error('Failed to load gallery slides:', err);
-			this.error = String(err);
+			if (!silent) this.error = String(err);
 		} finally {
-			this.loading = false;
+			if (!silent) this.loading = false;
 		}
+	};
+
+	watchUploads = (id: string) => {
+		if (!id) return;
+
+		let timer: ReturnType<typeof setTimeout> | undefined;
+
+		const handler = (treeId: string) => {
+			if (treeId !== id) return;
+
+			if (timer) clearTimeout(timer);
+
+			timer = setTimeout(() => {
+				timer = undefined;
+				void this.fetch(id, true);
+			}, 2000);
+		};
+
+		uploadBus.on('success', handler);
+
+		return () => {
+			uploadBus.off('success', handler);
+			if (timer) clearTimeout(timer);
+		};
 	};
 
 	watchQueue = (id: string) => {

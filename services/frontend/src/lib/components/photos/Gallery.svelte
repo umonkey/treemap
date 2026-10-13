@@ -23,6 +23,10 @@
 		return gallery.watchQueue(id);
 	});
 
+	$effect(() => {
+		return gallery.watchUploads(id);
+	});
+
 	const handleLoad = (e: Event) => {
 		const target = e.currentTarget as HTMLImageElement;
 		target.style.opacity = '1';
