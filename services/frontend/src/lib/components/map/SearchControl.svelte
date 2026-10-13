@@ -34,6 +34,13 @@
 		z-index: 10;
 	}
 
+	/* On desktop search lives in the sidebar. */
+	@media (min-width: 1024px) {
+		.search-container {
+			display: none;
+		}
+	}
+
 	@media screen and (max-width: 600px) {
 		.search-container {
 			right: calc(50px + env(safe-area-inset-right));
