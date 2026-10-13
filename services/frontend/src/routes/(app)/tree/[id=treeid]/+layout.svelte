@@ -233,6 +233,7 @@
 
 			.search {
 				display: block;
+				margin-bottom: 1rem;
 			}
 		}
 
