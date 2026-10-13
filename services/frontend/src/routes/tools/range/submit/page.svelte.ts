@@ -49,7 +49,7 @@ export class RangeSubmitState {
 				const id = res.data.trees[0].id;
 				rangeStore.clearTrees();
 				mapBus.emit('reload');
-				goto(routes.mapPreview(id));
+				goto(routes.treeDetails(id));
 			} else {
 				console.error(`Error ${res.status} adding triangulated trees.`, res);
 				showError(res.error?.description || `Error ${res.status} adding trees.`);

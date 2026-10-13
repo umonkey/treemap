@@ -176,7 +176,7 @@ class PanoramaViewerLogic {
 	};
 
 	handleTreeClick = (treeId: string) => {
-		void goto(routes.mapPreview(treeId));
+		void goto(routes.treeDetails(treeId));
 	};
 
 	handleImageClick = (imageId: string) => {

@@ -11,7 +11,7 @@
 	const id = $derived($page.params.id as string);
 
 	const close = () => {
-		goto(routes.mapPreview(pageState.treeId));
+		goto(routes.treeDetails(pageState.treeId));
 	};
 
 	$effect(() => {

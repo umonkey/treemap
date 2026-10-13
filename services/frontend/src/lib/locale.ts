@@ -370,10 +370,6 @@ class EnglishLocale {
 		return 'Tree';
 	}
 
-	public treeTabsDetails(): string {
-		return 'Details';
-	}
-
 	public treeTabsStreetView(): string {
 		return '360°';
 	}
@@ -724,10 +720,6 @@ class EnglishLocale {
 
 	public settingsTitle(): string {
 		return 'Settings';
-	}
-
-	public mapPreviewDetails(): string {
-		return 'Details';
 	}
 
 	public rowStepInfo(count: number, step: number): string {
@@ -1171,10 +1163,6 @@ class RussianLocale extends EnglishLocale {
 		return 'Дерево';
 	}
 
-	public treeTabsDetails(): string {
-		return 'Общее';
-	}
-
 	public treeTabsMap(): string {
 		return 'Карта';
 	}
@@ -1521,10 +1509,6 @@ class RussianLocale extends EnglishLocale {
 
 	public settingsTitle(): string {
 		return 'Настройки';
-	}
-
-	public mapPreviewDetails(): string {
-		return 'Детали';
 	}
 
 	public rowSizeLabel(): string {
@@ -1972,10 +1956,6 @@ class ArmenianLocale extends EnglishLocale {
 		return 'Ծառ';
 	}
 
-	public treeTabsDetails(): string {
-		return 'Մանրամասներ';
-	}
-
 	public treeTabsMap(): string {
 		return 'Քարտեզ';
 	}
@@ -2230,10 +2210,6 @@ class ArmenianLocale extends EnglishLocale {
 
 	public settingsTitle(): string {
 		return 'Կարգավորումներ';
-	}
-
-	public mapPreviewDetails(): string {
-		return 'Մանրամասն';
 	}
 
 	public rowSizeLabel(): string {

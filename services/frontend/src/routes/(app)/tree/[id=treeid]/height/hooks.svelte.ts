@@ -22,7 +22,7 @@ class HeightState {
 		updateTreeHeight(id, this.value)
 			.then((res) => {
 				if (res.status >= 200 && res.status < 300 && res.data) {
-					goto(routes.mapPreview(id));
+					goto(routes.treeDetails(id));
 				} else if (res.error) {
 					showError(res.error.description);
 				}
@@ -34,7 +34,7 @@ class HeightState {
 
 	close = () => {
 		if (this.id) {
-			goto(routes.mapPreview(this.id));
+			goto(routes.treeDetails(this.id));
 		}
 	};
 

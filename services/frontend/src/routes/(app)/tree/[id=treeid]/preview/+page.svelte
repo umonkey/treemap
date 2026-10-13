@@ -1,5 +1,13 @@
 <script lang="ts">
-	import PreviewContent from './PreviewContent.svelte';
-</script>
+	// Legacy URL: the tree root page now lives at /tree/:id.
+	import { page } from '$app/state';
+	import { goto, routes } from '$lib/routes';
 
-<PreviewContent />
+	const id = $derived(page.params.id as string);
+
+	$effect(() => {
+		if (id) {
+			void goto(routes.treeDetails(id), { replaceState: true });
+		}
+	});
+</script>

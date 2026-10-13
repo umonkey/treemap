@@ -564,7 +564,7 @@ describe('Search Results Page', () => {
 
 		await user.click(previewButton);
 
-		expect(mockedGoto).toHaveBeenCalledWith(routes.mapPreview('tree1'));
+		expect(mockedGoto).toHaveBeenCalledWith(routes.treeDetails('tree1'));
 		expect(mockedMapBusEmit).not.toHaveBeenCalled();
 	});
 
@@ -580,7 +580,7 @@ describe('Search Results Page', () => {
 
 			expect(event.preventDefault).toHaveBeenCalled();
 			expect(event.stopPropagation).toHaveBeenCalled();
-			expect(mockedGoto).toHaveBeenCalledWith(routes.mapPreview('tree-123'));
+			expect(mockedGoto).toHaveBeenCalledWith(routes.treeDetails('tree-123'));
 		});
 
 		test('selectTree sets selectedTreeId and emits map pin', () => {

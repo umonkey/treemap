@@ -19,7 +19,7 @@
 
 	// The sidebar is wide on the content tabs, but narrow where the content is:
 	// the preview page and the move view.
-	const narrowPaths = $derived([routes.mapPreview(id), routes.treeMove(id)]);
+	const narrowPaths = $derived([routes.treeDetails(id), routes.treeMove(id)]);
 	const wide = $derived(!narrowPaths.includes(page.url.pathname));
 
 	$effect(() => {
@@ -146,6 +146,7 @@
 		flex-direction: column;
 		gap: var(--gap);
 		min-height: 0;
+		scrollbar-width: none;
 	}
 
 	.subtitle {

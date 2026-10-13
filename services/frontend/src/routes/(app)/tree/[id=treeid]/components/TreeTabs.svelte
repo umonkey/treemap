@@ -14,7 +14,7 @@
 		{
 			id: 'preview',
 			title: locale.treeTabsPreview(),
-			url: routes.mapPreview(tree.id)
+			url: routes.treeDetails(tree.id)
 		},
 		{
 			id: 'photos',

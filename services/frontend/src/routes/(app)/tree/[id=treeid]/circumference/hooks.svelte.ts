@@ -35,7 +35,7 @@ class GirthState {
 			.then((res) => {
 				if (res.status >= 200 && res.status < 300 && res.data) {
 					console.debug(`[crown editor] Tree ${id} updated.`);
-					goto(routes.mapPreview(id));
+					goto(routes.treeDetails(id));
 				} else if (res.error) {
 					showError(`Error ${res.status} updating circumference: ${res.error.description}`);
 					console.error(
@@ -51,7 +51,7 @@ class GirthState {
 
 	close = () => {
 		if (this.id) {
-			goto(routes.mapPreview(this.id));
+			goto(routes.treeDetails(this.id));
 		}
 	};
 }

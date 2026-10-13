@@ -52,7 +52,7 @@ export class TreeLayoutState {
 
 	public handleClose = async () => {
 		if (this.id) {
-			await goto(routes.mapPreview(this.id));
+			await goto(routes.treeDetails(this.id));
 		}
 	};
 

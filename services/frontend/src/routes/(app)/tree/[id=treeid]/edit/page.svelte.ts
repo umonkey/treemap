@@ -80,7 +80,7 @@ class PageState {
 			});
 
 			if (res.status >= 200 && res.status < 400) {
-				goto(routes.mapPreview(this.updated.id));
+				goto(routes.treeDetails(this.updated.id));
 			} else {
 				console.error(`Error ${res.status} updating tree.`, res);
 				showError(res.error?.description || `Error ${res.status} updating tree.`);
