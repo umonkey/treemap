@@ -13,8 +13,6 @@
 </script>
 
 <TreeForm
-	{id}
-	title="Crown Diameter"
 	onSubmit={crownState.save}
 	onCancel={crownState.close}
 	canSave={crownState.canSave}

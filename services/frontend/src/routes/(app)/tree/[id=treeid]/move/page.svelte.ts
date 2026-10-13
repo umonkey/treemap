@@ -61,7 +61,7 @@ class PageState {
 
 		const res = await updateTreeLocation(id, lat, lng);
 		if (res.status >= 200 && res.status < 300) {
-			goto(routes.mapPreview(id));
+			goto(routes.treeDetails(id));
 		} else {
 			this.error = res.error?.description || 'Failed to move tree';
 			this.busy = false;
@@ -69,7 +69,7 @@ class PageState {
 	};
 
 	handleCancel = (id: string) => {
-		goto(routes.mapPreview(id));
+		goto(routes.treeDetails(id));
 	};
 }
 

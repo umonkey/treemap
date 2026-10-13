@@ -38,8 +38,7 @@ vi.mock('$lib/routes', async () => {
 		...actual,
 		goto: vi.fn().mockResolvedValue(undefined),
 		routes: {
-			...actual.routes,
-			mapPreview: (id: string) => `/tree/${id}`
+			...actual.routes
 		}
 	};
 });

@@ -35,3 +35,17 @@ export const isLowPower = async (): Promise<boolean> => {
 		return false;
 	}
 };
+
+/**
+ * Check if the device's primary input is a coarse pointer (touch), i.e. a
+ * phone or tablet. On such devices the OS picker offers a distinct photo
+ * library ("gallery"); on desktop the camera and gallery tiles would open the
+ * same file dialog, so only the camera tile is shown there.
+ */
+export const isTouchDevice = (): boolean => {
+	if (typeof window === 'undefined') {
+		return false;
+	}
+
+	return window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+};

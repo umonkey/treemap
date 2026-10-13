@@ -86,7 +86,7 @@ export class TreeLayerLogic {
 						mapPoiStore.trees = collection.features.map((f) => ({
 							lat: f.geometry.coordinates[1],
 							lon: f.geometry.coordinates[0],
-							url: routes.mapPreview(f.properties.id)
+							url: routes.treeDetails(f.properties.id)
 						}));
 					}
 				})
@@ -124,7 +124,7 @@ export class TreeLayerLogic {
 
 		console.debug(`[TreeLayer] Tree ${treeId} clicked.`);
 
-		await goto(routes.mapPreview(treeId));
+		await goto(routes.treeDetails(treeId));
 
 		if (navigator.vibrate) {
 			navigator.vibrate(50);

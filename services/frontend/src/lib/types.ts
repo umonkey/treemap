@@ -78,6 +78,7 @@ export interface ITree {
 
 export interface ISingleTree extends ITree {
 	users: IUser[];
+	comment_count?: number;
 }
 
 export interface IMarkers {
@@ -247,6 +248,7 @@ export interface IGalleryItem {
 	small: string;
 	large: string;
 	label: string;
+	example?: boolean;
 }
 
 export interface IHeatMap {

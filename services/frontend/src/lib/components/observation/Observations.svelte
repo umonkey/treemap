@@ -45,8 +45,8 @@
 
 <style>
 	.observations {
-		padding: 0 var(--gap);
-		margin-bottom: var(--gap);
+		padding: 0;
+		margin: 0;
 
 		ul {
 			list-style: none;

@@ -34,8 +34,6 @@
 </script>
 
 {#if $isAuthenticated || !!authenticated}
-	<p>{locale.commentPrompt()}</p>
-
 	<Form>
 		<CommentInput value={message} onChange={handleChange} />
 

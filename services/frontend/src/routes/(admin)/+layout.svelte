@@ -49,7 +49,7 @@
 
 	@media screen and (min-width: 1024px) {
 		.admin-layout {
-			margin-left: 300px;
+			margin-left: var(--sidebar-width-desktop);
 		}
 	}
 

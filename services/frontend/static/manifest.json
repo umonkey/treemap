@@ -47,14 +47,7 @@
 			"form_factor": "narrow",
 			"type": "image/png",
 			"sizes": "1080x2400",
-			"label": "Tree preview on map"
-		},
-		{
-			"src": "/assets/screenshots/screenshot-narrow-details.png",
-			"form_factor": "narrow",
-			"type": "image/png",
-			"sizes": "1080x2400",
-			"label": "Tree details"
+			"label": "Tree page on map"
 		},
 		{
 			"src": "/assets/screenshots/screenshot-narrow-report.png",
@@ -82,14 +75,7 @@
 			"form_factor": "wide",
 			"type": "image/png",
 			"sizes": "1920x1080",
-			"label": "Map selection"
-		},
-		{
-			"src": "/assets/screenshots/screenshot-wide-details.png",
-			"form_factor": "wide",
-			"type": "image/png",
-			"sizes": "1920x1080",
-			"label": "Tree information"
+			"label": "Tree page on map"
 		},
 		{
 			"src": "/assets/screenshots/screenshot-wide-report.png",

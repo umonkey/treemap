@@ -181,6 +181,10 @@ class EnglishLocale {
 		return 'Copy coordinates';
 	}
 
+	public copyId(): string {
+		return 'Copy id';
+	}
+
 	public downloadData(): string {
 		return 'Download data';
 	}
@@ -366,16 +370,24 @@ class EnglishLocale {
 		return 'Tree';
 	}
 
-	public treeTabsDetails(): string {
-		return 'Details';
-	}
-
 	public treeTabsStreetView(): string {
 		return '360°';
 	}
 
 	public treeTabsMap(): string {
 		return 'Map';
+	}
+
+	public treeTabsPreview(): string {
+		return 'Preview';
+	}
+
+	public treeTabsPhotos(): string {
+		return 'Photos';
+	}
+
+	public treeTabsComments(): string {
+		return 'Comments';
 	}
 
 	public treeTabsObservations(): string {
@@ -454,12 +466,12 @@ class EnglishLocale {
 		return 'No comments for this tree yet.';
 	}
 
-	public commentPrompt(): string {
-		return 'Would you like to leave a comment?';
+	public noPhotos(): string {
+		return 'There are no images for this tree.';
 	}
 
 	public commentLabel(): string {
-		return 'Comment';
+		return 'Type your comment:';
 	}
 
 	public commentSignIn(): string {
@@ -475,7 +487,7 @@ class EnglishLocale {
 	}
 
 	public commentHint(): string {
-		return 'Some hints or suggested edits.';
+		return 'Suggest edits, maintenance or spot recent issues.';
 	}
 
 	public contextReplace(): string {
@@ -626,6 +638,10 @@ class EnglishLocale {
 		return 'Upload photos';
 	}
 
+	public photoExample(): string {
+		return 'Example';
+	}
+
 	public deleteTreeTitle(): string {
 		return 'Delete tree';
 	}
@@ -712,10 +728,6 @@ class EnglishLocale {
 
 	public settingsTitle(): string {
 		return 'Settings';
-	}
-
-	public mapPreviewDetails(): string {
-		return 'Details';
 	}
 
 	public rowStepInfo(count: number, step: number): string {
@@ -998,6 +1010,10 @@ class RussianLocale extends EnglishLocale {
 		return 'Скопировать координаты';
 	}
 
+	public override copyId(): string {
+		return 'Скопировать идентификатор';
+	}
+
 	public override downloadData(): string {
 		return 'Скачать данные';
 	}
@@ -1155,12 +1171,20 @@ class RussianLocale extends EnglishLocale {
 		return 'Дерево';
 	}
 
-	public treeTabsDetails(): string {
-		return 'Общее';
-	}
-
 	public treeTabsMap(): string {
 		return 'Карта';
+	}
+
+	public treeTabsPreview(): string {
+		return 'Обзор';
+	}
+
+	public treeTabsPhotos(): string {
+		return 'Фото';
+	}
+
+	public treeTabsComments(): string {
+		return 'Комментарии';
 	}
 
 	public treeTabsObservations(): string {
@@ -1239,12 +1263,12 @@ class RussianLocale extends EnglishLocale {
 		return 'Нет комментариев для этого дерева.';
 	}
 
-	public commentPrompt(): string {
-		return 'Желаете оставить комментарий?';
+	public noPhotos(): string {
+		return 'Для этого дерева нет изображений.';
 	}
 
 	public commentLabel(): string {
-		return 'Комментарий';
+		return 'Введите комментарий:';
 	}
 
 	public commentSignIn(): string {
@@ -1260,7 +1284,7 @@ class RussianLocale extends EnglishLocale {
 	}
 
 	public commentHint(): string {
-		return 'Оставьте подсказки или предложения по исправлению.';
+		return 'Предложите правки, уход или отметьте недавние проблемы.';
 	}
 
 	public contextReplace(): string {
@@ -1387,6 +1411,10 @@ class RussianLocale extends EnglishLocale {
 		return 'Загрузка фотографий';
 	}
 
+	public photoExample(): string {
+		return 'Пример фото';
+	}
+
 	public measureTitle(): string {
 		return 'Замер дерева';
 	}
@@ -1497,10 +1525,6 @@ class RussianLocale extends EnglishLocale {
 
 	public settingsTitle(): string {
 		return 'Настройки';
-	}
-
-	public mapPreviewDetails(): string {
-		return 'Детали';
 	}
 
 	public rowSizeLabel(): string {
@@ -1783,6 +1807,10 @@ class ArmenianLocale extends EnglishLocale {
 		return 'Պատճենել կոորդինատները';
 	}
 
+	public override copyId(): string {
+		return 'Պատճենել նույնացուցիչը';
+	}
+
 	public override downloadData(): string {
 		return 'Ներբեռնել տվյալները';
 	}
@@ -1944,12 +1972,20 @@ class ArmenianLocale extends EnglishLocale {
 		return 'Ծառ';
 	}
 
-	public treeTabsDetails(): string {
-		return 'Մանրամասներ';
-	}
-
 	public treeTabsMap(): string {
 		return 'Քարտեզ';
+	}
+
+	public treeTabsPreview(): string {
+		return 'Նախադիտում';
+	}
+
+	public treeTabsPhotos(): string {
+		return 'Ֆոտո';
+	}
+
+	public treeTabsComments(): string {
+		return 'Մեկնաբանություններ';
 	}
 
 	public treeTabsObservations(): string {
@@ -2028,12 +2064,12 @@ class ArmenianLocale extends EnglishLocale {
 		return 'Այս ծառի մասին դեռևս մեկնաբանություններ չկան:';
 	}
 
-	public commentPrompt(): string {
-		return 'Կցանկանայի՞ք մեկնաբանություն թողնել:';
+	public noPhotos(): string {
+		return 'Այս ծառի համար պատկերներ չկան:';
 	}
 
 	public commentLabel(): string {
-		return 'Մեկնաբանություն';
+		return 'Մուտքագրեք ձեր մեկնաբանությունը:';
 	}
 
 	public commentSignIn(): string {
@@ -2049,7 +2085,7 @@ class ArmenianLocale extends EnglishLocale {
 	}
 
 	public commentHint(): string {
-		return 'Որոշ խորհուրդներ կամ առաջարկվող խմբագրումներ:';
+		return 'Առաջարկեք խմբագրումներ, խնամք կամ նշեք վերջին խնդիրները:';
 	}
 
 	public contextEditTree(): string {
@@ -2176,6 +2212,10 @@ class ArmenianLocale extends EnglishLocale {
 		return 'Վերբեռնել լուսանկարներ';
 	}
 
+	public photoExample(): string {
+		return 'Օրինակ լուսանկար';
+	}
+
 	public measureTitle(): string {
 		return 'Չափել ծառը';
 	}
@@ -2194,10 +2234,6 @@ class ArmenianLocale extends EnglishLocale {
 
 	public settingsTitle(): string {
 		return 'Կարգավորումներ';
-	}
-
-	public mapPreviewDetails(): string {
-		return 'Մանրամասն';
 	}
 
 	public rowSizeLabel(): string {

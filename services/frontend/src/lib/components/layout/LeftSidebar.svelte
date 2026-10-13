@@ -131,7 +131,7 @@
 <style>
 	.canvas {
 		height: 100dvh;
-		width: 300px;
+		width: var(--sidebar-width-desktop);
 		position: fixed;
 		top: 0;
 		left: 0;

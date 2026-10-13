@@ -1,12 +1,13 @@
 <script lang="ts">
-	import MapPreview from './MapPreview.svelte';
-	import { page } from '$app/stores';
+	// Legacy URL: the tree root page now lives at /tree/:id.
+	import { page } from '$app/state';
+	import { goto, routes } from '$lib/routes';
 
-	const id = $derived($page.params.id as string);
+	const id = $derived(page.params.id as string);
+
+	$effect(() => {
+		if (id) {
+			void goto(routes.treeDetails(id), { replaceState: true });
+		}
+	});
 </script>
-
-<svelte:head>
-	<title>Tree {id} - Trees of Yerevan</title>
-</svelte:head>
-
-<MapPreview {id} />

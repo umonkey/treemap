@@ -13,8 +13,6 @@
 </script>
 
 <TreeForm
-	{id}
-	title="Tree Circumference"
 	onSubmit={girthState.save}
 	onCancel={girthState.close}
 	canSave={girthState.canSave}

@@ -1,42 +1,24 @@
 <script lang="ts">
-	import { page } from '$app/stores';
-	import Dialog from '$lib/components/layout/Dialog.svelte';
-	import { goto, routes } from '$lib/routes';
-	import Title from '../components/Title.svelte';
-	import TreeTabs from '../components/TreeTabs.svelte';
+	import { getContext } from 'svelte';
+	import { page } from '$app/state';
+	import { TREE_CONTEXT_KEY, type TreeLayoutState } from '../layout.svelte.ts';
 	import ChangeList from './ChangeList.svelte';
 	import { pageState } from './page.svelte';
 
-	const id = $derived($page.params.id as string);
+	const layoutState = getContext<TreeLayoutState>(TREE_CONTEXT_KEY);
+	const tree = $derived(layoutState.tree);
+
+	const id = $derived(page.params.id as string);
 
 	$effect(() => {
 		pageState.reload(id);
 	});
 </script>
 
-<Dialog title="Tree History" onCancel={() => goto(routes.mapPreview(id))} nopadding>
-	{#if pageState.loading}
-		<p>Loading...</p>
-	{:else if pageState.error}
-		<p>Error loading tree: {pageState.error.description}</p>
-	{:else if pageState.tree}
-		<Title
-			id={pageState.tree.id}
-			title={pageState.tree.species}
-			address={pageState.tree.address}
-			padded
-		/>
-		<TreeTabs tree={pageState.tree.id} active="history" />
-
-		<div class="padded">
-			<ChangeList changes={pageState.changes} />
-		</div>
-	{/if}
-</Dialog>
-
-<style>
-	.padded,
-	p {
-		padding: 0 var(--gap);
-	}
-</style>
+{#if pageState.loading}
+	<p>Loading...</p>
+{:else if pageState.error}
+	<p>Error loading tree: {pageState.error.description}</p>
+{:else if tree}
+	<ChangeList changes={pageState.changes} />
+{/if}

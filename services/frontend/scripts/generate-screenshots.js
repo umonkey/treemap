@@ -9,8 +9,9 @@ const OUTPUT_DIR = path.join(__dirname, '../static/assets/screenshots');
 
 const ROUTES = [
 	{ name: 'home', url: 'https://yerevan.treemaps.app/' },
-	{ name: 'preview', url: 'https://yerevan.treemaps.app/tree/134346854707105792/preview' },
-	{ name: 'details', url: 'https://yerevan.treemaps.app/tree/134346854707105792' },
+	// The tree root page.  The route name (and therefore the file name) is kept
+	// as "preview" because the checked-in PWA screenshots use it.
+	{ name: 'preview', url: 'https://yerevan.treemaps.app/tree/134346854707105792' },
 	{ name: 'report', url: 'https://yerevan.treemaps.app/report?address=Komitas+avenue' },
 	{
 		name: 'add',

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
+	import { routes } from '$lib/routes';
 	import { formatCentimeters, formatMeters, formatState, formatYear } from '$lib/utils/trees';
 	import type { ITree } from '$lib/types';
 
@@ -9,18 +10,24 @@
 </script>
 
 <div class="properties">
-	<dl>
-		<dt>{locale.propHeight()}</dt>
-		<dd>{formatMeters(tree.height)}</dd>
-	</dl>
-	<dl>
-		<dt>{locale.propCanopy()}</dt>
-		<dd>{formatMeters(tree.diameter)}</dd>
-	</dl>
-	<dl>
-		<dt>{locale.propTrunk()}</dt>
-		<dd>{formatCentimeters(tree.circumference)}</dd>
-	</dl>
+	<a class="row" href={routes.treeHeight(tree.id)}>
+		<dl>
+			<dt>{locale.propHeight()}</dt>
+			<dd>{formatMeters(tree.height)}</dd>
+		</dl>
+	</a>
+	<a class="row" href={routes.treeDiameter(tree.id)}>
+		<dl>
+			<dt>{locale.propCanopy()}</dt>
+			<dd>{formatMeters(tree.diameter)}</dd>
+		</dl>
+	</a>
+	<a class="row" href={routes.treeCircumference(tree.id)}>
+		<dl>
+			<dt>{locale.propTrunk()}</dt>
+			<dd>{formatCentimeters(tree.circumference)}</dd>
+		</dl>
+	</a>
 	<dl>
 		<dt>{locale.propState()}</dt>
 		<dd>{formatState(tree.state)}</dd>
@@ -34,19 +41,22 @@
 <style>
 	.properties {
 		columns: 2;
-		gap: 0;
-		margin: var(--gap) 0;
+		gap: 1rem;
 
-		border-top: 1px solid var(--sep-color);
-		padding-top: var(--gap);
 		box-sizing: border-box;
+	}
+
+	.row {
+		display: block;
+		color: inherit;
+		text-decoration: none;
 	}
 
 	dl {
 		display: flex;
 		flex-direction: row;
 		margin: 0 0 5px;
-		padding: 0 var(--gap);
+		padding: 0;
 	}
 
 	dt {
@@ -62,10 +72,7 @@
 		flex-shrink: 1;
 		flex-grow: 1;
 		text-align: right;
-		margin: 0;
-	}
-
-	dd {
 		white-space: nowrap;
+		margin: 0;
 	}
 </style>

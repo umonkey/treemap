@@ -85,7 +85,7 @@ export const editor = (tree_id: string) => {
 	};
 
 	const close = () => {
-		goto(routes.mapPreview(tree_id));
+		goto(routes.treeDetails(tree_id));
 	};
 
 	reload(tree_id);

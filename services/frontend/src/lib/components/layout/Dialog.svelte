@@ -1,9 +1,10 @@
 <script lang="ts">
 	import Overlay from '$lib/components/layout/Overlay.svelte';
+	import SidebarSearchInput from '$lib/components/search/SidebarSearchInput.svelte';
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
 	import type { Snippet } from 'svelte';
-	import { handleClose } from './Dialog.svelte.ts';
+	import { DialogState } from './Dialog.svelte.ts';
 
 	type ButtonDef = {
 		title: string;
@@ -29,11 +30,17 @@
 		variant?: 'standard' | 'bottom';
 	}>();
 
+	const state = new DialogState();
+
+	$effect(() => {
+		return state.init();
+	});
+
 	const close = () => {
 		if (onCancel) {
 			onCancel();
 		} else {
-			handleClose();
+			state.handleClose();
 		}
 	};
 </script>
@@ -42,14 +49,21 @@
 	<title>{title}</title>
 </svelte:head>
 
-<Overlay onClick={close}>
+<Overlay onClick={close} backdrop="none">
 	<form class="dialog" class:variant-bottom={variant === 'bottom'}>
 		{#if header}
 			{@render header()}
 		{:else}
+			<div class="search">
+				<SidebarSearchInput
+					value={state.query}
+					onInput={state.handleInput}
+					onSearch={state.handleSearch}
+					onClose={close}
+				/>
+			</div>
 			<div class="title">
-				<div class="button"></div>
-				<h1>{title}</h1>
+				<h2>{title}</h2>
 				<div class="button">
 					<button type="button" onclick={close}>
 						<CloseIcon />
@@ -85,7 +99,7 @@
 		top: 50%;
 		transform: translateY(-50%);
 
-		background-color: var(--color-dialog-background);
+		background-color: var(--map-menu-background);
 		border-radius: 10px;
 		overflow: hidden;
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -93,9 +107,9 @@
 
 	.button {
 		flex: 0 0 auto;
-		min-width: 40px;
+		min-width: 30px;
 		display: block;
-		height: 40px;
+		height: 30px;
 
 		:global(svg) {
 			width: 22px;
@@ -118,27 +132,33 @@
 	}
 
 	.title {
-		padding: 0.5rem 0;
-		height: var(--dialog-header-size);
+		padding: var(--gap);
 	}
 
 	.actions {
 		height: var(--dialog-footer-size);
 	}
 
-	h1 {
-		font-size: 1rem;
+	h2 {
+		font-size: 120%;
 		font-weight: 400;
-		line-height: 40px;
-		text-align: center;
+		line-height: 30px;
+		text-align: left;
 		margin: 0;
-
 		flex: 1 0 auto;
+
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.search {
+		display: none;
 	}
 
 	.body {
 		margin: 0 auto;
-		padding: 1rem;
+		padding: var(--gap);
 		width: 100%;
 		box-sizing: border-box;
 
@@ -161,8 +181,8 @@
 		background-color: transparent;
 		border: none;
 		border-radius: 5px;
-		height: 40px;
-		width: 40px;
+		height: 30px;
+		width: 30px;
 		cursor: pointer;
 		opacity: 0.5;
 	}
@@ -177,11 +197,12 @@
 	@media screen and (max-width: 1023px) {
 		.dialog {
 			width: 100vw;
-			height: calc(100dvh - var(--bottom-nav-height));
-			border-radius: 0;
+			height: auto;
+			max-height: 80dvh;
+			border-radius: 8px 8px 0 0;
 
 			transform: none;
-			top: 0;
+			top: auto;
 			left: 0;
 			bottom: 0;
 
@@ -202,11 +223,7 @@
 					height: auto;
 					min-height: 40px;
 
-					.button:first-child {
-						display: none;
-					}
-
-					.button:last-child {
+					.button {
 						flex-basis: 30px;
 						height: 30px;
 
@@ -216,7 +233,7 @@
 						}
 					}
 
-					h1 {
+					h2 {
 						text-align: left;
 						font-size: 120%;
 						line-height: 30px;
@@ -238,11 +255,50 @@
 			}
 		}
 
+		.title {
+			background-color: var(--map-menu-background);
+		}
+
 		.body {
 			min-height: auto;
 			max-height: none;
 			flex: 1;
 			padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+		}
+	}
+
+	/** Dock the dialog to the left on desktop, full height, overlaying the sidebar. **/
+	@media screen and (min-width: 1024px) {
+		.dialog {
+			top: 0;
+			left: 0;
+			transform: none;
+			margin-left: 0;
+			width: 50vw;
+			max-width: 700px;
+			height: 100%;
+			border-radius: 0;
+			box-shadow: none;
+		}
+
+		.search {
+			display: block;
+			padding: var(--gap);
+			box-sizing: border-box;
+		}
+
+		.title {
+			background-color: transparent;
+
+			.button {
+				display: none;
+			}
+		}
+
+		.body {
+			flex: 1;
+			min-height: 0;
+			max-height: none;
 		}
 	}
 

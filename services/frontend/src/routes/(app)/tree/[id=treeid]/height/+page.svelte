@@ -13,8 +13,6 @@
 </script>
 
 <TreeForm
-	{id}
-	title="Tree Height"
 	onSubmit={heightState.save}
 	onCancel={heightState.close}
 	canSave={heightState.canSave}

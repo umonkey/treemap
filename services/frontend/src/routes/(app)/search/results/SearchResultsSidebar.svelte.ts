@@ -35,7 +35,7 @@ export class SearchResultsSidebarLogic {
 	navigateToPreview = async (e: Event, treeId: string) => {
 		e.preventDefault();
 		e.stopPropagation();
-		await goto(routes.mapPreview(treeId));
+		await goto(routes.treeDetails(treeId));
 	};
 
 	reload = async (query: string, zoom?: number, bounds?: IBounds) => {
