@@ -1,6 +1,7 @@
 <script lang="ts">
 	import GalleryIcon from '$lib/icons/GalleryIcon.svelte';
 	import { hasPermission } from '$lib/stores/authStore';
+	import { isTouchDevice } from '$lib/utils/device';
 	import { GalleryUploader } from './GalleryUploader.svelte.ts';
 
 	const { treeId }: { treeId: string } = $props();
@@ -8,7 +9,7 @@
 	const state = new GalleryUploader();
 </script>
 
-{#if $hasPermission('tree:edit')}
+{#if $hasPermission('tree:edit') && isTouchDevice()}
 	<label class="tile gallery" title="Pick from Gallery">
 		<GalleryIcon />
 

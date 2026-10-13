@@ -1,7 +1,6 @@
 <script lang="ts">
 	import CameraIcon from '$lib/icons/CameraIcon.svelte';
 	import { hasPermission } from '$lib/stores/authStore';
-	import { supportsCameraCapture } from '$lib/utils/device';
 	import { CameraUploader } from './CameraUploader.svelte.ts';
 
 	const { treeId }: { treeId: string } = $props();
@@ -9,7 +8,7 @@
 	const state = new CameraUploader();
 </script>
 
-{#if $hasPermission('tree:edit') && supportsCameraCapture()}
+{#if $hasPermission('tree:edit')}
 	<label class="tile camera" title="Take Photo">
 		<CameraIcon />
 

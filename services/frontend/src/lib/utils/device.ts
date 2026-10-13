@@ -38,8 +38,9 @@ export const isLowPower = async (): Promise<boolean> => {
 
 /**
  * Check if the device's primary input is a coarse pointer (touch), i.e. a
- * phone or tablet. Used to decide whether the browser will honor the
- * `capture` attribute on a file input (a no-op on desktop).
+ * phone or tablet. On such devices the OS picker offers a distinct photo
+ * library ("gallery"); on desktop the camera and gallery tiles would open the
+ * same file dialog, so only the camera tile is shown there.
  */
 export const isTouchDevice = (): boolean => {
 	if (typeof window === 'undefined') {
@@ -47,16 +48,4 @@ export const isTouchDevice = (): boolean => {
 	}
 
 	return window.matchMedia('(hover: none) and (pointer: coarse)').matches;
-};
-
-/**
- * Check if a file input will be routed to the camera. The `capture` attribute
- * is silently ignored on desktop, so this requires a touch device.
- */
-export const supportsCameraCapture = (): boolean => {
-	if (typeof document === 'undefined') {
-		return false;
-	}
-
-	return isTouchDevice() && 'capture' in document.createElement('input');
 };
