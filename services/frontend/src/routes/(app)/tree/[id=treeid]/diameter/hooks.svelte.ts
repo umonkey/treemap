@@ -4,7 +4,7 @@ import { updateTreeDiameter } from '$lib/api/trees';
 import { showError } from '$lib/errors';
 import { goto, routes } from '$lib/routes';
 
-class CrownState {
+export class CrownState {
 	id = $state<string | undefined>(undefined);
 	value = $state<number>(0);
 	canSave = $state<boolean>(false);
@@ -54,5 +54,3 @@ class CrownState {
 		this.canSave = false;
 	};
 }
-
-export const crownState = new CrownState();

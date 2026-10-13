@@ -5,7 +5,9 @@
 	import Ruler from '$lib/icons/Ruler.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
-	import { pageState } from './page.svelte';
+	import { PageState } from './page.svelte';
+
+	const pageState = new PageState();
 
 	const id = $derived(page.params.id as string);
 

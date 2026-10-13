@@ -2,7 +2,9 @@
 	import { page } from '$app/state';
 	import CommentForm from './CommentForm.svelte';
 	import CommentList from './CommentList.svelte';
-	import { pageState } from './page.svelte.ts';
+	import { PageState } from './page.svelte.ts';
+
+	const pageState = new PageState();
 
 	const id = $derived(page.params.id as string);
 

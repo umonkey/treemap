@@ -2,7 +2,7 @@ import { page } from '$app/state';
 import { locale } from '$lib/locale';
 import { routes } from '$lib/routes';
 
-class TabsLogic {
+export class TabsLogic {
 	tabs = $derived.by(() => {
 		const path = page.url.pathname;
 
@@ -22,5 +22,3 @@ class TabsLogic {
 		];
 	});
 }
-
-export const componentState = new TabsLogic();

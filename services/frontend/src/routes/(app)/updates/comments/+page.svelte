@@ -1,7 +1,9 @@
 <script lang="ts">
 	import TreeListPreview from '$lib/components/layout/TreeListPreview.svelte';
 	import Comment from '$lib/components/tree/Comment.svelte';
-	import { pageState } from './page.svelte.ts';
+	import { PageState } from './page.svelte.ts';
+
+	const pageState = new PageState();
 
 	$effect(() => {
 		pageState.load();

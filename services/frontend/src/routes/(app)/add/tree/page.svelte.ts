@@ -5,7 +5,7 @@ import { showError } from '$lib/errors';
 import { goto, routes } from '$lib/routes';
 import type { IAddTreesRequest } from '$lib/types';
 
-class PageState {
+export class PageState {
 	saving = $state<boolean>(false);
 
 	private save = async (): Promise<string | null> => {
@@ -65,5 +65,3 @@ class PageState {
 		goto(routes.map());
 	};
 }
-
-export const pageState = new PageState();

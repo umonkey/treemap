@@ -8,7 +8,7 @@ import { mapRowState } from '$lib/stores/mapRowState.svelte';
 import { getDistance } from '$lib/utils';
 import type { IAddTreesRequest, ILatLon } from '$lib/types';
 
-class PageState {
+export class PageState {
 	saving = $state<boolean>(false);
 
 	distance = $derived(
@@ -97,5 +97,3 @@ class PageState {
 		goto(routes.map());
 	};
 }
-
-export const pageState = new PageState();

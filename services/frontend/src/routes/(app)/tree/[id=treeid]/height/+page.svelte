@@ -3,7 +3,9 @@
 	import TreeForm from '$lib/components/forms/TreeForm.svelte';
 	import HeightInput from '$lib/ui/height-input/HeightInput.svelte';
 	import ChangeHistory from '../components/ChangeHistory.svelte';
-	import { heightState } from './hooks.svelte.ts';
+	import { HeightState } from './hooks.svelte.ts';
+
+	const heightState = new HeightState();
 
 	const id = $derived($page.params.id as string);
 

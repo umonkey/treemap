@@ -2,7 +2,7 @@ import { getTreeHistory } from '$lib/api/trees';
 import { addUsers } from '$lib/stores/userStore';
 import type { IChange, IError } from '$lib/types';
 
-class PageState {
+export class PageState {
 	loading = $state<boolean>(true);
 	error = $state<IError | undefined>(undefined);
 	changes = $state<IChange[]>([]);
@@ -26,5 +26,3 @@ class PageState {
 		}
 	};
 }
-
-export const pageState = new PageState();

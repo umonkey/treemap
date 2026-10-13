@@ -4,7 +4,7 @@ import { updateTreeHeight } from '$lib/api/trees';
 import { showError } from '$lib/errors';
 import { goto, routes } from '$lib/routes';
 
-class HeightState {
+export class HeightState {
 	id = $state<string | undefined>(undefined);
 	value = $state<number>(0);
 	canSave = $state<boolean>(false);
@@ -49,5 +49,3 @@ class HeightState {
 		this.canSave = false;
 	};
 }
-
-export const heightState = new HeightState();

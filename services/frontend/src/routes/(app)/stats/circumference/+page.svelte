@@ -1,7 +1,9 @@
 <script lang="ts">
 	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import NewTreesListItem from '../NewTreesListItem.svelte';
-	import { pageState } from './page.svelte';
+	import { PageState } from './page.svelte';
+
+	const pageState = new PageState();
 
 	$effect(() => {
 		pageState.reload();

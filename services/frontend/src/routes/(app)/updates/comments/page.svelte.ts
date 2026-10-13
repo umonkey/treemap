@@ -3,7 +3,7 @@ import { addTrees } from '$lib/stores/treeStore';
 import { addUsers } from '$lib/stores/userStore';
 import type { IComment } from '$lib/types';
 
-class PageState {
+export class PageState {
 	comments = $state<IComment[]>([]);
 	loading = $state<boolean>(true);
 	error = $state<boolean>(false);
@@ -29,5 +29,3 @@ class PageState {
 		}
 	};
 }
-
-export const pageState = new PageState();

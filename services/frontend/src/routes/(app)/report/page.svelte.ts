@@ -2,7 +2,7 @@ import { getStreetReport } from '$lib/api/streets';
 import { goto, routes } from '$lib/routes';
 import type { StreetReport } from '$lib/types';
 
-class PageState {
+export class PageState {
 	report = $state<StreetReport | null>(null);
 
 	handleStreetChange = (value: string) => {
@@ -23,5 +23,3 @@ class PageState {
 		}
 	};
 }
-
-export const pageState = new PageState();

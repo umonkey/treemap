@@ -7,7 +7,7 @@ import { roundCoord } from '$lib/utils/strings';
 import { getDistance } from '$lib/utils';
 import type { IWaterSource, ILatLng } from '$lib/types';
 
-class PageState {
+export class PageState {
 	source = $state<IWaterSource | undefined>(undefined);
 	busy = $state(false);
 	error = $state<string | undefined>(undefined);
@@ -72,5 +72,3 @@ class PageState {
 		goto(routes.waterDetails(id));
 	};
 }
-
-export const pageState = new PageState();

@@ -3,7 +3,9 @@
 	import TreeForm from '$lib/components/forms/TreeForm.svelte';
 	import CircumferenceInput from '$lib/ui/circumference-input/CircumferenceInput.svelte';
 	import ChangeHistory from '../components/ChangeHistory.svelte';
-	import { girthState } from './hooks.svelte.ts';
+	import { GirthState } from './hooks.svelte.ts';
+
+	const girthState = new GirthState();
 
 	const id = $derived($page.params.id as string);
 

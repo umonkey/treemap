@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { locale } from '$lib/locale';
-	import { pageState } from './page.svelte';
+	import { PageState } from './page.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import TagIcon from '$lib/icons/TagIcon.svelte';
@@ -10,6 +10,8 @@
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
 	import { mapBottomPadding } from '$lib/components/map/mapBottomPadding';
 	import '$lib/styles/variables.css';
+
+	const pageState = new PageState();
 
 	const id = $derived($page.params.id as string);
 

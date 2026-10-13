@@ -1,7 +1,7 @@
 import { getSpeciesStats } from '$lib/api/stats';
 import type { IError, ISpeciesStats } from '$lib/types';
 
-class PageState {
+export class PageState {
 	loading = $state<boolean>(true);
 	data = $state<ISpeciesStats[]>([]);
 	error = $state<IError | undefined>(undefined);
@@ -32,5 +32,3 @@ class PageState {
 		}
 	};
 }
-
-export const pageState = new PageState();

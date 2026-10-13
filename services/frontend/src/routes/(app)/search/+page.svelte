@@ -9,7 +9,9 @@
 	import StreetInput from '$lib/ui/street-input/StreetInput.svelte';
 	import AgeInput from './AgeInput.svelte';
 	import StateInput from '$lib/ui/state-input/StateInput.svelte';
-	import { pageState } from './page.svelte';
+	import { PageState } from './page.svelte';
+
+	const pageState = new PageState();
 
 	const buttons = [
 		{

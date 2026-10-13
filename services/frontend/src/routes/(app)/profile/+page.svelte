@@ -5,7 +5,9 @@
 	import SignInButton from '$lib/ui/sign-in-button/SignInButton.svelte';
 	import ProfileHeader from './ProfileHeader.svelte';
 	import ToolList from '$lib/components/tools/ToolList.svelte';
-	import { pageState } from './page.svelte';
+	import { PageState } from './page.svelte';
+
+	const pageState = new PageState();
 
 	$effect(() => {
 		untrack(() => pageState.reload());

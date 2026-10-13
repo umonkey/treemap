@@ -1,10 +1,12 @@
 <script lang="ts">
-	import { pageState } from './page.svelte.ts';
+	import { PageState } from './page.svelte.ts';
 	import { page } from '$app/state';
 	import { formatDateTime } from '$lib/utils/strings';
 	import { hasPermission } from '$lib/stores/authStore';
 	import PanoramaViewer from '$lib/components/panoramas/PanoramaViewer.svelte';
 	import { mapBottomPadding } from '$lib/components/map/mapBottomPadding';
+
+	const pageState = new PageState();
 
 	const id = $derived(page.params.id as string);
 

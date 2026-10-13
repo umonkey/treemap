@@ -4,7 +4,7 @@ import { showError } from '$lib/errors';
 import { goto, routes } from '$lib/routes';
 import type { ITree } from '$lib/types';
 
-class PageState {
+export class PageState {
 	tree = $state<ITree>(DEFAULT_TREE);
 	updated = $state<ITree>(DEFAULT_TREE);
 	loading = $state<boolean>(true);
@@ -97,5 +97,3 @@ class PageState {
 		await goto(routes.treeDetails(this.tree.id));
 	};
 }
-
-export const pageState = new PageState();

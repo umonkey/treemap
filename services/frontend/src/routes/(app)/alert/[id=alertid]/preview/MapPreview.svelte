@@ -2,12 +2,14 @@
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
 	import ChatIcon from '$lib/icons/ChatIcon.svelte';
 	import SpinnerIcon from '$lib/icons/SpinnerIcon.svelte';
-	import { previewState } from './MapPreview.svelte.ts';
+	import { PreviewState } from './MapPreview.svelte.ts';
 	import { formatDateTime } from '$lib/utils/strings';
 	import LazyImage from '$lib/ui/lazy-image/LazyImage.svelte';
 	import DefaultImage from '$lib/assets/tree.jpg';
 	import { locale } from './lang';
 	import '$lib/styles/variables.css';
+
+	const previewState = new PreviewState();
 
 	let { id } = $props<{ id: string }>();
 

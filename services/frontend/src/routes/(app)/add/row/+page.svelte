@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
-	import { pageState } from './page.svelte';
+	import { PageState } from './page.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
@@ -13,6 +13,8 @@
 	import CloseOnEscape from '$lib/components/layout/CloseOnEscape.svelte';
 	import { mapBottomPadding } from '$lib/components/map/mapBottomPadding';
 	import '$lib/styles/variables.css';
+
+	const pageState = new PageState();
 
 	onMount(() => {
 		$mapMode = 'add-row';

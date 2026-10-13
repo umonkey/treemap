@@ -3,7 +3,7 @@ import { mapBus } from '$lib/buses/mapBus';
 import { showError } from '$lib/errors';
 import { goto, routes } from '$lib/routes';
 
-class PreviewState {
+export class PreviewState {
 	alert = $state<IAlert>();
 	photos = $state<string[]>([]);
 	expand = $state<boolean>(false);
@@ -69,5 +69,3 @@ class PreviewState {
 		};
 	};
 }
-
-export const previewState = new PreviewState();

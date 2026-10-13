@@ -1,7 +1,7 @@
 import { getUser } from '$lib/api/users';
 import type { IUserWithRights, IError } from '$lib/types';
 
-class PageState {
+export class PageState {
 	user = $state<IUserWithRights | null>(null);
 	loading = $state<boolean>(true);
 	error = $state<IError | null>(null);
@@ -31,5 +31,3 @@ class PageState {
 		}
 	};
 }
-
-export const pageState = new PageState();

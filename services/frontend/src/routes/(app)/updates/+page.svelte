@@ -3,8 +3,10 @@
 	import FALLBACK from '$lib/assets/tree.jpg';
 	import InfiniteScroll from '$lib/components/layout/InfiniteScroll.svelte';
 	import LazyImage from '$lib/ui/lazy-image/LazyImage.svelte';
-	import { pageState } from './page.svelte';
+	import { PageState } from './page.svelte';
 	import { locale } from '$lib/locale';
+
+	const pageState = new PageState();
 
 	$effect(() => {
 		untrack(() => pageState.load());

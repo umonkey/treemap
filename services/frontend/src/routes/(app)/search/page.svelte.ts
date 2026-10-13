@@ -2,7 +2,7 @@ import { goto, routes } from '$lib/routes';
 import { mapLayerStore } from '$lib/stores/mapLayerStore';
 import { get } from 'svelte/store';
 
-class PageState {
+export class PageState {
 	query = $state<string>('');
 	street = $state<string | null>(null);
 	species = $state<string | null>(null);
@@ -188,5 +188,3 @@ class PageState {
 		return `${baseQuery} age:${this.age}`;
 	};
 }
-
-export const pageState = new PageState();

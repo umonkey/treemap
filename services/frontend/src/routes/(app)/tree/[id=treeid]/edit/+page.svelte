@@ -9,7 +9,9 @@
 	import StateInput from '$lib/ui/state-input/StateInput.svelte';
 	import StreetInput from '$lib/ui/street-input/StreetInput.svelte';
 	import YearInput from '$lib/ui/year-input/YearInput.svelte';
-	import { pageState } from './page.svelte';
+	import { PageState } from './page.svelte';
+
+	const pageState = new PageState();
 
 	const id = $derived($page.params.id as string);
 

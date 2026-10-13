@@ -3,7 +3,9 @@
 	import { page } from '$app/state';
 	import { TREE_CONTEXT_KEY, type TreeLayoutState } from '../layout.svelte.ts';
 	import ChangeList from './ChangeList.svelte';
-	import { pageState } from './page.svelte';
+	import { PageState } from './page.svelte';
+
+	const pageState = new PageState();
 
 	const layoutState = getContext<TreeLayoutState>(TREE_CONTEXT_KEY);
 	const tree = $derived(layoutState.tree);

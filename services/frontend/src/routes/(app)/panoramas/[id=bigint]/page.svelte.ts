@@ -4,7 +4,7 @@ import { mapRaysStore } from '$lib/stores/mapRays.svelte';
 import { mapBus } from '$lib/buses/mapBus';
 import { mapLayerStore } from '$lib/stores/mapLayerStore';
 
-class PageState {
+export class PageState {
 	id = $state<string>('');
 	image = $state<PanoramaImage | null>(null);
 	angle = $state<number>(0);
@@ -54,5 +54,3 @@ class PageState {
 		mapRaysStore.rays = [];
 	};
 }
-
-export const pageState = new PageState();

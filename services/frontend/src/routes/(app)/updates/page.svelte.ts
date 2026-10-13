@@ -28,7 +28,7 @@ const formatTile = (tree: ITree): Tile => {
 	};
 };
 
-class PageState {
+export class PageState {
 	tiles = $state<Tile[]>([]);
 	loading = $state<boolean>(false);
 	error = $state<boolean>(false);
@@ -82,5 +82,3 @@ class PageState {
 		this.load();
 	};
 }
-
-export const pageState = new PageState();

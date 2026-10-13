@@ -1,7 +1,7 @@
 import { getTreeActors } from '$lib/api/trees';
 import { type IUserWithRights } from '$lib/types';
 
-class ActionsState {
+export class ActionsState {
 	actors = $state<IUserWithRights[]>([]);
 	currentId = $state<string>('');
 
@@ -22,5 +22,3 @@ class ActionsState {
 		}
 	};
 }
-
-export const actionsState = new ActionsState();

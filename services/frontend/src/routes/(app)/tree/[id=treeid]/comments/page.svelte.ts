@@ -4,7 +4,7 @@ import { locale } from '$lib/locale';
 import { addUsers } from '$lib/stores/userStore';
 import type { IComment } from '$lib/types';
 
-class PageState {
+export class PageState {
 	id = $state<string>();
 	comments = $state<IComment[]>([]);
 
@@ -53,5 +53,3 @@ class PageState {
 		}
 	};
 }
-
-export const pageState = new PageState();

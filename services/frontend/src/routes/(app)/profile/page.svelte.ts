@@ -1,7 +1,7 @@
 import { getMe } from '$lib/api/users';
 import type { IError, IMeResponse } from '$lib/types';
 
-class PageState {
+export class PageState {
 	loading = $state<boolean>(true);
 	data = $state<IMeResponse | undefined>(undefined);
 	error = $state<IError | undefined>(undefined);
@@ -27,5 +27,3 @@ class PageState {
 		}
 	};
 }
-
-export const pageState = new PageState();

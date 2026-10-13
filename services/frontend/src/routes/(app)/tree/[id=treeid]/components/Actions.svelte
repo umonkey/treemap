@@ -12,8 +12,10 @@
 	import { isLiked } from '$lib/stores/likeStore';
 	import type { ITree } from '$lib/types';
 	import { onMount } from 'svelte';
-	import { actionsState } from './Actions.svelte.ts';
+	import { ActionsState } from './Actions.svelte.ts';
 	import ShareButton from './ShareButton.svelte';
+
+	const actionsState = new ActionsState();
 
 	const { tree } = $props<{
 		tree: ITree;

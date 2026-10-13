@@ -1,8 +1,10 @@
 <script lang="ts">
-	import { pageState } from './page.svelte.ts';
+	import { PageState } from './page.svelte.ts';
 	import { page } from '$app/state';
 	import Dialog from '$lib/components/layout/Dialog.svelte';
 	import { locale } from './lang';
+
+	const pageState = new PageState();
 
 	const token = $derived(page.url.searchParams.get('token'));
 	const state = $derived(page.url.searchParams.get('state'));

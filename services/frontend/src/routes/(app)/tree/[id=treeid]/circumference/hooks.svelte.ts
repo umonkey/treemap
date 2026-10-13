@@ -4,7 +4,7 @@ import { updateTreeCircumference } from '$lib/api/trees';
 import { showError } from '$lib/errors';
 import { goto, routes } from '$lib/routes';
 
-class GirthState {
+export class GirthState {
 	id = $state<string | undefined>(undefined);
 	value = $state<number>(0);
 	canSave = $state<boolean>(false);
@@ -55,5 +55,3 @@ class GirthState {
 		}
 	};
 }
-
-export const girthState = new GirthState();

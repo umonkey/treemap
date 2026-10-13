@@ -6,7 +6,9 @@
 	import { locale } from '$lib/locale';
 	import LazyImage from '$lib/ui/lazy-image/LazyImage.svelte';
 	import SignInButton from '$lib/ui/sign-in-button/SignInButton.svelte';
-	import { pageState } from './page.svelte';
+	import { PageState } from './page.svelte';
+
+	const pageState = new PageState();
 
 	$effect(() => {
 		untrack(() => pageState.load());

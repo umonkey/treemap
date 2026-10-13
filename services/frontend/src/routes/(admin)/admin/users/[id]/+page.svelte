@@ -2,7 +2,9 @@
 	import { page } from '$app/state';
 	import Breadcrumbs from '$lib/components/admin/Breadcrumbs.svelte';
 	import PageHeader from '$lib/ui/header/PageHeader.svelte';
-	import { pageState } from './page.svelte';
+	import { PageState } from './page.svelte';
+
+	const pageState = new PageState();
 
 	$effect(() => {
 		if (page.params.id) {

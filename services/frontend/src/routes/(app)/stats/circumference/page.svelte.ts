@@ -3,7 +3,7 @@ import { addTrees } from '$lib/stores/treeStore';
 import { addUsers } from '$lib/stores/userStore';
 import type { IError, ITree } from '$lib/types';
 
-class PageState {
+export class PageState {
 	loading = $state<boolean>(true);
 	data = $state<ITree[]>([]);
 	error = $state<IError | undefined>(undefined);
@@ -29,5 +29,3 @@ class PageState {
 		}
 	};
 }
-
-export const pageState = new PageState();

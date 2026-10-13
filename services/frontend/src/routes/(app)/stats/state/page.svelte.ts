@@ -1,7 +1,7 @@
 import { getStateStats } from '$lib/api/stats';
 import type { IError, IStateStats } from '$lib/types';
 
-class PageState {
+export class PageState {
 	loading = $state<boolean>(true);
 	data = $state<IStateStats[]>([]);
 	error = $state<IError | undefined>(undefined);
@@ -24,5 +24,3 @@ class PageState {
 		}
 	};
 }
-
-export const pageState = new PageState();

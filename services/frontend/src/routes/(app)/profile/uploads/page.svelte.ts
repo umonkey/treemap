@@ -2,7 +2,7 @@ import { type IUpload, db } from '$lib/db';
 import { processUploadQueue, restartUploadQueue } from '$lib/upload';
 import { liveQuery } from 'dexie';
 
-class PageState {
+export class PageState {
 	uploads = $state<IUpload[]>([]);
 
 	onMount = () => {
@@ -26,5 +26,3 @@ class PageState {
 		restartUploadQueue();
 	};
 }
-
-export const pageState = new PageState();

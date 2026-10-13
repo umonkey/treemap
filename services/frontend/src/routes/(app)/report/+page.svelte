@@ -4,7 +4,7 @@
 	import { locale } from '$lib/locale';
 	import Form from '$lib/ui/form/Form.svelte';
 	import StreetInput from '$lib/ui/street-input/StreetInput.svelte';
-	import { pageState } from './page.svelte';
+	import { PageState } from './page.svelte';
 
 	import { getStreetReportCSV } from '$lib/api/streets';
 	import { routes } from '$lib/routes';
@@ -13,6 +13,8 @@
 	import HeightReport from '$lib/ui/height-report/HeightReport.svelte';
 	import SpeciesReport from '$lib/ui/species-report/SpeciesReport.svelte';
 	import StateReport from '$lib/ui/state-report/StateReport.svelte';
+
+	const pageState = new PageState();
 
 	const address = $derived($page.url.searchParams.get('address'));
 

@@ -2,7 +2,7 @@ import { verifyToken } from '$lib/api/users';
 import { authStore } from '$lib/stores/authStore';
 import { goto, routes } from '$lib/routes';
 
-class PageState {
+export class PageState {
 	error = $state<boolean>(false);
 	loading = $state<boolean>(true);
 	redirect = $state<string | null>(null);
@@ -44,5 +44,3 @@ class PageState {
 		goto(routes.home());
 	};
 }
-
-export const pageState = new PageState();

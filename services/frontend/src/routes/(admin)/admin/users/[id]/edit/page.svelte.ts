@@ -3,7 +3,7 @@ import { showError } from '$lib/errors';
 import { goto } from '$app/navigation';
 import type { IUser, IError } from '$lib/types';
 
-class PageState {
+export class PageState {
 	user = $state<IUser | null>(null);
 	loading = $state<boolean>(true);
 	saving = $state<boolean>(false);
@@ -57,5 +57,3 @@ class PageState {
 		}
 	};
 }
-
-export const pageState = new PageState();

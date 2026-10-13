@@ -3,7 +3,7 @@ import { mapBus } from '$lib/buses/mapBus';
 import { showError } from '$lib/errors';
 import type { IWaterSource } from '$lib/types';
 
-class PageState {
+export class PageState {
 	source = $state<IWaterSource | undefined>(undefined);
 
 	public reload = (id: string) => {
@@ -23,5 +23,3 @@ class PageState {
 		});
 	};
 }
-
-export const pageState = new PageState();

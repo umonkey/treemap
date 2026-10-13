@@ -4,7 +4,7 @@ import { mapState } from '$lib/components/map/MapLibre.svelte.ts';
 import { showError } from '$lib/errors';
 import { goto, routes } from '$lib/routes';
 
-class PageState {
+export class PageState {
 	saving = $state<boolean>(false);
 
 	private save = async (): Promise<string | null> => {
@@ -40,5 +40,3 @@ class PageState {
 		goto(routes.map());
 	};
 }
-
-export const pageState = new PageState();

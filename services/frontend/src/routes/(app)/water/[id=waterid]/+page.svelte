@@ -7,7 +7,9 @@
 	import LocationIcon from '$lib/icons/LocationIcon.svelte';
 	import TagIcon from '$lib/icons/TagIcon.svelte';
 	import { formatDate } from '$lib/utils/strings';
-	import { pageState } from './hooks.svelte.ts';
+	import { PageState } from './hooks.svelte.ts';
+
+	const pageState = new PageState();
 
 	const id = $derived($page.params.id as string);
 

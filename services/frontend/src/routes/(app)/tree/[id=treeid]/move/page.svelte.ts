@@ -7,7 +7,7 @@ import { roundCoord } from '$lib/utils/strings';
 import { getDistance } from '$lib/utils';
 import type { ITree, ILatLng } from '$lib/types';
 
-class PageState {
+export class PageState {
 	tree = $state<ITree | undefined>(undefined);
 	busy = $state(false);
 	error = $state<string | undefined>(undefined);
@@ -72,5 +72,3 @@ class PageState {
 		goto(routes.treeDetails(id));
 	};
 }
-
-export const pageState = new PageState();

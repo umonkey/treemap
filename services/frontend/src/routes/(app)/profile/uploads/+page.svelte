@@ -8,8 +8,10 @@
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import { onMount } from 'svelte';
 	import { locale } from './lang';
-	import { pageState } from './page.svelte';
+	import { PageState } from './page.svelte';
 	import UploadRow from './UploadRow.svelte';
+
+	const pageState = new PageState();
 
 	onMount(pageState.onMount);
 
