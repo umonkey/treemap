@@ -1,5 +1,6 @@
 <script lang="ts">
 	import GalleryIcon from '$lib/icons/GalleryIcon.svelte';
+	import { hasPermission } from '$lib/stores/authStore';
 	import { GalleryUploader } from './GalleryUploader.svelte.ts';
 
 	const { treeId }: { treeId: string } = $props();
@@ -7,16 +8,18 @@
 	const state = new GalleryUploader();
 </script>
 
-<label class="tile gallery" title="Pick from Gallery">
-	<GalleryIcon />
+{#if $hasPermission('tree:edit')}
+	<label class="tile gallery" title="Pick from Gallery">
+		<GalleryIcon />
 
-	<input
-		type="file"
-		accept="image/jpeg,image/png,image/heic,image/heif,image/webp"
-		multiple
-		onchange={(e) => state.handleChange(treeId, e)}
-	/>
-</label>
+		<input
+			type="file"
+			accept="image/jpeg,image/png,image/heic,image/heif,image/webp"
+			multiple
+			onchange={(e) => state.handleChange(treeId, e)}
+		/>
+	</label>
+{/if}
 
 <style>
 	.tile {
