@@ -5,6 +5,7 @@
 	import CameraUploader from './CameraUploader.svelte';
 	import { Gallery } from './Gallery.svelte.ts';
 	import GalleryUploader from './GalleryUploader.svelte';
+	import ImageViewer from './ImageViewer.svelte';
 
 	const {
 		id,
@@ -66,18 +67,17 @@
 
 		{#if !gallery.error}
 			{#each gallery.slides as item (item.id)}
-				<a
+				<button
+					type="button"
 					class="tile"
-					href={item.large}
-					target="_blank"
-					rel="noopener noreferrer"
+					onclick={() => gallery.openViewer(item)}
 					title={item.label}
 				>
 					<img src={item.small} loading="lazy" alt="Tree" onload={handleLoad} />
 					{#if item.label}
 						<span class="badge">{item.label}</span>
 					{/if}
-				</a>
+				</button>
 			{:else}
 				{#each Array(placeholders).keys() as index (index)}
 					<div class="tile placeholder"></div>
@@ -85,6 +85,10 @@
 			{/each}
 		{/if}
 	</div>
+
+	{#if gallery.selected}
+		<ImageViewer item={gallery.selected} onClose={gallery.closeViewer} />
+	{/if}
 </div>
 
 <style>
@@ -107,6 +111,11 @@
 		display: block;
 		aspect-ratio: 1/1;
 		overflow: hidden;
+		background: none;
+		border: none;
+		padding: 0;
+		font: inherit;
+		cursor: pointer;
 
 		&.queued {
 			opacity: 0.5;

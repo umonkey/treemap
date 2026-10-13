@@ -20,7 +20,16 @@ export class Gallery {
 	slides = $state<IGalleryItem[]>([]);
 	queue = $state<QueuedPhoto[]>([]);
 	currentId = $state<string | null>(null);
+	selected = $state<IGalleryItem | null>(null);
 	private species = '';
+
+	openViewer = (item: IGalleryItem) => {
+		this.selected = item;
+	};
+
+	closeViewer = () => {
+		this.selected = null;
+	};
 
 	reload = async (id: string, species: string) => {
 		if (this.currentId === id && this.species === species) return;
