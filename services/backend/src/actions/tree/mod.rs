@@ -16,6 +16,7 @@ pub fn tree_router(cfg: &mut ServiceConfig) {
         .service(get_new_trees_action)
         .service(get_tree_action)
         .service(get_tree_actors_action)
+        .service(tree_card_action)
         .service(get_tree_comments_action)
         .service(get_tree_defaults_action)
         .service(get_tree_history_action)
