@@ -1,12 +1,12 @@
 import { getTreeFiles } from '$lib/api/trees';
 import { uploadBus } from '$lib/buses/upload';
 import { db } from '$lib/db';
+import { locale } from '$lib/locale';
 import { routes } from '$lib/routes';
-import { getUser } from '$lib/stores/userStore';
 import type { IGalleryItem, ITreeFile } from '$lib/types';
-import { formatDate } from '$lib/utils/strings';
+import { findSpeciesPhotos } from '$lib/utils/photos';
+import { formatDateShort } from '$lib/utils/strings';
 import { liveQuery } from 'dexie';
-import { get } from 'svelte/store';
 
 export type QueuedPhoto = {
 	id: number;
@@ -20,10 +20,12 @@ export class Gallery {
 	slides = $state<IGalleryItem[]>([]);
 	queue = $state<QueuedPhoto[]>([]);
 	currentId = $state<string | null>(null);
+	private species = '';
 
-	reload = async (id: string) => {
-		if (this.currentId === id) return;
+	reload = async (id: string, species: string) => {
+		if (this.currentId === id && this.species === species) return;
 		this.currentId = id;
+		this.species = species;
 		await this.fetch(id, false);
 	};
 
@@ -99,29 +101,38 @@ export class Gallery {
 		};
 	};
 
+	// Real photos come first, followed by the species examples. Both are shaped as
+	// gallery items so the component can render a single, uniform list.
 	private formatSlides = (files: ITreeFile[]): IGalleryItem[] => {
-		return files.map((file: ITreeFile): IGalleryItem => {
+		const photos = files.map((file: ITreeFile): IGalleryItem => {
 			return {
 				id: file.id,
 				small: routes.file(file.small_id),
 				large: routes.file(file.source_id ?? file.large_id),
-				label: this.added_at(file)
+				label: this.label(file)
 			};
 		});
+
+		const examples = findSpeciesPhotos(this.species).map(
+			(url: string, index: number): IGalleryItem => {
+				return {
+					id: `example-${index}`,
+					small: url,
+					large: url,
+					label: locale.photoExample(),
+					example: true
+				};
+			}
+		);
+
+		return [...photos, ...examples];
 	};
 
-	private added_at = (file: ITreeFile): string => {
-		if (!file.added_at || !file.added_by) {
+	private label = (file: ITreeFile): string => {
+		if (!file.added_at) {
 			return '';
 		}
 
-		const user = get(getUser)(file.added_by);
-
-		if (user === undefined) {
-			return '';
-		}
-
-		const date = formatDate(file.added_at);
-		return `${date} by ${user.name}`;
+		return formatDateShort(file.added_at);
 	};
 }

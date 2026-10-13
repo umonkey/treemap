@@ -1,10 +1,16 @@
 import { addUsers } from '$lib/stores/userStore';
 import { describe, expect, it } from 'vitest';
-import { fileAttribution, formatDate, formatDateTime } from './strings';
+import { fileAttribution, formatDate, formatDateShort, formatDateTime } from './strings';
 
 describe('formatDate', () => {
 	it('should format correctly', () => {
 		expect(formatDate(1740304662)).toBe('23.02.2025');
+	});
+});
+
+describe('formatDateShort', () => {
+	it('should format correctly', () => {
+		expect(formatDateShort(1740304662)).toBe('23.02.25');
 	});
 });
 

@@ -6,7 +6,11 @@
 	import { Gallery } from './Gallery.svelte.ts';
 	import GalleryUploader from './GalleryUploader.svelte';
 
-	const { id, count }: { id: string; count?: number | undefined } = $props();
+	const {
+		id,
+		count,
+		species
+	}: { id: string; count?: number | undefined; species?: string | undefined } = $props();
 
 	const gallery = new Gallery();
 
@@ -16,7 +20,7 @@
 	const placeholders = $derived(gallery.loading ? (count ?? 0) : 0);
 
 	$effect(() => {
-		gallery.reload(id);
+		gallery.reload(id, species ?? '');
 	});
 
 	$effect(() => {
@@ -55,12 +59,16 @@
 			{#each gallery.slides as item (item.id)}
 				<a
 					class="tile"
+					class:example={item.example}
 					href={item.large}
 					target="_blank"
 					rel="noopener noreferrer"
 					title={item.label}
 				>
 					<img src={item.small} loading="lazy" alt="Tree" onload={handleLoad} />
+					{#if item.example}
+						<span class="badge">{item.label}</span>
+					{/if}
 				</a>
 			{:else}
 				{#if placeholders > 0}
@@ -120,5 +128,17 @@
 
 	.tile.placeholder {
 		background-color: rgba(0, 0, 0, 0.2);
+	}
+
+	.tile.example .badge {
+		position: absolute;
+		bottom: 4px;
+		left: 4px;
+		padding: 2px 6px;
+		border-radius: 4px;
+		background-color: rgba(0, 0, 0, 0.55);
+		color: #fff;
+		font-size: 0.7rem;
+		line-height: 1.2;
 	}
 </style>
