@@ -37,7 +37,7 @@
 
 	const title = $derived(
 		state.tree
-			? `${formatSpecies(state.tree.species)} — ${state.tree.address} — ${locale.appTitle()}`
+			? `${formatSpecies(state.tree.species)} — ${state.tree.address ?? "address unknown"} — ${locale.appTitle()}`
 			: `${locale.treeShortTitle()} — ${locale.appTitle()}`
 	);
 </script>
@@ -69,7 +69,7 @@
 		</div>
 
 		<div class="subtitle">
-			<div class="addr">{tree.address}</div>
+			<div class="addr">{tree.address ?? "Address unknown"}</div>
 			<button
 				class="id"
 				type="button"
