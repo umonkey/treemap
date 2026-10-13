@@ -22,8 +22,6 @@
 	<!-- Loading... -->
 {:else if pageState.tree}
 	<TreeForm
-		title="Edit Tree"
-		{id}
 		onSubmit={pageState.handleConfirm}
 		onCancel={pageState.handleCancel}
 		saving={pageState.saving}

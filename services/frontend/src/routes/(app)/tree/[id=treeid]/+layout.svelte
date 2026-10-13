@@ -17,10 +17,10 @@
 
 	const id = $derived(page.params.id as string);
 
-	// The sidebar is wide everywhere except the preview tab, whose content is
-	// narrow. Preview is the layout's own special case: it is where the close
-	// button goes.
-	const wide = $derived(page.url.pathname !== routes.mapPreview(id));
+	// The sidebar is wide on the content tabs, but narrow where the content is:
+	// the preview page and the move view.
+	const narrowPaths = $derived([routes.mapPreview(id), routes.treeMove(id)]);
+	const wide = $derived(!narrowPaths.includes(page.url.pathname));
 
 	$effect(() => {
 		return state.init();
