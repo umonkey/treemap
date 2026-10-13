@@ -69,6 +69,6 @@ describe('fileAttribution', () => {
 				added_at: 1740304662,
 				added_by: '12345'
 			})
-		).toBe('23.02.2025 by Alice');
+		).toBe('23.02.25 by Alice');
 	});
 });

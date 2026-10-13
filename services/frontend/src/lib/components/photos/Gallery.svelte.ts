@@ -5,7 +5,7 @@ import { locale } from '$lib/locale';
 import { routes } from '$lib/routes';
 import type { IGalleryItem, ITreeFile } from '$lib/types';
 import { findSpeciesPhotos } from '$lib/utils/photos';
-import { formatDateShort } from '$lib/utils/strings';
+import { fileAttribution, formatDateShort } from '$lib/utils/strings';
 import { liveQuery } from 'dexie';
 
 export type QueuedPhoto = {
@@ -114,11 +114,14 @@ export class Gallery {
 	// gallery items so the component can render a single, uniform list.
 	private formatSlides = (files: ITreeFile[]): IGalleryItem[] => {
 		const photos = files.map((file: ITreeFile): IGalleryItem => {
+			const label = this.label(file);
+
 			return {
 				id: file.id,
 				small: routes.file(file.small_id),
 				large: routes.file(file.source_id ?? file.large_id),
-				label: this.label(file)
+				label,
+				description: fileAttribution(file) || label
 			};
 		});
 
@@ -128,7 +131,8 @@ export class Gallery {
 					id: `example-${index}`,
 					small: url,
 					large: url,
-					label: locale.photoExample()
+					label: locale.photoExample(),
+					description: locale.photoExampleDescription()
 				};
 			}
 		);

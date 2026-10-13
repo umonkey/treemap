@@ -248,6 +248,7 @@ export interface IGalleryItem {
 	small: string;
 	large: string;
 	label: string;
+	description: string;
 }
 
 export interface IHeatMap {

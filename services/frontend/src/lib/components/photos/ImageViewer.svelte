@@ -54,6 +54,9 @@
 		onpointercancel={viewer.handlePointerUp}
 	/>
 	<button class="close" aria-label="Close" onclick={onClose}><CloseIcon /></button>
+	{#if item.description}
+		<p class="caption">{item.description}</p>
+	{/if}
 </div>
 
 <style>
@@ -118,5 +121,34 @@
 		background: rgba(0, 0, 0, 0.4);
 		color: #fff;
 		cursor: pointer;
+	}
+
+	.caption {
+		position: absolute;
+		z-index: 2;
+		bottom: 1rem;
+		left: 50%;
+		transform: translateX(-50%);
+		max-width: 80vw;
+		margin: 0;
+		padding: 4px 8px;
+		border-radius: 4px;
+		background-color: rgba(0, 0, 0, 0.5);
+		color: #fff;
+		font-size: 1rem;
+		line-height: 1.3;
+		text-align: center;
+		pointer-events: none;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		line-clamp: 2;
+		overflow: hidden;
+	}
+
+	@media screen and (max-width: 1023px) {
+		.caption {
+			bottom: calc(var(--bottom-nav-height) + 1rem);
+		}
 	}
 </style>

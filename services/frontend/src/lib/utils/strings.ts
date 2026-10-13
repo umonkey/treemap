@@ -60,7 +60,7 @@ export const fileAttribution = (file: ITreeFile): string => {
 		return '';
 	}
 
-	const date = formatDate(file.added_at);
+	const date = formatDateShort(file.added_at);
 	return `${date} by ${user.name}`;
 };
 

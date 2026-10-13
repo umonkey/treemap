@@ -8,7 +8,8 @@ const item: IGalleryItem = {
 	id: '1',
 	small: 'small.jpg',
 	large: 'large.jpg',
-	label: 'Tree'
+	label: 'Tree',
+	description: '23.02.25 by Alice'
 };
 
 describe('ImageViewer', () => {

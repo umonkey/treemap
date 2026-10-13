@@ -642,6 +642,10 @@ class EnglishLocale {
 		return 'Example';
 	}
 
+	public photoExampleDescription(): string {
+		return 'Example image, from another tree.';
+	}
+
 	public deleteTreeTitle(): string {
 		return 'Delete tree';
 	}
@@ -1413,6 +1417,10 @@ class RussianLocale extends EnglishLocale {
 
 	public photoExample(): string {
 		return 'Пример';
+	}
+
+	public photoExampleDescription(): string {
+		return 'Пример изображения с другого дерева.';
 	}
 
 	public measureTitle(): string {
@@ -2214,6 +2222,10 @@ class ArmenianLocale extends EnglishLocale {
 
 	public photoExample(): string {
 		return 'Օրինակ';
+	}
+
+	public photoExampleDescription(): string {
+		return 'Օրինակ պատկեր՝ մեկ այլ ծառից։';
 	}
 
 	public measureTitle(): string {
