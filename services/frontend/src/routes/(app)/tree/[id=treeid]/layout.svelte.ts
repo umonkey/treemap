@@ -2,13 +2,32 @@ import { getTree } from '$lib/api/trees';
 import { mapBus } from '$lib/buses/mapBus';
 import { showError } from '$lib/errors';
 import { goto, routes } from '$lib/routes';
+import { treeStore } from '$lib/stores/treeStore';
 import type { IError, ISingleTree } from '$lib/types';
+import { fromStore } from 'svelte/store';
 
 export const TREE_CONTEXT_KEY = Symbol('tree-layout');
 
 export class TreeLayoutState {
 	id = $state<string>();
-	tree = $state<ISingleTree>();
+
+	// The single-tree payload, kept for fields the map cache doesn't carry
+	// (e.g. comment_count / users).
+	response = $state<ISingleTree>();
+
+	#trees = fromStore(treeStore);
+
+	/** Cache is the source of truth; single-tree-only fields survive the merge. */
+	tree = $derived.by<ISingleTree | undefined>(() => {
+		const cached = this.id ? this.#trees.current[this.id] : undefined;
+
+		if (!cached && !this.response) {
+			return undefined;
+		}
+
+		return { ...this.response, ...cached } as ISingleTree;
+	});
+
 	loading = $state(false);
 	error = $state<IError>();
 	expand = $state(false);
@@ -16,15 +35,15 @@ export class TreeLayoutState {
 
 	public reload = (id: string) => {
 		this.id = id;
-		this.tree = undefined;
+		this.response = undefined;
 		this.error = undefined;
 		this.loading = true;
 
 		getTree(id).then((res) => {
 			if (res.status === 200 && res.data) {
-				this.tree = res.data;
+				this.response = res.data;
 
-				const ll = { lat: this.tree.lat, lng: this.tree.lon };
+				const ll = { lat: res.data.lat, lng: res.data.lon };
 				mapBus.emit('pin', ll);
 				mapBus.emit('moveOnce', ll);
 			} else if (res.error) {
