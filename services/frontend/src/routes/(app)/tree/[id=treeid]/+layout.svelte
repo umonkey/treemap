@@ -2,6 +2,7 @@
 	import { setContext } from 'svelte';
 	import { page } from '$app/state';
 	import { mapBottomPadding } from '$lib/components/map/mapBottomPadding';
+	import SidebarSearchInput from '$lib/components/search/SidebarSearchInput.svelte';
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
 	import SpinnerIcon from '$lib/icons/SpinnerIcon.svelte';
 	import { locale } from '$lib/locale';
@@ -21,6 +22,10 @@
 	// the preview page and the move view.
 	const narrowPaths = $derived([routes.treeDetails(id), routes.treeMove(id)]);
 	const wide = $derived(!narrowPaths.includes(page.url.pathname));
+
+	// The sidebar close button returns to the map from the tree root, and to the
+	// tree root from any other tree tab.
+	const isRoot = $derived(page.url.pathname === routes.treeDetails(id));
 
 	$effect(() => {
 		return state.init();
@@ -45,10 +50,21 @@
 	{#if state.tree}
 		{@const tree = state.tree}
 
+		<div class="search">
+			<SidebarSearchInput
+				value={state.query}
+				onInput={state.handleInput}
+				onSearch={state.handleSearch}
+				onClose={() => state.handleClose(isRoot)}
+			/>
+		</div>
+
 		<div class="header">
 			<div class="title">{formatSpecies(tree.species)}</div>
-			<button class="close" aria-label={locale.editCancel()} onclick={state.handleClose}
-				><CloseIcon /></button
+			<button
+				class="close"
+				aria-label={locale.editCancel()}
+				onclick={() => state.handleClose(isRoot)}><CloseIcon /></button
 			>
 		</div>
 
@@ -107,6 +123,11 @@
 				width: 20px;
 				height: 20px;
 			}
+		}
+
+		/* The search row is desktop-only. */
+		.search {
+			display: none;
 		}
 
 		.header {
@@ -203,6 +224,15 @@
 				flex-direction: column;
 				gap: var(--gap);
 				margin-bottom: var(--gap);
+			}
+
+			/* The close button moves to the search row on desktop. */
+			.header .close {
+				display: none;
+			}
+
+			.search {
+				display: block;
 			}
 		}
 

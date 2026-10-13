@@ -12,6 +12,7 @@ export class TreeLayoutState {
 	loading = $state(false);
 	error = $state<IError>();
 	expand = $state(false);
+	query = $state<string>('');
 
 	public reload = (id: string) => {
 		this.id = id;
@@ -50,10 +51,20 @@ export class TreeLayoutState {
 		}
 	};
 
-	public handleClose = async () => {
-		if (this.id) {
-			await goto(routes.treeDetails(this.id));
+	public handleInput = (value: string) => {
+		this.query = value;
+	};
+
+	public handleSearch = async (value: string) => {
+		await goto(routes.searchQuery(value));
+	};
+
+	public handleClose = async (isRoot: boolean) => {
+		if (!this.id) {
+			return;
 		}
+
+		await goto(isRoot ? routes.home() : routes.treeDetails(this.id));
 	};
 
 	/** Cleanup leaves the map pin behind. */
