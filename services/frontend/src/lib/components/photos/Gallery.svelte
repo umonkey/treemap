@@ -1,6 +1,7 @@
 <script lang="ts">
 	import FALLBACK from '$lib/assets/tree.jpg';
 	import SpinnerIcon from '$lib/icons/SpinnerIcon.svelte';
+	import { routes } from '$lib/routes';
 	import CameraUploader from './CameraUploader.svelte';
 	import { Gallery } from './Gallery.svelte.ts';
 	import GalleryUploader from './GalleryUploader.svelte';
@@ -38,12 +39,12 @@
 		<GalleryUploader treeId={id} />
 
 		{#each gallery.queue as item (item.id)}
-			<div class="tile queued" class:busy={item.busy}>
+			<a class="tile queued" class:busy={item.busy} href={routes.uploads()} title="Uploading">
 				<img src={item.src} alt="Uploading" onload={handleLoad} />
 				{#if item.busy}
 					<div class="spinner"><SpinnerIcon /></div>
 				{/if}
-			</div>
+			</a>
 		{/each}
 
 		{#if !gallery.error}
@@ -86,6 +87,10 @@
 		display: block;
 		aspect-ratio: 1/1;
 		overflow: hidden;
+
+		&.queued {
+			opacity: 0.5;
+		}
 	}
 
 	.tile.queued .spinner {
