@@ -6,7 +6,18 @@
 	const { item, onClose }: { item: IGalleryItem; onClose: () => void } = $props();
 	const viewer = new ImageViewerLogic();
 
+	let imageEl: HTMLImageElement;
+
 	$effect(() => viewer.bind(onClose));
+
+	$effect(() => viewer.bindImage(imageEl));
+
+	// Reset zoom/pan when the displayed image changes (the component is not remounted on prop change).
+	$effect(() => {
+		const id = item.id;
+		if (!id) return;
+		viewer.reset();
+	});
 
 	$effect(() => {
 		window.addEventListener('keydown', viewer.handleKeydown);
@@ -22,9 +33,26 @@
 	});
 </script>
 
+<svelte:window onresize={viewer.handleResize} />
+
 <div class="viewer" role="dialog" aria-modal="true">
 	<button class="backdrop" aria-label="Close" onclick={onClose}></button>
-	<img class="image" src={item.large} alt={item.label || 'Tree'} />
+	<img
+		class="image"
+		class:pannable={viewer.canPan}
+		class:dragging={viewer.dragging}
+		src={item.large}
+		alt={item.label || 'Tree'}
+		draggable="false"
+		style="transform: translate({viewer.offsetX}px, {viewer.offsetY}px) scale({viewer.scale})"
+		bind:this={imageEl}
+		onwheel={viewer.handleWheel}
+		ondblclick={viewer.handleDblClick}
+		onpointerdown={viewer.handlePointerDown}
+		onpointermove={viewer.handlePointerMove}
+		onpointerup={viewer.handlePointerUp}
+		onpointercancel={viewer.handlePointerUp}
+	/>
 	<button class="close" aria-label="Close" onclick={onClose}><CloseIcon /></button>
 </div>
 
@@ -38,6 +66,8 @@
 		justify-content: center;
 		background: rgba(0, 0, 0, 0.9);
 		animation: fadeIn 0.2s ease-out;
+		overflow: hidden;
+		touch-action: none;
 	}
 
 	.backdrop {
@@ -56,6 +86,20 @@
 		max-width: 100%;
 		max-height: 100%;
 		object-fit: contain;
+		transform-origin: center center;
+		will-change: transform;
+		user-select: none;
+		-webkit-user-drag: none;
+		touch-action: none;
+		cursor: default;
+	}
+
+	.image.pannable {
+		cursor: grab;
+	}
+
+	.image.pannable.dragging {
+		cursor: grabbing;
 	}
 
 	.close {
