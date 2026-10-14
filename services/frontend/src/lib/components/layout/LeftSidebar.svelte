@@ -6,6 +6,7 @@
 	import ChartIcon from '$lib/icons/ChartIcon.svelte';
 	import MegaphoneIcon from '$lib/icons/MegaphoneIcon.svelte';
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
+	import GridIcon from '$lib/icons/GridIcon.svelte';
 	import HomeIcon from '$lib/icons/HomeIcon.svelte';
 	import InstallIcon from '$lib/icons/InstallIcon.svelte';
 	import SaveIcon from '$lib/icons/SaveIcon.svelte';
@@ -91,6 +92,12 @@
 				>
 					<span class="icon"><MegaphoneIcon /></span>
 					<span>{locale.sideSendAlert()}</span>
+				</a>
+			</li>
+			<li>
+				<a href={routes.tools()} onclick={componentState.close}>
+					<span class="icon"><GridIcon /></span>
+					<span>{locale.sideTools()}</span>
 				</a>
 			</li>
 			<li>

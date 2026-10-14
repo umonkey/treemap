@@ -74,6 +74,7 @@ export const routes = {
 	waterDetails: (id: string) => `/water/${id}`,
 	waterMove: (id: string) => `/water/${id}/move`,
 	privacy: () => '/privacy',
+	tools: () => '/tools',
 	toolsRange: () => '/tools/range',
 	toolsRangeEnter: () => '/tools/range/enter',
 	toolsRangeSubmit: () => '/tools/range/submit',

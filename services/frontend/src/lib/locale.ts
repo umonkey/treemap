@@ -33,6 +33,14 @@ class EnglishLocale {
 		return 'Statistics';
 	}
 
+	public sideTools(): string {
+		return 'More tools';
+	}
+
+	public toolsHeading(): string {
+		return 'Explore additional tools';
+	}
+
 	public sideProfile(): string {
 		return 'Profile';
 	}
@@ -858,6 +866,14 @@ class RussianLocale extends EnglishLocale {
 		return 'Анализ данных';
 	}
 
+	public sideTools(): string {
+		return 'Другие инструменты';
+	}
+
+	public toolsHeading(): string {
+		return 'Дополнительные инструменты';
+	}
+
 	public sideProfile(): string {
 		return 'Профиль';
 	}
@@ -1665,6 +1681,14 @@ class ArmenianLocale extends EnglishLocale {
 
 	public sideReports(): string {
 		return 'Տվյալների զեկույցներ';
+	}
+
+	public sideTools(): string {
+		return 'Այլ գործիքներ';
+	}
+
+	public toolsHeading(): string {
+		return 'Լրացուցիչ գործիքներ';
 	}
 
 	public sideProfile(): string {

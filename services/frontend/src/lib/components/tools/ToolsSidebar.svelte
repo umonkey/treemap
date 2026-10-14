@@ -2,6 +2,7 @@
 	import SidebarSearchInput from '$lib/components/search/SidebarSearchInput.svelte';
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
 	import UserIcon from '$lib/icons/UserIcon.svelte';
+	import { locale } from '$lib/locale';
 	import { isSidebarVisible } from '$lib/stores/mobileSidebarStore';
 	import { ToolsSidebarLogic } from './ToolsSidebar.svelte.ts';
 
@@ -31,7 +32,7 @@
 			/>
 		</div>
 
-		<h2>Explore additional tools</h2>
+		<h2>{locale.toolsHeading()}</h2>
 
 		<div class="grid">
 			{#each componentState.items as item}
