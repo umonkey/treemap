@@ -4,6 +4,7 @@ import DatabaseIcon from '$lib/icons/DatabaseIcon.svelte';
 import LearnIcon from '$lib/icons/LearnIcon.svelte';
 import MergeIcon from '$lib/icons/MergeIcon.svelte';
 import QuestionIcon from '$lib/icons/QuestionIcon.svelte';
+import SpeciesIcon from '$lib/icons/SpeciesIcon.svelte';
 import StreetIcon from '$lib/icons/StreetIcon.svelte';
 import StreetViewIcon from '$lib/icons/StreetViewIcon.svelte';
 import TriangleIcon from '$lib/icons/TriangleIcon.svelte';
@@ -71,6 +72,13 @@ export const tools: Tool[] = [
 		href: '/tools/users',
 		icon: UsersIcon,
 		permission: 'user:manage'
+	},
+	{
+		name: locale.species(),
+		description: locale.speciesDescription(),
+		href: '/tools/species',
+		icon: SpeciesIcon,
+		permission: 'species:manage'
 	},
 	{
 		name: locale.exportData(),

@@ -36,6 +36,7 @@ pub enum Error {
     PanoramaNotFound,
     Queue,
     RemoteAddrNotSet,
+    SpeciesNotFound,
     TreeNotFound,
     UniqueId,
     UserAgentNotSet,
@@ -131,6 +132,9 @@ impl Error {
             Error::RemoteAddrNotSet => {
                 r#"{"error":{"code":"RemoteAddrNotSet","description":"Remote address not set."}}"#.to_string()
             }
+            Error::SpeciesNotFound => {
+                r#"{"error":{"code":"SpeciesNotFound","description":"The specified species does not exist in the database."}}"#.to_string()
+            }
             Error::TreeNotFound => {
                 r#"{"error":{"code":"TreeNotFound","description":"The specified tree does not exist in the database."}}"#.to_string()
             }
@@ -193,6 +197,7 @@ impl ResponseError for Error {
             | Error::FileNotFound
             | Error::PanoramaNotFound
             | Error::InstanceNotFound
+            | Error::SpeciesNotFound
             | Error::TreeNotFound
             | Error::WaterNotFound => StatusCode::NOT_FOUND,
             Error::BadAuthToken
@@ -245,6 +250,7 @@ impl fmt::Display for Error {
             Error::PanoramaNotFound => write!(f, "PanoramaNotFound"),
             Error::Queue => write!(f, "Queue"),
             Error::RemoteAddrNotSet => write!(f, "RemoteAddrNotSet"),
+            Error::SpeciesNotFound => write!(f, "SpeciesNotFound"),
             Error::TreeNotFound => write!(f, "TreeNotFound"),
             Error::UniqueId => write!(f, "UniqueId"),
             Error::UserAgentNotSet => write!(f, "UserAgentNotSet"),

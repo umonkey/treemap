@@ -123,6 +123,17 @@ export interface ISpecies {
 	local: string;
 }
 
+export interface ISpeciesDetails {
+	name: string;
+	local: string;
+	keywords: string[];
+	wikidata_id: string;
+}
+
+export interface ISpeciesListItem extends ISpeciesDetails {
+	count: number;
+}
+
 export interface IStreet {
 	name: string;
 }

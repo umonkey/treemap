@@ -1,65 +1,106 @@
 use super::models::Species;
 use super::report::{calculate_simpson_index, format_species_report};
-use super::schemas::{DiversityReport, SpeciesStats};
+use super::schemas::{CreateSpeciesRequest, DiversityReport, SpeciesStats, UpdateSpeciesRequest};
 use super::utils::{get_genus_name, get_species_name};
-use crate::infra::database::{Database, Value};
+use crate::domain::species::SpeciesRepository;
 use crate::services::{Context, Injectable};
-use crate::types::Result;
-use crate::utils::get_timestamp;
-use log::debug;
+use crate::types::{Error, Result};
+use log::{debug, info};
 use std::collections::HashMap;
 use std::sync::Arc;
 
-const SUGGEST_WINDOW: u64 = 3600 * 24; // 24 hours
-
 pub struct SpeciesService {
-    db: Arc<Database>,
+    repo: Arc<SpeciesRepository>,
 }
 
 impl SpeciesService {
     pub async fn search(&self, query: &str) -> Result<Vec<Species>> {
-        let pattern = format!("%{}%", query.trim().to_lowercase());
+        self.repo.search(query).await
+    }
 
-        let rows = self
-            .db
-            .fetch_sql(
-                "SELECT name, local, keywords, wikidata_id FROM species WHERE name LIKE ?1 OR local LIKE ?1 OR keywords LIKE ?1 ORDER BY name LIMIT 10",
-                &[Value::from(pattern)],
-            )
-            .await?;
+    pub async fn suggest(&self, user_id: u64) -> Result<Vec<String>> {
+        self.repo.suggest(user_id).await
+    }
 
-        let mut species: Vec<Species> = Vec::new();
+    pub async fn list(&self) -> Result<Vec<Species>> {
+        self.repo.all().await
+    }
 
-        for row in rows {
-            species.push(Species {
-                name: row.require_string("name")?,
-                local: row.require_string("local")?,
-                keywords: row.require_string("keywords")?,
-                wikidata_id: row.require_string("wikidata_id")?,
-            });
+    pub async fn get_counts(&self) -> Result<HashMap<String, u64>> {
+        self.repo.get_counts().await
+    }
+
+    pub async fn get(&self, name: &str) -> Result<Species> {
+        self.repo.get(name).await?.ok_or(Error::SpeciesNotFound)
+    }
+
+    pub async fn create(&self, req: CreateSpeciesRequest) -> Result<Species> {
+        let name = req.name.trim().to_string();
+        let local = req.local.trim().to_string();
+
+        if name.is_empty() {
+            return Err(Error::BadRequestMessage(
+                "Species name cannot be empty.".to_string(),
+            ));
         }
+
+        if local.is_empty() {
+            return Err(Error::BadRequestMessage(
+                "Species local name cannot be empty.".to_string(),
+            ));
+        }
+
+        let wikidata_id = req.wikidata_id.trim().to_string();
+        validate_wikidata_id(&wikidata_id)?;
+
+        let species = Species {
+            name: name.clone(),
+            local,
+            keywords: normalize_keywords(&req.keywords),
+            wikidata_id,
+        };
+
+        self.repo.add(&species).await?;
+
+        info!("Species {name} created by {}.", req.user_id);
 
         Ok(species)
     }
 
-    pub async fn suggest(&self, user_id: u64) -> Result<Vec<String>> {
-        let since = get_timestamp() - SUGGEST_WINDOW;
+    pub async fn update(&self, name: &str, req: UpdateSpeciesRequest) -> Result<Species> {
+        let name = name.trim().to_string();
+        let local = req.local.trim().to_string();
 
-        let rows = self
-            .db
-            .fetch_sql(
-                "SELECT species, COUNT(1) AS use_count FROM trees WHERE updated_by = ? AND updated_at >= ? AND LOWER(species) <> 'unknown' GROUP BY species ORDER BY use_count DESC LIMIT 10",
-                &[Value::from(user_id), Value::from(since)],
-            )
-            .await?;
-
-        let mut values: Vec<String> = Vec::new();
-
-        for row in rows {
-            values.push(row.require_string("species")?);
+        if name.is_empty() {
+            return Err(Error::BadRequestMessage(
+                "Species name cannot be empty.".to_string(),
+            ));
         }
 
-        Ok(values)
+        if local.is_empty() {
+            return Err(Error::BadRequestMessage(
+                "Species local name cannot be empty.".to_string(),
+            ));
+        }
+
+        // Ensure the record exists before updating.
+        self.repo.get(&name).await?.ok_or(Error::SpeciesNotFound)?;
+
+        let wikidata_id = req.wikidata_id.trim().to_string();
+        validate_wikidata_id(&wikidata_id)?;
+
+        let species = Species {
+            name: name.clone(),
+            local,
+            keywords: normalize_keywords(&req.keywords),
+            wikidata_id,
+        };
+
+        self.repo.update(&species).await?;
+
+        info!("Species {name} updated by {}: {species:?}", req.user_id);
+
+        Ok(species)
     }
 
     pub async fn get_stats(&self) -> Result<Vec<SpeciesStats>> {
@@ -91,23 +132,7 @@ impl SpeciesService {
     }
 
     async fn get_raw_stats(&self) -> Result<Vec<(String, u64)>> {
-        let rows = self
-            .db
-            .fetch_sql(
-                "SELECT species, COUNT(1) AS cnt FROM trees WHERE state <> 'gone' AND state <> 'stump' GROUP BY TRIM(LOWER(species)) ORDER BY cnt DESC, LOWER(species)",
-                &[],
-            )
-            .await?;
-
-        let mut res = Vec::new();
-
-        for row in rows {
-            let species = row.require_string("species")?;
-            let count = row.require_u64("cnt")?;
-            res.push((species, count));
-        }
-
-        Ok(res)
+        self.repo.get_raw_stats().await
     }
 
     // Find species above 10% threshold.
@@ -183,19 +208,53 @@ impl SpeciesService {
     }
 }
 
+/// Trim each keyword, drop empties, and join them back with `;`.
+fn normalize_keywords(raw: &str) -> String {
+    raw.split(';')
+        .map(|keyword| keyword.trim())
+        .filter(|keyword| !keyword.is_empty())
+        .collect::<Vec<&str>>()
+        .join(";")
+}
+
+/// Accept an empty id, or a Wikidata id of the form `Q` followed by digits.
+fn validate_wikidata_id(id: &str) -> Result<()> {
+    if id.is_empty() {
+        return Ok(());
+    }
+
+    let valid = id
+        .strip_prefix('Q')
+        .map(|digits| !digits.is_empty() && digits.chars().all(|c| c.is_ascii_digit()))
+        .unwrap_or(false);
+
+    if !valid {
+        return Err(Error::BadRequestMessage(format!(
+            "Invalid Wikidata id: {id}."
+        )));
+    }
+
+    Ok(())
+}
+
 impl Injectable for SpeciesService {
     fn inject(ctx: &dyn Context) -> Result<Self> {
-        Ok(Self { db: ctx.database() })
+        Ok(Self {
+            repo: Arc::new(ctx.build::<SpeciesRepository>()?),
+        })
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::infra::database::Database;
     use crate::services::AppState;
     use crate::services::ContextExt;
+    use crate::utils::get_timestamp;
+    use log::debug;
 
-    async fn setup() -> SpeciesService {
+    async fn setup() -> (SpeciesService, Arc<Database>) {
         if env_logger::try_init().is_err() {
             debug!("env_logger already initialized.");
         };
@@ -207,18 +266,20 @@ mod tests {
             .await
             .expect("Error creating session state.");
 
-        state
+        let db = state.database();
+
+        let service = state
             .build::<SpeciesService>()
-            .expect("Error creating SpeciesService")
+            .expect("Error creating SpeciesService");
+
+        (service, db)
     }
 
     #[tokio::test]
     async fn test_search() {
-        let service = setup().await;
+        let (service, db) = setup().await;
 
-        service
-            .db
-            .execute_batch(include_str!("../../infra/database/fixtures/species.sql"))
+        db.execute_batch(include_str!("../../infra/database/fixtures/species.sql"))
             .await
             .expect("Error adding species.");
 
@@ -233,22 +294,18 @@ mod tests {
 
     #[tokio::test]
     async fn test_suggest() {
-        let service = setup().await;
+        let (service, db) = setup().await;
 
-        service
-            .db
-            .execute_sql("DELETE FROM trees", &[])
+        db.execute_sql("DELETE FROM trees", &[])
             .await
             .expect("Error clearing trees.");
 
         let now = get_timestamp();
 
-        service
-            .db
-            .execute_sql(format!(
-                "INSERT INTO trees (id, lat, lon, species, added_at, updated_at, updated_by, added_by) VALUES (1, 40.1, 44.1, 'Birch', {}, {}, 1, 1)",
-                now, now
-            ).as_str(), &[])
+        db.execute_sql(format!(
+            "INSERT INTO trees (id, lat, lon, species, added_at, updated_at, updated_by, added_by) VALUES (1, 40.1, 44.1, 'Birch', {}, {}, 1, 1)",
+            now, now
+        ).as_str(), &[])
             .await
             .expect("Error adding tree.");
 
@@ -260,20 +317,85 @@ mod tests {
 
     #[tokio::test]
     async fn test_get_stats() {
-        let service = setup().await;
+        let (service, db) = setup().await;
 
-        service
-            .db
-            .execute_batch(include_str!(
-                "../../infra/database/fixtures/test_species_stats.sql"
-            ))
-            .await
-            .expect("Error adding species.");
+        db.execute_batch(include_str!(
+            "../../infra/database/fixtures/test_species_stats.sql"
+        ))
+        .await
+        .expect("Error adding species.");
 
         let res = service.get_stats().await.expect("Error getting report.");
 
         assert_eq!(res.len(), 1);
         assert_eq!("Quercus", res[0].name);
         assert_eq!(2, res[0].count);
+    }
+
+    #[tokio::test]
+    async fn test_create_and_get() {
+        let (service, _) = setup().await;
+
+        let created = service
+            .create(CreateSpeciesRequest {
+                name: "  Quercus robur  ".to_string(),
+                local: " Pedunculate oak ".to_string(),
+                keywords: " дуб ; oak ; ".to_string(),
+                wikidata_id: " Q165145 ".to_string(),
+                user_id: 1,
+            })
+            .await
+            .expect("Error creating species.");
+
+        assert_eq!(created.name, "Quercus robur");
+        assert_eq!(created.keywords, "дуб;oak");
+
+        let found = service
+            .get("Quercus robur")
+            .await
+            .expect("Error getting species.");
+
+        assert_eq!(found.local, "Pedunculate oak");
+    }
+
+    #[tokio::test]
+    async fn test_update() {
+        let (service, _) = setup().await;
+
+        service
+            .create(CreateSpeciesRequest {
+                name: "Quercus robur".to_string(),
+                local: "Pedunculate oak".to_string(),
+                keywords: "дуб;oak".to_string(),
+                wikidata_id: "Q165145".to_string(),
+                user_id: 1,
+            })
+            .await
+            .expect("Error creating species.");
+
+        let updated = service
+            .update(
+                "Quercus robur",
+                UpdateSpeciesRequest {
+                    local: "Common oak".to_string(),
+                    keywords: "дуб;oak;common".to_string(),
+                    wikidata_id: "".to_string(),
+                    user_id: 2,
+                },
+            )
+            .await
+            .expect("Error updating species.");
+
+        assert_eq!(updated.local, "Common oak");
+        assert_eq!(updated.wikidata_id, "");
+    }
+
+    #[tokio::test]
+    async fn test_get_missing() {
+        let (service, _) = setup().await;
+
+        let res = service.get("Nonexistent").await;
+
+        assert!(matches!(res, Err(Error::SpeciesNotFound)));
     }
 }

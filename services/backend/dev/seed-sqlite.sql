@@ -25,6 +25,7 @@ INSERT OR IGNORE INTO permissions (id) VALUES ('tree:delete');
 INSERT OR IGNORE INTO permissions (id) VALUES ('tree:edit');
 INSERT OR IGNORE INTO permissions (id) VALUES ('user:manage');
 INSERT OR IGNORE INTO permissions (id) VALUES ('water:manage');
+INSERT OR IGNORE INTO permissions (id) VALUES ('species:manage');
 
 INSERT OR IGNORE INTO role_permissions (role_id, permission_id) SELECT 'admin', id FROM permissions;
 INSERT OR IGNORE INTO role_permissions (role_id, permission_id) VALUES ('editor', 'tree:create');
@@ -32,5 +33,6 @@ INSERT OR IGNORE INTO role_permissions (role_id, permission_id) VALUES ('editor'
 INSERT OR IGNORE INTO role_permissions (role_id, permission_id) VALUES ('editor', 'comment:create');
 INSERT OR IGNORE INTO role_permissions (role_id, permission_id) VALUES ('editor', 'pano:edit');
 INSERT OR IGNORE INTO role_permissions (role_id, permission_id) VALUES ('editor', 'water:manage');
+INSERT OR IGNORE INTO role_permissions (role_id, permission_id) VALUES ('editor', 'species:manage');
 INSERT OR IGNORE INTO role_permissions (role_id, permission_id) VALUES ('user', 'tree:create');
 INSERT OR IGNORE INTO role_permissions (role_id, permission_id) VALUES ('user', 'comment:create');

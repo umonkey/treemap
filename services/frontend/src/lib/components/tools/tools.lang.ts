@@ -17,6 +17,8 @@ interface StringList {
 	panoramasDescription: () => string;
 	users: () => string;
 	usersDescription: () => string;
+	species: () => string;
+	speciesDescription: () => string;
 	exportData: () => string;
 	exportDataDescription: () => string;
 }
@@ -44,6 +46,8 @@ class English implements StringList {
 		'Add, edit and reprocess the 360° panoramas used to photo-map trees.';
 	users = () => 'Users';
 	usersDescription = () => 'Browse accounts and their roles, and edit a user when needed.';
+	species = () => 'Species';
+	speciesDescription = () => 'Review and edit the tree species database.';
 	exportData = () => 'Export';
 	exportDataDescription = () => 'Download the anonymised database as a single SQLite file (ODbL).';
 }
@@ -67,6 +71,8 @@ class Russian extends English {
 	panoramasDescription = () => 'Добавление и настройка уличных панорам.';
 	users = () => 'Пользователи';
 	usersDescription = () => 'Управление пользователями и правами доступа.';
+	species = () => 'Виды';
+	speciesDescription = () => 'Просмотр и редактирование базы видов деревьев.';
 	exportData = () => 'Выгрузка';
 	exportDataDescription = () =>
 		'Скачать копию базу одним файлом для детальных исследований SQLite (ODbL).';
@@ -94,6 +100,8 @@ class Armenian extends English {
 		'Ավելացրեք, խմբագրեք և վերամշակեք ծառերի քարտեզագրման 360° պանորամաները։';
 	users = () => 'Օգտատերեր';
 	usersDescription = () => 'Օգտատերերի և դերերի ցանկը՝ խմբագրման հնարավորությամբ։';
+	species = () => 'Տեսակներ';
+	speciesDescription = () => 'Դիտեք և խմբագրեք ծառերի տեսակների տվյալների բազան։';
 	exportData = () => 'Արտահանում';
 	exportDataDescription = () => 'Ներբեռնեք անանունացված տվյալների բազան մեկ SQLite ֆայլով (ODbL)։';
 }
