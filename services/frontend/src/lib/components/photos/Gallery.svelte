@@ -1,5 +1,6 @@
 <script lang="ts">
 	import SpinnerIcon from '$lib/icons/SpinnerIcon.svelte';
+	import UploadIcon from '$lib/icons/UploadIcon.svelte';
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
 	import CameraUploader from './CameraUploader.svelte';
@@ -43,7 +44,14 @@
 	};
 </script>
 
-<div class="gallery">
+<div
+	class="gallery"
+	role="group"
+	ondragover={gallery.handleDragOver}
+	ondragenter={gallery.handleDragEnter}
+	ondragleave={gallery.handleDragLeave}
+	ondrop={(event) => gallery.handleDrop(id, event)}
+>
 	{#if gallery.error}
 		<p>{gallery.error}</p>
 	{/if}
@@ -89,11 +97,50 @@
 	{#if gallery.selected}
 		<ImageViewer item={gallery.selected} onClose={gallery.closeViewer} />
 	{/if}
+
+	{#if gallery.dragging}
+		<div class="drop-zone" aria-hidden="true">
+			<span class="drop-icon"><UploadIcon /></span>
+			<span>{locale.dropPhotos()}</span>
+		</div>
+	{/if}
 </div>
 
 <style>
 	.gallery {
+		position: relative;
 		width: 100%;
+	}
+
+	.drop-zone {
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		box-sizing: border-box;
+		padding: 16px;
+		text-align: center;
+		border: 2px dashed var(--form-border);
+		border-radius: 8px;
+		background-color: rgba(128, 128, 128, 0.9);
+		color: #fff;
+		font-weight: 600;
+		pointer-events: none;
+
+		.drop-icon {
+			display: block;
+			width: 32px;
+			height: 32px;
+
+			:global(svg) {
+				width: 100%;
+				height: 100%;
+			}
+		}
 	}
 
 	.empty {

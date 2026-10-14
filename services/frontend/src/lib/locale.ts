@@ -478,6 +478,10 @@ class EnglishLocale {
 		return 'There are no images for this tree.';
 	}
 
+	public dropPhotos(): string {
+		return 'Drop images here to upload';
+	}
+
 	public commentLabel(): string {
 		return 'Type your comment:';
 	}
@@ -1285,6 +1289,10 @@ class RussianLocale extends EnglishLocale {
 
 	public noPhotos(): string {
 		return 'Для этого дерева нет изображений.';
+	}
+
+	public dropPhotos(): string {
+		return 'Перетащите изображения сюда, чтобы загрузить';
 	}
 
 	public commentLabel(): string {
@@ -2098,6 +2106,10 @@ class ArmenianLocale extends EnglishLocale {
 
 	public noPhotos(): string {
 		return 'Այս ծառի համար պատկերներ չկան:';
+	}
+
+	public dropPhotos(): string {
+		return 'Վերբեռնելու համար պատկերները գցեք այստեղ';
 	}
 
 	public commentLabel(): string {

@@ -3,10 +3,13 @@ import { uploadBus } from '$lib/buses/upload';
 import { db } from '$lib/db';
 import { locale } from '$lib/locale';
 import { routes } from '$lib/routes';
+import { hasPermission } from '$lib/stores/authStore';
 import type { IGalleryItem, ITreeFile } from '$lib/types';
+import { queuePhoto } from '$lib/upload';
 import { findSpeciesPhotos } from '$lib/utils/photos';
 import { fileAttribution, formatDateShort } from '$lib/utils/strings';
 import { liveQuery } from 'dexie';
+import { get } from 'svelte/store';
 
 export type QueuedPhoto = {
 	id: number;
@@ -21,7 +24,9 @@ export class Gallery {
 	queue = $state<QueuedPhoto[]>([]);
 	currentId = $state<string | null>(null);
 	selected = $state<IGalleryItem | null>(null);
+	dragging = $state<boolean>(false);
 	private species = '';
+	private dragDepth = 0;
 
 	openViewer = (item: IGalleryItem) => {
 		this.selected = item;
@@ -29,6 +34,59 @@ export class Gallery {
 
 	closeViewer = () => {
 		this.selected = null;
+	};
+
+	private canEdit = (): boolean => get(hasPermission)('tree:edit');
+
+	// Only file drags (from the OS or a file manager) should activate the drop
+	// zone; in-page element drags must keep their default behaviour.
+	private isFileDrag = (event: DragEvent): boolean =>
+		Array.from(event.dataTransfer?.types ?? []).includes('Files');
+
+	handleDragOver = (event: DragEvent) => {
+		if (!this.canEdit() || !this.isFileDrag(event)) return;
+
+		event.preventDefault();
+		if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
+
+		// Firefox often reports an empty `types` list on the first `dragenter`, so
+		// the highlight is driven by `dragover`, where the file types are reliable.
+		this.dragging = true;
+	};
+
+	handleDragEnter = (event: DragEvent) => {
+		if (!this.canEdit()) return;
+
+		// Track the depth unconditionally so every `dragleave` has a matching
+		// `dragenter`; only file drags may prevent the default or highlight.
+		this.dragDepth++;
+
+		if (this.isFileDrag(event)) {
+			event.preventDefault();
+			this.dragging = true;
+		}
+	};
+
+	handleDragLeave = () => {
+		if (!this.canEdit()) return;
+		this.dragDepth = Math.max(0, this.dragDepth - 1);
+		if (this.dragDepth === 0) this.dragging = false;
+	};
+
+	handleDrop = async (treeId: string, event: DragEvent) => {
+		if (!this.canEdit()) return; // Let the browser handle drops for non-editors.
+
+		event.preventDefault();
+		this.dragDepth = 0;
+		this.dragging = false;
+
+		const files = Array.from(event.dataTransfer?.files ?? []).filter((file) =>
+			file.type.startsWith('image/')
+		);
+
+		for (const file of files) {
+			await queuePhoto(treeId, file);
+		}
 	};
 
 	reload = async (id: string, species: string) => {
