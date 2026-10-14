@@ -9,7 +9,7 @@ export class ToolListLogic {
 		if (check('user:manage')) {
 			list.push({
 				name: 'Manage Users',
-				href: '/admin/users'
+				href: '/tools/users'
 			});
 		}
 

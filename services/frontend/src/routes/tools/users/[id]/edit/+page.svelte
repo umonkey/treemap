@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import Breadcrumbs from '$lib/components/admin/Breadcrumbs.svelte';
 	import PageHeader from '$lib/ui/header/PageHeader.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
@@ -33,14 +32,6 @@
 		<p class="error">Error loading user: {pageState.error.description}</p>
 	{:else if pageState.user}
 		<PageHeader text="User Editor" />
-		<Breadcrumbs
-			items={[
-				{ label: 'Admin', href: '/admin' },
-				{ label: 'Users', href: '/admin/users' },
-				{ label: pageState.user.name, href: `/admin/users/${pageState.user.id}` },
-				{ label: 'Edit' }
-			]}
-		/>
 
 		<form onsubmit={handleSubmit} class="user-edit-form">
 			<div class="field">
@@ -62,7 +53,7 @@
 				<Button type="submit" disabled={pageState.saving}>
 					{pageState.saving ? 'Saving...' : 'Save'}
 				</Button>
-				<Button link="/admin/users/{pageState.user.id}" type="cancel">Cancel</Button>
+				<Button link="/tools/users/{pageState.user.id}" type="cancel">Cancel</Button>
 			</Buttons>
 		</form>
 	{/if}

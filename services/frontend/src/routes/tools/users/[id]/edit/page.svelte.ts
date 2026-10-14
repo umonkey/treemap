@@ -45,7 +45,7 @@ export class PageState {
 		try {
 			const res = await updateUser(this.user.id, { name: this.name });
 			if (res.status >= 200 && res.status < 300) {
-				goto('/admin/users');
+				goto('/tools/users');
 			} else {
 				showError(res.error?.description || `Error ${res.status} updating user.`);
 			}

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import Breadcrumbs from '$lib/components/admin/Breadcrumbs.svelte';
 	import PageHeader from '$lib/ui/header/PageHeader.svelte';
 	import { PageState } from './page.svelte';
 
@@ -29,14 +28,7 @@
 	{:else if user}
 		<PageHeader
 			text="User Properties"
-			button={{ label: 'Edit', link: `/admin/users/${user.user.id}/edit` }}
-		/>
-		<Breadcrumbs
-			items={[
-				{ label: 'Admin', href: '/admin' },
-				{ label: 'Users', href: '/admin/users' },
-				{ label: user.user.name }
-			]}
+			button={{ label: 'Edit', link: `/tools/users/${user.user.id}/edit` }}
 		/>
 		<div class="user-details">
 			<h2>{user.user.name}</h2>
