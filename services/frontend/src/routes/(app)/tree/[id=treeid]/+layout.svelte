@@ -9,6 +9,7 @@
 	import { routes } from '$lib/routes';
 	import { formatSpecies } from '$lib/utils/trees';
 	import { sidebarState } from '$lib/stores/sidebar.svelte';
+	import QuickEdit from '$lib/components/QuickEdit.svelte';
 	import TreeTabs from './components/TreeTabs.svelte';
 	import { TREE_CONTEXT_KEY, TreeLayoutState } from './layout.svelte.ts';
 
@@ -30,7 +31,8 @@
 		routes.treeCircumference(id),
 		routes.treeDead(id),
 		routes.treeDiameter(id),
-		routes.treeHeight(id)
+		routes.treeHeight(id),
+		routes.treeEditSpecies(id)
 	]);
 
 	$effect(() => {
@@ -77,7 +79,9 @@
 		</div>
 
 		<div class="header">
-			<div class="title">{formatSpecies(tree.species)}</div>
+			<div class="title">
+				<QuickEdit url={routes.treeEditSpecies(id)}>{formatSpecies(tree.species)}</QuickEdit>
+			</div>
 			<button
 				class="close"
 				aria-label={locale.editCancel()}

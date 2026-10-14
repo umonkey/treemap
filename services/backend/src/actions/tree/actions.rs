@@ -16,7 +16,7 @@ use crate::domain::tree::{
 };
 use crate::domain::tree_image::TreeImageService;
 use crate::domain::user::UserService;
-use crate::services::app::{OptionalUserId, UserId};
+use crate::services::app::{OptionalUserId, RequirePermission, TreeCreate, UserId};
 use crate::services::comment_loader::{CommentList, CommentLoader};
 use crate::services::prop_loader::{PropList, PropLoader};
 use crate::services::tree_loader::SingleTreeResponse;
@@ -25,7 +25,7 @@ use crate::services::Injected;
 use crate::types::{Error, Result};
 use crate::utils::{get_remote_addr, get_user_agent};
 use actix_web::web::{Bytes, Json, Path, Query};
-use actix_web::{delete, get, post, put, HttpRequest, HttpResponse};
+use actix_web::{delete, get, patch, post, put, HttpRequest, HttpResponse};
 use log::warn;
 use serde::Deserialize;
 
@@ -373,6 +373,23 @@ pub async fn update_tree_action(
             address: payload.address.clone(),
         })
         .await?;
+
+    let res = loader.load_single(&tree).await?;
+
+    Ok(Json(res))
+}
+
+#[patch("/{id:\\d+}")]
+pub async fn update_tree_partial_action(
+    user_id: RequirePermission<TreeCreate>,
+    path: Path<PathInfo>,
+    payload: Json<UpdateTreePartialPayload>,
+    service: Injected<TreeService>,
+    loader: Injected<TreeLoader>,
+) -> Result<Json<SingleTreeResponse>> {
+    let species = payload.species.clone().ok_or(Error::BadRequest)?;
+
+    let tree = service.update_species(path.id, species, *user_id).await?;
 
     let res = loader.load_single(&tree).await?;
 

@@ -74,6 +74,11 @@ pub struct UpdateTreeRequestPayload {
 }
 
 #[derive(Debug, Deserialize)]
+pub struct UpdateTreePartialPayload {
+    pub species: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
 pub struct UpdateCircumferencePayload {
     pub value: f64,
 }

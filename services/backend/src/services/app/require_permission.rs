@@ -60,6 +60,11 @@ impl Permission for WaterManage {
     const NAME: &'static str = "water:manage";
 }
 
+pub struct TreeCreate;
+impl Permission for TreeCreate {
+    const NAME: &'static str = "tree:create";
+}
+
 pub struct TreeDelete;
 impl Permission for TreeDelete {
     const NAME: &'static str = "tree:delete";

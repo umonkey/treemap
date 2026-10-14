@@ -36,6 +36,7 @@ pub fn tree_router(cfg: &mut ServiceConfig) {
         .service(update_tree_diameter_action)
         .service(update_tree_height_action)
         .service(update_tree_location_action)
+        .service(update_tree_partial_action)
         .service(update_tree_state_action)
         .service(update_tree_thumbnail_action);
 }

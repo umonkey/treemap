@@ -254,6 +254,46 @@ impl TreeService {
         Ok(updated)
     }
 
+    pub async fn update_species(
+        &self,
+        tree_id: u64,
+        species: String,
+        user_id: u64,
+    ) -> Result<Tree> {
+        // Make sure the tree exists.
+        let tree = self.trees.get(tree_id).await?.ok_or(Error::TreeNotFound)?;
+
+        if tree.species == species {
+            // If the species is the same, we still need to store the property update.
+            self.props
+                .add(&PropRecord {
+                    tree_id,
+                    name: "species".to_string(),
+                    value: species.clone(),
+                    added_by: user_id,
+                    ..Default::default()
+                })
+                .await?;
+        }
+
+        let updated = self
+            .trees
+            .update(
+                &Tree {
+                    species,
+                    ..tree.clone()
+                },
+                user_id,
+            )
+            .await?;
+
+        self.users.increment_update_count(user_id).await?;
+
+        info!("Species for tree {tree_id} changed by {user_id}.");
+
+        Ok(updated)
+    }
+
     pub async fn update_location(
         &self,
         tree_id: u64,
@@ -761,6 +801,24 @@ mod tests {
 
         assert_eq!(res.len(), 1);
         assert_eq!(res[0].species, "Fake Species");
+    }
+
+    #[tokio::test]
+    async fn test_update_species() {
+        let service = setup().await;
+
+        service
+            .db
+            .execute_sql("INSERT INTO trees (id, lat, lon, species, state, added_at, updated_at, updated_by, added_by) VALUES (296296, 40.1, 44.1, 'Old Species', 'alive', 0, 0, 1, 1)", &[])
+            .await
+            .expect("Error adding tree.");
+
+        let tree = service
+            .update_species(296296, "New Species".to_string(), 1)
+            .await
+            .expect("Error updating species.");
+
+        assert_eq!(tree.species, "New Species");
     }
 
     #[test]

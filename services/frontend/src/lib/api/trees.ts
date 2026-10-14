@@ -178,6 +178,22 @@ export async function updateTreeHeight(id: string, value: number): Promise<IResp
 	return res;
 }
 
+export async function updateTreeSpecies(id: string, species: string): Promise<IResponse<ITree>> {
+	const res = await request<ITree>('PATCH', `v1/trees/${id}`, {
+		body: JSON.stringify({ species }),
+		headers: {
+			'Content-Type': 'application/json',
+			...getAuthHeaders()
+		}
+	});
+
+	if (res.status === 200 && res.data) {
+		addTrees([res.data]);
+	}
+
+	return res;
+}
+
 export async function updateTreeLocation(
 	id: string,
 	lat: number,
