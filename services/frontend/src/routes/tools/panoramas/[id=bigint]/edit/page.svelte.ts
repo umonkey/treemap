@@ -42,7 +42,7 @@ export class PageState {
 		this.isSaving = false;
 
 		if (res.status === 200) {
-			goto(`/admin/panoramas/${this.panorama.id}`);
+			goto(`/tools/panoramas/${this.panorama.id}`);
 		} else {
 			this.error = res.error;
 		}

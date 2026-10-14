@@ -21,7 +21,7 @@
 		{ name: 'Learn', href: '/tools/learn', icon: LearnIcon },
 		{ name: 'Trilaterate', href: '/tools/range', icon: TriangleIcon, permission: 'tree:create' },
 		{ name: 'Duplicates', href: '/tools/merge', icon: MergeIcon, permission: 'tree:delete' },
-		{ name: 'Panoramas', href: '/admin/panoramas', icon: StreetViewIcon, permission: 'pano:edit' },
+		{ name: 'Panoramas', href: '/tools/panoramas', icon: StreetViewIcon, permission: 'pano:edit' },
 		{ name: 'Users', href: '/tools/users', icon: UsersIcon, permission: 'user:manage' }
 	];
 

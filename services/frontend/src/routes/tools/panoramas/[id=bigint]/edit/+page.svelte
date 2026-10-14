@@ -2,7 +2,6 @@
 	import { untrack } from 'svelte';
 	import { PageState } from './page.svelte.ts';
 	import { page } from '$app/state';
-	import Breadcrumbs from '$lib/components/admin/Breadcrumbs.svelte';
 	import PageHeader from '$lib/ui/header/PageHeader.svelte';
 	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
@@ -27,14 +26,6 @@
 
 <AuthWrapper permission="pano:edit">
 	<PageHeader text={`Edit Panorama: ${pageState.panorama?.title || id}`} />
-	<Breadcrumbs
-		items={[
-			{ label: 'Admin', href: '/admin' },
-			{ label: 'Panoramas', href: '/admin/panoramas' },
-			{ label: pageState.panorama?.title || id, href: `/admin/panoramas/${id}` },
-			{ label: 'Edit' }
-		]}
-	/>
 	<article>
 		{#if pageState.error}
 			<p class="error">Error: {pageState.error.description}</p>
@@ -72,7 +63,7 @@
 
 				<Buttons>
 					<Button type="submit" disabled={pageState.isSaving}>Save Changes</Button>
-					<Button link="/admin/panoramas/{id}" type="cancel">Cancel</Button>
+					<Button link="/tools/panoramas/{id}" type="cancel">Cancel</Button>
 				</Buttons>
 			</Form>
 		{/if}

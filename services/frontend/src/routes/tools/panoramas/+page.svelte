@@ -3,7 +3,6 @@
 	import { PageState } from './page.svelte.ts';
 	import { formatDate, formatDistance } from '$lib/utils/strings';
 	import { storage_cost } from '$lib/utils/files';
-	import Breadcrumbs from '$lib/components/admin/Breadcrumbs.svelte';
 	import PageHeader from '$lib/ui/header/PageHeader.svelte';
 	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
 	import CheckInput from '$lib/ui/check-input/CheckInput.svelte';
@@ -37,8 +36,7 @@
 
 <AuthWrapper permission="pano:edit">
 	<article>
-		<PageHeader text="Manage Panoramas" button={{ label: 'Add', link: '/admin/panoramas/add' }} />
-		<Breadcrumbs items={[{ label: 'Admin', href: '/admin' }, { label: 'Panoramas' }]} />
+		<PageHeader text="Manage Panoramas" button={{ label: 'Add', link: '/tools/panoramas/add' }} />
 
 		{#if pageState.error}
 			<p class="error">Error loading panoramas: {pageState.error.description}</p>
@@ -72,7 +70,7 @@
 									/>
 								</td>
 								<td>
-									<a href="/admin/panoramas/{pano.id}">{pano.title}</a>
+									<a href="/tools/panoramas/{pano.id}">{pano.title}</a>
 								</td>
 								<td class="col-images">{pano.image_count}</td>
 								<td class="col-length">{formatDistance(pano.distance)}</td>

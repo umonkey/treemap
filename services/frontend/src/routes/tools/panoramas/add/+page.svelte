@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { createPanorama } from '$lib/api/panoramas';
 	import { goto } from '$app/navigation';
-	import Breadcrumbs from '$lib/components/admin/Breadcrumbs.svelte';
 	import PageHeader from '$lib/ui/header/PageHeader.svelte';
 	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
@@ -20,7 +19,7 @@
 
 		const res = await createPanorama({ title });
 		if (res.status >= 200 && res.status < 300 && res.data) {
-			goto(`/admin/panoramas/${res.data.id}`);
+			goto(`/tools/panoramas/${res.data.id}`);
 		} else {
 			error = res.error?.description || 'Failed to create panorama';
 			isBusy = false;
@@ -34,13 +33,6 @@
 
 <AuthWrapper permission="pano:edit">
 	<PageHeader text="Add Panorama" />
-	<Breadcrumbs
-		items={[
-			{ label: 'Admin', href: '/admin' },
-			{ label: 'Panoramas', href: '/admin/panoramas' },
-			{ label: 'Add' }
-		]}
-	/>
 	<article>
 		<Form onSubmit={handleSubmit}>
 			<TextInput
@@ -56,7 +48,7 @@
 
 			<Buttons>
 				<Button type="submit" disabled={isBusy || !title}>Create Panorama</Button>
-				<Button link="/admin/panoramas" type="cancel">Cancel</Button>
+				<Button link="/tools/panoramas" type="cancel">Cancel</Button>
 			</Buttons>
 		</Form>
 	</article>

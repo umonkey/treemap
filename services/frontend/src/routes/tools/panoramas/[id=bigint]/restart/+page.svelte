@@ -2,7 +2,6 @@
 	import { untrack } from 'svelte';
 	import { PageState } from './page.svelte.ts';
 	import { page } from '$app/state';
-	import Breadcrumbs from '$lib/components/admin/Breadcrumbs.svelte';
 	import PanoramaHeader from '$lib/components/panoramas/PanoramaHeader.svelte';
 	import PageHeader from '$lib/ui/header/PageHeader.svelte';
 	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
@@ -26,14 +25,6 @@
 
 <AuthWrapper permission="pano:edit">
 	<PageHeader text="Restart Panorama" />
-	<Breadcrumbs
-		items={[
-			{ label: 'Admin', href: '/admin' },
-			{ label: 'Panoramas', href: '/admin/panoramas' },
-			{ label: pageState.panorama?.title || id, href: `/admin/panoramas/${id}` },
-			{ label: 'Restart' }
-		]}
-	/>
 
 	{#if pageState.panorama}
 		<PanoramaHeader
@@ -67,7 +58,7 @@
 						disabled={!pageState.understandCost || pageState.isSaving}
 						onClick={() => pageState.submit(id)}>Restart Panorama</Button
 					>
-					<Button link="/admin/panoramas/{id}" type="cancel">Cancel</Button>
+					<Button link="/tools/panoramas/{id}" type="cancel">Cancel</Button>
 				</Buttons>
 			</Form>
 		{/if}

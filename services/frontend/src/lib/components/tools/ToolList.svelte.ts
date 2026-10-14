@@ -16,7 +16,7 @@ export class ToolListLogic {
 		if (check('pano:edit')) {
 			list.push({
 				name: 'Manage Panoramas',
-				href: '/admin/panoramas'
+				href: '/tools/panoramas'
 			});
 		}
 

@@ -2,7 +2,6 @@
 	import { untrack } from 'svelte';
 	import { PageState } from './page.svelte.ts';
 	import { page } from '$app/state';
-	import Breadcrumbs from '$lib/components/admin/Breadcrumbs.svelte';
 	import PanoramaHeader from '$lib/components/panoramas/PanoramaHeader.svelte';
 	import PageHeader from '$lib/ui/header/PageHeader.svelte';
 	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
@@ -43,14 +42,7 @@
 <AuthWrapper permission="pano:edit">
 	<PageHeader
 		text={pageState.panorama?.title || id}
-		button={{ label: 'Edit', link: `/admin/panoramas/${id}/edit` }}
-	/>
-	<Breadcrumbs
-		items={[
-			{ label: 'Admin', href: '/admin' },
-			{ label: 'Panoramas', href: '/admin/panoramas' },
-			{ label: pageState.panorama?.title || id }
-		]}
+		button={{ label: 'Edit', link: `/tools/panoramas/${id}/edit` }}
 	/>
 
 	{#if pageState.panorama}
@@ -96,7 +88,7 @@
 			{#if pageState.panorama.status === 'SUCCESS' || pageState.panorama.status === 'FAILURE'}
 				<Buttons>
 					<Button type="secondary" onClick={() => pageState.exportData(id)}>Download data</Button>
-					<Button type="secondary" link="/admin/panoramas/{id}/restart">Restart Panorama</Button>
+					<Button type="secondary" link="/tools/panoramas/{id}/restart">Restart Panorama</Button>
 				</Buttons>
 			{/if}
 		{/if}
