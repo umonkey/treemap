@@ -50,14 +50,11 @@ class English implements StringList {
 
 class Russian extends English {
 	learn = () => 'Тренировка';
-	learnDescription = () =>
-		'Проверка знаний видов растений и их особенностей с помощью тренажёра.';
+	learnDescription = () => 'Проверка знаний видов растений и их особенностей с помощью тренажёра.';
 	trilaterate = () => 'Трилатерация';
-	trilaterateDescription = () =>
-		'Добавление дереьвев с помощью опорных точек и геометрии.';
+	trilaterateDescription = () => 'Добавление дереьвев с помощью опорных точек и геометрии.';
 	duplicates = () => 'Дубликаты';
-	duplicatesDescription = () =>
-		'Объединение нескольких деревьев, добавленных по ошибке, в одно.';
+	duplicatesDescription = () => 'Объединение нескольких деревьев, добавленных по ошибке, в одно.';
 	guessSpecies = () => 'Определить вид';
 	guessSpeciesDescription = () =>
 		'Исправление данных по деревьям с неопределённым или сомнительным видом.';
@@ -65,15 +62,14 @@ class Russian extends English {
 	statisticsDescription = () =>
 		'Отчёты по видам, состоянию, высоте, обхвату ствола, диаметру кроны и адресам.';
 	reports = () => 'Отчёты';
-	reportsDescription = () =>
-		'Отчёт по деревьям на определённой улице, выгрузка в CSV.';
+	reportsDescription = () => 'Отчёт по деревьям на определённой улице, выгрузка в CSV.';
 	panoramas = () => 'Панорамы';
-	panoramasDescription = () =>
-		'Добавление и настройка уличных панорам.';
+	panoramasDescription = () => 'Добавление и настройка уличных панорам.';
 	users = () => 'Пользователи';
 	usersDescription = () => 'Управление пользователями и правами доступа.';
 	exportData = () => 'Выгрузка';
-	exportDataDescription = () => 'Скачать копию базу одним файлом для детальных исследований SQLite (ODbL).';
+	exportDataDescription = () =>
+		'Скачать копию базу одним файлом для детальных исследований SQLite (ODbL).';
 }
 
 class Armenian extends English {
