@@ -10,6 +10,7 @@
 	import TriangleIcon from '$lib/icons/TriangleIcon.svelte';
 	import UsersIcon from '$lib/icons/UsersIcon.svelte';
 	import { hasPermission } from '$lib/stores/authStore';
+	import { getLanguageCode } from '$lib/locale';
 	import { locale } from './ToolGrid.lang';
 
 	type Tool = {
@@ -20,6 +21,8 @@
 	};
 
 	const { onSelect }: { onSelect: () => void } = $props();
+
+	const lang = getLanguageCode();
 
 	const tools: Tool[] = [
 		{ name: locale.learn(), href: '/tools/learn', icon: LearnIcon },
@@ -67,7 +70,7 @@
 		{@const Icon = tool.icon}
 		<a href={tool.href} class:active={isActive(tool.href)} onclick={onSelect}>
 			<span class="icon"><Icon /></span>
-			<span class="label">{tool.name}</span>
+			<span class="label" {lang}>{tool.name}</span>
 		</a>
 	{/each}
 </div>
@@ -75,7 +78,7 @@
 <style>
 	.grid {
 		display: grid;
-		grid-template-columns: repeat(4, 1fr);
+		grid-template-columns: repeat(3, minmax(0, 1fr));
 		gap: var(--gap);
 		align-content: start;
 
@@ -85,6 +88,7 @@
 			align-items: center;
 			gap: calc(var(--gap) / 2);
 
+			min-width: 0;
 			color: inherit;
 			text-decoration: none;
 			text-align: center;
@@ -111,10 +115,21 @@
 		}
 
 		.label {
-			font-size: 14px;
+			flex: 0 0 auto;
+			max-width: 100%;
+			min-width: 0;
+			font-size: 12px;
 			line-height: 1.2;
 			margin-top: 0.5rem;
 			opacity: 0.75;
+
+			display: -webkit-box;
+			-webkit-box-orient: vertical;
+			-webkit-line-clamp: 2;
+			line-clamp: 2;
+			overflow: hidden;
+			overflow-wrap: break-word;
+			hyphens: auto;
 		}
 	}
 </style>
