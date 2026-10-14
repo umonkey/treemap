@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Dialog from '$lib/components/layout/Dialog.svelte';
-	import NewTreesListItem from '../NewTreesListItem.svelte';
+	import NewTreesListItem from '$lib/components/tree/NewTreesListItem.svelte';
 	import { PageState } from './page.svelte';
 
 	const pageState = new PageState();

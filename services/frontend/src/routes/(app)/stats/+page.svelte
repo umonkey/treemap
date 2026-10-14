@@ -22,7 +22,7 @@
 	<h2>Moderation queue</h2>
 
 	<ul>
-		<li><a href={routes.statsMismatch()}>Trees with unknown species</a></li>
+		<li><a href={routes.toolsUnknownSpecies()}>Trees with unknown species</a></li>
 	</ul>
 </Dialog>
 

@@ -49,7 +49,6 @@ export const routes = {
 	statsCircumference: () => '/stats/circumference',
 	statsDiameter: () => '/stats/diameter',
 	statsHeight: () => '/stats/height',
-	statsMismatch: () => '/stats/species-mismatch',
 	statsSpecies: () => '/stats/species',
 	statsState: () => '/stats/state',
 	statsStreets: () => '/stats/streets',
@@ -79,5 +78,6 @@ export const routes = {
 	toolsRangeEnter: () => '/tools/range/enter',
 	toolsRangeSubmit: () => '/tools/range/submit',
 	toolsMerge: () => '/tools/merge',
-	toolsMergePair: (src: string, dst: string) => `/tools/merge/${src}/${dst}`
+	toolsMergePair: (src: string, dst: string) => `/tools/merge/${src}/${dst}`,
+	toolsUnknownSpecies: () => '/tools/unknown-species'
 };

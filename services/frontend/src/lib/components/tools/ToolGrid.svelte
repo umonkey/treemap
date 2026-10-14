@@ -4,6 +4,7 @@
 	import LearnIcon from '$lib/icons/LearnIcon.svelte';
 	import MergeIcon from '$lib/icons/MergeIcon.svelte';
 	import StreetViewIcon from '$lib/icons/StreetViewIcon.svelte';
+	import QuestionIcon from '$lib/icons/QuestionIcon.svelte';
 	import TriangleIcon from '$lib/icons/TriangleIcon.svelte';
 	import UsersIcon from '$lib/icons/UsersIcon.svelte';
 	import { hasPermission } from '$lib/stores/authStore';
@@ -21,6 +22,12 @@
 		{ name: 'Learn', href: '/tools/learn', icon: LearnIcon },
 		{ name: 'Trilaterate', href: '/tools/range', icon: TriangleIcon, permission: 'tree:create' },
 		{ name: 'Duplicates', href: '/tools/merge', icon: MergeIcon, permission: 'tree:delete' },
+		{
+			name: 'Guess Species',
+			href: '/tools/unknown-species',
+			icon: QuestionIcon,
+			permission: 'tree:create'
+		},
 		{ name: 'Panoramas', href: '/tools/panoramas', icon: StreetViewIcon, permission: 'pano:edit' },
 		{ name: 'Users', href: '/tools/users', icon: UsersIcon, permission: 'user:manage' }
 	];
@@ -76,6 +83,11 @@
 			height: 32px;
 			width: 32px;
 			position: relative;
+
+			:global(svg) {
+				height: 32px;
+				width: 32px;
+			}
 		}
 
 		.label {
