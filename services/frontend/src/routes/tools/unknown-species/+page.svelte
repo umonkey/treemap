@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Dialog from '$lib/components/layout/Dialog.svelte';
+	import PageHeader from '$lib/ui/header/PageHeader.svelte';
 	import NewTreesListItem from '$lib/components/tree/NewTreesListItem.svelte';
 	import { PageState } from './page.svelte';
 
@@ -10,7 +10,9 @@
 	});
 </script>
 
-<Dialog title="Species Mismatches">
+<article>
+	<PageHeader text="Guess Unknown Species" />
+
 	{#if pageState.loading}
 		<p>Loading...</p>
 	{:else if pageState.error}
@@ -24,4 +26,4 @@
 			{/each}
 		{/if}
 	{/if}
-</Dialog>
+</article>
