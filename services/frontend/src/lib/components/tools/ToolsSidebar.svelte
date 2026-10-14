@@ -1,37 +1,12 @@
 <script lang="ts">
-	import type { Component } from 'svelte';
 	import SidebarSearchInput from '$lib/components/search/SidebarSearchInput.svelte';
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
-	import LearnIcon from '$lib/icons/LearnIcon.svelte';
-	import MergeIcon from '$lib/icons/MergeIcon.svelte';
-	import StreetViewIcon from '$lib/icons/StreetViewIcon.svelte';
-	import TriangleIcon from '$lib/icons/TriangleIcon.svelte';
-	import UsersIcon from '$lib/icons/UsersIcon.svelte';
 	import { locale } from '$lib/locale';
-	import { hasPermission } from '$lib/stores/authStore';
 	import { isSidebarVisible } from '$lib/stores/mobileSidebarStore';
+	import ToolGrid from './ToolGrid.svelte';
 	import { ToolsSidebarLogic } from './ToolsSidebar.svelte.ts';
 
-	type Tool = {
-		name: string;
-		href: string;
-		icon: Component;
-		permission?: string;
-	};
-
 	const componentState = new ToolsSidebarLogic();
-
-	const tools: Tool[] = [
-		{ name: 'Learn', href: '/learn', icon: LearnIcon },
-		{ name: 'Trilaterate', href: '/tools/range', icon: TriangleIcon, permission: 'tree:create' },
-		{ name: 'Duplicates', href: '/tools/merge', icon: MergeIcon, permission: 'tree:delete' },
-		{ name: 'Panoramas', href: '/admin/panoramas', icon: StreetViewIcon, permission: 'pano:edit' },
-		{ name: 'Users', href: '/admin/users', icon: UsersIcon, permission: 'user:manage' },
-	];
-
-	const visibleTools = $derived(
-		tools.filter((tool) => !tool.permission || $hasPermission(tool.permission))
-	);
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -59,19 +34,7 @@
 
 		<h2>{locale.toolsHeading()}</h2>
 
-		<div class="grid">
-			{#each visibleTools as tool}
-				{@const Icon = tool.icon}
-				<a
-					href={tool.href}
-					class:active={componentState.isActive(tool.href)}
-					onclick={componentState.close}
-				>
-					<span class="icon"><Icon /></span>
-					<span class="label">{tool.name}</span>
-				</a>
-			{/each}
-		</div>
+		<ToolGrid onSelect={componentState.close} />
 	</div>
 </div>
 
@@ -112,46 +75,6 @@
 
 		.search {
 			display: none;
-		}
-
-		.grid {
-			display: grid;
-			grid-template-columns: repeat(4, 1fr);
-			gap: var(--gap);
-			align-content: start;
-
-			a {
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-				gap: calc(var(--gap) / 2);
-
-				color: inherit;
-				text-decoration: none;
-				text-align: center;
-				padding: var(--gap) calc(var(--gap) / 2);
-				border-radius: 8px;
-				cursor: pointer;
-
-				&:hover,
-				&.active {
-					background-color: var(--sep-color);
-				}
-			}
-
-			.icon {
-				flex: 0 0 auto;
-				height: 32px;
-				width: 32px;
-				position: relative;
-			}
-
-			.label {
-				font-size: 14px;
-				line-height: 1.2;
-				margin-top: 0.5rem;
-				opacity: 0.75;
-			}
 		}
 	}
 
