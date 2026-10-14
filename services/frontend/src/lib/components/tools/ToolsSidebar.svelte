@@ -31,9 +31,11 @@
 			/>
 		</div>
 
+		<h2>Explore additional tools</h2>
+
 		<div class="grid">
 			{#each componentState.items as item}
-				<a href={item.href} onclick={componentState.close}>
+				<a href={item.href} class:active={item.active} onclick={componentState.close}>
 					<span class="icon"><UserIcon /></span>
 					<span class="label">{item.name}</span>
 				</a>
@@ -66,6 +68,13 @@
 
 		color: var(--text-color);
 
+		h2 {
+			font-size: 1.25rem;
+			font-weight: 400;
+			margin: 0;
+			opacity: 0.5;
+		}
+
 		.mobile-header {
 			display: none;
 		}
@@ -93,7 +102,8 @@
 				border-radius: 8px;
 				cursor: pointer;
 
-				&:hover {
+				&:hover,
+				&.active {
 					background-color: var(--sep-color);
 				}
 			}

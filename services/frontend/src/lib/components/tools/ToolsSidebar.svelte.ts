@@ -1,4 +1,5 @@
 import { get } from 'svelte/store';
+import { page } from '$app/state';
 import { hasPermission } from '$lib/stores/authStore';
 import { goto, routes } from '$lib/routes';
 import { mobileSidebarStore } from '$lib/stores/mobileSidebarStore';
@@ -8,6 +9,7 @@ export class ToolsSidebarLogic {
 
 	items = $derived.by(() => {
 		const check = get(hasPermission);
+		const path = page.url.pathname;
 		const list: { name: string; href: string }[] = [];
 
 		if (check('user:manage')) {
@@ -43,7 +45,10 @@ export class ToolsSidebarLogic {
 			href: '/learn'
 		});
 
-		return list;
+		return list.map((item) => ({
+			...item,
+			active: path === item.href || path.startsWith(`${item.href}/`)
+		}));
 	});
 
 	public close = () => {
