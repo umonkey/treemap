@@ -10,6 +10,7 @@
 	import { formatSpecies } from '$lib/utils/trees';
 	import { sidebarState } from '$lib/stores/sidebar.svelte';
 	import QuickEdit from '$lib/components/QuickEdit.svelte';
+	import ClipboardUploader from '$lib/components/photos/ClipboardUploader.svelte';
 	import TreeTabs from './components/TreeTabs.svelte';
 	import { TREE_CONTEXT_KEY, TreeLayoutState } from './layout.svelte.ts';
 
@@ -101,6 +102,8 @@
 		</div>
 
 		<TreeTabs {tree} />
+
+		<ClipboardUploader treeId={id} />
 	{:else if state.loading}
 		<div class="loading-state"><SpinnerIcon /></div>
 	{/if}
