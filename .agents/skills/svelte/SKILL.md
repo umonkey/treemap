@@ -10,9 +10,10 @@ Strictly adhere to the following rules when creating or modifying Svelte compone
 ## Core Invariants
 
 1. Client-Only: CSR only (no SSR). Forbidden: `+page.ts` or SvelteKit `load` functions. All fetching occurs in the logic class.
-2. File Separation: exactly two files per entity:
+2. File Separation: two files per entity, plus a `*.lang.ts` file for translations:
    - Components: `[Name].svelte` (markup) and `[Name].svelte.ts` (logic class).
    - Pages: `+page.svelte` (markup) and `page.svelte.ts` (logic class).
+   - Translations: `[Name].lang.ts` for shared components and `lang.ts` for pages, as described in Localization below.
 3. Class-Based Logic: state and business logic must reside in a TypeScript class using Svelte 5 `$state` runes.
 4. Method Signatures: all class methods MUST be arrow functions to preserve lexical `this`.
 5. Pure Constructors: constructors MUST NOT execute side effects, subscriptions, or API calls. Fetch via `reload()` or `init()` invoked from an `$effect` block; use `onMount()` for mounting logic.
@@ -26,6 +27,21 @@ Strictly adhere to the following rules when creating or modifying Svelte compone
 9. Runes Only: use `$state`, `$derived`, `$effect`, and `$props` exclusively. No Svelte 4 legacy slots or event dispatchers.
 10. Prop Typing: strictly type destructuring: `const { prop }: { prop: Type } = $props()`. Generic syntax `$props<Type>()` is forbidden. Default to `const`; use `let` only for `$bindable()`.
 11. Pages: wrap contents in `<RoleGuard roles={['Scientist']}>` unless specified otherwise.
+
+## Localization
+
+Never hardcode user-facing strings in markup. Declare them in a `*.lang.ts` file that mirrors `$lib/locale.ts`:
+
+- `StringList` interface listing every string, plus an `English` base class and `Russian`/`Armenian` subclasses overriding all of them.
+- `localize({ en: new English(), ru: new Russian(), hy: new Armenian() })` behind a `getLocale()` function, exported as `export const locale = getLocale();`.
+- Methods are arrow functions returning a string, so parameters are supported: `error = (description: string) => \`Error: ${description}\`;`.
+
+Placement:
+
+- Shared components: `[Name].lang.ts` next to the component, e.g. `src/lib/components/tools/ToolGrid.lang.ts`. A lang file shared by sibling components takes the domain name, e.g. `src/lib/components/tools/tools.lang.ts`.
+- Pages: `lang.ts` in the route directory, e.g. `src/routes/tools/lang.ts`, imported as `import { locale } from './lang';`.
+
+When a page needs both the local and the global locale, alias the global one as `import { locale as appLocale } from '$lib/locale';`.
 
 ## Implementation Templates & Reference
 

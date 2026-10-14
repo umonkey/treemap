@@ -1,5 +1,5 @@
 <script lang="ts">
-	import LeftSidebar from '$lib/components/layout/LeftSidebar.svelte';
+	import ToolsSidebar from '$lib/components/tools/ToolsSidebar.svelte';
 	import MobileNav from '$lib/components/layout/MobileNav.svelte';
 	import TreeContextMenu from '$lib/components/tree/TreeContextMenu.svelte';
 
@@ -12,7 +12,7 @@
 	</div>
 </div>
 
-<LeftSidebar />
+<ToolsSidebar />
 <MobileNav />
 <TreeContextMenu />
 
@@ -28,6 +28,7 @@
 		margin: 0 auto;
 		padding: var(--gap);
 		padding-bottom: calc(var(--gap) + env(safe-area-inset-bottom));
+		overflow: scroll;
 	}
 
 	@media screen and (min-width: 1024px) {

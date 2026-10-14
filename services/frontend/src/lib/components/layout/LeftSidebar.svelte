@@ -3,9 +3,9 @@
 	import UserPic from '$lib/components/layout/UserPic.svelte';
 	import SidebarSearchInput from '$lib/components/search/SidebarSearchInput.svelte';
 	import BellIcon from '$lib/icons/BellIcon.svelte';
-	import ChartIcon from '$lib/icons/ChartIcon.svelte';
 	import MegaphoneIcon from '$lib/icons/MegaphoneIcon.svelte';
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
+	import GridIcon from '$lib/icons/GridIcon.svelte';
 	import HomeIcon from '$lib/icons/HomeIcon.svelte';
 	import InstallIcon from '$lib/icons/InstallIcon.svelte';
 	import SaveIcon from '$lib/icons/SaveIcon.svelte';
@@ -57,12 +57,6 @@
 				</a>
 			</li>
 			<li>
-				<a href={routes.stats()} onclick={componentState.close}>
-					<span class="icon"><ChartIcon /></span>
-					<span>{locale.sideReports()}</span>
-				</a>
-			</li>
-			<li>
 				<a href={routes.treeUpdates()} onclick={componentState.close}>
 					<span class="icon"><BellIcon /></span>
 					<span>{locale.sideUpdates()}</span>
@@ -91,6 +85,12 @@
 				>
 					<span class="icon"><MegaphoneIcon /></span>
 					<span>{locale.sideSendAlert()}</span>
+				</a>
+			</li>
+			<li>
+				<a href={routes.tools()} onclick={componentState.close}>
+					<span class="icon"><GridIcon /></span>
+					<span>{locale.sideTools()}</span>
 				</a>
 			</li>
 			<li>
@@ -123,8 +123,6 @@
 					target="_blank"
 					onclick={componentState.close}>{locale.sideAbout()}</a
 				>
-				&middot;
-				<a href={routes.data()} onclick={componentState.close}>{locale.sideData()}</a>
 				&middot;
 				<a
 					href="https://github.com/umonkey/treemap/issues"
