@@ -4,7 +4,6 @@
 	import { locale } from '$lib/locale';
 	import SignInButton from '$lib/ui/sign-in-button/SignInButton.svelte';
 	import ProfileHeader from './ProfileHeader.svelte';
-	import ToolList from '$lib/components/tools/ToolList.svelte';
 	import { PageState } from './page.svelte';
 
 	const pageState = new PageState();
@@ -31,6 +30,4 @@
 	<ProfileHeader name={pageState.data.user.name} userpic={pageState.data.user.picture} />
 
 	<UserHeatMap id={pageState.data.user.id} />
-
-	<ToolList />
 {/if}

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Breadcrumbs from '$lib/components/admin/Breadcrumbs.svelte';
-	import ToolList from '$lib/components/tools/ToolList.svelte';
 	import PageHeader from '$lib/ui/header/PageHeader.svelte';
 </script>
 
@@ -11,5 +10,4 @@
 <article>
 	<PageHeader text="Admin Dashboard" />
 	<Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Admin' }]} />
-	<ToolList />
 </article>

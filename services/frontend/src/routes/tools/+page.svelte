@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ToolGrid from '$lib/components/tools/ToolGrid.svelte';
+	import ToolList from '$lib/components/tools/ToolList.svelte';
 	import PageHeader from '$lib/ui/header/PageHeader.svelte';
 	import { locale as appLocale } from '$lib/locale';
 	import { locale } from './lang';
@@ -14,7 +14,7 @@
 
 	<p class="description">{locale.description()}</p>
 
-	<ToolGrid onSelect={() => {}} />
+	<ToolList />
 </article>
 
 <style>

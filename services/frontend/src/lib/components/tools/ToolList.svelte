@@ -1,38 +1,85 @@
 <script lang="ts">
-	import { ToolListLogic } from './ToolList.svelte.ts';
+	import { page } from '$app/state';
+	import { hasPermission } from '$lib/stores/authStore';
+	import { isActiveTool, tools } from './tools';
 
-	const componentState = new ToolListLogic();
+	const visibleTools = $derived(
+		tools.filter((tool) => !tool.permission || $hasPermission(tool.permission))
+	);
 </script>
 
-<div>
-	<h2>Available tools</h2>
-
-	{#if componentState.items.length > 0}
-		<ul>
-			{#each componentState.items as item}
-				<li><a href={item.href}>{item.name}</a></li>
-			{/each}
-		</ul>
-	{:else}
-		<p>No extra tools are available to you at this moment.</p>
-	{/if}
-</div>
+<ul>
+	{#each visibleTools as tool}
+		{@const Icon = tool.icon}
+		<li class:active={isActiveTool(tool.href, page.url.pathname)}>
+			<span class="icon"><Icon /></span>
+			<span class="text">
+				<a class="name" href={tool.href}>{tool.name}</a>
+				<span class="description">{tool.description}</span>
+			</span>
+		</li>
+	{/each}
+</ul>
 
 <style>
-	h2 {
-		margin: 0.5rem 0;
-		font-weight: 400;
-		font-size: 20px;
-		opacity: 0.75;
-	}
-
 	ul {
-		line-height: 1.5em;
-		margin-top: 10px;
+		display: flex;
+		flex-direction: column;
+		gap: var(--gap);
+		list-style: none;
+		padding: 0;
+		margin: 0;
 	}
 
-	p {
-		margin-top: 10px;
-		opacity: 0.75;
+	li {
+		position: relative;
+		display: flex;
+		align-items: flex-start;
+		gap: var(--gap);
+		padding: var(--gap);
+		border-radius: 8px;
+		cursor: pointer;
+
+		&:hover,
+		&.active {
+			background-color: var(--sep-color);
+		}
+	}
+
+	.icon {
+		flex: 0 0 auto;
+		height: 24px;
+		width: 24px;
+		position: relative;
+
+		:global(svg) {
+			height: 24px;
+			width: 24px;
+		}
+	}
+
+	.text {
+		display: flex;
+		flex-direction: column;
+		gap: calc(var(--gap) / 4);
+		min-width: 0;
+	}
+
+	.name {
+		color: inherit;
+		text-decoration: none;
+
+		&::after {
+			content: '';
+			position: absolute;
+			inset: 0;
+		}
+	}
+
+	.description {
+		font-size: 0.8em;
+		line-height: 1.4;
+		opacity: 0.65;
+		overflow-wrap: break-word;
 	}
 </style>

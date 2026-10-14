@@ -1,70 +1,18 @@
 <script lang="ts">
-	import type { Component } from 'svelte';
 	import { page } from '$app/state';
-	import ChartIcon from '$lib/icons/ChartIcon.svelte';
-	import DatabaseIcon from '$lib/icons/DatabaseIcon.svelte';
-	import LearnIcon from '$lib/icons/LearnIcon.svelte';
-	import MergeIcon from '$lib/icons/MergeIcon.svelte';
-	import StreetIcon from '$lib/icons/StreetIcon.svelte';
-	import StreetViewIcon from '$lib/icons/StreetViewIcon.svelte';
-	import QuestionIcon from '$lib/icons/QuestionIcon.svelte';
-	import TriangleIcon from '$lib/icons/TriangleIcon.svelte';
-	import UsersIcon from '$lib/icons/UsersIcon.svelte';
 	import { hasPermission } from '$lib/stores/authStore';
 	import { getLanguageCode } from '$lib/locale';
-	import { locale } from './ToolGrid.lang';
-
-	type Tool = {
-		name: string;
-		href: string;
-		icon: Component;
-		permission?: string;
-	};
+	import { isActiveTool, tools } from './tools';
 
 	const { onSelect }: { onSelect: () => void } = $props();
 
 	const lang = getLanguageCode();
 
-	const tools: Tool[] = [
-		{ name: locale.learn(), href: '/tools/learn', icon: LearnIcon },
-		{
-			name: locale.trilaterate(),
-			href: '/tools/range',
-			icon: TriangleIcon,
-			permission: 'tree:create'
-		},
-		{
-			name: locale.duplicates(),
-			href: '/tools/merge',
-			icon: MergeIcon,
-			permission: 'tree:delete'
-		},
-		{
-			name: locale.guessSpecies(),
-			href: '/tools/unknown-species',
-			icon: QuestionIcon,
-			permission: 'tree:create'
-		},
-		{ name: locale.statistics(), href: '/tools/stats', icon: ChartIcon },
-		{ name: locale.reports(), href: '/tools/street-report', icon: StreetIcon },
-		{
-			name: locale.panoramas(),
-			href: '/tools/panoramas',
-			icon: StreetViewIcon,
-			permission: 'pano:edit'
-		},
-		{ name: locale.users(), href: '/tools/users', icon: UsersIcon, permission: 'user:manage' },
-		{ name: locale.exportData(), href: '/tools/export', icon: DatabaseIcon }
-	];
-
 	const visibleTools = $derived(
 		tools.filter((tool) => !tool.permission || $hasPermission(tool.permission))
 	);
 
-	const isActive = (href: string) => {
-		const path = page.url.pathname;
-		return path === href || path.startsWith(`${href}/`);
-	};
+	const isActive = (href: string) => isActiveTool(href, page.url.pathname);
 </script>
 
 <div class="grid">

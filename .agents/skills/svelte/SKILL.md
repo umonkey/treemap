@@ -38,7 +38,7 @@ Never hardcode user-facing strings in markup. Declare them in a `*.lang.ts` file
 
 Placement:
 
-- Shared components: `[Name].lang.ts` next to the component, e.g. `src/lib/components/tools/ToolGrid.lang.ts`.
+- Shared components: `[Name].lang.ts` next to the component, e.g. `src/lib/components/tools/ToolGrid.lang.ts`. A lang file shared by sibling components takes the domain name, e.g. `src/lib/components/tools/tools.lang.ts`.
 - Pages: `lang.ts` in the route directory, e.g. `src/routes/tools/lang.ts`, imported as `import { locale } from './lang';`.
 
 When a page needs both the local and the global locale, alias the global one as `import { locale as appLocale } from '$lib/locale';`.
