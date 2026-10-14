@@ -124,8 +124,6 @@
 					onclick={componentState.close}>{locale.sideAbout()}</a
 				>
 				&middot;
-				<a href={routes.data()} onclick={componentState.close}>{locale.sideData()}</a>
-				&middot;
 				<a
 					href="https://github.com/umonkey/treemap/issues"
 					target="_blank"

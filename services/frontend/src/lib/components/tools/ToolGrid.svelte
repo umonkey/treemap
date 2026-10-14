@@ -2,6 +2,7 @@
 	import type { Component } from 'svelte';
 	import { page } from '$app/state';
 	import ChartIcon from '$lib/icons/ChartIcon.svelte';
+	import DatabaseIcon from '$lib/icons/DatabaseIcon.svelte';
 	import LearnIcon from '$lib/icons/LearnIcon.svelte';
 	import MergeIcon from '$lib/icons/MergeIcon.svelte';
 	import StreetIcon from '$lib/icons/StreetIcon.svelte';
@@ -52,7 +53,8 @@
 			icon: StreetViewIcon,
 			permission: 'pano:edit'
 		},
-		{ name: locale.users(), href: '/tools/users', icon: UsersIcon, permission: 'user:manage' }
+		{ name: locale.users(), href: '/tools/users', icon: UsersIcon, permission: 'user:manage' },
+		{ name: locale.exportData(), href: '/tools/export', icon: DatabaseIcon }
 	];
 
 	const visibleTools = $derived(

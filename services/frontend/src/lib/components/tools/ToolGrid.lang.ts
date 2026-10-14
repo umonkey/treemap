@@ -9,6 +9,7 @@ interface StringList {
 	reports: () => string;
 	panoramas: () => string;
 	users: () => string;
+	exportData: () => string;
 }
 
 class English implements StringList {
@@ -20,6 +21,7 @@ class English implements StringList {
 	reports = () => 'Reports';
 	panoramas = () => 'Panoramas';
 	users = () => 'Users';
+	exportData = () => 'Export';
 }
 
 class Russian extends English {
@@ -31,6 +33,7 @@ class Russian extends English {
 	reports = () => 'Отчёты';
 	panoramas = () => 'Панорамы';
 	users = () => 'Пользователи';
+	exportData = () => 'Выгрузка';
 }
 
 class Armenian extends English {
@@ -42,6 +45,7 @@ class Armenian extends English {
 	reports = () => 'Զեկույցներ';
 	panoramas = () => 'Պանորամաներ';
 	users = () => 'Օգտատերեր';
+	exportData = () => 'Արտահանում';
 }
 
 const getLocale = (): StringList => {
