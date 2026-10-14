@@ -4,6 +4,7 @@
 	import ChartIcon from '$lib/icons/ChartIcon.svelte';
 	import LearnIcon from '$lib/icons/LearnIcon.svelte';
 	import MergeIcon from '$lib/icons/MergeIcon.svelte';
+	import StreetIcon from '$lib/icons/StreetIcon.svelte';
 	import StreetViewIcon from '$lib/icons/StreetViewIcon.svelte';
 	import QuestionIcon from '$lib/icons/QuestionIcon.svelte';
 	import TriangleIcon from '$lib/icons/TriangleIcon.svelte';
@@ -30,6 +31,7 @@
 			permission: 'tree:create'
 		},
 		{ name: 'Statistics', href: '/tools/stats', icon: ChartIcon },
+		{ name: 'Reports', href: '/tools/street-report', icon: StreetIcon },
 		{ name: 'Panoramas', href: '/tools/panoramas', icon: StreetViewIcon, permission: 'pano:edit' },
 		{ name: 'Users', href: '/tools/users', icon: UsersIcon, permission: 'user:manage' }
 	];

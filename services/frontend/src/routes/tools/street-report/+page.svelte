@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import Dialog from '$lib/components/layout/Dialog.svelte';
+	import PageHeader from '$lib/ui/header/PageHeader.svelte';
 	import { locale } from '$lib/locale';
 	import Form from '$lib/ui/form/Form.svelte';
 	import StreetInput from '$lib/ui/street-input/StreetInput.svelte';
@@ -23,7 +23,12 @@
 	});
 </script>
 
-<Dialog title={locale.reportTitle()}>
+<svelte:head>
+	<title>{locale.reportTitle()}</title>
+</svelte:head>
+
+<article>
+	<PageHeader text={locale.reportTitle()} />
 	<div class="report">
 		<Form>
 			<StreetInput value={address} onChange={pageState.handleStreetChange} />
@@ -55,7 +60,7 @@
 			/>
 		</div>
 	{/if}
-</Dialog>
+</article>
 
 <style>
 	.report {

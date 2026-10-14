@@ -12,7 +12,10 @@ const ROUTES = [
 	// The tree root page.  The route name (and therefore the file name) is kept
 	// as "preview" because the checked-in PWA screenshots use it.
 	{ name: 'preview', url: 'https://yerevan.treemaps.app/tree/134346854707105792' },
-	{ name: 'report', url: 'https://yerevan.treemaps.app/report?address=Komitas+avenue' },
+	{
+		name: 'report',
+		url: 'https://yerevan.treemaps.app/tools/street-report?address=Komitas+avenue'
+	},
 	{
 		name: 'add',
 		url: 'https://yerevan.treemaps.app/add?lat=40.20652821799567&lng=44.514434201320114'
