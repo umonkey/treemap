@@ -25,10 +25,6 @@ class EnglishLocale {
 		return 'Saved trees';
 	}
 
-	public sideReports(): string {
-		return 'Data reports';
-	}
-
 	public sideStats(): string {
 		return 'Statistics';
 	}
@@ -762,14 +758,6 @@ class EnglishLocale {
 		return 'Continue';
 	}
 
-	public globalHeatmapHeader(): string {
-		return 'Recent activity';
-	}
-
-	public learnContributions(): string {
-		return 'Learn how we count contributions';
-	}
-
 	public uploadsTitle(): string {
 		return 'Uploads';
 	}
@@ -864,10 +852,6 @@ class RussianLocale extends EnglishLocale {
 
 	public sideSaved(): string {
 		return 'Сохранённые';
-	}
-
-	public sideReports(): string {
-		return 'Анализ данных';
 	}
 
 	public sideTools(): string {
@@ -1583,14 +1567,6 @@ class RussianLocale extends EnglishLocale {
 		return 'Двигай карту чтобы указать конец ряда.';
 	}
 
-	public globalHeatmapHeader(): string {
-		return 'Недавняя активность';
-	}
-
-	public learnContributions(): string {
-		return 'Узнать как мы это считаем';
-	}
-
 	public uploadsTitle(): string {
 		return 'Загрузки';
 	}
@@ -1685,10 +1661,6 @@ class ArmenianLocale extends EnglishLocale {
 
 	public sideSaved(): string {
 		return 'Պահպանված';
-	}
-
-	public sideReports(): string {
-		return 'Տվյալների զեկույցներ';
 	}
 
 	public sideTools(): string {
@@ -2306,14 +2278,6 @@ class ArmenianLocale extends EnglishLocale {
 
 	public addRowIntro(): string {
 		return 'Տեղաշարժե՛ք քարտեզը՝ շարքի վերջը նշելու համար։';
-	}
-
-	public globalHeatmapHeader(): string {
-		return 'Վերջին ակտիվություն';
-	}
-
-	public learnContributions(): string {
-		return 'Իմացեք, թե ինչպես ենք մենք հաշվում ներդրումները';
 	}
 
 	public uploadsTitle(): string {

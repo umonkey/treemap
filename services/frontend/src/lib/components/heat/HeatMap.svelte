@@ -1,12 +1,10 @@
 <script lang="ts">
 	import { locale } from '$lib/locale';
 	import { type IHeatMap } from '$lib/types';
-	import { formatData } from './hooks';
+	import { HeatMap } from './HeatMap.svelte.ts';
 
 	type Props = {
-		title?: string;
 		data: IHeatMap[];
-		docs?: string;
 	};
 
 	const days = [
@@ -19,14 +17,12 @@
 		locale.shortSunday()
 	];
 
-	const { title, data, docs }: Props = $props();
+	const { data }: Props = $props();
+
+	const componentState = new HeatMap();
 </script>
 
 <div>
-	{#if title}
-		<h2>{title}</h2>
-	{/if}
-
 	<div class="heatmap">
 		<table>
 			<tbody>
@@ -41,7 +37,7 @@
 		<div class="main">
 			<table>
 				<tbody>
-					{#each formatData(data) as row}
+					{#each componentState.formatData(data) as row}
 						<tr>
 							{#each row as cell}
 								<td class="cell" title={cell.title}>
@@ -54,20 +50,9 @@
 			</table>
 		</div>
 	</div>
-
-	{#if docs}
-		<div class="docs"><a href={docs} target="_blank">{locale.learnContributions()}</a></div>
-	{/if}
 </div>
 
 <style>
-	h2 {
-		margin: 0.5rem 0;
-		font-weight: 400;
-		font-size: 20px;
-		opacity: 0.75;
-	}
-
 	.heatmap {
 		display: flex;
 		flex-direction: row;
@@ -88,10 +73,6 @@
 			overflow-x: scroll;
 			direction: rtl;
 		}
-	}
-
-	.docs {
-		margin: 0.5rem 0 0;
 	}
 
 	table {
@@ -132,14 +113,6 @@
 
 		.grade4 {
 			background-color: light-dark(#116329, #6bc46d);
-		}
-	}
-
-	.docs {
-		a {
-			color: inherit;
-			opacity: 0.5;
-			font-size: 80%;
 		}
 	}
 </style>

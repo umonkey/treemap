@@ -21,6 +21,22 @@
 		min-height: 100dvh;
 		background-color: var(--color-dialog-background);
 		box-sizing: border-box;
+
+		.content {
+			:global(h1) {
+				font-weight: 400;
+				font-size: 2rem;
+				margin: 0.5rem 0;
+				opacity: 0.8;
+			}
+
+			:global(h2) {
+				font-weight: 400;
+				font-size: 1.5rem;
+				margin: 2rem 0 0.5rem;
+				opacity: 0.8;
+			}
+		}
 	}
 
 	.content {

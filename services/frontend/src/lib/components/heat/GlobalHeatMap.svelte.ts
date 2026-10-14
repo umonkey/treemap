@@ -1,24 +1,23 @@
-import { getUserHeatMap } from '$lib/api/users';
+import { getHeatMap } from '$lib/api/stats';
 import { type IHeatMap } from '$lib/types';
 
-class UserHeatMapState {
+export class GlobalHeatMap {
 	data = $state<IHeatMap[]>([]);
 	error = $state<string | undefined>(undefined);
 	loading = $state<boolean>(false);
-	userId = $state<string>('');
+	initialized = false;
 
-	public init = async (userId: string) => {
-		if (this.userId === userId) return;
-		this.userId = userId;
+	public init = async () => {
+		if (this.initialized) return;
+		this.initialized = true;
 		await this.reload();
 	};
 
 	public reload = async () => {
-		if (!this.userId) return;
 		this.loading = true;
 
 		try {
-			const { status, data: d, error: e } = await getUserHeatMap(this.userId);
+			const { status, data: d, error: e } = await getHeatMap();
 
 			if (status === 200 && d) {
 				this.data = d;
@@ -32,5 +31,3 @@ class UserHeatMapState {
 		}
 	};
 }
-
-export const userHeatMapState = new UserHeatMapState();

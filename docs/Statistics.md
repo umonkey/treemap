@@ -47,3 +47,11 @@ SELECT COUNT(1) FROM trees WHERE updated_at >= strftime('%s', 'now') - 86400 * 7
 ```sql
 SELECT t2.id, t2.name, COUNT(1) AS c FROM trees_props t1 INNER JOIN users t2 ON t2.id = t1.added_by WHERE added_at >= strftime('%s', 'now') - 86400 * 7 GROUP BY t1.added_by ORDER BY c DESC;
 ```
+
+## Most active users last 30 days
+
+This is the query used by `GET /v1/stats/top-users` to build the top contributors leaderboard.
+
+```sql
+SELECT t2.id, t2.name, COUNT(1) AS c FROM trees_props t1 INNER JOIN users t2 ON t2.id = t1.added_by WHERE added_at >= strftime('%s', 'now') - 86400 * 30 GROUP BY t1.added_by ORDER BY c DESC LIMIT 5;
+```

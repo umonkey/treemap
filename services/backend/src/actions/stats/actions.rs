@@ -1,4 +1,4 @@
-use crate::actions::user::UserList;
+use super::schemas::TopUserList;
 use crate::domain::species::{DiversityReport, SpeciesService, SpeciesStats};
 use crate::domain::stats::{StateStatsResponse, StatsService, StreetStatsResponse};
 use crate::domain::tree::TreeService;
@@ -42,7 +42,7 @@ pub async fn get_species_stats_action(
 }
 
 #[get("/top-users")]
-pub async fn get_top_users(user_service: Injected<UserService>) -> Result<Json<UserList>> {
+pub async fn get_top_users(user_service: Injected<UserService>) -> Result<Json<TopUserList>> {
     let res = user_service.get_top_users().await?;
     Ok(Json(res.into()))
 }

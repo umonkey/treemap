@@ -17,6 +17,13 @@ pub struct User {
     pub last_active_at: u64,
 }
 
+/// A user together with their recent contribution count.
+#[derive(Clone, Debug, Default)]
+pub struct UserActivity {
+    pub user: User,
+    pub count: u64,
+}
+
 impl User {
     pub fn from_attributes(attributes: &Attributes) -> Result<Self> {
         Ok(Self {

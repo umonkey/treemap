@@ -1,4 +1,4 @@
-use super::models::User;
+use super::models::{User, UserActivity};
 use super::repository::UserRepository;
 use super::schemas::UserUpdate;
 use crate::domain::upload::UploadRepository;
@@ -8,6 +8,7 @@ use crate::services::*;
 use crate::types::*;
 use crate::utils::{get_timestamp, get_unique_id};
 use log::{error, info};
+use std::collections::HashMap;
 use std::sync::Arc;
 
 const USERPIC_SIZE: u32 = 1000;
@@ -36,57 +37,36 @@ impl UserService {
         self.users.all().await
     }
 
-    pub async fn get_top_users(&self) -> Result<Vec<User>> {
-        let monthly_ids = self.get_monthly_active().await?;
-        let other_ids = self.get_other().await?;
-        let ids = self.merge_ids(monthly_ids, other_ids);
+    pub async fn get_top_users(&self) -> Result<Vec<UserActivity>> {
+        let after = get_timestamp() - 86400 * 30;
+        let query: &str = "SELECT `added_by`, COUNT(1) AS `cnt` FROM `trees_props` WHERE `added_at` >= ? GROUP BY `added_by` ORDER BY `cnt` DESC LIMIT 5";
+        let params = vec![Value::from(after as i64)];
 
-        self.users.get_multiple(&ids).await
+        let rows = self.db.fetch_sql(query, &params).await?;
+
+        let mut pairs: Vec<(u64, u64)> = Vec::new();
+        for row in rows {
+            pairs.push((row.require_u64("added_by")?, row.require_u64("cnt")?));
+        }
+
+        let ids: Vec<u64> = pairs.iter().map(|(id, _)| *id).collect();
+        let users = self.users.get_multiple(&ids).await?;
+
+        // get_multiple does not preserve order, so reorder by the count-desc list.
+        let mut by_id: HashMap<u64, User> = users.into_iter().map(|u| (u.id, u)).collect();
+
+        let mut res = Vec::new();
+        for (id, count) in pairs {
+            if let Some(user) = by_id.remove(&id) {
+                res.push(UserActivity { user, count });
+            }
+        }
+
+        Ok(res)
     }
 
     pub async fn get_tree_actors(&self, tree_id: u64) -> Result<Vec<User>> {
         self.users.get_tree_actors(tree_id).await
-    }
-
-    async fn get_monthly_active(&self) -> Result<Vec<u64>> {
-        let after = get_timestamp() - 86400 * 30;
-        let query: &str = "SELECT `added_by`, COUNT(1) AS `cnt` FROM `trees` WHERE `added_at` >= ? GROUP BY `added_by` ORDER BY `cnt` DESC LIMIT 10";
-        let params = vec![Value::from(after as i64)];
-
-        let rows = self.db.fetch_sql(query, &params).await?;
-        let ids: Result<Vec<u64>> = rows.iter().map(|row| row.require_u64("added_by")).collect();
-
-        ids.map_err(|e| {
-            error!("Error getting monthly active users: {e}");
-            e
-        })
-    }
-
-    async fn get_other(&self) -> Result<Vec<u64>> {
-        let query: &str =
-            "SELECT `id` FROM `users` ORDER BY `trees_count` + `updates_count` DESC LIMIT 10";
-        let params = vec![];
-
-        let rows = self.db.fetch_sql(query, &params).await?;
-
-        let ids: Result<Vec<u64>> = rows.iter().map(|row| row.require_u64("id")).collect();
-
-        ids.map_err(|e| {
-            error!("Error getting top users: {e}");
-            e
-        })
-    }
-
-    fn merge_ids(&self, monthly: Vec<u64>, other: Vec<u64>) -> Vec<u64> {
-        let mut res = monthly.clone();
-
-        for id in other.iter() {
-            if !res.contains(id) {
-                res.push(*id);
-            }
-        }
-
-        res
     }
 
     pub async fn add_user(&self, user: &User) -> Result<()> {

@@ -5,6 +5,7 @@ import type {
 	IStateStats,
 	IStats,
 	IStreetStats,
+	ITopUserList,
 	ITreeList
 } from '$lib/types';
 import { request } from './client';
@@ -43,4 +44,8 @@ export async function getStateStats(): Promise<IResponse<IStateStats[]>> {
 
 export async function getHeatMap(): Promise<IResponse<IHeatMap[]>> {
 	return await request('GET', 'v1/heatmap');
+}
+
+export async function getTopUsers(): Promise<IResponse<ITopUserList>> {
+	return await request('GET', 'v1/stats/top-users');
 }

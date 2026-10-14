@@ -47,6 +47,17 @@ export interface IUserList {
 	users: IUserWithRights[];
 }
 
+export interface ITopUser {
+	id: string;
+	name: string;
+	picture: string;
+	count: number;
+}
+
+export interface ITopUserList {
+	users: ITopUser[];
+}
+
 export interface ILoginResponse {
 	token: string;
 	user: IUser;

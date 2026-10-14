@@ -1,23 +1,34 @@
 <script lang="ts">
+	import GlobalHeatMap from '$lib/components/heat/GlobalHeatMap.svelte';
+	import TopUsers from '$lib/components/top-users/TopUsers.svelte';
+	import { locale as appLocale } from '$lib/locale';
 	import { routes } from '$lib/routes';
 	import PageHeader from '$lib/ui/header/PageHeader.svelte';
-	import { locale } from '$lib/locale';
+	import { locale } from './lang';
 </script>
 
 <svelte:head>
-	<title>{locale.sideReports()} — {locale.appTitle()}</title>
+	<title>{locale.title()} — {appLocale.appTitle()}</title>
 </svelte:head>
 
 <article>
-	<PageHeader text="Data Reports" />
+	<PageHeader text={locale.header()} />
+
+	<h2>{locale.heatmapHeader()}</h2>
+	<GlobalHeatMap />
+
+	<h2>{locale.contributorsHeader()}</h2>
+	<TopUsers />
+
+	<h2>{locale.reportsHeader()}</h2>
 	<ul>
-		<li><a href={routes.statsSpecies()}>Top species</a></li>
-		<li><a href={routes.statsStreets()}>Top streets</a></li>
-		<li><a href={routes.statsHeight()}>Top by height</a></li>
-		<li><a href={routes.statsDiameter()}>Top by diameter</a></li>
-		<li><a href={routes.statsCircumference()}>Top by trunk circumference</a></li>
-		<li><a href={routes.statsState()}>Group by state</a></li>
-		<li><a href={routes.streetReport()}>Street report</a></li>
+		<li><a href={routes.statsSpecies()}>{locale.species()}</a></li>
+		<li><a href={routes.statsStreets()}>{locale.streets()}</a></li>
+		<li><a href={routes.statsHeight()}>{locale.height()}</a></li>
+		<li><a href={routes.statsDiameter()}>{locale.diameter()}</a></li>
+		<li><a href={routes.statsCircumference()}>{locale.circumference()}</a></li>
+		<li><a href={routes.statsState()}>{locale.state()}</a></li>
+		<li><a href={routes.streetReport()}>{locale.streetReport()}</a></li>
 	</ul>
 </article>
 
