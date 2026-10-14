@@ -1,55 +1,14 @@
-import { get } from 'svelte/store';
 import { page } from '$app/state';
-import { hasPermission } from '$lib/stores/authStore';
 import { goto, routes } from '$lib/routes';
 import { mobileSidebarStore } from '$lib/stores/mobileSidebarStore';
 
 export class ToolsSidebarLogic {
 	query = $state('');
 
-	items = $derived.by(() => {
-		const check = get(hasPermission);
+	public isActive = (href: string) => {
 		const path = page.url.pathname;
-		const list: { name: string; href: string }[] = [];
-
-		if (check('user:manage')) {
-			list.push({
-				name: 'Users',
-				href: '/admin/users'
-			});
-		}
-
-		if (check('pano:edit')) {
-			list.push({
-				name: 'Panoramas',
-				href: '/admin/panoramas'
-			});
-		}
-
-		if (check('tree:create')) {
-			list.push({
-				name: 'Trilaterate',
-				href: '/tools/range'
-			});
-		}
-
-		if (check('tree:delete')) {
-			list.push({
-				name: 'Duplicates',
-				href: '/tools/merge'
-			});
-		}
-
-		list.push({
-			name: 'Learn',
-			href: '/learn'
-		});
-
-		return list.map((item) => ({
-			...item,
-			active: path === item.href || path.startsWith(`${item.href}/`)
-		}));
-	});
+		return path === href || path.startsWith(`${href}/`);
+	};
 
 	public close = () => {
 		mobileSidebarStore.set(false);
