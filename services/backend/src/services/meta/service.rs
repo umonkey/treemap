@@ -206,7 +206,7 @@ mod tests {
         let service = MetaService {};
         let html = "<html><head></head><body></body></html>";
 
-        let result = service.inject_robots(html, "/stats");
+        let result = service.inject_robots(html, "/tools/stats");
 
         assert_eq!(result, html);
     }
@@ -239,7 +239,7 @@ mod tests {
     fn test_inject_robots_indexable_paths() {
         let service = MetaService {};
 
-        for path in ["/", "/stats", "/privacy"] {
+        for path in ["/", "/tools/stats", "/privacy"] {
             let result = service.inject_robots("<head></head>", path);
 
             assert!(!result.contains("noindex"), "expected indexable for {path}");

@@ -6,7 +6,7 @@
 		<priority>1.0</priority>
 	</url>
 	<url>
-		<loc>https://yerevan.treemaps.app/stats</loc>
+		<loc>https://yerevan.treemaps.app/tools/stats</loc>
 		<changefreq>weekly</changefreq>
 		<priority>0.8</priority>
 	</url>

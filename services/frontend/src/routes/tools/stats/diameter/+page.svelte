@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Dialog from '$lib/components/layout/Dialog.svelte';
+	import PageHeader from '$lib/ui/header/PageHeader.svelte';
 	import NewTreesListItem from '$lib/components/tree/NewTreesListItem.svelte';
 	import { PageState } from './page.svelte';
 
@@ -14,18 +14,23 @@
 			return 'no data';
 		}
 
-		return `${(value * 100).toFixed(0)} cm`;
+		return `${value.toFixed(1)} m`;
 	};
 </script>
 
-<Dialog title="Thickest Trees">
+<svelte:head>
+	<title>Widest Trees</title>
+</svelte:head>
+
+<article>
+	<PageHeader text="Widest Trees" />
 	{#if pageState.loading}
 		<p>Loading...</p>
 	{:else if pageState.error}
 		<p>{pageState.error.description}</p>
 	{:else}
 		{#each pageState.data as tree}
-			<NewTreesListItem {tree} extra={format(tree.circumference)} />
+			<NewTreesListItem {tree} extra={format(tree.diameter)} />
 		{/each}
 	{/if}
-</Dialog>
+</article>

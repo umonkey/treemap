@@ -3,7 +3,6 @@
 	import UserPic from '$lib/components/layout/UserPic.svelte';
 	import SidebarSearchInput from '$lib/components/search/SidebarSearchInput.svelte';
 	import BellIcon from '$lib/icons/BellIcon.svelte';
-	import ChartIcon from '$lib/icons/ChartIcon.svelte';
 	import MegaphoneIcon from '$lib/icons/MegaphoneIcon.svelte';
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
 	import GridIcon from '$lib/icons/GridIcon.svelte';
@@ -55,12 +54,6 @@
 				<a href={routes.search()} onclick={componentState.close}>
 					<span class="icon"><SearchIcon /></span>
 					<span>{locale.sideSearch()}</span>
-				</a>
-			</li>
-			<li>
-				<a href={routes.stats()} onclick={componentState.close}>
-					<span class="icon"><ChartIcon /></span>
-					<span>{locale.sideReports()}</span>
 				</a>
 			</li>
 			<li>

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { routes } from '$lib/routes';
-	import Dialog from '$lib/components/layout/Dialog.svelte';
+	import PageHeader from '$lib/ui/header/PageHeader.svelte';
 	import { locale } from '$lib/locale';
 </script>
 
@@ -8,7 +8,8 @@
 	<title>{locale.sideReports()} — {locale.appTitle()}</title>
 </svelte:head>
 
-<Dialog title="Data Reports">
+<article>
+	<PageHeader text="Data Reports" />
 	<ul>
 		<li><a href={routes.statsSpecies()}>Top species</a></li>
 		<li><a href={routes.statsStreets()}>Top streets</a></li>
@@ -18,13 +19,7 @@
 		<li><a href={routes.statsState()}>Group by state</a></li>
 		<li><a href={routes.streetReport()}>Street report</a></li>
 	</ul>
-
-	<h2>Moderation queue</h2>
-
-	<ul>
-		<li><a href={routes.toolsUnknownSpecies()}>Trees with unknown species</a></li>
-	</ul>
-</Dialog>
+</article>
 
 <style>
 	ul {

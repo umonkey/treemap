@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Dialog from '$lib/components/layout/Dialog.svelte';
+	import PageHeader from '$lib/ui/header/PageHeader.svelte';
 	import { routes } from '$lib/routes';
 	import { PageState } from './page.svelte';
 
@@ -10,7 +10,12 @@
 	});
 </script>
 
-<Dialog title="Trees by Species">
+<svelte:head>
+	<title>Trees by Species</title>
+</svelte:head>
+
+<article>
+	<PageHeader text="Trees by Species" />
 	{#if pageState.loading}
 		<p>Loading...</p>
 	{:else if pageState.error}
@@ -40,7 +45,7 @@
 			</tbody>
 		</table>
 	{/if}
-</Dialog>
+</article>
 
 <style>
 	table {

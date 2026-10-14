@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Component } from 'svelte';
 	import { page } from '$app/state';
+	import ChartIcon from '$lib/icons/ChartIcon.svelte';
 	import LearnIcon from '$lib/icons/LearnIcon.svelte';
 	import MergeIcon from '$lib/icons/MergeIcon.svelte';
 	import StreetViewIcon from '$lib/icons/StreetViewIcon.svelte';
@@ -28,6 +29,7 @@
 			icon: QuestionIcon,
 			permission: 'tree:create'
 		},
+		{ name: 'Statistics', href: '/tools/stats', icon: ChartIcon },
 		{ name: 'Panoramas', href: '/tools/panoramas', icon: StreetViewIcon, permission: 'pano:edit' },
 		{ name: 'Users', href: '/tools/users', icon: UsersIcon, permission: 'user:manage' }
 	];

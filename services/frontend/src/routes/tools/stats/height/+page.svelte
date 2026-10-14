@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Dialog from '$lib/components/layout/Dialog.svelte';
+	import PageHeader from '$lib/ui/header/PageHeader.svelte';
 	import NewTreesListItem from '$lib/components/tree/NewTreesListItem.svelte';
 	import { PageState } from './page.svelte';
 
@@ -18,7 +18,12 @@
 	};
 </script>
 
-<Dialog title="Highest Trees">
+<svelte:head>
+	<title>Highest Trees</title>
+</svelte:head>
+
+<article>
+	<PageHeader text="Highest Trees" />
 	{#if pageState.loading}
 		<p>Loading...</p>
 	{:else if pageState.error}
@@ -28,4 +33,4 @@
 			<NewTreesListItem {tree} extra={format(tree.height)} />
 		{/each}
 	{/if}
-</Dialog>
+</article>

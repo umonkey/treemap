@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Dialog from '$lib/components/layout/Dialog.svelte';
+	import PageHeader from '$lib/ui/header/PageHeader.svelte';
 	import { routes } from '$lib/routes';
 	import { PageState } from './page.svelte';
 
@@ -10,7 +10,12 @@
 	});
 </script>
 
-<Dialog title="Trees by Address">
+<svelte:head>
+	<title>Trees by Status</title>
+</svelte:head>
+
+<article>
+	<PageHeader text="Trees by Status" />
 	{#if pageState.loading}
 		<p>Loading...</p>
 	{:else if pageState.error}
@@ -19,21 +24,27 @@
 		<table>
 			<thead>
 				<tr>
-					<th class="l" onclick={() => pageState.reorder('address')}>Address</th>
-					<th class="r" onclick={() => pageState.reorder('count')}>Count</th>
+					<th class="l">State</th>
+					<th class="r">Count</th>
 				</tr>
 			</thead>
 			<tbody>
-				{#each pageState.data as { address, count }}
+				{#each pageState.data as { state, count }}
 					<tr>
-						<td class="l"><a href={routes.searchAddress(address)}>{address}</a></td>
+						{#if state}
+							<td class="l"
+								><a href={routes.searchState(state)}>{state ? state : '(not set)'}</a></td
+							>
+						{:else}
+							<td class="l">not set</td>
+						{/if}
 						<td class="r">{count}</td>
 					</tr>
 				{/each}
 			</tbody>
 		</table>
 	{/if}
-</Dialog>
+</article>
 
 <style>
 	table {
