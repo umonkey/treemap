@@ -35,7 +35,6 @@ export class TreeLayoutState {
 
 	public reload = (id: string) => {
 		this.id = id;
-		this.response = undefined;
 		this.error = undefined;
 		this.loading = true;
 
