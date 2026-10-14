@@ -10,6 +10,7 @@
 	import TriangleIcon from '$lib/icons/TriangleIcon.svelte';
 	import UsersIcon from '$lib/icons/UsersIcon.svelte';
 	import { hasPermission } from '$lib/stores/authStore';
+	import { locale } from './ToolGrid.lang';
 
 	type Tool = {
 		name: string;
@@ -21,19 +22,34 @@
 	const { onSelect }: { onSelect: () => void } = $props();
 
 	const tools: Tool[] = [
-		{ name: 'Learn', href: '/tools/learn', icon: LearnIcon },
-		{ name: 'Trilaterate', href: '/tools/range', icon: TriangleIcon, permission: 'tree:create' },
-		{ name: 'Duplicates', href: '/tools/merge', icon: MergeIcon, permission: 'tree:delete' },
+		{ name: locale.learn(), href: '/tools/learn', icon: LearnIcon },
 		{
-			name: 'Guess Species',
+			name: locale.trilaterate(),
+			href: '/tools/range',
+			icon: TriangleIcon,
+			permission: 'tree:create'
+		},
+		{
+			name: locale.duplicates(),
+			href: '/tools/merge',
+			icon: MergeIcon,
+			permission: 'tree:delete'
+		},
+		{
+			name: locale.guessSpecies(),
 			href: '/tools/unknown-species',
 			icon: QuestionIcon,
 			permission: 'tree:create'
 		},
-		{ name: 'Statistics', href: '/tools/stats', icon: ChartIcon },
-		{ name: 'Reports', href: '/tools/street-report', icon: StreetIcon },
-		{ name: 'Panoramas', href: '/tools/panoramas', icon: StreetViewIcon, permission: 'pano:edit' },
-		{ name: 'Users', href: '/tools/users', icon: UsersIcon, permission: 'user:manage' }
+		{ name: locale.statistics(), href: '/tools/stats', icon: ChartIcon },
+		{ name: locale.reports(), href: '/tools/street-report', icon: StreetIcon },
+		{
+			name: locale.panoramas(),
+			href: '/tools/panoramas',
+			icon: StreetViewIcon,
+			permission: 'pano:edit'
+		},
+		{ name: locale.users(), href: '/tools/users', icon: UsersIcon, permission: 'user:manage' }
 	];
 
 	const visibleTools = $derived(
