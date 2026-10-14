@@ -6,6 +6,7 @@ pub mod export;
 pub mod file;
 pub mod health;
 pub mod heatmap;
+pub mod instance;
 pub mod login;
 pub mod mcp;
 pub mod me;

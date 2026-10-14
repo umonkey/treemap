@@ -11,6 +11,7 @@ use crate::actions::export::export_router;
 use crate::actions::file::file_router;
 use crate::actions::health::health_router;
 use crate::actions::heatmap::heatmap_router;
+use crate::actions::instance::instance_router;
 use crate::actions::login::login_router;
 
 use crate::actions::mcp::mcp_router;
@@ -112,7 +113,8 @@ pub async fn serve_command() {
                     .wrap(Transaction)
                     .service(web::scope("/panoramas").configure(panorama_router))
                     .service(web::scope("/export").configure(export_router))
-                    .service(web::scope("/settings").configure(app_settings_router)),
+                    .service(web::scope("/settings").configure(app_settings_router))
+                    .service(web::scope("/instance").configure(instance_router)),
             )
             .service(
                 web::scope("/v1")

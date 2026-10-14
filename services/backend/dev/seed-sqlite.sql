@@ -26,6 +26,7 @@ INSERT OR IGNORE INTO permissions (id) VALUES ('tree:edit');
 INSERT OR IGNORE INTO permissions (id) VALUES ('user:manage');
 INSERT OR IGNORE INTO permissions (id) VALUES ('water:manage');
 INSERT OR IGNORE INTO permissions (id) VALUES ('species:manage');
+INSERT OR IGNORE INTO permissions (id) VALUES ('instance:manage');
 
 INSERT OR IGNORE INTO role_permissions (role_id, permission_id) SELECT 'admin', id FROM permissions;
 INSERT OR IGNORE INTO role_permissions (role_id, permission_id) VALUES ('editor', 'tree:create');

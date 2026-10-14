@@ -1,6 +1,7 @@
 import type { Component } from 'svelte';
 import ChartIcon from '$lib/icons/ChartIcon.svelte';
 import DatabaseIcon from '$lib/icons/DatabaseIcon.svelte';
+import GearIcon from '$lib/icons/GearIcon.svelte';
 import LearnIcon from '$lib/icons/LearnIcon.svelte';
 import MergeIcon from '$lib/icons/MergeIcon.svelte';
 import QuestionIcon from '$lib/icons/QuestionIcon.svelte';
@@ -85,6 +86,13 @@ export const tools: Tool[] = [
 		description: locale.exportDataDescription(),
 		href: '/tools/export',
 		icon: DatabaseIcon
+	},
+	{
+		name: locale.configure(),
+		description: locale.configureDescription(),
+		href: '/tools/configure',
+		icon: GearIcon,
+		permission: 'instance:manage'
 	}
 ];
 

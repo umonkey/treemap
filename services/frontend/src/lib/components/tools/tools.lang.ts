@@ -21,6 +21,8 @@ interface StringList {
 	speciesDescription: () => string;
 	exportData: () => string;
 	exportDataDescription: () => string;
+	configure: () => string;
+	configureDescription: () => string;
 }
 
 class English implements StringList {
@@ -50,6 +52,8 @@ class English implements StringList {
 	speciesDescription = () => 'Review and edit the tree species database.';
 	exportData = () => 'Export';
 	exportDataDescription = () => 'Download the anonymised database as a single SQLite file (ODbL).';
+	configure = () => 'Configure';
+	configureDescription = () => "Edit this instance's name and description.";
 }
 
 class Russian extends English {
@@ -76,6 +80,8 @@ class Russian extends English {
 	exportData = () => 'Выгрузка';
 	exportDataDescription = () =>
 		'Скачать копию базу одним файлом для детальных исследований SQLite (ODbL).';
+	configure = () => 'Настройки';
+	configureDescription = () => 'Измените название и описание этого экземпляра.';
 }
 
 class Armenian extends English {
@@ -104,6 +110,8 @@ class Armenian extends English {
 	speciesDescription = () => 'Դիտեք և խմբագրեք ծառերի տեսակների տվյալների բազան։';
 	exportData = () => 'Արտահանում';
 	exportDataDescription = () => 'Ներբեռնեք անանունացված տվյալների բազան մեկ SQLite ֆայլով (ODbL)։';
+	configure = () => 'Կարգավորումներ';
+	configureDescription = () => 'Փոխեք այս օրինակի անունը և նկարագրությունը։';
 }
 
 const getLocale = (): StringList => {
