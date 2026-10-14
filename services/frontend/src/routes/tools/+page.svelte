@@ -1,20 +1,18 @@
 <script lang="ts">
 	import ToolGrid from '$lib/components/tools/ToolGrid.svelte';
 	import PageHeader from '$lib/ui/header/PageHeader.svelte';
-	import { locale } from '$lib/locale';
+	import { locale as appLocale } from '$lib/locale';
+	import { locale } from './lang';
 </script>
 
 <svelte:head>
-	<title>Tools — {locale.appTitle()}</title>
+	<title>{locale.title()} — {appLocale.appTitle()}</title>
 </svelte:head>
 
 <article>
-	<PageHeader text="Additional tools" />
+	<PageHeader text={locale.heading()} />
 
-	<p class="description">
-		Here you can find various additional tools that this application provides for data management
-		and access.
-	</p>
+	<p class="description">{locale.description()}</p>
 
 	<ToolGrid onSelect={() => {}} />
 </article>
