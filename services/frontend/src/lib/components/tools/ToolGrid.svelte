@@ -18,7 +18,7 @@
 	const { onSelect }: { onSelect: () => void } = $props();
 
 	const tools: Tool[] = [
-		{ name: 'Learn', href: '/learn', icon: LearnIcon },
+		{ name: 'Learn', href: '/tools/learn', icon: LearnIcon },
 		{ name: 'Trilaterate', href: '/tools/range', icon: TriangleIcon, permission: 'tree:create' },
 		{ name: 'Duplicates', href: '/tools/merge', icon: MergeIcon, permission: 'tree:delete' },
 		{ name: 'Panoramas', href: '/admin/panoramas', icon: StreetViewIcon, permission: 'pano:edit' },

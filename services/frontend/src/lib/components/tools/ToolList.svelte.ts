@@ -36,7 +36,7 @@ export class ToolListLogic {
 
 		list.push({
 			name: 'Training',
-			href: '/learn'
+			href: '/tools/learn'
 		});
 
 		return list;

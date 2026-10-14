@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Dialog from '$lib/components/layout/Dialog.svelte';
+	import PageHeader from '$lib/ui/header/PageHeader.svelte';
 	import ProgressBar from './ProgressBar.svelte';
 	import Question from './Question.svelte';
 	import Results from './Results.svelte';
@@ -28,7 +28,8 @@
 	};
 </script>
 
-<Dialog title={locale.learnTitle()}>
+<article>
+	<PageHeader text={locale.learnTitle()} />
 	<ProgressBar total={questions.length} complete={idx} />
 
 	{#if idx === questions.length}
@@ -38,4 +39,4 @@
 	{/if}
 
 	<SoundPlayer />
-</Dialog>
+</article>
