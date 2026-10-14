@@ -21,6 +21,8 @@ interface StringList {
 	speciesDescription: () => string;
 	exportData: () => string;
 	exportDataDescription: () => string;
+	mcp: () => string;
+	mcpDescription: () => string;
 	configure: () => string;
 	configureDescription: () => string;
 }
@@ -52,6 +54,9 @@ class English implements StringList {
 	speciesDescription = () => 'Review and edit the tree species database.';
 	exportData = () => 'Export';
 	exportDataDescription = () => 'Download the anonymised database as a single SQLite file (ODbL).';
+	mcp = () => 'MCP';
+	mcpDescription = () =>
+		'Query the tree database from AI agents over the Model Context Protocol (read-only, no authentication).';
 	configure = () => 'Configure';
 	configureDescription = () => "Edit this instance's name and description.";
 }
@@ -80,6 +85,9 @@ class Russian extends English {
 	exportData = () => 'Выгрузка';
 	exportDataDescription = () =>
 		'Скачать копию базу одним файлом для детальных исследований SQLite (ODbL).';
+	mcp = () => 'MCP';
+	mcpDescription = () =>
+		'Доступ ИИ-агентов к базе данных деревьев по Model Context Protocol (только чтение, без аутентификации).';
 	configure = () => 'Настройки';
 	configureDescription = () => 'Измените название и описание этого экземпляра.';
 }
@@ -110,6 +118,9 @@ class Armenian extends English {
 	speciesDescription = () => 'Դիտեք և խմբագրեք ծառերի տեսակների տվյալների բազան։';
 	exportData = () => 'Արտահանում';
 	exportDataDescription = () => 'Ներբեռնեք անանունացված տվյալների բազան մեկ SQLite ֆայլով (ODbL)։';
+	mcp = () => 'MCP';
+	mcpDescription = () =>
+		'ԱԲ գործակալների մուտքը ծառերի տվյալների բազա Model Context Protocol-ով (միայն ընթերցում, առանց նույնականացման)։';
 	configure = () => 'Կարգավորումներ';
 	configureDescription = () => 'Փոխեք այս օրինակի անունը և նկարագրությունը։';
 }

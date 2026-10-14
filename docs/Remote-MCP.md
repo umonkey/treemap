@@ -50,7 +50,7 @@ To connect an MCP-compliant client (such as Claude Desktop, OpenCode, Cursor, or
 
 For production use against the official deployment:
 
-- endpoint: `https://yerevan.treemaps.app/mcp`
+- endpoint: `https://api.treemaps.app/mcp`
 
 Example JSON configuration for client applications:
 
@@ -58,7 +58,7 @@ Example JSON configuration for client applications:
 {
   "mcpServers": {
     "treemaps-yerevan": {
-      "url": "https://yerevan.treemaps.app/mcp"
+      "url": "https://api.treemaps.app/mcp"
     }
   }
 }

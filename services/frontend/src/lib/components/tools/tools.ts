@@ -3,6 +3,7 @@ import ChartIcon from '$lib/icons/ChartIcon.svelte';
 import DatabaseIcon from '$lib/icons/DatabaseIcon.svelte';
 import GearIcon from '$lib/icons/GearIcon.svelte';
 import LearnIcon from '$lib/icons/LearnIcon.svelte';
+import McpIcon from '$lib/icons/McpIcon.svelte';
 import MergeIcon from '$lib/icons/MergeIcon.svelte';
 import QuestionIcon from '$lib/icons/QuestionIcon.svelte';
 import SpeciesIcon from '$lib/icons/SpeciesIcon.svelte';
@@ -86,6 +87,12 @@ export const tools: Tool[] = [
 		description: locale.exportDataDescription(),
 		href: '/tools/export',
 		icon: DatabaseIcon
+	},
+	{
+		name: locale.mcp(),
+		description: locale.mcpDescription(),
+		href: '/tools/mcp-server',
+		icon: McpIcon
 	},
 	{
 		name: locale.configure(),
