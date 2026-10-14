@@ -28,6 +28,7 @@
 		margin: 0 auto;
 		padding: var(--gap);
 		padding-bottom: calc(var(--gap) + env(safe-area-inset-bottom));
+		overflow: scroll;
 	}
 
 	@media screen and (min-width: 1024px) {
