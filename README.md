@@ -36,16 +36,66 @@ Architectural decisions are logged in the [ADR folder](docs/adr/).
 
 ## Getting started
 
-You can run the app locally using [Docker Compose](https://docs.docker.com/compose/), like this:
 
+### Local development
+
+You can run the backend and frontend locally using Docker Compose without valid AWS or S3 credentials.
+
+Requirements:
+
+- Docker Engine or Docker Desktop
+- Docker Compose v2
+- Make (optional)
+
+Clone the repository and start the local environment:
+
+```bash
+git clone https://github.com/umonkey/treemap.git
+cd treemap
+make start-local
 ```
+
+Without Make:
+
+```bash
+sh tools/init-local.sh
+docker compose -f compose.yaml -f compose.local.yaml up --build
+```
+
+The services are available at:
+
+- Frontend: http://localhost:5173
+- Backend: http://localhost:8000
+- Healthcheck: http://localhost:8000/health
+
+The local environment uses:
+
+- SQLite for the database and background job queue.
+- Local filesystem storage instead of S3.
+- Automatically generated development-only secrets.
+- A separate Docker Compose project and persistent database volume.
+- An initially empty tree database with the required instance and permission records.
+- Disabled scheduled jobs, including automatic OSM synchronization.
+
+Basic functionality does not require valid cloud credentials. Some features, including photo uploads, panorama processing, and external integrations, are not fully supported.
+
+To stop the local environment:
+
+```bash
+make stop-local
+```
+
+See [Development](docs/Development.md) for additional information and troubleshooting.
+
+### Existing development environment
+
+The original development setup is still available:
+
+```bash
 docker compose up
 ```
 
-With this command you'll be running the application, the frontend is available at [localhost:5173](http://localhost:5173/).
-The SQLite database will be stored in a Docker volume, and should persist container restarts.
-The database will be created automatically on the first run.
-To run a public service, this would need a CDN.
+This uses `services/backend/config.toml.dev` and retains its existing cloud integrations and scheduled jobs.
 
 
 ## Demo
