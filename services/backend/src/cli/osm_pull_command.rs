@@ -4,34 +4,46 @@ use crate::types::Result;
 use crate::utils::build_overpass_query;
 use log::{error, info, warn};
 
+// Pull OSM data for all instances with pull enabled.
+//
+// This command must never panic.  Errors are logged and reported to Sentry,
+// tagged with the failed instance, so a single bad instance does not stop
+// the others or abort the cron job.
 pub async fn osm_pull_command() {
-    let state = AppState::new()
-        .await
-        .expect("Error initializing app state.");
+    let state = match AppState::new().await {
+        Ok(state) => state,
 
-    let instances = state
-        .build::<InstanceService>()
-        .expect("Error creating instance service.")
-        .list_for_osm_pull()
-        .await
-        .expect("Error listing instances for OSM pull.");
+        Err(e) => {
+            report_error(&e, "init", None);
+            return;
+        }
+    };
+
+    let instances = match state.build::<InstanceService>() {
+        Ok(service) => match service.list_for_osm_pull().await {
+            Ok(instances) => instances,
+
+            Err(e) => {
+                report_error(&e, "list-instances", None);
+                return;
+            }
+        },
+
+        Err(e) => {
+            report_error(&e, "list-instances", None);
+            return;
+        }
+    };
 
     if instances.is_empty() {
         info!("No instances have OSM pull enabled.");
         return;
     }
 
-    let mut failures = 0;
-
     for instance in instances {
         if let Err(e) = pull_instance(&state, &instance).await {
-            error!("OSM pull failed for {}: {e}", instance.domain);
-            failures += 1;
+            report_error(&e, "pull", Some(&instance));
         }
-    }
-
-    if failures > 0 {
-        panic!("OSM pull failed for {failures} instance(s).");
     }
 }
 
@@ -72,4 +84,35 @@ async fn pull_instance(state: &AppState, instance: &Instance) -> Result<()> {
     session.database.commit().await?;
 
     Ok(())
+}
+
+// Log an error and send it to Sentry, optionally tagged with the instance.
+fn report_error(e: &crate::types::Error, stage: &str, instance: Option<&Instance>) {
+    match instance {
+        Some(instance) => {
+            error!(
+                "OSM pull failed at stage {stage} for {}: {e}",
+                instance.domain
+            );
+        }
+
+        None => {
+            error!("OSM pull failed at stage {stage}: {e}");
+        }
+    }
+
+    sentry::with_scope(
+        |scope| {
+            scope.set_tag("command", "osm-pull");
+            scope.set_tag("stage", stage);
+
+            if let Some(instance) = instance {
+                scope.set_tag("instance", &instance.domain);
+                scope.set_extra("instance_id", instance.id.into());
+            }
+        },
+        || {
+            sentry::capture_message(&e.to_string(), sentry::Level::Error);
+        },
+    );
 }
