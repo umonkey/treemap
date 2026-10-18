@@ -9,6 +9,8 @@ export class PageState {
 	error = $state<IError | undefined>(undefined);
 	name = $state<string>('');
 	description = $state<string>('');
+	osmPull = $state<boolean>(false);
+	osmBotId = $state<string>('');
 
 	reload = async () => {
 		try {
@@ -19,6 +21,8 @@ export class PageState {
 			if (res.status === 200 && res.data) {
 				this.name = res.data.name;
 				this.description = res.data.description ?? '';
+				this.osmPull = res.data.osm_pull;
+				this.osmBotId = res.data.osm_bot_id ?? '';
 				this.error = undefined;
 			} else {
 				this.error = res.error;
@@ -34,7 +38,9 @@ export class PageState {
 
 			const res = await updateInstance({
 				name: this.name,
-				description: this.description
+				description: this.description,
+				osm_pull: this.osmPull,
+				osm_bot_id: this.osmBotId.trim()
 			});
 
 			if (res.status >= 200 && res.status < 300) {

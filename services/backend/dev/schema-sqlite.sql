@@ -312,7 +312,9 @@ CREATE TABLE IF NOT EXISTS instances (
     bbox_w REAL,
     bbox_s REAL,
     bbox_e REAL,
-    bbox_n REAL
+    bbox_n REAL,
+    osm_bot_id INTEGER,
+    osm_pull INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS emails (

@@ -40,9 +40,6 @@ pub struct Config {
     #[serde(default = "default_overpass_endpoint")]
     pub overpass_endpoint: String,
 
-    #[serde(default = "default_overpass_query")]
-    pub overpass_query: String,
-
     #[serde(default = "default_payload_size")]
     pub payload_size: usize,
 
@@ -191,11 +188,6 @@ fn default_osm_changeset_size() -> u64 {
 
 fn default_overpass_endpoint() -> String {
     "https://overpass-api.de/api/interpreter".to_string()
-}
-
-fn default_overpass_query() -> String {
-    "[out:json];node[natural=tree](40.052848, 44.294472, 40.300476, 44.807396);out meta;"
-        .to_string()
 }
 
 fn default_database() -> String {

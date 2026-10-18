@@ -110,3 +110,7 @@ The application includes a trilateration tool that assists field arborists and v
 ## Water sources
 
 The application maintains a registry of water access points (fountains, hydrants, irrigation points) to support planting and maintenance planning, identify dry areas with high risk of tree decline, and automate the selection of spots for civic planting. Water sources are rendered on the map with a 50 meter coverage disc and a clickable dot, track an `operational`, `dead`, or `gone` lifecycle status, and can be added or moved by users with the `water:manage` permission. See `Water-sources.md` for full operational and technical guidelines.
+
+## OpenStreetMap integration
+
+The application can synchronize trees with OpenStreetMap. Pull is configured per instance through `/tools/configure`, and push settings remain in `config.toml`. See `features/osm/README.md` for the workflow and detailed documentation.

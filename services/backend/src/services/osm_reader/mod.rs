@@ -11,7 +11,7 @@
 //! (2) Use the osm_trees table data to add new trees to our database, or
 //! update existing trees that were changed on the OSM side.
 //!
-//! See details in docs/OSM-Integration.md
+//! See details in docs/features/osm/pull/README.md
 
 use crate::domain::osm::{OsmTreeRecord, OsmTreeRepository};
 use crate::domain::tree::{Tree, TreeRepository, TreeState};
@@ -27,7 +27,6 @@ const DEFAULT_STATE: TreeState = TreeState::Alive;
 pub struct OsmReaderService {
     trees: Arc<TreeRepository>,
     overpass_client: Arc<OverpassClient>,
-    user_id: u64,
     osm_trees: Arc<OsmTreeRepository>,
 }
 
@@ -38,13 +37,14 @@ impl OsmReaderService {
     // table for use in the following data merging steps.
     //
     // Nodes that were not in the response, but existed previously, are considered
-    // deleted and are marked as visible=0.
-    pub async fn update_osm_cache(&self) -> Result<()> {
+    // deleted and are marked as visible=0. Only nodes inside the given bbox are
+    // updated, so pulling one instance does not affect other instances.
+    pub async fn update_osm_cache(&self, query: &str, bbox: [f64; 4]) -> Result<()> {
         info!("Running OSM reader service.");
 
         let sync_start = get_timestamp();
 
-        let doc = self.overpass_client.query().await?;
+        let doc = self.overpass_client.query(query).await?;
         let mut updated_count = 0;
 
         for mut node in doc.iter().cloned() {
@@ -56,7 +56,9 @@ impl OsmReaderService {
             }
         }
 
-        self.osm_trees.mark_invisible_before(sync_start).await?;
+        self.osm_trees
+            .mark_invisible_before_in_bbox(sync_start, bbox)
+            .await?;
 
         info!(
             "Found {} OSM nodes, had {} updates.",
@@ -68,11 +70,11 @@ impl OsmReaderService {
     }
 
     // Iterate through OSM data and apply changes to local trees.
-    pub async fn update_local_trees(&self) -> Result<()> {
-        for node in self.osm_trees.all().await? {
+    pub async fn update_local_trees(&self, bbox: [f64; 4], user_id: u64) -> Result<()> {
+        for node in self.osm_trees.all_in_bbox(bbox).await? {
             match self.trees.get_by_osm_id(node.id).await? {
-                Some(tree) => self.update_tree(tree, node).await?,
-                None => self.add_tree(node).await?,
+                Some(tree) => self.update_tree(tree, node, user_id).await?,
+                None => self.add_tree(node, user_id).await?,
             }
         }
 
@@ -80,9 +82,9 @@ impl OsmReaderService {
     }
 
     // Pull changes to an existing tree.
-    async fn update_tree(&self, tree: Tree, node: OsmTreeRecord) -> Result<()> {
+    async fn update_tree(&self, tree: Tree, node: OsmTreeRecord, user_id: u64) -> Result<()> {
         if !node.visible {
-            return self.delete_tree(tree).await;
+            return self.delete_tree(tree, user_id).await;
         }
 
         // If OSM node is newer than local sync, update local tree.
@@ -109,7 +111,7 @@ impl OsmReaderService {
                 updated.lon = node.lon;
             }
 
-            self.trees.update(&updated, self.user_id).await?;
+            self.trees.update(&updated, user_id).await?;
 
             info!(
                 "Tree {} updated from OSM node {} (version {} > {}).",
@@ -124,7 +126,7 @@ impl OsmReaderService {
     }
 
     // Add a new tree, which is in the OSM data, but not on our side.
-    async fn add_tree(&self, node: OsmTreeRecord) -> Result<()> {
+    async fn add_tree(&self, node: OsmTreeRecord, user_id: u64) -> Result<()> {
         // This node was deleted in OSM, no need to add on our side.
         if !node.visible {
             return Ok(());
@@ -144,8 +146,8 @@ impl OsmReaderService {
             state: DEFAULT_STATE,
             added_at: now,
             updated_at: now,
-            updated_by: self.user_id,
-            added_by: self.user_id,
+            updated_by: user_id,
+            added_by: user_id,
             osm_version: Some(node.version),
             last_sync_at: Some(now),
             ..Default::default()
@@ -159,9 +161,9 @@ impl OsmReaderService {
     }
 
     // Delete a tree that was removed from OSM.
-    async fn delete_tree(&self, tree: Tree) -> Result<()> {
+    async fn delete_tree(&self, tree: Tree, user_id: u64) -> Result<()> {
         if tree.state != TreeState::Gone && tree.state != TreeState::Replaced {
-            self.trees.mark_gone(tree.id, self.user_id).await?;
+            self.trees.mark_gone(tree.id, user_id).await?;
 
             info!(
                 "Tree {} marked as gone because OSM node {:?} was deleted.",
@@ -193,12 +195,9 @@ impl OsmReaderService {
 
 impl Injectable for OsmReaderService {
     fn inject(ctx: &dyn Context) -> Result<Self> {
-        let config = ctx.config();
-
         Ok(Self {
             trees: Arc::new(ctx.build::<TreeRepository>()?),
             overpass_client: Arc::new(ctx.build::<OverpassClient>()?),
-            user_id: config.bot_user_id,
             osm_trees: Arc::new(ctx.build::<OsmTreeRepository>()?),
         })
     }

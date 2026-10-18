@@ -1,0 +1,6 @@
+BEGIN;
+
+ALTER TABLE instances ADD COLUMN osm_bot_id INTEGER;
+ALTER TABLE instances ADD COLUMN osm_pull INTEGER;
+
+COMMIT;

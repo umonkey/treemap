@@ -11,26 +11,24 @@ use url::Url;
 pub struct OverpassClient {
     client: reqwest::Client,
     endpoint: String,
-    query: String,
     user_agent: String,
     referrer: String,
 }
 
 impl OverpassClient {
-    pub fn new(endpoint: String, query: String, user_agent: String, referrer: String) -> Self {
+    pub fn new(endpoint: String, user_agent: String, referrer: String) -> Self {
         let client = reqwest::Client::new();
 
         Self {
             client,
             endpoint,
-            query,
             user_agent,
             referrer,
         }
     }
 
-    pub async fn query(&self) -> Result<Vec<OsmTreeRecord>> {
-        let query_url = self.get_query_url()?;
+    pub async fn query(&self, query: &str) -> Result<Vec<OsmTreeRecord>> {
+        let query_url = self.get_query_url(query)?;
         let json = self.read_json(&query_url).await?;
 
         let elements = match json["elements"].as_array() {
@@ -134,8 +132,8 @@ impl OverpassClient {
         }
     }
 
-    fn get_query_url(&self) -> Result<String> {
-        match Url::parse_with_params(&self.endpoint, &[("data", self.query.clone())]) {
+    fn get_query_url(&self, query: &str) -> Result<String> {
+        match Url::parse_with_params(&self.endpoint, &[("data", query)]) {
             Ok(url) => Ok(url.to_string()),
 
             Err(e) => Err(Error::OsmExchange(format!(
@@ -157,7 +155,6 @@ impl Injectable for OverpassClient {
 
         Ok(Self::new(
             config.overpass_endpoint.clone(),
-            config.overpass_query.clone(),
             user_agent,
             referrer,
         ))
