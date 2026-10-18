@@ -16,6 +16,8 @@ pub struct Instance {
     pub bbox_s: Option<f64>,
     pub bbox_e: Option<f64>,
     pub bbox_n: Option<f64>,
+    pub osm_bot_id: Option<u64>,
+    pub osm_pull: bool,
 }
 
 impl Instance {
@@ -31,6 +33,8 @@ impl Instance {
             bbox_s: attributes.get_f64("bbox_s")?,
             bbox_e: attributes.get_f64("bbox_e")?,
             bbox_n: attributes.get_f64("bbox_n")?,
+            osm_bot_id: attributes.get_u64("osm_bot_id")?,
+            osm_pull: attributes.get_bool("osm_pull")?.unwrap_or(false),
         })
     }
 
@@ -60,6 +64,8 @@ impl Instance {
             ("bbox_s".to_string(), Value::from(self.bbox_s)),
             ("bbox_e".to_string(), Value::from(self.bbox_e)),
             ("bbox_n".to_string(), Value::from(self.bbox_n)),
+            ("osm_bot_id".to_string(), Value::from(self.osm_bot_id)),
+            ("osm_pull".to_string(), Value::from(self.osm_pull)),
         ])
     }
 }

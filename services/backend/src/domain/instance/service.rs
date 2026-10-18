@@ -32,11 +32,37 @@ impl InstanceService {
             .ok_or(Error::InstanceNotFound)
     }
 
+    pub async fn list_for_osm_pull(&self) -> Result<Vec<Instance>> {
+        self.instances.get_enabled_with_osm_pull().await
+    }
+
     pub async fn update(&self, user_id: u64, domain: &str, req: InstanceUpdate) -> Result<()> {
         let instance = self.get(domain).await?;
 
         let name = req.name.unwrap_or_else(|| instance.name.clone());
         let description = req.description.or_else(|| instance.description.clone());
+        let osm_pull = req.osm_pull.unwrap_or(instance.osm_pull);
+
+        let osm_bot_id = match req.osm_bot_id {
+            None => instance.osm_bot_id,
+
+            Some(value) => {
+                let value = value.trim();
+
+                if value.is_empty() || value == "0" {
+                    None
+                } else {
+                    match value.parse::<u64>() {
+                        Ok(id) => Some(id),
+                        Err(_) => {
+                            return Err(Error::BadRequestMessage(
+                                "OSM bot id must be a positive integer.".to_string(),
+                            ));
+                        }
+                    }
+                }
+            }
+        };
 
         if name.trim().is_empty() {
             return Err(Error::BadRequestMessage(
@@ -45,7 +71,13 @@ impl InstanceService {
         }
 
         self.instances
-            .update_profile(instance.id, &name, description.as_deref())
+            .update(
+                instance.id,
+                &name,
+                description.as_deref(),
+                osm_pull,
+                osm_bot_id,
+            )
             .await?;
 
         if name != instance.name {
@@ -59,6 +91,20 @@ impl InstanceService {
             info!(
                 "User {user_id} changed instance {} description: {:?} -> {:?}.",
                 instance.domain, instance.description, description
+            );
+        }
+
+        if osm_pull != instance.osm_pull {
+            info!(
+                "User {user_id} changed instance {} OSM pull: {} -> {}.",
+                instance.domain, instance.osm_pull, osm_pull
+            );
+        }
+
+        if osm_bot_id != instance.osm_bot_id {
+            info!(
+                "User {user_id} changed instance {} OSM bot id: {:?} -> {:?}.",
+                instance.domain, instance.osm_bot_id, osm_bot_id
             );
         }
 
@@ -144,6 +190,7 @@ mod tests {
                 InstanceUpdate {
                     name: Some("New Name".to_string()),
                     description: Some("New description.".to_string()),
+                    ..Default::default()
                 },
             )
             .await
@@ -167,8 +214,8 @@ mod tests {
                 42,
                 "example.com",
                 InstanceUpdate {
-                    name: None,
                     description: Some("Only description.".to_string()),
+                    ..Default::default()
                 },
             )
             .await
@@ -193,7 +240,7 @@ mod tests {
                 "unknown.example.com",
                 InstanceUpdate {
                     name: Some("New Name".to_string()),
-                    description: None,
+                    ..Default::default()
                 },
             )
             .await;
@@ -211,7 +258,7 @@ mod tests {
                 "example.com",
                 InstanceUpdate {
                     name: Some("   ".to_string()),
-                    description: None,
+                    ..Default::default()
                 },
             )
             .await;
@@ -224,5 +271,119 @@ mod tests {
             .expect("Error getting instance.");
 
         assert_eq!(instance.name, "Example Trees");
+    }
+
+    #[tokio::test]
+    async fn test_update_osm_settings() {
+        let (_state, service) = setup().await;
+
+        service
+            .update(
+                42,
+                "example.com",
+                InstanceUpdate {
+                    osm_pull: Some(true),
+                    osm_bot_id: Some("134022734140280832".to_string()),
+                    ..Default::default()
+                },
+            )
+            .await
+            .expect("Error updating instance.");
+
+        let instance = service
+            .get("example.com")
+            .await
+            .expect("Error getting instance.");
+
+        assert!(instance.osm_pull);
+        assert_eq!(instance.osm_bot_id, Some(134022734140280832));
+    }
+
+    #[tokio::test]
+    async fn test_update_rejects_invalid_osm_bot_id() {
+        let (_state, service) = setup().await;
+
+        let result = service
+            .update(
+                42,
+                "example.com",
+                InstanceUpdate {
+                    osm_pull: Some(true),
+                    osm_bot_id: Some("not-a-number".to_string()),
+                    ..Default::default()
+                },
+            )
+            .await;
+
+        assert!(matches!(result, Err(Error::BadRequestMessage(_))));
+
+        let instance = service
+            .get("example.com")
+            .await
+            .expect("Error getting instance.");
+
+        assert!(!instance.osm_pull);
+        assert_eq!(instance.osm_bot_id, None);
+    }
+
+    #[tokio::test]
+    async fn test_update_clears_osm_bot_id() {
+        let (_state, service) = setup().await;
+
+        service
+            .update(
+                42,
+                "example.com",
+                InstanceUpdate {
+                    osm_bot_id: Some("42".to_string()),
+                    ..Default::default()
+                },
+            )
+            .await
+            .expect("Error updating instance.");
+
+        service
+            .update(
+                42,
+                "example.com",
+                InstanceUpdate {
+                    osm_bot_id: Some("   ".to_string()),
+                    ..Default::default()
+                },
+            )
+            .await
+            .expect("Error clearing the OSM bot id.");
+
+        let instance = service
+            .get("example.com")
+            .await
+            .expect("Error getting instance.");
+
+        assert_eq!(instance.osm_bot_id, None);
+    }
+
+    #[tokio::test]
+    async fn test_list_for_osm_pull() {
+        let (state, service) = setup().await;
+
+        state
+            .database()
+            .execute_sql(
+                "INSERT INTO instances (domain, name, description, email, enabled, osm_pull) VALUES \
+                 ('enabled.example.com', 'Enabled', NULL, 'enabled@example.com', 1, 1), \
+                 ('disabled.example.com', 'Disabled', NULL, 'disabled@example.com', 0, 1), \
+                 ('no-pull.example.com', 'No Pull', NULL, 'nopull@example.com', 1, 0)",
+                &[],
+            )
+            .await
+            .expect("Error inserting instances.");
+
+        let instances = service
+            .list_for_osm_pull()
+            .await
+            .expect("Error listing instances for OSM pull.");
+
+        assert_eq!(instances.len(), 1);
+        assert_eq!(instances[0].domain, "enabled.example.com");
     }
 }

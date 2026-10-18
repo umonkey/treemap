@@ -1,5 +1,7 @@
+# OpenStreetMap Integration
+
 This page collects findings on how to integrate with OSM.
-We currently publish our data as user [YerevanTreeMaps](https://www.openstreetmap.org/user/YerevanTreeMap).
+We currently publish our data as user [YerevanTreeMap](https://www.openstreetmap.org/user/YerevanTreeMap).
 
 ## Current status
 
@@ -29,17 +31,9 @@ In OSM, single trees are nodes with the following tags of interest:
 
 ## Pulling data from OSM
 
-The `treemap osm-pull` command synchronizes data from OSM using a two-phase process.
+The `treemap osm-pull` command synchronizes data from OSM using a two-phase process. Each instance builds its own Overpass query from its bounding box, and only enabled instances with OSM pull turned on are processed.
 
-1. Retrieve current data from OSM. We use Overpass API to fetch all tree nodes within the configured bounding box. These nodes are stored in the `osm_trees` table, which serves as a local cache of the OSM data and speeds up processing.
-2. For each OSM node received, add a new tree to the local `trees` table or update an existing record with new data from OSM.
-
-Remote changes are added using the following algorithm.
-
-1. We use the local tree's `osm_id` field to find corresponding trees.
-2. If there is no local tree with that OSM id, we create a new one.
-3. If there is a local tree, but we see that the node was deleted on the OSM side, we mark the tree as gone on our side.
-4. If the tree exists on both sides, and the remote version is newer, we update our local copy. We use OSM node version number to track updates.
+See `pull/README.md` for the detailed algorithm, cache behaviour, and failure handling.
 
 ## Pushing data to OSM
 
@@ -49,18 +43,16 @@ We don't currently push updates to existing trees.
 
 ## Configuration
 
-To successfully pull data from OSM, the following options need to be set in `config.toml`:
+Pull settings are configured per instance in the `instances` table, either through the `/tools/configure` page or directly with SQL:
 
-- `bot_user_id`: the id of the local user account who owns the local changes, something like "OSM Bot".
-- `overpass_query`: the query to retrieve the data, make sure you have proper boundaries set.
+- `osm_pull`: enables pulling for the instance. Pull is disabled when the value is `NULL` or `0`.
+- `osm_bot_id`: the local user id used for changes pulled from OSM. When `NULL`, the command falls back to `bot_user_id` in `config.toml`.
+- `bbox_w`, `bbox_s`, `bbox_e`, `bbox_n`: the bounding box that defines the instance area. Pull is skipped with a warning when the bbox is incomplete.
 
-To push new trees to OSM, the following additional options are required:
+The `overpass_endpoint` option remains in `config.toml` and is shared by all instances.
+
+To push new trees to OSM, the following additional options are required in `config.toml`:
 
 - `osm_client_id`: the application id, get it [here](https://www.openstreetmap.org/oauth2/applications).
 - `osm_hashtag`: this identifies your changesets, e.g. "YerevanTreeMap".
 - `osm_activity`: a link to the OSM Wiki page describing the organized editing activity.
-
-## Source Code Links
-
-- Pulling data from OSM is in `services/backend/src/services/osm_reader/mod.rs`
-- Pushing data to OSM is in `services/backend/src/services/osm_writer/mod.rs`

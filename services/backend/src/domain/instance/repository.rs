@@ -17,11 +17,13 @@ impl InstanceRepository {
         self.query_single(query).await
     }
 
-    pub async fn update_profile(
+    pub async fn update(
         &self,
         id: u64,
         name: &str,
         description: Option<&str>,
+        osm_pull: bool,
+        osm_bot_id: Option<u64>,
     ) -> Result<()> {
         let query = UpdateQuery::new(TABLE)
             .with_condition("id", Value::from(id as i64))
@@ -29,11 +31,24 @@ impl InstanceRepository {
             .with_value(
                 "description",
                 Value::from(description.map(|s| s.to_string())),
-            );
+            )
+            .with_value("osm_pull", Value::from(osm_pull))
+            .with_value("osm_bot_id", Value::from(osm_bot_id));
 
         self.db.update(query).await?;
 
         Ok(())
+    }
+
+    pub async fn get_enabled_with_osm_pull(&self) -> Result<Vec<Instance>> {
+        let query = SelectQuery::new(TABLE)
+            .with_condition("enabled", Value::from(1))
+            .with_condition("osm_pull", Value::from(1))
+            .with_order("id");
+
+        let records = self.db.get_records(query).await?;
+
+        records.iter().map(Instance::from_attributes).collect()
     }
 
     async fn query_single(&self, query: SelectQuery) -> Result<Option<Instance>> {

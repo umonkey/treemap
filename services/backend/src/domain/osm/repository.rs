@@ -44,19 +44,51 @@ impl OsmTreeRepository {
         })
     }
 
-    pub async fn all(&self) -> Result<Vec<OsmTreeRecord>> {
-        let query = SelectQuery::new(TABLE);
+    pub async fn all_in_bbox(&self, bbox: [f64; 4]) -> Result<Vec<OsmTreeRecord>> {
+        let [west, south, east, north] = bbox;
+        let sql =
+            format!("SELECT * FROM `{TABLE}` WHERE lat BETWEEN ? AND ? AND lon BETWEEN ? AND ?");
 
-        let records = self.db.get_records(query).await?;
+        let records = self
+            .db
+            .fetch_sql(
+                &sql,
+                &[
+                    Value::from(south),
+                    Value::from(north),
+                    Value::from(west),
+                    Value::from(east),
+                ],
+            )
+            .await?;
 
         records.iter().map(OsmTreeRecord::from_attributes).collect()
     }
 
-    pub async fn mark_invisible_before(&self, timestamp: u64) -> Result<()> {
-        let sql = format!("UPDATE `{TABLE}` SET visible = 0 WHERE last_seen_at < ?");
+    pub async fn mark_invisible_before_in_bbox(
+        &self,
+        timestamp: u64,
+        bbox: [f64; 4],
+    ) -> Result<()> {
+        let [west, south, east, north] = bbox;
+        let sql = format!(
+            "UPDATE `{TABLE}` SET visible = 0 \
+             WHERE last_seen_at < ? AND lat BETWEEN ? AND ? AND lon BETWEEN ? AND ?"
+        );
+
         self.db
-            .execute_sql(&sql, &[Value::from(timestamp as i64)])
+            .execute_sql(
+                &sql,
+                &[
+                    Value::from(timestamp as i64),
+                    Value::from(south),
+                    Value::from(north),
+                    Value::from(west),
+                    Value::from(east),
+                ],
+            )
             .await?;
+
         Ok(())
     }
 
@@ -98,5 +130,70 @@ impl OsmTreeRepository {
 impl Injectable for OsmTreeRepository {
     fn inject(ctx: &dyn Context) -> Result<Self> {
         Ok(Self { db: ctx.database() })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::services::{AppState, ContextExt};
+
+    async fn setup() -> (AppState, Arc<OsmTreeRepository>) {
+        let state = AppState::new()
+            .await
+            .expect("Error creating app state.")
+            .session()
+            .await
+            .expect("Error creating session state.");
+
+        state
+            .database()
+            .execute_sql(
+                "INSERT INTO osm_trees \
+                 (id, lat, lon, version, timestamp, user_id, user_name, visible, last_seen_at) \
+                 VALUES \
+                 (1, 40.1, 44.1, 1, '2024-01-01T00:00:00Z', 1, 'Mapper', 1, 100), \
+                 (2, 50.0, 50.0, 1, '2024-01-01T00:00:00Z', 1, 'Mapper', 1, 100)",
+                &[],
+            )
+            .await
+            .expect("Error inserting OSM trees.");
+
+        let repository = Arc::new(
+            state
+                .build::<OsmTreeRepository>()
+                .expect("Error creating OsmTreeRepository"),
+        );
+
+        (state, repository)
+    }
+
+    #[tokio::test]
+    async fn test_bbox_scoped_operations() {
+        let (_state, repository) = setup().await;
+        let bbox = [44.0, 40.0, 44.5, 40.5];
+
+        repository
+            .mark_invisible_before_in_bbox(200, bbox)
+            .await
+            .expect("Error marking OSM trees invisible.");
+
+        let inside = repository
+            .all_in_bbox(bbox)
+            .await
+            .expect("Error reading OSM trees in bbox.");
+
+        assert_eq!(inside.len(), 1);
+        assert_eq!(inside[0].id, 1);
+        assert!(!inside[0].visible);
+
+        let outside = repository
+            .get(2)
+            .await
+            .expect("Error reading the outside OSM tree.")
+            .expect("The outside OSM tree is missing.");
+
+        assert!(outside.visible);
+        assert_eq!(outside.last_seen_at, Some(100));
     }
 }
