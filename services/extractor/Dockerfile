@@ -19,8 +19,15 @@ RUN uv venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 # 3. Clone OpenSfM and install it into /opt/venv using uv pip install .
+# The commit is pinned so consecutive extractor builds run identical
+# reconstruction code.  Bump it deliberately.
+ARG OPEN_SFM_COMMIT=92381be43cd93ca91e7ef903733a0482440028dd
 WORKDIR /source
-RUN git clone --depth 1 --branch main https://github.com/mapillary/OpenSfM.git . && \
+RUN git init . && \
+    git remote add origin https://github.com/mapillary/OpenSfM.git && \
+    git fetch --depth 1 origin "${OPEN_SFM_COMMIT}" && \
+    git checkout FETCH_HEAD && \
+    git rev-parse HEAD && \
     git submodule update --init --recursive
 RUN uv pip install .
 

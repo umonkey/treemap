@@ -2,6 +2,7 @@
 # This script aligns the OpenSfM reconstruction trajectory with the GPS track.
 
 set -e
+set -o pipefail
 
 if [ -n "$1" ]; then
     DATASET="$1"

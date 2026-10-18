@@ -8,11 +8,20 @@ import math
 import os
 import re
 from datetime import datetime, timezone
+from glob import glob
 from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 
 from .speed import parse_gpx
+
+# World frame conventions used by OpenSfM reconstructions.
+#
+# With `align_method: none` the reconstruction stays in the bootstrap camera
+# frame: X right, Y down, Z forward.  With an active alignment OpenSfM rotates
+# the estimated ground plane normal to +Z, so the world becomes Z-up.
+Y_DOWN_FRAME = "y-down"
+Z_UP_FRAME = "z-up"
 
 
 def lla_to_enu(
@@ -215,6 +224,122 @@ def format_utc_time(dt: datetime) -> str:
     return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+def detect_sfm_frame(dataset_path: str) -> str:
+    """
+    Detect the SfM world frame convention from the dataset config.
+
+    `align_method: none` leaves the reconstruction in the bootstrap camera
+    frame (Y down).  Any active alignment (`auto`, `orientation_prior`, ...)
+    levels the model, making the world Z-up.
+
+    Falls back to `y-down` when the config is missing or unreadable.
+    """
+    config_path = os.path.join(dataset_path, "config.yaml")
+    align_method = "none"
+    try:
+        with open(config_path, "r") as f:
+            for line in f:
+                match = re.match(r"^\s*align_method\s*:\s*(\S+)", line)
+                if match:
+                    align_method = match.group(1).strip().strip("'\"")
+                    break
+    except OSError:
+        pass
+    return Y_DOWN_FRAME if align_method == "none" else Z_UP_FRAME
+
+
+def horizontal_axes(frame: str) -> Tuple[int, int]:
+    """Return the two SfM axes that span the horizontal plane."""
+    return (0, 1) if frame == Z_UP_FRAME else (0, 2)
+
+
+def up_axis(frame: str) -> int:
+    """Return the SfM axis that points up (sign is given by `up_sign`)."""
+    return 2 if frame == Z_UP_FRAME else 1
+
+
+def up_sign(frame: str) -> float:
+    """Return the factor converting the up axis to positive ENU height."""
+    return 1.0 if frame == Z_UP_FRAME else -1.0
+
+
+def world_rotation(theta: float, frame: str) -> np.ndarray:
+    """
+    Build the yaw + axis-swap rotation from SfM coordinates to ENU.
+
+    `theta` is the horizontal yaw fitted by `umeyama_2d`.  The returned matrix
+    maps SfM X/Y/Z to ENU East/North/Up for both supported frames.
+    """
+    cos_th = math.cos(theta)
+    sin_th = math.sin(theta)
+
+    h0, h1 = horizontal_axes(frame)
+    r_world = np.zeros((3, 3), dtype=np.float64)
+    r_world[0, h0] = cos_th
+    r_world[0, h1] = -sin_th
+    r_world[1, h0] = sin_th
+    r_world[1, h1] = cos_th
+    r_world[2, up_axis(frame)] = up_sign(frame)
+    return r_world
+
+
+def _half_similarity(
+    p_2d: np.ndarray, q_2d: np.ndarray, start: int, end: int
+) -> Optional[Tuple[float, float]]:
+    """Fit a similarity on a slice and return (scale, yaw_deg), if possible."""
+    if end - start < 3:
+        return None
+    scale, theta, _, _ = umeyama_2d(p_2d[start:end], q_2d[start:end])
+    return float(scale), float(math.degrees(theta))
+
+
+def _rounded(value: Optional[float], digits: int) -> Optional[float]:
+    """Round an optional diagnostic value."""
+    return None if value is None else round(value, digits)
+
+
+def _format_optional(value: Optional[float], digits: int = 2) -> str:
+    """Format an optional diagnostic value for logging."""
+    return "n/a" if value is None else f"{value:.{digits}f}"
+
+
+def _altitude_gradient_m_per_100m(c_enu: np.ndarray) -> float:
+    """Linear altitude trend along the horizontal track, in m per 100 m."""
+    if len(c_enu) < 2:
+        return 0.0
+    horizontal = np.concatenate(
+        ([0.0], np.cumsum(np.linalg.norm(np.diff(c_enu[:, :2], axis=0), axis=1)))
+    )
+    total_horizontal = float(horizontal[-1])
+    if total_horizontal < 1e-6:
+        return 0.0
+    slope = float(np.polyfit(horizontal, c_enu[:, 2], 1)[0])
+    return slope * 100.0
+
+
+def _loop_distances_m(
+    c_enu: np.ndarray, times: np.ndarray, radius_m: float = 5.0, min_dt: float = 60.0
+) -> List[float]:
+    """
+    Distances between camera positions that revisit the same place.
+
+    A pair counts as a revisit when the horizontal distance is below `radius_m`
+    while the capture times differ by more than `min_dt` seconds.
+    """
+    distances: List[float] = []
+    # Chunk the O(n^2) comparison to cap peak memory on long sequences.
+    chunk_size = 500
+    for start in range(0, len(c_enu), chunk_size):
+        end = min(start + chunk_size, len(c_enu))
+        d = np.linalg.norm(c_enu[start:end, None, :2] - c_enu[None, :, :2], axis=2)
+        dt = times[None, :] - times[start:end, None]
+        later = np.arange(len(c_enu))[None, :] > np.arange(start, end)[:, None]
+        mask = (d < radius_m) & (dt > min_dt) & later
+        if np.any(mask):
+            distances.extend(d[mask].tolist())
+    return distances
+
+
 def run_align_trajectory(dataset_path: str) -> None:
     """
     Align SfM reconstruction trajectory with GPS track (.gpx) and
@@ -275,6 +400,9 @@ def run_align_trajectory(dataset_path: str) -> None:
         print("Warning: No shots found in reconstruction, skipping alignment.")
         return
 
+    frame = detect_sfm_frame(dataset_path)
+    print(f"SfM world frame: {frame}")
+
     video_duration: Optional[float] = None
     video_path = os.path.join(dataset_path, "video.mp4")
     if os.path.exists(video_path):
@@ -323,7 +451,7 @@ def run_align_trajectory(dataset_path: str) -> None:
     if video_duration is None:
         video_duration = float(sfm_t[-1] - sfm_t[0]) if len(sfm_t) > 1 else 0.0
 
-    p_2d = c_sfm_arr[:, [0, 2]]  # OpenSfM horizontal plane: X and Z
+    p_2d = c_sfm_arr[:, list(horizontal_axes(frame))]
 
     gpx_duration = float(gpx_times[-1] - gpx_times[0])
     video_span = float(sfm_t[-1] - sfm_t[0])
@@ -379,16 +507,13 @@ def run_align_trajectory(dataset_path: str) -> None:
 
     # 3. Match vertical altitude offset tu using median GPX elevation over active window
     med_u_gpx = float(np.median(q_target_enu[:, 2]))
-    # U = s * (-Y) + tu => tu = med_u_gpx + scale * median(Y)
-    tu = med_u_gpx + scale * float(np.median(c_sfm_arr[:, 1]))
-
-    # Rigid world transformation R_world with horizontal yaw theta and vertical U = -Y
-    cos_th = math.cos(theta)
-    sin_th = math.sin(theta)
-    r_world = np.array(
-        [[cos_th, 0.0, -sin_th], [sin_th, 0.0, cos_th], [0.0, -1.0, 0.0]],
-        dtype=np.float64,
+    # U = s * up_sign * C_up + tu => tu = med_u_gpx - s * up_sign * median(C_up)
+    tu = med_u_gpx - up_sign(frame) * scale * float(
+        np.median(c_sfm_arr[:, up_axis(frame)])
     )
+
+    # Rigid world transformation with horizontal yaw theta and the frame's up axis
+    r_world = world_rotation(theta, frame)
     t_3d = np.array([t_xy[0], t_xy[1], tu], dtype=np.float64)
 
     # Camera centers in ENU: C'_enu = s * R_world * C_sfm + T
@@ -414,6 +539,40 @@ def run_align_trajectory(dataset_path: str) -> None:
         total_distance_m += float(np.linalg.norm(c_enu_all[i + 1] - c_enu_all[i]))
 
     avg_speed_mps = total_distance_m / video_span if video_span > 0 else 0.0
+
+    # Diagnostics for stage-by-stage A/B comparisons.  These are informational
+    # only: they never change the emitted poses.
+    residual_p90_m = float(np.percentile(res_2d, 90))
+    residual_max_m = float(np.max(res_2d))
+
+    half = total_shots // 2
+    first_half = _half_similarity(p_2d, q_target_enu[:, :2], 0, half)
+    second_half = _half_similarity(p_2d, q_target_enu[:, :2], half, total_shots)
+    scale_first_half = first_half[0] if first_half else None
+    yaw_first_half_deg = first_half[1] if first_half else None
+    scale_second_half = second_half[0] if second_half else None
+    yaw_second_half_deg = second_half[1] if second_half else None
+
+    if total_shots > 1:
+        step_lengths = np.linalg.norm(np.diff(c_enu_all, axis=0), axis=1)
+        step_median_m = float(np.median(step_lengths))
+        step_p99_m = float(np.percentile(step_lengths, 99))
+        step_max_m = float(np.max(step_lengths))
+    else:
+        step_median_m = 0.0
+        step_p99_m = 0.0
+        step_max_m = 0.0
+
+    altitude_gradient = _altitude_gradient_m_per_100m(c_enu_all)
+    altitude_range = float(np.ptp(c_enu_all[:, 2]))
+
+    loop_distances = _loop_distances_m(c_enu_all, sfm_t)
+    loop_pairs = len(loop_distances)
+    loop_median_m = float(np.median(loop_distances)) if loop_distances else None
+
+    input_images = len(glob(os.path.join(dataset_path, "images", "*.jpg")))
+    coverage_pct = 100.0 * total_shots / input_images if input_images > 0 else None
+    components = len(reconstructions)
 
     # Convert ENU to LLA and build Point features
     point_features: List[Dict[str, Any]] = []
@@ -492,6 +651,23 @@ def run_align_trajectory(dataset_path: str) -> None:
             ],
             "alignment_median_residual_m": round(median_residual, 3),
             "total_shots": total_shots,
+            "sfm_frame": frame,
+            "alignment_p90_residual_m": round(residual_p90_m, 3),
+            "alignment_max_residual_m": round(residual_max_m, 3),
+            "scale_first_half": _rounded(scale_first_half, 6),
+            "scale_second_half": _rounded(scale_second_half, 6),
+            "yaw_first_half_deg": _rounded(yaw_first_half_deg, 2),
+            "yaw_second_half_deg": _rounded(yaw_second_half_deg, 2),
+            "step_median_m": round(step_median_m, 2),
+            "step_p99_m": round(step_p99_m, 2),
+            "step_max_m": round(step_max_m, 2),
+            "altitude_gradient_m_per_100m": round(altitude_gradient, 2),
+            "altitude_range_m": round(altitude_range, 2),
+            "loop_pairs": loop_pairs,
+            "loop_median_m": _rounded(loop_median_m, 2),
+            "input_images": input_images,
+            "coverage_pct": _rounded(coverage_pct, 2),
+            "components": components,
         },
         "features": [linestring_feature] + point_features,
     }
@@ -505,4 +681,15 @@ def run_align_trajectory(dataset_path: str) -> None:
         f"Metrics: shots={total_shots}, scale={scale:.4f}, "
         f"yaw={math.degrees(theta):.2f}°, tau={refined_tau:.2f}s, "
         f"median_res={median_residual:.2f}m, dist={total_distance_m:.1f}m"
+    )
+    print(
+        f"Diagnostics: frame={frame}, half_scale="
+        f"{_format_optional(scale_first_half, 4)}/"
+        f"{_format_optional(scale_second_half, 4)}, half_yaw="
+        f"{_format_optional(yaw_first_half_deg)}/"
+        f"{_format_optional(yaw_second_half_deg)}°, step p99/max="
+        f"{step_p99_m:.2f}/{step_max_m:.2f}m, alt_gradient="
+        f"{altitude_gradient:.2f}m/100m, loop_pairs={loop_pairs}"
+        f" (median={_format_optional(loop_median_m)}m), coverage="
+        f"{_format_optional(coverage_pct)}% of {input_images}"
     )

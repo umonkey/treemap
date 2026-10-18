@@ -5,6 +5,7 @@
 # The output is a sequence of files `var/dataset/matches/frame_*.jpg_matches.pkl.gz`
 
 set -e
+set -o pipefail
 
 if [ -z "$DATASET" ]; then
     echo "DATASET variable not set, cannot continue."

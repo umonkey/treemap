@@ -6,6 +6,7 @@
 # to `var/dataset/exif/frame_*.jpg.exif`.
 
 set -e
+set -o pipefail
 
 if [ -z "$DATASET" ]; then
     echo "DATASET variable not set, cannot continue."
