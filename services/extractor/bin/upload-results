@@ -9,4 +9,14 @@ elif [ -z "$RESULT_URL" ]; then
     exit 1
 fi
 
+# Persist experiment diagnostics alongside the images.  The dataset bucket is
+# cleaned after a successful run, so the alignment report, the effective config
+# and the reconstruction summary would otherwise be lost.
+mkdir -p var/output/diagnostics
+cp var/dataset/trajectory.geojson var/output/diagnostics/
+cp var/dataset/config.yaml var/output/diagnostics/
+cp var/dataset/reports/reconstruction.json var/output/diagnostics/ 2>/dev/null || true
+cp var/dataset/logs/align_trajectory.log var/output/diagnostics/ 2>/dev/null || true
+cp var/dataset/logs/reconstruct.log var/output/diagnostics/ 2>/dev/null || true
+
 time aws s3 --endpoint-url="$AWS_ENDPOINT_URL" sync --no-progress --size-only --delete --acl public-read var/output/ "$RESULT_URL"
