@@ -31,29 +31,29 @@ Capability documentation is a pyramid. Each layer adds depth, and a reader can s
 2. `docs/features/<domain>/README.md`: the capability page, or the domain hub when sub-features exist. One to two screens for a capability page, one screen for a hub.
 3. `docs/<Topic>.md`: the operator reference. Configuration keys, commands, schemas, algorithms, and recovery procedures. It is shared by every capability that depends on the same infrastructure. Linked from the capability page, never duplicated on it.
 
-Within a capability page, order sections so reading depth increases: decision summary first, links last.
+Within a capability page, open with an Overview. Order the rest so reading depth increases, and link outward where the reader needs it.
 
 ## Domains and Sub-Features
 
-- Split a domain into sub-features when its capabilities have distinct outcomes, prerequisites, configuration, or operational concerns that a reader evaluates separately. They need not be fully independent; one may support another, but each must stand as a coherent capability with its own decision summary.
-- When a domain has sub-features, `docs/features/<domain>/README.md` becomes a hub. It contains a one-paragraph domain overview, the shared decision summary, shared requirements and cost, and a one-line link to each sub-feature. It does not repeat sub-feature content.
-- Each sub-feature is a full page following the structure below. Sections that are genuinely shared may point to the hub instead of repeating them.
+- Split a domain into sub-features when its capabilities have distinct outcomes, prerequisites, configuration, or operational concerns that a reader evaluates separately. They need not be fully independent; one may support another, but each must stand as a coherent capability with its own overview.
+- When a domain has sub-features, `docs/features/<domain>/README.md` becomes a hub. It contains a one-paragraph domain overview, shared requirements and cost, and a one-line link to each sub-feature. It does not repeat sub-feature content.
+- Each sub-feature is a full page following the guidance below. Material that is genuinely shared may point to the hub instead of repeating it.
 - Allow exactly one level of sub-features. If a sub-feature needs further splitting, the domain model is wrong.
 - Keep the operator reference per topic, not per sub-feature. Import and export share one reference when they share infrastructure.
 
-## Document Structure
+## Page Content
 
-Every capability page, including each sub-feature, follows this structure. Omit a section only when it is genuinely inapplicable, and say why if the omission is surprising.
+Open with an Overview: one or two paragraphs explaining what the capability does and why it matters. Include who it is for, what it enables, and the main trade-off, in prose rather than a bullet list. A decision-maker should be able to stop after reading it.
 
-1. Decision summary: three to six bullets covering fit, cost, risk, and availability. A decision-maker reads this and stops.
-2. What it does: the capability and the outcome it produces, without implementation detail.
-3. Requirements and availability: accounts, roles and permissions, device and browser limits, upstream data or state, and the configuration categories a tenant must set. Name the technology or policy behind every restriction. Distinguish tenant configuration from infrastructure configuration.
-4. How a program runs: the end-to-end lifecycle at program level, including which steps are automatic and which need a person. Keep it declarative, with no click paths.
-5. What the organisation gets: data, exports, publications, and audit history.
-6. Cost and effort: compute, storage, and staff time, with realistic units.
-7. Operations and limitations: what administrators monitor, how failures behave, where recovery is documented, and the honest constraints, quantified where possible.
-8. Questions organisations usually ask: three to five recurring concerns, answered plainly.
-9. Learn more: links to the operator reference, security material, and pricing.
+After that, use the prompts below as a menu, not a checklist. Keep only what the capability needs, in whatever order reads naturally. A page may have three sections or eight. Never pad a page to match a template.
+
+- Requirements and availability: accounts, roles and permissions, device and browser limits, prerequisites such as a registered tenant hostname, upstream data or state, and the configuration categories a tenant must set. Name the technology or policy behind every restriction. Distinguish tenant configuration from infrastructure configuration.
+- How it works: the trigger or lifecycle. Describe the action that starts it from the user's point of view, what happens automatically, where a person decides, and what the organisation is left with. For a scheduled capability, describe the cycle. For an event-driven one, describe the trigger. Keep it declarative, with no click paths.
+- Cost and effort: compute, storage, and staff time, with realistic units. One sentence when the cost is trivial.
+- Operations and limitations: what administrators monitor, how failures behave, where recovery is documented, and the honest constraints, quantified where possible.
+- Questions organisations usually ask: three to five recurring concerns, answered plainly.
+
+Drop a prompt when it adds nothing. Do not explain the omission.
 
 ## Availability and Delivery Model
 
@@ -100,9 +100,9 @@ Defer to the `markdown` skill for bold usage, headers, list spacing, and colon c
 ## Workflow
 
 1. Identify the domain and whether it contains sub-features. Split when capabilities have distinct outcomes, prerequisites, configuration, or operational concerns, even if one supports another. Do not nest deeper than one level.
-2. Write the decision summary first. If it cannot be written, the capability is not ready to document.
+2. Write the Overview first: what the capability does and why. If it cannot be written, the capability is not ready to document.
 3. Map requirements and availability, separating tenant configuration from infrastructure configuration.
-4. Map the program lifecycle: what the organisation prepares, what runs automatically, where a person decides, and what remains afterwards.
+4. Map the trigger or lifecycle: what causes the capability to run, what happens automatically, where a person decides, and what remains afterwards.
 5. Verify every cost, capacity, and limitation claim against code or operator documentation.
 6. Write the body, then move any configuration or debugging detail down to the operator reference.
 7. Check the page against the prohibited content list and the five-minute limit.
