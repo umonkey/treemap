@@ -13,7 +13,8 @@ feature_process_size_panorama: 2048
 # or driving video.  Setting this to 10 means a frame is matched to the
 # next 10 and previous 10 images in the sequence.  This speeds up processing
 # significantly, compared to all-vs-all matching.
-matching_order_neighbors: 12
+# 40 means +/-20 frames, roughly +/-20 m at the current 1 m extraction spacing.
+matching_order_neighbors: 40
 
 # Disable GPS usage altogether.  We only use local reconstruction.
 bundle_use_gps: no
