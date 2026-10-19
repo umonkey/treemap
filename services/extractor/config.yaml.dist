@@ -44,7 +44,7 @@ align_orientation_prior: no_roll
 # Fixing the banana effect.
 bundle_interval: 15
 retriangulation: yes
-retriangulation_ratio: 2.0
+retriangulation_ratio: 1.2
 
 # Enable cross-checking features to further reduce the banana effect.
 matching_symmetric: yes
@@ -54,7 +54,7 @@ matching_lowes_ratio: 0.75
 robust_matching_threshold: 0.004
 robust_matching_min_inliers: 25
 
-bundle_max_iterations: 25       # Limit solver iterations and prevent memory spikes
+bundle_max_iterations: 50       # Limit solver iterations and prevent memory spikes
 local_bundle_radius: 15
 bundle_new_points_ratio: 1.2    # Optimized for linear street-view sequences to reduce compute time and improve alignment stability
 
@@ -62,7 +62,7 @@ bundle_new_points_ratio: 1.2    # Optimized for linear street-view sequences to 
 ceres_linear_solver: ITERATIVE_SCHUR
 
 # Rigidity settings
-triangulation_min_ray_angle: 1.0  # Higher angle ensures more stable depth/triangulation for features like trees
+triangulation_min_ray_angle: 2.0  # Higher angle ensures more stable depth/triangulation for features like trees
 
 # This must be set to "no" for 360 images, which we are working with.
 optimize_camera_parameters: no
