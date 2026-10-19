@@ -48,7 +48,7 @@
 				<td>{panorama.processing_status ?? 'unknown'}</td>
 			</tr>
 
-			{#if panorama.status === 'SUCCESS' || panorama.status === 'FAILURE'}
+			{#if panorama.processing_time != null && panorama.processing_time > 0}
 				<tr>
 					<th>Processing time:</th>
 					<td>{componentState.formatProcessingTime(panorama.processing_time)}</td>
