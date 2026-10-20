@@ -22,7 +22,7 @@ bundle_use_gps: no
 # Use the BOW (bag of words) to catch when the track re-visits a location,
 # e.g. when the track loops or you drive the same street backwards.
 matching_bow_neighbors: 20
-bow_words_to_query: 50
+bow_words_to_match: 50
 
 
 # High point count for stability
@@ -48,12 +48,12 @@ retriangulation: yes
 retriangulation_ratio: 1.2
 
 # Enable cross-checking features to further reduce the banana effect.
-matching_symmetric: yes
-matching_lowes_ratio: 0.75
+symmetric_matching: yes
+lowes_ratio: 0.75
 
 # Ignore moving objects.
 robust_matching_threshold: 0.004
-robust_matching_min_inliers: 25
+robust_matching_min_match: 25
 
 bundle_max_iterations: 50       # Limit solver iterations and prevent memory spikes
 local_bundle_radius: 15
