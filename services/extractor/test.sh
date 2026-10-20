@@ -3,5 +3,5 @@ rm -rf var/dataset/*.json var/dataset/config.yaml var/dataset/*.ply var/dataset/
 
 time docker run --rm -v `pwd`/var:/app/var \
     -u 1000:1000 \
-    -e "MASK_SIZE=0.35" \
+    -e "MASK_SIZE=${MASK_SIZE:-0.35}" \
     -t treemap-extractor:latest bin/process

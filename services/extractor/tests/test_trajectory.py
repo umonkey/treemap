@@ -7,6 +7,7 @@ import numpy as np
 from app.trajectory import (
     Y_DOWN_FRAME,
     Z_UP_FRAME,
+    component_summary,
     detect_sfm_frame,
     horizontal_axes,
     up_axis,
@@ -82,3 +83,52 @@ class TestWorldRotation(unittest.TestCase):
         translation = np.array([1.0, 2.0, 3.0])
         c_enu = scale * (c_sfm @ world_rotation(0.0, Y_DOWN_FRAME).T) + translation
         np.testing.assert_allclose(c_enu, [1.0, 22.0, 13.0])
+
+
+class TestComponentSummary(unittest.TestCase):
+    def test_summary_reports_each_component(self):
+        reconstructions = [
+            {
+                "shots": {
+                    "frame_000002.jpg": {
+                        "rotation": [0.0, 0.0, 0.0],
+                        "translation": [1.0, 2.0, 3.0],
+                    },
+                    "frame_000001.jpg": {
+                        "rotation": [0.0, 0.0, 0.0],
+                        "translation": [4.0, 5.0, 6.0],
+                    },
+                },
+                "points": {"a": {}, "b": {}},
+            },
+            {
+                "shots": {
+                    "frame_000010.jpg": {
+                        "rotation": [0.0, 0.0, 0.0],
+                        "translation": [-1.0, 0.0, 0.0],
+                    },
+                },
+                "points": {"c": {}},
+            },
+        ]
+
+        summary = component_summary(reconstructions, Z_UP_FRAME)
+
+        self.assertEqual(summary["sfm_frame"], Z_UP_FRAME)
+        self.assertEqual(len(summary["components"]), 2)
+
+        main = summary["components"][0]
+        self.assertEqual(main["shot_count"], 2)
+        self.assertEqual(main["point_count"], 2)
+        self.assertEqual(main["shot_ids"], ["frame_000001.jpg", "frame_000002.jpg"])
+        self.assertEqual(main["shot_indices"], [1, 2])
+        self.assertEqual(
+            main["camera_centers"],
+            [[-4.0, -5.0, -6.0], [-1.0, -2.0, -3.0]],
+        )
+
+        secondary = summary["components"][1]
+        self.assertEqual(secondary["shot_count"], 1)
+        self.assertEqual(secondary["point_count"], 1)
+        self.assertEqual(secondary["shot_ids"], ["frame_000010.jpg"])
+        self.assertEqual(secondary["camera_centers"], [[1.0, 0.0, 0.0]])

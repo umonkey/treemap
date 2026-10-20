@@ -214,7 +214,7 @@ def main():
     create_masks_parser.add_argument(
         "--mask-size",
         type=float,
-        default=float(os.environ.get("MASK_SIZE", 0.35)),
+        default=float(os.environ.get("MASK_SIZE", 0.2)),
         help="Height fraction of the black mask part",
     )
     create_masks_parser.set_defaults(func=handle_create_masks)

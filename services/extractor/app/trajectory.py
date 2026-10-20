@@ -340,6 +340,47 @@ def _loop_distances_m(
     return distances
 
 
+def component_summary(
+    reconstructions: List[Dict[str, Any]], frame: str
+) -> Dict[str, Any]:
+    """Summarise every reconstruction component in a small JSON-friendly form.
+
+    The full reconstruction.json is large and is not retained after the
+    dataset cleanup, so the secondary components and their camera centres are
+    otherwise lost.  Shot ids and centres are enough to tell whether a second
+    component is spatially adjacent to the main one.
+    """
+    components: List[Dict[str, Any]] = []
+    for index, recon in enumerate(reconstructions):
+        items: List[Tuple[int, str, List[float]]] = []
+        for shot_id, shot_data in recon.get("shots", {}).items():
+            match = re.findall(r"\d+", shot_id)
+            shot_index = int(match[-1]) if match else 1
+            r_vec = np.array(shot_data["rotation"], dtype=np.float64)
+            t_vec = np.array(shot_data["translation"], dtype=np.float64)
+            r_cam = rodrigues(r_vec)
+            c_sfm = -r_cam.T @ t_vec
+            items.append(
+                (
+                    shot_index,
+                    shot_id,
+                    [round(float(value), 4) for value in c_sfm],
+                )
+            )
+        items.sort(key=lambda item: item[0])
+        components.append(
+            {
+                "index": index,
+                "shot_count": len(items),
+                "point_count": len(recon.get("points", {})),
+                "shot_indices": [item[0] for item in items],
+                "shot_ids": [item[1] for item in items],
+                "camera_centers": [item[2] for item in items],
+            }
+        )
+    return {"sfm_frame": frame, "components": components}
+
+
 def run_align_trajectory(dataset_path: str) -> None:
     """
     Align SfM reconstruction trajectory with GPS track (.gpx) and
@@ -402,6 +443,11 @@ def run_align_trajectory(dataset_path: str) -> None:
 
     frame = detect_sfm_frame(dataset_path)
     print(f"SfM world frame: {frame}")
+
+    components_path = os.path.join(dataset_path, "components.json")
+    with open(components_path, "w") as f:
+        json.dump(component_summary(reconstructions, frame), f, indent=2)
+    print(f"Wrote component summary to {components_path}")
 
     video_duration: Optional[float] = None
     video_path = os.path.join(dataset_path, "video.mp4")
@@ -691,5 +737,6 @@ def run_align_trajectory(dataset_path: str) -> None:
         f"{step_p99_m:.2f}/{step_max_m:.2f}m, alt_gradient="
         f"{altitude_gradient:.2f}m/100m, loop_pairs={loop_pairs}"
         f" (median={_format_optional(loop_median_m)}m), coverage="
-        f"{_format_optional(coverage_pct)}% of {input_images}"
+        f"{_format_optional(coverage_pct)}% of {input_images}, "
+        f"components={components}"
     )

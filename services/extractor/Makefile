@@ -4,6 +4,7 @@ BATCH_QUEUE=treemap-transcode
 BATCH_DEFINITION=treemap-extractor
 DATASET_URL?=s3://treemap-panoramas-tmp-g6dxkoua/437014194731225088/
 RESULT_URL?=s3://panoramas-px3qodu3/437014194731225088/
+MASK_SIZE?=0.35
 
 build: docker-login
 	docker build -t $(PACKAGE):latest .
@@ -29,7 +30,7 @@ logs:
 	aws logs tail --follow /aws/batch/job
 
 test-run:
-	docker run --rm -v $(PWD)/var:/app/var -u $(shell id -u):$(shell id -g) -e "GPX_OFFSET=471.3" -e "MASK_SIZE=0.35" -e "DATASET_URL=$(DATASET_URL)" -t $(PACKAGE):latest bin/process
+	docker run --rm -v $(PWD)/var:/app/var -u $(shell id -u):$(shell id -g) -e "GPX_OFFSET=471.3" -e "MASK_SIZE=$(MASK_SIZE)" -e "DATASET_URL=$(DATASET_URL)" -t $(PACKAGE):latest bin/process
 
 test-job:
-	aws batch submit-job --job-name $(PACKAGE)-test-$(shell date +'%Y%m%d-%H%M%S') --job-queue $(BATCH_QUEUE) --job-definition $(BATCH_DEFINITION) --container-overrides '{ "command": ["bin/process"], "environment": [ {"name": "AWS_ACCESS_KEY_ID", "value": "$(FILES_KEY)"}, {"name": "AWS_SECRET_ACCESS_KEY", "value": "$(FILES_SECRET)"}, {"name": "AWS_REGION", "value": "$(FILES_REGION)"}, {"name": "AWS_ENDPOINT_URL", "value": "$(FILES_ENDPOINT)"}, {"name": "GPX_OFFSET", "value": "471.3" }, {"name": "MASK_SIZE", "value": "0.35"}, {"name": "DATASET_URL", "value": "$(DATASET_URL)"}, {"name": "RESULT_URL", "value": "$(RESULT_URL)"} ] }'
+	aws batch submit-job --job-name $(PACKAGE)-test-$(shell date +'%Y%m%d-%H%M%S') --job-queue $(BATCH_QUEUE) --job-definition $(BATCH_DEFINITION) --container-overrides '{ "command": ["bin/process"], "environment": [ {"name": "AWS_ACCESS_KEY_ID", "value": "$(FILES_KEY)"}, {"name": "AWS_SECRET_ACCESS_KEY", "value": "$(FILES_SECRET)"}, {"name": "AWS_REGION", "value": "$(FILES_REGION)"}, {"name": "AWS_ENDPOINT_URL", "value": "$(FILES_ENDPOINT)"}, {"name": "GPX_OFFSET", "value": "471.3" }, {"name": "MASK_SIZE", "value": "$(MASK_SIZE)"}, {"name": "DATASET_URL", "value": "$(DATASET_URL)"}, {"name": "RESULT_URL", "value": "$(RESULT_URL)"} ] }'
