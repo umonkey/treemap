@@ -44,7 +44,7 @@ impl PanoramaDispatcher {
         let dataset_url = format!("s3://{}/{}/", self.storage.name(), id);
         let result_url = format!("s3://{}/{}/", self.panoramas.name(), id);
         let job_name = format!("extract-{id}");
-        let mask_size = 0.35;
+        let mask_size = 0.2;
 
         let arn = self
             .batch
