@@ -49,11 +49,11 @@ retriangulation_ratio: 1.2
 
 # Enable cross-checking features to further reduce the banana effect.
 symmetric_matching: yes
-lowes_ratio: 0.75
+lowes_ratio: 0.8
 
 # Ignore moving objects.
 robust_matching_threshold: 0.004
-robust_matching_min_match: 25
+robust_matching_min_match: 20
 
 bundle_max_iterations: 50       # Limit solver iterations and prevent memory spikes
 local_bundle_radius: 15
