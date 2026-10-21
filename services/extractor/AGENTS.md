@@ -15,6 +15,7 @@ This service creates sequences of accurately geo-referenced 360° images from a 
 - Pipeline artifacts must be strictly non-destructive: `reconstruction.json` and `track.gpx` are strictly read-only. The alignment step emits an intermediate `var/dataset/trajectory.geojson` for inspection and downstream processing.
 - Never snap or interpolate individual camera poses to noisy GPS points; the entire SfM reconstruction must be transformed as a single rigid Sim(3) block (scale, yaw, translation) to preserve ray collinearity for tree triangulation.
 - There has to be one automated process to convert source `video.mpg` and `track.gpx` into a sequence of geo-referenced JPEG files enriched with pitch, roll and yaw data.
+- The user must NOT perform any manual configuration for each dataset, such as masking or whatever.
 
 
 ## Software Stack

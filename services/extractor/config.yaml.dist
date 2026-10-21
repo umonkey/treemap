@@ -63,7 +63,7 @@ bundle_new_points_ratio: 1.2    # Optimized for linear street-view sequences to 
 ceres_linear_solver: ITERATIVE_SCHUR
 
 # Rigidity settings
-triangulation_min_ray_angle: 2.0  # Higher angle ensures more stable depth/triangulation for features like trees
+triangulation_min_ray_angle: 1.5  # Lower than 2.0 to keep low-parallax points on straight walking segments
 
 # This must be set to "no" for 360 images, which we are working with.
 optimize_camera_parameters: no
