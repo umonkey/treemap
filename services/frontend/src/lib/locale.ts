@@ -558,6 +558,10 @@ class EnglishLocale {
 		return 'Cancel';
 	}
 
+	public editTree(): string {
+		return 'Edit tree';
+	}
+
 	public mapTitle(): string {
 		return 'Map';
 	}
@@ -1337,6 +1341,10 @@ class RussianLocale extends EnglishLocale {
 
 	public editCancel(): string {
 		return 'Отмена';
+	}
+
+	public editTree(): string {
+		return 'Изменить дерево';
 	}
 
 	public mapTitle(): string {
@@ -2138,6 +2146,10 @@ class ArmenianLocale extends EnglishLocale {
 
 	public editCancel(): string {
 		return 'Չեղարկել';
+	}
+
+	public editTree(): string {
+		return 'Խմբագրել ծառը';
 	}
 
 	public mapTitle(): string {

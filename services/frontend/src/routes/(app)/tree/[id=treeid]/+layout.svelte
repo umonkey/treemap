@@ -4,6 +4,7 @@
 	import { mapBottomPadding } from '$lib/components/map/mapBottomPadding';
 	import SidebarSearchInput from '$lib/components/search/SidebarSearchInput.svelte';
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
+	import EditIcon from '$lib/icons/EditIcon.svelte';
 	import SpinnerIcon from '$lib/icons/SpinnerIcon.svelte';
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
@@ -100,6 +101,12 @@
 			<div class="title">
 				<QuickEdit url={routes.treeEditSpecies(id)}>{formatSpecies(tree.species)}</QuickEdit>
 			</div>
+			<a
+				class="edit"
+				href={routes.treeEdit(id)}
+				title={locale.editTree()}
+				aria-label={locale.editTree()}><EditIcon /></a
+			>
 			<button
 				class="close"
 				aria-label={locale.editCancel()}
@@ -174,6 +181,7 @@
 		.header {
 			display: flex;
 			flex-direction: row;
+			gap: 4px;
 
 			.close {
 				flex-basis: 30px;
@@ -188,6 +196,30 @@
 				border: none;
 				color: light-dark(black, white);
 				opacity: 0.5;
+			}
+
+			.edit {
+				flex: 0 0 30px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+
+				width: 30px;
+				height: 30px;
+				cursor: pointer;
+
+				color: light-dark(black, white);
+				opacity: 0.5;
+
+				:global(svg) {
+					width: 18px;
+					height: 18px;
+				}
+
+				&:hover,
+				&:focus-visible {
+					opacity: 1;
+				}
 			}
 		}
 
@@ -267,8 +299,9 @@
 				margin-bottom: var(--gap);
 			}
 
-			/* The close button moves to the search row on desktop. */
-			.header .close {
+			/* The header icon actions move to the search row on desktop. */
+			.header .close,
+			.header .edit {
 				display: none;
 			}
 
