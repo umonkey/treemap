@@ -49,11 +49,29 @@ RUN cargo build --release && \
 
 FROM docker.io/library/node:22-bookworm AS frontend-builder
 WORKDIR /app
+
+# Source-map upload is mandatory for production images.
+ARG SENTRY_AUTH_TOKEN
+ARG SENTRY_RELEASE
+
+RUN test -n "$SENTRY_AUTH_TOKEN" || { \
+      echo >&2 "ERROR: build arg SENTRY_AUTH_TOKEN is required (Sentry source-map upload)."; \
+      exit 1; }; \
+    test -n "$SENTRY_RELEASE" || { \
+      echo >&2 "ERROR: build arg SENTRY_RELEASE is required."; \
+      echo >&2 "       Without it the plugin falls back to 'git rev-parse HEAD' (no .git in the build context), then to a random uuid, so uploaded maps never match any event."; \
+      exit 1; }
+
+ENV SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN
+ENV SENTRY_RELEASE=$SENTRY_RELEASE
+
 COPY services/frontend/package*.json ./
 RUN corepack enable
 RUN npm ci
 COPY services/frontend/. .
 RUN npm run build
+# Upload already succeeded (failures are fatal); never ship source maps.
+RUN find build -name '*.map' -delete
 
 
 #################################

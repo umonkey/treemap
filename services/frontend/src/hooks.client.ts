@@ -10,7 +10,10 @@ if (config.environment === 'production') {
 
 		ignoreErrors: [
 			// MapLibre GL does this when it fails to find an icon.
-			'Please make sure you have added the image with map.addImage'
+			'Please make sure you have added the image with map.addImage',
+			// Native WKWebView bridge injected by the Facebook/Instagram iOS in-app
+			// browser. Not our code; frames are attributed to the document URL.
+			/window\.webkit\.messageHandlers/
 		],
 
 		// Enable API performance tracing.

@@ -44,7 +44,8 @@ docker run --rm \
     -v $PWD/services/frontend:/app \
     -v $PWD/.cache/npm:/root/.npm \
     -w /app \
-    -e VITE_SENTRY_AUTH_TOKEN="$SENTRY_AUTH_TOKEN" \
+    -e SENTRY_AUTH_TOKEN="$SENTRY_AUTH_TOKEN" \
+    -e SENTRY_RELEASE="$(git rev-parse HEAD)" \
     -e PUBLIC_API_ROOT="https://yerevan.treemaps.app/" \
     --network=host \
     --ulimit nofile=5000:5000 \

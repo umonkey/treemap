@@ -31,6 +31,7 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false
     permissions:
       contents: read
       packages: write
@@ -54,6 +55,9 @@ jobs:
           context: .
           push: ${{ github.ref == 'refs/heads/master' }}
           tags: ghcr.io/umonkey/treemap:latest
+          build-args: |
+            SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+            SENTRY_RELEASE=${{ github.sha }}
           cache-from: |
             type=registry,ref=ghcr.io/umonkey/treemap:buildcache
             type=gha,scope=treemap
