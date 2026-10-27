@@ -61,9 +61,6 @@
 	{/if}
 
 	<div class="grid">
-		<CameraUploader treeId={id} />
-		<GalleryUploader treeId={id} />
-
 		{#each gallery.queue as item (item.id)}
 			<a class="tile queued" class:busy={item.busy} href={routes.uploads()} title="Uploading">
 				<img src={item.src} alt="Uploading" onload={handleLoad} />
@@ -92,6 +89,13 @@
 				{/each}
 			{/each}
 		{/if}
+	</div>
+
+	<div class="uploaders">
+		<div class="actions">
+			<CameraUploader treeId={id} />
+			<GalleryUploader treeId={id} />
+		</div>
 	</div>
 
 	{#if gallery.selected}
@@ -147,10 +151,64 @@
 		margin: 0 0 8px;
 	}
 
+	/* Floating upload actions: pinned to the bottom-right of the visible panel
+	   on phones, top-left of the gallery on desktop. The phone wrapper is a
+	   zero-height sticky line, so the buttons hover over the photos instead of
+	   reserving a row underneath them. */
+	.uploaders {
+		position: sticky;
+		bottom: 8px;
+		height: 0;
+		z-index: 1;
+	}
+
+	.actions {
+		position: absolute;
+		right: 0.5rem;
+		bottom: 0;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+		gap: 8px;
+	}
+
+	@media (min-width: 1024px) {
+		.uploaders {
+			position: absolute;
+			top: 0.5rem;
+			left: 0.5rem;
+			height: auto;
+		}
+
+		.actions {
+			position: static;
+		}
+	}
+
 	.grid {
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
 		gap: 8px;
+	}
+
+	/* Phones: two rows that scroll sideways instead of a long vertical list.
+	   The panel itself keeps its vertical scroll for the rest of the tab. */
+	@media (max-width: 1023px) {
+		.grid {
+			grid-auto-flow: column;
+			grid-template-columns: none;
+			grid-template-rows: repeat(2, auto);
+			grid-auto-columns: calc((100% - 16px) / 3);
+			overflow-x: auto;
+			overflow-y: hidden;
+			overscroll-behavior-x: contain;
+			scroll-snap-type: x proximity;
+			scrollbar-width: thin;
+
+			> .tile {
+				scroll-snap-align: start;
+			}
+		}
 	}
 
 	.tile {
@@ -158,7 +216,7 @@
 		display: block;
 		aspect-ratio: 1/1;
 		overflow: hidden;
-		background: none;
+		background-color: rgba(128, 128, 128, 0.2);
 		border: none;
 		padding: 0;
 		font: inherit;

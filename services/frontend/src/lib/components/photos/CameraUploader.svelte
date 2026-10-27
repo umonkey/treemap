@@ -2,6 +2,7 @@
 	import CameraIcon from '$lib/icons/CameraIcon.svelte';
 	import { hasPermission } from '$lib/stores/authStore';
 	import { CameraUploader } from './CameraUploader.svelte.ts';
+	import { locale } from './photos.lang';
 
 	const { treeId }: { treeId: string } = $props();
 
@@ -9,7 +10,7 @@
 </script>
 
 {#if $hasPermission('tree:edit')}
-	<label class="tile camera" title="Take Photo">
+	<label class="tile camera" title={locale.takePhoto()} aria-label={locale.takePhoto()}>
 		<CameraIcon />
 
 		<input
@@ -23,19 +24,30 @@
 
 <style>
 	.tile {
-		position: relative;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		aspect-ratio: 1/1;
-		padding: 20%;
-
-		background-color: var(--color-dialog-header);
-		color: var(--color-dialog-text);
-
-		cursor: pointer;
+		width: 50px;
+		height: 50px;
+		padding: 0;
 		box-sizing: border-box;
+		border-radius: 50%;
 		overflow: hidden;
+		background-color: var(--link-color);
+		color: #fff;
+		cursor: pointer;
+		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+		transition: box-shadow 0.15s ease;
+
+		&:hover {
+			box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+		}
+
+		:global(svg) {
+			display: block;
+			width: 26px;
+			height: 26px;
+		}
 	}
 
 	input {
