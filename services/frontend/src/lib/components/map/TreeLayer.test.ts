@@ -49,6 +49,7 @@ describe('TreeLayerLogic', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
 		mapPoiStore.trees = [];
+		mapPoiStore.treeTab = '';
 		resetMapLayerStore();
 		searchStore.set(undefined);
 		vi.mocked(getGeoJSON).mockResolvedValue({
@@ -209,6 +210,26 @@ describe('TreeLayerLogic', () => {
 		expect(moveEmit).toHaveBeenCalledWith('move', { lat: 40.1, lng: 44.5 });
 		expect(routesModule.goto).toHaveBeenCalledWith('/tree/tree-1');
 		expect(vibrateSpy).toHaveBeenCalledWith(50);
+	});
+
+	it('keeps the open tree tab when a tree is clicked', async () => {
+		mapPoiStore.treeTab = '/photos';
+		logic.zoom = 16;
+		vi.stubGlobal('navigator', { vibrate: vi.fn() });
+
+		const event = {
+			features: [
+				{
+					properties: { id: 'tree-1' },
+					geometry: { coordinates: [44.5, 40.1] }
+				}
+			]
+		};
+
+		await logic.handleClick(event);
+
+		expect(routesModule.goto).toHaveBeenCalledWith('/tree/tree-1/photos');
+		mapPoiStore.treeTab = '';
 	});
 
 	it('ignores click event when zoom is < 15', async () => {

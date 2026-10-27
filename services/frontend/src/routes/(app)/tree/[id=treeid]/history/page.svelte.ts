@@ -11,7 +11,6 @@ export class PageState {
 		try {
 			this.loading = true;
 			this.error = undefined;
-			this.changes = [];
 
 			const res = await getTreeHistory(id);
 
@@ -19,6 +18,7 @@ export class PageState {
 				addUsers(res.data.users);
 				this.changes = res.data.props;
 			} else {
+				this.changes = [];
 				this.error = res.error;
 			}
 		} finally {

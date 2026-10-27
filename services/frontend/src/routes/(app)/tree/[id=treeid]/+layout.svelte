@@ -9,9 +9,11 @@
 	import { routes } from '$lib/routes';
 	import { formatSpecies } from '$lib/utils/trees';
 	import { sidebarState } from '$lib/stores/sidebar.svelte';
+	import { mapPoiStore } from '$lib/stores/mapPoi.svelte';
 	import QuickEdit from '$lib/components/QuickEdit.svelte';
 	import ClipboardUploader from '$lib/components/photos/ClipboardUploader.svelte';
 	import TreeTabs from './components/TreeTabs.svelte';
+	import { activeTreeTab } from './components/TreeTabs.svelte.ts';
 	import { TREE_CONTEXT_KEY, TreeLayoutState } from './layout.svelte.ts';
 
 	const { children } = $props();
@@ -20,6 +22,21 @@
 	setContext(TREE_CONTEXT_KEY, state);
 
 	const id = $derived(page.params.id as string);
+
+	// The POI store appends this to tree URLs so map clicks keep the open tab.
+	const tabSuffix = $derived(activeTreeTab(page.url.pathname, id)?.suffix ?? '');
+
+	$effect(() => {
+		mapPoiStore.treeTab = tabSuffix;
+	});
+
+	// Separate, dependency-free effect: runs cleanup only when the tree sidebar
+	// unmounts. Avoids a transient reset on every tab change.
+	$effect(() => {
+		return () => {
+			mapPoiStore.treeTab = '';
+		};
+	});
 
 	// The sidebar is wide on the content tabs, but narrow where the content is:
 	// the preview page and the move view.

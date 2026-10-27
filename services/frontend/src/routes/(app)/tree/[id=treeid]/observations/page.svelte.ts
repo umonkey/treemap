@@ -45,11 +45,9 @@ export class ObservationsPage {
 		this.treeId = id;
 		this.loading = true;
 
-		// Reset observation to default values.
-		this.observation = emptyObservation(id);
-
 		try {
 			const response = await getObservations(id);
+
 			if (response.data) {
 				this.observation = { ...this.observation, ...response.data };
 
@@ -66,6 +64,9 @@ export class ObservationsPage {
 				}
 			}
 		} catch (err) {
+			// Reset observation to default values.
+			this.observation = emptyObservation(id);
+
 			console.error('Failed to load observations:', err);
 		} finally {
 			this.loading = false;

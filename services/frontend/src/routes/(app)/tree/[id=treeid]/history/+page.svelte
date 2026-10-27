@@ -17,7 +17,7 @@
 	});
 </script>
 
-{#if pageState.loading}
+{#if pageState.loading && !tree}
 	<p>Loading...</p>
 {:else if pageState.error}
 	<p>Error loading tree: {pageState.error.description}</p>

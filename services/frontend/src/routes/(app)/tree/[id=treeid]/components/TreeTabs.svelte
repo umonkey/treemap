@@ -1,46 +1,33 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import TabRenderer from '$lib/components/TabRenderer.svelte';
-	import { locale } from '$lib/locale';
-	import { routes } from '$lib/routes';
 	import type { ISingleTree } from '$lib/types';
+	import { activeTreeTab, treeTabs } from './TreeTabs.svelte.ts';
 
 	const { tree }: { tree: ISingleTree } = $props();
+
+	// URL-derived, so tab links follow the URL's id rather than a payload that
+	// may still be the previous tree while a new one is loading.
+	const id = $derived(page.params.id as string);
 
 	const photos = $derived(tree.files?.length ?? 0);
 	const comments = $derived(tree.comment_count ?? 0);
 
-	const tabs = $derived([
-		{
-			id: 'preview',
-			title: locale.treeTabsPreview(),
-			url: routes.treeDetails(tree.id)
-		},
-		{
-			id: 'photos',
-			title: locale.treeTabsPhotos(),
-			url: routes.treePhotos(tree.id),
-			badge: photos > 0 ? photos : undefined
-		},
-		{
-			id: 'comments',
-			title: locale.treeTabsComments(),
-			url: routes.treeComments(tree.id),
-			badge: comments > 0 ? comments : undefined
-		},
-		{
-			id: 'observations',
-			title: locale.treeTabsObservations(),
-			url: routes.treeObservations(tree.id)
-		},
-		{
-			id: 'history',
-			title: locale.treeTabsChanges(),
-			url: routes.treeHistory(tree.id)
-		}
-	]);
+	const tabs = $derived(
+		treeTabs(id).map((tab) => ({
+			...tab,
+			badge:
+				tab.id === 'photos'
+					? photos > 0
+						? photos
+						: undefined
+					: tab.id === 'comments' && comments > 0
+						? comments
+						: undefined
+		}))
+	);
 
-	const active = $derived(tabs.find((tab) => tab.url === page.url.pathname)?.id);
+	const active = $derived(activeTreeTab(page.url.pathname, id)?.id);
 </script>
 
 <TabRenderer {active} {tabs} />

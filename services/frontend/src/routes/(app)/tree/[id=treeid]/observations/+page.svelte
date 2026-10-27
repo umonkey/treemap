@@ -53,6 +53,8 @@
 			{:else}
 				<p>There are no observations for this tree, add the first one.</p>
 			{/if}
+		{:else}
+			<p>Loading...</p>
 		{/if}
 	</div>
 

@@ -18,8 +18,18 @@ class MapPoiStore {
 	panoramas = $state.raw<IMapPoi[]>([]);
 	water = $state.raw<IMapPoi[]>([]);
 
+	/**
+	 * Relative suffix of the tree tab open in the sidebar, e.g. '/photos'.
+	 * Empty when no tree tab is open. Written only by the tree layout.
+	 */
+	treeTab = $state<string>('');
+
 	pois = $derived.by(() => {
-		return [...this.trees, ...this.alerts, ...this.panoramas, ...this.water];
+		const trees = this.treeTab
+			? this.trees.map((poi) => ({ ...poi, url: poi.url + this.treeTab }))
+			: this.trees;
+
+		return [...trees, ...this.alerts, ...this.panoramas, ...this.water];
 	});
 
 	getNearest = (center: ILatLng, maxDistance?: number) => {

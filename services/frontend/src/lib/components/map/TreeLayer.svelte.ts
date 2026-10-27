@@ -124,7 +124,9 @@ export class TreeLayerLogic {
 
 		console.debug(`[TreeLayer] Tree ${treeId} clicked.`);
 
-		await goto(routes.treeDetails(treeId));
+		// Tree POIs in the store already carry the open tab (mapPoiStore.pois), but
+		// this handler builds the URL directly, so apply the same suffix here.
+		await goto(routes.treeDetails(treeId) + mapPoiStore.treeTab);
 
 		if (navigator.vibrate) {
 			navigator.vibrate(50);

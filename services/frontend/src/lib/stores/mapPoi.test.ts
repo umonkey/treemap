@@ -69,3 +69,43 @@ describe('mapPoiStore.getNearestTrees', () => {
 		expect(mapPoiStore.getNearestTrees(center, -1)).toEqual([]);
 	});
 });
+
+describe('mapPoiStore tree tab suffix', () => {
+	afterEach(() => {
+		mapPoiStore.trees = [];
+		mapPoiStore.water = [];
+		mapPoiStore.treeTab = '';
+	});
+
+	it('appends the open tree tab to tree POI URLs', () => {
+		mapPoiStore.treeTab = '/photos';
+		mapPoiStore.trees = [{ lat: 40.001, lon: 44.0, url: '/tree/1' }];
+
+		expect(mapPoiStore.getNearest(center)?.poi.url).toBe('/tree/1/photos');
+	});
+
+	it('does not mutate the base tree URLs', () => {
+		mapPoiStore.treeTab = '/photos';
+		mapPoiStore.trees = [{ lat: 40.001, lon: 44.0, url: '/tree/1' }];
+
+		mapPoiStore.getNearest(center);
+
+		expect(mapPoiStore.trees[0].url).toBe('/tree/1');
+	});
+
+	it('leaves water POI URLs unchanged', () => {
+		mapPoiStore.treeTab = '/photos';
+		mapPoiStore.trees = [{ lat: 40.01, lon: 44.0, url: '/tree/1' }];
+		mapPoiStore.water = [{ lat: 40.0005, lon: 44.0, url: '/water/9' }];
+
+		expect(mapPoiStore.getNearest(center)?.poi.url).toBe('/water/9');
+		expect(mapPoiStore.pois.map((poi) => poi.url)).toEqual(['/tree/1/photos', '/water/9']);
+	});
+
+	it('leaves tree POI URLs unchanged when no tree tab is open', () => {
+		mapPoiStore.treeTab = '';
+		mapPoiStore.trees = [{ lat: 40.001, lon: 44.0, url: '/tree/1' }];
+
+		expect(mapPoiStore.getNearest(center)?.poi.url).toBe('/tree/1');
+	});
+});
