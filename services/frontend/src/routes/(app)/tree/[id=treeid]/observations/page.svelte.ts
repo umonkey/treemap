@@ -50,6 +50,7 @@ export class ObservationsPage {
 
 			if (response.data) {
 				this.observation = { ...this.observation, ...response.data };
+				this.observation.tree_id = id;
 
 				if (
 					this.observation.created_by &&
@@ -62,6 +63,8 @@ export class ObservationsPage {
 						}
 					});
 				}
+			} else {
+				this.observation = emptyObservation(id);
 			}
 		} catch (err) {
 			// Reset observation to default values.
