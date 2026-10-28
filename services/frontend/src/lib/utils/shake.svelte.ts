@@ -4,7 +4,7 @@ import { goto, routes } from '$lib/routes';
  * Shake detector for mobile devices.
  * Uses Device Motion API to detect rapid movement.
  */
-class ShakeDetector {
+export class ShakeDetector {
 	private threshold = 15; // Acceleration threshold in m/s^2
 	private cooldown = 1500; // Cooldown between shakes in ms
 	private hitWindow = 1000; // Max time between hits in ms
@@ -62,7 +62,13 @@ class ShakeDetector {
 				}
 				return granted;
 			} catch (e) {
-				console.error('[shake] Permission request failed:', e);
+				if (e instanceof DOMException && e.name === 'NotAllowedError') {
+					// Expected: WebKit only prompts during a user gesture, and some
+					// environments (in-app webviews) never allow motion access at all.
+					console.warn('[shake] Motion permission unavailable:', e.message);
+				} else {
+					console.error('[shake] Permission request failed:', e);
+				}
 				return false;
 			}
 		}
@@ -79,14 +85,22 @@ class ShakeDetector {
 		if (this.isInitialized) return;
 
 		const handleFirstInteraction = async () => {
+			if (this.isInitialized) return;
+
+			// Only request while the gesture still grants transient activation,
+			// otherwise iOS rejects the request and we would have wasted the gesture.
+			if (navigator.userActivation?.isActive === false) return;
+
 			this.isInitialized = true;
 			window.removeEventListener('click', handleFirstInteraction);
-			window.removeEventListener('touchstart', handleFirstInteraction);
+			window.removeEventListener('touchend', handleFirstInteraction);
 			await this.requestPermission();
 		};
 
+		// `touchstart` is not an activation-triggering event, so requesting motion
+		// permission from it always fails on iOS. `touchend` and `click` are.
 		window.addEventListener('click', handleFirstInteraction);
-		window.addEventListener('touchstart', handleFirstInteraction);
+		window.addEventListener('touchend', handleFirstInteraction);
 	};
 
 	private handleMotion = (event: DeviceMotionEvent) => {
