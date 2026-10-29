@@ -97,7 +97,9 @@ pub async fn serve_command() {
             )
             .service(
                 web::scope("/_app")
-                    .wrap(DefaultHeaders::new().add(("Cache-Control", "public, max-age=3600")))
+                    // Serves `_app/version.json`, which SvelteKit polls for update detection, so
+                    // it must never be served from a stale cache.
+                    .wrap(DefaultHeaders::new().add(("Cache-Control", "no-cache")))
                     .default_service(
                         Files::new("", "./static/_app")
                             .prefer_utf8(true)
@@ -143,6 +145,10 @@ pub async fn serve_command() {
                     .service(web::scope("/login").configure(login_router)),
             )
             .service(manifest_action)
+            // The shell at "/" must always be revalidated, otherwise a client can boot a stale
+            // asset graph after a deploy and fail to load chunks that no longer exist. Route it
+            // through the same handler as the SPA fallback, which sets the caching headers.
+            .service(web::resource("/").to(default_action))
             .service(
                 Files::new("/", "./static")
                     .prefer_utf8(true)

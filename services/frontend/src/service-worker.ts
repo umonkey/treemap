@@ -62,14 +62,11 @@ self.addEventListener('fetch', (event) => {
 	async function respond() {
 		const cache = await caches.open(CACHE);
 
-		// Always try the cache first for assets and the index page.
-		// SvelteKit's ASSETS includes files from the static directory and the build output.
-		const isAsset = ASSETS.includes(url.pathname);
-		const isIndex = url.pathname === '/';
-
-		if (isAsset || isIndex) {
-			const cacheKey = isIndex ? '/index.html' : url.pathname;
-			const cachedResponse = await cache.match(cacheKey);
+		// Cache-first for precached build and static assets. The HTML shell is deliberately not
+		// precached: it must always be revalidated, otherwise a deploy can leave a page running an
+		// asset graph whose chunks no longer exist.
+		if (ASSETS.includes(url.pathname)) {
+			const cachedResponse = await cache.match(url.pathname);
 			if (cachedResponse) return cachedResponse;
 		}
 

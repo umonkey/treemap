@@ -19,9 +19,10 @@ pub async fn default_action(
 
     let html = meta_service.inject_robots(&body, req.path());
 
+    // `no-cache` keeps this response out of stale reuse while still allowing the document to live
+    // in the back/forward cache; `no-store` would disable bfcache in Firefox and Safari.
     let cache_control = CacheControl(vec![
         CacheDirective::NoCache,
-        CacheDirective::NoStore,
         CacheDirective::MustRevalidate,
     ]);
 
