@@ -75,6 +75,7 @@
 			onzoom={mapState.handleZoom}
 			onrotate={mapState.handleRotate}
 			onload={mapState.handleLoad}
+			onerror={mapState.handleError}
 			maxBounds={settingsState.bbox}
 			attributionControl={false}
 		>

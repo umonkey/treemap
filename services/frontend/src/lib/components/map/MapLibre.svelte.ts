@@ -9,6 +9,7 @@ import { Debouncer } from '$lib/utils/debounce';
 import { type LngLatBounds, type Map, type StyleSpecification } from 'maplibre-gl';
 import { get } from 'svelte/store';
 import { MapBouncer } from './MapBouncer';
+import { isNonActionableMapError } from './mapErrors';
 
 const BASIC_LAYER = `https://api.maptiler.com/maps/openstreetmap/style.json?key=${config.mapTilerKey}&language=${locale.lang}`;
 const LIGHT_LAYER = `https://api.maptiler.com/maps/base-v4-light/style.json?key=${config.mapTilerKey}&language=${locale.lang}`;
@@ -64,6 +65,18 @@ class MapLibre {
 			console.debug('MapLibre load fired.');
 			this.handleMoveEnd();
 		}
+	};
+
+	public handleError = (event: { error?: unknown }) => {
+		// MapLibre logs its own error to the console when nothing handles it, and
+		// the console integration forwards console errors to Sentry. Filter the
+		// expected network noise here so it never becomes an issue.
+		if (isNonActionableMapError(event)) {
+			console.debug('[map] Ignoring non-actionable error:', event.error);
+			return;
+		}
+
+		console.error('[map]', event.error);
 	};
 
 	public setBottomPadding = (px: number, owner: symbol) => {
