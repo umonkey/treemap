@@ -46,7 +46,7 @@ export default defineConfig(({ mode }) => {
 				adapter: 'other',
 				telemetry: false,
 				org: 'trees-of-yerevan',
-				project: 'treemap-v2',
+				project: 'frontend',
 				authToken,
 				release: { name: release },
 				// Upload errors are only logged by default; make them fatal.
