@@ -49,6 +49,12 @@ class LocationTracker {
 					this.stop(); // access denied, stop tracking
 					console.debug('[GEO] User denied access, stopping.');
 					showError(locale.toastLocationDenied());
+				} else if (error.code === 2 || error.code === 3) {
+					// Position unavailable or timed out. Expected on devices without a
+					// reliable location provider (desktops have no GPS at all), and the
+					// watch stays active afterwards, so this is not an application error.
+					// Warn rather than error: `captureConsoleIntegration` only reports errors.
+					console.warn(`[GEO] Error ${error.code}: ${error.message}`, error);
 				} else {
 					console.error(`[GEO] Error ${error.code}: ${error.message}`, error);
 				}
