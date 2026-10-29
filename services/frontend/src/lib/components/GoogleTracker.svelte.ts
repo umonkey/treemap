@@ -1,7 +1,7 @@
 import { browser } from '$app/environment';
 import { config } from '$lib/env';
 
-class GoogleTrackerLogic {
+export class GoogleTrackerLogic {
 	gaId = config.gaMeasurementId;
 	private lastUserId: string | undefined = undefined;
 
@@ -47,13 +47,17 @@ class GoogleTrackerLogic {
 	};
 
 	setUserId = (userId: string | undefined) => {
-		if (!browser || !this.gaId || typeof window.gtag !== 'function' || !userId) return;
+		if (!browser || !this.gaId || typeof window.gtag !== 'function') return;
 
 		if (userId === this.lastUserId) return;
 
-		console.debug('[GA] Setting user ID:', userId);
-		window.gtag('set', { user_id: userId });
 		this.lastUserId = userId;
+
+		console.debug('[GA] Setting user ID:', userId ?? '(none)');
+
+		// GA4 expects null, not undefined, to clear the ID when a user signs out.
+		// See https://developers.google.com/analytics/devguides/collection/ga4/user-id
+		window.gtag('set', { user_id: userId ?? null });
 	};
 }
 

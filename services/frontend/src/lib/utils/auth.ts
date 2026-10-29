@@ -1,6 +1,5 @@
 import { verifyToken } from '$lib/api/users';
 import { authStore } from '$lib/stores/authStore';
-import * as Sentry from '@sentry/browser';
 import { get } from 'svelte/store';
 
 export const validateStoredToken = async () => {
@@ -25,16 +24,6 @@ export const validateStoredToken = async () => {
 		console.info('[auth] Token expired.');
 		authStore.update(() => undefined);
 		return;
-	}
-
-	if (res.data) {
-		Sentry.setUser({
-			id: res.data.user.id,
-			email: res.data.user.email,
-			username: res.data.user.name
-		});
-
-		console.debug('[Sentry] User id added.');
 	}
 
 	console.debug('[auth] Token is OK.');
