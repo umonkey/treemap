@@ -20,6 +20,11 @@ const config = {
 		}),
 		version: {
 			pollInterval: 60000
+		},
+		// Registration is handled in `src/lib/utils/serviceWorker.ts`, which treats a failed
+		// registration as a non-fatal condition instead of an unhandled rejection.
+		serviceWorker: {
+			register: false
 		}
 	}
 };

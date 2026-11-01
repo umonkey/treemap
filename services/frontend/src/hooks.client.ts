@@ -1,4 +1,5 @@
 import { config } from '$lib/env';
+import { registerServiceWorker } from '$lib/utils/serviceWorker';
 import { handleErrorWithSentry } from '@sentry/sveltekit';
 import * as Sentry from '@sentry/sveltekit';
 
@@ -26,6 +27,9 @@ if (config.environment === 'production') {
 		enableLogs: true
 	});
 }
+
+// Registration failures are expected on some browsers and are handled as non-fatal.
+registerServiceWorker();
 
 // If you have a custom error handler, pass it to `handleErrorWithSentry`
 export const handleError = handleErrorWithSentry();

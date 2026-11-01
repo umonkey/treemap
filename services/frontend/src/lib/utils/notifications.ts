@@ -1,4 +1,5 @@
 import { browser } from '$app/environment';
+import { registerServiceWorker } from '$lib/utils/serviceWorker';
 
 const PERIODIC_SYNC_TAG = 'upload-reminder';
 const PERIODIC_SYNC_INTERVAL = 60 * 60 * 1000; // 1 hour
@@ -17,6 +18,12 @@ interface ServiceWorkerRegistrationWithSync extends ServiceWorkerRegistration {
  */
 export async function initBackgroundReminders() {
 	if (!browser || !('serviceWorker' in navigator) || !('Notification' in window)) {
+		return;
+	}
+
+	const registered = await registerServiceWorker();
+	if (!registered) {
+		console.debug('[notifications] No service worker; skipping background reminders.');
 		return;
 	}
 
