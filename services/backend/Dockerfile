@@ -29,6 +29,7 @@ RUN rm -rf src
 COPY src src
 COPY dev dev
 COPY templates templates
+COPY assets assets
 RUN touch src/main.rs
 RUN cargo build --release
 
@@ -49,6 +50,7 @@ COPY dev/schema-sqlite.sql /app
 COPY static /app/static
 COPY config.toml.dev /app
 COPY templates /app/templates
+COPY assets /app/assets
 
 ENV RUST_LOG=info,treemap=debug
 

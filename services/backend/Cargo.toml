@@ -33,6 +33,8 @@ glob = "0.3.1"
 handlebars = "6.0"
 html-escape = "0.2.13"
 image = "=0.25.0"
+imageproc = "0.25.0"
+ab_glyph = "0.2"
 lettre = { version = "0.11", features = ["smtp-transport", "builder", "rustls", "ring", "webpki-roots"] }
 jsonwebtoken = "9.3.0"
 jwks = "0.4.0"
