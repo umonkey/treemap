@@ -11,3 +11,4 @@
 /.opencode/package*
 .envrc
 *.sqlite
+.local-secrets/

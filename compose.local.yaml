@@ -1,0 +1,96 @@
+# Isolated local development configuration.
+#
+# Use together with compose.yaml:
+# docker compose -f compose.yaml -f compose.local.yaml up --build
+#
+# This file does not modify the existing development or production setups.
+
+# Use a separate Compose project to isolate networks and volumes.
+name: trees_local
+
+services:
+  backend:
+    # Avoid container name conflicts with the existing dev environment.
+    container_name: trees_local_backend
+
+    # Initialize local database records before starting the backend.
+    command: ["/bin/sh", "/app/startup-local.sh"]
+
+    environment:
+      # Select the local backend configuration.
+      TREEMAP_CONFIG: /app/config.toml.local
+
+    volumes:
+      # Mount local configuration files without modifying the image.
+      - ./services/backend/config.toml.local:/app/config.toml.local:ro
+      - ./services/backend/local/startup.sh:/app/startup-local.sh:ro
+      - ./services/backend/local/bootstrap.sql:/app/bootstrap-local.sql:ro
+
+      # Disable cron only for the local environment.
+      - ./services/backend/local/supervisor/crond.ini:/etc/supervisor.d/crond.ini:ro
+
+      # Fix stdout/stderr logging only for the local environment.
+      - ./services/backend/local/supervisor/dispatch-emails.ini:/etc/supervisor.d/dispatch-emails.ini:ro
+
+  frontend:
+    container_name: trees_local_frontend
+
+    environment:
+      # Direct frontend requests to the local backend.
+      PUBLIC_API_ROOT: http://localhost:8000/
+      PUBLIC_FILE_BASE_URL: http://localhost:8000/v1/files/
+
+      # Keep the frontend in development mode.
+      PUBLIC_ENVIRONMENT: development
+
+    volumes:
+      # Preserve dependencies installed inside the Docker image.
+      - frontend_node_modules:/app/node_modules
+
+  chatbot:
+    # The chatbot remains disabled unless its Compose profile is enabled.
+    container_name: trees_local_chatbot
+
+volumes:
+  # Keep frontend dependencies independent of the host filesystem.
+  frontend_node_modules:
+
+# Override all secrets from compose.yaml with local-only placeholders.
+# Never use real development or production credentials here.
+secrets:
+  aws_key:
+    file: ./.local-secrets/aws_key.txt
+  aws_secret:
+    file: ./.local-secrets/aws_secret.txt
+  aws_region:
+    file: ./.local-secrets/aws_region.txt
+
+  files_key:
+    file: ./.local-secrets/files_key.txt
+  files_secret:
+    file: ./.local-secrets/files_secret.txt
+
+  jwt_secret:
+    file: ./.local-secrets/jwt_secret.txt
+
+  sqs_key:
+    file: ./.local-secrets/sqs_key.txt
+  sqs_secret:
+    file: ./.local-secrets/sqs_secret.txt
+
+  osm_token:
+    file: ./.local-secrets/osm_token.txt
+
+  smtp_user:
+    file: ./.local-secrets/smtp_user.txt
+  smtp_secret:
+    file: ./.local-secrets/smtp_secret.txt
+  smtp_host:
+    file: ./.local-secrets/smtp_host.txt
+  from_email:
+    file: ./.local-secrets/from_email.txt
+
+  chatbot_token:
+    file: ./.local-secrets/chatbot_token.txt
+  report_recipients:
+    file: ./.local-secrets/report_recipients.txt
