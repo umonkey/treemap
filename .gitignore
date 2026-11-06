@@ -1,5 +1,6 @@
 /.cache
 /.env
+/tags
 /services/backend/database.*
 /services/backend/target
 /services/frontend/node_modules

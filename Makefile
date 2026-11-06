@@ -1,10 +1,15 @@
 CR_USER = umonkey
 CHANGED_SERVICES = $(shell git status --porcelain | grep "^.. services/" | cut -c 4- | cut -d/ -f1,2 | sort -u | tr '\n' ' ')
+CTAGS ?= ctags
+TAG_DIRS = services/backend services/chatbot
+
+.PHONY: tags
 
 help:
 	@echo "Development steps:"
 	@echo ""
 	@echo "make build                 -- compile backend and frontend"
+	@echo "make tags                  -- generate ctags index for Rust symbols"
 	@echo "make start                 -- run the development version"
 	@echo "make sql                   -- run sqlite3 in backend container"
 
@@ -16,6 +21,24 @@ build-combined:
 
 check:
 	for service in $(CHANGED_SERVICES); do make -C $$service check; done
+
+tags:
+	@command -v $(CTAGS) >/dev/null 2>&1 || { \
+		echo "error: '$(CTAGS)' not found."; \
+		echo "Install Universal Ctags (Rust support is required):"; \
+		echo "  Debian/Ubuntu: sudo apt install universal-ctags"; \
+		echo "  macOS:         brew install universal-ctags"; \
+		exit 1; \
+	}
+	@$(CTAGS) --list-languages 2>/dev/null | grep -qx Rust || { \
+		echo "error: '$(CTAGS)' does not support Rust."; \
+		echo "Install Universal Ctags; Exuberant Ctags and BSD ctags are not sufficient."; \
+		exit 1; \
+	}
+	@$(CTAGS) --recurse --languages=Rust --fields=+n \
+		--sort=yes --exclude=target --exclude=.git \
+		-f tags $(TAG_DIRS)
+	@echo "Generated ./tags ($$(wc -l < tags | tr -d ' ') entries)."
 
 format-docs:
 	@echo "Formatting Markdown documents..."
