@@ -10,6 +10,7 @@ const resetStore = () => {
 		panoramas: false,
 		treeHints: false,
 		water: true,
+		genus: true,
 		stickyPoints: false,
 		center: false,
 		missingHeight: false,

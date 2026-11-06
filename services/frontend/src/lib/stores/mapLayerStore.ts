@@ -10,6 +10,7 @@ interface IMapLayers {
 	panoramas: boolean;
 	treeHints: boolean;
 	water: boolean;
+	genus: boolean;
 	stickyPoints: boolean;
 	center: boolean;
 	missingHeight: boolean;
@@ -27,6 +28,7 @@ const getDefaultState = (): IMapLayers => {
 		panoramas: false,
 		treeHints: false,
 		water: true,
+		genus: true,
 		stickyPoints: false,
 		center: false,
 		missingHeight: false,
@@ -56,6 +58,7 @@ export const alertsLayer = derived(mapLayerStore, ($mapStore) => $mapStore?.aler
 export const panoramasLayer = derived(mapLayerStore, ($mapStore) => $mapStore?.panoramas);
 export const treeHintsLayer = derived(mapLayerStore, ($mapStore) => $mapStore?.treeHints);
 export const waterLayer = derived(mapLayerStore, ($mapStore) => $mapStore?.water);
+export const genusLayer = derived(mapLayerStore, ($mapStore) => $mapStore?.genus ?? true);
 export const stickyPointsLayer = derived(mapLayerStore, ($mapStore) => $mapStore?.stickyPoints);
 export const centerLayer = derived(mapLayerStore, ($mapStore) => $mapStore?.center === true);
 

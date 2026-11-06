@@ -17,6 +17,7 @@ const resetMapLayerStore = () => {
 		panoramas: false,
 		treeHints: false,
 		water: true,
+		genus: true,
 		stickyPoints: false,
 		center: false,
 		missingHeight: false,

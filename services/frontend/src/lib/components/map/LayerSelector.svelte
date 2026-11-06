@@ -92,6 +92,11 @@
 						label={locale.optionCenter()}
 						onChange={componentState.toggleCenter}
 					/>
+					<CheckInput
+						value={componentState.genus}
+						label={locale.optionGenus()}
+						onChange={componentState.toggleGenus}
+					/>
 				</div>
 			</div>
 		</div>

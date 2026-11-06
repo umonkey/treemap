@@ -9,6 +9,7 @@ export class LayerSelector {
 	panoramas = $state<boolean>(false);
 	treeHints = $state<boolean>(false);
 	water = $state<boolean>(true);
+	genus = $state<boolean>(true);
 	stickyPoints = $state<boolean>(false);
 	center = $state<boolean>(false);
 
@@ -20,6 +21,7 @@ export class LayerSelector {
 		this.panoramas = layers.panoramas ?? false;
 		this.treeHints = layers.treeHints ?? false;
 		this.water = layers.water ?? true;
+		this.genus = layers.genus ?? true;
 		this.stickyPoints = layers.stickyPoints ?? false;
 		this.center = layers.center ?? false;
 	};
@@ -99,6 +101,15 @@ export class LayerSelector {
 
 		mapLayerStore.update((store) => {
 			store.water = this.water;
+			return store;
+		});
+	};
+
+	public toggleGenus = () => {
+		this.genus = !this.genus;
+
+		mapLayerStore.update((store) => {
+			store.genus = this.genus;
 			return store;
 		});
 	};

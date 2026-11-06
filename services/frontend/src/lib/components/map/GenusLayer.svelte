@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { genusLayer } from '$lib/stores/mapLayerStore';
 	import type { SymbolLayerSpecification } from 'maplibre-gl';
 	import { SymbolLayer } from 'svelte-maplibre';
 
@@ -11,14 +12,16 @@
 	};
 </script>
 
-<SymbolLayer
-	id="tree-genus"
-	minzoom={18}
-	filter={['has', 'genus']}
-	{layout}
-	paint={{
-		'text-color': '#1f2937',
-		'text-halo-color': '#ffffff',
-		'text-halo-width': 1.5
-	}}
-/>
+{#if $genusLayer}
+	<SymbolLayer
+		id="tree-genus"
+		minzoom={18}
+		filter={['has', 'genus']}
+		{layout}
+		paint={{
+			'text-color': '#1f2937',
+			'text-halo-color': '#ffffff',
+			'text-halo-width': 1.5
+		}}
+	/>
+{/if}

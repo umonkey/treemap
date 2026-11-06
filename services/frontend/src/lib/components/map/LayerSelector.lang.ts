@@ -11,6 +11,7 @@ interface StringList {
 	layerWater: () => string;
 	optionStickyPoints: () => string;
 	optionCenter: () => string;
+	optionGenus: () => string;
 }
 
 class English implements StringList {
@@ -24,6 +25,7 @@ class English implements StringList {
 	layerWater = () => 'Water sources';
 	optionStickyPoints = () => 'Sticky points';
 	optionCenter = () => 'Center crosshair';
+	optionGenus = () => 'Genus labels';
 }
 
 class Russian extends English {
@@ -37,6 +39,7 @@ class Russian extends English {
 	layerWater = () => 'Источники воды';
 	optionStickyPoints = () => 'Прилипание к точкам';
 	optionCenter = () => 'Перекрестие в центре';
+	optionGenus = () => 'Названия родов';
 }
 
 class Armenian extends English {
@@ -50,6 +53,7 @@ class Armenian extends English {
 	layerWater = () => 'Ջրի աղբյուրներ';
 	optionStickyPoints = () => 'Կպչուն կետեր';
 	optionCenter = () => 'Կենտրոնական խաչ';
+	optionGenus = () => 'Ցեղերի անվանումներ';
 }
 
 const getLocale = (): StringList => {
