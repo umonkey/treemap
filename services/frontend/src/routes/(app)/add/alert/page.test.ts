@@ -90,7 +90,8 @@ describe('add alert page', () => {
 				lon: mapCenter.lng,
 				created_at: 1,
 				description: 'A fallen branch',
-				source: 'web'
+				source: 'web',
+				editable: true
 			},
 			error: undefined
 		});

@@ -9,6 +9,11 @@ pub struct AddAlertPayload {
     pub files: Vec<String>,
 }
 
+#[derive(Debug, Deserialize)]
+pub struct UpdateAlertPayload {
+    pub description: String,
+}
+
 #[derive(Debug, Serialize)]
 pub struct AlertRead {
     pub id: u64,
@@ -17,10 +22,11 @@ pub struct AlertRead {
     pub created_at: u64,
     pub description: Option<String>,
     pub source: String,
+    pub editable: bool,
 }
 
 impl AlertRead {
-    pub fn from_domain(alert: &Alert) -> Self {
+    pub fn from_domain(alert: &Alert, editable: bool) -> Self {
         Self {
             id: alert.id,
             lat: alert.lat,
@@ -32,6 +38,7 @@ impl AlertRead {
             } else {
                 "telegram".to_string()
             },
+            editable,
         }
     }
 }

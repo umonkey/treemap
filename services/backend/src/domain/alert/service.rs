@@ -6,6 +6,7 @@
 
 use super::{Alert, AlertRepository};
 use crate::domain::alert_photo::AlertPhotoRepository;
+use crate::domain::iam::IamService;
 use crate::domain::upload::UploadRepository;
 use crate::infra::queue::Queue;
 use crate::infra::storage::FileBucket;
@@ -23,6 +24,7 @@ pub struct AlertService {
     alerts: Arc<AlertRepository>,
     photos: Arc<AlertPhotoRepository>,
     uploads: Arc<UploadRepository>,
+    iam: Arc<IamService>,
     storage: Arc<FileBucket>,
     thumbnailer: Arc<ThumbnailerService>,
     queue: Arc<Queue>,
@@ -41,19 +43,7 @@ impl AlertService {
         description: String,
         files: Vec<String>,
     ) -> Result<Alert> {
-        let description = description.trim().to_string();
-
-        if description.is_empty() {
-            return Err(Error::BadRequestMessage(
-                "Alert description is required.".to_string(),
-            ));
-        }
-
-        if description.chars().count() > MAX_DESCRIPTION_LEN {
-            return Err(Error::BadRequestMessage(format!(
-                "Alert description must be at most {MAX_DESCRIPTION_LEN} characters."
-            )));
-        }
+        let description = normalize_description(&description)?;
 
         if !lat.is_finite()
             || !lon.is_finite()
@@ -127,6 +117,36 @@ impl AlertService {
         Ok(alert)
     }
 
+    /// Replace the description of an alert the user is allowed to edit.
+    pub async fn update_description(
+        &self,
+        alert_id: u64,
+        user_id: u64,
+        description: &str,
+    ) -> Result<Alert> {
+        let mut alert = self
+            .alerts
+            .get(alert_id)
+            .await?
+            .ok_or(Error::AlertNotFound)?;
+
+        let rights = self.iam.get_user_rights(user_id).await?;
+
+        if !alert.is_editable(user_id, &rights) {
+            return Err(Error::AccessDenied);
+        }
+
+        let description = normalize_description(description)?;
+
+        self.alerts
+            .update_description(alert_id, &description)
+            .await?;
+
+        alert.description = Some(description);
+
+        Ok(alert)
+    }
+
     /// Convert an uploaded image to JPEG and attach it to an alert.
     ///
     /// The deterministic path makes retries idempotent: the same upload always
@@ -177,9 +197,28 @@ impl Injectable for AlertService {
             alerts: Arc::new(ctx.build::<AlertRepository>()?),
             photos: Arc::new(ctx.build::<AlertPhotoRepository>()?),
             uploads: Arc::new(ctx.build::<UploadRepository>()?),
+            iam: Arc::new(ctx.build::<IamService>()?),
             storage: ctx.storage(),
             thumbnailer: Arc::new(ctx.build::<ThumbnailerService>()?),
             queue: ctx.queue(),
         })
     }
+}
+
+fn normalize_description(description: &str) -> Result<String> {
+    let description = description.trim().to_string();
+
+    if description.is_empty() {
+        return Err(Error::BadRequestMessage(
+            "Alert description is required.".to_string(),
+        ));
+    }
+
+    if description.chars().count() > MAX_DESCRIPTION_LEN {
+        return Err(Error::BadRequestMessage(format!(
+            "Alert description must be at most {MAX_DESCRIPTION_LEN} characters."
+        )));
+    }
+
+    Ok(description)
 }

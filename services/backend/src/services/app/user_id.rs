@@ -37,8 +37,7 @@ impl FromRequest for UserId {
 }
 
 /// An extractor for the optional authenticated user ID.
-/// Returns 0 if the user is not authenticated.
-/// Returns an error if the token is malformed.
+/// Returns 0 if the user is not authenticated or invalid credentials were supplied.
 pub struct OptionalUserId(pub u64);
 
 impl Deref for OptionalUserId {
@@ -66,7 +65,9 @@ impl FromRequest for OptionalUserId {
 
         let result = match state.get_user_id(req) {
             Ok(id) => Ok(OptionalUserId(id)),
-            Err(Error::MissingAuthorizationHeader) => Ok(OptionalUserId(0)),
+            Err(Error::MissingAuthorizationHeader)
+            | Err(Error::BadAuthorizationHeader)
+            | Err(Error::BadAuthToken) => Ok(OptionalUserId(0)),
             Err(e) => Err(e),
         };
 

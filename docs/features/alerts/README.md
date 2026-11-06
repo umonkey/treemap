@@ -12,6 +12,8 @@ Web submission starts when a signed-in person positions the map, writes a descri
 
 Telegram submission uses a conversation instead: the person sends photos, a location, and a description over one or more messages. The report accumulates updates until it has all three, then locks; later messages start a new report. Incomplete conversations receive a reminder after ten minutes without activity.
 
+After sending, a reporter can correct the text of their own web report, and curators whose role includes the alert management permission can correct any report.
+
 In both cases a completed report is delivered as a private notification to the curators configured for the deployment, with a link to the report preview. A report is marked as delivered only when every configured recipient receives it, and failed deliveries are retried automatically. Reports are retained permanently, but only those from the last seven days are rendered on the active map.
 
 ## Requirements and availability
@@ -30,6 +32,7 @@ The capability adds negligible compute: the request only records metadata, and p
 ## Operations and limitations
 
 - Curator notifications need a named team and a triage routine; the platform does not assign reports automatically.
+- Only the description text can be changed after submission. Photos cannot be replaced or removed, and the platform keeps no edit history in this release.
 - Photos are attached asynchronously, so a report preview can open before its photos are available. They usually appear within seconds, and refreshing the preview shows them.
 - There is no per-user rate limit. Any account allowed to submit can create reports as fast as it can upload photos, so public deployments should monitor for abuse.
 - Photos in HEIC or HEIF format from some phones may be rejected because the server cannot decode them. JPEG, PNG, and WebP are reliable.

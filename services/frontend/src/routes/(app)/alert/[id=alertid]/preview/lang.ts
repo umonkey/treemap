@@ -5,7 +5,7 @@ interface StringList {
 	tabTitle: (id: string) => string;
 	noDescription: () => string;
 	photoAlt: () => string;
-	sendReport: () => string;
+	edit: () => string;
 	close: () => string;
 }
 
@@ -14,7 +14,7 @@ class English implements StringList {
 	tabTitle = (id: string) => `Alert ${id} - Trees of Yerevan`;
 	noDescription = () => 'No description provided';
 	photoAlt = () => 'Alert photo';
-	sendReport = () => 'Sent via @kanach_yerevan_bot';
+	edit = () => 'Edit alert';
 	close = () => 'Close';
 }
 
@@ -23,7 +23,7 @@ class Russian extends English {
 	tabTitle = (id: string) => `Сигнал ${id} - Деревья Еревана`;
 	noDescription = () => 'Описание отсутствует';
 	photoAlt = () => 'Фото сигнала';
-	sendReport = () => 'Отправлено через @kanach_yerevan_bot';
+	edit = () => 'Редактировать сигнал';
 	close = () => 'Закрыть';
 }
 
@@ -32,7 +32,7 @@ class Armenian extends English {
 	tabTitle = (id: string) => `Ահազանգ ${id} - Երևանի ծառերը`;
 	noDescription = () => 'Նկարագրությունը բացակայում է';
 	photoAlt = () => 'Ահազանգի լուսանկար';
-	sendReport = () => 'Ուղարկված է @kanach_yerevan_bot-ի միջոցով';
+	edit = () => 'Խմբագրել ահազանգը';
 	close = () => 'Փակել';
 }
 

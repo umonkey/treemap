@@ -1,7 +1,9 @@
 <script lang="ts">
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
+	import EditIcon from '$lib/icons/EditIcon.svelte';
 	import ChatIcon from '$lib/icons/ChatIcon.svelte';
 	import SpinnerIcon from '$lib/icons/SpinnerIcon.svelte';
+	import { routes } from '$lib/routes';
 	import { PreviewState } from './MapPreview.svelte.ts';
 	import { formatDateTime } from '$lib/utils/strings';
 	import LazyImage from '$lib/ui/lazy-image/LazyImage.svelte';
@@ -31,6 +33,14 @@
 			<div class="title" onclick={previewState.toggleExpand}>
 				{locale.title(alert.id)}
 			</div>
+			{#if alert.editable}
+				<a
+					class="edit"
+					href={routes.alertEdit(alert.id)}
+					title={locale.edit()}
+					aria-label={locale.edit()}><EditIcon /></a
+				>
+			{/if}
 			<button class="close" aria-label={locale.close()} onclick={previewState.handleClose}
 				><CloseIcon /></button
 			>
@@ -46,18 +56,6 @@
 			<div class="line date">
 				{formatDateTime(alert.created_at)}
 			</div>
-			{#if alert.source === 'telegram'}
-				<div class="line bot-report">
-					<a
-						href="https://t.me/kanach_yerevan_bot"
-						target="_blank"
-						rel="noopener noreferrer"
-						class="value"
-					>
-						{locale.sendReport()}
-					</a>
-				</div>
-			{/if}
 		</div>
 
 		{#if previewState.photos.length > 0}
@@ -140,6 +138,30 @@
 					opacity: 1;
 				}
 			}
+
+			.edit {
+				flex: 0 0 30px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+
+				width: 30px;
+				height: 30px;
+				cursor: pointer;
+
+				color: light-dark(black, white);
+				opacity: 0.5;
+
+				:global(svg) {
+					width: 18px;
+					height: 18px;
+				}
+
+				&:hover,
+				&:focus-visible {
+					opacity: 1;
+				}
+			}
 		}
 
 		.title {
@@ -168,16 +190,6 @@
 				&.date {
 					font-size: 85%;
 					margin-left: calc(20px + var(--gap));
-				}
-
-				&.bot-report {
-					font-size: 85%;
-					margin-left: calc(20px + var(--gap));
-
-					a {
-						color: var(--color-link);
-						text-decoration: underline;
-					}
 				}
 
 				.icon {

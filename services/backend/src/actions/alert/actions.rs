@@ -1,11 +1,12 @@
-use super::schemas::{AddAlertPayload, AlertRead};
+use super::schemas::{AddAlertPayload, AlertRead, UpdateAlertPayload};
 use crate::domain::alert::{AlertRepository, AlertService};
 use crate::domain::alert_photo::AlertPhotoRepository;
-use crate::services::app::{AlertCreate, RequirePermission};
+use crate::domain::iam::IamService;
+use crate::services::app::{AlertCreate, OptionalUserId, RequirePermission, UserId};
 use crate::services::{AppState, Injected};
 use crate::types::{Error, Result};
 use actix_web::web::{Data, Json, Path};
-use actix_web::{get, post, HttpResponse};
+use actix_web::{get, patch, post, HttpResponse};
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -29,7 +30,8 @@ pub async fn add_alert_action(
         )
         .await?;
 
-    Ok(Json(AlertRead::from_domain(&alert)))
+    // The permission extractor already proved the creator holds `alert:create`.
+    Ok(Json(AlertRead::from_domain(&alert, true)))
 }
 
 #[get("/active")]
@@ -43,15 +45,35 @@ pub async fn get_active_alerts_action(alerts: Injected<AlertRepository>) -> Resu
 
 #[get("/{id:\\d+}")]
 pub async fn get_alert_action(
+    user_id: OptionalUserId,
     path: Path<PathInfo>,
     alerts: Injected<AlertRepository>,
+    iam: Injected<IamService>,
 ) -> Result<Json<AlertRead>> {
-    let alert = alerts
-        .get(path.id)
-        .await?
-        .ok_or(Error::DatabaseStructure("Alert not found".to_string()))?;
+    let alert = alerts.get(path.id).await?.ok_or(Error::AlertNotFound)?;
 
-    Ok(Json(AlertRead::from_domain(&alert)))
+    let editable = if *user_id == 0 {
+        false
+    } else {
+        let rights = iam.get_user_rights(*user_id).await?;
+        alert.is_editable(*user_id, &rights)
+    };
+
+    Ok(Json(AlertRead::from_domain(&alert, editable)))
+}
+
+#[patch("/{id:\\d+}")]
+pub async fn update_alert_action(
+    user_id: UserId,
+    path: Path<PathInfo>,
+    payload: Json<UpdateAlertPayload>,
+    service: Injected<AlertService>,
+) -> Result<Json<AlertRead>> {
+    let alert = service
+        .update_description(path.id, *user_id, &payload.description)
+        .await?;
+
+    Ok(Json(AlertRead::from_domain(&alert, true)))
 }
 
 #[get("/{id:\\d+}/photos")]

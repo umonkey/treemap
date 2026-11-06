@@ -31,6 +31,7 @@ export interface IAlert {
 	created_at: number;
 	description: string | null;
 	source: 'web' | 'telegram';
+	editable: boolean;
 }
 
 export interface IAddAlertRequest {
@@ -38,6 +39,10 @@ export interface IAddAlertRequest {
 	lon: number;
 	description: string;
 	files: string[];
+}
+
+export interface IUpdateAlertRequest {
+	description: string;
 }
 
 export async function getActiveAlertsGeoJSON(): Promise<IResponse<IAlertCollection>> {
@@ -55,7 +60,22 @@ export async function addAlert(req: IAddAlertRequest): Promise<IResponse<IAlert>
 }
 
 export async function getAlert(id: string): Promise<IResponse<IAlert>> {
-	return await request<IAlert>('GET', `v1/alerts/${id}`);
+	return await request<IAlert>('GET', `v1/alerts/${id}`, {
+		headers: getAuthHeaders()
+	});
+}
+
+export async function updateAlert(
+	id: string,
+	req: IUpdateAlertRequest
+): Promise<IResponse<IAlert>> {
+	return await request<IAlert>('PATCH', `v1/alerts/${id}`, {
+		body: JSON.stringify(req),
+		headers: {
+			'Content-Type': 'application/json',
+			...getAuthHeaders()
+		}
+	});
 }
 
 export async function getAlertPhotos(id: string): Promise<IResponse<string[]>> {

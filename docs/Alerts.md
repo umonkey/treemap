@@ -74,13 +74,36 @@ Validation rules:
 - duplicate file ids are removed while preserving order;
 - every id must resolve to a completed upload owned by the authenticated user; a missing upload returns `FileNotFound`, an unfinished upload returns a bad-request error, and another user's upload is rejected as access denied.
 
-The response is the created `AlertRead` (`id`, `lat`, `lon`, `created_at`, `description`, `source`). `source` is `web` when `chat_id` is `NULL` and `telegram` otherwise; the chat id itself is never exposed. Read endpoints `GET /v1/alerts/active`, `GET /v1/alerts/{id}`, and `GET /v1/alerts/{id}/photos` are unchanged.
+The response is the created `AlertRead` (`id`, `lat`, `lon`, `created_at`, `description`, `source`, `editable`). `source` is `web` when `chat_id` is `NULL` and `telegram` otherwise; the chat id itself is never exposed. `editable` is `true` in the create response because the caller holds `alert:create`. `GET /v1/alerts/active` and `GET /v1/alerts/{id}/photos` are unchanged; `GET /v1/alerts/{id}` returns the same fields plus an `editable` value for the requesting user.
+
+### Editing
+
+`PATCH /v1/alerts/{id}` replaces the description of an existing alert:
+
+```json
+{
+  "description": "Corrected description."
+}
+```
+
+The description is trimmed with the same rules as creation: empty text or more than 2,000 characters is rejected. The response is the updated `AlertRead`, not an empty body. `PATCH` returns `401` without a token, `403` for an authenticated user who may not edit the alert, and `404` when the alert does not exist.
+
+An alert is editable when either of the following holds:
+
+- the alert was created through the web interface by the requesting user, and that user still holds `alert:create`;
+- the requesting user holds `alert:manage`. Migration `026-alert-manage.sql` grants it to the `admin` role.
+
+Ownership applies only to web alerts. A Telegram alert stores the Telegram user id in `created_by`, which is not a platform user id, so the creator branch is skipped for those rows; holders of `alert:manage` can still edit them. Editing is allowed in any alert status.
+
+`GET /v1/alerts/{id}` computes `editable` for the requesting user. Anonymous requests receive `false`, so a client must send the `Authorization` header to receive `true`. Invalid or expired bearer tokens on this endpoint are treated as anonymous instead of returning `401`.
+
+Only the description can be changed. Photos, coordinates, status, and the submission time remain as recorded, and no edit history is stored.
 
 ### Alert record and notification semantics
 
 A web submission is inserted with `status = 'new'`, `chat_id = NULL`, and `created_by` set to the authenticated user. The insert uses `INSERT ... RETURNING *` so the generated id is read without relying on `last_insert_rowid()`, which is unsafe across pooled connections outside a transaction. `message_id`, `username`, `language_code`, `response_text`, `responded_at`, `reported_at`, and `ping_at` stay `NULL`.
 
-`chat_id` is nullable after migration `024-alert-web-submission.sql`; `NULL` means the alert has no Telegram chat. The draft pinger filters such alerts out of `get_pending_pings` and defensively skips any it receives. `dispatch-alerts` does not read `chat_id`: it sends to the configured recipients, so web alerts are dispatched like any other new alert. The preview page renders the `@kanach_yerevan_bot` link only for Telegram submissions; web submissions omit it.
+`chat_id` is nullable after migration `024-alert-web-submission.sql`; `NULL` means the alert has no Telegram chat. The draft pinger filters such alerts out of `get_pending_pings` and defensively skips any it receives. `dispatch-alerts` does not read `chat_id`: it sends to the configured recipients, so web alerts are dispatched like any other new alert. The preview page no longer renders a Telegram bot link; `source` remains in the API for clients that need the channel.
 
 ### Photo processing
 
@@ -106,7 +129,7 @@ Because photo processing is asynchronous, the preview at `/alert/<id>/preview` c
 
 ### Deployment
 
-Apply migration `024-alert-web-submission.sql` first, then deploy the backend that writes `NULL` chat ids, then apply `025-alert-create.sql` before announcing the web entry point. Migration 024 must run before the backend because the previous schema declares `chat_id` as `NOT NULL`. Migration 025 must run before users can submit: without the grant, every non-admin request returns 403 and the menu item stays hidden. Deploy the chatbot build that reads a nullable chat id before web alerts are dispatched, since the dispatcher maps rows from the shared table.
+Apply migration `024-alert-web-submission.sql` first, then deploy the backend that writes `NULL` chat ids, then apply `025-alert-create.sql` before announcing the web entry point. Migration 024 must run before the backend because the previous schema declares `chat_id` as `NOT NULL`. Migration 025 must run before users can submit: without the grant, every non-admin request returns 403 and the menu item stays hidden. Apply `026-alert-manage.sql` with the backend rollout: it adds `alert:manage` and grants it to the `admin` role. Admins already bypass permission checks at runtime, so the migration does not change who can edit; it makes `/v1/me` report the permission and allows it to be granted to other roles later. Deploy the chatbot build that reads a nullable chat id before web alerts are dispatched, since the dispatcher maps rows from the shared table.
 
 Migration 024 rebuilds `chatbot_alerts` while `chatbot_alerts_photos.alert_id` references it with `ON DELETE CASCADE`. Apply the whole file as one transaction on a connection where foreign-key enforcement is off, which is the application default. `PRAGMA defer_foreign_keys` defers constraint checks but does not suppress `ON DELETE CASCADE`; if your migration client enables `PRAGMA foreign_keys`, disable it for the rebuild or back up `chatbot_alerts_photos` first. Take a database backup and rehearse on a copy that contains alerts with photos: confirm that `chatbot_alerts_photos` rows survive (ids are copied unchanged) and that `GET /v1/alerts/{id}/photos` returns the same paths.
 

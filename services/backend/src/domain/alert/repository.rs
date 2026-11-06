@@ -1,5 +1,5 @@
 use super::models::Alert;
-use crate::infra::database::{Database, SelectQuery, Value};
+use crate::infra::database::{Database, SelectQuery, UpdateQuery, Value};
 use crate::services::{Context, Injectable};
 use crate::types::*;
 use crate::utils::get_timestamp;
@@ -44,6 +44,16 @@ impl AlertRepository {
         })?;
 
         Alert::from_attributes(row)
+    }
+
+    pub async fn update_description(&self, id: u64, description: &str) -> Result<()> {
+        let query = UpdateQuery::new(TABLE)
+            .with_condition("id", Value::from(id as i64))
+            .with_value("description", Value::from(description));
+
+        self.db.update(query).await?;
+
+        Ok(())
     }
 
     pub async fn get_active(&self, days: u64) -> Result<Vec<Alert>> {

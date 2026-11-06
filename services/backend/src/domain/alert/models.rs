@@ -1,6 +1,10 @@
+use crate::domain::iam::ActorRights;
 use crate::infra::database::{Attributes, Value};
 use crate::types::Result;
 use serde::Serialize;
+
+const ALERT_CREATE_PERMISSION: &str = "alert:create";
+const ALERT_MANAGE_PERMISSION: &str = "alert:manage";
 
 #[derive(Clone, Debug, Default, Serialize)]
 pub struct Alert {
@@ -87,5 +91,91 @@ impl Alert {
                 },
             ),
         ])
+    }
+
+    /// Whether the given user may edit this alert's description.
+    pub fn is_editable(&self, user_id: u64, rights: &ActorRights) -> bool {
+        if rights.has_permission(ALERT_MANAGE_PERMISSION) {
+            return true;
+        }
+
+        // Telegram alerts store the Telegram user id in `created_by`, which is
+        // unrelated to platform user ids. Ownership only applies to web alerts.
+        self.chat_id.is_none()
+            && self.created_by == user_id
+            && rights.has_permission(ALERT_CREATE_PERMISSION)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::collections::HashSet;
+
+    fn web_alert(created_by: u64) -> Alert {
+        Alert {
+            created_by,
+            ..Default::default()
+        }
+    }
+
+    fn telegram_alert(created_by: u64) -> Alert {
+        Alert {
+            created_by,
+            chat_id: Some(42),
+            ..Default::default()
+        }
+    }
+
+    fn rights(roles: &[&str], permissions: &[&str]) -> ActorRights {
+        ActorRights {
+            roles: roles.iter().map(|role| role.to_string()).collect(),
+            permissions: permissions
+                .iter()
+                .map(|permission| permission.to_string())
+                .collect::<HashSet<String>>(),
+        }
+    }
+
+    #[test]
+    fn owner_with_create_permission_can_edit() {
+        let alert = web_alert(7);
+
+        assert!(alert.is_editable(7, &rights(&[], &["alert:create"])));
+    }
+
+    #[test]
+    fn owner_without_create_permission_cannot_edit() {
+        let alert = web_alert(7);
+
+        assert!(!alert.is_editable(7, &rights(&[], &[])));
+    }
+
+    #[test]
+    fn non_owner_with_create_permission_cannot_edit() {
+        let alert = web_alert(7);
+
+        assert!(!alert.is_editable(8, &rights(&[], &["alert:create"])));
+    }
+
+    #[test]
+    fn manage_permission_can_edit_someone_elses_alert() {
+        let alert = web_alert(7);
+
+        assert!(alert.is_editable(8, &rights(&[], &["alert:manage"])));
+    }
+
+    #[test]
+    fn admin_role_can_edit_without_explicit_permissions() {
+        let alert = web_alert(7);
+
+        assert!(alert.is_editable(8, &rights(&["admin"], &[])));
+    }
+
+    #[test]
+    fn telegram_alert_is_not_editable_through_ownership() {
+        let alert = telegram_alert(7);
+
+        assert!(!alert.is_editable(7, &rights(&[], &["alert:create"])));
     }
 }
