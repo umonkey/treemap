@@ -10,8 +10,9 @@
 		hint = '',
 		help,
 		onChange,
-		onBlur
-	} = $props<{
+		onBlur,
+		ariaLabel = ''
+	}: {
 		value?: string | number | null;
 		placeholder?: string;
 		label?: string;
@@ -21,7 +22,8 @@
 		help?: string;
 		onChange: (value: string) => void;
 		onBlur?: (value: string) => void;
-	}>();
+		ariaLabel?: string;
+	} = $props();
 
 	const handleChange = (e: Event) => {
 		if (e.target) {
@@ -40,8 +42,20 @@
 
 <FormElement {label} {hint} {help}>
 	{#if multiline}
-		<textarea {placeholder} oninput={handleChange} onblur={handleBlur}>{value}</textarea>
+		<textarea
+			{placeholder}
+			aria-label={ariaLabel || undefined}
+			oninput={handleChange}
+			onblur={handleBlur}>{value}</textarea
+		>
 	{:else}
-		<input {type} {value} {placeholder} oninput={handleChange} onblur={handleBlur} />
+		<input
+			{type}
+			{value}
+			{placeholder}
+			aria-label={ariaLabel || undefined}
+			oninput={handleChange}
+			onblur={handleBlur}
+		/>
 	{/if}
 </FormElement>

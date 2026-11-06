@@ -96,6 +96,10 @@ impl FileBucket {
         self.storage.write_file(&id.to_string(), data, public).await
     }
 
+    pub async fn write_file_at(&self, path: &str, data: &[u8], public: bool) -> Result<()> {
+        self.storage.write_file(path, data, public).await
+    }
+
     pub async fn read_file(&self, id: u64) -> Result<Vec<u8>> {
         self.storage.read_file(&id.to_string()).await
     }

@@ -334,7 +334,7 @@ CREATE TABLE IF NOT EXISTS `chatbot_alerts` (
     `id` INTEGER PRIMARY KEY AUTOINCREMENT,
     `created_at` INTEGER NOT NULL,
     `created_by` INTEGER NOT NULL,
-    `chat_id` INTEGER NOT NULL,
+    `chat_id` INTEGER,
     `message_id` INTEGER,
     `username` TEXT,
     `language_code` TEXT,

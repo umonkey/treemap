@@ -48,6 +48,47 @@ impl ThumbnailerService {
         Ok(())
     }
 
+    /// Convert any supported image into an oriented JPEG.
+    ///
+    /// The image is never returned as-is: JPEG has no alpha channel and the
+    /// target path always ends with `.jpg`, so re-encoding is required.
+    pub fn to_jpeg(&self, data: &[u8], max_size: u32) -> Result<Vec<u8>> {
+        debug!("Reading an image to convert it to JPEG.");
+
+        let img = self.decode(data)?;
+
+        info!(
+            "Converting an {}x{} image to a {} px JPEG.",
+            img.width(),
+            img.height(),
+            max_size
+        );
+
+        let rotated = self.autorotate(img, data)?;
+
+        // `thumbnail` upscales small images in image 0.25, so only resize
+        // when a side exceeds the limit.
+        let resized = if rotated.width() <= max_size && rotated.height() <= max_size {
+            rotated
+        } else {
+            rotated.thumbnail(max_size, max_size)
+        };
+
+        let mut buf: Vec<u8> = Vec::new();
+
+        resized
+            .into_rgb8()
+            .write_to(&mut Cursor::new(&mut buf), image::ImageFormat::Jpeg)
+            .map_err(|e| {
+                error!("Error writing image: {e:?}");
+                Error::ImageResize
+            })?;
+
+        debug!("JPEG conversion successful.");
+
+        Ok(buf)
+    }
+
     pub fn decode(&self, data: &[u8]) -> Result<DynamicImage> {
         debug!("Decoding image of {} bytes.", data.len());
 
@@ -222,5 +263,78 @@ mod tests {
         let resized = thumbnailer.resize(data.as_ref(), 100);
 
         assert!(resized.is_err());
+    }
+
+    /**
+     * Test converting a regular image to JPEG.
+     *
+     * The image is 1023x680, so converted to fit in a 2000x2000 square
+     * the size should remain the same, and the result should still decode.
+     */
+    #[test]
+    fn to_jpeg_large() {
+        let thumbnailer = setup();
+
+        let data = include_bytes!("test/tree.jpg");
+        let jpeg = thumbnailer
+            .to_jpeg(data.as_ref(), 2000)
+            .expect("Error converting image.");
+
+        assert_eq!(
+            image::guess_format(&jpeg).expect("Error guessing format."),
+            image::ImageFormat::Jpeg
+        );
+
+        let image = read_image(jpeg);
+        assert_eq!(image.width(), 1023);
+        assert_eq!(image.height(), 680);
+    }
+
+    /**
+     * Test that images larger than the limit are downscaled.
+     *
+     * The image is 1023x680, so converted to fit in a 100x100 square
+     * it should be 100x66 pixels, like the resize tests.
+     */
+    #[test]
+    fn to_jpeg_downscales_large() {
+        let thumbnailer = setup();
+
+        let data = include_bytes!("test/tree.jpg");
+        let jpeg = thumbnailer
+            .to_jpeg(data.as_ref(), 100)
+            .expect("Error converting image.");
+
+        let image = read_image(jpeg);
+        assert_eq!(image.width(), 100);
+        assert_eq!(image.height(), 66);
+    }
+
+    /**
+     * Test that a PNG image comes back as JPEG, even when it is small
+     * enough to need no resizing.
+     */
+    #[test]
+    fn to_jpeg_converts_small_png() {
+        let thumbnailer = setup();
+
+        let mut png: Vec<u8> = Vec::new();
+
+        DynamicImage::new_rgb8(10, 10)
+            .write_to(&mut Cursor::new(&mut png), image::ImageFormat::Png)
+            .expect("Error writing PNG.");
+
+        let jpeg = thumbnailer
+            .to_jpeg(png.as_ref(), 2000)
+            .expect("Error converting image.");
+
+        assert_eq!(
+            image::guess_format(&jpeg).expect("Error guessing format."),
+            image::ImageFormat::Jpeg
+        );
+
+        let image = read_image(jpeg);
+        assert_eq!(image.width(), 10);
+        assert_eq!(image.height(), 10);
     }
 }

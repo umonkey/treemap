@@ -4,6 +4,7 @@
 	import DownloadIcon from '$lib/icons/DownloadIcon.svelte';
 	import LocationIcon from '$lib/icons/LocationIcon.svelte';
 	import MapTreeIcon from '$lib/icons/MapTreeIcon.svelte';
+	import MegaphoneIcon from '$lib/icons/MegaphoneIcon.svelte';
 	import Ruler from '$lib/icons/Ruler.svelte';
 	import WaterIcon from '$lib/icons/WaterIcon.svelte';
 	import { locale } from '$lib/locale';
@@ -33,6 +34,12 @@
 			label: locale.waterAddTitle(),
 			disabled: !$hasPermission('water:manage'),
 			onClick: () => componentState.handleNavigate(routes.addWater())
+		},
+		{
+			icon: MegaphoneIcon,
+			label: locale.addAlertTitle(),
+			disabled: !$hasPermission('alert:create'),
+			onClick: () => componentState.handleNavigate(routes.addAlert())
 		},
 		{
 			icon: DownloadIcon,

@@ -1,5 +1,5 @@
 use super::models::AlertPhoto;
-use crate::infra::database::{Database, SelectQuery, Value};
+use crate::infra::database::{Database, InsertQuery, SelectQuery, Value};
 use crate::services::{Context, Injectable};
 use crate::types::*;
 use std::sync::Arc;
@@ -11,6 +11,24 @@ pub struct AlertPhotoRepository {
 }
 
 impl AlertPhotoRepository {
+    pub async fn add(&self, alert_id: u64, photo_path: &str) -> Result<()> {
+        let query = InsertQuery::new(TABLE)
+            .with_value("alert_id", Value::from(alert_id as i64))
+            .with_value("photo_path", Value::from(photo_path));
+
+        self.db.add_record(query).await?;
+
+        Ok(())
+    }
+
+    pub async fn has_photo(&self, alert_id: u64, photo_path: &str) -> Result<bool> {
+        let query = SelectQuery::new(TABLE)
+            .with_condition("alert_id", Value::from(alert_id as i64))
+            .with_condition("photo_path", Value::from(photo_path));
+
+        Ok(self.db.get_record(query).await?.is_some())
+    }
+
     pub async fn get_by_alert(&self, alert_id: u64) -> Result<Vec<AlertPhoto>> {
         let query =
             SelectQuery::new(TABLE).with_condition("alert_id", Value::from(alert_id as i64));

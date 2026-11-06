@@ -179,6 +179,7 @@ impl AlertRepository {
         let sql = "SELECT id, created_at, created_by, chat_id, message_id, username, language_code, lat, lon, description, status, response_text, responded_at, reported_at, ping_at
                    FROM chatbot_alerts
                    WHERE status = 'draft'
+                     AND chat_id IS NOT NULL
                      AND ping_at IS NOT NULL
                      AND ping_at <= unixepoch()
                      AND created_at >= (unixepoch() - 604800)

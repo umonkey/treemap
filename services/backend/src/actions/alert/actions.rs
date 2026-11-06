@@ -1,15 +1,35 @@
-use super::schemas::AlertRead;
-use crate::domain::alert::AlertRepository;
+use super::schemas::{AddAlertPayload, AlertRead};
+use crate::domain::alert::{AlertRepository, AlertService};
 use crate::domain::alert_photo::AlertPhotoRepository;
+use crate::services::app::{AlertCreate, RequirePermission};
 use crate::services::{AppState, Injected};
 use crate::types::{Error, Result};
 use actix_web::web::{Data, Json, Path};
-use actix_web::{get, HttpResponse};
+use actix_web::{get, post, HttpResponse};
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
 pub struct PathInfo {
     pub id: u64,
+}
+
+#[post("")]
+pub async fn add_alert_action(
+    user_id: RequirePermission<AlertCreate>,
+    payload: Json<AddAlertPayload>,
+    service: Injected<AlertService>,
+) -> Result<Json<AlertRead>> {
+    let alert = service
+        .create(
+            *user_id,
+            payload.lat,
+            payload.lon,
+            payload.description.clone(),
+            payload.files.clone(),
+        )
+        .await?;
+
+    Ok(Json(AlertRead::from_domain(&alert)))
 }
 
 #[get("/active")]

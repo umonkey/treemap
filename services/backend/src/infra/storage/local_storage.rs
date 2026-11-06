@@ -26,11 +26,20 @@ impl StorageDriver for LocalStorageDriver {
         let bucket_folder = format!("{}/{}", self.folder, bucket);
         let file_path = format!("{}/{}", bucket_folder, path);
 
-        match fs::create_dir_all(&bucket_folder).await {
+        let parent = match std::path::Path::new(&file_path).parent() {
+            Some(value) => value,
+
+            None => {
+                error!("Error resolving folder for {}: no parent.", file_path);
+                return Err(Error::FileUpload);
+            }
+        };
+
+        match fs::create_dir_all(parent).await {
             Ok(()) => (),
 
             Err(e) => {
-                error!("Error creating folder {}: {:?}", bucket_folder, e);
+                error!("Error creating folder {}: {:?}", parent.display(), e);
                 return Err(Error::FileUpload);
             }
         };

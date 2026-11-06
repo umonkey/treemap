@@ -53,6 +53,7 @@ export const routes = {
 	statsState: () => '/tools/stats/state',
 	statsStreets: () => '/tools/stats/streets',
 	addTree: () => '/add/tree',
+	addAlert: () => '/add/alert',
 	uploads: () => '/profile/uploads',
 	addRow: () => '/add/row',
 	treeDead: (id: string) => `/tree/${id}/dead`,

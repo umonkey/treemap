@@ -37,15 +37,17 @@ The application displays the number of pending photo uploads as a badge (or "bub
 - Requirements: requires a supported browser (e.g., Chrome on Android/Desktop, Safari on iOS 16.4+).
 - Reset: the badge is automatically cleared when the upload queue is empty.
 
-## Citizen feedback via Telegram
+## Citizen feedback
 
-Users can submit citizen feedback and remarkable sightings through a dedicated Telegram bot. These reports cover newly planted trees, wildlife sightings, health anomalies, and maintenance needs, providing real-time awareness of urban forest dynamics.
+Users can submit citizen feedback and remarkable sightings through the web map interface or a dedicated Telegram bot. These reports cover newly planted trees, wildlife sightings, health anomalies, and maintenance needs, providing real-time awareness of urban forest dynamics.
 
-- implementation: a Telegram bot receives feedback reports and stores them in the central database.
+- web submission: signed-in users with the `alert:create` permission can attach photos and a description to a point on the map.
+- Telegram submission: the bot collects photos, location, and description through a conversation.
 - curator notifications: completed reports (containing photos, GPS location, and description) are automatically and promptly dispatched via private Telegram messages to a designated team of moderators/curators.
 - visualization: feedback reports are rendered as markers on the map.
 - retention: all reports are stored permanently in the database for historical analysis.
 - display logic: only reports submitted within the last 7 days are displayed on the active map to ensure current relevance.
+- detailed documentation: see `features/alerts/README.md` for the capability and `Alerts.md` for the operator reference.
 
 ## Model Context Protocol (MCP) server
 

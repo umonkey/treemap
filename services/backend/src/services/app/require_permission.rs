@@ -45,6 +45,11 @@ impl<P: Permission + 'static> FromRequest for RequirePermission<P> {
 }
 
 // Define permissions here or in respective domains.
+pub struct AlertCreate;
+impl Permission for AlertCreate {
+    const NAME: &'static str = "alert:create";
+}
+
 pub struct InstanceManage;
 impl Permission for InstanceManage {
     const NAME: &'static str = "instance:manage";

@@ -17,6 +17,35 @@ impl AlertRepository {
         self.query_single(query).await
     }
 
+    pub async fn create(
+        &self,
+        user_id: u64,
+        lat: f64,
+        lon: f64,
+        description: &str,
+    ) -> Result<Alert> {
+        let sql = format!(
+            "INSERT INTO `{}` (created_at, created_by, lat, lon, description, status) VALUES (?, ?, ?, ?, ?, 'new') RETURNING *",
+            TABLE
+        );
+
+        let params = &[
+            Value::from(get_timestamp() as i64),
+            Value::from(user_id as i64),
+            Value::from(lat),
+            Value::from(lon),
+            Value::from(description),
+        ];
+
+        let rows = self.db.fetch_sql(&sql, params).await?;
+
+        let row = rows.first().ok_or_else(|| {
+            Error::DatabaseStructure("Could not create an alert row.".to_string())
+        })?;
+
+        Alert::from_attributes(row)
+    }
+
     pub async fn get_active(&self, days: u64) -> Result<Vec<Alert>> {
         let now = get_timestamp();
         let since = now.saturating_sub(days * 24 * 60 * 60);

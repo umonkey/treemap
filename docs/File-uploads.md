@@ -23,4 +23,6 @@ The ids are not saved anywhere directly, but sent to the queue for processing.
 The original file record is then deleted from the `uploads` table, but a record with the same id is created in the `files` table.
 This is how the source file is moved from uploads to photos.
 
+Alert submissions use the same `/v1/upload` tickets and upload ids, but their queue handler keeps the source upload and writes an oriented JPEG to `alerts/<alert_id>/<upload_file_id>.jpg` with a longest side of 2,000 pixels. The path is recorded in `chatbot_alerts_photos` instead of `trees_images`.
+
 [1]: https://github.com/umonkey/treemap/wiki/Database-structure#uploads

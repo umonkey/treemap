@@ -44,6 +44,11 @@ impl AlertPinger {
         }
 
         for alert in pending {
+            let Some(chat_id) = alert.chat_id else {
+                log::warn!("Skipping ping for alert {} without a chat", alert.id);
+                continue;
+            };
+
             let raw_lang = alert.language_code.as_deref().unwrap_or("en");
             let lang = &raw_lang[..2.min(raw_lang.len())];
             let text = self.i18n.tr("alert-ping-reminder", lang, None);
@@ -51,14 +56,10 @@ impl AlertPinger {
             log::info!(
                 "Enqueuing ping reminder for alert {} (chat {}) to outbox...",
                 alert.id,
-                alert.chat_id
+                chat_id
             );
 
-            if let Err(e) = self
-                .outbox
-                .enqueue(&alert.chat_id.to_string(), &text, None)
-                .await
-            {
+            if let Err(e) = self.outbox.enqueue(&chat_id.to_string(), &text, None).await {
                 log::error!(
                     "Failed to enqueue ping reminder for alert {}: {:?}",
                     alert.id,

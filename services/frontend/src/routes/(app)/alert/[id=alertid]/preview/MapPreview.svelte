@@ -46,16 +46,18 @@
 			<div class="line date">
 				{formatDateTime(alert.created_at)}
 			</div>
-			<div class="line bot-report">
-				<a
-					href="https://t.me/kanach_yerevan_bot"
-					target="_blank"
-					rel="noopener noreferrer"
-					class="value"
-				>
-					{locale.sendReport()}
-				</a>
-			</div>
+			{#if alert.source === 'telegram'}
+				<div class="line bot-report">
+					<a
+						href="https://t.me/kanach_yerevan_bot"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="value"
+					>
+						{locale.sendReport()}
+					</a>
+				</div>
+			{/if}
 		</div>
 
 		{#if previewState.photos.length > 0}

@@ -3,7 +3,6 @@
 	import UserPic from '$lib/components/layout/UserPic.svelte';
 	import SidebarSearchInput from '$lib/components/search/SidebarSearchInput.svelte';
 	import BellIcon from '$lib/icons/BellIcon.svelte';
-	import MegaphoneIcon from '$lib/icons/MegaphoneIcon.svelte';
 	import CloseIcon from '$lib/icons/CloseIcon.svelte';
 	import GridIcon from '$lib/icons/GridIcon.svelte';
 	import HomeIcon from '$lib/icons/HomeIcon.svelte';
@@ -76,17 +75,6 @@
 					</button>
 				</li>
 			{/if}
-			<li>
-				<a
-					href="https://t.me/kanach_yerevan_bot"
-					target="_blank"
-					rel="noopener noreferrer"
-					onclick={componentState.close}
-				>
-					<span class="icon"><MegaphoneIcon /></span>
-					<span>{locale.sideSendAlert()}</span>
-				</a>
-			</li>
 			<li>
 				<a href={routes.tools()} onclick={componentState.close}>
 					<span class="icon"><GridIcon /></span>

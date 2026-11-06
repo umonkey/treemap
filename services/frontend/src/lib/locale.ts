@@ -45,8 +45,8 @@ class EnglishLocale {
 		return 'Sign in';
 	}
 
-	public sideSendAlert(): string {
-		return 'Send alert';
+	public addAlertTitle(): string {
+		return 'Add alert';
 	}
 
 	public sideAbout(): string {
@@ -878,8 +878,8 @@ class RussianLocale extends EnglishLocale {
 		return 'Войти';
 	}
 
-	public sideSendAlert(): string {
-		return 'Отправить сигнал';
+	public addAlertTitle(): string {
+		return 'Добавить сигнал';
 	}
 
 	public sideAbout(): string {
@@ -1695,8 +1695,8 @@ class ArmenianLocale extends EnglishLocale {
 		return 'Մուտք գործել';
 	}
 
-	public sideSendAlert(): string {
-		return 'Ուղարկել ահազանգ';
+	public addAlertTitle(): string {
+		return 'Ավելացնել ահազանգ';
 	}
 
 	public sideAbout(): string {

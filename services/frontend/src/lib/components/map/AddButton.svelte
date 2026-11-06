@@ -8,7 +8,7 @@
 	const mapContext = getMapContext();
 </script>
 
-{#if $hasPermission('tree:create') || $hasPermission('water:manage')}
+{#if $hasPermission('tree:create') || $hasPermission('water:manage') || $hasPermission('alert:create')}
 	<Control position="bottom-right">
 		<button
 			class="add-button"
