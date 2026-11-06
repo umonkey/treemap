@@ -3,6 +3,8 @@
 	import UploadIcon from '$lib/icons/UploadIcon.svelte';
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
+	import { hasPermission } from '$lib/stores/authStore';
+	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import CameraUploader from './CameraUploader.svelte';
 	import { Gallery } from './Gallery.svelte.ts';
 	import GalleryUploader from './GalleryUploader.svelte';
@@ -91,12 +93,14 @@
 		{/if}
 	</div>
 
-	<div class="uploaders">
-		<div class="actions">
-			<CameraUploader treeId={id} />
-			<GalleryUploader treeId={id} />
+	{#if $hasPermission('tree:edit')}
+		<div class="uploaders">
+			<Buttons>
+				<CameraUploader treeId={id} inline />
+				<GalleryUploader treeId={id} inline />
+			</Buttons>
 		</div>
-	</div>
+	{/if}
 
 	{#if gallery.selected}
 		<ImageViewer item={gallery.selected} onClose={gallery.closeViewer} />
@@ -148,41 +152,11 @@
 	}
 
 	.empty {
-		margin: 0 0 8px;
+		margin: 0;
 	}
 
-	/* Floating upload actions: pinned to the bottom-right of the visible panel
-	   on phones, top-left of the gallery on desktop. The phone wrapper is a
-	   zero-height sticky line, so the buttons hover over the photos instead of
-	   reserving a row underneath them. */
 	.uploaders {
-		position: sticky;
-		bottom: 8px;
-		height: 0;
-		z-index: 1;
-	}
-
-	.actions {
-		position: absolute;
-		right: 0.5rem;
-		bottom: 0;
-		display: flex;
-		flex-direction: column;
-		align-items: flex-end;
-		gap: 8px;
-	}
-
-	@media (min-width: 1024px) {
-		.uploaders {
-			position: absolute;
-			top: 0.5rem;
-			left: 0.5rem;
-			height: auto;
-		}
-
-		.actions {
-			position: static;
-		}
+		margin-top: 8px;
 	}
 
 	.grid {

@@ -5,7 +5,7 @@
 	import { GalleryUploader } from './GalleryUploader.svelte.ts';
 	import { locale } from './photos.lang';
 
-	const { treeId }: { treeId: string } = $props();
+	const { treeId, inline = false }: { treeId: string; inline?: boolean } = $props();
 
 	const state = new GalleryUploader();
 </script>
@@ -13,6 +13,7 @@
 {#if $hasPermission('tree:edit') && isTouchDevice()}
 	<label
 		class="tile gallery"
+		class:inline
 		title={locale.pickFromGallery()}
 		aria-label={locale.pickFromGallery()}
 	>
@@ -53,6 +54,26 @@
 			width: 26px;
 			height: 26px;
 		}
+	}
+
+	.tile.inline {
+		width: auto;
+		height: 34px;
+		padding: 6px 12px;
+		border-radius: 6px;
+		background-color: var(--map-primary-background);
+		box-shadow: none;
+		transition: none;
+		flex-shrink: 0;
+	}
+
+	.tile.inline:hover {
+		box-shadow: none;
+	}
+
+	.tile.inline :global(svg) {
+		width: 18px;
+		height: 18px;
 	}
 
 	input {

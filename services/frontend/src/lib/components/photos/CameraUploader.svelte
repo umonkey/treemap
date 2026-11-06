@@ -4,13 +4,18 @@
 	import { CameraUploader } from './CameraUploader.svelte.ts';
 	import { locale } from './photos.lang';
 
-	const { treeId }: { treeId: string } = $props();
+	const { treeId, inline = false }: { treeId: string; inline?: boolean } = $props();
 
 	const state = new CameraUploader();
 </script>
 
 {#if $hasPermission('tree:edit')}
-	<label class="tile camera" title={locale.takePhoto()} aria-label={locale.takePhoto()}>
+	<label
+		class="tile camera"
+		class:inline
+		title={locale.takePhoto()}
+		aria-label={locale.takePhoto()}
+	>
 		<CameraIcon />
 
 		<input
@@ -48,6 +53,26 @@
 			width: 26px;
 			height: 26px;
 		}
+	}
+
+	.tile.inline {
+		width: auto;
+		height: 34px;
+		padding: 6px 12px;
+		border-radius: 6px;
+		background-color: var(--map-primary-background);
+		box-shadow: none;
+		transition: none;
+		flex-shrink: 0;
+	}
+
+	.tile.inline:hover {
+		box-shadow: none;
+	}
+
+	.tile.inline :global(svg) {
+		width: 18px;
+		height: 18px;
 	}
 
 	input {
