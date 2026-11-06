@@ -79,7 +79,9 @@
 		{#if buttons}
 			<div class="actions">
 				{#each buttons as button}
-					<Button onClick={button.onClick} disabled={button.disabled}>{button.title}</Button>
+					<Button type="button" onClick={button.onClick} disabled={button.disabled}
+						>{button.title}</Button
+					>
 				{/each}
 			</div>
 		{/if}

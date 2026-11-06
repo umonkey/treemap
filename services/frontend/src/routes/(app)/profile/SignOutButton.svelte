@@ -10,4 +10,4 @@
 	};
 </script>
 
-<Button {onClick}>{locale.signOut()}</Button>
+<Button type="button" {onClick}>{locale.signOut()}</Button>
