@@ -1,3 +1,4 @@
+import { signInWithGoogle } from '$lib/auth';
 import { goto, routes } from '$lib/routes';
 import { mobileSidebarStore } from '$lib/stores/mobileSidebarStore';
 import { pwaStore } from '$lib/stores/pwaStore';
@@ -28,6 +29,11 @@ class ComponentState {
 			event.prompt();
 			this.close();
 		}
+	};
+
+	public signIn = () => {
+		this.close();
+		signInWithGoogle();
 	};
 
 	public handleOverlayClick = (e: MouseEvent) => {

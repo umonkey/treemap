@@ -13,7 +13,7 @@
 	import SpinnerIcon from '$lib/icons/SpinnerIcon.svelte';
 	import { locale } from '$lib/locale';
 	import { routes } from '$lib/routes';
-	import { authStore } from '$lib/stores/authStore';
+	import { authStore, isAuthenticated } from '$lib/stores/authStore';
 	import { isSidebarVisible } from '$lib/stores/mobileSidebarStore';
 	import { isInstallable } from '$lib/stores/pwaStore';
 	import { uploadStore } from '$lib/stores/upload';
@@ -94,19 +94,17 @@
 				</a>
 			</li>
 			<li>
-				<a href={routes.profile()} onclick={componentState.close}>
-					<span class="icon">
-						{#if $uploadStore.uploading}
-							<SpinnerIcon />
-						{:else}
-							<UserPic src={$authStore?.user?.picture} alt="userpic" class="user-pic-sidebar" />
-						{/if}
-						{#if $uploadStore.pending > 0}
-							<span class="badge">{$uploadStore.pending}</span>
-						{/if}
-					</span>
-					<span>{locale.sideProfile()}</span>
-				</a>
+				{#if $isAuthenticated}
+					<a href={routes.profile()} onclick={componentState.close}>
+						{@render profileIcon()}
+						<span>{locale.sideProfile()}</span>
+					</a>
+				{:else}
+					<button type="button" class="menu-item" onclick={componentState.signIn}>
+						{@render profileIcon()}
+						<span>{locale.sideSignIn()}</span>
+					</button>
+				{/if}
 			</li>
 		</ul>
 
@@ -135,6 +133,19 @@
 		</div>
 	</div>
 </div>
+
+{#snippet profileIcon()}
+	<span class="icon">
+		{#if $uploadStore.uploading}
+			<SpinnerIcon />
+		{:else}
+			<UserPic src={$authStore?.user?.picture} alt="userpic" class="user-pic-sidebar" />
+		{/if}
+		{#if $uploadStore.pending > 0}
+			<span class="badge">{$uploadStore.pending}</span>
+		{/if}
+	</span>
+{/snippet}
 
 <style>
 	.canvas {

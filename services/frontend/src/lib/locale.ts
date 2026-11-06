@@ -41,6 +41,10 @@ class EnglishLocale {
 		return 'Profile';
 	}
 
+	public sideSignIn(): string {
+		return 'Sign in';
+	}
+
 	public sideSendAlert(): string {
 		return 'Send alert';
 	}
@@ -870,6 +874,10 @@ class RussianLocale extends EnglishLocale {
 		return 'Профиль';
 	}
 
+	public sideSignIn(): string {
+		return 'Войти';
+	}
+
 	public sideSendAlert(): string {
 		return 'Отправить сигнал';
 	}
@@ -1681,6 +1689,10 @@ class ArmenianLocale extends EnglishLocale {
 
 	public sideProfile(): string {
 		return 'Պրոֆիլ';
+	}
+
+	public sideSignIn(): string {
+		return 'Մուտք գործել';
 	}
 
 	public sideSendAlert(): string {
