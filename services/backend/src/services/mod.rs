@@ -1,3 +1,4 @@
+pub mod alert_loader;
 pub mod app;
 pub mod comment_loader;
 pub mod like_loader;

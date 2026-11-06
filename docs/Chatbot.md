@@ -1,6 +1,6 @@
 # Telegram Chatbot
 
-The application includes a Telegram chatbot that allows users to send citizen feedback and remarkable sightings directly from their mobile devices. The bot is one submission channel: signed-in users can also submit feedback from the web map interface. See `features/alerts/README.md` for the capability overview and `Alerts.md` for the shared lifecycle, configuration, and dispatch behaviour.
+The application includes a Telegram chatbot that allows users to send citizen feedback and remarkable sightings directly from their mobile devices. The bot is one submission channel: signed-in users can also submit feedback from the web map interface. See `features/alerts/README.md` for the capability overview; the sections below cover configuration and dispatch behaviour.
 
 - citizen feedback: users can send reports including photos, location data, and descriptions of remarkable sightings, new plantings, or maintenance needs.
 - map integration: feedback reports are visualized on the main map.

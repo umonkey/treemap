@@ -69,6 +69,15 @@ impl AlertRepository {
         self.fetch(&sql, params).await
     }
 
+    pub async fn get_recent(&self, limit: u64) -> Result<Vec<Alert>> {
+        let sql = format!(
+            "SELECT * FROM `{}` ORDER BY created_at DESC, id DESC LIMIT ?",
+            TABLE
+        );
+
+        self.fetch(&sql, &[Value::from(limit as i64)]).await
+    }
+
     pub async fn get_filtered(
         &self,
         since_id: Option<u64>,

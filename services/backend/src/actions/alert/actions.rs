@@ -2,12 +2,16 @@ use super::schemas::{AddAlertPayload, AlertRead, UpdateAlertPayload};
 use crate::domain::alert::{AlertRepository, AlertService};
 use crate::domain::alert_photo::AlertPhotoRepository;
 use crate::domain::iam::IamService;
-use crate::services::app::{AlertCreate, OptionalUserId, RequirePermission, UserId};
+use crate::services::alert_loader::{AlertFull, AlertList, AlertLoader};
+use crate::services::app::{AlertCreate, AlertManage, OptionalUserId, RequirePermission, UserId};
 use crate::services::{AppState, Injected};
 use crate::types::{Error, Result};
 use actix_web::web::{Data, Json, Path};
 use actix_web::{get, patch, post, HttpResponse};
 use serde::Deserialize;
+
+/// Maximum number of alerts returned by the admin review list.
+const RECENT_ALERTS_LIMIT: u64 = 100;
 
 #[derive(Debug, Deserialize)]
 pub struct PathInfo {
@@ -32,6 +36,29 @@ pub async fn add_alert_action(
 
     // The permission extractor already proved the creator holds `alert:create`.
     Ok(Json(AlertRead::from_domain(&alert, true)))
+}
+
+#[get("")]
+pub async fn list_alerts_action(
+    _user: RequirePermission<AlertManage>,
+    alerts: Injected<AlertRepository>,
+    loader: Injected<AlertLoader>,
+) -> Result<Json<AlertList>> {
+    let recent = alerts.get_recent(RECENT_ALERTS_LIMIT).await?;
+
+    Ok(Json(loader.load(&recent).await?))
+}
+
+#[get("/{id:\\d+}/full")]
+pub async fn get_alert_full_action(
+    _user: RequirePermission<AlertManage>,
+    path: Path<PathInfo>,
+    alerts: Injected<AlertRepository>,
+    loader: Injected<AlertLoader>,
+) -> Result<Json<AlertFull>> {
+    let alert = alerts.get(path.id).await?.ok_or(Error::AlertNotFound)?;
+
+    Ok(Json(loader.load_one(&alert).await?))
 }
 
 #[get("/active")]

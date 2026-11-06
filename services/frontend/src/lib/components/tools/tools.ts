@@ -4,6 +4,7 @@ import DatabaseIcon from '$lib/icons/DatabaseIcon.svelte';
 import GearIcon from '$lib/icons/GearIcon.svelte';
 import LearnIcon from '$lib/icons/LearnIcon.svelte';
 import McpIcon from '$lib/icons/McpIcon.svelte';
+import MegaphoneIcon from '$lib/icons/MegaphoneIcon.svelte';
 import MergeIcon from '$lib/icons/MergeIcon.svelte';
 import QuestionIcon from '$lib/icons/QuestionIcon.svelte';
 import SpeciesIcon from '$lib/icons/SpeciesIcon.svelte';
@@ -22,6 +23,13 @@ export type Tool = {
 };
 
 export const tools: Tool[] = [
+	{
+		name: locale.alerts(),
+		description: locale.alertsDescription(),
+		href: '/tools/alerts',
+		icon: MegaphoneIcon,
+		permission: 'alert:manage'
+	},
 	{
 		name: locale.learn(),
 		description: locale.learnDescription(),

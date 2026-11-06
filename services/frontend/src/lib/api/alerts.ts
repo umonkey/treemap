@@ -1,4 +1,4 @@
-import type { IResponse } from '$lib/types';
+import type { IResponse, IUser } from '$lib/types';
 import { getAuthHeaders, request } from './client';
 
 export interface IAlertProperties {
@@ -32,6 +32,33 @@ export interface IAlert {
 	description: string | null;
 	source: 'web' | 'telegram';
 	editable: boolean;
+}
+
+export interface IAlertRecord {
+	id: string;
+	created_at: number;
+	created_by: string;
+	source: 'web' | 'telegram';
+	username: string | null;
+	language_code: string | null;
+	lat: number | null;
+	lon: number | null;
+	description: string | null;
+	status: string;
+	response_text: string | null;
+	responded_at: number | null;
+	reported_at: number | null;
+	ping_at: number | null;
+}
+
+export interface IAlertList {
+	alerts: IAlertRecord[];
+	users: IUser[];
+}
+
+export interface IAlertFull {
+	alert: IAlertRecord;
+	users: IUser[];
 }
 
 export interface IAddAlertRequest {
@@ -80,4 +107,16 @@ export async function updateAlert(
 
 export async function getAlertPhotos(id: string): Promise<IResponse<string[]>> {
 	return await request<string[]>('GET', `v1/alerts/${id}/photos`);
+}
+
+export async function getAlertList(): Promise<IResponse<IAlertList>> {
+	return await request<IAlertList>('GET', 'v1/alerts', {
+		headers: getAuthHeaders()
+	});
+}
+
+export async function getAlertFull(id: string): Promise<IResponse<IAlertFull>> {
+	return await request<IAlertFull>('GET', `v1/alerts/${id}/full`, {
+		headers: getAuthHeaders()
+	});
 }

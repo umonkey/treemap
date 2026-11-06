@@ -17,6 +17,8 @@ interface StringList {
 	panoramasDescription: () => string;
 	users: () => string;
 	usersDescription: () => string;
+	alerts: () => string;
+	alertsDescription: () => string;
 	species: () => string;
 	speciesDescription: () => string;
 	exportData: () => string;
@@ -50,6 +52,9 @@ class English implements StringList {
 		'Add, edit and reprocess the 360° panoramas used to photo-map trees.';
 	users = () => 'Users';
 	usersDescription = () => 'Browse accounts and their roles, and edit a user when needed.';
+	alerts = () => 'Alerts';
+	alertsDescription = () =>
+		'Review citizen reports from the web and Telegram, with photos and reporter details.';
 	species = () => 'Species';
 	speciesDescription = () => 'Review and edit the tree species database.';
 	exportData = () => 'Export';
@@ -80,6 +85,9 @@ class Russian extends English {
 	panoramasDescription = () => 'Добавление и настройка уличных панорам.';
 	users = () => 'Пользователи';
 	usersDescription = () => 'Управление пользователями и правами доступа.';
+	alerts = () => 'Сигналы';
+	alertsDescription = () =>
+		'Просмотр сигналов с веб-сайта и Telegram, с фотографиями и данными автора.';
 	species = () => 'Виды';
 	speciesDescription = () => 'Просмотр и редактирование базы видов деревьев.';
 	exportData = () => 'Выгрузка';
@@ -114,6 +122,9 @@ class Armenian extends English {
 		'Ավելացրեք, խմբագրեք և վերամշակեք ծառերի քարտեզագրման 360° պանորամաները։';
 	users = () => 'Օգտատերեր';
 	usersDescription = () => 'Օգտատերերի և դերերի ցանկը՝ խմբագրման հնարավորությամբ։';
+	alerts = () => 'Ահազանգեր';
+	alertsDescription = () =>
+		'Դիտեք քաղաքացիների ահազանգերը վեբից և Telegram-ից՝ լուսանկարներով և հեղինակի տվյալներով։';
 	species = () => 'Տեսակներ';
 	speciesDescription = () => 'Դիտեք և խմբագրեք ծառերի տեսակների տվյալների բազան։';
 	exportData = () => 'Արտահանում';

@@ -47,7 +47,8 @@ Users can submit citizen feedback and remarkable sightings through the web map i
 - visualization: feedback reports are rendered as markers on the map.
 - retention: all reports are stored permanently in the database for historical analysis.
 - display logic: only reports submitted within the last 7 days are displayed on the active map to ensure current relevance.
-- detailed documentation: see `features/alerts/README.md` for the capability and `Alerts.md` for the operator reference.
+- archive review: staff with the `alert:manage` permission can browse stored reports beyond the seven-day map window and open one to see its description, location, reporter, and photos.
+- detailed documentation: see `features/alerts/README.md` for the capability.
 
 ## Model Context Protocol (MCP) server
 
