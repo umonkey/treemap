@@ -1,6 +1,7 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import { locale } from '$lib/locale';
-	import FormElement from '$lib/ui/form-element/FormElement.svelte';
+	import NumberInput from '$lib/ui/number-input/NumberInput.svelte';
 	import SelectButton from '$lib/ui/SelectButton.svelte';
 
 	const {
@@ -15,52 +16,48 @@
 		onChange: (value: number) => void;
 	} = $props();
 
-	let currentValue = $state<number | null>(null);
+	let currentValue = $state(untrack(() => value));
 
 	$effect(() => {
-		currentValue = value;
-	});
+		const incoming = value;
 
-	const handleInput = (e: Event) => {
-		const target = e.target as HTMLInputElement;
-		currentValue = isNaN(target.valueAsNumber) ? null : target.valueAsNumber;
-		if (currentValue !== null) {
-			onChange(currentValue);
-		}
-	};
+		untrack(() => {
+			if (incoming !== currentValue) currentValue = incoming;
+		});
+	});
 
 	const suggestion = $derived(
 		showDivider && currentValue !== null && currentValue > 0 ? (currentValue / 2).toFixed(1) : null
 	);
 
+	const handleChange = (v: number) => {
+		currentValue = v;
+		onChange(v);
+	};
+
 	const handleSuggestionClick = (v: string) => {
-		const num = parseFloat(v);
-		currentValue = num;
-		onChange(num);
+		const parsed = Number(v);
+		if (Number.isFinite(parsed)) {
+			currentValue = parsed;
+			onChange(parsed);
+		}
 	};
 </script>
 
-<FormElement
+<NumberInput
 	label={locale.canopyLabel()}
 	help="https://github.com/KanachYerevan/kb/wiki/Measuring-tree-crown"
+	placeholder="0.0"
+	{autofocus}
+	value={currentValue}
+	onChange={handleChange}
 >
-	<!-- svelte-ignore a11y_autofocus -->
-	<input
-		type="number"
-		value={currentValue}
-		{autofocus}
-		placeholder="0.0"
-		step="0.1"
-		min="0"
-		oninput={handleInput}
-	/>
-
 	{#if suggestion && parseFloat(suggestion) > 0}
 		<div class="suggested">
 			<SelectButton value={suggestion} label={suggestion} onClick={handleSuggestionClick} />
 		</div>
 	{/if}
-</FormElement>
+</NumberInput>
 
 <style>
 	.suggested {

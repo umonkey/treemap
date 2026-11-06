@@ -9,7 +9,7 @@
 	}>();
 
 	const normalize = (value: number | null): number | null => {
-		return value ? +(value * 100).toFixed() : null;
+		return value ? Number((value * 100).toFixed(2)) : null;
 	};
 </script>
 
