@@ -8,7 +8,13 @@ use serde_json::{json, Value};
 use std::f64::consts::PI;
 
 /// Convert a list of trees to a GeoJSON FeatureCollection response.
-pub fn respond_with_trees(trees: &[Tree]) -> HttpResponse {
+///
+/// The `genus` property is only included when `zoom` is at least 18, and only
+/// for trees with a usable genus. Lower-zoom map responses and trees without a
+/// known genus omit the property entirely.
+pub fn respond_with_trees(trees: &[Tree], zoom: Option<f64>) -> HttpResponse {
+    let include_genus = zoom.is_some_and(|z| z >= 18.0);
+
     let features: Vec<_> = trees
         .iter()
         .map(|tree| {
@@ -24,6 +30,19 @@ pub fn respond_with_trees(trees: &[Tree]) -> HttpResponse {
                 .map(|c| c / PI)
                 .unwrap_or(0.0);
 
+            let mut properties = json!({
+                "id": tree.id.to_string(),
+                "crown": crown,
+                "trunk": trunk,
+                "state": tree.state,
+            });
+
+            if include_genus {
+                if let Some(genus) = tree.get_genus() {
+                    properties["genus"] = json!(genus);
+                }
+            }
+
             json!({
                 "type": "Feature",
                 "id": tree.id.to_string(),
@@ -31,12 +50,7 @@ pub fn respond_with_trees(trees: &[Tree]) -> HttpResponse {
                     "type": "Point",
                     "coordinates": [tree.lon, tree.lat]
                 },
-                "properties": {
-                    "id": tree.id.to_string(),
-                    "crown": crown,
-                    "trunk": trunk,
-                    "state": tree.state,
-                }
+                "properties": properties
             })
         })
         .collect();
@@ -553,5 +567,66 @@ mod tests {
         assert_eq!(feature["properties"]["height_m"], 12.5);
         assert_eq!(feature["properties"]["crown_diameter_m"], 4.0);
         assert_eq!(feature["properties"]["trunk_circumference_cm"], 125.0);
+    }
+
+    fn tree(id: u64, species: &str) -> Tree {
+        Tree {
+            id,
+            lat: 40.1792,
+            lon: 44.5091,
+            state: crate::domain::tree::TreeState::Alive,
+            species: species.to_string(),
+            ..Default::default()
+        }
+    }
+
+    #[tokio::test]
+    async fn respond_with_trees_includes_genus_at_high_zoom() {
+        let response = respond_with_trees(&[tree(42, "Tilia cordata")], Some(18.0));
+
+        assert_eq!(response.status(), actix_web::http::StatusCode::OK);
+
+        let body = actix_web::body::to_bytes(response.into_body())
+            .await
+            .unwrap();
+        let value: Value = serde_json::from_slice(&body).unwrap();
+
+        assert_eq!(value["features"][0]["properties"]["genus"], "Tilia");
+    }
+
+    #[tokio::test]
+    async fn respond_with_trees_omits_genus_below_high_zoom() {
+        let response = respond_with_trees(&[tree(42, "Tilia cordata")], Some(17.9));
+
+        let body = actix_web::body::to_bytes(response.into_body())
+            .await
+            .unwrap();
+        let value: Value = serde_json::from_slice(&body).unwrap();
+
+        assert!(value["features"][0]["properties"].get("genus").is_none());
+    }
+
+    #[tokio::test]
+    async fn respond_with_trees_omits_genus_without_zoom() {
+        let response = respond_with_trees(&[tree(42, "Tilia cordata")], None);
+
+        let body = actix_web::body::to_bytes(response.into_body())
+            .await
+            .unwrap();
+        let value: Value = serde_json::from_slice(&body).unwrap();
+
+        assert!(value["features"][0]["properties"].get("genus").is_none());
+    }
+
+    #[tokio::test]
+    async fn respond_with_trees_omits_genus_for_unknown_species_at_high_zoom() {
+        let response = respond_with_trees(&[tree(42, "Unknown")], Some(19.0));
+
+        let body = actix_web::body::to_bytes(response.into_body())
+            .await
+            .unwrap();
+        let value: Value = serde_json::from_slice(&body).unwrap();
+
+        assert!(value["features"][0]["properties"].get("genus").is_none());
     }
 }

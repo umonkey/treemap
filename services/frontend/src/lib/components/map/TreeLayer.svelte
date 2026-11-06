@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { CircleLayer, GeoJSON } from 'svelte-maplibre';
+	import GenusLayer from './GenusLayer.svelte';
 	import { TreeLayerLogic } from './TreeLayer.svelte.ts';
 
 	const componentState = new TreeLayerLogic();
@@ -67,5 +68,7 @@
 				'circle-pitch-scale': 'map'
 			}}
 		/>
+
+		<GenusLayer />
 	</GeoJSON>
 {/if}

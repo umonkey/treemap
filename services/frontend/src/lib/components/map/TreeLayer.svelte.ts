@@ -18,6 +18,7 @@ type Properties = {
 	type: string;
 	crown: number;
 	trunk: number;
+	genus?: string;
 };
 
 type Feature = {

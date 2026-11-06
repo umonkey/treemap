@@ -266,16 +266,11 @@ impl Tree {
     }
 
     pub fn get_genus(&self) -> Option<String> {
-        if self.species.is_empty() {
-            return None;
-        }
-
         if self.species.to_lowercase().contains("unknown") {
             return None;
         }
 
-        let parts = self.species.split_whitespace().collect::<Vec<_>>();
-        Some(parts[0].to_string())
+        self.species.split_whitespace().next().map(str::to_string)
     }
 
     pub fn get_full_species(&self) -> Option<String> {
@@ -299,5 +294,47 @@ impl Tree {
             Some(value) => Value::from(*value as i64),
             _ => Value::Null,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn tree(species: &str) -> Tree {
+        Tree {
+            species: species.to_string(),
+            ..Default::default()
+        }
+    }
+
+    #[test]
+    fn get_genus_returns_the_first_word_of_a_multi_word_species() {
+        assert_eq!(tree("Tilia cordata").get_genus(), Some("Tilia".to_string()));
+    }
+
+    #[test]
+    fn get_genus_returns_the_whole_single_word_species() {
+        assert_eq!(tree("Tilia").get_genus(), Some("Tilia".to_string()));
+    }
+
+    #[test]
+    fn get_genus_returns_none_for_an_empty_species() {
+        assert_eq!(tree("").get_genus(), None);
+    }
+
+    #[test]
+    fn get_genus_returns_none_for_a_whitespace_only_species() {
+        assert_eq!(tree("   ").get_genus(), None);
+    }
+
+    #[test]
+    fn get_genus_returns_none_for_a_capitalized_unknown_species() {
+        assert_eq!(tree("Unknown").get_genus(), None);
+    }
+
+    #[test]
+    fn get_genus_returns_none_for_a_species_containing_unknown() {
+        assert_eq!(tree("unknown tree").get_genus(), None);
     }
 }

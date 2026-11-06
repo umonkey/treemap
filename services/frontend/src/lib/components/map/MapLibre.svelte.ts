@@ -17,6 +17,7 @@ const DRONE_LAYER = 'https://treemap-tiles.fra1.cdn.digitaloceanspaces.com/{z}/{
 
 const GOOGLE_LAYER: StyleSpecification = {
 	version: 8,
+	glyphs: `https://api.maptiler.com/fonts/{fontstack}/{range}.pbf?key=${config.mapTilerKey}`,
 	sources: {
 		'google-satellite': {
 			type: 'raster',

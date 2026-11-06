@@ -242,7 +242,9 @@ pub async fn get_trees_json_action(
 ) -> Result<HttpResponse> {
     let trees = service.get_trees(&query, *user_id).await?;
 
-    Ok(crate::responders::geo_json::respond_with_trees(&trees))
+    Ok(crate::responders::geo_json::respond_with_trees(
+        &trees, query.zoom,
+    ))
 }
 
 #[get("/search.csv")]
