@@ -4,7 +4,8 @@ import { getAuthHeaders, request } from './client';
 export interface IInstance {
 	name: string;
 	description: string | null;
-	osm_pull: boolean;
+	enable_osm_pull: boolean;
+	enable_osm_push: boolean;
 	osm_bot_id: string | null;
 }
 
@@ -17,7 +18,8 @@ export async function getInstance(): Promise<IResponse<IInstance>> {
 export async function updateInstance(props: {
 	name?: string;
 	description?: string | null;
-	osm_pull?: boolean;
+	enable_osm_pull?: boolean;
+	enable_osm_push?: boolean;
 	osm_bot_id?: string | null;
 }): Promise<IResponse<void>> {
 	return await request<void>('PATCH', 'api/instance', {

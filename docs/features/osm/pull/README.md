@@ -4,7 +4,7 @@ The `treemap osm-pull` command synchronizes data from OSM using a two-phase proc
 
 ## Instances
 
-The command iterates over enabled instances where `osm_pull` is enabled, ordered by id.
+The command iterates over enabled instances where `enable_osm_pull` is enabled, ordered by id.
 
 Each instance must have a complete bounding box (`bbox_w`, `bbox_s`, `bbox_e`, `bbox_n`). When the bbox is incomplete, the command logs a warning and skips the instance. The bot user id comes from `osm_bot_id`; when it is `NULL` or `0`, the command falls back to `bot_user_id` in `config.toml`. If the effective id is `0`, the instance is skipped with a warning.
 

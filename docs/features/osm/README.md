@@ -39,13 +39,16 @@ See `pull/README.md` for the detailed algorithm, cache behaviour, and failure ha
 
 New trees are pushed to OSM using the `treemap osm-push` command. We look in the `trees` table to find trees that don't have an `osm_id`, create a new changeset and send 100 of those trees to OSM using the API. We then set the new received `osm_id` in the `trees` table. This is how we push new trees to OSM. This process normally runs every hour.
 
+The command exits early when no enabled instance has `enable_osm_push` set. Because `trees` is not scoped to an instance, the flag currently acts as a deployment-wide switch: if any enabled instance enables push, the command pushes all eligible new trees.
+
 We don't currently push updates to existing trees.
 
 ## Configuration
 
-Pull settings are configured per instance in the `instances` table, either through the `/tools/configure` page or directly with SQL:
+OSM settings are configured per instance in the `instances` table, either through the `/tools/configure` page or directly with SQL:
 
-- `osm_pull`: enables pulling for the instance. Pull is disabled when the value is `NULL` or `0`.
+- `enable_osm_pull`: enables pulling for the instance. The column is `NOT NULL DEFAULT 0`, and pull is disabled when the value is `0`.
+- `enable_osm_push`: enables pushing trees to OSM. The column is `NOT NULL DEFAULT 0`, and `osm-push` exits early when no enabled instance has the value set to `1`. Because `trees` is not scoped to an instance, the flag currently acts as a deployment-wide switch rather than limiting the push to the instance's area.
 - `osm_bot_id`: the local user id used for changes pulled from OSM. When `NULL`, the command falls back to `bot_user_id` in `config.toml`.
 - `bbox_w`, `bbox_s`, `bbox_e`, `bbox_n`: the bounding box that defines the instance area. Pull is skipped with a warning when the bbox is incomplete.
 

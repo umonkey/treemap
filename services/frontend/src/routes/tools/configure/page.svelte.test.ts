@@ -35,7 +35,8 @@ describe('configure PageState', () => {
 			data: {
 				name: 'Example Trees',
 				description: null,
-				osm_pull: true,
+				enable_osm_pull: true,
+				enable_osm_push: false,
 				osm_bot_id: '134022734140280832'
 			}
 		});
@@ -46,6 +47,7 @@ describe('configure PageState', () => {
 
 		expect(state.name).toBe('Example Trees');
 		expect(state.osmPull).toBe(true);
+		expect(state.osmPush).toBe(false);
 		expect(state.osmBotId).toBe('134022734140280832');
 	});
 
@@ -56,6 +58,7 @@ describe('configure PageState', () => {
 		state.name = 'Example Trees';
 		state.description = 'A test instance.';
 		state.osmPull = true;
+		state.osmPush = true;
 		state.osmBotId = ' 42 ';
 
 		await state.apply();
@@ -63,9 +66,34 @@ describe('configure PageState', () => {
 		expect(mockedUpdateInstance).toHaveBeenCalledWith({
 			name: 'Example Trees',
 			description: 'A test instance.',
-			osm_pull: true,
+			enable_osm_pull: true,
+			enable_osm_push: true,
 			osm_bot_id: '42'
 		});
+	});
+
+	it('round-trips a disabled push flag', async () => {
+		mockedGetInstance.mockResolvedValue({
+			status: 200,
+			data: {
+				name: 'Example Trees',
+				description: null,
+				enable_osm_pull: false,
+				enable_osm_push: false,
+				osm_bot_id: null
+			}
+		});
+		mockedUpdateInstance.mockResolvedValue({ status: 202 });
+
+		const state = new PageState();
+
+		await state.reload();
+		await state.apply();
+
+		expect(state.osmPush).toBe(false);
+		expect(mockedUpdateInstance).toHaveBeenCalledWith(
+			expect.objectContaining({ enable_osm_push: false })
+		);
 	});
 
 	it('sends an empty string to clear the bot id', async () => {

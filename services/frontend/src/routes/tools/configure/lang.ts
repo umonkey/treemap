@@ -6,6 +6,7 @@ interface StringList {
 	description: () => string;
 	osmIntegration: () => string;
 	osmPull: () => string;
+	osmPush: () => string;
 	osmBotId: () => string;
 	osmBotIdHint: () => string;
 	apply: () => string;
@@ -20,6 +21,7 @@ class English implements StringList {
 	description = () => 'Description';
 	osmIntegration = () => 'OSM Integration';
 	osmPull = () => 'Pull new trees from OSM';
+	osmPush = () => 'Push new trees to OSM';
 	osmBotId = () => 'OSM bot user ID';
 	osmBotIdHint = () => 'Local user id used for changes pulled from OSM.';
 	apply = () => 'Apply';
@@ -34,6 +36,7 @@ class Russian extends English {
 	description = () => 'Описание';
 	osmIntegration = () => 'Интеграция с OSM';
 	osmPull = () => 'Импортировать деревья из OSM';
+	osmPush = () => 'Отправлять деревья в OSM';
 	osmBotId = () => 'ID пользователя бота OSM';
 	osmBotIdHint = () => 'ID локального пользователя для изменений из OSM.';
 	apply = () => 'Применить';
@@ -48,6 +51,7 @@ class Armenian extends English {
 	description = () => 'Նկարագրություն';
 	osmIntegration = () => 'OSM ինտեգրում';
 	osmPull = () => 'Ներմուծել ծառեր OSM-ից';
+	osmPush = () => 'Ուղարկել ծառերը OSM';
 	osmBotId = () => 'OSM բոտի օգտատիրոջ ID';
 	osmBotIdHint = () => 'OSM-ից ներմուծված փոփոխությունների համար օգտագործվող տեղական օգտատիրոջ ID։';
 	apply = () => 'Կիրառել';

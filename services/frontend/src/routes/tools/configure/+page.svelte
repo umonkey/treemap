@@ -50,6 +50,12 @@
 				onChange={(value) => (pageState.osmPull = value)}
 			/>
 
+			<CheckInput
+				label={locale.osmPush()}
+				value={pageState.osmPush}
+				onChange={(value) => (pageState.osmPush = value)}
+			/>
+
 			<TextInput
 				label={locale.osmBotId()}
 				value={pageState.osmBotId}

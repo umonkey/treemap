@@ -22,7 +22,8 @@ impl InstanceRepository {
         id: u64,
         name: &str,
         description: Option<&str>,
-        osm_pull: bool,
+        enable_osm_pull: bool,
+        enable_osm_push: bool,
         osm_bot_id: Option<u64>,
     ) -> Result<()> {
         let query = UpdateQuery::new(TABLE)
@@ -32,7 +33,8 @@ impl InstanceRepository {
                 "description",
                 Value::from(description.map(|s| s.to_string())),
             )
-            .with_value("osm_pull", Value::from(osm_pull))
+            .with_value("enable_osm_pull", Value::from(enable_osm_pull))
+            .with_value("enable_osm_push", Value::from(enable_osm_push))
             .with_value("osm_bot_id", Value::from(osm_bot_id));
 
         self.db.update(query).await?;
@@ -43,7 +45,18 @@ impl InstanceRepository {
     pub async fn get_enabled_with_osm_pull(&self) -> Result<Vec<Instance>> {
         let query = SelectQuery::new(TABLE)
             .with_condition("enabled", Value::from(1))
-            .with_condition("osm_pull", Value::from(1))
+            .with_condition("enable_osm_pull", Value::from(1))
+            .with_order("id");
+
+        let records = self.db.get_records(query).await?;
+
+        records.iter().map(Instance::from_attributes).collect()
+    }
+
+    pub async fn get_enabled_with_osm_push(&self) -> Result<Vec<Instance>> {
+        let query = SelectQuery::new(TABLE)
+            .with_condition("enabled", Value::from(1))
+            .with_condition("enable_osm_push", Value::from(1))
             .with_order("id");
 
         let records = self.db.get_records(query).await?;

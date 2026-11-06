@@ -17,7 +17,8 @@ pub struct Instance {
     pub bbox_e: Option<f64>,
     pub bbox_n: Option<f64>,
     pub osm_bot_id: Option<u64>,
-    pub osm_pull: bool,
+    pub enable_osm_pull: bool,
+    pub enable_osm_push: bool,
 }
 
 impl Instance {
@@ -34,7 +35,8 @@ impl Instance {
             bbox_e: attributes.get_f64("bbox_e")?,
             bbox_n: attributes.get_f64("bbox_n")?,
             osm_bot_id: attributes.get_u64("osm_bot_id")?,
-            osm_pull: attributes.get_bool("osm_pull")?.unwrap_or(false),
+            enable_osm_pull: attributes.get_bool("enable_osm_pull")?.unwrap_or(false),
+            enable_osm_push: attributes.get_bool("enable_osm_push")?.unwrap_or(false),
         })
     }
 
@@ -65,7 +67,14 @@ impl Instance {
             ("bbox_e".to_string(), Value::from(self.bbox_e)),
             ("bbox_n".to_string(), Value::from(self.bbox_n)),
             ("osm_bot_id".to_string(), Value::from(self.osm_bot_id)),
-            ("osm_pull".to_string(), Value::from(self.osm_pull)),
+            (
+                "enable_osm_pull".to_string(),
+                Value::from(self.enable_osm_pull),
+            ),
+            (
+                "enable_osm_push".to_string(),
+                Value::from(self.enable_osm_push),
+            ),
         ])
     }
 }

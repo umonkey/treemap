@@ -36,12 +36,17 @@ impl InstanceService {
         self.instances.get_enabled_with_osm_pull().await
     }
 
+    pub async fn list_for_osm_push(&self) -> Result<Vec<Instance>> {
+        self.instances.get_enabled_with_osm_push().await
+    }
+
     pub async fn update(&self, user_id: u64, domain: &str, req: InstanceUpdate) -> Result<()> {
         let instance = self.get(domain).await?;
 
         let name = req.name.unwrap_or_else(|| instance.name.clone());
         let description = req.description.or_else(|| instance.description.clone());
-        let osm_pull = req.osm_pull.unwrap_or(instance.osm_pull);
+        let enable_osm_pull = req.enable_osm_pull.unwrap_or(instance.enable_osm_pull);
+        let enable_osm_push = req.enable_osm_push.unwrap_or(instance.enable_osm_push);
 
         let osm_bot_id = match req.osm_bot_id {
             None => instance.osm_bot_id,
@@ -75,7 +80,8 @@ impl InstanceService {
                 instance.id,
                 &name,
                 description.as_deref(),
-                osm_pull,
+                enable_osm_pull,
+                enable_osm_push,
                 osm_bot_id,
             )
             .await?;
@@ -94,10 +100,17 @@ impl InstanceService {
             );
         }
 
-        if osm_pull != instance.osm_pull {
+        if enable_osm_pull != instance.enable_osm_pull {
             info!(
                 "User {user_id} changed instance {} OSM pull: {} -> {}.",
-                instance.domain, instance.osm_pull, osm_pull
+                instance.domain, instance.enable_osm_pull, enable_osm_pull
+            );
+        }
+
+        if enable_osm_push != instance.enable_osm_push {
+            info!(
+                "User {user_id} changed instance {} OSM push: {} -> {}.",
+                instance.domain, instance.enable_osm_push, enable_osm_push
             );
         }
 
@@ -168,6 +181,8 @@ mod tests {
 
         assert_eq!(instance.name, "Example Trees");
         assert_eq!(instance.description.as_deref(), Some("A test instance."));
+        assert!(!instance.enable_osm_pull);
+        assert!(!instance.enable_osm_push);
     }
 
     #[tokio::test]
@@ -282,7 +297,8 @@ mod tests {
                 42,
                 "example.com",
                 InstanceUpdate {
-                    osm_pull: Some(true),
+                    enable_osm_pull: Some(true),
+                    enable_osm_push: Some(true),
                     osm_bot_id: Some("134022734140280832".to_string()),
                     ..Default::default()
                 },
@@ -295,7 +311,8 @@ mod tests {
             .await
             .expect("Error getting instance.");
 
-        assert!(instance.osm_pull);
+        assert!(instance.enable_osm_pull);
+        assert!(instance.enable_osm_push);
         assert_eq!(instance.osm_bot_id, Some(134022734140280832));
     }
 
@@ -308,7 +325,7 @@ mod tests {
                 42,
                 "example.com",
                 InstanceUpdate {
-                    osm_pull: Some(true),
+                    enable_osm_pull: Some(true),
                     osm_bot_id: Some("not-a-number".to_string()),
                     ..Default::default()
                 },
@@ -322,8 +339,33 @@ mod tests {
             .await
             .expect("Error getting instance.");
 
-        assert!(!instance.osm_pull);
+        assert!(!instance.enable_osm_pull);
         assert_eq!(instance.osm_bot_id, None);
+    }
+
+    #[tokio::test]
+    async fn test_update_osm_push_independently() {
+        let (_state, service) = setup().await;
+
+        service
+            .update(
+                42,
+                "example.com",
+                InstanceUpdate {
+                    enable_osm_push: Some(true),
+                    ..Default::default()
+                },
+            )
+            .await
+            .expect("Error updating instance.");
+
+        let instance = service
+            .get("example.com")
+            .await
+            .expect("Error getting instance.");
+
+        assert!(!instance.enable_osm_pull);
+        assert!(instance.enable_osm_push);
     }
 
     #[tokio::test]
@@ -369,7 +411,7 @@ mod tests {
         state
             .database()
             .execute_sql(
-                "INSERT INTO instances (domain, name, description, email, enabled, osm_pull) VALUES \
+                "INSERT INTO instances (domain, name, description, email, enabled, enable_osm_pull) VALUES \
                  ('enabled.example.com', 'Enabled', NULL, 'enabled@example.com', 1, 1), \
                  ('disabled.example.com', 'Disabled', NULL, 'disabled@example.com', 0, 1), \
                  ('no-pull.example.com', 'No Pull', NULL, 'nopull@example.com', 1, 0)",
@@ -382,6 +424,31 @@ mod tests {
             .list_for_osm_pull()
             .await
             .expect("Error listing instances for OSM pull.");
+
+        assert_eq!(instances.len(), 1);
+        assert_eq!(instances[0].domain, "enabled.example.com");
+    }
+
+    #[tokio::test]
+    async fn test_list_for_osm_push() {
+        let (state, service) = setup().await;
+
+        state
+            .database()
+            .execute_sql(
+                "INSERT INTO instances (domain, name, description, email, enabled, enable_osm_push) VALUES \
+                 ('enabled.example.com', 'Enabled', NULL, 'enabled@example.com', 1, 1), \
+                 ('disabled.example.com', 'Disabled', NULL, 'disabled@example.com', 0, 1), \
+                 ('no-push.example.com', 'No Push', NULL, 'nopush@example.com', 1, 0)",
+                &[],
+            )
+            .await
+            .expect("Error inserting instances.");
+
+        let instances = service
+            .list_for_osm_push()
+            .await
+            .expect("Error listing instances for OSM push.");
 
         assert_eq!(instances.len(), 1);
         assert_eq!(instances[0].domain, "enabled.example.com");
