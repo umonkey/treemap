@@ -5,7 +5,9 @@
 
 	const { tree }: { tree: ITree } = $props();
 
-	const src = $derived(tree.thumbnail_id ? routes.file(tree.thumbnail_id) : FALLBACK);
+	const src = $derived(
+		tree.thumbnail_url ?? (tree.thumbnail_id ? routes.file(tree.thumbnail_id) : FALLBACK)
+	);
 	const alt = $derived(tree.species);
 
 	let img: HTMLImageElement;

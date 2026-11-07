@@ -1,5 +1,6 @@
 use super::schemas::*;
 use crate::domain::alert::AlertService;
+use crate::domain::file::FileService;
 use crate::domain::panorama::PanoramaService;
 use crate::domain::photo::PhotoService;
 use crate::domain::tree::TreeService;
@@ -21,6 +22,7 @@ pub struct QueueConsumer {
     users: Arc<UserService>,
     panoramas: Arc<PanoramaService>,
     alerts: Arc<AlertService>,
+    files: Arc<FileService>,
 }
 
 impl QueueConsumer {
@@ -70,6 +72,10 @@ impl QueueConsumer {
         match QueueCommand::decode(msg) {
             Ok(Some(QueueCommand::ResizeImage(message))) => {
                 self.photos.resize_image(message.id).await?;
+            }
+
+            Ok(Some(QueueCommand::ProcessFile(message))) => {
+                self.files.process(message.id).await?;
             }
 
             Ok(Some(QueueCommand::UpdateTreeAddress(message))) => {
@@ -124,6 +130,7 @@ impl Injectable for QueueConsumer {
             users: Arc::new(ctx.build::<UserService>()?),
             panoramas: Arc::new(ctx.build::<PanoramaService>()?),
             alerts: Arc::new(ctx.build::<AlertService>()?),
+            files: Arc::new(ctx.build::<FileService>()?),
         })
     }
 }

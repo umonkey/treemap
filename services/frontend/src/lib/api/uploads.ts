@@ -42,7 +42,10 @@ export async function uploadSingleFile(
 	onProgress?: (p: number) => void
 ): Promise<IResponse<string>> {
 	const ticketRes = await request<IUploadTicket>('POST', 'v1/upload', {
-		body: JSON.stringify({ size: file.size }),
+		body: JSON.stringify({
+			size: file.size,
+			content_type: file.type || 'application/octet-stream'
+		}),
 		headers: {
 			'Content-Type': 'application/json',
 			...getAuthHeaders()

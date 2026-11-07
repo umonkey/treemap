@@ -67,6 +67,10 @@ impl Bucket {
             .await
     }
 
+    pub async fn copy_file(&self, from: &str, to: &str) -> Result<()> {
+        self.driver.copy_file(&self.bucket, from, to).await
+    }
+
     pub async fn delete_file(&self, path: &str) -> Result<()> {
         self.driver.delete_file(&self.bucket, path).await
     }
@@ -104,8 +108,20 @@ impl FileBucket {
         self.storage.read_file(&id.to_string()).await
     }
 
+    pub async fn read_file_at(&self, path: &str) -> Result<Vec<u8>> {
+        self.storage.read_file(path).await
+    }
+
     pub async fn create_upload_url(&self, id: u64) -> Result<String> {
         self.storage.create_upload_url(&id.to_string()).await
+    }
+
+    pub async fn create_upload_url_at(&self, path: &str) -> Result<String> {
+        self.storage.create_upload_url(path).await
+    }
+
+    pub async fn copy_file(&self, from: &str, to: &str) -> Result<()> {
+        self.storage.copy_file(from, to).await
     }
 
     pub async fn exists(&self, key: &str) -> Result<bool> {

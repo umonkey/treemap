@@ -176,8 +176,8 @@ export class Gallery {
 
 			return {
 				id: file.id,
-				small: routes.file(file.small_id),
-				large: routes.file(file.source_id ?? file.large_id),
+				small: file.urls?.small ?? routes.file(file.small_id),
+				large: file.urls?.large ?? routes.file(file.source_id ?? file.large_id),
 				label,
 				description: fileAttribution(file) || label
 			};

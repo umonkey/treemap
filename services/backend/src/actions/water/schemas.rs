@@ -5,12 +5,16 @@ use serde::{Deserialize, Serialize};
 pub struct AddWaterPayload {
     pub lat: f64,
     pub lon: f64,
+    #[serde(default)]
+    pub files: Vec<String>,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct UpdateWaterPayload {
     pub lat: f64,
     pub lon: f64,
+    #[serde(default)]
+    pub files: Vec<String>,
 }
 
 #[derive(Debug, Deserialize)]

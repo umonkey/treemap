@@ -268,8 +268,9 @@ impl Chatbot {
         self.bot.download_file(&file.path, &mut buffer).await?;
 
         let id = get_unique_id()?;
-        let photo_path = format!("alerts/{}.jpg", id);
-        self.storage.write_file(&photo_path, buffer).await?;
+        let key = format!("files/{}/original.jpg", id);
+        let size_bytes = buffer.len() as i64;
+        self.storage.write_file(&key, buffer).await?;
 
         let _ = self
             .bot
@@ -279,10 +280,16 @@ impl Chatbot {
             }])
             .await;
 
-        let is_first = self.photos.add_to_alert(alert.id, &photo_path).await?;
+        self.photos
+            .create_file(id, alert.created_by, size_bytes)
+            .await?;
+        let is_first = self
+            .photos
+            .add_to_alert(alert.id, id, alert.created_by)
+            .await?;
         self.alerts.touch_ping(alert.id).await?;
 
-        log::info!("File added to alert: {} for alert {}", photo_path, alert.id);
+        log::info!("File added to alert: {} for alert {}", key, alert.id);
 
         Ok(is_first)
     }

@@ -35,6 +35,15 @@ impl QueueCommand {
                 Ok(Some(QueueCommand::ResizeImage(ResizeImageMessage { id })))
             }
 
+            "ProcessFile" => {
+                let id = params["id"].as_u64().ok_or("missing id").map_err(|e| {
+                    error!("Error extracting file id: {e}, payload={json}");
+                    Error::Queue
+                })?;
+
+                Ok(Some(QueueCommand::ProcessFile(ProcessFileMessage { id })))
+            }
+
             "UpdateTreeAddress" => {
                 let id = params["id"].as_u64().ok_or("missing id").map_err(|e| {
                     error!("Error extracting tree id: {e}, payload={json}");
@@ -167,6 +176,33 @@ mod tests {
     }
 
     #[test]
+    fn test_decode_process_file() {
+        let json = r#"{"command":"ProcessFile","params":{"id":12345}}"#;
+
+        let command = QueueCommand::decode(json)
+            .expect("Error parsing command.")
+            .expect("No command found.");
+
+        match command {
+            QueueCommand::ProcessFile(message) => {
+                assert_eq!(message.id, 12345);
+            }
+
+            _ => panic!("Expected ProcessFile, got {command:?}"),
+        }
+    }
+
+    #[test]
+    fn test_encode_process_file() {
+        let message = ProcessFileMessage { id: 12345 };
+
+        assert_eq!(
+            message.encode(),
+            r#"{"command":"ProcessFile","params":{"id":12345}}"#
+        );
+    }
+
+    #[test]
     fn test_decode_update_panorama_stats() {
         let json = r#"{"command":"UpdatePanoramaStats","params":{"id":12345}}"#;
 
@@ -222,5 +258,39 @@ mod tests {
             message.encode(),
             r#"{"command":"AddAlertPhoto","params":{"alert_id":12345,"file_id":67890}}"#
         );
+    }
+
+    #[test]
+    fn test_every_command_decodes() {
+        let messages = [
+            ResizeImageMessage { id: 12345 }.encode(),
+            ProcessFileMessage { id: 12345 }.encode(),
+            UpdateTreeAddressMessage { id: 12345 }.encode(),
+            AddPhotoMessage {
+                tree_id: 12345,
+                file_id: 67890,
+            }
+            .encode(),
+            UpdateUserpicMessage {
+                user_id: 12345,
+                file_id: 67890,
+            }
+            .encode(),
+            UpdatePanoramaStatsMessage { id: 12345 }.encode(),
+            AddAlertPhotoMessage {
+                alert_id: 12345,
+                file_id: 67890,
+            }
+            .encode(),
+        ];
+
+        for json in messages {
+            assert!(
+                QueueCommand::decode(&json)
+                    .expect("Error parsing command.")
+                    .is_some(),
+                "Missing decoder for message: {json}"
+            );
+        }
     }
 }

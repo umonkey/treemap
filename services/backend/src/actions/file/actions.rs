@@ -4,21 +4,18 @@ use serde::Deserialize;
 use std::time::{Duration, SystemTime};
 
 use super::schemas::FileStatusResponse;
-use crate::domain::tree_image::TreeImageService;
+use crate::domain::file::FileService;
 use crate::services::app::UserId;
 use crate::services::Injected;
-use crate::types::Result;
+use crate::types::{Error, Result};
 
 #[derive(Debug, Deserialize)]
 pub struct PathInfo {
     pub id: u64,
 }
 
-async fn get_file_real(
-    tree_image_service: Injected<TreeImageService>,
-    id: u64,
-) -> Result<HttpResponse> {
-    let file = tree_image_service.get_file(id).await?;
+async fn get_file_real(file_service: Injected<FileService>, id: u64) -> Result<HttpResponse> {
+    let (file, mime_type) = file_service.read_legacy(id).await?;
 
     let etag = ETag(EntityTag::new_strong(id.to_string()));
 
@@ -32,7 +29,7 @@ async fn get_file_real(
     let expiration_header = Expires(expiration.into());
 
     let res = HttpResponse::Ok()
-        .content_type("image/jpeg")
+        .content_type(mime_type)
         .insert_header(cache_control)
         .insert_header(etag)
         .insert_header(expiration_header)
@@ -43,36 +40,40 @@ async fn get_file_real(
 
 #[get("/{id:\\d+}.jpg")]
 pub async fn get_file_jpg(
-    tree_image_service: Injected<TreeImageService>,
+    file_service: Injected<FileService>,
     path: Path<PathInfo>,
 ) -> Result<HttpResponse> {
-    get_file_real(tree_image_service, path.id).await
+    get_file_real(file_service, path.id).await
 }
 
 #[get("/{id:\\d+}")]
 pub async fn get_file(
-    tree_image_service: Injected<TreeImageService>,
+    file_service: Injected<FileService>,
     path: Path<PathInfo>,
 ) -> Result<HttpResponse> {
-    get_file_real(tree_image_service, path.id).await
+    get_file_real(file_service, path.id).await
 }
 
 #[get("/{id:\\d+}/status")]
 pub async fn get_file_status_action(
-    tree_image_service: Injected<TreeImageService>,
+    file_service: Injected<FileService>,
     path: Path<PathInfo>,
 ) -> Result<Json<FileStatusResponse>> {
-    let status = tree_image_service.get_file_status(path.id).await?;
-    Ok(Json(status.into()))
+    let file = file_service
+        .get(path.id)
+        .await?
+        .ok_or(Error::FileNotFound)?;
+
+    Ok(Json(file.into()))
 }
 
 #[delete("/{id:\\d+}")]
 pub async fn delete_file_action(
     user_id: UserId,
-    tree_image_service: Injected<TreeImageService>,
+    file_service: Injected<FileService>,
     path: Path<PathInfo>,
 ) -> Result<HttpResponse> {
-    tree_image_service.delete_file(*user_id, path.id).await?;
+    file_service.delete(*user_id, path.id).await?;
 
     Ok(HttpResponse::Accepted().finish())
 }

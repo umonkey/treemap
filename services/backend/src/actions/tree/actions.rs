@@ -5,6 +5,7 @@ use super::schemas::*;
 use crate::actions::tree::schemas::ObservationRead;
 use crate::actions::user::UserList;
 use crate::domain::comment::CommentService;
+use crate::domain::file::parse_file_ids;
 use crate::domain::like::LikeService;
 use crate::domain::observation::ObservationService;
 use crate::domain::panorama::PanoramaService;
@@ -14,6 +15,7 @@ use crate::domain::tree::ReplaceTreeRequest;
 use crate::domain::tree::{
     AddTreeRequest, GetTreesRequest, TreeService, TreeStats, UpdateTreeRequest,
 };
+use crate::domain::tree_file::TreeFileService;
 use crate::domain::tree_image::TreeImageService;
 use crate::domain::user::UserService;
 use crate::services::app::{OptionalUserId, RequirePermission, TreeCreate, UserId};
@@ -84,11 +86,11 @@ pub async fn add_photos_action(
     user_id: UserId,
     path: Path<PathInfo>,
     payload: Json<UpdatePhotos>,
-    service: Injected<TreeService>,
+    service: Injected<TreeFileService>,
 ) -> Result<HttpResponse> {
-    service
-        .add_tree_photos(path.id, *user_id, payload.files.clone())
-        .await?;
+    let file_ids = parse_file_ids(&payload.files)?;
+
+    service.attach(path.id, *user_id, file_ids).await?;
 
     Ok(HttpResponse::Accepted().finish())
 }
@@ -488,11 +490,11 @@ pub async fn update_tree_thumbnail_action(
     user_id: UserId,
     path: Path<PathInfo>,
     payload: Json<ThumbnailPayload>,
-    service: Injected<TreeService>,
+    service: Injected<TreeFileService>,
 ) -> Result<HttpResponse> {
     let file_id = payload.file.parse().map_err(|_| Error::BadImage)?;
 
-    service.update_thumbnail(path.id, file_id, *user_id).await?;
+    service.set_thumbnail(path.id, file_id, *user_id).await?;
 
     Ok(HttpResponse::Accepted()
         .content_type("application/json")

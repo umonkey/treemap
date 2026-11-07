@@ -8,52 +8,14 @@ use std::panic;
 pub struct ThumbnailerService;
 
 impl ThumbnailerService {
+    /// Resize an image to fit a square, always re-encoding it as JPEG.
     pub fn resize(&self, data: &[u8], size: u32) -> Result<Vec<u8>> {
-        debug!("Reading an image to resize it to {} px.", size);
-
-        let img = self.decode(data)?;
-
-        if img.width() <= size && img.height() <= size {
-            debug!("Image too small, no need to downsize.");
-            return Ok(data.to_vec());
-        }
-
-        info!(
-            "Resizing an {}x{} image to {} px.",
-            img.width(),
-            img.height(),
-            size
-        );
-
-        let rotated = self.autorotate(img, data)?;
-        let resized = rotated.thumbnail(size, size);
-
-        let mut buf: Vec<u8> = Vec::new();
-
-        resized
-            .into_rgb8()
-            .write_to(&mut Cursor::new(&mut buf), image::ImageFormat::Jpeg)
-            .map_err(|e| {
-                error!("Error writing image: {e:?}");
-                Error::ImageResize
-            })?;
-
-        debug!("Resize successful.");
-
-        Ok(buf)
+        self.to_jpeg(data, size)
     }
 
-    pub fn validate(&self, data: &[u8]) -> Result<()> {
-        self.decode(data)?;
-        Ok(())
-    }
-
-    /// Convert any supported image into an oriented JPEG.
-    ///
-    /// The image is never returned as-is: JPEG has no alpha channel and the
-    /// target path always ends with `.jpg`, so re-encoding is required.
-    pub fn to_jpeg(&self, data: &[u8], max_size: u32) -> Result<Vec<u8>> {
-        debug!("Reading an image to convert it to JPEG.");
+    /// Resize an image and return the JPEG bytes plus its dimensions.
+    pub fn variant(&self, data: &[u8], max_size: u32) -> Result<(Vec<u8>, u32, u32)> {
+        debug!("Reading an image to build a {} px variant.", max_size);
 
         let img = self.decode(data)?;
 
@@ -66,13 +28,14 @@ impl ThumbnailerService {
 
         let rotated = self.autorotate(img, data)?;
 
-        // `thumbnail` upscales small images in image 0.25, so only resize
-        // when a side exceeds the limit.
         let resized = if rotated.width() <= max_size && rotated.height() <= max_size {
             rotated
         } else {
             rotated.thumbnail(max_size, max_size)
         };
+
+        let width = resized.width();
+        let height = resized.height();
 
         let mut buf: Vec<u8> = Vec::new();
 
@@ -84,9 +47,23 @@ impl ThumbnailerService {
                 Error::ImageResize
             })?;
 
-        debug!("JPEG conversion successful.");
+        debug!("Variant conversion successful, {}x{}.", width, height);
 
-        Ok(buf)
+        Ok((buf, width, height))
+    }
+
+    pub fn validate(&self, data: &[u8]) -> Result<()> {
+        self.decode(data)?;
+        Ok(())
+    }
+
+    /// Convert any supported image into an oriented JPEG.
+    ///
+    /// The image is never returned as-is: JPEG has no alpha channel and the
+    /// target path always ends with `.jpg`, so re-encoding is required.
+    pub fn to_jpeg(&self, data: &[u8], max_size: u32) -> Result<Vec<u8>> {
+        self.variant(data, max_size)
+            .map(|(bytes, _width, _height)| bytes)
     }
 
     pub fn decode(&self, data: &[u8]) -> Result<DynamicImage> {
@@ -336,5 +313,22 @@ mod tests {
         let image = read_image(jpeg);
         assert_eq!(image.width(), 10);
         assert_eq!(image.height(), 10);
+    }
+
+    #[test]
+    fn variant_returns_dimensions() {
+        let thumbnailer = setup();
+
+        let data = include_bytes!("test/tree.jpg");
+        let (jpeg, width, height) = thumbnailer
+            .variant(data.as_ref(), 100)
+            .expect("Error building variant.");
+
+        assert_eq!(width, 100);
+        assert_eq!(height, 66);
+
+        let image = read_image(jpeg);
+        assert_eq!(image.width(), 100);
+        assert_eq!(image.height(), 66);
     }
 }

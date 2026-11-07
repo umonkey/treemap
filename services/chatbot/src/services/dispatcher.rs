@@ -55,6 +55,14 @@ impl AlertDispatcher {
         }
     }
 
+    fn file_url(&self, key: &str) -> String {
+        format!(
+            "{}/{}",
+            self.files_base_url.trim_end_matches('/'),
+            key.trim_start_matches('/')
+        )
+    }
+
     async fn dispatch_once(&self) -> anyhow::Result<()> {
         if self.recipients.is_empty() {
             return Ok(());
@@ -77,10 +85,8 @@ impl AlertDispatcher {
                 .get_photos_by_alert_id(alert.id)
                 .await
                 .unwrap_or_default();
-            let attachment_urls: Vec<String> = photos
-                .into_iter()
-                .map(|p| format!("{}{}", self.files_base_url, p))
-                .collect();
+            let attachment_urls: Vec<String> =
+                photos.into_iter().map(|p| self.file_url(&p)).collect();
             let attachments_opt = if attachment_urls.is_empty() {
                 None
             } else {
