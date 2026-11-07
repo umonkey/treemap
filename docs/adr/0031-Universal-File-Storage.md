@@ -7,7 +7,7 @@
 
 Uploads grew feature by feature. Tree photos used `uploads` as a temporary ticket table and `trees_images` to hold three bare S3 keys (`source_id`, `small_id`, `large_id`). Telegram alert photos used `chatbot_alerts_photos` with a path. Water sources had no photos. Each path reimplemented key naming, ownership checks, and response shaping, and the API returned backend-proxied numeric ids rather than stable URLs.
 
-The old pipeline also had correctness problems. The thumbnailer returned the original bytes when an image was already small, so EXIF metadata, including GPS coordinates, could be served under a `.jpg` key that was not actually JPEG. Several endpoints lacked ownership or completion checks. There was no migration runner; schema changes were raw SQL applied by hand.
+The old pipeline also had correctness problems. The thumbnailer returned the original bytes when an image was already small, so EXIF metadata, including GPS coordinates, could be served under a `.jpg` key that was not actually JPEG. Several endpoints lacked ownership or completion checks.
 
 We need one file domain that any feature can attach to, with explicit derived variants, stable public URLs, and a migration that does not require downtime.
 
@@ -53,7 +53,7 @@ This is a deliberate v1 trade-off. A hard takedown would need a private bucket o
 
 Migration `028-file-storage.sql` is purely additive. It creates the new tables and adds `trees.thumbnail_file_id`; it does not drop or rewrite legacy tables or columns.
 
-A migration runner records applied migrations in `schema_migrations`. `bin/treemap migrate --baseline` records migrations `001` to `027` as applied without executing them, because the base schema already contains their result. `bin/treemap migrate` then applies `028`.
+Apply `028-file-storage.sql` with the existing manual migration process. It is additive.
 
 `bin/treemap migrate-files` backfills `trees_images` into the new tables. It reuses `source_id` as the file id when present, falling back to the row id. It inserts the file, the `original`, `small`, and `large` variants, the `trees_files` link, and `files_fallback` rows that map the old bare keys to the new file and variant. It copies objects server-side with `CopyObject`, skips missing or zero keys, and is idempotent and resumable in batches. It then sets `trees.thumbnail_file_id` by mapping the old `thumbnail_id` through the `small` fallback.
 
@@ -76,5 +76,5 @@ The legacy `GET /v1/files/{id}.jpg` route resolves `files_fallback` first, then 
 - The legacy route, `trees_images`, `uploads`, `chatbot_alerts_photos`, and `files_fallback` remain until the cleanup issue ([#313](https://github.com/umonkey/treemap/issues/313)) is executed. `files_fallback` is migration-only and should not be used by new code.
 - Video is schema-ready only. `kind` and the `poster` variant name exist, but there is no transcoding or poster generation in this change.
 - There is no deduplication and no content hash. Uploading the same bytes twice creates two files.
-- The migration runner becomes the supported way to change the schema. Hand-applied SQL is no longer expected.
+- The file backfill is a separate CLI command, so operators can run it independently of the schema change.
 - `trees.thumbnail_id` no longer means a `small_id`; new code reads `thumbnail_file_id`. The old column is only a migration input.

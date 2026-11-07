@@ -21,7 +21,6 @@ fn usage() {
     println!("  dispatch-queue          -- run the queue consumer daemon");
     println!("  export-database         -- create an anonymized data export");
     println!("  merge-replaced-trees [N] -- link duplicate trees as replaced");
-    println!("  migrate [--baseline]    -- apply database migrations");
     println!("  migrate-files           -- backfill legacy tree images into files");
     println!("  migrate-timestamps      -- backfill update timestamps");
     println!("  osm-pull                -- get new trees from OpenStreetMap");
@@ -89,10 +88,6 @@ async fn main() -> std::io::Result<()> {
         }
         "merge-replaced-trees" => {
             merge_replaced_trees_command().await;
-            return Ok(());
-        }
-        "migrate" => {
-            migrate_command().await;
             return Ok(());
         }
         "migrate-files" => {

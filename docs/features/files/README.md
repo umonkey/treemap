@@ -47,8 +47,8 @@ The move from the previous photo pipeline is designed to avoid downtime. The new
 The sequence is:
 
 - Back up the database and record the current object count.
-- Deploy the release that includes the migration runner and the new schema.
-- Record the existing schema as applied, then apply the new schema.
+- Deploy the release.
+- Apply `028-file-storage.sql` with the usual database tooling.
 - Run the photo backfill against a copy of the database and a staging bucket first, and compare counts and sample links.
 - Run the backfill in production. It is idempotent and resumable, so an interrupted run can be repeated.
 - Deploy the client that uses the new links.
