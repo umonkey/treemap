@@ -20,6 +20,7 @@ Before modifying or creating files, you MUST load the appropriate skill via the 
 | :--- | :--- | :--- |
 | Svelte components, pages, or frontend logic | `svelte` | `services/frontend/src/**`, `*.svelte`, `*.svelte.ts` |
 | Rust backend API or chatbot development | `rust` | `services/backend/**`, `services/chatbot/**`, `*.rs` |
+| Adding or changing a backend queue command | `queue-commands` | `services/backend/src/services/queue_consumer/**`, `services/backend/src/services/queue_encoder/**` |
 | Extending the backend JSON-RPC MCP server | `mcp-server` | `services/backend/src/services/mcp/**` |
 | Creating or reporting GitHub repository issues | `github-issues` | Invoking `gh issue create`, reporting bugs/tasks |
 | Docker image builds and CI caching | `docker-build-caching` | `Dockerfile`, `services/*/Dockerfile`, `.github/workflows/deploy-*.yml` |

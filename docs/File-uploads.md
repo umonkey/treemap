@@ -13,6 +13,8 @@ Files live in a single S3-compatible bucket. Keys are derived from the file id a
 
 The public base address is configured as `files_base_url` in `config.toml`. Production uses `https://treemap.fra1.cdn.digitaloceanspaces.com/`, so a variant key such as `files/123/small.jpg` becomes `https://treemap.fra1.cdn.digitaloceanspaces.com/files/123/small.jpg`. The base must not repeat the `files/` prefix. API responses join this base with the variant key. The URLs are stable and are not presigned.
 
+Every object is written with an explicit `Content-Type` derived from its key extension (`image/jpeg` for the JPEG variants, `video/mp4` for MP4, and so on). S3-compatible storage does not infer it from the extension, and a server-side copy preserves the source metadata by default, so the backfill replaces it explicitly. A missing type makes the browser download the file instead of displaying it.
+
 ## Data model
 
 - `files`: one row per logical file. Holds `id`, `kind` (`photo`, `video`, `other`), `status` (`pending`, `processing`, `ready`, `failed`), `is_visible`, `created_at`, `created_by`, `ready_at`, `deleted_at`, `deleted_by`.
