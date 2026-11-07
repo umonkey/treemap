@@ -10,8 +10,8 @@ use async_trait::async_trait;
 use aws_sdk_s3::presigning::PresigningConfig;
 use aws_sdk_s3::primitives::ByteStream;
 use aws_sdk_s3::types::{
-    CompletedMultipartUpload, CompletedPart as S3CompletedPart, Delete, ObjectCannedAcl,
-    ObjectIdentifier,
+    CompletedMultipartUpload, CompletedPart as S3CompletedPart, Delete, MetadataDirective,
+    ObjectCannedAcl, ObjectIdentifier,
 };
 use aws_sdk_s3::Client;
 use log::{debug, error, info};
@@ -48,6 +48,24 @@ impl S3StorageDriver {
         info!("S3 storage driver initialized.");
 
         Ok(Self { client })
+    }
+}
+
+fn content_type_for_key(key: &str) -> &'static str {
+    let Some((_, extension)) = key.rsplit_once('.') else {
+        return "application/octet-stream";
+    };
+
+    match extension.to_ascii_lowercase().as_str() {
+        "jpg" | "jpeg" => "image/jpeg",
+        "png" => "image/png",
+        "webp" => "image/webp",
+        "gif" => "image/gif",
+        "mp4" => "video/mp4",
+        "mov" => "video/quicktime",
+        "json" => "application/json",
+        "gz" => "application/gzip",
+        _ => "application/octet-stream",
     }
 }
 
@@ -99,7 +117,13 @@ impl StorageDriver for S3StorageDriver {
         let body = ByteStream::from(bytes.to_vec());
         let start = Instant::now();
 
-        let mut req = self.client.put_object().bucket(bucket).key(path).body(body);
+        let mut req = self
+            .client
+            .put_object()
+            .bucket(bucket)
+            .key(path)
+            .body(body)
+            .content_type(content_type_for_key(path));
 
         if public {
             req = req.acl(ObjectCannedAcl::PublicRead);
@@ -285,6 +309,8 @@ impl StorageDriver for S3StorageDriver {
             .copy_source(format!("{bucket}/{from}"))
             .key(to)
             .acl(ObjectCannedAcl::PublicRead)
+            .metadata_directive(MetadataDirective::Replace)
+            .content_type(content_type_for_key(to))
             .send()
             .await;
 
@@ -400,5 +426,33 @@ impl StorageDriver for S3StorageDriver {
         }
 
         Ok(files)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_content_type_for_key() {
+        let cases = [
+            ("files/1/small.jpg", "image/jpeg"),
+            ("files/1/large.jpg", "image/jpeg"),
+            ("files/1/original.jpeg", "image/jpeg"),
+            ("files/1/original.png", "image/png"),
+            ("files/1/original.webp", "image/webp"),
+            ("files/1/original.gif", "image/gif"),
+            ("files/1/original.mp4", "video/mp4"),
+            ("files/1/original.mov", "video/quicktime"),
+            ("files/1/original.json", "application/json"),
+            ("files/1/original.gz", "application/gzip"),
+            ("files/1/original.bin", "application/octet-stream"),
+            ("files/1/original", "application/octet-stream"),
+            ("163702859915988992", "application/octet-stream"),
+        ];
+
+        for (key, expected) in cases {
+            assert_eq!(content_type_for_key(key), expected, "key: {key}");
+        }
     }
 }
