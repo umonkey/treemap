@@ -1,6 +1,6 @@
 use super::schemas::{AddAlertPayload, AlertRead, UpdateAlertPayload};
 use crate::domain::alert::{AlertRepository, AlertService};
-use crate::domain::alert_photo::AlertPhotoRepository;
+use crate::domain::alert_file::AlertFileService;
 use crate::domain::iam::IamService;
 use crate::services::alert_loader::{AlertFull, AlertList, AlertLoader};
 use crate::services::app::{AlertCreate, AlertManage, OptionalUserId, RequirePermission, UserId};
@@ -22,10 +22,10 @@ pub struct PathInfo {
 pub async fn add_alert_action(
     user_id: RequirePermission<AlertCreate>,
     payload: Json<AddAlertPayload>,
-    service: Injected<AlertService>,
+    service: Injected<AlertFileService>,
 ) -> Result<Json<AlertRead>> {
     let alert = service
-        .create(
+        .create_alert(
             *user_id,
             payload.lat,
             payload.lon,
@@ -107,15 +107,10 @@ pub async fn update_alert_action(
 pub async fn get_alert_photos_action(
     state: Data<AppState>,
     path: Path<PathInfo>,
-    photos: Injected<AlertPhotoRepository>,
+    photos: Injected<AlertFileService>,
 ) -> Result<Json<Vec<String>>> {
-    let alert_photos = photos.get_by_alert(path.id).await?;
     let base_url = &state.config.files_base_url;
-
-    let urls = alert_photos
-        .into_iter()
-        .map(|p| format!("{}{}", base_url, p.photo_path))
-        .collect();
+    let urls = photos.get_urls(path.id, base_url).await?;
 
     Ok(Json(urls))
 }

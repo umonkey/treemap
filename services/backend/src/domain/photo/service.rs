@@ -2,7 +2,9 @@
 //!
 //! This message is sent whenever a user adds a file to a tree as a photo.
 
+use crate::domain::file::FileRepository;
 use crate::domain::tree::TreeRepository;
+use crate::domain::tree_file::TreeFileService;
 use crate::domain::tree_image::{TreeImage, TreeImageRepository};
 use crate::domain::upload::{Upload, UploadRepository};
 use crate::infra::storage::FileBucket;
@@ -19,6 +21,8 @@ const LARGE_SIZE: u32 = 2000;
 pub struct PhotoService {
     tree_images: Arc<TreeImageRepository>,
     uploads: Arc<UploadRepository>,
+    files: Arc<FileRepository>,
+    tree_files: Arc<TreeFileService>,
     storage: Arc<FileBucket>,
     thumbnailer: Arc<ThumbnailerService>,
     trees: Arc<TreeRepository>,
@@ -30,6 +34,21 @@ impl PhotoService {
     // Reads the source file, resizes it to small and large veresions,
     // saves them in the file storage, and adds a tree photo record.
     pub async fn add_tree_photo(&self, tree_id: u64, file_id: u64) -> Result<()> {
+        // New universal files are attached directly; legacy uploads keep the
+        // old resize-and-record path below.
+        if let Some(file) = self.files.get(file_id).await? {
+            self.tree_files
+                .attach(tree_id, file.created_by, vec![file_id])
+                .await?;
+
+            info!(
+                "File {} attached to tree {} through the compatibility path.",
+                file_id, tree_id
+            );
+
+            return Ok(());
+        }
+
         let source = self
             .uploads
             .get(file_id)
@@ -175,6 +194,8 @@ impl Injectable for PhotoService {
         Ok(Self {
             tree_images: Arc::new(ctx.build::<TreeImageRepository>()?),
             uploads: Arc::new(ctx.build::<UploadRepository>()?),
+            files: Arc::new(ctx.build::<FileRepository>()?),
+            tree_files: Arc::new(ctx.build::<TreeFileService>()?),
             storage: ctx.storage(),
             thumbnailer: Arc::new(ctx.build::<ThumbnailerService>()?),
             trees: Arc::new(ctx.build::<TreeRepository>()?),

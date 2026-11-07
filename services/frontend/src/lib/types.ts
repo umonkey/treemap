@@ -23,6 +23,14 @@ export interface ITreeFile {
 	source_id?: string;
 	added_at?: number;
 	added_by?: string;
+	urls?: {
+		original?: string | null;
+		large?: string | null;
+		small?: string | null;
+	};
+	kind?: string;
+	width?: number | null;
+	height?: number | null;
 }
 
 export interface IUser {
@@ -84,6 +92,7 @@ export interface ITree {
 	replaces: string | null;
 	replaced_by: string | null;
 	thumbnail_id: string | null;
+	thumbnail_url?: string | null;
 	files: ITreeFile[];
 }
 

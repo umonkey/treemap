@@ -3,7 +3,6 @@ use serde::Serialize;
 use crate::actions::file::FileRead;
 use crate::actions::user::UserRead;
 use crate::domain::tree::Tree;
-use crate::domain::tree_image::TreeImage;
 use crate::domain::user::User;
 
 #[derive(Clone, Debug, Default, Serialize)]
@@ -21,6 +20,7 @@ pub struct TreeRead {
     pub added_by: String,
     pub updated_at: u64,
     pub thumbnail_id: Option<String>,
+    pub thumbnail_url: Option<String>,
     pub year: Option<i64>,
     pub address: Option<String>,
     pub like_count: i64,
@@ -51,6 +51,7 @@ pub struct SingleTreeResponse {
     pub added_by: String,
     pub address: Option<String>,
     pub thumbnail_id: Option<String>,
+    pub thumbnail_url: Option<String>,
     pub year: Option<i64>,
     pub like_count: i64,
     pub comment_count: u64,
@@ -98,6 +99,7 @@ impl TreeRead {
             added_by: tree.added_by.to_string(),
             updated_at: tree.updated_at,
             thumbnail_id,
+            thumbnail_url: None,
             year: tree.year,
             address: tree.address.clone(),
             like_count: tree.like_count,
@@ -108,7 +110,7 @@ impl TreeRead {
 }
 
 impl SingleTreeResponse {
-    pub fn from_tree(tree: &Tree, files: &[TreeImage], users: &[User]) -> SingleTreeResponse {
+    pub fn from_tree(tree: &Tree, files: &[FileRead], users: &[User]) -> SingleTreeResponse {
         let thumbnail_id = tree.thumbnail_id.map(|value| value.to_string());
 
         let users = users.iter().map(UserRead::from).collect();
@@ -129,12 +131,13 @@ impl SingleTreeResponse {
             added_by: tree.added_by.to_string(),
             address: tree.address.clone(),
             thumbnail_id,
+            thumbnail_url: None,
             year: tree.year,
             like_count: tree.like_count,
             comment_count: tree.comment_count,
             replaces: Self::itos(tree.replaces),
             replaced_by: Self::itos(tree.replaced_by),
-            files: files.iter().map(|f| f.into()).collect(),
+            files: files.to_vec(),
             users,
         }
     }

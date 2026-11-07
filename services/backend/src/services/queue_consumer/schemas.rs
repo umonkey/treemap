@@ -7,6 +7,12 @@ pub struct ResizeImageMessage {
     pub id: u64,
 }
 
+// Process a universal file upload into its derived variants.
+#[derive(Debug, Deserialize, Serialize)]
+pub struct ProcessFileMessage {
+    pub id: u64,
+}
+
 // Request tree street address using Nominatim.
 #[derive(Debug, Deserialize, Serialize)]
 pub struct UpdateTreeAddressMessage {
@@ -40,9 +46,11 @@ pub struct UpdatePanoramaStatsMessage {
     pub id: u64,
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Serialize)]
 pub enum QueueCommand {
     ResizeImage(ResizeImageMessage),
+    ProcessFile(ProcessFileMessage),
     UpdateTreeAddress(UpdateTreeAddressMessage),
     AddPhoto(AddPhotoMessage),
     UpdateUserpic(UpdateUserpicMessage),
@@ -54,6 +62,18 @@ impl ResizeImageMessage {
     pub fn encode(&self) -> String {
         json!({
             "command": "ResizeImage",
+            "params": {
+                "id": self.id,
+            },
+        })
+        .to_string()
+    }
+}
+
+impl ProcessFileMessage {
+    pub fn encode(&self) -> String {
+        json!({
+            "command": "ProcessFile",
             "params": {
                 "id": self.id,
             },
@@ -113,6 +133,7 @@ impl UpdatePanoramaStatsMessage {
 }
 
 impl AddAlertPhotoMessage {
+    #[allow(dead_code)]
     pub fn encode(&self) -> String {
         json!({
             "command": "AddAlertPhoto",

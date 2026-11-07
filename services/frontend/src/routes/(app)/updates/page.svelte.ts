@@ -23,7 +23,7 @@ const formatTile = (tree: ITree): Tile => {
 		link: routes.treeDetails(tree.id),
 		species: formatSpecies(tree.species),
 		address: tree.address,
-		image: tree.thumbnail_id ? routes.file(tree.thumbnail_id) : null,
+		image: tree.thumbnail_url ?? (tree.thumbnail_id ? routes.file(tree.thumbnail_id) : null),
 		updated_at: formatDate(tree.added_at)
 	};
 };

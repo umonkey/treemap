@@ -164,6 +164,42 @@ impl StorageDriver for LocalStorageDriver {
         Err(Error::FileUpload)
     }
 
+    async fn copy_file(&self, bucket: &str, from: &str, to: &str) -> Result<()> {
+        let from_path = format!("{}/{}/{}", self.folder, bucket, from);
+        let to_path = format!("{}/{}/{}", self.folder, bucket, to);
+
+        let parent = match std::path::Path::new(&to_path).parent() {
+            Some(value) => value,
+
+            None => {
+                error!("Error resolving folder for {}: no parent.", to_path);
+                return Err(Error::FileUpload);
+            }
+        };
+
+        if let Err(e) = fs::create_dir_all(parent).await {
+            error!("Error creating folder {}: {:?}", parent.display(), e);
+            return Err(Error::FileUpload);
+        }
+
+        match fs::copy(&from_path, &to_path).await {
+            Ok(_) => {
+                debug!("File {}/{} copied to {}.", bucket, from, to);
+                Ok(())
+            }
+
+            Err(ref e) if e.kind() == std::io::ErrorKind::NotFound => {
+                debug!("File {}/{} not found, cannot copy.", bucket, from);
+                Err(Error::FileNotFound)
+            }
+
+            Err(e) => {
+                error!("Error copying file {}/{}: {:?}", bucket, from, e);
+                Err(Error::FileUpload)
+            }
+        }
+    }
+
     async fn delete_file(&self, bucket: &str, path: &str) -> Result<()> {
         let file_path = format!("{}/{}/{}", self.folder, bucket, path);
         match fs::remove_file(&file_path).await {

@@ -1,23 +1,16 @@
 //! Handler for new file uploads.
 //!
-//! Receives file contents and information on who uploaded it.
-//! Creates a new records in the `uploads` table for this file,
-//! saves the file in the configured file storage (local or remote).
-//! Returns new file id.
+//! Creates a `files` ticket and returns a presigned upload URL.
 
-use super::models::Upload;
-use super::repository::UploadRepository;
 use crate::actions::tree::FileUploadResponse;
-use crate::infra::storage::FileBucket;
+use crate::domain::file::{FileKind, FileService};
 use crate::services::*;
 use crate::types::*;
-use crate::utils::{get_timestamp, get_unique_id};
 use log::info;
 use std::sync::Arc;
 
 pub struct UploadService {
-    uploads: Arc<UploadRepository>,
-    storage: Arc<FileBucket>,
+    files: Arc<FileService>,
 }
 
 impl UploadService {
@@ -25,35 +18,31 @@ impl UploadService {
         &self,
         user_id: u64,
         size: u64,
+        content_type: String,
+        kind: Option<String>,
         remote_addr: String,
         user_agent: String,
     ) -> Result<FileUploadResponse> {
-        let file_id = get_unique_id()?;
-        let url = self.storage.create_upload_url(file_id).await?;
+        let kind = kind.as_deref().map(FileKind::from_str).unwrap_or_default();
 
-        self.uploads
-            .add(&Upload {
-                id: file_id,
-                added_by: user_id,
-                added_at: get_timestamp(),
-                size,
-                uploaded_at: None,
-            })
+        let (id, url) = self
+            .files
+            .create_ticket(user_id, size, &content_type, kind)
             .await?;
 
         info!(
-            "Created upload ticket for user {user_id}, id={file_id}, size={size}; addr={remote_addr} agent={user_agent}"
+            "Created upload ticket for user {user_id}, id={id}, size={size}; addr={remote_addr} agent={user_agent}"
         );
 
         Ok(FileUploadResponse {
-            id: file_id.to_string(),
+            id: id.to_string(),
             url: Some(url),
         })
     }
 
-    pub async fn finish_upload(&self, id: u64) -> Result<()> {
-        self.uploads.finish(id, get_timestamp()).await?;
-        info!("Upload {id} finished");
+    pub async fn finish_upload(&self, user_id: u64, id: u64) -> Result<()> {
+        self.files.finish(user_id, id).await?;
+        info!("Upload {id} finished by user {user_id}");
         Ok(())
     }
 }
@@ -61,8 +50,7 @@ impl UploadService {
 impl Injectable for UploadService {
     fn inject(ctx: &dyn Context) -> Result<Self> {
         Ok(Self {
-            uploads: Arc::new(ctx.build::<UploadRepository>()?),
-            storage: ctx.storage(),
+            files: Arc::new(ctx.build::<FileService>()?),
         })
     }
 }

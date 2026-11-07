@@ -275,6 +275,32 @@ impl StorageDriver for S3StorageDriver {
         Ok(())
     }
 
+    async fn copy_file(&self, bucket: &str, from: &str, to: &str) -> Result<()> {
+        debug!("Copying file {}/{} to {} in S3.", bucket, from, to);
+
+        let res = self
+            .client
+            .copy_object()
+            .bucket(bucket)
+            .copy_source(format!("{bucket}/{from}"))
+            .key(to)
+            .acl(ObjectCannedAcl::PublicRead)
+            .send()
+            .await;
+
+        match res {
+            Ok(_) => {
+                info!("File {}/{} copied to {}.", bucket, from, to);
+                Ok(())
+            }
+
+            Err(e) => {
+                error!("Error copying file {}/{} to {}: {:?}", bucket, from, to, e);
+                Err(Error::FileUpload)
+            }
+        }
+    }
+
     async fn delete_file(&self, bucket: &str, path: &str) -> Result<()> {
         debug!("Deleting file {}/{} from S3.", bucket, path);
         let res = self

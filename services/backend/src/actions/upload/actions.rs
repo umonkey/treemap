@@ -21,7 +21,14 @@ pub async fn upload_action(
     let user_agent = get_user_agent(&req).ok_or(Error::UserAgentNotSet)?;
 
     let rec = upload_service
-        .create_upload_ticket(*user_id, payload.size, remote_addr, user_agent)
+        .create_upload_ticket(
+            *user_id,
+            payload.size,
+            payload.content_type.clone(),
+            payload.kind.clone(),
+            remote_addr,
+            user_agent,
+        )
         .await?;
 
     Ok(Json(rec))
@@ -30,9 +37,10 @@ pub async fn upload_action(
 #[post("/{id}/finish")]
 pub async fn finish_upload_action(
     upload_service: Injected<UploadService>,
+    user_id: UserId,
     path: Path<u64>,
 ) -> Result<Json<()>> {
     let id = path.into_inner();
-    upload_service.finish_upload(id).await?;
+    upload_service.finish_upload(*user_id, id).await?;
     Ok(Json(()))
 }

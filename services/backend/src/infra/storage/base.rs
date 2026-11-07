@@ -28,6 +28,7 @@ pub trait StorageDriver: Send + Sync {
         upload_id: &str,
         part_number: i32,
     ) -> Result<String>;
+    async fn copy_file(&self, bucket: &str, from: &str, to: &str) -> Result<()>;
     async fn delete_file(&self, bucket: &str, path: &str) -> Result<()>;
     async fn delete_files(&self, bucket: &str, paths: &[String]) -> Result<()>;
     async fn list_files(&self, bucket: &str, prefix: &str) -> Result<Vec<StorageFile>>;

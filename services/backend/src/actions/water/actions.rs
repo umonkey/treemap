@@ -1,5 +1,7 @@
 use super::schemas::*;
+use crate::domain::file::parse_file_ids;
 use crate::domain::water::{AddWaterRequest, GetWaterRequest, UpdateWaterRequest, WaterService};
+use crate::domain::water_file::WaterFileService;
 use crate::services::app::{RequirePermission, WaterManage};
 use crate::services::Injected;
 use crate::types::Result;
@@ -11,6 +13,7 @@ pub async fn add_water_action(
     user_id: RequirePermission<WaterManage>,
     payload: Json<AddWaterPayload>,
     service: Injected<WaterService>,
+    files: Injected<WaterFileService>,
 ) -> Result<Json<WaterSourceRead>> {
     let source = service
         .add_source(AddWaterRequest {
@@ -19,6 +22,9 @@ pub async fn add_water_action(
             user_id: *user_id,
         })
         .await?;
+
+    let file_ids = parse_file_ids(&payload.files)?;
+    files.attach(source.id, *user_id, file_ids).await?;
 
     Ok(Json(WaterSourceRead::from_source(&source)))
 }
@@ -29,6 +35,7 @@ pub async fn update_water_action(
     path: Path<PathInfo>,
     payload: Json<UpdateWaterPayload>,
     service: Injected<WaterService>,
+    files: Injected<WaterFileService>,
 ) -> Result<Json<WaterSourceRead>> {
     let source = service
         .update_source(UpdateWaterRequest {
@@ -38,6 +45,9 @@ pub async fn update_water_action(
             user_id: *user_id,
         })
         .await?;
+
+    let file_ids = parse_file_ids(&payload.files)?;
+    files.attach(source.id, *user_id, file_ids).await?;
 
     Ok(Json(WaterSourceRead::from_source(&source)))
 }
