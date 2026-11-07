@@ -27,6 +27,16 @@ The API follows the Action-Domain-Responder model.
 - Use macro-based routing (e.g., `#[get("/...")]`) for web actions.
 - Action modules should define their router function (e.g., `pub fn tree_router(cfg: &mut ServiceConfig)`) in the `mod.rs` file, importing handlers from `actions.rs` via `pub use actions::*;`.
 
+## Routing
+
+Public API resources live under `/v1` (trees, alerts, files, upload, species, water, users, me, stats, streets, heatmap, comments, settings, duplicates, training). `/api` is reserved for operator and admin surfaces (panoramas, export, app settings, instance). Do not add a public resource under `/api`; join the existing `/v1` scope and its router.
+
+## Permissions
+
+- Declare a permission as a marker type implementing `Permission` in `src/services/app/require_permission.rs`, then gate the handler with `RequirePermission<P>`.
+- A new permission needs a migration that inserts it into `permissions` and grants it in `role_permissions`, plus a matching `dev/seed-sqlite.sql` update.
+- `admin` bypasses checks at runtime, but `/v1/me` only reports explicitly granted permissions. Persist the `admin` grant too, or the UI will hide the feature from admins.
+
 ## Queue Commands
 
 A queued command exists in three hand-maintained places, and the compiler does not cross-check them:
@@ -49,6 +59,8 @@ A missing decoder arm compiles cleanly. `QueueCommand::decode` returns `Ok(None)
 ## Database Migrations
 
 Schema changes are raw forward-only SQL files in `dev/migrations/`, applied manually with the existing database tooling. Do not add a general migration runner or a `schema_migrations` workflow. Feature-specific backfills are separate, idempotent CLI commands such as `migrate-files`.
+
+SQLite cannot change a column's nullability in place; rebuild the table in the `006`/`024` style (create new, copy, drop, rename, recreate indexes). The application never enables `PRAGMA foreign_keys`, so `DROP TABLE` does not cascade to child tables; do not enable it in a migration. `PRAGMA defer_foreign_keys` does not suppress `ON DELETE CASCADE`. Follow the `database-migrations` skill for the cross-service checklist.
 
 ## Useful commands
 

@@ -1,6 +1,6 @@
 ---
 name: markdown
-description: Formatting standards and Prettier post-processing rules for documentation. Use ONLY when authoring or editing markdown files in docs/ or architectural documentation.
+description: Formatting standards and Prettier post-processing for markdown. Use for formatting and layout of docs/ and architectural documentation; for capability pages under docs/features/<domain>/, load feature-docs first and apply this skill for formatting.
 ---
 
 ## Markdown Formatting Rules

@@ -30,6 +30,10 @@ This directory contains the Telegram chatbot service and its background workers.
   - `secrets.rs`: file-based and environment-based secret loaders.
 - `docker/rootfs/etc/supervisor.d/`: production supervisor process configurations (`chatbot.ini`, `dispatch-alerts.ini`, `dispatch-outbox.ini`, `dispatch-pings.ini`).
 
+## Database Schema
+
+Schema changes are owned by `services/backend/dev/migrations/`. When a shared table changes, follow the `database-migrations` skill and update the chatbot models, repositories, and daemons in the same change.
+
 ## CLI Commands
 
 The binary (`/app/bin/chatbot`) supports subcommands:

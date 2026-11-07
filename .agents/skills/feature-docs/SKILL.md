@@ -1,6 +1,6 @@
 ---
 name: feature-docs
-description: Audience, structure, and content rules for platform capability documentation under docs/features/<domain>/, written for the adopting organisation's technical decision-maker and the staff who operate a tenant or deployment.
+description: Audience, structure, and content rules for capability documentation under docs/features/<domain>/. Use when creating or editing those pages; defers to markdown for formatting. Written for the adopting organisation's technical decision-maker and the staff who operate a tenant or deployment.
 ---
 
 # Feature Documentation

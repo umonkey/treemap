@@ -1,6 +1,6 @@
 ---
 name: svelte
-description: Svelte 5 runes and separated-logic class architecture for services/frontend/. Use when creating, modifying, or refactoring *.svelte and *.svelte.ts files.
+description: Svelte 5 runes, separated-logic class architecture, and component conventions (forms, buttons, localization) for services/frontend/. Use when creating, modifying, or refactoring *.svelte and *.svelte.ts files.
 ---
 
 # Svelte 5 Architecture Directives
@@ -42,6 +42,12 @@ Placement:
 - Pages: `lang.ts` in the route directory, e.g. `src/routes/tools/lang.ts`, imported as `import { locale } from './lang';`.
 
 When a page needs both the local and the global locale, alias the global one as `import { locale as appLocale } from '$lib/locale';`.
+
+## Form and Button semantics
+
+- `Button.svelte` defaults to `type="submit"`. Pass `type="button"` for any action that does not submit the surrounding form.
+- `Dialog.svelte` renders its content inside a `<form>`. A submit-typed button there reloads the page and overrides `goto()`; this was the Sign Out bug.
+- Wrap forms in `Form.svelte` to get `preventDefault` and Ctrl+Enter submission. Do not hand-roll `onsubmit`.
 
 ## Implementation Templates & Reference
 
