@@ -1,6 +1,6 @@
 import { mapBus } from '$lib/buses/mapBus';
 import { goto } from '$lib/routes';
-import { mapLayerStore } from '$lib/stores/mapLayerStore';
+import { stickyPointsLayer } from '$lib/stores/mapLayerStore';
 import { mapPoiStore } from '$lib/stores/mapPoi.svelte';
 import type { ILatLng } from '$lib/types';
 import type { Map, MapLibreEvent } from 'maplibre-gl';
@@ -86,7 +86,7 @@ export class NearestPoiLogic {
 			return;
 		}
 
-		if (!get(mapLayerStore).stickyPoints || !this.visible) {
+		if (!get(stickyPointsLayer) || !this.visible) {
 			return;
 		}
 

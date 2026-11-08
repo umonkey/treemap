@@ -22,8 +22,8 @@ export class LayerSelector {
 		this.treeHints = layers.treeHints ?? false;
 		this.water = layers.water ?? true;
 		this.genus = layers.genus ?? true;
-		this.stickyPoints = layers.stickyPoints ?? false;
 		this.center = layers.center ?? false;
+		this.stickyPoints = (layers.stickyPoints ?? false) && this.center;
 	};
 
 	public toggle = () => {
@@ -115,6 +115,10 @@ export class LayerSelector {
 	};
 
 	public toggleStickyPoints = () => {
+		if (!this.center) {
+			return;
+		}
+
 		this.stickyPoints = !this.stickyPoints;
 
 		mapLayerStore.update((store) => {
@@ -126,8 +130,17 @@ export class LayerSelector {
 	public toggleCenter = () => {
 		this.center = !this.center;
 
+		if (!this.center) {
+			this.stickyPoints = false;
+		}
+
 		mapLayerStore.update((store) => {
 			store.center = this.center;
+
+			if (!this.center) {
+				store.stickyPoints = false;
+			}
+
 			return store;
 		});
 	};

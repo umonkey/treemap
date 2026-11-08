@@ -1,6 +1,6 @@
 import { get } from 'svelte/store';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { combineQuery, mapLayerStore, missingQuery } from './mapLayerStore';
+import { combineQuery, mapLayerStore, missingQuery, stickyPointsLayer } from './mapLayerStore';
 
 const resetStore = () => {
 	mapLayerStore.set({
@@ -95,5 +95,39 @@ describe('missingQuery', () => {
 		});
 
 		expect(get(missingQuery)).toBe('no:height no:observations no:photo');
+	});
+});
+
+describe('stickyPointsLayer', () => {
+	beforeEach(resetStore);
+
+	it('is disabled when the crosshair is off even if sticky points are stored as enabled', () => {
+		mapLayerStore.update((store) => {
+			store.center = false;
+			store.stickyPoints = true;
+			return store;
+		});
+
+		expect(get(stickyPointsLayer)).toBe(false);
+	});
+
+	it('is enabled when both the crosshair and sticky points are on', () => {
+		mapLayerStore.update((store) => {
+			store.center = true;
+			store.stickyPoints = true;
+			return store;
+		});
+
+		expect(get(stickyPointsLayer)).toBe(true);
+	});
+
+	it('is disabled when sticky points are off', () => {
+		mapLayerStore.update((store) => {
+			store.center = true;
+			store.stickyPoints = false;
+			return store;
+		});
+
+		expect(get(stickyPointsLayer)).toBe(false);
 	});
 });

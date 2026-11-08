@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { mapLayerStore } from '$lib/stores/mapLayerStore';
 import { LayerSelector } from './LayerSelector.svelte.ts';
 
-const resetStore = (genus: boolean) => {
+const resetStore = (genus = true, center = false, stickyPoints = false) => {
 	mapLayerStore.set({
 		base: 'light',
 		drone: false,
@@ -12,8 +12,8 @@ const resetStore = (genus: boolean) => {
 		treeHints: false,
 		water: true,
 		genus,
-		stickyPoints: false,
-		center: false,
+		stickyPoints,
+		center,
 		missingHeight: false,
 		missingDiameter: false,
 		missingCircumference: false,
@@ -57,5 +57,65 @@ describe('LayerSelector', () => {
 
 		expect(selector.genus).toBe(true);
 		expect(get(mapLayerStore).genus).toBe(true);
+	});
+
+	it('reports sticky points as off when the crosshair is off even if stored as enabled', () => {
+		resetStore(true, false, true);
+
+		const selector = new LayerSelector();
+		selector.init();
+
+		expect(selector.center).toBe(false);
+		expect(selector.stickyPoints).toBe(false);
+	});
+
+	it('reports sticky points as on when both are stored as enabled', () => {
+		resetStore(true, true, true);
+
+		const selector = new LayerSelector();
+		selector.init();
+
+		expect(selector.center).toBe(true);
+		expect(selector.stickyPoints).toBe(true);
+	});
+
+	it('clears sticky points when the crosshair is turned off', () => {
+		resetStore(true, true, true);
+
+		const selector = new LayerSelector();
+		selector.init();
+
+		selector.toggleCenter();
+
+		expect(selector.center).toBe(false);
+		expect(selector.stickyPoints).toBe(false);
+		expect(get(mapLayerStore).center).toBe(false);
+		expect(get(mapLayerStore).stickyPoints).toBe(false);
+	});
+
+	it('does not toggle or persist sticky points while the crosshair is off', () => {
+		resetStore(true, false, false);
+
+		const selector = new LayerSelector();
+		selector.init();
+
+		selector.toggleStickyPoints();
+
+		expect(selector.stickyPoints).toBe(false);
+		expect(get(mapLayerStore).stickyPoints).toBe(false);
+	});
+
+	it('does not turn sticky points back on when the crosshair is re-enabled', () => {
+		resetStore(true, false, false);
+
+		const selector = new LayerSelector();
+		selector.init();
+
+		selector.toggleCenter();
+
+		expect(selector.center).toBe(true);
+		expect(selector.stickyPoints).toBe(false);
+		expect(get(mapLayerStore).center).toBe(true);
+		expect(get(mapLayerStore).stickyPoints).toBe(false);
 	});
 });

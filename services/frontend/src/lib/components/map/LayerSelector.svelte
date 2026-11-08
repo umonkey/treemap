@@ -83,14 +83,15 @@
 			<div class="sep">
 				<div class="other-options">
 					<CheckInput
-						value={componentState.stickyPoints}
-						label={locale.optionStickyPoints()}
-						onChange={componentState.toggleStickyPoints}
-					/>
-					<CheckInput
 						value={componentState.center}
 						label={locale.optionCenter()}
 						onChange={componentState.toggleCenter}
+					/>
+					<CheckInput
+						value={componentState.stickyPoints}
+						label={locale.optionStickyPoints()}
+						onChange={componentState.toggleStickyPoints}
+						disabled={!componentState.center}
 					/>
 					<CheckInput
 						value={componentState.genus}

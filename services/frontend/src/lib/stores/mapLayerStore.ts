@@ -39,10 +39,14 @@ const getDefaultState = (): IMapLayers => {
 	};
 };
 
-const getInitialState = (): IMapLayers => ({
-	...getDefaultState(),
-	...ls.read<Partial<IMapLayers>>('mapLayerStore')
-});
+const getInitialState = (): IMapLayers => {
+	const state: IMapLayers = {
+		...getDefaultState(),
+		...ls.read<Partial<IMapLayers>>('mapLayerStore')
+	};
+
+	return state.center === true ? state : { ...state, stickyPoints: false };
+};
 
 export const mapLayerStore = writable<IMapLayers>(getInitialState());
 
@@ -59,7 +63,10 @@ export const panoramasLayer = derived(mapLayerStore, ($mapStore) => $mapStore?.p
 export const treeHintsLayer = derived(mapLayerStore, ($mapStore) => $mapStore?.treeHints);
 export const waterLayer = derived(mapLayerStore, ($mapStore) => $mapStore?.water);
 export const genusLayer = derived(mapLayerStore, ($mapStore) => $mapStore?.genus ?? true);
-export const stickyPointsLayer = derived(mapLayerStore, ($mapStore) => $mapStore?.stickyPoints);
+export const stickyPointsLayer = derived(
+	mapLayerStore,
+	($mapStore) => ($mapStore?.stickyPoints ?? false) && $mapStore?.center === true
+);
 export const centerLayer = derived(mapLayerStore, ($mapStore) => $mapStore?.center === true);
 
 export const missingQuery = derived(mapLayerStore, ($l) => {
