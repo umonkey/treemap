@@ -144,6 +144,18 @@ impl Panorama {
     }
 }
 
+/// Visible-only bounds, sectioned geometry, visible image count, and total
+/// visible track length for a panorama.
+pub struct PanoramaStats {
+    pub min_lat: Option<f64>,
+    pub max_lat: Option<f64>,
+    pub min_lon: Option<f64>,
+    pub max_lon: Option<f64>,
+    pub points_json: Option<String>,
+    pub image_count: i32,
+    pub distance: f64,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreatePanorama {
     pub title: String,

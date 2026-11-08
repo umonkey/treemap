@@ -1,0 +1,6 @@
+# Keep local and CI builds on the same compiler as the production images
+# (docker.io/library/rust:1.97-bookworm) and as rust-version in both Cargo.toml files.
+[toolchain]
+channel = "1.97"
+profile = "minimal"
+components = ["clippy", "rustfmt"]

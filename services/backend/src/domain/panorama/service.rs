@@ -1,6 +1,7 @@
 use super::grouping::group_visible;
 use super::models::{
-    CreatePanorama, Panorama, PanoramaHint, PanoramaImage, PanoramaStatus, UpdatePanorama,
+    CreatePanorama, Panorama, PanoramaHint, PanoramaImage, PanoramaStats, PanoramaStatus,
+    UpdatePanorama,
 };
 use super::repository::PanoramaRepository;
 use crate::actions::panorama::{PanoramaHintRead, PanoramaImageRead};
@@ -38,18 +39,6 @@ const RECENT_HINT_WINDOW_SECONDS: u64 = 5 * 60;
 /// This gives the request transaction time to commit before the consumer reads
 /// the panorama, avoiding a race on SQS. The systemic fix is tracked separately.
 const STATS_REFRESH_DELAY_SECS: u64 = 1;
-
-/// Visible-only bounds, sectioned geometry, visible image count, and total
-/// visible track length for a panorama.
-struct PanoramaStats {
-    min_lat: Option<f64>,
-    max_lat: Option<f64>,
-    min_lon: Option<f64>,
-    max_lon: Option<f64>,
-    points_json: Option<String>,
-    image_count: i32,
-    distance: f64,
-}
 
 /// Great-circle distance in meters between two coordinates.
 fn haversine_distance_m(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> f64 {
@@ -666,18 +655,7 @@ impl PanoramaService {
 
         info!("Panorama {id} stats computed: bounds=({:?}..{:?}, {:?}..{:?}), points_json={}, distance={:.1}m.", stats.min_lat, stats.max_lat, stats.min_lon, stats.max_lon, if stats.points_json.is_some() { "present" } else { "none" }, stats.distance);
 
-        self.repo
-            .update_panorama_stats_fields(
-                id,
-                stats.min_lat,
-                stats.max_lat,
-                stats.min_lon,
-                stats.max_lon,
-                stats.points_json,
-                stats.image_count,
-                stats.distance,
-            )
-            .await
+        self.repo.update_panorama_stats_fields(id, &stats).await
     }
 
     pub async fn schedule_stats_refresh(&self, id: u64) -> Result<()> {

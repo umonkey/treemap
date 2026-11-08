@@ -109,17 +109,16 @@ pub fn decode_header_value(value: &str) -> Option<String> {
     Some(trimmed.to_string())
 }
 
-#[allow(clippy::result_large_err)]
 pub fn validate_modern_headers(
     id: &Value,
     method: &str,
     params: Option<&Value>,
     headers: &HeaderMap,
-) -> Result<(), JsonRpcResponse> {
+) -> Result<(), Box<JsonRpcResponse>> {
     let requested = protocol_version_from_params(params).unwrap_or_default();
 
     if !supported_versions().contains(&requested) {
-        return Err(JsonRpcResponse::error_with_data(
+        return Err(Box::new(JsonRpcResponse::error_with_data(
             id.clone(),
             UNSUPPORTED_PROTOCOL_VERSION,
             "Unsupported protocol version",
@@ -127,7 +126,7 @@ pub fn validate_modern_headers(
                 "supported": supported_versions(),
                 "requested": requested,
             }),
-        ));
+        )));
     }
 
     let header_version = headers
@@ -135,11 +134,11 @@ pub fn validate_modern_headers(
         .and_then(|value| value.to_str().ok());
 
     if header_version != Some(requested) {
-        return Err(JsonRpcResponse::error(
+        return Err(Box::new(JsonRpcResponse::error(
             id.clone(),
             HEADER_MISMATCH,
             "MCP-Protocol-Version header mismatch",
-        ));
+        )));
     }
 
     let header_method = headers
@@ -147,11 +146,11 @@ pub fn validate_modern_headers(
         .and_then(|value| value.to_str().ok());
 
     if header_method != Some(method) {
-        return Err(JsonRpcResponse::error(
+        return Err(Box::new(JsonRpcResponse::error(
             id.clone(),
             HEADER_MISMATCH,
             "Mcp-Method header mismatch",
-        ));
+        )));
     }
 
     if method == "tools/call" {
@@ -164,11 +163,11 @@ pub fn validate_modern_headers(
             .and_then(decode_header_value);
 
         if header_name.as_deref() != expected_name {
-            return Err(JsonRpcResponse::error(
+            return Err(Box::new(JsonRpcResponse::error(
                 id.clone(),
                 HEADER_MISMATCH,
                 "Mcp-Name header mismatch",
-            ));
+            )));
         }
     }
 
@@ -403,7 +402,6 @@ pub fn discover_result() -> Value {
     result
 }
 
-#[allow(clippy::unwrap_used)]
 #[cfg(test)]
 mod tests {
     use super::*;

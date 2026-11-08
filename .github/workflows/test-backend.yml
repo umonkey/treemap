@@ -40,7 +40,7 @@ jobs:
 
     - name: Run tests
       run: |
-        cargo clippy
+        cargo clippy -- -D warnings
         cargo fmt --check
 
   unit:

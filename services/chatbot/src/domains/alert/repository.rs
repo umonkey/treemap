@@ -1,4 +1,4 @@
-use super::model::{Alert, AlertStatus};
+use super::model::{Alert, AlertStatus, NewAlert};
 use crate::infra::database::DatabaseClient;
 use libsql::{params_from_iter, Value};
 use std::sync::Arc;
@@ -85,18 +85,7 @@ impl AlertRepository {
         Ok(())
     }
 
-    #[allow(clippy::too_many_arguments)]
-    pub async fn create(
-        &self,
-        user_id: i64,
-        chat_id: i64,
-        message_id: Option<i32>,
-        username: Option<String>,
-        lang: Option<String>,
-        lat: Option<f64>,
-        lon: Option<f64>,
-        force_new: bool,
-    ) -> anyhow::Result<Alert> {
+    pub async fn create(&self, alert: NewAlert, force_new: bool) -> anyhow::Result<Alert> {
         let conn = self.db.connect().await?;
 
         if !force_new {
@@ -105,7 +94,7 @@ impl AlertRepository {
                        ORDER BY created_at DESC LIMIT 1";
             let mut stmt = conn.prepare(sql).await?;
             let mut rows = stmt
-                .query(params_from_iter(vec![Value::Integer(user_id)]))
+                .query(params_from_iter(vec![Value::Integer(alert.user_id)]))
                 .await?;
 
             if let Some(row) = rows.next().await? {
@@ -121,15 +110,16 @@ impl AlertRepository {
                    VALUES (unixepoch(), ?, ?, ?, ?, ?, ?, ?, 'draft', unixepoch() + 600)";
 
         let params = vec![
-            Value::Integer(user_id),
-            Value::Integer(chat_id),
-            message_id
+            Value::Integer(alert.user_id),
+            Value::Integer(alert.chat_id),
+            alert
+                .message_id
                 .map(|v| Value::Integer(v as i64))
                 .unwrap_or(Value::Null),
-            username.map(Value::Text).unwrap_or(Value::Null),
-            lang.map(Value::Text).unwrap_or(Value::Null),
-            lat.map(Value::Real).unwrap_or(Value::Null),
-            lon.map(Value::Real).unwrap_or(Value::Null),
+            alert.username.map(Value::Text).unwrap_or(Value::Null),
+            alert.language_code.map(Value::Text).unwrap_or(Value::Null),
+            alert.lat.map(Value::Real).unwrap_or(Value::Null),
+            alert.lon.map(Value::Real).unwrap_or(Value::Null),
         ];
 
         conn.execute(sql, params_from_iter(params)).await?;

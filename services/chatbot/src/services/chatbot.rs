@@ -1,4 +1,4 @@
-use crate::domains::alert::{Alert, AlertRepository, AlertStatus};
+use crate::domains::alert::{Alert, AlertRepository, AlertStatus, NewAlert};
 use crate::domains::alert_photo::AlertPhotoRepository;
 use crate::domains::tree::TreeRepository;
 use crate::infra::s3::S3FileStorage;
@@ -28,6 +28,18 @@ enum Command {
     Map,
 }
 
+/// Dependencies needed to construct the interactive bot.
+pub struct ChatbotDeps {
+    pub token: String,
+    pub bot_id: UserId,
+    pub bot_username: String,
+    pub i18n: Arc<I18n>,
+    pub alerts: Arc<AlertRepository>,
+    pub photos: Arc<AlertPhotoRepository>,
+    pub trees: Arc<TreeRepository>,
+    pub storage: Arc<S3FileStorage>,
+}
+
 pub struct Chatbot {
     bot: Bot,
     bot_id: UserId,
@@ -40,17 +52,18 @@ pub struct Chatbot {
 }
 
 impl Chatbot {
-    #[allow(clippy::too_many_arguments)]
-    pub fn new(
-        token: String,
-        bot_id: UserId,
-        bot_username: String,
-        i18n: Arc<I18n>,
-        alerts: Arc<AlertRepository>,
-        photos: Arc<AlertPhotoRepository>,
-        trees: Arc<TreeRepository>,
-        storage: Arc<S3FileStorage>,
-    ) -> Self {
+    pub fn new(deps: ChatbotDeps) -> Self {
+        let ChatbotDeps {
+            token,
+            bot_id,
+            bot_username,
+            i18n,
+            alerts,
+            photos,
+            trees,
+            storage,
+        } = deps;
+
         Self {
             bot: Bot::new(token),
             bot_id,
@@ -364,18 +377,17 @@ impl Chatbot {
         let lat = location.map(|l| l.latitude);
         let lon = location.map(|l| l.longitude);
 
-        self.alerts
-            .create(
-                user_id,
-                chat_id,
-                Some(msg.id.0),
-                username,
-                Some(lang.to_string()),
-                lat,
-                lon,
-                force_new,
-            )
-            .await
+        let new_alert = NewAlert {
+            user_id,
+            chat_id,
+            message_id: Some(msg.id.0),
+            username,
+            language_code: Some(lang.to_string()),
+            lat,
+            lon,
+        };
+
+        self.alerts.create(new_alert, force_new).await
     }
 
     async fn handle_start(&self, msg: &Message, lang: &str) -> anyhow::Result<()> {
@@ -435,15 +447,15 @@ pub async fn run(
         }
     };
 
-    let chatbot = Arc::new(Chatbot::new(
+    let chatbot = Arc::new(Chatbot::new(ChatbotDeps {
         token,
-        me.id,
-        me.username().to_string(),
+        bot_id: me.id,
+        bot_username: me.username().to_string(),
         i18n,
         alerts,
         photos,
         trees,
         storage,
-    ));
+    }));
     chatbot.run().await;
 }

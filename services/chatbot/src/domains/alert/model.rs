@@ -61,6 +61,18 @@ pub struct Alert {
     pub ping_at: Option<i64>,
 }
 
+/// Fields supplied when a citizen starts or continues an alert draft.
+#[derive(Clone, Debug)]
+pub struct NewAlert {
+    pub user_id: i64,
+    pub chat_id: i64,
+    pub message_id: Option<i32>,
+    pub username: Option<String>,
+    pub language_code: Option<String>,
+    pub lat: Option<f64>,
+    pub lon: Option<f64>,
+}
+
 impl Alert {
     pub fn is_complete(&self, photo_count: i64) -> bool {
         self.lat.is_some()

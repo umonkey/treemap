@@ -1,4 +1,4 @@
-use super::models::{Panorama, PanoramaHint, PanoramaImage};
+use super::models::{Panorama, PanoramaHint, PanoramaImage, PanoramaStats};
 use crate::domain::tree::Bounds;
 use crate::infra::database::{
     Attributes, Database, DeleteQuery, InsertQuery, SelectQuery, UpdateQuery, Value,
@@ -44,26 +44,15 @@ impl PanoramaRepository {
         Ok(())
     }
 
-    #[allow(clippy::too_many_arguments)]
-    pub async fn update_panorama_stats_fields(
-        &self,
-        id: u64,
-        min_lat: Option<f64>,
-        max_lat: Option<f64>,
-        min_lon: Option<f64>,
-        max_lon: Option<f64>,
-        points_json: Option<String>,
-        image_count: i32,
-        distance: f64,
-    ) -> Result<()> {
+    pub async fn update_panorama_stats_fields(&self, id: u64, stats: &PanoramaStats) -> Result<()> {
         let mut values = Attributes::default();
-        values.insert("min_lat", Value::from(min_lat));
-        values.insert("max_lat", Value::from(max_lat));
-        values.insert("min_lon", Value::from(min_lon));
-        values.insert("max_lon", Value::from(max_lon));
-        values.insert("points_json", Value::from(points_json));
-        values.insert("image_count", Value::from(image_count as i64));
-        values.insert("distance", Value::from(distance));
+        values.insert("min_lat", Value::from(stats.min_lat));
+        values.insert("max_lat", Value::from(stats.max_lat));
+        values.insert("min_lon", Value::from(stats.min_lon));
+        values.insert("max_lon", Value::from(stats.max_lon));
+        values.insert("points_json", Value::from(stats.points_json.clone()));
+        values.insert("image_count", Value::from(stats.image_count as i64));
+        values.insert("distance", Value::from(stats.distance));
 
         let query = UpdateQuery::new(TABLE)
             .with_condition("id", Value::from(id as i64))

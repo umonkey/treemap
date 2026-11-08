@@ -2,7 +2,6 @@ mod actions;
 mod cli;
 mod domain;
 mod handlers;
-#[allow(clippy::double_must_use)]
 mod infra;
 mod responders;
 mod services;
