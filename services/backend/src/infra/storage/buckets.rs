@@ -96,6 +96,10 @@ impl FileBucket {
         }
     }
 
+    pub fn name(&self) -> &str {
+        self.storage.name()
+    }
+
     pub async fn write_file(&self, id: u64, data: &[u8], public: bool) -> Result<()> {
         self.storage.write_file(&id.to_string(), data, public).await
     }
@@ -181,6 +185,10 @@ impl BackupBucket {
         Ok(Self {
             storage: Bucket::new(driver, bucket.clone()),
         })
+    }
+
+    pub fn name(&self) -> &str {
+        self.storage.name()
     }
 
     pub async fn write_file(&self, path: &str, data: &[u8], public: bool) -> Result<()> {

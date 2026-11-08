@@ -30,6 +30,7 @@ fn usage() {
     println!("  refresh-panorama-stats  -- recompute panorama geometry and bounds");
     println!("  scan-panoramas          -- scan and calculate file sizes for panoramas");
     println!("  serve                   -- run the web server");
+    println!("  storage-sync            -- snapshot object storage inventory");
     println!("  update-tree-address N   -- update street address for a single tree");
     println!("  update-tree-addresses   -- update street address for all trees");
     println!("  upload-files            -- move local files to S3");
@@ -63,6 +64,10 @@ async fn main() -> std::io::Result<()> {
     match command.as_str() {
         "serve" => {
             serve_command().await;
+            return Ok(());
+        }
+        "storage-sync" => {
+            storage_sync_command().await;
             return Ok(());
         }
         "backup-database" => {

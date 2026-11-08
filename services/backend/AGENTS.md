@@ -81,6 +81,7 @@ The binary also supports several CLI commands (run via `cargo run -- <command>`)
 - `dispatch-queue`: run the queue consumer daemon.
 - `scan-panoramas`: scan and calculate file sizes for panoramas.
 - `serve`: run the web server.
+- `storage-sync`: snapshot object storage inventory.
 - `update-tree-address N`: update street address for a single tree.
 - `update-tree-addresses`: update street address for all trees.
 - `upload-files`: move local files to S3.

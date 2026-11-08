@@ -412,8 +412,18 @@ impl StorageDriver for S3StorageDriver {
             if let Some(contents) = res.contents {
                 for object in contents {
                     let size = object.size().unwrap_or(0).max(0) as u64;
+                    let etag = object.e_tag().map(|value| value.to_string());
+                    let last_modified_at = object
+                        .last_modified()
+                        .and_then(|value| u64::try_from(value.secs()).ok());
+
                     if let Some(key) = object.key {
-                        files.push(StorageFile { path: key, size });
+                        files.push(StorageFile {
+                            path: key,
+                            size,
+                            etag,
+                            last_modified_at,
+                        });
                     }
                 }
             }

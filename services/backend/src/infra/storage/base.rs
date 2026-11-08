@@ -11,6 +11,10 @@ pub struct CompletedPart {
 pub struct StorageFile {
     pub path: String,
     pub size: u64,
+    #[serde(default)]
+    pub etag: Option<String>,
+    #[serde(default)]
+    pub last_modified_at: Option<u64>,
 }
 
 #[async_trait]

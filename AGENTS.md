@@ -26,6 +26,7 @@ Before modifying or creating files, load every skill whose `description` matches
 - No lint suppressions: never add `-A`/`--allow` lint flags or new `#[allow]` attributes to make `make check` pass. Fix the code or align the toolchain; the gate must stay green without suppressions.
 - Container limitations: Docker daemon is unavailable inside this container. Do NOT run `docker` or `docker compose` commands.
 - Formatting: terminal-friendly ASCII/Unicode only (no LaTeX formulas). Run `make format-docs` after modifying any file in `docs/`.
+- ADRs: only for a contract shared across features or services, or an irreversible trade-off. Do not add one for an isolated tool, an additive feature, or routine work. Follow `.agents/skills/adr/SKILL.md` and ask the operator when unsure.
 
 ## Verification
 

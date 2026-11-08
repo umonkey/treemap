@@ -23,6 +23,7 @@ pub mod prop;
 pub mod settings;
 pub mod species;
 pub mod stats;
+pub mod storage;
 pub mod street;
 pub mod training;
 #[allow(dead_code)]

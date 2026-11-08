@@ -3,3 +3,4 @@ set -e
 cd /app
 bin/treemap backup-database
 bin/treemap export-database
+bin/treemap storage-sync

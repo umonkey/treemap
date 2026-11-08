@@ -20,6 +20,14 @@ impl LocalStorageDriver {
     }
 }
 
+fn modified_at(metadata: &std::fs::Metadata) -> Option<u64> {
+    metadata
+        .modified()
+        .ok()
+        .and_then(|value| value.duration_since(std::time::UNIX_EPOCH).ok())
+        .map(|value| value.as_secs())
+}
+
 #[async_trait]
 impl StorageDriver for LocalStorageDriver {
     async fn write_file(&self, bucket: &str, path: &str, data: &[u8], _public: bool) -> Result<()> {
@@ -103,6 +111,8 @@ impl StorageDriver for LocalStorageDriver {
                         files.push(StorageFile {
                             path: rel_str.replace('\\', "/"),
                             size: metadata.len(),
+                            etag: None,
+                            last_modified_at: modified_at(&metadata),
                         });
                     }
                 }
@@ -128,6 +138,8 @@ impl StorageDriver for LocalStorageDriver {
                                         files.push(StorageFile {
                                             path: rel_str.replace('\\', "/"),
                                             size: metadata.len(),
+                                            etag: None,
+                                            last_modified_at: modified_at(&metadata),
                                         });
                                     }
                                 }

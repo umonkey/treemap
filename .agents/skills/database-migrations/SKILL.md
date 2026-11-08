@@ -28,5 +28,5 @@ description: Checklist for changing the SQLite schema, adding migrations, permis
 2. Update the backend domain model, repository, schemas, and service.
 3. If the table is shared, update the chatbot model, repository, and any daemon that reads it.
 4. Add or update the seed rows for permissions or fixtures.
-5. Update the operator reference and add an ADR for a new pattern or irreversible trade-off.
+5. Update the operator reference. Add an ADR only when the `adr` skill says the change qualifies; ask the operator when unsure.
 6. Verify with `make -C services/backend check` and `make -C services/chatbot check`.

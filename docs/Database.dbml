@@ -262,6 +262,23 @@ Table panoramas_hints {
   created_at int [not null, default: 0]
 }
 
+// Object storage inventory snapshot, written by the storage-sync job.
+Table storage_objects {
+  bucket text [not null, note: 'Physical bucket name']
+  key text [not null]
+  size_bytes int [not null]
+  etag text [note: 'S3 ETag as returned; not a checksum for multipart uploads']
+  last_modified_at int [not null, note: 'S3 LastModified; a CopyObject resets it']
+  first_seen_at int [not null]
+  last_seen_at int [not null]
+  missing_since int [note: 'Set when absent from a listing; cleared on reappearance']
+
+  Indexes {
+    (bucket, key) [pk]
+    missing_since
+  }
+}
+
 // Relationships
 Ref: trees_props.tree_id > trees.id
 Ref: comments.tree_id > trees.id
