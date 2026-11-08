@@ -1,6 +1,6 @@
 ---
 name: rust
-description: Rust style, DI pattern, and error boundary standards for services/backend/ and services/chatbot/. Use when modifying any *.rs files or Cargo.toml.
+description: Rust style, structural simplification, DI pattern, and error boundary standards for services/backend/ and services/chatbot/. Use when modifying any *.rs files or Cargo.toml.
 ---
 
 # Skill: rust
@@ -8,6 +8,16 @@ description: Rust style, DI pattern, and error boundary standards for services/b
 ## Formatting rules
 
 - Multi-line statements (blocks or those using brackets) must have one empty line between them and other code on the same indentation level, both above and below.
+
+## Structural Simplification
+
+- Re-read your own diff before finishing. When the same short sequence appears once per type, per field, or per item, extract a private method and iterate over it. Do this without waiting for the operator to point it out.
+- Register parallel items in one place only when they already share a call shape. If adding an item means editing several duplicated blocks (name, fetch, log, push), replace them with a single array or iterator so the next addition is one entry, but do not invent a wrapper type just to make unrelated items look alike.
+- Match the abstraction to the data. A list of names is enough when one call accepts the name, such as a storage driver listing by bucket. When each item is a distinct wrapper with no shared call, a name list still needs dispatch, so do not add an enum or trait just to remove the repetition.
+- Keep per-item work sequential when items are expensive to hold. Do not collect every item into a Vec up front only to loop over it later: list one, process one.
+- Apply the same rule to adjacent dead weight: remove a stale `#[allow(dead_code)]` in the change that makes the item used, because an unnecessary allowance never fails the gate.
+- Preserve behavior while restructuring. Output order, log text, and error propagation must stay identical unless the task is explicitly about them.
+- Do not over-abstract. Two or three lines that read clearly are fine. Extract only when the duplication is a real editing hazard or a third copy appears, and only if the extraction is shorter than the duplication it removes. A new type whose only purpose is to hold heterogeneous items is a net loss.
 
 ## Dependency Injection Pattern
 
