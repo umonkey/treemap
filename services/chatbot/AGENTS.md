@@ -4,7 +4,7 @@
 
 This directory contains the Telegram chatbot service and its background workers.
 
-- Language: Rust
+- Language: Rust 1.97 (pinned by the root `rust-toolchain.toml`)
 - Framework: [Teloxide](https://teloxide.dev/)
 - Database: libSQL / SQLite (shared database with backend)
 - Storage: S3 / DigitalOcean Spaces
@@ -46,7 +46,7 @@ The binary (`/app/bin/chatbot`) supports subcommands:
 
 ## Useful Commands
 
-- `make check`: run clippy with `-D warnings` and the test suite.
+- `make check`: run clippy with `-D warnings`, `cargo fmt --check`, `cargo check`, and the test suite.
 - `make format`: format Rust code with `cargo fmt`.
 - `make serve`: run the chatbot locally.
 - `make test`: run unit tests.

@@ -79,3 +79,4 @@ let mut rows = stmt.query(params_from_iter(std::iter::empty::<Value>())).await?;
 ## Development Workflow
 
 - After implementing the required changes, verify code integrity by running `make format check` in the service directory.
+- Do not run the full gate twice in one service at the same time. It shares one `target/` directory and the backend suite shares `var/test-*.db`, so parallel runs block on the Cargo lock or interfere through the test database. When several scopes work in one service, give each `cargo clippy -- -D warnings`, `cargo check --tests`, and `cargo fmt --check`, then run `make check` once, serially, at the end.
