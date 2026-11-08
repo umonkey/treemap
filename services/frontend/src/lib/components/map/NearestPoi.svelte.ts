@@ -11,7 +11,7 @@ export class NearestPoiLogic {
 	private zoomChanged = false;
 
 	center = $state<ILatLng>();
-	maxDistance = $state<number>(100);
+	maxDistance = $state<number>(1);
 	zoom = $state<number>(0);
 	moving = $state(false);
 

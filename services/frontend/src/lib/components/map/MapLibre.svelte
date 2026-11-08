@@ -137,7 +137,7 @@
 				{#if $centerLayer}
 					<MapCenter />
 				{/if}
-				<NearestPoi zoom={mapState.zoom} distance={5} />
+				<NearestPoi zoom={mapState.zoom} />
 			{/if}
 		</MapLibre>
 

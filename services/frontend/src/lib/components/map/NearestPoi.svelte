@@ -3,7 +3,9 @@
 	import { GeoJSON, LineLayer, getMapContext } from 'svelte-maplibre';
 	import { NearestPoiLogic } from './NearestPoi.svelte.ts';
 
-	const { distance = 100, zoom = 0 }: { distance?: number; zoom?: number } = $props();
+	// Snap distance in metres from the map centre. Intentionally small so an ordinary
+	// pan does not snap to a POI; sticky points should need deliberate centring.
+	const { distance = 1, zoom = 0 }: { distance?: number; zoom?: number } = $props();
 
 	const componentState = new NearestPoiLogic();
 	const mapContext = getMapContext();
