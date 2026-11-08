@@ -28,6 +28,11 @@ Before modifying or creating files, load every skill whose `description` matches
 - Formatting: terminal-friendly ASCII/Unicode only (no LaTeX formulas). Run `make format-docs` after modifying any file in `docs/`.
 - ADRs: only for a contract shared across features or services, or an irreversible trade-off. Do not add one for an isolated tool, an additive feature, or routine work. Follow `.agents/skills/adr/SKILL.md` and ask the operator when unsure.
 
+## Build Gotchas
+
+- The cron-daily that ships is services/backend/docker/rootfs/app/bin/cron-daily. container/rootfs has no scheduler, so add backend cron jobs there. The legacy container/Dockerfile.yerevan image copies only container/rootfs and will not run them.
+- make format-docs formats every Markdown file under docs/ and .agents/, so run it after editing a skill, not only after editing docs.
+
 ## Verification
 
 Run the canonical gate for each changed service from the repository root:
@@ -46,3 +51,5 @@ Use Conventional Commits. The scope is the domain (`upload`, `map`, `alerts`, `o
 ## Architectural Invariants
 
 - The backend and chatbot share one SQLite database. A schema change to a table both services read (`chatbot_alerts`, `chatbot_alerts_photos`, `trees`, `instances`) must update both services in the same change.
+- Backend CLI commands build state with AppState::new() and must not call session() when the domain opens its own transaction. session() starts a transaction, and a nested Database::transact() fails with "Already in a transaction"; use it only for tests or single-transaction flows.
+- storage-sync holds one whole bucket in memory because list_files returns a Vec. Do not point it at buckets with millions of objects without first streaming listing pages into the upsert. Query live usage with missing_since IS NULL.

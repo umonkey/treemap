@@ -16,6 +16,7 @@ description: Checklist for changing the SQLite schema, adding migrations, permis
 - SQLite cannot change a column's nullability in place. Rebuild the table in the `006`/`024` style: create the new table, copy the rows, drop the old table, rename the new one, and recreate every index.
 - The application never enables `PRAGMA foreign_keys`, so `DROP TABLE` does not cascade to child tables. Do not enable it in a migration. `PRAGMA defer_foreign_keys` does not suppress `ON DELETE CASCADE`.
 - Keep `services/backend/dev/schema-sqlite.sql` in sync with the migrations; it is the snapshot used by tests and local setup.
+- Tests execute dev/schema-sqlite.sql in memory; they do not run the migration file. Keep the snapshot and the migration identical by hand, because no check diffs them. docs/Database.dbml has no validator either, so update it from the same schema.
 
 ## Permissions
 
