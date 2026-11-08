@@ -39,7 +39,7 @@ The process follows these rules when resolving a pair of duplicate trees:
 
 All data linked to secondary trees is reassigned to the main tree:
 
-- Photos: all records in the `trees_images` table are moved to the main tree.
+- Photos: all links in the `trees_files` table are moved to the main tree.
 - Comments: all tree comments are moved, and the main tree's `comment_count` is updated.
 - Likes: all likes are moved. The system handles potential conflicts where multiple users liked different duplicates of the same tree.
 - Observations: all historical observations are migrated.

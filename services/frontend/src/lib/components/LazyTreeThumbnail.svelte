@@ -1,13 +1,10 @@
 <script lang="ts">
-	import { routes } from '$lib/routes';
 	import type { ITree } from '$lib/types';
 	import FALLBACK from '$lib/assets/tree.jpg';
 
 	const { tree }: { tree: ITree } = $props();
 
-	const src = $derived(
-		tree.thumbnail_url ?? (tree.thumbnail_id ? routes.file(tree.thumbnail_id) : FALLBACK)
-	);
+	const src = $derived(tree.thumbnail_url ?? FALLBACK);
 	const alt = $derived(tree.species);
 
 	let img: HTMLImageElement;

@@ -3,202 +3,50 @@
 //! This message is sent whenever a user adds a file to a tree as a photo.
 
 use crate::domain::file::FileRepository;
-use crate::domain::tree::TreeRepository;
 use crate::domain::tree_file::TreeFileService;
-use crate::domain::tree_image::{TreeImage, TreeImageRepository};
-use crate::domain::upload::{Upload, UploadRepository};
-use crate::infra::storage::FileBucket;
-use crate::services::ThumbnailerService;
 use crate::services::{Context, Injectable};
-use crate::types::{Error, Result};
-use crate::utils::*;
-use log::{debug, error, info};
+use crate::types::Result;
+use log::{info, warn};
 use std::sync::Arc;
 
-const SMALL_SIZE: u32 = 1000;
-const LARGE_SIZE: u32 = 2000;
-
 pub struct PhotoService {
-    tree_images: Arc<TreeImageRepository>,
-    uploads: Arc<UploadRepository>,
     files: Arc<FileRepository>,
     tree_files: Arc<TreeFileService>,
-    storage: Arc<FileBucket>,
-    thumbnailer: Arc<ThumbnailerService>,
-    trees: Arc<TreeRepository>,
 }
 
 impl PhotoService {
-    // Adds a photo to a tree.
-    //
-    // Reads the source file, resizes it to small and large veresions,
-    // saves them in the file storage, and adds a tree photo record.
+    /// Attach a universal file to a tree.
+    ///
+    /// A missing file row is not an error: the message would otherwise be
+    /// delayed and retried forever.
     pub async fn add_tree_photo(&self, tree_id: u64, file_id: u64) -> Result<()> {
-        // New universal files are attached directly; legacy uploads keep the
-        // old resize-and-record path below.
-        if let Some(file) = self.files.get(file_id).await? {
-            self.tree_files
-                .attach(tree_id, file.created_by, vec![file_id])
-                .await?;
+        let file = self.files.get(file_id).await?;
 
-            info!(
-                "File {} attached to tree {} through the compatibility path.",
-                file_id, tree_id
-            );
-
-            return Ok(());
-        }
-
-        let source = self
-            .uploads
-            .get(file_id)
-            .await
-            .inspect_err(|e| {
-                error!("Could not find source file {file_id}: {e:?}");
-            })?
-            .ok_or(Error::FileNotFound)?;
-
-        let body = self.storage.read_file(source.id).await.inspect_err(|e| {
-            error!("Could not read source file {}: {:?}", source.id, e);
-        })?;
-
-        let image_id = get_unique_id()?;
-
-        let small = self.thumbnailer.resize(&body, SMALL_SIZE)?;
-        let small_id = self.write_file(&small, source.added_by).await?;
-
-        let large = self.thumbnailer.resize(&body, LARGE_SIZE)?;
-        let large_id = self.write_file(&large, source.added_by).await?;
-
-        let rec = TreeImage {
-            id: image_id,
-            tree_id,
-            small_id,
-            large_id,
-            source_id: source.id,
-
-            added_at: source.added_at,
-            added_by: source.added_by,
-
-            ..Default::default()
-        };
-
-        self.tree_images.add(&rec).await.inspect_err(|e| {
-            error!("Could not add file {file_id}: {e:?}");
-        })?;
-
-        self.trees.update_images_timestamp(tree_id).await?;
-
-        self.update_thumbnail(tree_id, small_id, source.added_by)
-            .await?;
-
-        info!(
-            "TreeImage {} successfully processed, added to tree {}.",
-            source.id, tree_id
-        );
-
-        Ok(())
-    }
-
-    pub async fn resize_image(&self, file_id: u64) -> Result<()> {
-        debug!("Going to resize images for file {file_id}.");
-
-        match self.tree_images.get(file_id).await {
-            Ok(Some(file)) => {
-                let body = self.storage.read_file(file.id).await?;
-
-                let small = self.thumbnailer.resize(&body, SMALL_SIZE)?;
-                let small_id = self.write_file(&small, file.added_by).await?;
-
-                let large = self.thumbnailer.resize(&body, LARGE_SIZE)?;
-                let large_id = self.write_file(&large, file.added_by).await?;
-
-                debug!("Updating file {file_id} with new image ids.");
-
-                let updated = TreeImage {
-                    small_id,
-                    large_id,
-                    source_id: file.id,
-                    ..file
-                };
-
-                self.tree_images.update(&updated).await?;
-
-                self.trees
-                    .update_thumbnail(file.tree_id, small_id, file.added_by)
+        match file {
+            Some(file) => {
+                self.tree_files
+                    .attach(tree_id, file.created_by, vec![file_id])
                     .await?;
 
-                info!("Resized images for file {}, tree {}", file_id, file.tree_id);
+                info!("File {file_id} attached to tree {tree_id}.");
+
                 Ok(())
             }
 
-            Ok(None) => {
-                error!("TreeImage {file_id} not found, cannot resize images.");
-                Ok(())
-            }
+            None => {
+                warn!("File {file_id} not found; dropping AddPhoto message for tree {tree_id}.");
 
-            Err(e) => {
-                error!("Error resizing images for file {file_id}: {e:?}");
                 Ok(())
             }
         }
-    }
-
-    /**
-     * Writes the binary data to a new file, returns its id.
-     *
-     * Note that the id is only allocated, file info is not yet
-     * stored in the database.
-     */
-    async fn write_file(&self, data: &[u8], added_by: u64) -> Result<u64> {
-        let id = get_unique_id()?;
-
-        self.storage.write_file(id, data, true).await.map_err(|e| {
-            debug!("Error writing file: {e}");
-            Error::FileUpload
-        })?;
-
-        self.uploads
-            .add(&Upload {
-                id,
-                added_at: get_timestamp(),
-                added_by,
-                size: data.len() as u64,
-                uploaded_at: Some(get_timestamp()),
-            })
-            .await?;
-
-        info!("Derived file recorded as {id}.");
-
-        Ok(id)
-    }
-
-    async fn update_thumbnail(&self, tree_id: u64, file_id: u64, user_id: u64) -> Result<()> {
-        if let Some(tree) = self.trees.get(tree_id).await? {
-            if tree.thumbnail_id.is_some() {
-                debug!("Tree {tree_id} has a thumbnail, not updating.");
-                return Ok(());
-            }
-
-            self.trees
-                .update_thumbnail(tree_id, file_id, user_id)
-                .await?;
-        }
-
-        Ok(())
     }
 }
 
 impl Injectable for PhotoService {
     fn inject(ctx: &dyn Context) -> Result<Self> {
         Ok(Self {
-            tree_images: Arc::new(ctx.build::<TreeImageRepository>()?),
-            uploads: Arc::new(ctx.build::<UploadRepository>()?),
             files: Arc::new(ctx.build::<FileRepository>()?),
             tree_files: Arc::new(ctx.build::<TreeFileService>()?),
-            storage: ctx.storage(),
-            thumbnailer: Arc::new(ctx.build::<ThumbnailerService>()?),
-            trees: Arc::new(ctx.build::<TreeRepository>()?),
         })
     }
 }

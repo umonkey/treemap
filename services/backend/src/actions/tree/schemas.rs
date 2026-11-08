@@ -1,5 +1,4 @@
 use crate::domain::tree::{LatLon, TreeState};
-use crate::domain::tree_image::TreeImage;
 use serde::{Deserialize, Serialize};
 use std::cmp::min;
 
@@ -8,15 +7,6 @@ const DEFAULT_PAGE_SIZE: u64 = 50;
 // The maximum number of trees that can be requested.
 // Needs to be one more than the default page size to check if there are more trees to fetch.
 const MAX_PAGE_SIZE: u64 = DEFAULT_PAGE_SIZE + 1;
-
-#[derive(Default)]
-pub struct AddFileRequest {
-    pub user_id: u64,
-    pub tree_id: u64,
-    pub file: Vec<u8>,
-    pub remote_addr: String,
-    pub user_agent: String,
-}
 
 #[derive(Debug, Serialize)]
 pub struct FileUploadResponse {
@@ -222,15 +212,6 @@ impl AddedTreesRequest {
 
     pub fn get_skip(&self) -> u64 {
         self.skip.unwrap_or(0)
-    }
-}
-
-impl FileUploadResponse {
-    pub fn from_file(file: &TreeImage) -> Self {
-        Self {
-            id: file.id.to_string(),
-            url: None,
-        }
     }
 }
 

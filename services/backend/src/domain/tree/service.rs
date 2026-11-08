@@ -2,7 +2,6 @@ use super::schemas::*;
 use crate::domain::comment::CommentService;
 use crate::domain::prop::{PropRecord, PropRepository};
 use crate::domain::tree::{Tree, TreeRepository, TreeState};
-use crate::domain::tree_image::TreeImageRepository;
 use crate::domain::user::UserRepository;
 use crate::infra::database::{Database, Value};
 use crate::infra::nominatim::NominatimClient;
@@ -22,7 +21,6 @@ pub struct TreeService {
     trees: Arc<TreeRepository>,
     users: Arc<UserRepository>,
     queue: Arc<Queue>,
-    files: Arc<TreeImageRepository>,
     props: Arc<PropRepository>,
     nominatim: Arc<NominatimClient>,
     bot_user_id: u64,
@@ -443,7 +441,6 @@ impl TreeService {
             updated_at: now,
             updated_by: req.user_id,
             added_by: old.added_by,
-            thumbnail_id: old.thumbnail_id,
             year: match req.year {
                 Some(value) => Some(value),
                 None => old.year,
@@ -466,22 +463,6 @@ impl TreeService {
         self.users.increment_update_count(req.user_id).await?;
 
         Ok(updated)
-    }
-
-    pub async fn update_thumbnail(&self, tree_id: u64, file_id: u64, user_id: u64) -> Result<()> {
-        self.trees.get(tree_id).await?.ok_or(Error::TreeNotFound)?;
-
-        let file = self.files.get(file_id).await?.ok_or(Error::FileNotFound)?;
-
-        self.trees
-            .update_thumbnail(tree_id, file.small_id, user_id)
-            .await?;
-
-        self.users.increment_update_count(user_id).await?;
-
-        info!("Thumbnail for tree {tree_id} changed to {file_id} by {user_id}.",);
-
-        Ok(())
     }
 
     pub async fn get_top_by_height(&self) -> Result<Vec<Tree>> {
@@ -638,7 +619,6 @@ impl TreeService {
             added_by: req.user_id,
             updated_at: now,
             updated_by: req.user_id,
-            thumbnail_id: None,
             year: req.year,
             address: req.address.clone(),
             ..Default::default()
@@ -720,7 +700,6 @@ impl Injectable for TreeService {
             trees: Arc::new(ctx.build::<TreeRepository>()?),
             users: Arc::new(ctx.build::<UserRepository>()?),
             queue: ctx.queue(),
-            files: Arc::new(ctx.build::<TreeImageRepository>()?),
             props: Arc::new(ctx.build::<PropRepository>()?),
             nominatim: Arc::new(ctx.build::<NominatimClient>()?),
             bot_user_id: ctx.config().bot_user_id,

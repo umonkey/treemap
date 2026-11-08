@@ -1,7 +1,5 @@
-use actix_web::http::header::{CacheControl, CacheDirective, ETag, EntityTag, Expires};
 use actix_web::{delete, get, web::Json, web::Path, HttpResponse};
 use serde::Deserialize;
-use std::time::{Duration, SystemTime};
 
 use super::schemas::FileStatusResponse;
 use crate::domain::file::FileService;
@@ -12,46 +10,6 @@ use crate::types::{Error, Result};
 #[derive(Debug, Deserialize)]
 pub struct PathInfo {
     pub id: u64,
-}
-
-async fn get_file_real(file_service: Injected<FileService>, id: u64) -> Result<HttpResponse> {
-    let (file, mime_type) = file_service.read_legacy(id).await?;
-
-    let etag = ETag(EntityTag::new_strong(id.to_string()));
-
-    let cache_control = CacheControl(vec![
-        CacheDirective::Public,
-        CacheDirective::MaxAge(31536000),
-        CacheDirective::Extension("immutable".to_string(), None),
-    ]);
-
-    let expiration = SystemTime::now() + Duration::from_secs(31536000); // 1 year
-    let expiration_header = Expires(expiration.into());
-
-    let res = HttpResponse::Ok()
-        .content_type(mime_type)
-        .insert_header(cache_control)
-        .insert_header(etag)
-        .insert_header(expiration_header)
-        .body(file);
-
-    Ok(res)
-}
-
-#[get("/{id:\\d+}.jpg")]
-pub async fn get_file_jpg(
-    file_service: Injected<FileService>,
-    path: Path<PathInfo>,
-) -> Result<HttpResponse> {
-    get_file_real(file_service, path.id).await
-}
-
-#[get("/{id:\\d+}")]
-pub async fn get_file(
-    file_service: Injected<FileService>,
-    path: Path<PathInfo>,
-) -> Result<HttpResponse> {
-    get_file_real(file_service, path.id).await
 }
 
 #[get("/{id:\\d+}/status")]

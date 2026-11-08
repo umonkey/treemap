@@ -9,8 +9,6 @@ pub use schemas::FileRead;
 use actix_web::web::ServiceConfig;
 
 pub fn file_router(cfg: &mut ServiceConfig) {
-    cfg.service(get_file)
-        .service(get_file_jpg)
-        .service(get_file_status_action)
+    cfg.service(get_file_status_action)
         .service(delete_file_action);
 }

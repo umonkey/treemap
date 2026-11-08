@@ -8,11 +8,6 @@ use std::panic;
 pub struct ThumbnailerService;
 
 impl ThumbnailerService {
-    /// Resize an image to fit a square, always re-encoding it as JPEG.
-    pub fn resize(&self, data: &[u8], size: u32) -> Result<Vec<u8>> {
-        self.to_jpeg(data, size)
-    }
-
     /// Resize an image and return the JPEG bytes plus its dimensions.
     pub fn variant(&self, data: &[u8], max_size: u32) -> Result<(Vec<u8>, u32, u32)> {
         debug!("Reading an image to build a {} px variant.", max_size);
@@ -50,20 +45,6 @@ impl ThumbnailerService {
         debug!("Variant conversion successful, {}x{}.", width, height);
 
         Ok((buf, width, height))
-    }
-
-    pub fn validate(&self, data: &[u8]) -> Result<()> {
-        self.decode(data)?;
-        Ok(())
-    }
-
-    /// Convert any supported image into an oriented JPEG.
-    ///
-    /// The image is never returned as-is: JPEG has no alpha channel and the
-    /// target path always ends with `.jpg`, so re-encoding is required.
-    pub fn to_jpeg(&self, data: &[u8], max_size: u32) -> Result<Vec<u8>> {
-        self.variant(data, max_size)
-            .map(|(bytes, _width, _height)| bytes)
     }
 
     pub fn decode(&self, data: &[u8]) -> Result<DynamicImage> {
@@ -169,6 +150,12 @@ mod tests {
         ThumbnailerService {}
     }
 
+    fn to_jpeg(thumbnailer: &ThumbnailerService, data: &[u8], max_size: u32) -> Result<Vec<u8>> {
+        thumbnailer
+            .variant(data, max_size)
+            .map(|(bytes, _width, _height)| bytes)
+    }
+
     fn read_image(bytes: Vec<u8>) -> DynamicImage {
         Reader::new(Cursor::new(bytes))
             .with_guessed_format()
@@ -188,9 +175,7 @@ mod tests {
         let thumbnailer = setup();
 
         let data = include_bytes!("test/tree.jpg");
-        let resized = thumbnailer
-            .resize(data.as_ref(), 100)
-            .expect("Error resizing image.");
+        let resized = to_jpeg(&thumbnailer, data.as_ref(), 100).expect("Error resizing image.");
 
         let image = read_image(resized);
         assert_eq!(image.width(), 100);
@@ -208,9 +193,7 @@ mod tests {
         let thumbnailer = setup();
 
         let data = include_bytes!("test/tree.jpg");
-        let resized = thumbnailer
-            .resize(data.as_ref(), 2000)
-            .expect("Error resizing image.");
+        let resized = to_jpeg(&thumbnailer, data.as_ref(), 2000).expect("Error resizing image.");
 
         let image = read_image(resized);
         assert_eq!(image.width(), 1023);
@@ -222,9 +205,7 @@ mod tests {
         let thumbnailer = setup();
 
         let data = include_bytes!("test/rotated.jpg");
-        let resized = thumbnailer
-            .resize(data.as_ref(), 100)
-            .expect("Error resizing image.");
+        let resized = to_jpeg(&thumbnailer, data.as_ref(), 100).expect("Error resizing image.");
 
         let image = read_image(resized);
 
@@ -237,7 +218,7 @@ mod tests {
         let thumbnailer = setup();
 
         let data = include_bytes!("test/broken.jpg");
-        let resized = thumbnailer.resize(data.as_ref(), 100);
+        let resized = to_jpeg(&thumbnailer, data.as_ref(), 100);
 
         assert!(resized.is_err());
     }
@@ -253,9 +234,7 @@ mod tests {
         let thumbnailer = setup();
 
         let data = include_bytes!("test/tree.jpg");
-        let jpeg = thumbnailer
-            .to_jpeg(data.as_ref(), 2000)
-            .expect("Error converting image.");
+        let jpeg = to_jpeg(&thumbnailer, data.as_ref(), 2000).expect("Error converting image.");
 
         assert_eq!(
             image::guess_format(&jpeg).expect("Error guessing format."),
@@ -278,9 +257,7 @@ mod tests {
         let thumbnailer = setup();
 
         let data = include_bytes!("test/tree.jpg");
-        let jpeg = thumbnailer
-            .to_jpeg(data.as_ref(), 100)
-            .expect("Error converting image.");
+        let jpeg = to_jpeg(&thumbnailer, data.as_ref(), 100).expect("Error converting image.");
 
         let image = read_image(jpeg);
         assert_eq!(image.width(), 100);
@@ -301,9 +278,7 @@ mod tests {
             .write_to(&mut Cursor::new(&mut png), image::ImageFormat::Png)
             .expect("Error writing PNG.");
 
-        let jpeg = thumbnailer
-            .to_jpeg(png.as_ref(), 2000)
-            .expect("Error converting image.");
+        let jpeg = to_jpeg(&thumbnailer, png.as_ref(), 2000).expect("Error converting image.");
 
         assert_eq!(
             image::guess_format(&jpeg).expect("Error guessing format."),

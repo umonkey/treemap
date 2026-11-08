@@ -1,5 +1,4 @@
 export { goto } from '$app/navigation';
-import { config } from '$lib/env';
 
 type Params = {
 	[key: string]: string | undefined | null;
@@ -27,7 +26,6 @@ export const routes = {
 	treeUpdates: () => '/updates',
 	treeSaved: () => '/saved',
 	comments: () => '/updates/comments',
-	file: (id: string) => `${config.fileBaseUrl}${id}.jpg`,
 	home: () => '/',
 	learn: () => '/tools/learn',
 	map: () => '/',

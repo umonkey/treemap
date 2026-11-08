@@ -29,8 +29,6 @@ pub mod training;
 pub mod tree;
 pub mod tree_file;
 #[allow(dead_code)]
-pub mod tree_image;
-#[allow(dead_code)]
 pub mod upload;
 pub mod user;
 pub mod water;

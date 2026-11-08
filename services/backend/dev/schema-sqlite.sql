@@ -19,7 +19,6 @@ CREATE TABLE IF NOT EXISTS trees (
     `updated_at` INT NOT NULL,
     `updated_by` INT NOT NULL,
     `added_by` INT NOT NULL,
-    `thumbnail_id` INT NULL,
     `thumbnail_file_id` INT NULL,
     `year` INT NULL,
     `address` TEXT NULL,
@@ -48,22 +47,6 @@ CREATE INDEX IF NOT EXISTS trees_images_updated_at ON trees (images_updated_at);
 CREATE INDEX IF NOT EXISTS trees_observations_updated_at ON trees (observations_updated_at);
 
 
-CREATE TABLE IF NOT EXISTS trees_images (
-    `id` INT NOT NULL,
-    `tree_id` INT NOT NULL,
-    `added_at` INT NOT NULL,
-    `added_by` INT NOT NULL,
-    `deleted_at` INT NULL,
-    `deleted_by` INT NULL,
-    `small_id` INT NOT NULL,
-    `large_id` INT NOT NULL,
-    `source_id` INT NOT NULL,
-    PRIMARY KEY(`id`)
-);
-
-CREATE INDEX IF NOT EXISTS trees_images_tree_id ON trees_images (tree_id);
-
-
 -- Tree attributes.
 -- This contains random properties, like year of planting, height, etc.
 --
@@ -83,21 +66,6 @@ CREATE TABLE IF NOT EXISTS trees_props (
 );
 
 CREATE INDEX IF NOT EXISTS trees_props_tree_id ON trees_props (tree_id);
-
-
--- File uploads.
--- This is a temporary table used to store the file upload ticket.
--- Uploaded files are then used to create photos for trees.
--- The ticket id is also the file name.
--- Records older than 7 days are deleted by a cron job.
-CREATE TABLE IF NOT EXISTS uploads (
-    `id` INT NOT NULL,
-    `added_at` INT NOT NULL,
-    `added_by` INT NOT NULL,
-    `size` INT NOT NULL,
-    `uploaded_at` INT NULL,
-    PRIMARY KEY(`id`)
-);
 
 
 -- User accounts.
@@ -456,12 +424,6 @@ CREATE TABLE IF NOT EXISTS `water_source_files` (
     `added_at` INTEGER NOT NULL,
     `added_by` INTEGER NOT NULL,
     UNIQUE (`water_source_id`, `file_id`)
-);
-
-CREATE TABLE IF NOT EXISTS `files_fallback` (
-    `old_key` TEXT PRIMARY KEY,
-    `file_id` INTEGER NOT NULL,
-    `variant` TEXT NOT NULL
 );
 
 COMMIT;

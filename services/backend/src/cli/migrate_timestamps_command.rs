@@ -42,8 +42,8 @@ pub async fn migrate_timestamps_command() {
             }
         }
 
-        // 2. Images from trees_images
-        let sql = "SELECT MAX(added_at) as last_update FROM trees_images WHERE tree_id = ?";
+        // 2. Images from trees_files
+        let sql = "SELECT MAX(added_at) as last_update FROM trees_files WHERE tree_id = ?";
         let params = &[Value::from(tree.id as i64)];
         let rows = db
             .fetch_sql(sql, params)

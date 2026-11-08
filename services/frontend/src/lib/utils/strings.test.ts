@@ -27,9 +27,7 @@ describe('fileAttribution', () => {
 	it('should return an empty string on no data', () => {
 		expect(
 			fileAttribution({
-				id: '1',
-				small_id: '2',
-				large_id: '3'
+				id: '1'
 			})
 		).toBe('');
 	});
@@ -38,8 +36,6 @@ describe('fileAttribution', () => {
 		expect(
 			fileAttribution({
 				id: '1',
-				small_id: '2',
-				large_id: '3',
 				added_at: 0,
 				added_by: '12345'
 			})
@@ -64,8 +60,6 @@ describe('fileAttribution', () => {
 		expect(
 			fileAttribution({
 				id: '1',
-				small_id: '2',
-				large_id: '3',
 				added_at: 1740304662,
 				added_by: '12345'
 			})

@@ -1,5 +1,4 @@
 use super::schemas::*;
-use crate::domain::alert::AlertService;
 use crate::domain::file::FileService;
 use crate::domain::panorama::PanoramaService;
 use crate::domain::photo::PhotoService;
@@ -21,7 +20,6 @@ pub struct QueueConsumer {
     photos: Arc<PhotoService>,
     users: Arc<UserService>,
     panoramas: Arc<PanoramaService>,
-    alerts: Arc<AlertService>,
     files: Arc<FileService>,
 }
 
@@ -70,10 +68,6 @@ impl QueueConsumer {
      */
     async fn process_message(&self, msg: &str) -> Result<()> {
         match QueueCommand::decode(msg) {
-            Ok(Some(QueueCommand::ResizeImage(message))) => {
-                self.photos.resize_image(message.id).await?;
-            }
-
             Ok(Some(QueueCommand::ProcessFile(message))) => {
                 self.files.process(message.id).await?;
             }
@@ -102,12 +96,6 @@ impl QueueConsumer {
                 self.panoramas.refresh_panorama_stats(message.id).await?;
             }
 
-            Ok(Some(QueueCommand::AddAlertPhoto(message))) => {
-                self.alerts
-                    .add_alert_photo(message.alert_id, message.file_id)
-                    .await?;
-            }
-
             Ok(None) => {
                 debug!("Unknown message: {msg}");
             }
@@ -129,7 +117,6 @@ impl Injectable for QueueConsumer {
             photos: Arc::new(ctx.build::<PhotoService>()?),
             users: Arc::new(ctx.build::<UserService>()?),
             panoramas: Arc::new(ctx.build::<PanoramaService>()?),
-            alerts: Arc::new(ctx.build::<AlertService>()?),
             files: Arc::new(ctx.build::<FileService>()?),
         })
     }

@@ -1,24 +1,21 @@
 use super::models::{User, UserActivity};
 use super::repository::UserRepository;
 use super::schemas::UserUpdate;
-use crate::domain::upload::UploadRepository;
+use crate::domain::file::{file_url, FileRepository};
+use crate::infra::config::Config;
 use crate::infra::database::{Database, Value};
-use crate::infra::storage::FileBucket;
 use crate::services::*;
 use crate::types::*;
-use crate::utils::{get_timestamp, get_unique_id};
-use log::{error, info};
+use crate::utils::get_timestamp;
+use log::info;
 use std::collections::HashMap;
 use std::sync::Arc;
-
-const USERPIC_SIZE: u32 = 1000;
 
 pub struct UserService {
     db: Arc<Database>,
     users: Arc<UserRepository>,
-    uploads: Arc<UploadRepository>,
-    storage: Arc<FileBucket>,
-    thumbnailer: Arc<ThumbnailerService>,
+    files: Arc<FileRepository>,
+    config: Arc<Config>,
 }
 
 impl UserService {
@@ -90,48 +87,29 @@ impl UserService {
         Ok(())
     }
 
-    // --- Logic from UpdateUserpicHandler ---
+    /// Set a universal file as the user's profile picture.
+    ///
+    /// The stored URL points at the stable `small` key, which resolves once
+    /// processing writes the variant.
     pub async fn update_userpic(&self, user_id: u64, file_id: u64) -> Result<()> {
-        let source = self
-            .uploads
-            .get(file_id)
-            .await
-            .inspect_err(|e| {
-                error!("Could not find source file {file_id}: {e:?}");
-            })?
-            .ok_or(Error::FileNotFound)?;
+        let file = self.files.get(file_id).await?.ok_or(Error::FileNotFound)?;
 
-        let body = self.storage.read_file(source.id).await.inspect_err(|e| {
-            error!("Could not read source file {}: {:?}", source.id, e);
-        })?;
+        if file.is_deleted() {
+            return Err(Error::FileNotFound);
+        }
 
-        let small = self.thumbnailer.resize(&body, USERPIC_SIZE)?;
-        let small_id = self.write_file(&small).await?;
+        if file.created_by != user_id {
+            return Err(Error::AccessDenied);
+        }
 
-        let userpic = format!("https://yerevan.treemaps.app/v1/files/{small_id}.jpg");
+        let key = format!("files/{file_id}/small.jpg");
+        let userpic = file_url(&self.config.files_base_url, &key);
+
         self.users.update_userpic(user_id, &userpic).await?;
 
-        info!(
-            "File {} successfully processed, added to user {}.",
-            source.id, user_id
-        );
+        info!("File {file_id} set as the userpic of user {user_id}.");
 
         Ok(())
-    }
-
-    /**
-     * Writes the binary data to a new file, returns its id.
-     *
-     * Note that the id is only allocated, file info is not yet
-     * stored in the database.
-     */
-    async fn write_file(&self, data: &[u8]) -> Result<u64> {
-        let id = get_unique_id()?;
-
-        match self.storage.write_file(id, data, true).await {
-            Ok(_) => Ok(id),
-            Err(_) => Err(Error::FileUpload),
-        }
     }
 }
 
@@ -140,9 +118,8 @@ impl Injectable for UserService {
         Ok(Self {
             db: ctx.database(),
             users: Arc::new(ctx.build::<UserRepository>()?),
-            uploads: Arc::new(ctx.build::<UploadRepository>()?),
-            storage: ctx.storage(),
-            thumbnailer: Arc::new(ctx.build::<ThumbnailerService>()?),
+            files: Arc::new(ctx.build::<FileRepository>()?),
+            config: ctx.config(),
         })
     }
 }

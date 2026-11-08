@@ -141,7 +141,7 @@ impl UserRepository {
     }
 
     pub async fn get_tree_actors(&self, tree_id: u64) -> Result<Vec<User>> {
-        let query = "SELECT DISTINCT * FROM users WHERE id IN (SELECT added_by FROM trees_images WHERE tree_id = ? UNION SELECT added_by FROM trees_props WHERE tree_id = ?) ORDER BY id";
+        let query = "SELECT DISTINCT * FROM users WHERE id IN (SELECT added_by FROM trees_files WHERE tree_id = ? AND deleted_at IS NULL UNION SELECT added_by FROM trees_props WHERE tree_id = ?) ORDER BY id";
         let params = &[Value::from(tree_id as i64), Value::from(tree_id as i64)];
 
         self.query_multiple_sql(query, params).await
@@ -187,7 +187,7 @@ impl Injectable for UserRepository {
 mod tests {
     use super::*;
     use crate::domain::prop::PropRecord;
-    use crate::domain::tree_image::TreeImage;
+    use crate::domain::tree_file::TreeFile;
     use crate::services::AppState;
     use crate::services::ContextExt;
 
@@ -227,16 +227,28 @@ mod tests {
         };
         repo.add(&user2).await.expect("Failed to add user 2");
 
-        // Add a tree image by user 1
-        let image = TreeImage {
+        // Link a tree file by user 1
+        let link = TreeFile {
             id: 1,
             tree_id: 100,
+            file_id: 1,
+            added_at: 100,
             added_by: 1,
             ..Default::default()
         };
-        db.add_record(InsertQuery::new("trees_images").with_values(image.to_attributes()))
-            .await
-            .expect("Failed to add image");
+        db.execute_sql(
+            "INSERT INTO `trees_files` (`id`, `tree_id`, `file_id`, `sort_order`, `added_at`, `added_by`, `deleted_at`, `deleted_by`) VALUES (?, ?, ?, ?, ?, ?, NULL, NULL)",
+            &[
+                Value::from(link.id as i64),
+                Value::from(link.tree_id as i64),
+                Value::from(link.file_id as i64),
+                Value::from(link.sort_order as i64),
+                Value::from(link.added_at as i64),
+                Value::from(link.added_by as i64),
+            ],
+        )
+        .await
+        .expect("Failed to add tree file link");
 
         // Add a tree prop by user 2
         let prop = PropRecord {

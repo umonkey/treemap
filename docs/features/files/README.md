@@ -14,7 +14,7 @@ Processing normalises every photo. The platform applies the camera's orientation
 
 A file can be attached to a tree, a citizen feedback report, or a water source. Attachment is separate from upload: a person can upload while still filling in a form, and the file is linked when the record is saved. A tree can hold several photos and one of them is its thumbnail. A feedback report can hold up to ten photos. A water source can hold photos that document its condition.
 
-The platform returns stable links for the original, the display version, and the thumbnail. The links do not expire, so the app, the map, and any shared page can cache them. Older links that address a file by its numeric id continue to work during the transition.
+The platform returns stable links for the original, the display version, and the thumbnail. The links do not expire, so the app, the map, and any shared page can cache them. A link is built from the file's identifier, so it survives moderation and never needs refreshing.
 
 ## Requirements and availability
 
@@ -28,7 +28,7 @@ File storage is available in the hosted service and in self-hosted deployments.
 
 ## Cost and effort
 
-Storage is the main recurring cost. Each photo keeps the original plus a thumbnail and a display JPEG, so budget roughly two to three times the size of the original set. A deployment that receives a few hundred photos a month should expect a few gigabytes a year. Delivery cost depends on the CDN in front of the bucket; thumbnails are small and are cached for a long time, so repeat views are cheap. Processing is background work and adds no meaningful compute. Staff effort is limited to moderation and, for a migration, one planned run of the backfill.
+Storage is the main recurring cost. Each photo keeps the original plus a thumbnail and a display JPEG, so budget roughly two to three times the size of the original set. A deployment that receives a few hundred photos a month should expect a few gigabytes a year. Delivery cost depends on the CDN in front of the bucket; thumbnails are small and are cached for a long time, so repeat views are cheap. Processing is background work and adds no meaningful compute. Staff effort is limited to moderation and, for a deployment moving off the previous photo pipeline, one planned cleanup.
 
 ## Operations and limitations
 
@@ -37,27 +37,28 @@ Storage is the main recurring cost. Each photo keeps the original plus a thumbna
 - The original is retained. This allows re-processing and full-resolution display, but it also means storage cannot be reduced by discarding originals.
 - There is no deduplication. Uploading the same photo twice stores it twice.
 - Video is not processed in this release. The data model reserves a video kind and a poster image, but there is no transcoding, poster generation, or playback pipeline.
-- The legacy numeric file links and the old photo tables remain during the transition. They are read-only compatibility paths and are removed in a later cleanup.
-- A migration from the previous photo pipeline is additive and can run while the service is live. It copies objects server-side, is safe to re-run, and leaves the old data in place for rollback. The operator reference describes the exact sequence.
+- The previous photo pipeline has been retired. The old numeric file links and the records behind them are gone, so a client cached from before the upgrade fails on those links until it reloads. This is a one-time break.
+- Legacy Telegram alert photos are still served from their original store. They were never copied into this capability, so they are not managed here and remain a separate storage concern.
+- Files copied from the previous pipeline carry placeholder size and dimension metadata. Storage reporting understates them until the inventory is refreshed.
 
-## Migration and rollback
+## Moving from the previous photo pipeline
 
-The move from the previous photo pipeline is designed to avoid downtime. The new tables are added alongside the old ones, existing photos are copied to the new layout in the background, and the old links keep working while clients move to the new links.
+This release completes the move away from the previous photo pipeline. The copy itself was additive: the new storage was added alongside the old, photos were copied in the background while the service stayed live, and the old links kept working until clients moved to the new ones.
 
-The sequence is:
+The cleanup is one-way. Once it has run, the previous release cannot be redeployed against the same database, and objects deleted from storage cannot be restored.
+
+The sequence for an existing deployment is:
 
 - Back up the database and record the current object count.
-- Deploy the release.
-- Apply `028-file-storage.sql` with the usual database tooling.
-- Run the photo backfill against a copy of the database and a staging bucket first, and compare counts and sample links.
-- Run the backfill in production. It is idempotent and resumable, so an interrupted run can be repeated.
-- Deploy the client that uses the new links.
-- Verify that the number of tree-photo links matches the old photo count, that sample legacy links resolve, and that sample new links return the image.
-- Freeze writes to the old photo path. Do not delete old objects or columns yet.
+- Deploy the release that no longer reads the old tables and links.
+- Export the old object keys before the schema changes, because the mapping that identifies them is dropped by the cleanup.
+- Spot-check that a sample of the new links resolves, then delete the listed objects from storage by hand. Never delete by prefix.
+- Apply the schema cleanup.
+- Verify that the old storage records are gone and that legacy alert photos are unchanged.
 
-Rollback is a redeploy of the previous release. The old tables, columns, and objects are untouched until the cleanup is executed, so the previous version continues to work. The cleanup itself is a separate, later change and is not part of this migration.
+Rollback is only possible from the database backup taken before the cleanup, and it does not restore the objects deleted from storage.
 
-The exact commands, configuration keys, and verification queries are in the [file upload operator reference](../../File-uploads.md).
+The design and its consequences are recorded in [ADR 0031](../../adr/0031-Universal-File-Storage.md).
 
 ## Questions organisations usually ask
 
@@ -66,4 +67,4 @@ The exact commands, configuration keys, and verification queries are in the [fil
 - Do we keep the original? Yes. The original is stored unchanged, and the platform derives a thumbnail and a display version from it. This costs more storage but allows re-processing and full-resolution viewing.
 - What happens to location metadata? It is removed from the thumbnail and display versions. The original keeps its metadata, so treat the original as sensitive if the source photo carried location data.
 - Can we use our own storage and CDN? Yes, in a self-hosted deployment. The platform needs an S3-compatible bucket and a public base address for the files. The hosted service uses the operator's storage.
-- What does the migration cost? One backfill run that copies existing photos server-side. It runs while the service is live, can be repeated safely, and does not require a maintenance window. The main cost is the additional storage for the new layout until the old objects are cleaned up.
+- What does the move cost? The copy ran in the background while the service stayed live, so there was no downtime and no extra staff effort. The remaining work is one planned cleanup: take a backup, delete the old objects, and apply the schema change. The additional storage for the old objects ends when they are deleted.

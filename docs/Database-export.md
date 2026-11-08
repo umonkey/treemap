@@ -28,7 +28,7 @@ The export runs daily at 04:00 as part of the `cron-daily` script, immediately a
 The export contains four tables.
 
 - `trees`: id, osm_id, added_at, updated_at, lat, lon, species, state, height, diameter, circumference.
-- `trees_images`: id, tree_id, added_at, url.
+- `trees_files`: id, tree_id, file_id, added_at, url.
 - `observations`: id, tree_id, created_at, and the boolean condition flags.
 - `water_source`: id, created_at, updated_at, status, lat, lon.
 

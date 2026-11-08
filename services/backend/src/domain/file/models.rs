@@ -146,23 +146,6 @@ impl FileVariant {
     }
 }
 
-#[derive(Clone, Debug, Default, Serialize)]
-pub struct FileFallback {
-    pub old_key: String,
-    pub file_id: u64,
-    pub variant: String,
-}
-
-impl FileFallback {
-    pub fn from_attributes(attributes: &Attributes) -> Result<Self> {
-        Ok(Self {
-            old_key: attributes.require_string("old_key")?,
-            file_id: attributes.require_u64("file_id")?,
-            variant: attributes.require_string("variant")?,
-        })
-    }
-}
-
 #[derive(Clone, Debug, Default)]
 pub struct FileDetails {
     pub file: File,

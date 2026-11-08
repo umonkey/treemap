@@ -1,6 +1,7 @@
+use crate::domain::file::FileRepository;
 use crate::domain::observation::ObservationRepository;
 use crate::domain::tree::TreeRepository;
-use crate::domain::tree_image::TreeImageRepository;
+use crate::domain::tree_file::TreeFileRepository;
 use crate::domain::water::WaterRepository;
 use crate::infra::export::ExportClient;
 use crate::services::*;
@@ -19,9 +20,13 @@ pub async fn export_database_command() {
         .build::<TreeRepository>()
         .expect("Error creating tree repository.");
 
+    let tree_files = state
+        .build::<TreeFileRepository>()
+        .expect("Error creating tree file repository.");
+
     let files = state
-        .build::<TreeImageRepository>()
-        .expect("Error creating tree image repository.");
+        .build::<FileRepository>()
+        .expect("Error creating file repository.");
 
     let observations = state
         .build::<ObservationRepository>()
@@ -42,16 +47,35 @@ pub async fn export_database_command() {
         client.add_tree(tree).await.expect("Error exporting tree.");
     }
 
-    let files = files.all().await.expect("Error reading tree images.");
-    let files: Vec<_> = files.into_iter().filter(|file| file.is_visible()).collect();
-    println!("Exported {} tree images.", files.len());
+    let links = tree_files.all().await.expect("Error reading tree files.");
+    let mut exported_files = 0;
 
-    for file in &files {
-        client
-            .add_file(file, &state.config.files_base_url)
+    for link in &links {
+        if link.is_deleted() {
+            continue;
+        }
+
+        let Some(details) = files
+            .get_details(link.file_id)
             .await
-            .expect("Error exporting tree image.");
+            .expect("Error reading file details.")
+        else {
+            continue;
+        };
+
+        if !details.is_listable() || details.small().or_else(|| details.original()).is_none() {
+            continue;
+        }
+
+        client
+            .add_file(link, &details, &state.config.files_base_url)
+            .await
+            .expect("Error exporting tree file.");
+
+        exported_files += 1;
     }
+
+    println!("Exported {exported_files} tree files.");
 
     let observations = observations
         .all()

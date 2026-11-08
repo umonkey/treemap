@@ -1,4 +1,4 @@
-//! File ticket creation, processing, and legacy reads.
+//! File ticket creation and processing.
 
 use super::models::{File, FileKind, FileStatus, FileVariant};
 use super::repository::FileRepository;
@@ -124,34 +124,6 @@ impl FileService {
         info!("File {id} deleted by user {user_id}.");
 
         Ok(())
-    }
-
-    /// Read a file through the legacy `/v1/files/{id}.jpg` route.
-    ///
-    /// Resolution order: `files_fallback`, then the `small` variant of a file
-    /// with this id, then the bare legacy storage key.
-    pub async fn read_legacy(&self, id: u64) -> Result<(Vec<u8>, String)> {
-        let old_key = id.to_string();
-
-        if let Some(fallback) = self.files.get_fallback(&old_key).await? {
-            if let Some(variant) = self
-                .files
-                .get_variant(fallback.file_id, &fallback.variant)
-                .await?
-            {
-                let data = self.storage.read_file_at(&variant.key).await?;
-                return Ok((data, variant.mime_type));
-            }
-        }
-
-        if let Some(variant) = self.files.get_variant(id, "small").await? {
-            let data = self.storage.read_file_at(&variant.key).await?;
-            return Ok((data, variant.mime_type));
-        }
-
-        let data = self.storage.read_file(id).await?;
-
-        Ok((data, "image/jpeg".to_string()))
     }
 
     /// Process an uploaded original into `small` and `large` JPEG variants.

@@ -1,25 +1,6 @@
 import type { IResponse, IUploadTicket } from '$lib/types';
 import { getAuthHeaders, request } from './client';
 
-/**
- * This is deprecated.
- * Please use uploadSingleFile for now.
- **/
-export async function uploadFile(tree: string, file: File): Promise<IResponse<void>> {
-	const headers: HeadersInit = {
-		'Content-Type': 'application/json',
-		...getAuthHeaders()
-	};
-
-	const buffer = await file.arrayBuffer();
-	const body = new Blob([buffer], { type: file.type });
-
-	return await request('POST', `v1/trees/${tree}/files`, {
-		body,
-		headers
-	});
-}
-
 // Add previously uploaded files as photos to a tree.
 export async function addPhotos(tree_id: string, files: string[]): Promise<IResponse<void>> {
 	const headers: HeadersInit = {

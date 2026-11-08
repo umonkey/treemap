@@ -4,9 +4,10 @@
 //! that no `-wal` sidecar is left behind, which would otherwise produce an
 //! incomplete gzip archive.
 
+use crate::domain::file::{file_url, FileDetails};
 use crate::domain::observation::Observation;
 use crate::domain::tree::Tree;
-use crate::domain::tree_image::TreeImage;
+use crate::domain::tree_file::TreeFile;
 use crate::domain::water::WaterSource;
 use crate::infra::database::{InsertQuery, Value};
 use crate::types::*;
@@ -32,9 +33,10 @@ CREATE TABLE trees (
     circumference REAL
 );
 
-CREATE TABLE trees_images (
+CREATE TABLE trees_files (
     id INTEGER PRIMARY KEY,
     tree_id INTEGER NOT NULL,
+    file_id INTEGER NOT NULL,
     added_at INTEGER NOT NULL,
     url TEXT NOT NULL
 );
@@ -114,19 +116,23 @@ impl ExportClient {
         self.execute(query).await
     }
 
-    pub async fn add_file(&self, file: &TreeImage, base_url: &str) -> Result<()> {
-        let id = if file.source_id > 0 {
-            file.source_id
-        } else {
-            file.large_id
+    pub async fn add_file(
+        &self,
+        link: &TreeFile,
+        details: &FileDetails,
+        base_url: &str,
+    ) -> Result<()> {
+        let Some(variant) = details.small().or_else(|| details.original()) else {
+            return Ok(());
         };
 
-        let url = format!("{}{}.jpg", base_url, id);
+        let url = file_url(base_url, &variant.key);
 
-        let query = InsertQuery::new("trees_images")
-            .with_value("id", Value::from(file.id as i64))
-            .with_value("tree_id", Value::from(file.tree_id as i64))
-            .with_value("added_at", Value::from(file.added_at as i64))
+        let query = InsertQuery::new("trees_files")
+            .with_value("id", Value::from(link.id as i64))
+            .with_value("tree_id", Value::from(link.tree_id as i64))
+            .with_value("file_id", Value::from(link.file_id as i64))
+            .with_value("added_at", Value::from(link.added_at as i64))
             .with_value("url", Value::from(url));
 
         self.execute(query).await

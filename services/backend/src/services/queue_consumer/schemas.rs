@@ -1,12 +1,6 @@
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
-// Prepare images from an uploaded file.
-#[derive(Debug, Deserialize, Serialize)]
-pub struct ResizeImageMessage {
-    pub id: u64,
-}
-
 // Process a universal file upload into its derived variants.
 #[derive(Debug, Deserialize, Serialize)]
 pub struct ProcessFileMessage {
@@ -33,13 +27,6 @@ pub struct UpdateUserpicMessage {
     pub file_id: u64,
 }
 
-// Convert an uploaded file into an alert photo.
-#[derive(Debug, Deserialize, Serialize)]
-pub struct AddAlertPhotoMessage {
-    pub alert_id: u64,
-    pub file_id: u64,
-}
-
 // Recompute the pre-rendered track geometry and bounds for a panorama.
 #[derive(Debug, Deserialize, Serialize)]
 pub struct UpdatePanoramaStatsMessage {
@@ -49,25 +36,11 @@ pub struct UpdatePanoramaStatsMessage {
 #[allow(dead_code)]
 #[derive(Debug, Serialize)]
 pub enum QueueCommand {
-    ResizeImage(ResizeImageMessage),
     ProcessFile(ProcessFileMessage),
     UpdateTreeAddress(UpdateTreeAddressMessage),
     AddPhoto(AddPhotoMessage),
     UpdateUserpic(UpdateUserpicMessage),
     UpdatePanoramaStats(UpdatePanoramaStatsMessage),
-    AddAlertPhoto(AddAlertPhotoMessage),
-}
-
-impl ResizeImageMessage {
-    pub fn encode(&self) -> String {
-        json!({
-            "command": "ResizeImage",
-            "params": {
-                "id": self.id,
-            },
-        })
-        .to_string()
-    }
 }
 
 impl ProcessFileMessage {
@@ -126,20 +99,6 @@ impl UpdatePanoramaStatsMessage {
             "command": "UpdatePanoramaStats",
             "params": {
                 "id": self.id,
-            },
-        })
-        .to_string()
-    }
-}
-
-impl AddAlertPhotoMessage {
-    #[allow(dead_code)]
-    pub fn encode(&self) -> String {
-        json!({
-            "command": "AddAlertPhoto",
-            "params": {
-                "alert_id": self.alert_id,
-                "file_id": self.file_id,
             },
         })
         .to_string()

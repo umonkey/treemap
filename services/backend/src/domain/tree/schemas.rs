@@ -395,7 +395,6 @@ mod tests {
             updated_at: 0,
             updated_by: 0,
             added_by: 0,
-            thumbnail_id: None,
             year: None,
             address: None,
             height_updated_at: 0,

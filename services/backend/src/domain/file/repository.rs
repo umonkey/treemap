@@ -1,6 +1,6 @@
-//! Access to the `files`, `files_variants`, and `files_fallback` tables.
+//! Access to the `files` and `files_variants` tables.
 
-use super::models::{File, FileDetails, FileFallback, FileStatus, FileVariant};
+use super::models::{File, FileDetails, FileStatus, FileVariant};
 use crate::infra::database::{Database, InsertQuery, SelectQuery, UpdateQuery, Value};
 use crate::services::{Context, Injectable};
 use crate::types::*;
@@ -8,7 +8,6 @@ use std::sync::Arc;
 
 const FILES: &str = "files";
 const VARIANTS: &str = "files_variants";
-const FALLBACK: &str = "files_fallback";
 
 pub struct FileRepository {
     db: Arc<Database>,
@@ -132,31 +131,6 @@ impl FileRepository {
 
         Ok(())
     }
-
-    pub async fn get_fallback(&self, old_key: &str) -> Result<Option<FileFallback>> {
-        let query = SelectQuery::new(FALLBACK).with_condition("old_key", Value::from(old_key));
-
-        match self.db.get_record(query).await {
-            Ok(Some(props)) => Ok(Some(FileFallback::from_attributes(&props)?)),
-            Ok(None) => Ok(None),
-            Err(err) => Err(err),
-        }
-    }
-
-    #[allow(dead_code)]
-    pub async fn add_fallback(&self, fallback: &FileFallback) -> Result<()> {
-        let sql = "INSERT OR IGNORE INTO `files_fallback` (`old_key`, `file_id`, `variant`) VALUES (?, ?, ?)";
-
-        let params = [
-            Value::from(fallback.old_key.clone()),
-            Value::from(fallback.file_id as i64),
-            Value::from(fallback.variant.clone()),
-        ];
-
-        self.db.execute_sql(sql, &params).await?;
-
-        Ok(())
-    }
 }
 
 impl Injectable for FileRepository {
@@ -251,27 +225,5 @@ mod tests {
 
         assert_eq!(variant.key, "files/1/small.jpg");
         assert_eq!(variant.width, Some(100));
-    }
-
-    #[tokio::test]
-    async fn test_fallback() {
-        let repo = setup().await;
-
-        repo.add_fallback(&FileFallback {
-            old_key: "123".to_string(),
-            file_id: 1,
-            variant: "small".to_string(),
-        })
-        .await
-        .expect("Error adding fallback.");
-
-        let fallback = repo
-            .get_fallback("123")
-            .await
-            .expect("Error getting fallback.")
-            .unwrap();
-
-        assert_eq!(fallback.file_id, 1);
-        assert_eq!(fallback.variant, "small");
     }
 }

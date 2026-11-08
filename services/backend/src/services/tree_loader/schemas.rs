@@ -19,7 +19,6 @@ pub struct TreeRead {
     pub added_at: u64,
     pub added_by: String,
     pub updated_at: u64,
-    pub thumbnail_id: Option<String>,
     pub thumbnail_url: Option<String>,
     pub year: Option<i64>,
     pub address: Option<String>,
@@ -50,7 +49,6 @@ pub struct SingleTreeResponse {
     pub updated_at: u64,
     pub added_by: String,
     pub address: Option<String>,
-    pub thumbnail_id: Option<String>,
     pub thumbnail_url: Option<String>,
     pub year: Option<i64>,
     pub like_count: i64,
@@ -83,8 +81,6 @@ impl TreeList {
 
 impl TreeRead {
     pub fn from_tree(tree: &Tree) -> Self {
-        let thumbnail_id = tree.thumbnail_id.map(|value| value.to_string());
-
         TreeRead {
             id: tree.id.to_string(),
             lat: tree.lat,
@@ -98,7 +94,6 @@ impl TreeRead {
             added_at: tree.added_at,
             added_by: tree.added_by.to_string(),
             updated_at: tree.updated_at,
-            thumbnail_id,
             thumbnail_url: None,
             year: tree.year,
             address: tree.address.clone(),
@@ -111,8 +106,6 @@ impl TreeRead {
 
 impl SingleTreeResponse {
     pub fn from_tree(tree: &Tree, files: &[FileRead], users: &[User]) -> SingleTreeResponse {
-        let thumbnail_id = tree.thumbnail_id.map(|value| value.to_string());
-
         let users = users.iter().map(UserRead::from).collect();
 
         SingleTreeResponse {
@@ -130,7 +123,6 @@ impl SingleTreeResponse {
             updated_at: tree.updated_at,
             added_by: tree.added_by.to_string(),
             address: tree.address.clone(),
-            thumbnail_id,
             thumbnail_url: None,
             year: tree.year,
             like_count: tree.like_count,

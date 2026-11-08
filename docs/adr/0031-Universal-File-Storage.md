@@ -21,7 +21,7 @@ Key characteristics:
 - `files_variants` holds one row per stored object: `file_id`, `name`, `key`, `mime_type`, `size_bytes`, `width`, `height`, `created_at`. The primary key is `(file_id, name)`.
 - Link tables `trees_files`, `chatbot_alerts_files`, and `water_source_files` attach a file to a feature. `trees_files` carries `sort_order` and soft-delete columns; the other two are append-only.
 - Objects live under `files/{id}/{name}.{ext}`. The original is uploaded to `files/{id}/original.{ext}`; derived images are written to `files/{id}/small.jpg` and `files/{id}/large.jpg`.
-- `trees.thumbnail_file_id` references `files.id`. The legacy `trees.thumbnail_id` column is retained during the transition.
+- `trees.thumbnail_file_id` references `files.id`.
 
 ### The original is a variant
 
@@ -39,7 +39,7 @@ HEIC and HEIF are rejected at ticket time because the image decoder cannot read 
 
 ### Stable CDN URLs
 
-API responses carry public URLs built from the configured `files_base_url` and the variant key. `FileRead` exposes `urls: { original, large, small }`, `kind`, `width`, and `height`; `TreeRead` exposes `thumbnail_url`. The legacy `small_id`, `large_id`, and `source_id` fields remain populated for older clients.
+API responses carry public URLs built from the configured `files_base_url` and the variant key. `FileRead` exposes `urls: { original, large, small }`, `kind`, `width`, and `height`; `TreeRead` exposes `thumbnail_url`, built from `thumbnail_file_id`.
 
 The URLs are not presigned. Presigned URLs expire, defeat long-lived caching, and force every client to refresh them. The URLs are also not proxied through the API, which would spend backend bandwidth and latency on object delivery. File ids are unique and variant keys are never rewritten, so the objects are immutable and can be cached for a year.
 
@@ -57,7 +57,7 @@ Apply `028-file-storage.sql` with the existing manual migration process. It is a
 
 `bin/treemap migrate-files` backfills `trees_images` into the new tables. It reuses `source_id` as the file id when present, falling back to the row id. It inserts the file, the `original`, `small`, and `large` variants, the `trees_files` link, and `files_fallback` rows that map the old bare keys to the new file and variant. It copies objects server-side with `CopyObject`, skips missing or zero keys, and is idempotent and resumable in batches. It then sets `trees.thumbnail_file_id` by mapping the old `thumbnail_id` through the `small` fallback.
 
-The legacy `GET /v1/files/{id}.jpg` route resolves `files_fallback` first, then the `small` variant of a file with that id, then the bare legacy key. Old clients keep working while the frontend moves to the URL fields. Legacy columns and objects stay in place until the cleanup issue ([#313](https://github.com/umonkey/treemap/issues/313)) is executed.
+A compatibility phase ran `GET /v1/files/{id}.jpg`, which resolved `files_fallback` first, then the `small` variant of a file with that id, then the bare legacy key. The cleanup issue ([#313](https://github.com/umonkey/treemap/issues/313)) removed the route, the legacy columns, and the legacy objects. See [Cleanup](#cleanup) below.
 
 ## Alternatives considered
 
@@ -73,8 +73,37 @@ The legacy `GET /v1/files/{id}.jpg` route resolves `files_fallback` first, then 
 - One upload and processing pipeline serves trees, alerts, and water sources. A new feature attaches files with a link table and reuses the same URLs and visibility rules.
 - Storage grows: each photo keeps the original plus two derived JPEGs. The original is retained for re-processing and for full-resolution display.
 - `is_visible` is a delisting control, not a hard takedown. A reader with the CDN URL may still fetch a hidden object until it is removed manually.
-- The legacy route, `trees_images`, `uploads`, `chatbot_alerts_photos`, and `files_fallback` remain until the cleanup issue ([#313](https://github.com/umonkey/treemap/issues/313)) is executed. `files_fallback` is migration-only and should not be used by new code.
+- The cleanup issue ([#313](https://github.com/umonkey/treemap/issues/313)) removed the legacy route, `trees_images`, `uploads`, and `files_fallback`. `chatbot_alerts_photos` is retained because legacy alert photos have no backfill.
 - Video is schema-ready only. `kind` and the `poster` variant name exist, but there is no transcoding or poster generation in this change.
 - There is no deduplication and no content hash. Uploading the same bytes twice creates two files.
 - The file backfill is a separate CLI command, so operators can run it independently of the schema change.
-- `trees.thumbnail_id` no longer means a `small_id`; new code reads `thumbnail_file_id`. The old column is only a migration input.
+- Tree thumbnails are read only from `thumbnail_file_id`. The cleanup dropped `trees.thumbnail_id`.
+
+## Cleanup
+
+- Date: 2026-11-08
+
+The compatibility layer described above has served its purpose. Tree image rows were backfilled into `trees_files`, the derived variants were copied to the `files/{id}/{variant}.jpg` keys, and the frontend reads `urls` and `thumbnail_url` instead of the numeric ids. The window in which a rollback could redeploy the previous release without touching data is now closed, so issue [#313](https://github.com/umonkey/treemap/issues/313) removed the layer in one release.
+
+Removed:
+
+- The `trees_images`, `uploads`, and `files_fallback` tables, and `trees.thumbnail_id`. Tree thumbnails come only from `thumbnail_file_id`.
+- The `GET /v1/files/{id}.jpg` and `GET /v1/files/{id}` routes.
+- The `small_id`, `large_id`, and `source_id` fields on `FileRead`.
+- The legacy branches that wrote to `uploads` and `trees_images`, and the `ResizeImage` and `AddAlertPhoto` queue commands. `AddPhoto` stays and attaches universal files only.
+
+Retained and changed:
+
+- `chatbot_alerts_photos` stays, with its readers in the backend and the chatbot, because legacy alert photos were never backfilled.
+- The exported photo table is renamed from `trees_images` to `trees_files` with `id, tree_id, file_id, added_at, url`.
+- Migration `029-file-storage-cleanup.sql` performs the schema removal. It is forward-only and runs after the legacy objects are deleted, because `files_fallback` is the recommended source of the object list.
+
+The legacy bare-key objects are deleted manually with the storage console or the provider CLI, driven by an exported key list. There is no application command or repository tool for it, because it is a one-off operational step that needs an explicit review before it runs.
+
+Consequences:
+
+- Cached frontend bundles and old clients that call the legacy route or read the compatibility id fields break until they reload. The issue accepts this.
+- Restoring the previous release after the migration requires the database backup and does not restore the deleted objects.
+- Consumers of the public export see the photo table renamed and gain `file_id`.
+- `chatbot_alerts_photos` is the only remaining legacy file reader. It cannot be removed until legacy alert photos are either backfilled or discarded.
+- The `ALTER TABLE trees DROP COLUMN thumbnail_id` statement requires SQLite 3.35 or newer.

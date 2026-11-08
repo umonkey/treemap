@@ -15,8 +15,7 @@ Table trees {
   updated_at int [not null]
   updated_by int [not null]
   added_by int [not null]
-  thumbnail_id int [note: 'Legacy thumbnail id, retained during migration']
-  thumbnail_file_id int [note: 'References files.id']
+  thumbnail_file_id int [note: 'References files.id; the tree thumbnail']
   year int
   address text
   like_count int [not null, default: 0]
@@ -26,19 +25,6 @@ Table trees {
   osm_id int [unique, note: 'OpenStreetMap ID']
   osm_version int
   last_sync_at int
-}
-
-// Legacy tree photo table, retained until the file storage cleanup.
-Table trees_images {
-  id int [pk]
-  tree_id int [not null]
-  added_at int [not null]
-  added_by int [not null]
-  deleted_at int
-  deleted_by int
-  small_id int [not null]
-  large_id int [not null]
-  source_id int [not null]
 }
 
 Table trees_props {
@@ -61,14 +47,6 @@ Table water_source {
 }
 
 // Legacy upload ticket table, retained until the file storage cleanup.
-Table uploads {
-  id int [pk]
-  added_at int [not null]
-  added_by int [not null]
-  size int [not null]
-  uploaded_at int
-}
-
 // Universal file storage.
 Table files {
   id int [pk]
@@ -138,12 +116,6 @@ Table water_source_files {
 }
 
 // Migration-only map from legacy bare S3 keys to new files.
-Table files_fallback {
-  old_key text [pk]
-  file_id int [not null]
-  variant text [not null]
-}
-
 Table users {
   id int [pk]
   email text [unique, not null]
@@ -291,7 +263,6 @@ Table panoramas_hints {
 }
 
 // Relationships
-Ref: trees_images.tree_id > trees.id
 Ref: trees_props.tree_id > trees.id
 Ref: comments.tree_id > trees.id
 Ref: likes.tree_id > trees.id
@@ -301,10 +272,7 @@ Ref: trees.replaced_by > trees.id
 
 Ref: trees.added_by > users.id
 Ref: trees.updated_by > users.id
-Ref: trees_images.added_by > users.id
-Ref: trees_images.deleted_by > users.id
 Ref: trees_props.added_by > users.id
-Ref: uploads.added_by > users.id
 Ref: comments.added_by > users.id
 Ref: likes.user_id > users.id
 Ref: training.user_id > users.id
@@ -330,4 +298,3 @@ Ref: chatbot_alerts_files.added_by > users.id
 Ref: water_source_files.water_source_id > water_source.id
 Ref: water_source_files.file_id > files.id
 Ref: water_source_files.added_by > users.id
-Ref: files_fallback.file_id > files.id

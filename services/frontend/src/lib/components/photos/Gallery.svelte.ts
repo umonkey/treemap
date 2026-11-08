@@ -1,8 +1,8 @@
 import { getTreeFiles } from '$lib/api/trees';
+import FALLBACK from '$lib/assets/tree.jpg';
 import { uploadBus } from '$lib/buses/upload';
 import { db } from '$lib/db';
 import { locale } from '$lib/locale';
-import { routes } from '$lib/routes';
 import { hasPermission } from '$lib/stores/authStore';
 import type { IGalleryItem, ITreeFile } from '$lib/types';
 import { queuePhoto } from '$lib/upload';
@@ -176,8 +176,8 @@ export class Gallery {
 
 			return {
 				id: file.id,
-				small: file.urls?.small ?? routes.file(file.small_id),
-				large: file.urls?.large ?? routes.file(file.source_id ?? file.large_id),
+				small: file.urls?.small ?? FALLBACK,
+				large: file.urls?.large ?? file.urls?.small ?? FALLBACK,
 				label,
 				description: fileAttribution(file) || label
 			};

@@ -2,14 +2,12 @@ mod actions;
 mod schemas;
 
 pub use actions::*;
-pub use schemas::AddFileRequest;
 pub use schemas::FileUploadResponse;
 
 use actix_web::web::ServiceConfig;
 
 pub fn tree_router(cfg: &mut ServiceConfig) {
     cfg.service(add_comment_action)
-        .service(add_file_action)
         .service(add_photos_action)
         .service(add_trees_action)
         .service(get_liked_trees_action)

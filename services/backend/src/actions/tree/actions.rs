@@ -1,6 +1,4 @@
-use super::schemas::AddFileRequest;
 use super::schemas::AddTreePayload;
-use super::schemas::FileUploadResponse;
 use super::schemas::*;
 use crate::actions::tree::schemas::ObservationRead;
 use crate::actions::user::UserList;
@@ -16,7 +14,6 @@ use crate::domain::tree::{
     AddTreeRequest, GetTreesRequest, TreeService, TreeStats, UpdateTreeRequest,
 };
 use crate::domain::tree_file::TreeFileService;
-use crate::domain::tree_image::TreeImageService;
 use crate::domain::user::UserService;
 use crate::services::app::{OptionalUserId, RequirePermission, TreeCreate, UserId};
 use crate::services::comment_loader::{CommentList, CommentLoader};
@@ -25,9 +22,8 @@ use crate::services::tree_loader::SingleTreeResponse;
 use crate::services::tree_loader::{TreeList, TreeLoader};
 use crate::services::Injected;
 use crate::types::{Error, Result};
-use crate::utils::{get_remote_addr, get_user_agent};
-use actix_web::web::{Bytes, Json, Path, Query};
-use actix_web::{delete, get, patch, post, put, HttpRequest, HttpResponse};
+use actix_web::web::{Json, Path, Query};
+use actix_web::{delete, get, patch, post, put, HttpResponse};
 use log::warn;
 use serde::Deserialize;
 
@@ -58,27 +54,6 @@ pub async fn add_comment_action(
         .await?;
 
     Ok(HttpResponse::Accepted().finish())
-}
-
-#[post("/{id:\\d+}/files")]
-pub async fn add_file_action(
-    user_id: UserId,
-    path: Path<PathInfo>,
-    req: HttpRequest,
-    body: Bytes,
-    service: Injected<TreeImageService>,
-) -> Result<Json<FileUploadResponse>> {
-    let file = service
-        .add_file(AddFileRequest {
-            user_id: *user_id,
-            tree_id: path.id,
-            remote_addr: get_remote_addr(&req).ok_or(Error::RemoteAddrNotSet)?,
-            user_agent: get_user_agent(&req).ok_or(Error::UserAgentNotSet)?,
-            file: body.to_vec(),
-        })
-        .await?;
-
-    Ok(Json(FileUploadResponse::from_file(&file)))
 }
 
 #[post("/{id:\\d+}/photos")]

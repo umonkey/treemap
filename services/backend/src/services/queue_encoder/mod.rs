@@ -26,15 +26,6 @@ impl QueueCommand {
             })?;
 
         match command {
-            "ResizeImage" => {
-                let id = params["id"].as_u64().ok_or("missing id").map_err(|e| {
-                    error!("Error extracting image id: {e}, payload={json}");
-                    Error::Queue
-                })?;
-
-                Ok(Some(QueueCommand::ResizeImage(ResizeImageMessage { id })))
-            }
-
             "ProcessFile" => {
                 let id = params["id"].as_u64().ok_or("missing id").map_err(|e| {
                     error!("Error extracting file id: {e}, payload={json}");
@@ -112,29 +103,6 @@ impl QueueCommand {
                 )))
             }
 
-            "AddAlertPhoto" => {
-                let alert_id = params["alert_id"]
-                    .as_u64()
-                    .ok_or("missing alert_id")
-                    .map_err(|e| {
-                        error!("Error extracting alert id: {e}, payload={json}");
-                        Error::Queue
-                    })?;
-
-                let file_id = params["file_id"]
-                    .as_u64()
-                    .ok_or("missing file_id")
-                    .map_err(|e| {
-                        error!("Error extracting file id: {e}, payload={json}");
-                        Error::Queue
-                    })?;
-
-                Ok(Some(QueueCommand::AddAlertPhoto(AddAlertPhotoMessage {
-                    alert_id,
-                    file_id,
-                })))
-            }
-
             _ => {
                 error!("Could not parse message: {json}");
                 Ok(None)
@@ -147,33 +115,6 @@ impl QueueCommand {
 #[allow(unreachable_patterns)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn test_decode_resize_image() {
-        let json = r#"{"command":"ResizeImage","params":{"id":12345}}"#;
-
-        let command = QueueCommand::decode(json)
-            .expect("Error parsing command.")
-            .expect("No command found.");
-
-        match command {
-            QueueCommand::ResizeImage(message) => {
-                assert_eq!(message.id, 12345);
-            }
-
-            _ => panic!("Expected ResizeImage, got {command:?}"),
-        }
-    }
-
-    #[test]
-    fn test_encode_resize_image() {
-        let message = ResizeImageMessage { id: 12345 };
-
-        assert_eq!(
-            message.encode(),
-            r#"{"command":"ResizeImage","params":{"id":12345}}"#
-        );
-    }
 
     #[test]
     fn test_decode_process_file() {
@@ -230,40 +171,8 @@ mod tests {
     }
 
     #[test]
-    fn test_decode_add_alert_photo() {
-        let json = r#"{"command":"AddAlertPhoto","params":{"alert_id":12345,"file_id":67890}}"#;
-
-        let command = QueueCommand::decode(json)
-            .expect("Error parsing command.")
-            .expect("No command found.");
-
-        match command {
-            QueueCommand::AddAlertPhoto(message) => {
-                assert_eq!(message.alert_id, 12345);
-                assert_eq!(message.file_id, 67890);
-            }
-
-            _ => panic!("Expected AddAlertPhoto, got {command:?}"),
-        }
-    }
-
-    #[test]
-    fn test_encode_add_alert_photo() {
-        let message = AddAlertPhotoMessage {
-            alert_id: 12345,
-            file_id: 67890,
-        };
-
-        assert_eq!(
-            message.encode(),
-            r#"{"command":"AddAlertPhoto","params":{"alert_id":12345,"file_id":67890}}"#
-        );
-    }
-
-    #[test]
     fn test_every_command_decodes() {
         let messages = [
-            ResizeImageMessage { id: 12345 }.encode(),
             ProcessFileMessage { id: 12345 }.encode(),
             UpdateTreeAddressMessage { id: 12345 }.encode(),
             AddPhotoMessage {
@@ -277,11 +186,6 @@ mod tests {
             }
             .encode(),
             UpdatePanoramaStatsMessage { id: 12345 }.encode(),
-            AddAlertPhotoMessage {
-                alert_id: 12345,
-                file_id: 67890,
-            }
-            .encode(),
         ];
 
         for json in messages {

@@ -5,7 +5,7 @@ use crate::domain::observation::ObservationRepository;
 use crate::domain::osm::OsmTreeRepository;
 use crate::domain::prop::{PropRecord, PropRepository};
 use crate::domain::tree::{TreeLocation, TreeRepository, TreeState};
-use crate::domain::tree_image::TreeImageRepository;
+use crate::domain::tree_file::TreeFileRepository;
 use crate::services::{Context, Injectable};
 use crate::types::*;
 use log::{debug, info};
@@ -16,7 +16,7 @@ const EXCLUDED_MERGE_PROPS: &[&str] = &["replaced_by", "replaces"];
 
 pub struct TreeMergerService {
     trees: Arc<TreeRepository>,
-    files: Arc<TreeImageRepository>,
+    files: Arc<TreeFileRepository>,
     comments: Arc<CommentRepository>,
     likes: Arc<LikeRepository>,
     observations: Arc<ObservationRepository>,
@@ -233,14 +233,14 @@ impl TreeMergerService {
             .max()
             .unwrap_or(0);
 
-        // Merge thumbnail_id: if main has none, take latest available
-        if merged_tree.thumbnail_id.is_none() {
+        // Merge thumbnail_file_id: if main has none, take latest available
+        if merged_tree.thumbnail_file_id.is_none() {
             if let Some(t) = all
                 .iter()
-                .filter(|t| t.thumbnail_id.is_some())
+                .filter(|t| t.thumbnail_file_id.is_some())
                 .max_by_key(|t| t.images_updated_at)
             {
-                merged_tree.thumbnail_id = t.thumbnail_id;
+                merged_tree.thumbnail_file_id = t.thumbnail_file_id;
             }
         }
 
@@ -361,7 +361,7 @@ impl Injectable for TreeMergerService {
     fn inject(ctx: &dyn Context) -> Result<Self> {
         Ok(Self {
             trees: Arc::new(ctx.build::<TreeRepository>()?),
-            files: Arc::new(ctx.build::<TreeImageRepository>()?),
+            files: Arc::new(ctx.build::<TreeFileRepository>()?),
             comments: Arc::new(ctx.build::<CommentRepository>()?),
             likes: Arc::new(ctx.build::<LikeRepository>()?),
             observations: Arc::new(ctx.build::<ObservationRepository>()?),
@@ -433,7 +433,7 @@ mod tests {
 
         // Clear database
         db.execute_sql("DELETE FROM trees", &[]).await.unwrap();
-        db.execute_sql("DELETE FROM trees_images", &[])
+        db.execute_sql("DELETE FROM trees_files", &[])
             .await
             .unwrap();
         db.execute_sql("DELETE FROM comments", &[]).await.unwrap();

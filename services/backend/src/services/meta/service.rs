@@ -1,10 +1,12 @@
+use crate::domain::file::file_url;
 use crate::domain::tree::{Tree, TreeState};
+use crate::infra::config::Config;
 use crate::services::{Context, Injectable};
 use crate::types::{Error, Result};
 use html_escape::encode_double_quoted_attribute_to_string;
 use log::{debug, error};
 use regex::Regex;
-use std::sync::{LazyLock, OnceLock};
+use std::sync::{Arc, LazyLock, OnceLock};
 use tokio::fs;
 
 static INDEX_TEMPLATE: OnceLock<String> = OnceLock::new();
@@ -32,7 +34,9 @@ static NOINDEX_REGEXES: LazyLock<Vec<Regex>> = LazyLock::new(|| {
         .collect()
 });
 
-pub struct MetaService {}
+pub struct MetaService {
+    config: Arc<Config>,
+}
 
 impl MetaService {
     pub async fn get_tree(&self, tree: &Tree) -> Result<String> {
@@ -69,8 +73,14 @@ impl MetaService {
             .as_str(),
         );
 
-        if let Some(image) = tree.thumbnail_id {
-            html.push_str(format!("<meta name=\"og:image\" content=\"https://yerevan.treemaps.app/v1/files/{image}.jpg\">").as_str());
+        if let Some(image) = self.thumbnail_url(tree) {
+            html.push_str(
+                format!(
+                    "<meta name=\"og:image\" content=\"{}\">",
+                    Self::escape(&image)
+                )
+                .as_str(),
+            );
         }
 
         html.push_str("<meta name=\"twitter:card\" content=\"summary_large_image\">");
@@ -97,8 +107,14 @@ impl MetaService {
             .as_str(),
         );
 
-        if let Some(image) = tree.thumbnail_id {
-            html.push_str(format!("<meta name=\"twitter:image\" content=\"https://yerevan.treemaps.app/v1/files/{image}.jpg\">").as_str());
+        if let Some(image) = self.thumbnail_url(tree) {
+            html.push_str(
+                format!(
+                    "<meta name=\"twitter:image\" content=\"{}\">",
+                    Self::escape(&image)
+                )
+                .as_str(),
+            );
         }
 
         self.inject_meta(&html).await
@@ -136,6 +152,15 @@ impl MetaService {
             state => format!("A {} tree at {}, {}.", state.as_str(), tree.lat, tree.lon),
         }
         .to_string()
+    }
+
+    fn thumbnail_url(&self, tree: &Tree) -> Option<String> {
+        tree.thumbnail_file_id.map(|id| {
+            file_url(
+                &self.config.files_base_url,
+                &format!("files/{id}/small.jpg"),
+            )
+        })
     }
 
     fn escape(text: &str) -> String {
@@ -181,8 +206,10 @@ impl MetaService {
 }
 
 impl Injectable for MetaService {
-    fn inject(_ctx: &dyn Context) -> Result<Self> {
-        Ok(Self {})
+    fn inject(ctx: &dyn Context) -> Result<Self> {
+        Ok(Self {
+            config: ctx.config(),
+        })
     }
 }
 
@@ -192,7 +219,9 @@ mod tests {
 
     #[test]
     fn test_inject_robots_noindex() {
-        let service = MetaService {};
+        let service = MetaService {
+            config: Arc::new(Config::default()),
+        };
         let html = "<html><head></head><body></body></html>";
 
         let result = service.inject_robots(html, "/tree/123");
@@ -203,7 +232,9 @@ mod tests {
 
     #[test]
     fn test_inject_robots_indexable() {
-        let service = MetaService {};
+        let service = MetaService {
+            config: Arc::new(Config::default()),
+        };
         let html = "<html><head></head><body></body></html>";
 
         let result = service.inject_robots(html, "/tools/stats");
@@ -213,7 +244,9 @@ mod tests {
 
     #[test]
     fn test_inject_robots_excluded_paths() {
-        let service = MetaService {};
+        let service = MetaService {
+            config: Arc::new(Config::default()),
+        };
 
         for path in [
             "/tree/123",
@@ -237,7 +270,9 @@ mod tests {
 
     #[test]
     fn test_inject_robots_indexable_paths() {
-        let service = MetaService {};
+        let service = MetaService {
+            config: Arc::new(Config::default()),
+        };
 
         for path in ["/", "/tools/stats", "/privacy"] {
             let result = service.inject_robots("<head></head>", path);

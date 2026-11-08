@@ -305,24 +305,6 @@ impl TreeRepository {
         self.log_changes(&old, &new, user_id).await
     }
 
-    pub async fn update_thumbnail(
-        &self,
-        tree_id: u64,
-        thumbnail_id: u64,
-        user_id: u64,
-    ) -> Result<()> {
-        let query = UpdateQuery::new(TABLE)
-            .with_condition("id", Value::from(tree_id as i64))
-            .with_value("updated_at", Value::from(get_timestamp() as i64))
-            .with_value("updated_by", Value::from(user_id as i64))
-            .with_value("thumbnail_id", Value::from(thumbnail_id as i64));
-
-        self.db.update(query).await?;
-
-        self.add_tree_prop(tree_id, "thumbnail_id", &thumbnail_id.to_string(), user_id)
-            .await
-    }
-
     pub async fn update_address(&self, tree_id: u64, address: &str, user_id: u64) -> Result<()> {
         let query = UpdateQuery::new(TABLE)
             .with_condition("id", Value::from(tree_id as i64))
@@ -552,16 +534,6 @@ impl TreeRepository {
             };
 
             self.add_tree_prop(new.id, "address", &value, user_id)
-                .await?;
-        }
-
-        if old.thumbnail_id != new.thumbnail_id {
-            let value = match new.thumbnail_id {
-                Some(value) => value.to_string(),
-                None => "".to_string(),
-            };
-
-            self.add_tree_prop(new.id, "thumbnail_id", &value, user_id)
                 .await?;
         }
 

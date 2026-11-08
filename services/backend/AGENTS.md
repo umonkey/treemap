@@ -49,12 +49,12 @@ A missing decoder arm compiles cleanly. `QueueCommand::decode` returns `Ok(None)
 
 ## File Storage
 
-- New uploads write `files` and `files_variants`, then link through `trees_files`, `chatbot_alerts_files`, or `water_source_files`. Do not add new writes to `trees_images`, `uploads`, or `chatbot_alerts_photos`; they are read-only compatibility paths until the cleanup issue.
+- New uploads write `files` and `files_variants`, then link through `trees_files`, `chatbot_alerts_files`, or `water_source_files`. The legacy cleanup ([#313](https://github.com/umonkey/treemap/issues/313)) is done: `trees_images`, `uploads`, and `files_fallback` are gone. `chatbot_alerts_photos` is the only remaining legacy table, kept read-only for old alert photos.
 - A file is listable when `status = 'ready'`, `is_visible = 1`, and `deleted_at IS NULL`. Attaching accepts `pending` and `processing` files.
 - Keys are `files/{id}/original.{ext}`, `files/{id}/small.jpg`, and `files/{id}/large.jpg`. S3-compatible storage does not infer `Content-Type`: every service-side write must set it, and `CopyObject` must use `MetadataDirective::Replace` when the source metadata is wrong.
 - The `original` object's `Content-Type` comes from the client's PUT. The ticket `content_type` only selects the key extension and the `files_variants` row.
 - Processing is idempotent; re-enqueueing a file is safe.
-- Operator reference: `docs/File-uploads.md`.
+- Operator reference: `docs/features/files/README.md`.
 
 ## Database Migrations
 
