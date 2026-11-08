@@ -41,3 +41,10 @@ This will create an empty database with the correct schema.
 API keys and tokens cannot be stored in the config file. Instead, they are read from the environment variables or files under `/run/secrets` with the same name. The following secrets are supported: FILES_KEY, FILES_SECRET, OSM_CLIENT_SECRET, OSM_TOKEN, TURSO_TOKEN, JWT_SECRET, SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_SECRET, FROM_EMAIL.
 
 When running the app in Fly.io, secrets must be set using the `fly secrets set K1=V K2=V` command.
+
+## Observability
+
+Error reporting and tracing are optional and are configured with plain environment variables, not with files in the `.secrets` directory.
+`SENTRY_DSN` holds the client key of the Sentry `backend` project and enables the integration; when it is unset, the application only writes logs as before.
+`SENTRY_RELEASE` is the git commit SHA that tags the error reports; it is normally baked into the images at build time, so it is rarely set by hand.
+`SENTRY_TRACES_SAMPLE_RATE` sets the share of API requests that are traced, as a number between 0.0 and 1.0 (default 0.1).

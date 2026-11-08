@@ -53,7 +53,9 @@ docker run --rm \
     sh -c "npm ci && npm run build"
 
 # (5) Build the final Docker image.
-docker build --tag treemap:$VERSION --file container/Dockerfile.yerevan .
+docker build --tag treemap:$VERSION \
+    --build-arg SENTRY_RELEASE="$(git rev-parse HEAD)" \
+    --file container/Dockerfile.yerevan .
 
 # (6) Publish the Docker image.
 docker tag treemap:$VERSION ghcr.io/$CR_USER/treemap:$VERSION

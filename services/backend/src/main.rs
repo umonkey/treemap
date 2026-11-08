@@ -41,14 +41,8 @@ async fn main() -> std::io::Result<()> {
     dotenv::dotenv().ok();
 
     let command_arg = std::env::args().nth(1);
-    let command_str = command_arg.as_deref().unwrap_or("");
 
-    let _sentry_guard = if !command_str.is_empty() && command_str != "serve" {
-        crate::utils::sentry::init()
-    } else {
-        env_logger::init();
-        None
-    };
+    let _sentry_guard = crate::utils::sentry::init();
 
     let command = match command_arg {
         Some(value) => value,

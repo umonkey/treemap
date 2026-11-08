@@ -79,7 +79,12 @@ pub async fn serve_command() {
             // Prioritize because of collisions with wildcards later.
             .service(web::scope("/health").configure(health_router))
             .service(web::scope("/mcp").wrap(Transaction).configure(mcp_router))
-            .service(web::scope("/tree").wrap(Transaction).configure(meta_router))
+            .service(
+                web::scope("/tree")
+                    .wrap(Transaction)
+                    .wrap(sentry_actix::Sentry::with_transaction())
+                    .configure(meta_router),
+            )
             .service(
                 web::scope("/_app/immutable")
                     .wrap(
@@ -113,6 +118,7 @@ pub async fn serve_command() {
                 web::scope("/api")
                     .wrap(DefaultHeaders::new().add(("Cache-Control", "no-store")))
                     .wrap(Transaction)
+                    .wrap(sentry_actix::Sentry::with_transaction())
                     .service(web::scope("/panoramas").configure(panorama_router))
                     .service(web::scope("/export").configure(export_router))
                     .service(web::scope("/settings").configure(app_settings_router))
@@ -122,6 +128,7 @@ pub async fn serve_command() {
                 web::scope("/v1")
                     .wrap(DefaultHeaders::new().add(("Cache-Control", "no-store")))
                     .wrap(Transaction)
+                    .wrap(sentry_actix::Sentry::with_transaction())
                     .service(web::scope("/comments").configure(comment_router))
                     .service(web::scope("/upload").configure(upload_router))
                     .service(web::scope("/settings").configure(settings_router))
@@ -142,6 +149,7 @@ pub async fn serve_command() {
                 web::scope("/v3")
                     .wrap(DefaultHeaders::new().add(("Cache-Control", "no-store")))
                     .wrap(Transaction)
+                    .wrap(sentry_actix::Sentry::with_transaction())
                     .service(web::scope("/login").configure(login_router)),
             )
             .service(manifest_action)

@@ -103,6 +103,11 @@ COPY --from=frontend-builder /app/build /app/static
 ENV TZ=Asia/Yerevan
 ENV RUST_LOG=info,treemap=debug
 
+# The deploy workflow passes the commit SHA as a build arg. Export it so the
+# server reports Sentry events against the same release as the frontend.
+ARG SENTRY_RELEASE
+ENV SENTRY_RELEASE=$SENTRY_RELEASE
+
 EXPOSE 8000/tcp
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \

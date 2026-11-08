@@ -13,6 +13,7 @@ use actix_web::{
     Error, HttpMessage,
 };
 use futures::future::{ready, LocalBoxFuture, Ready};
+use log::error;
 use std::rc::Rc;
 
 pub struct Transaction;
@@ -77,10 +78,10 @@ where
             }
 
             // Start a new session (transaction).
-            let session_state = state
-                .session()
-                .await
-                .map_err(actix_web::error::ErrorInternalServerError)?;
+            let session_state = state.session().await.map_err(|e| {
+                error!("Could not start a database session: {e}");
+                actix_web::error::ErrorInternalServerError(e)
+            })?;
 
             // Store the transactional state in request extensions.
             req.extensions_mut().insert(session_state.clone());
@@ -89,11 +90,10 @@ where
 
             // If the response is successful, commit the transaction.
             if res.status().is_success() || res.status().is_redirection() {
-                session_state
-                    .database
-                    .commit()
-                    .await
-                    .map_err(actix_web::error::ErrorInternalServerError)?;
+                session_state.database.commit().await.map_err(|e| {
+                    error!("Could not commit the database transaction: {e}");
+                    actix_web::error::ErrorInternalServerError(e)
+                })?;
             }
 
             Ok(res)

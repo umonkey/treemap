@@ -17,6 +17,8 @@ services:
     environment:
       - RUST_LOG=info
       - TREEMAP_CONFIG=/app/config.toml
+      - SENTRY_DSN=${SENTRY_DSN:-}
+      - SENTRY_TRACES_SAMPLE_RATE=${SENTRY_TRACES_SAMPLE_RATE:-0.1}
     secrets:
       - aws_key
       - aws_region

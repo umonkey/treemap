@@ -25,6 +25,10 @@ COPY services/backend/dev/species.sql /app/species.sql
 
 COPY container/rootfs/ /
 
+# The git revision is passed by the build script and attached to error reports.
+ARG SENTRY_RELEASE
+ENV SENTRY_RELEASE=$SENTRY_RELEASE
+
 ENV RUST_LOG info,treemap=debug
 ENV TREEMAP_SQLITE_PATH /app/var/database.sqlite
 

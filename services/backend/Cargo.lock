@@ -4693,6 +4693,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "sentry-actix"
+version = "0.34.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e461c7d3a46d298b5ffc66127c1f16454dd11d3d89fcfb21023cd499d82b9a78"
+dependencies = [
+ "actix-web",
+ "futures-util",
+ "sentry-core",
+]
+
+[[package]]
 name = "sentry-backtrace"
 version = "0.34.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5617,6 +5628,7 @@ dependencies = [
  "regex 1.13.1",
  "reqwest",
  "sentry",
+ "sentry-actix",
  "sentry-log",
  "serde",
  "serde_json",
