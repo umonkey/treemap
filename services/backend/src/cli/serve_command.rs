@@ -77,7 +77,11 @@ pub async fn serve_command() {
             .app_data(web::Data::from(state.clone()))
             .app_data(PayloadConfig::new(config.payload_size))
             // Prioritize because of collisions with wildcards later.
-            .service(web::scope("/health").configure(health_router))
+            .service(
+                web::scope("/health")
+                    .default_service(web::to(|| async { HttpResponse::NotFound().finish() }))
+                    .configure(health_router),
+            )
             .service(web::scope("/mcp").wrap(Transaction).configure(mcp_router))
             .service(
                 web::scope("/tree")

@@ -1,7 +1,7 @@
 use crate::domain::tree::TreeRepository;
 use crate::services::{Context, Injectable};
 use crate::types::Result;
-use log::info;
+use log::debug;
 use std::sync::Arc;
 
 pub struct HealthService {
@@ -14,7 +14,7 @@ impl HealthService {
         // We don't care if it finds anything or not, just that it can connect.
         self.trees.get(12345).await?;
 
-        info!("Health check OK.");
+        debug!("Health check OK.");
 
         Ok(())
     }
