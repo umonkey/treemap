@@ -54,6 +54,10 @@ async fn main() -> std::io::Result<()> {
         }
     };
 
+    sentry::configure_scope(|scope| {
+        scope.set_tag("command", command.clone());
+    });
+
     match command.as_str() {
         "serve" => {
             serve_command().await;

@@ -10,9 +10,9 @@ use crate::utils::get_unique_id;
 use async_trait::async_trait;
 use libsql::params_from_iter;
 use libsql::{Builder, Connection, Database, Transaction};
-use log::{debug, info};
+use log::{debug, info, warn};
 use std::sync::Arc;
-use std::time::Instant;
+use std::time::{Duration, Instant};
 use tokio::sync::{Mutex, MutexGuard};
 
 // This is where temporary database files are created to simulate
@@ -173,13 +173,16 @@ impl SqliteDatabase {
             .connect()
             .map_err(|e| Error::DatabaseConnect(e.to_string()))?;
 
+        // The busy handler and durability are set before the journal mode
+        // switch, because switching the journal mode may need a lock.
         conn.execute_batch(
-            "PRAGMA journal_mode = WAL;
-             PRAGMA synchronous = NORMAL;
-             PRAGMA busy_timeout = 5000;",
+            "PRAGMA busy_timeout = 5000;
+             PRAGMA synchronous = NORMAL;",
         )
         .await
         .map_err(|e| Error::DatabaseQuery(format!("Error setting database pragmas: {e}")))?;
+
+        Self::enable_wal(&conn).await?;
 
         if cfg!(test) {
             let schema = include_str!("../../../dev/schema-sqlite.sql");
@@ -189,15 +192,53 @@ impl SqliteDatabase {
         Ok(())
     }
 
+    // Switches the database to WAL, retrying briefly: the switch needs a lock
+    // that another process may hold while the backend starts. WAL is persisted
+    // in the file header, so a successful first attempt is the normal path.
+    async fn enable_wal(conn: &Connection) -> Result<()> {
+        const MAX_ATTEMPTS: u32 = 3;
+
+        let mut last_error = String::new();
+
+        for attempt in 1..=MAX_ATTEMPTS {
+            match conn.execute_batch("PRAGMA journal_mode = WAL;").await {
+                Ok(_) => return Ok(()),
+
+                Err(e) => {
+                    last_error = e.to_string();
+
+                    if attempt < MAX_ATTEMPTS {
+                        let delay = Duration::from_millis(200 * 2u64.pow(attempt - 1));
+
+                        warn!(
+                            "Failed to enable the WAL journal mode (attempt {attempt} of {MAX_ATTEMPTS}): {e}; retrying in {}ms",
+                            delay.as_millis()
+                        );
+
+                        tokio::time::sleep(delay).await;
+                    }
+                }
+            }
+        }
+
+        Err(Error::DatabaseQuery(format!(
+            "Error setting database pragmas: journal_mode WAL failed after {MAX_ATTEMPTS} attempts: {last_error}"
+        )))
+    }
+
     async fn connect(&self) -> Result<Connection> {
         let conn = self
             .pool
             .connect()
             .map_err(|e| Error::DatabaseConnect(e.to_string()))?;
 
-        conn.execute_batch("PRAGMA busy_timeout = 5000;")
-            .await
-            .map_err(|e| Error::DatabaseQuery(format!("Error setting busy_timeout: {e}")))?;
+        // synchronous is per connection, so it has to be set on every one.
+        conn.execute_batch(
+            "PRAGMA busy_timeout = 5000;
+             PRAGMA synchronous = NORMAL;",
+        )
+        .await
+        .map_err(|e| Error::DatabaseQuery(format!("Error setting connection pragmas: {e}")))?;
 
         Ok(conn)
     }

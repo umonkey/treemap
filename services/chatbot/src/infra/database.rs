@@ -1,5 +1,12 @@
 use libsql::{params_from_iter, Builder, Connection, Database, Value};
 use std::collections::HashMap;
+use std::time::Duration;
+
+// WAL is persistent in the database header, so the first attempt normally
+// succeeds. Retrying only covers the transient lock when another process is
+// activating WAL at the same moment.
+const WAL_ATTEMPTS: u32 = 3;
+const WAL_INITIAL_RETRY_DELAY: Duration = Duration::from_millis(200);
 
 #[allow(dead_code)]
 pub struct DatabaseClient {
@@ -13,17 +20,57 @@ impl DatabaseClient {
         let db = Builder::new_local(path).build().await?;
         let conn = db.connect()?;
         conn.execute_batch(
-            "PRAGMA journal_mode = WAL;
-             PRAGMA synchronous = NORMAL;
-             PRAGMA busy_timeout = 5000;",
+            "PRAGMA busy_timeout = 5000;
+             PRAGMA synchronous = NORMAL;",
         )
         .await?;
+        Self::enable_wal(&conn).await?;
+
         Ok(Self { db })
+    }
+
+    /// Switches the database to WAL with a bounded retry.
+    ///
+    /// `busy_timeout` must already be set on `conn`, otherwise a concurrent
+    /// writer fails the switch immediately with `database is locked`.
+    async fn enable_wal(conn: &Connection) -> anyhow::Result<()> {
+        let mut attempt = 1;
+        let mut delay = WAL_INITIAL_RETRY_DELAY;
+
+        loop {
+            match conn.execute_batch("PRAGMA journal_mode = WAL;").await {
+                Ok(_) => return Ok(()),
+                Err(error) if attempt < WAL_ATTEMPTS => {
+                    log::warn!(
+                        "Failed to set journal_mode = WAL (attempt {}/{}): {}. Retrying in {:?}",
+                        attempt,
+                        WAL_ATTEMPTS,
+                        error,
+                        delay
+                    );
+                    tokio::time::sleep(delay).await;
+                    delay *= 2;
+                    attempt += 1;
+                }
+                Err(error) => {
+                    return Err(anyhow::anyhow!(
+                        "Error setting database pragmas: journal_mode = WAL failed after {} attempts: {}",
+                        WAL_ATTEMPTS,
+                        error
+                    ));
+                }
+            }
+        }
     }
 
     pub async fn connect(&self) -> anyhow::Result<Connection> {
         let conn = self.db.connect()?;
-        conn.execute_batch("PRAGMA busy_timeout = 5000;").await?;
+        conn.execute_batch(
+            "PRAGMA busy_timeout = 5000;
+             PRAGMA synchronous = NORMAL;",
+        )
+        .await?;
+
         Ok(conn)
     }
 
