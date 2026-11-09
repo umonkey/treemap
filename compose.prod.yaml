@@ -10,8 +10,6 @@ services:
     hostname: treemap-backend
     command: /app/startup.sh
     restart: unless-stopped
-    ports:
-      - "8000:8000"
     volumes:
       - var:/app/var
     environment:
