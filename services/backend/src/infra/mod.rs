@@ -7,6 +7,7 @@ pub mod database;
 pub mod email;
 pub mod export;
 pub mod google_auth;
+pub mod logs;
 pub mod nominatim;
 pub mod osm;
 pub mod overpass;

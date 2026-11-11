@@ -13,6 +13,7 @@ pub fn panorama_router(cfg: &mut ServiceConfig) {
         .service(get_panorama_hints_action)
         .service(get_panorama_hints_by_id_action)
         .service(get_panorama_action)
+        .service(list_panorama_files_action)
         .service(export_panorama_action)
         .service(update_panorama_action)
         .service(restart_panorama_action)

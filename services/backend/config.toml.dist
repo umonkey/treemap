@@ -17,6 +17,10 @@ database = "sqlite"
 # You'd also need to set secrets SQS_KEY and SQS_SECRET.
 #sqs_url = "https://sqs.eu-west-1.amazonaws.com/123456789012/trees_updates"
 
+# CloudWatch Logs group that AWS Batch writes job logs to.
+# Defaults to "/aws/batch/job".
+#batch_log_group = "/aws/batch/job"
+
 # Path to where the file based secrets are stored.
 #secrets_path = "/run/secrets"
 

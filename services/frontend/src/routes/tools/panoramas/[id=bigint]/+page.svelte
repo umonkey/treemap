@@ -1,99 +1,59 @@
 <script lang="ts">
-	import { untrack } from 'svelte';
-	import { PageState } from './page.svelte.ts';
+	import { getContext } from 'svelte';
 	import { page } from '$app/state';
-	import PanoramaHeader from '$lib/components/panoramas/PanoramaHeader.svelte';
-	import PageHeader from '$lib/ui/header/PageHeader.svelte';
-	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import VideoUploader from './VideoUploader.svelte';
 	import TrackUploader from './TrackUploader.svelte';
 	import PanoramaPreview from './PanoramaPreview.svelte';
 	import PanoramaInfo from './PanoramaInfo.svelte';
+	import { PANORAMA_CONTEXT_KEY, type PanoramaLayoutState } from './layout.svelte.ts';
+	import { PageState } from './page.svelte.ts';
 
 	const id = $derived(page.params.id as string);
+	const state = getContext<PanoramaLayoutState>(PANORAMA_CONTEXT_KEY);
 	const pageState = new PageState();
-
-	$effect(() => {
-		const cleanup = pageState.setup();
-		untrack(() => pageState.reload(id));
-		return cleanup;
-	});
-
-	$effect(() => {
-		const status = pageState.panorama?.status;
-		if (status && status !== 'SUCCESS' && status !== 'FAILURE') {
-			pageState.startPolling(id);
-		} else {
-			pageState.stopPolling();
-		}
-
-		return () => {
-			pageState.stopPolling();
-		};
-	});
 </script>
 
-<svelte:head>
-	<title>Panorama: {pageState.panorama?.title || id}</title>
-</svelte:head>
+<article>
+	{#if state.isLoading}
+		<p aria-busy="true">Loading panorama...</p>
+	{:else if state.panorama}
+		<PanoramaInfo panorama={state.panorama} />
 
-<AuthWrapper permission="pano:edit">
-	<PageHeader
-		text={pageState.panorama?.title || id}
-		button={{ label: 'Edit', link: `/tools/panoramas/${id}/edit` }}
-	/>
-
-	{#if pageState.panorama}
-		<PanoramaHeader
-			{id}
-			title={pageState.panorama.title}
-			createdAt={pageState.panorama.created_at}
-			status={pageState.panorama.status}
-			bind:visible={pageState.panorama.visible}
-		/>
-	{/if}
-
-	<article>
-		{#if pageState.error}
-			<p class="error">Error loading panorama: {pageState.error.description}</p>
-		{:else if pageState.isLoading}
-			<p aria-busy="true">Loading panorama...</p>
-		{:else if pageState.panorama}
-			<PanoramaInfo panorama={pageState.panorama} />
-
-			{#if pageState.panorama.status === 'NEEDS_FILES'}
-				{#if !pageState.panorama.gpx_path}
-					<TrackUploader panoramaId={id} onUploadSuccess={() => pageState.reload(id)} />
-				{/if}
-
-				{#if !pageState.panorama.source_video_path}
-					<VideoUploader panoramaId={id} onUploadSuccess={() => pageState.reload(id)} />
-				{/if}
-			{:else if pageState.panorama.status === 'FAILURE'}
-				<p class="error">
-					We could not process the uploaded file: {pageState.panorama.failure_reason ||
-						'Please contact technical support.'}
-				</p>
-			{:else if pageState.panorama.status === 'NEEDS_PROCESSING' || pageState.panorama.status === 'NEEDS_PROCESSING_FINISH'}
-				<p>
-					We are now processing your dataset: extracting images, correcting their position, etc.
-					When we finish, you will get an email.
-				</p>
-			{:else if pageState.panorama.status === 'SUCCESS'}
-				<PanoramaPreview panoramaId={id} />
+		{#if state.panorama.status === 'NEEDS_FILES'}
+			{#if !state.panorama.gpx_path}
+				<TrackUploader panoramaId={id} onUploadSuccess={() => state.reload(id)} />
 			{/if}
 
-			{#if pageState.panorama.status === 'SUCCESS' || pageState.panorama.status === 'FAILURE'}
-				<Buttons>
-					<Button type="secondary" onClick={() => pageState.exportData(id)}>Download data</Button>
-					<Button type="secondary" link="/tools/panoramas/{id}/restart">Restart Panorama</Button>
-				</Buttons>
+			{#if !state.panorama.source_video_path}
+				<VideoUploader panoramaId={id} onUploadSuccess={() => state.reload(id)} />
 			{/if}
+		{:else if state.panorama.status === 'FAILURE'}
+			<p class="error">
+				We could not process the uploaded file: {state.panorama.failure_reason ||
+					'Please contact technical support.'}
+			</p>
+		{:else if state.panorama.status === 'NEEDS_PROCESSING' || state.panorama.status === 'NEEDS_PROCESSING_FINISH'}
+			<p>
+				We are now processing your dataset: extracting images, correcting their position, etc. When
+				we finish, you will get an email.
+			</p>
+		{:else if state.panorama.status === 'SUCCESS'}
+			<PanoramaPreview panoramaId={id} />
 		{/if}
-	</article>
-</AuthWrapper>
+
+		{#if state.panorama.status === 'SUCCESS' || state.panorama.status === 'FAILURE'}
+			<Buttons>
+				<Button
+					type="secondary"
+					disabled={pageState.isExporting}
+					onClick={() => pageState.exportData(id)}>Download data</Button
+				>
+			</Buttons>
+		{/if}
+	{/if}
+</article>
 
 <style>
 	.error {

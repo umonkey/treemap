@@ -1,69 +1,45 @@
 <script lang="ts">
-	import { untrack } from 'svelte';
-	import { PageState } from './page.svelte.ts';
+	import { getContext } from 'svelte';
 	import { page } from '$app/state';
-	import PanoramaHeader from '$lib/components/panoramas/PanoramaHeader.svelte';
-	import PageHeader from '$lib/ui/header/PageHeader.svelte';
-	import AuthWrapper from '$lib/ui/auth-wrapper/AuthWrapper.svelte';
 	import Button from '$lib/ui/button/Button.svelte';
 	import Buttons from '$lib/ui/buttons/Buttons.svelte';
 	import Form from '$lib/ui/form/Form.svelte';
 	import CheckInput from '$lib/ui/check-input/CheckInput.svelte';
-
-	const pageState = new PageState();
+	import { PANORAMA_CONTEXT_KEY, type PanoramaLayoutState } from '../layout.svelte.ts';
+	import { PageState } from './page.svelte.ts';
 
 	const id = $derived(page.params.id as string);
-
-	$effect(() => {
-		untrack(() => pageState.reload(id));
-	});
+	const layout = getContext<PanoramaLayoutState>(PANORAMA_CONTEXT_KEY);
+	const pageState = new PageState();
 </script>
 
-<svelte:head>
-	<title>Restart Panorama: {pageState.panorama?.title || id}</title>
-</svelte:head>
-
-<AuthWrapper permission="pano:edit">
-	<PageHeader text="Restart Panorama" />
-
-	{#if pageState.panorama}
-		<PanoramaHeader
-			{id}
-			title={pageState.panorama.title}
-			createdAt={pageState.panorama.created_at}
-			status={pageState.panorama.status}
-			bind:visible={pageState.panorama.visible}
-		/>
+<article>
+	{#if pageState.error}
+		<p class="error">Error: {pageState.error.description}</p>
 	{/if}
 
-	<article>
-		{#if pageState.error}
-			<p class="error">Error: {pageState.error.description}</p>
-		{:else if pageState.isLoading && !pageState.panorama}
-			<p aria-busy="true">Loading panorama...</p>
-		{:else if pageState.panorama}
-			<Form onSubmit={() => pageState.submit(id)}>
-				<CheckInput
-					label="Delete temporary files (uncheck to preserve extracted files and retry with different settings)"
-					bind:value={pageState.deleteTemporaryFiles}
-				/>
-				<CheckInput
-					label="I understand that this process will incur additional cost"
-					bind:value={pageState.understandCost}
-				/>
+	{#if layout.panorama}
+		<Form onSubmit={() => pageState.submit(id, layout)}>
+			<CheckInput
+				label="Delete temporary files (uncheck to preserve extracted files and retry with different settings)"
+				bind:value={pageState.deleteTemporaryFiles}
+			/>
+			<CheckInput
+				label="I understand that this process will incur additional cost"
+				bind:value={pageState.understandCost}
+			/>
 
-				<Buttons>
-					<Button
-						type="danger"
-						disabled={!pageState.understandCost || pageState.isSaving}
-						onClick={() => pageState.submit(id)}>Restart Panorama</Button
-					>
-					<Button link="/tools/panoramas/{id}" type="cancel">Cancel</Button>
-				</Buttons>
-			</Form>
-		{/if}
-	</article>
-</AuthWrapper>
+			<Buttons>
+				<Button
+					type="danger"
+					disabled={!pageState.understandCost || pageState.isSaving}
+					onClick={() => pageState.submit(id, layout)}>Restart Panorama</Button
+				>
+				<Button link="/tools/panoramas/{id}" type="cancel">Cancel</Button>
+			</Buttons>
+		</Form>
+	{/if}
+</article>
 
 <style>
 	.error {

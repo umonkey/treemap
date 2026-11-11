@@ -15,6 +15,13 @@ pub struct PanoramaImageRead {
 }
 
 #[derive(Debug, Serialize)]
+pub struct PanoramaFileRead {
+    pub name: String,
+    pub url: Option<String>,
+    pub size: u64,
+}
+
+#[derive(Debug, Serialize)]
 pub struct PanoramaRead {
     pub id: String,
     pub created_at: i64,

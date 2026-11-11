@@ -65,6 +65,7 @@ fn content_type_for_key(key: &str) -> &'static str {
         "mov" => "video/quicktime",
         "json" => "application/json",
         "gz" => "application/gzip",
+        "log" => "text/plain",
         _ => "application/octet-stream",
     }
 }
@@ -456,6 +457,7 @@ mod tests {
             ("files/1/original.mov", "video/quicktime"),
             ("files/1/original.json", "application/json"),
             ("files/1/original.gz", "application/gzip"),
+            ("42/processing.log", "text/plain"),
             ("files/1/original.bin", "application/octet-stream"),
             ("files/1/original", "application/octet-stream"),
             ("163702859915988992", "application/octet-stream"),

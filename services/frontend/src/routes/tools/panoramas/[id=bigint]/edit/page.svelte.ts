@@ -1,40 +1,39 @@
-import { getPanorama, updatePanorama, type Panorama } from '$lib/api/panoramas';
+import { updatePanorama, type Panorama } from '$lib/api/panoramas';
 import { roundOffset } from '$lib/utils/geo';
 import type { IError } from '$lib/types';
 import { goto } from '$app/navigation';
+import type { PanoramaLayoutState } from '../layout.svelte.ts';
 
 export class PageState {
-	panorama = $state<Panorama | undefined>(undefined);
-	isLoading = $state<boolean>(false);
 	isSaving = $state<boolean>(false);
 	error = $state<IError | undefined>(undefined);
+	draft = $state<Panorama | undefined>(undefined);
+	draftId: string | undefined = undefined;
 
-	reload = async (id: string) => {
-		this.isLoading = true;
-		this.error = undefined;
-		const res = await getPanorama(id);
-		this.isLoading = false;
-		if (res.status === 200 && res.data) {
-			this.panorama = {
-				...res.data,
-				lat_offset: roundOffset(res.data.lat_offset),
-				lon_offset: roundOffset(res.data.lon_offset)
-			};
-		} else {
-			this.error = res.error;
-		}
+	/** Seeds a rounded draft once per panorama, so a silent reload cannot clobber edits. */
+	init = (panorama: Panorama | undefined) => {
+		if (!panorama) return;
+		if (this.draft && this.draftId === panorama.id) return;
+
+		this.draftId = panorama.id;
+		this.draft = {
+			...panorama,
+			lat_offset: roundOffset(panorama.lat_offset),
+			lon_offset: roundOffset(panorama.lon_offset)
+		};
 	};
 
-	save = async () => {
-		if (!this.panorama || this.isSaving) return;
+	save = async (layout: PanoramaLayoutState) => {
+		const draft = this.draft;
+		if (!draft || this.isSaving) return;
 		this.isSaving = true;
 		this.error = undefined;
 
-		const lat_offset = roundOffset(this.panorama.lat_offset);
-		const lon_offset = roundOffset(this.panorama.lon_offset);
+		const lat_offset = roundOffset(draft.lat_offset);
+		const lon_offset = roundOffset(draft.lon_offset);
 
-		const res = await updatePanorama(this.panorama.id, {
-			title: this.panorama.title,
+		const res = await updatePanorama(draft.id, {
+			title: draft.title,
 			lat_offset,
 			lon_offset
 		});
@@ -42,7 +41,12 @@ export class PageState {
 		this.isSaving = false;
 
 		if (res.status === 200) {
-			goto(`/tools/panoramas/${this.panorama.id}`);
+			if (res.data) {
+				layout.panorama = res.data;
+			} else {
+				await layout.reload(draft.id);
+			}
+			goto(`/tools/panoramas/${draft.id}`);
 		} else {
 			this.error = res.error;
 		}

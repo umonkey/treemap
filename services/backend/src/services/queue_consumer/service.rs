@@ -1,6 +1,6 @@
 use super::schemas::*;
 use crate::domain::file::FileService;
-use crate::domain::panorama::PanoramaService;
+use crate::domain::panorama::{PanoramaLogs, PanoramaService};
 use crate::domain::photo::PhotoService;
 use crate::domain::tree::TreeService;
 use crate::domain::user::*;
@@ -20,6 +20,7 @@ pub struct QueueConsumer {
     photos: Arc<PhotoService>,
     users: Arc<UserService>,
     panoramas: Arc<PanoramaService>,
+    panorama_logs: Arc<PanoramaLogs>,
     files: Arc<FileService>,
 }
 
@@ -96,6 +97,16 @@ impl QueueConsumer {
                 self.panoramas.refresh_panorama_stats(message.id).await?;
             }
 
+            Ok(Some(QueueCommand::DownloadPanoramaLogs(message))) => {
+                info!(
+                    "Processing DownloadPanoramaLogs for panorama {}.",
+                    message.id
+                );
+                self.panorama_logs
+                    .download(message.id, &message.log_stream)
+                    .await?;
+            }
+
             Ok(None) => {
                 debug!("Unknown message: {msg}");
             }
@@ -117,6 +128,7 @@ impl Injectable for QueueConsumer {
             photos: Arc::new(ctx.build::<PhotoService>()?),
             users: Arc::new(ctx.build::<UserService>()?),
             panoramas: Arc::new(ctx.build::<PanoramaService>()?),
+            panorama_logs: Arc::new(ctx.build::<PanoramaLogs>()?),
             files: Arc::new(ctx.build::<FileService>()?),
         })
     }

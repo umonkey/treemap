@@ -103,6 +103,26 @@ impl QueueCommand {
                 )))
             }
 
+            "DownloadPanoramaLogs" => {
+                let id = params["id"].as_u64().ok_or("missing id").map_err(|e| {
+                    error!("Error extracting panorama id: {e}, payload={json}");
+                    Error::Queue
+                })?;
+
+                let log_stream = params["log_stream"]
+                    .as_str()
+                    .ok_or("missing log_stream")
+                    .map_err(|e| {
+                        error!("Error extracting log stream: {e}, payload={json}");
+                        Error::Queue
+                    })?
+                    .to_string();
+
+                Ok(Some(QueueCommand::DownloadPanoramaLogs(
+                    DownloadPanoramaLogsMessage { id, log_stream },
+                )))
+            }
+
             _ => {
                 error!("Could not parse message: {json}");
                 Ok(None)
@@ -171,6 +191,38 @@ mod tests {
     }
 
     #[test]
+    fn test_decode_download_panorama_logs() {
+        let json =
+            r#"{"command":"DownloadPanoramaLogs","params":{"id":12345,"log_stream":"extract-1"}}"#;
+
+        let command = QueueCommand::decode(json)
+            .expect("Error parsing command.")
+            .expect("No command found.");
+
+        match command {
+            QueueCommand::DownloadPanoramaLogs(message) => {
+                assert_eq!(message.id, 12345);
+                assert_eq!(message.log_stream, "extract-1");
+            }
+
+            _ => panic!("Expected DownloadPanoramaLogs, got {command:?}"),
+        }
+    }
+
+    #[test]
+    fn test_encode_download_panorama_logs() {
+        let message = DownloadPanoramaLogsMessage {
+            id: 12345,
+            log_stream: "extract-1".to_string(),
+        };
+
+        assert_eq!(
+            message.encode(),
+            r#"{"command":"DownloadPanoramaLogs","params":{"id":12345,"log_stream":"extract-1"}}"#
+        );
+    }
+
+    #[test]
     fn test_every_command_decodes() {
         let messages = [
             ProcessFileMessage { id: 12345 }.encode(),
@@ -186,6 +238,11 @@ mod tests {
             }
             .encode(),
             UpdatePanoramaStatsMessage { id: 12345 }.encode(),
+            DownloadPanoramaLogsMessage {
+                id: 12345,
+                log_stream: "extract-1".to_string(),
+            }
+            .encode(),
         ];
 
         for json in messages {

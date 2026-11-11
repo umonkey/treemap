@@ -1,7 +1,7 @@
 use super::schemas::{
     AddPanoramaHintRequest, CompleteMultipartRequest, GetPanoramaHintsRequest,
-    GetPanoramasGeoJSONRequest, MultipartUploadResponse, PanoramaExport, PanoramaHintRead,
-    PanoramaImageExport, PanoramaImageRead, PanoramaMetaExport, PanoramaRead,
+    GetPanoramasGeoJSONRequest, MultipartUploadResponse, PanoramaExport, PanoramaFileRead,
+    PanoramaHintRead, PanoramaImageExport, PanoramaImageRead, PanoramaMetaExport, PanoramaRead,
     RestartPanoramaRequest, StartMultipartRequest, TrackPoint, UpdatePanoramaImageRequest,
     UploadUrlResponse,
 };
@@ -45,6 +45,17 @@ pub async fn get_panorama_action(
     let mut res = PanoramaRead::from(panorama);
     res.hints_count = Some(hints_count as usize);
     Ok(Json(res))
+}
+
+#[get("/{id}/files")]
+pub async fn list_panorama_files_action(
+    _user: RequirePermission<PanoEdit>,
+    service: Injected<PanoramaService>,
+    path: Path<u64>,
+) -> Result<Json<Vec<PanoramaFileRead>>> {
+    let id = path.into_inner();
+    let files = service.get_panorama_files(id).await?;
+    Ok(Json(files))
 }
 
 #[get("/{id}/geo.json")]

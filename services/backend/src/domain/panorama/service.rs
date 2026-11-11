@@ -4,12 +4,12 @@ use super::models::{
     UpdatePanorama,
 };
 use super::repository::PanoramaRepository;
-use crate::actions::panorama::{PanoramaHintRead, PanoramaImageRead};
+use crate::actions::panorama::{PanoramaFileRead, PanoramaHintRead, PanoramaImageRead};
 use crate::domain::tree::Bounds;
 use crate::domain::tree::TreeRepository;
 use crate::infra::queue::Queue;
 use crate::infra::storage::{CompletedPart, PanoramaBucket, PanoramaSourceBucket};
-use crate::services::queue_consumer::UpdatePanoramaStatsMessage;
+use crate::services::queue_consumer::{DownloadPanoramaLogsMessage, UpdatePanoramaStatsMessage};
 use crate::services::{Context, Injectable};
 use crate::types::*;
 use crate::utils::{get_timestamp, get_unique_id};
@@ -39,6 +39,12 @@ const RECENT_HINT_WINDOW_SECONDS: u64 = 5 * 60;
 /// This gives the request transaction time to commit before the consumer reads
 /// the panorama, avoiding a race on SQS. The systemic fix is tracked separately.
 const STATS_REFRESH_DELAY_SECS: u64 = 1;
+
+/// Delay before a panorama log download message becomes visible.
+///
+/// CloudWatch Logs ingestion trails the AWS Batch status change, so an
+/// immediate fetch can return a partial stream.
+const LOG_DOWNLOAD_DELAY_SECS: u64 = 30;
 
 /// Great-circle distance in meters between two coordinates.
 fn haversine_distance_m(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> f64 {
@@ -256,6 +262,37 @@ impl PanoramaService {
 
     pub async fn get_panorama_images(&self, id: u64) -> Result<Vec<PanoramaImage>> {
         self.repo.get_images(id).await
+    }
+
+    /// Lists the objects stored in the panorama folder.
+    ///
+    /// `url` is `None` when the storage driver cannot presign (the local
+    /// driver), so the caller still gets the names and sizes.
+    pub async fn get_panorama_files(&self, id: u64) -> Result<Vec<PanoramaFileRead>> {
+        let panorama = self.get_panorama(id).await?;
+        let prefix = format!("{}/", panorama.storage_key);
+
+        let mut files = self.panoramas.list_files(&prefix).await?;
+        files.sort_by(|a, b| a.path.cmp(&b.path));
+
+        let mut result = Vec::with_capacity(files.len());
+
+        for file in files {
+            let name = file
+                .path
+                .strip_prefix(&prefix)
+                .unwrap_or(&file.path)
+                .to_string();
+            let url = self.panoramas.create_read_url(&file.path).await.ok();
+
+            result.push(PanoramaFileRead {
+                name,
+                url,
+                size: file.size,
+            });
+        }
+
+        Ok(result)
     }
 
     pub async fn get_image_metadata(&self, id: u64) -> Result<PanoramaImageRead> {
@@ -667,6 +704,25 @@ impl PanoramaService {
             .push_delayed(
                 &UpdatePanoramaStatsMessage { id }.encode(),
                 STATS_REFRESH_DELAY_SECS,
+            )
+            .await?;
+
+        Ok(())
+    }
+
+    pub async fn schedule_log_download(&self, id: u64, log_stream: &str) -> Result<()> {
+        info!(
+            "Scheduling panorama log download for panorama {id}, stream {log_stream} (delay {LOG_DOWNLOAD_DELAY_SECS}s)."
+        );
+
+        self.queue
+            .push_delayed(
+                &DownloadPanoramaLogsMessage {
+                    id,
+                    log_stream: log_stream.to_string(),
+                }
+                .encode(),
+                LOG_DOWNLOAD_DELAY_SECS,
             )
             .await?;
 

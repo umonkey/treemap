@@ -17,6 +17,14 @@ pub struct BatchClient {
     files_endpoint: String,
 }
 
+/// Snapshot of a processing job's state.
+pub struct JobStatus {
+    pub status: String,
+    pub status_reason: Option<String>,
+    pub running_time: u64,
+    pub log_stream: Option<String>,
+}
+
 impl BatchClient {
     pub fn new(config: &Config, secrets: &Secrets) -> Result<Self> {
         let job_queue = config
@@ -139,7 +147,7 @@ impl BatchClient {
         Ok(arn.to_string())
     }
 
-    pub async fn get_job_status(&self, arn: &str) -> Result<(String, Option<String>, u64)> {
+    pub async fn get_job_status(&self, arn: &str) -> Result<JobStatus> {
         let output = self
             .client
             .describe_jobs()
@@ -162,6 +170,11 @@ impl BatchClient {
             .unwrap_or_else(|| "UNKNOWN".to_string());
 
         let status_reason = job.status_reason().map(|s| s.to_string());
+
+        let log_stream = job
+            .container()
+            .and_then(|container| container.log_stream_name())
+            .map(str::to_string);
 
         let mut total_ms: i64 = 0;
         let attempts = job.attempts();
@@ -189,7 +202,12 @@ impl BatchClient {
 
         let running_time = (total_ms.max(0) as f64 / 1000.0).round() as u64;
 
-        Ok((status, status_reason, running_time))
+        Ok(JobStatus {
+            status,
+            status_reason,
+            running_time,
+            log_stream,
+        })
     }
 }
 

@@ -33,6 +33,13 @@ pub struct UpdatePanoramaStatsMessage {
     pub id: u64,
 }
 
+// Copy the AWS Batch job log into the panorama folder.
+#[derive(Debug, Deserialize, Serialize)]
+pub struct DownloadPanoramaLogsMessage {
+    pub id: u64,
+    pub log_stream: String,
+}
+
 #[allow(dead_code)]
 #[derive(Debug, Serialize)]
 pub enum QueueCommand {
@@ -41,6 +48,7 @@ pub enum QueueCommand {
     AddPhoto(AddPhotoMessage),
     UpdateUserpic(UpdateUserpicMessage),
     UpdatePanoramaStats(UpdatePanoramaStatsMessage),
+    DownloadPanoramaLogs(DownloadPanoramaLogsMessage),
 }
 
 impl ProcessFileMessage {
@@ -99,6 +107,19 @@ impl UpdatePanoramaStatsMessage {
             "command": "UpdatePanoramaStats",
             "params": {
                 "id": self.id,
+            },
+        })
+        .to_string()
+    }
+}
+
+impl DownloadPanoramaLogsMessage {
+    pub fn encode(&self) -> String {
+        json!({
+            "command": "DownloadPanoramaLogs",
+            "params": {
+                "id": self.id,
+                "log_stream": self.log_stream,
             },
         })
         .to_string()

@@ -300,6 +300,18 @@ export async function getPanoramaGeoJSON(id: string): Promise<IResponse<unknown>
 	});
 }
 
+export interface PanoramaFile {
+	name: string;
+	url: string | null;
+	size: number;
+}
+
+export async function getPanoramaFiles(id: string): Promise<IResponse<PanoramaFile[]>> {
+	return await request<PanoramaFile[]>('GET', `api/panoramas/${id}/files`, {
+		headers: getAuthHeaders()
+	});
+}
+
 export interface PanoramaTrackPoint {
 	lat: number;
 	lng: number;

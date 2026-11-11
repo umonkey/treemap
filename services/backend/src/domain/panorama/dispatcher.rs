@@ -67,7 +67,7 @@ impl PanoramaDispatcher {
 
     pub async fn check_processing_status(&self, panorama: &mut Panorama) -> Result<()> {
         let arn = match &panorama.processing_arn {
-            Some(arn) => arn,
+            Some(arn) => arn.clone(),
             None => {
                 return Err(Error::PanoramaFailure(
                     "Processing ARN is missing".to_string(),
@@ -81,11 +81,15 @@ impl PanoramaDispatcher {
             return Ok(());
         }
 
-        let (new_status, status_reason, running_time) =
-            self.batch.get_job_status(arn).await.map_err(|e| {
-                log::error!("Error getting processing status for {arn}: {e}");
-                e
-            })?;
+        let job_status = self.batch.get_job_status(&arn).await.map_err(|e| {
+            log::error!("Error getting processing status for {arn}: {e}");
+            e
+        })?;
+
+        let new_status = job_status.status;
+        let status_reason = job_status.status_reason;
+        let running_time = job_status.running_time;
+        let log_stream = job_status.log_stream;
 
         if new_status == status {
             return Ok(());
@@ -143,6 +147,28 @@ impl PanoramaDispatcher {
         let succeeded = new_status == "SUCCEEDED";
 
         self.repo.update(panorama_id, panorama).await?;
+
+        if new_status == "SUCCEEDED" || new_status == "FAILED" {
+            match &log_stream {
+                Some(log_stream) => {
+                    if let Err(e) = self
+                        .service
+                        .schedule_log_download(panorama_id, log_stream)
+                        .await
+                    {
+                        log::error!(
+                            "Failed to schedule log download for panorama {panorama_id}: {e}"
+                        );
+                    }
+                }
+
+                None => {
+                    log::warn!(
+                        "Panorama {panorama_id} job {arn} has no log stream, skipping log download."
+                    );
+                }
+            }
+        }
 
         if succeeded {
             self.service.schedule_stats_refresh(panorama_id).await?;
