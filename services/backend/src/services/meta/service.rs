@@ -30,7 +30,9 @@ const NOINDEX_PATTERNS: &[&str] = &[
 static NOINDEX_REGEXES: LazyLock<Vec<Regex>> = LazyLock::new(|| {
     NOINDEX_PATTERNS
         .iter()
-        .map(|pattern| Regex::new(pattern).expect("invalid noindex regex"))
+        .map(|pattern| {
+            Regex::new(pattern).expect("NOINDEX_PATTERNS must contain valid regular expressions")
+        })
         .collect()
 });
 

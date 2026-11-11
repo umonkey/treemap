@@ -17,6 +17,32 @@ fn usage() {
     println!("  serve           -- run the interactive Telegram bot REPL");
 }
 
+async fn run(command: &str) -> anyhow::Result<()> {
+    match command {
+        "dispatch-alerts" => {
+            dispatch_alerts_command().await?;
+        }
+        "dispatch-outbox" => {
+            dispatch_outbox_command().await?;
+        }
+        "dispatch-pings" => {
+            dispatch_pings_command().await?;
+        }
+        "send-test-alert" => {
+            send_test_alert_command().await?;
+        }
+        "serve" => {
+            serve_command().await?;
+        }
+        other => {
+            println!("Command {} not understood.", other);
+            usage();
+        }
+    }
+
+    Ok(())
+}
+
 #[tokio::main]
 async fn main() {
     dotenv::dotenv().ok();
@@ -33,25 +59,8 @@ async fn main() {
         }
     };
 
-    match command.as_str() {
-        "dispatch-alerts" => {
-            dispatch_alerts_command().await;
-        }
-        "dispatch-outbox" => {
-            dispatch_outbox_command().await;
-        }
-        "dispatch-pings" => {
-            dispatch_pings_command().await;
-        }
-        "send-test-alert" => {
-            send_test_alert_command().await;
-        }
-        "serve" => {
-            serve_command().await;
-        }
-        other => {
-            println!("Command {} not understood.", other);
-            usage();
-        }
+    if let Err(error) = run(&command).await {
+        log::error!("Command {command} failed: {error:#}");
+        std::process::exit(1);
     }
 }

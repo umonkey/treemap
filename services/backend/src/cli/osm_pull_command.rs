@@ -6,38 +6,21 @@ use log::{error, info, warn};
 
 // Pull OSM data for all instances with pull enabled.
 //
-// This command must never panic.  Errors are logged and reported to Sentry,
-// tagged with the failed instance, so a single bad instance does not stop
-// the others or abort the cron job.
-pub async fn osm_pull_command() {
-    let state = match AppState::new().await {
-        Ok(state) => state,
+// Initialization and instance-listing failures are returned to the command
+// boundary.  A single instance failing is logged and reported to Sentry,
+// tagged with the instance, so one bad instance does not stop the others or
+// abort the cron job.
+pub async fn osm_pull_command() -> Result<()> {
+    let state = AppState::new().await?;
 
-        Err(e) => {
-            report_error(&e, "init", None);
-            return;
-        }
-    };
-
-    let instances = match state.build::<InstanceService>() {
-        Ok(service) => match service.list_for_osm_pull().await {
-            Ok(instances) => instances,
-
-            Err(e) => {
-                report_error(&e, "list-instances", None);
-                return;
-            }
-        },
-
-        Err(e) => {
-            report_error(&e, "list-instances", None);
-            return;
-        }
-    };
+    let instances = state
+        .build::<InstanceService>()?
+        .list_for_osm_pull()
+        .await?;
 
     if instances.is_empty() {
         info!("No instances have OSM pull enabled.");
-        return;
+        return Ok(());
     }
 
     for instance in instances {
@@ -45,6 +28,8 @@ pub async fn osm_pull_command() {
             report_error(&e, "pull", Some(&instance));
         }
     }
+
+    Ok(())
 }
 
 async fn pull_instance(state: &AppState, instance: &Instance) -> Result<()> {

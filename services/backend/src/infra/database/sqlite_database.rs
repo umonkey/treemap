@@ -58,7 +58,9 @@ impl SqliteTransaction {
 
     async fn execute_sql_internal(&self, query: &str, params: &[Value]) -> Result<u64> {
         let mut tx_lock = self.lock().await?;
-        let tx = tx_lock.as_mut().expect("Transaction is open");
+        let tx = tx_lock
+            .as_mut()
+            .expect("Invariant: the transaction must be open while the lock is held");
 
         let rows = tx
             .execute(query, params_from_iter(params.to_vec()))
@@ -71,7 +73,9 @@ impl SqliteTransaction {
     async fn fetch_sql(&self, query: &str, params: &[Value]) -> Result<Vec<Attributes>> {
         let start = Instant::now();
         let mut tx_lock = self.lock().await?;
-        let tx = tx_lock.as_mut().expect("Transaction is open");
+        let tx = tx_lock
+            .as_mut()
+            .expect("Invariant: the transaction must be open while the lock is held");
 
         let mut stmt = tx.prepare(query).await.map_err(|e| {
             Error::DatabaseQuery(format!("Error preparing SQL statement: {e}; query={query}"))
@@ -276,7 +280,9 @@ impl DatabaseInterface for SqliteTransaction {
 
     async fn execute_batch(&self, query: &str) -> Result<()> {
         let mut tx_lock = self.lock().await?;
-        let tx = tx_lock.as_mut().expect("Transaction is open");
+        let tx = tx_lock
+            .as_mut()
+            .expect("Invariant: the transaction must be open while the lock is held");
 
         tx.execute_batch(query).await.map_err(|e| {
             Error::DatabaseQuery(format!("Error executing SQL batch: {e}; query={query}"))

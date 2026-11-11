@@ -1,5 +1,6 @@
 use crate::domain::storage::{BucketSyncResult, StorageSyncService};
 use crate::services::*;
+use crate::types::Result;
 
 fn print_result(result: &BucketSyncResult) {
     println!(
@@ -8,22 +9,17 @@ fn print_result(result: &BucketSyncResult) {
     );
 }
 
-pub async fn storage_sync_command() {
+pub async fn storage_sync_command() -> Result<()> {
     // No `.session()` here: the service opens one transaction per bucket.
-    let state = AppState::new()
-        .await
-        .expect("Error initializing app state.");
+    let state = AppState::new().await?;
 
-    let service = state
-        .build::<StorageSyncService>()
-        .expect("Error creating storage sync service.");
+    let service = state.build::<StorageSyncService>()?;
 
-    let results = service
-        .sync()
-        .await
-        .expect("Error syncing storage inventory.");
+    let results = service.sync().await?;
 
     for result in results {
         print_result(&result);
     }
+
+    Ok(())
 }

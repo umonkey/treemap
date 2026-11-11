@@ -1,38 +1,28 @@
 use crate::domain::instance::InstanceService;
 use crate::services::*;
+use crate::types::Result;
 use log::info;
 
-pub async fn osm_push_command() {
-    let state = AppState::new()
-        .await
-        .expect("Error initializing app state.");
+pub async fn osm_push_command() -> Result<()> {
+    let state = AppState::new().await?;
 
     let instances = state
-        .build::<InstanceService>()
-        .expect("Error creating the instance service.")
+        .build::<InstanceService>()?
         .list_for_osm_push()
-        .await
-        .expect("Error listing instances for OSM push.");
+        .await?;
 
     if instances.is_empty() {
         info!("No instances have OSM push enabled.");
-        return;
+        return Ok(());
     }
 
-    let state = state.session().await.expect("Error starting session.");
+    let state = state.session().await?;
 
-    let service = state
-        .build::<OsmWriterService>()
-        .expect("Error creating the service.");
+    let service = state.build::<OsmWriterService>()?;
 
-    service
-        .push_new_trees()
-        .await
-        .expect("Error processing updates.");
+    service.push_new_trees().await?;
 
-    state
-        .database
-        .commit()
-        .await
-        .expect("Error committing transaction.");
+    state.database.commit().await?;
+
+    Ok(())
 }

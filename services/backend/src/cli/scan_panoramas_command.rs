@@ -1,17 +1,13 @@
 use crate::domain::panorama::PanoramaDispatcher;
 use crate::services::*;
+use crate::types::Result;
 
-pub async fn scan_panoramas_command() {
-    let state = AppState::new()
-        .await
-        .expect("Error initializing app state.");
+pub async fn scan_panoramas_command() -> Result<()> {
+    let state = AppState::new().await?;
 
-    let dispatcher = state
-        .build::<PanoramaDispatcher>()
-        .expect("Error creating panorama dispatcher.");
+    let dispatcher = state.build::<PanoramaDispatcher>()?;
 
-    dispatcher
-        .scan_panoramas()
-        .await
-        .expect("Error scanning panoramas.");
+    dispatcher.scan_panoramas().await?;
+
+    Ok(())
 }

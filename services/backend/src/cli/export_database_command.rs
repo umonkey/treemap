@@ -5,49 +5,33 @@ use crate::domain::tree_file::TreeFileRepository;
 use crate::domain::water::WaterRepository;
 use crate::infra::export::ExportClient;
 use crate::services::*;
+use crate::types::Result;
 use chrono::Local;
 use std::io::Read;
 
-pub async fn export_database_command() {
-    let state = AppState::new()
-        .await
-        .expect("Error initializing app state.")
-        .session()
-        .await
-        .expect("Error starting a database session.");
+pub async fn export_database_command() -> Result<()> {
+    let state = AppState::new().await?.session().await?;
 
-    let trees = state
-        .build::<TreeRepository>()
-        .expect("Error creating tree repository.");
+    let trees = state.build::<TreeRepository>()?;
 
-    let tree_files = state
-        .build::<TreeFileRepository>()
-        .expect("Error creating tree file repository.");
+    let tree_files = state.build::<TreeFileRepository>()?;
 
-    let files = state
-        .build::<FileRepository>()
-        .expect("Error creating file repository.");
+    let files = state.build::<FileRepository>()?;
 
-    let observations = state
-        .build::<ObservationRepository>()
-        .expect("Error creating observation repository.");
+    let observations = state.build::<ObservationRepository>()?;
 
-    let water = state
-        .build::<WaterRepository>()
-        .expect("Error creating water repository.");
+    let water = state.build::<WaterRepository>()?;
 
-    let client = ExportClient::new()
-        .await
-        .expect("Failed to create export client.");
+    let client = ExportClient::new().await?;
 
-    let trees = trees.all().await.expect("Error reading trees.");
+    let trees = trees.all().await?;
     println!("Exported {} trees.", trees.len());
 
     for tree in &trees {
-        client.add_tree(tree).await.expect("Error exporting tree.");
+        client.add_tree(tree).await?;
     }
 
-    let links = tree_files.all().await.expect("Error reading tree files.");
+    let links = tree_files.all().await?;
     let mut exported_files = 0;
 
     for link in &links {
@@ -55,11 +39,7 @@ pub async fn export_database_command() {
             continue;
         }
 
-        let Some(details) = files
-            .get_details(link.file_id)
-            .await
-            .expect("Error reading file details.")
-        else {
+        let Some(details) = files.get_details(link.file_id).await? else {
             continue;
         };
 
@@ -69,52 +49,37 @@ pub async fn export_database_command() {
 
         client
             .add_file(link, &details, &state.config.files_base_url)
-            .await
-            .expect("Error exporting tree file.");
+            .await?;
 
         exported_files += 1;
     }
 
     println!("Exported {exported_files} tree files.");
 
-    let observations = observations
-        .all()
-        .await
-        .expect("Error reading observations.");
+    let observations = observations.all().await?;
     println!("Exported {} observations.", observations.len());
 
     for observation in &observations {
-        client
-            .add_observation(observation)
-            .await
-            .expect("Error exporting observation.");
+        client.add_observation(observation).await?;
     }
 
-    let water = water.all().await.expect("Error reading water sources.");
+    let water = water.all().await?;
     println!("Exported {} water sources.", water.len());
 
     for source in &water {
-        client
-            .add_water(source)
-            .await
-            .expect("Error exporting water source.");
+        client.add_water(source).await?;
     }
 
-    let zipped = client.finalize().await.expect("Failed to finalize export.");
+    let zipped = client.finalize().await?;
 
     let mut data = Vec::new();
-    std::fs::File::open(zipped.path())
-        .expect("Failed to open export file.")
-        .read_to_end(&mut data)
-        .expect("Failed to read export file.");
+    std::fs::File::open(zipped.path())?.read_to_end(&mut data)?;
 
     let path = format!("export/{}.sqlite.gz", Local::now().format("%Y-%m-%d"));
 
-    state
-        .backups
-        .write_file(&path, &data, false)
-        .await
-        .expect("Failed to upload export");
+    state.backups.write_file(&path, &data, false).await?;
 
     println!("Database export uploaded as {}", path);
+
+    Ok(())
 }

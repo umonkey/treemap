@@ -5,14 +5,10 @@ use crate::infra::config::Config;
 use crate::services::dispatcher::AlertDispatcher;
 use std::sync::Arc;
 
-pub async fn dispatch_alerts_command() {
-    let config = Config::from_env();
+pub async fn dispatch_alerts_command() -> anyhow::Result<()> {
+    let config = Config::from_env()?;
 
-    let db = Arc::new(
-        crate::infra::database::DatabaseClient::new(&config.database_path)
-            .await
-            .expect("Failed to initialize database"),
-    );
+    let db = Arc::new(crate::infra::database::DatabaseClient::new(&config.database_path).await?);
 
     let alerts = Arc::new(AlertRepository::new(Arc::clone(&db)));
     let photos = Arc::new(AlertPhotoRepository::new(Arc::clone(&db)));
@@ -30,4 +26,5 @@ pub async fn dispatch_alerts_command() {
         config.files_base_url,
     );
     dispatcher.run().await;
+    Ok(())
 }

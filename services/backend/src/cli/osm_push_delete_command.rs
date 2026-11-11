@@ -1,35 +1,25 @@
 use crate::services::OsmWriterService;
 use crate::services::*;
+use crate::types::Result;
 
-pub async fn osm_push_delete_command() {
+pub async fn osm_push_delete_command() -> Result<()> {
     let dry_run = std::env::var("DRY").unwrap_or_default() == "yes";
 
-    let state = AppState::new()
-        .await
-        .expect("Error initializing app state.");
+    let state = AppState::new().await?;
 
     let limit: u64 = std::env::args()
         .nth(2)
         .and_then(|s| s.parse().ok())
         .unwrap_or(100);
 
-    let state = state.session().await.expect("Error starting session.");
+    let state = state.session().await?;
 
-    let writer = state
-        .build::<OsmWriterService>()
-        .expect("Error creating OSM writer.");
+    let writer = state.build::<OsmWriterService>()?;
 
-    let deleted = writer
-        .push_deletions(limit, dry_run)
-        .await
-        .expect("Error pushing deletions to OSM.");
+    let deleted = writer.push_deletions(limit, dry_run).await?;
 
     if !dry_run {
-        state
-            .database
-            .commit()
-            .await
-            .expect("Error committing transaction.");
+        state.database.commit().await?;
     }
 
     if dry_run {
@@ -37,4 +27,6 @@ pub async fn osm_push_delete_command() {
     } else {
         println!("Successfully deleted {} nodes from OSM.", deleted);
     }
+
+    Ok(())
 }

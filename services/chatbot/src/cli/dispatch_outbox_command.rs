@@ -4,14 +4,10 @@ use crate::infra::telegram::TelegramClient;
 use crate::services::outbox_dispatcher::OutboxDispatcher;
 use std::sync::Arc;
 
-pub async fn dispatch_outbox_command() {
-    let config = Config::from_env();
+pub async fn dispatch_outbox_command() -> anyhow::Result<()> {
+    let config = Config::from_env()?;
 
-    let db = Arc::new(
-        crate::infra::database::DatabaseClient::new(&config.database_path)
-            .await
-            .expect("Failed to initialize database"),
-    );
+    let db = Arc::new(crate::infra::database::DatabaseClient::new(&config.database_path).await?);
 
     let outbox = Arc::new(OutboxRepository::new(Arc::clone(&db)));
 
@@ -21,4 +17,5 @@ pub async fn dispatch_outbox_command() {
 
     let dispatcher = OutboxDispatcher::new(telegram, outbox);
     dispatcher.run().await;
+    Ok(())
 }

@@ -2,6 +2,7 @@ use sentry::protocol::{Event, Request};
 use sentry::ClientInitGuard;
 use std::borrow::Cow;
 use std::sync::Arc;
+use std::time::Duration;
 
 /// Initializes Sentry and logging.
 /// Returns a guard that must be kept alive for the duration of the program.
@@ -49,6 +50,16 @@ pub fn init() -> Option<ClientInitGuard> {
     log::info!("Sentry reporting enabled.");
 
     Some(guard)
+}
+
+/// Flushes queued Sentry events.
+///
+/// Call before `std::process::exit`, which skips the `ClientInitGuard` drop
+/// that would otherwise flush. A no-op when Sentry has no client.
+pub fn flush() {
+    if let Some(client) = sentry::Hub::current().client() {
+        client.flush(Some(Duration::from_secs(2)));
+    }
 }
 
 /// Removes credentials from the request data attached by `sentry-actix`.

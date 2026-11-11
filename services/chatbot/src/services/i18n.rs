@@ -18,13 +18,16 @@ impl I18n {
             let path = format!("locales/{}.ftl", lang);
             let source =
                 fs::read_to_string(&path).unwrap_or_else(|_| panic!("Failed to read {}", path));
-            let resource = FluentResource::try_new(source).expect("Failed to parse FTL");
+            let resource = FluentResource::try_new(source)
+                .expect("bundled locales/en.ftl and locales/ru.ftl must contain valid FTL");
 
-            let lang_id: LanguageIdentifier = lang.parse().expect("Failed to parse language ID");
+            let lang_id: LanguageIdentifier = lang
+                .parse()
+                .expect("bundled language identifiers en and ru must be valid");
             let mut bundle = fluent::bundle::FluentBundle::new_concurrent(vec![lang_id]);
             bundle
                 .add_resource(resource)
-                .expect("Failed to add resource");
+                .expect("bundled FTL resources must be accepted by a fresh bundle");
 
             bundles.insert(lang.to_string(), bundle);
         }

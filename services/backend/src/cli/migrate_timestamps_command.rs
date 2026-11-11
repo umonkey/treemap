@@ -1,21 +1,18 @@
 use crate::domain::tree::TreeRepository;
 use crate::infra::database::Value;
 use crate::services::{AppState, Context, ContextExt};
+use crate::types::Result;
 use log::info;
 
-pub async fn migrate_timestamps_command() {
-    let state = AppState::new()
-        .await
-        .expect("Error initializing app state.");
+pub async fn migrate_timestamps_command() -> Result<()> {
+    let state = AppState::new().await?;
 
     let db = state.database();
-    let trees_repo = state
-        .build::<TreeRepository>()
-        .expect("Error building TreeRepository.");
+    let trees_repo = state.build::<TreeRepository>()?;
 
     info!("Starting timestamp migration...");
 
-    let trees = trees_repo.all().await.expect("Error fetching all trees.");
+    let trees = trees_repo.all().await?;
     info!("Found {} trees to process.", trees.len());
 
     for tree in trees {
@@ -25,10 +22,7 @@ pub async fn migrate_timestamps_command() {
         for prop in &["height", "diameter", "circumference"] {
             let sql = "SELECT MAX(added_at) as last_update FROM trees_props WHERE tree_id = ? AND name = ?";
             let params = &[Value::from(tree.id as i64), Value::from(prop.to_string())];
-            let rows = db
-                .fetch_sql(sql, params)
-                .await
-                .expect("Error fetching props.");
+            let rows = db.fetch_sql(sql, params).await?;
             if let Some(row) = rows.first() {
                 if let Ok(Some(ts)) = row.get_u64("last_update") {
                     let field_name = match *prop {
@@ -45,10 +39,7 @@ pub async fn migrate_timestamps_command() {
         // 2. Images from trees_files
         let sql = "SELECT MAX(added_at) as last_update FROM trees_files WHERE tree_id = ?";
         let params = &[Value::from(tree.id as i64)];
-        let rows = db
-            .fetch_sql(sql, params)
-            .await
-            .expect("Error fetching images.");
+        let rows = db.fetch_sql(sql, params).await?;
         if let Some(row) = rows.first() {
             if let Ok(Some(ts)) = row.get_u64("last_update") {
                 updates.push(("images_updated_at", ts));
@@ -58,10 +49,7 @@ pub async fn migrate_timestamps_command() {
         // 3. Observations from observations
         let sql = "SELECT MAX(created_at) as last_update FROM observations WHERE tree_id = ?";
         let params = &[Value::from(tree.id as i64)];
-        let rows = db
-            .fetch_sql(sql, params)
-            .await
-            .expect("Error fetching observations.");
+        let rows = db.fetch_sql(sql, params).await?;
         if let Some(row) = rows.first() {
             if let Ok(Some(ts)) = row.get_u64("last_update") {
                 updates.push(("observations_updated_at", ts));
@@ -82,11 +70,11 @@ pub async fn migrate_timestamps_command() {
             sql.push_str(" WHERE id = ?");
             params.push(Value::from(tree.id as i64));
 
-            db.execute_sql(&sql, &params)
-                .await
-                .expect("Error updating tree.");
+            db.execute_sql(&sql, &params).await?;
         }
     }
 
     info!("Timestamp migration completed.");
+
+    Ok(())
 }

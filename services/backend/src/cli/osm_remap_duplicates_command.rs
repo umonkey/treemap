@@ -1,28 +1,15 @@
 use crate::services::tree_merger::TreeMergerService;
 use crate::services::*;
+use crate::types::Result;
 
-pub async fn osm_remap_duplicates_command() {
-    let state = AppState::new()
-        .await
-        .expect("Error initializing app state.")
-        .session()
-        .await
-        .expect("Error creating session state.");
+pub async fn osm_remap_duplicates_command() -> Result<()> {
+    let state = AppState::new().await?.session().await?;
 
-    let merger = state
-        .build::<TreeMergerService>()
-        .expect("Error creating handler.");
+    let merger = state.build::<TreeMergerService>()?;
 
-    let remapped = merger
-        .remap_osm_duplicates()
-        .await
-        .expect("Error remapping OSM duplicates.");
+    let remapped = merger.remap_osm_duplicates().await?;
 
-    state
-        .database
-        .commit()
-        .await
-        .expect("Error committing transaction.");
+    state.database.commit().await?;
 
     for (main_id, dup_id) in remapped {
         println!(
@@ -30,4 +17,6 @@ pub async fn osm_remap_duplicates_command() {
             main_id, dup_id
         );
     }
+
+    Ok(())
 }

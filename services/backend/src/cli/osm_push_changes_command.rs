@@ -1,30 +1,19 @@
 use crate::services::*;
+use crate::types::Result;
 
-pub async fn osm_push_changes_command() {
+pub async fn osm_push_changes_command() -> Result<()> {
     let args: Vec<String> = std::env::args().collect();
     let dry_run = args.contains(&"--dry-run".to_string());
 
-    let state = AppState::new()
-        .await
-        .expect("Error initializing app state.")
-        .session()
-        .await
-        .expect("Error starting session.");
+    let state = AppState::new().await?.session().await?;
 
-    let service = state
-        .build::<OsmWriterService>()
-        .expect("Error creating the service.");
+    let service = state.build::<OsmWriterService>()?;
 
-    service
-        .push_updates(dry_run)
-        .await
-        .expect("Error sending updates.");
+    service.push_updates(dry_run).await?;
 
     if !dry_run {
-        state
-            .database
-            .commit()
-            .await
-            .expect("Error committing transaction.");
+        state.database.commit().await?;
     }
+
+    Ok(())
 }

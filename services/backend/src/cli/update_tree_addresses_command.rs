@@ -1,26 +1,15 @@
 use crate::domain::tree::TreeService;
 use crate::services::{AppState, ContextExt};
+use crate::types::Result;
 
-pub async fn update_tree_addresses_command() {
-    let state = AppState::new()
-        .await
-        .expect("Error initializing app state.")
-        .session()
-        .await
-        .expect("Error creating session state.");
+pub async fn update_tree_addresses_command() -> Result<()> {
+    let state = AppState::new().await?.session().await?;
 
-    let trees = state
-        .build::<TreeService>()
-        .expect("Error creating handler.");
+    let trees = state.build::<TreeService>()?;
 
-    trees
-        .update_all_tree_addresses()
-        .await
-        .expect("Error updating tree addresses.");
+    trees.update_all_tree_addresses().await?;
 
-    state
-        .database
-        .commit()
-        .await
-        .expect("Error committing transaction.");
+    state.database.commit().await?;
+
+    Ok(())
 }

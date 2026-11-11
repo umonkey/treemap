@@ -58,90 +58,42 @@ async fn main() -> std::io::Result<()> {
         scope.set_tag("command", command.clone());
     });
 
-    match command.as_str() {
-        "serve" => {
-            serve_command().await;
-            return Ok(());
-        }
-        "storage-sync" => {
-            storage_sync_command().await;
-            return Ok(());
-        }
-        "backup-database" => {
-            backup_database_command().await;
-            return Ok(());
-        }
-        "dispatch-emails" => {
-            dispatch_emails_command().await;
-            return Ok(());
-        }
-        "dispatch-panoramas" => {
-            dispatch_panoramas_command().await;
-            return Ok(());
-        }
-        "scan-panoramas" => {
-            scan_panoramas_command().await;
-            return Ok(());
-        }
-        "refresh-panorama-stats" => {
-            refresh_panorama_stats_command().await;
-            return Ok(());
-        }
-        "merge-replaced-trees" => {
-            merge_replaced_trees_command().await;
-            return Ok(());
-        }
-        "migrate-timestamps" => {
-            migrate_timestamps_command().await;
-            return Ok(());
-        }
+    if let Err(error) = run(&command).await {
+        log::error!("Command {command} failed: {error}");
+        crate::utils::sentry::flush();
+        std::process::exit(1);
+    }
 
-        "osm-pull" => {
-            osm_pull_command().await;
-            return Ok(());
-        }
-        "osm-push" => {
-            osm_push_command().await;
-            return Ok(());
-        }
-        "osm-push-changes" => {
-            osm_push_changes_command().await;
-            return Ok(());
-        }
-        "osm-push-delete" => {
-            osm_push_delete_command().await;
-            return Ok(());
-        }
-        "osm-remap-duplicates" => {
-            osm_remap_duplicates_command().await;
-            return Ok(());
-        }
+    Ok(())
+}
 
-        "update-tree-address" => {
-            update_tree_address_command().await;
-            return Ok(());
-        }
-        "update-tree-addresses" => {
-            update_tree_addresses_command().await;
-            return Ok(());
-        }
-        "upload-files" => {
-            upload_files_command().await;
-            return Ok(());
-        }
-        "dispatch-queue" => {
-            dispatch_queue_command().await;
-            return Ok(());
-        }
-        "export-database" => {
-            export_database_command().await;
-            return Ok(());
-        }
+async fn run(command: &str) -> crate::types::Result<()> {
+    match command {
+        "serve" => serve_command().await,
+        "storage-sync" => storage_sync_command().await,
+        "backup-database" => backup_database_command().await,
+        "dispatch-emails" => dispatch_emails_command().await,
+        "dispatch-panoramas" => dispatch_panoramas_command().await,
+        "scan-panoramas" => scan_panoramas_command().await,
+        "refresh-panorama-stats" => refresh_panorama_stats_command().await,
+        "merge-replaced-trees" => merge_replaced_trees_command().await,
+        "migrate-timestamps" => migrate_timestamps_command().await,
+
+        "osm-pull" => osm_pull_command().await,
+        "osm-push" => osm_push_command().await,
+        "osm-push-changes" => osm_push_changes_command().await,
+        "osm-push-delete" => osm_push_delete_command().await,
+        "osm-remap-duplicates" => osm_remap_duplicates_command().await,
+
+        "update-tree-address" => update_tree_address_command().await,
+        "update-tree-addresses" => update_tree_addresses_command().await,
+        "upload-files" => upload_files_command().await,
+        "dispatch-queue" => dispatch_queue_command().await,
+        "export-database" => export_database_command().await,
 
         _ => {
             println!("Command {command} not understood.");
+            Ok(())
         }
-    };
-
-    Ok(())
+    }
 }

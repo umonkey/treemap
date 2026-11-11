@@ -3,12 +3,12 @@ use crate::infra::telegram::{parse_recipient, TelegramClient};
 
 const TEST_ALERT_TEXT: &str = "This is a test alert message.  An operator is testing message delivery.  You can safely delete this message.";
 
-pub async fn send_test_alert_command() {
-    let config = Config::from_env();
+pub async fn send_test_alert_command() -> anyhow::Result<()> {
+    let config = Config::from_env()?;
 
     if config.report_recipients.is_empty() {
         log::warn!("No report recipients configured; nothing to send.");
-        return;
+        return Ok(());
     }
 
     let telegram = TelegramClient::new(config.bot_token);
@@ -31,4 +31,6 @@ pub async fn send_test_alert_command() {
             Err(e) => log::error!("Invalid recipient '{}': {:?}", recipient, e),
         }
     }
+
+    Ok(())
 }

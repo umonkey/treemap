@@ -28,6 +28,7 @@ use crate::actions::upload::upload_router;
 use crate::actions::user::user_router;
 use crate::actions::water::water_router;
 use crate::services::*;
+use crate::types::Result;
 use actix_cors::Cors;
 use actix_files::{Files, NamedFile};
 use actix_web::{
@@ -42,16 +43,12 @@ async fn manifest_action() -> actix_web::Result<NamedFile> {
     Ok(NamedFile::open("./static/manifest.json")?.set_content_type(
         "application/manifest+json"
             .parse()
-            .expect("Invalid MIME type"),
+            .expect("manifest content type must be a valid MIME type"),
     ))
 }
 
-pub async fn serve_command() {
-    let state = Arc::new(
-        AppState::new()
-            .await
-            .expect("Error initializing application."),
-    );
+pub async fn serve_command() -> Result<()> {
+    let state = Arc::new(AppState::new().await?);
     let config = state.config.clone();
 
     let workers = config.workers;
@@ -169,11 +166,11 @@ pub async fn serve_command() {
             )
             .default_service(actix_web::web::to(default_action))
     })
-    .bind((host_addr.as_str(), host_port))
-    .expect("Error starting server.")
+    .bind((host_addr.as_str(), host_port))?
     .workers(workers)
     .keep_alive(Duration::from_secs(60))
     .run()
-    .await
-    .expect("Error running server.");
+    .await?;
+
+    Ok(())
 }

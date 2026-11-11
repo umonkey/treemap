@@ -1,13 +1,15 @@
 use crate::domain::tree::TreeService;
 use crate::services::*;
+use crate::types::{Error, Result};
 
-pub async fn update_tree_address_command() {
+pub async fn update_tree_address_command() -> Result<()> {
     let value = match std::env::args().nth(2) {
         Some(value) => value,
 
         None => {
-            println!("Usage: treemap update-tree-address tree_id");
-            return;
+            return Err(Error::BadRequestMessage(
+                "Usage: treemap update-tree-address tree_id".to_string(),
+            ));
         }
     };
 
@@ -15,21 +17,17 @@ pub async fn update_tree_address_command() {
         Ok(tree_id) => tree_id,
 
         Err(_) => {
-            println!("Error: tree_id must be a number.");
-            return;
+            return Err(Error::BadRequestMessage(
+                "tree_id must be a number".to_string(),
+            ));
         }
     };
 
-    let state = AppState::new()
-        .await
-        .expect("Error initializing app state.");
+    let state = AppState::new().await?;
 
-    let trees = state
-        .build::<TreeService>()
-        .expect("Error creating handler.");
+    let trees = state.build::<TreeService>()?;
 
-    trees
-        .update_tree_address(tree_id)
-        .await
-        .expect("Error updating tree address.");
+    trees.update_tree_address(tree_id).await?;
+
+    Ok(())
 }

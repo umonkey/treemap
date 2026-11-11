@@ -30,6 +30,7 @@ pub enum Error {
     ImageResize,
     InstanceDisabled,
     InstanceNotFound,
+    Io(String),
 
     MissingAuthorizationHeader,
     OsmExchange(String),
@@ -117,6 +118,9 @@ impl Error {
             Error::InstanceNotFound => {
                 r#"{"error":{"code":"InstanceNotFound","description":"The specified instance does not exist."}}"#.to_string()
             }
+            Error::Io(_) => {
+                r#"{"error":{"code":"Io","description":"Input/output error."}}"#.to_string()
+            }
 
             Error::MissingAuthorizationHeader => {
                 r#"{"error":{"code":"MissingAuthorizationHeader","description":"Authentication required for this call."}}"#.to_string()
@@ -155,6 +159,12 @@ impl Error {
                 r#"{"error":{"code":"UserNotFound","description":"User record not found, or deleted."}}"#.to_string()
             }
         }
+    }
+}
+
+impl From<std::io::Error> for Error {
+    fn from(e: std::io::Error) -> Self {
+        Error::Io(e.to_string())
     }
 }
 
@@ -249,6 +259,7 @@ impl fmt::Display for Error {
             Error::ImageResize => write!(f, "ImageResize"),
             Error::InstanceDisabled => write!(f, "InstanceDisabled"),
             Error::InstanceNotFound => write!(f, "InstanceNotFound"),
+            Error::Io(s) => write!(f, "IO error: {s}"),
 
             Error::MissingAuthorizationHeader => write!(f, "MissingAuthorizationHeader"),
             Error::OsmExchange(s) => write!(f, "OsmExchange: {s}"),
