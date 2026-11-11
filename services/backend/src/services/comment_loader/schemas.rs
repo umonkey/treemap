@@ -10,7 +10,8 @@ use serde::Serialize;
 #[derive(Debug, Serialize)]
 pub struct CommentRead {
     pub id: String,
-    pub tree_id: String,
+    pub entity_type: String,
+    pub entity_id: String,
     pub added_at: u64,
     pub added_by: String,
     pub message: String,
@@ -43,7 +44,8 @@ impl CommentRead {
     pub fn from_record(record: &Comment) -> Self {
         Self {
             id: record.id.to_string(),
-            tree_id: record.tree_id.to_string(),
+            entity_type: record.entity_type.clone(),
+            entity_id: record.entity_id.to_string(),
             added_at: record.added_at,
             added_by: record.added_by.to_string(),
             message: record.message.clone(),

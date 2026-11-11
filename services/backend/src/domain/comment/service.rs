@@ -1,5 +1,5 @@
 use super::repository::CommentRepository;
-use crate::domain::comment::Comment;
+use crate::domain::comment::{Comment, TREE_ENTITY};
 use crate::domain::tree::TreeRepository;
 use crate::domain::user::UserRepository;
 use crate::services::{Context, Injectable};
@@ -15,17 +15,24 @@ pub struct CommentService {
 }
 
 impl CommentService {
-    pub async fn get_tree_comments(&self, tree_id: u64) -> Result<Vec<Comment>> {
-        self.comments.find_by_tree(tree_id).await
+    pub async fn get_comments(&self, entity_type: &str, entity_id: u64) -> Result<Vec<Comment>> {
+        self.comments.find_by_entity(entity_type, entity_id).await
     }
 
-    pub async fn add_comment(&self, tree_id: u64, user_id: u64, message: &str) -> Result<Comment> {
+    pub async fn add_comment(
+        &self,
+        entity_type: &str,
+        entity_id: u64,
+        user_id: u64,
+        message: &str,
+    ) -> Result<Comment> {
         let id = get_unique_id()?;
         let now = get_timestamp();
 
         let comment = Comment {
             id,
-            tree_id,
+            entity_type: entity_type.to_string(),
+            entity_id,
             added_at: now,
             added_by: user_id,
             message: message.to_string(),
@@ -35,10 +42,15 @@ impl CommentService {
 
         self.users.increment_comment_count(user_id).await?;
 
-        let comments = self.comments.count_by_tree(tree_id).await?;
-        self.trees.update_comment_count(tree_id, comments).await?;
+        if entity_type == TREE_ENTITY {
+            let comments = self
+                .comments
+                .count_by_entity(entity_type, entity_id)
+                .await?;
+            self.trees.update_comment_count(entity_id, comments).await?;
+        }
 
-        info!("Comment {id} added to tree {tree_id}");
+        info!("Comment {id} added to {entity_type} {entity_id}");
 
         Ok(comment)
     }

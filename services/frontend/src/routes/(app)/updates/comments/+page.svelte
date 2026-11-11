@@ -1,6 +1,6 @@
 <script lang="ts">
+	import Comment from '$lib/components/comments/Comment.svelte';
 	import TreeListPreview from '$lib/components/layout/TreeListPreview.svelte';
-	import Comment from '$lib/components/tree/Comment.svelte';
 	import { PageState } from './page.svelte.ts';
 
 	const pageState = new PageState();
@@ -16,7 +16,9 @@
 	<p>Error loading comments.</p>
 {:else}
 	{#each pageState.comments as comment (comment.id)}
-		<TreeListPreview id={comment.tree_id.toString()} />
+		{#if comment.entity_type === 'tree'}
+			<TreeListPreview id={comment.entity_id} />
+		{/if}
 		<Comment {comment} />
 	{/each}
 {/if}

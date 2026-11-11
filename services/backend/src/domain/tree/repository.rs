@@ -1,5 +1,6 @@
 use super::models::{Tree, TreeLocation};
 use super::schemas::*;
+use crate::domain::comment::TREE_ENTITY;
 use crate::domain::prop::{PropRecord, PropRepository};
 use crate::infra::database::{CountQuery, IncrementQuery, InsertQuery, SelectQuery, UpdateQuery};
 use crate::infra::database::{Database, Value};
@@ -392,7 +393,9 @@ impl TreeRepository {
         let comment_count = self
             .db
             .count(
-                CountQuery::new("comments").with_condition("tree_id", Value::from(tree_id as i64)),
+                CountQuery::new("comments")
+                    .with_condition("entity_type", Value::from(TREE_ENTITY.to_string()))
+                    .with_condition("entity_id", Value::from(tree_id as i64)),
             )
             .await?;
         let like_count = self

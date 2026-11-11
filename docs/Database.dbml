@@ -129,12 +129,19 @@ Table users {
   last_active_at int [not null, default: 0]
 }
 
+// Polymorphic comment thread; entity_type is an open string.
 Table comments {
   id int [pk]
-  tree_id int [not null]
+  entity_type text [not null]
+  entity_id int [not null]
   added_at int [not null]
   added_by int [not null]
   message text [not null]
+
+  Indexes {
+    (entity_type, entity_id)
+    added_at
+  }
 }
 
 Table queue_messages {
@@ -281,7 +288,6 @@ Table storage_objects {
 
 // Relationships
 Ref: trees_props.tree_id > trees.id
-Ref: comments.tree_id > trees.id
 Ref: likes.tree_id > trees.id
 Ref: observations.tree_id > trees.id
 Ref: trees.replaces > trees.id

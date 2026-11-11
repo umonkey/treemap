@@ -11,7 +11,8 @@
 		help,
 		onChange,
 		onBlur,
-		ariaLabel = ''
+		ariaLabel = '',
+		disabled = false
 	}: {
 		value?: string | number | null;
 		placeholder?: string;
@@ -23,6 +24,7 @@
 		onChange: (value: string) => void;
 		onBlur?: (value: string) => void;
 		ariaLabel?: string;
+		disabled?: boolean;
 	} = $props();
 
 	const handleChange = (e: Event) => {
@@ -46,7 +48,8 @@
 			{placeholder}
 			aria-label={ariaLabel || undefined}
 			oninput={handleChange}
-			onblur={handleBlur}>{value}</textarea
+			onblur={handleBlur}
+			{disabled}>{value}</textarea
 		>
 	{:else}
 		<input
@@ -56,6 +59,7 @@
 			aria-label={ariaLabel || undefined}
 			oninput={handleChange}
 			onblur={handleBlur}
+			{disabled}
 		/>
 	{/if}
 </FormElement>

@@ -55,6 +55,11 @@ impl Permission for AlertManage {
     const NAME: &'static str = "alert:manage";
 }
 
+pub struct CommentCreate;
+impl Permission for CommentCreate {
+    const NAME: &'static str = "comment:create";
+}
+
 pub struct InstanceManage;
 impl Permission for InstanceManage {
     const NAME: &'static str = "instance:manage";

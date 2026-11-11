@@ -18,6 +18,7 @@ INSERT OR IGNORE INTO roles (id) VALUES ('editor');
 INSERT OR IGNORE INTO roles (id) VALUES ('user');
 
 INSERT OR IGNORE INTO permissions (id) VALUES ('comment:create');
+INSERT OR IGNORE INTO permissions (id) VALUES ('comment:read');
 INSERT OR IGNORE INTO permissions (id) VALUES ('comment:delete');
 INSERT OR IGNORE INTO permissions (id) VALUES ('pano:edit');
 INSERT OR IGNORE INTO permissions (id) VALUES ('tree:create');
@@ -34,10 +35,12 @@ INSERT OR IGNORE INTO role_permissions (role_id, permission_id) SELECT 'admin', 
 INSERT OR IGNORE INTO role_permissions (role_id, permission_id) VALUES ('editor', 'tree:create');
 INSERT OR IGNORE INTO role_permissions (role_id, permission_id) VALUES ('editor', 'tree:edit');
 INSERT OR IGNORE INTO role_permissions (role_id, permission_id) VALUES ('editor', 'comment:create');
+INSERT OR IGNORE INTO role_permissions (role_id, permission_id) VALUES ('editor', 'comment:read');
 INSERT OR IGNORE INTO role_permissions (role_id, permission_id) VALUES ('editor', 'pano:edit');
 INSERT OR IGNORE INTO role_permissions (role_id, permission_id) VALUES ('editor', 'water:manage');
 INSERT OR IGNORE INTO role_permissions (role_id, permission_id) VALUES ('editor', 'species:manage');
 INSERT OR IGNORE INTO role_permissions (role_id, permission_id) VALUES ('editor', 'alert:create');
 INSERT OR IGNORE INTO role_permissions (role_id, permission_id) VALUES ('user', 'tree:create');
 INSERT OR IGNORE INTO role_permissions (role_id, permission_id) VALUES ('user', 'comment:create');
+INSERT OR IGNORE INTO role_permissions (role_id, permission_id) VALUES ('user', 'comment:read');
 INSERT OR IGNORE INTO role_permissions (role_id, permission_id) VALUES ('user', 'alert:create');
