@@ -236,7 +236,6 @@ CREATE TABLE IF NOT EXISTS panoramas (
     `lon_offset` REAL NOT NULL DEFAULT 0.0,
     `processing_arn` TEXT NULL,
     `processing_status` TEXT NULL,
-    `failure_reason` TEXT NULL,
     `min_lat` REAL NULL,
     `max_lat` REAL NULL,
     `min_lon` REAL NULL,

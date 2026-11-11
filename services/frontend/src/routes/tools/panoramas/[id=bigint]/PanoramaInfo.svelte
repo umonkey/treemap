@@ -12,13 +12,6 @@
 	{/if}
 	<table>
 		<tbody>
-			{#if panorama.failure_reason}
-				<tr>
-					<th>Failure Reason</th>
-					<td class="error">{panorama.failure_reason}</td>
-				</tr>
-			{/if}
-
 			<tr>
 				<th>Images:</th>
 				<td>{panorama.image_count}</td>
@@ -45,7 +38,13 @@
 
 			<tr>
 				<th>Processing job status</th>
-				<td>{panorama.processing_status ?? 'unknown'}</td>
+				<td>
+					{#if panorama.processing_status === 'FAILED'}
+						<a href={`/tools/panoramas/${panorama.id}/comments`}>FAILED</a>
+					{:else}
+						{panorama.processing_status ?? 'unknown'}
+					{/if}
+				</td>
 			</tr>
 
 			{#if panorama.processing_time != null && panorama.processing_time > 0}

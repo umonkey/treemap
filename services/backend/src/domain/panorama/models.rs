@@ -63,7 +63,6 @@ pub struct Panorama {
     pub lon_offset: f64,
     pub processing_arn: Option<String>,
     pub processing_status: Option<String>,
-    pub failure_reason: Option<String>,
     pub min_lat: Option<f64>,
     pub max_lat: Option<f64>,
     pub min_lon: Option<f64>,
@@ -98,7 +97,6 @@ impl Panorama {
             lon_offset: attrs.get_f64("lon_offset")?.unwrap_or(0.0),
             processing_arn: attrs.get_string("processing_arn")?,
             processing_status: attrs.get_string("processing_status")?,
-            failure_reason: attrs.get_string("failure_reason")?,
             min_lat: attrs.get_f64("min_lat")?,
             max_lat: attrs.get_f64("max_lat")?,
             min_lon: attrs.get_f64("min_lon")?,
@@ -133,7 +131,6 @@ impl Panorama {
             "processing_status",
             Value::from(self.processing_status.clone()),
         );
-        attrs.insert("failure_reason", Value::from(self.failure_reason.clone()));
         attrs.insert("min_lat", Value::from(self.min_lat));
         attrs.insert("max_lat", Value::from(self.max_lat));
         attrs.insert("min_lon", Value::from(self.min_lon));

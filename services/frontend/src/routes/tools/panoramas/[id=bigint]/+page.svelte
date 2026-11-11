@@ -29,11 +29,6 @@
 			{#if !state.panorama.source_video_path}
 				<VideoUploader panoramaId={id} onUploadSuccess={() => state.reload(id)} />
 			{/if}
-		{:else if state.panorama.status === 'FAILURE'}
-			<p class="error">
-				We could not process the uploaded file: {state.panorama.failure_reason ||
-					'Please contact technical support.'}
-			</p>
 		{:else if state.panorama.status === 'NEEDS_PROCESSING' || state.panorama.status === 'NEEDS_PROCESSING_FINISH'}
 			<p>
 				We are now processing your dataset: extracting images, correcting their position, etc. When
@@ -56,10 +51,6 @@
 </article>
 
 <style>
-	.error {
-		color: red;
-	}
-
 	article {
 		display: flex;
 		flex-direction: column;

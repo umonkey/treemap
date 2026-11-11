@@ -129,7 +129,7 @@ Table users {
   last_active_at int [not null, default: 0]
 }
 
-// Polymorphic comment thread; entity_type is open text, but the backend accepts only 'tree' today.
+// Polymorphic comment thread; entity_type is open text, but the backend accepts only 'tree' and 'panorama' today.
 // A null added_by marks a system comment.
 Table comments {
   id int [pk]
@@ -243,7 +243,6 @@ Table panoramas {
   lon_offset real [not null, default: 0.0]
   processing_arn text
   processing_status text
-  failure_reason text
   min_lat real
   max_lat real
   min_lon real

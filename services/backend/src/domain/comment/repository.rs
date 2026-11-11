@@ -108,8 +108,8 @@ mod tests {
         }
     }
 
-    // The API cannot create a non-tree comment, so a raw row proves that the
-    // queries filter on the entity type instead of the id alone.
+    // No variant represents an unknown stored type, so a raw row proves that
+    // the queries filter on the entity type instead of the id alone.
     async fn add_water_comment(repo: &CommentRepository) {
         repo.db
             .execute_sql(
@@ -139,6 +139,30 @@ mod tests {
         assert_eq!(2, res.len());
         assert!(res.iter().all(|r| r.entity_id == 10));
         assert!(res.iter().all(|r| r.entity_type == CommentEntity::Tree));
+    }
+
+    #[tokio::test]
+    async fn test_find_by_entity_isolates_entity_types() {
+        let repo = setup().await;
+
+        // The same entity id can belong to a tree and a panorama.
+        repo.add(&comment(1, CommentEntity::Tree, 10))
+            .await
+            .unwrap();
+        repo.add(&comment(2, CommentEntity::Panorama, 10))
+            .await
+            .unwrap();
+
+        let trees = repo.find_by_entity(CommentEntity::Tree, 10).await.unwrap();
+        assert_eq!(1, trees.len());
+        assert_eq!(CommentEntity::Tree, trees[0].entity_type);
+
+        let panoramas = repo
+            .find_by_entity(CommentEntity::Panorama, 10)
+            .await
+            .unwrap();
+        assert_eq!(1, panoramas.len());
+        assert_eq!(CommentEntity::Panorama, panoramas[0].entity_type);
     }
 
     #[tokio::test]

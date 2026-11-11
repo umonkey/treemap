@@ -450,7 +450,6 @@ mod tests {
             lon_offset: 0.0,
             processing_arn: None,
             processing_status: None,
-            failure_reason: None,
             min_lat: None,
             max_lat: None,
             min_lon: None,

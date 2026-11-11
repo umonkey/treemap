@@ -75,6 +75,7 @@ The ingestion and reconstruction workflow is fully automated:
 - Notifications: the system sends an email notification upon job completion or failure.
 - Job log: the full AWS Batch console log is copied to the panorama folder as `processing.log` and listed in the Files tab.
 - Failure recovery: if a run fails, the job can be restarted directly from the interface once the underlying issue is resolved.
+- Run history: each processing run records its outcome as a system comment on the Comments tab, either `Processing finished successfully.` or `Processing failed:` with the underlying error, so restarts keep the history of previous attempts.
 - Sequence preview: upon completion, administrators can inspect the reconstructed sequence in a private preview before publishing it to the public map.
 - Map fine-tuning: after publication, fine-tune alignment by sighting known reference landmarks (such as trees or building corners) to establish the best fit against the base map.
 

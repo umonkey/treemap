@@ -4,18 +4,21 @@ use serde::Serialize;
 
 /// The entity a comment can be attached to.
 ///
-/// Only trees can be commented on today. A future surface adds a variant here
-/// and support in the comment loader; the database column stays open text.
+/// Trees and panoramas can be commented on today. A future surface adds a
+/// variant here and support in the comment loader; the database column stays
+/// open text.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum CommentEntity {
     Tree,
+    Panorama,
 }
 
 impl CommentEntity {
     pub fn as_str(&self) -> &'static str {
         match self {
             Self::Tree => "tree",
+            Self::Panorama => "panorama",
         }
     }
 
@@ -26,6 +29,7 @@ impl CommentEntity {
     pub fn parse(value: &str) -> Option<Self> {
         match value.to_lowercase().as_str() {
             "tree" => Some(Self::Tree),
+            "panorama" => Some(Self::Panorama),
             _ => None,
         }
     }
@@ -82,6 +86,14 @@ mod tests {
     fn test_parse_known_entity_type() {
         assert_eq!(Some(CommentEntity::Tree), CommentEntity::parse("tree"));
         assert_eq!(Some(CommentEntity::Tree), CommentEntity::parse("TREE"));
+        assert_eq!(
+            Some(CommentEntity::Panorama),
+            CommentEntity::parse("panorama")
+        );
+        assert_eq!(
+            Some(CommentEntity::Panorama),
+            CommentEntity::parse("PANORAMA")
+        );
     }
 
     #[test]
@@ -92,6 +104,7 @@ mod tests {
     #[test]
     fn test_as_str() {
         assert_eq!("tree", CommentEntity::Tree.as_str());
+        assert_eq!("panorama", CommentEntity::Panorama.as_str());
     }
 
     #[test]

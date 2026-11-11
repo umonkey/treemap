@@ -3,6 +3,7 @@ import { localize } from '$lib/locale';
 interface StringList {
 	edit: () => string;
 	details: () => string;
+	comments: () => string;
 	files: () => string;
 	restart: () => string;
 	name: () => string;
@@ -15,6 +16,7 @@ interface StringList {
 class English implements StringList {
 	edit = () => 'Edit';
 	details = () => 'Details';
+	comments = () => 'Comments';
 	files = () => 'Files';
 	restart = () => 'Restart';
 	name = () => 'Name';
@@ -27,6 +29,7 @@ class English implements StringList {
 class Russian extends English {
 	edit = () => 'Редактировать';
 	details = () => 'Детали';
+	comments = () => 'Комментарии';
 	files = () => 'Файлы';
 	restart = () => 'Перезапустить';
 	name = () => 'Имя';
@@ -39,6 +42,7 @@ class Russian extends English {
 class Armenian extends English {
 	edit = () => 'Խմբագրել';
 	details = () => 'Մանրամասներ';
+	comments = () => 'Մեկնաբանություններ';
 	files = () => 'Ֆայլեր';
 	restart = () => 'Վերագործարկել';
 	name = () => 'Անվանում';

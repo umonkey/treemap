@@ -38,6 +38,11 @@
 
 	const tabs = $derived([
 		{ title: locale.details(), link: basePath, active: pathname === basePath },
+		{
+			title: locale.comments(),
+			link: `${basePath}/comments`,
+			active: pathname === `${basePath}/comments`
+		},
 		{ title: locale.files(), link: `${basePath}/files`, active: pathname === `${basePath}/files` },
 		{ title: locale.edit(), link: `${basePath}/edit`, active: pathname === `${basePath}/edit` },
 		{

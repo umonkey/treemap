@@ -16,7 +16,9 @@ export class PageState {
 			if (status === 200 && data) {
 				addUsers(data.users);
 				addTrees(data.trees);
-				this.comments = data.comments.sort((a, b) => b.added_at - a.added_at);
+				this.comments = data.comments
+					.filter((comment) => comment.entity_type === 'tree')
+					.sort((a, b) => b.added_at - a.added_at);
 				this.error = false;
 			} else {
 				this.error = true;

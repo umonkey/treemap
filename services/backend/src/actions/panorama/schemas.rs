@@ -38,7 +38,6 @@ pub struct PanoramaRead {
     pub lat_offset: f64,
     pub lon_offset: f64,
     pub processing_status: Option<String>,
-    pub failure_reason: Option<String>,
     pub hints_count: Option<usize>,
     pub distance: f64,
 }
@@ -171,7 +170,6 @@ impl From<Panorama> for PanoramaRead {
             lat_offset: p.lat_offset,
             lon_offset: p.lon_offset,
             processing_status: p.processing_status,
-            failure_reason: p.failure_reason,
             hints_count: None,
             distance: p.distance,
         }

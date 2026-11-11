@@ -361,7 +361,6 @@ impl PanoramaService {
             lon_offset: 0.0,
             processing_arn: None,
             processing_status: None,
-            failure_reason: None,
             min_lat: None,
             max_lat: None,
             min_lon: None,
@@ -389,7 +388,6 @@ impl PanoramaService {
         panorama.max_lon = None;
         panorama.points_json = None;
         panorama.distance = 0.0;
-        panorama.failure_reason = None;
         panorama.image_count = 0;
         panorama.file_size = None;
         panorama.lat_offset = 0.0;

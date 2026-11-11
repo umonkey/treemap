@@ -23,7 +23,6 @@ export interface Panorama {
 	lat_offset: number;
 	lon_offset: number;
 	processing_status?: string | null;
-	failure_reason?: string | null;
 	has_video?: boolean;
 	has_track?: boolean;
 	hints_count?: number | null;

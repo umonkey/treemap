@@ -1,6 +1,7 @@
 use super::models::{Panorama, PanoramaStatus};
 use super::repository::PanoramaRepository;
 use super::service::PanoramaService;
+use crate::domain::comment::{CommentEntity, CommentService};
 use crate::domain::email::EmailService;
 use crate::domain::user::UserService;
 use crate::infra::batch::BatchClient;
@@ -19,6 +20,7 @@ pub struct PanoramaDispatcher {
     batch: Arc<BatchClient>,
     users: Arc<UserService>,
     email: Arc<EmailService>,
+    comments: Arc<CommentService>,
 }
 
 impl PanoramaDispatcher {
@@ -171,6 +173,8 @@ impl PanoramaDispatcher {
         }
 
         if succeeded {
+            self.add_system_comment(panorama_id, "Processing finished successfully.")
+                .await;
             self.service.schedule_stats_refresh(panorama_id).await?;
         }
 
@@ -186,6 +190,19 @@ impl PanoramaDispatcher {
         }
 
         Ok(())
+    }
+
+    /// Records the outcome of a processing run on the panorama thread.
+    ///
+    /// Best-effort: a failed insert is logged and never changes the job result.
+    async fn add_system_comment(&self, panorama_id: u64, message: &str) {
+        if let Err(e) = self
+            .comments
+            .add_comment(CommentEntity::Panorama, panorama_id, None, message)
+            .await
+        {
+            log::error!("Failed to add system comment to panorama {panorama_id}: {e}");
+        }
     }
 
     async fn delete_temporary_files(&self, id: u64) -> Result<()> {
@@ -337,12 +354,17 @@ impl PanoramaDispatcher {
                     log::error!("Error processing panorama {}: {e}", panorama.id);
                     if let Error::PanoramaFailure(msg) = &e {
                         panorama.status = PanoramaStatus::Failure;
-                        panorama.failure_reason = Some(msg.clone());
                         if let Err(update_err) = self.repo.update(panorama.id, &panorama).await {
                             log::error!(
                                 "Failed to update panorama {} failure status: {update_err}",
                                 panorama.id
                             );
+                        } else {
+                            self.add_system_comment(
+                                panorama.id,
+                                &format!("Processing failed: {msg}"),
+                            )
+                            .await;
                         }
                     }
                 }
@@ -365,6 +387,7 @@ impl Injectable for PanoramaDispatcher {
             batch: ctx.batch(),
             users: Arc::new(ctx.build::<UserService>()?),
             email: Arc::new(ctx.build::<EmailService>()?),
+            comments: Arc::new(ctx.build::<CommentService>()?),
         })
     }
 }
