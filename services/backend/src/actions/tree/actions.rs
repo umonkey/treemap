@@ -2,7 +2,6 @@ use super::schemas::AddTreePayload;
 use super::schemas::*;
 use crate::actions::tree::schemas::ObservationRead;
 use crate::actions::user::UserList;
-use crate::domain::comment::CommentService;
 use crate::domain::file::parse_file_ids;
 use crate::domain::like::LikeService;
 use crate::domain::observation::ObservationService;
@@ -16,7 +15,6 @@ use crate::domain::tree::{
 use crate::domain::tree_file::TreeFileService;
 use crate::domain::user::UserService;
 use crate::services::app::{OptionalUserId, RequirePermission, TreeCreate, UserId};
-use crate::services::comment_loader::{CommentList, CommentLoader};
 use crate::services::prop_loader::{PropList, PropLoader};
 use crate::services::tree_loader::SingleTreeResponse;
 use crate::services::tree_loader::{TreeList, TreeLoader};
@@ -33,27 +31,8 @@ pub struct PathInfo {
 }
 
 #[derive(Debug, Deserialize)]
-struct RequestPayload {
-    pub message: String,
-}
-
-#[derive(Debug, Deserialize)]
 pub struct UpdatePhotos {
     pub files: Vec<String>,
-}
-
-#[post("/{id:\\d+}/comments")]
-pub async fn add_comment_action(
-    user_id: UserId,
-    path: Path<PathInfo>,
-    payload: Json<RequestPayload>,
-    service: Injected<CommentService>,
-) -> Result<HttpResponse> {
-    service
-        .add_comment(path.id, *user_id, &payload.message)
-        .await?;
-
-    Ok(HttpResponse::Accepted().finish())
 }
 
 #[post("/{id:\\d+}/photos")]
@@ -138,17 +117,6 @@ pub async fn get_tree_action(
 ) -> Result<Json<SingleTreeResponse>> {
     let tree = service.get_tree(path.id).await?;
     let res = loader.load_single(&tree).await?;
-    Ok(Json(res))
-}
-
-#[get("{id:\\d+}/comments")]
-pub async fn get_tree_comments_action(
-    path: Path<PathInfo>,
-    service: Injected<CommentService>,
-    loader: Injected<CommentLoader>,
-) -> Result<Json<CommentList>> {
-    let comments = service.get_tree_comments(path.id).await?;
-    let res = loader.load(&comments).await?;
     Ok(Json(res))
 }
 

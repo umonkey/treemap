@@ -7,14 +7,12 @@ pub use schemas::FileUploadResponse;
 use actix_web::web::ServiceConfig;
 
 pub fn tree_router(cfg: &mut ServiceConfig) {
-    cfg.service(add_comment_action)
-        .service(add_photos_action)
+    cfg.service(add_photos_action)
         .service(add_trees_action)
         .service(get_liked_trees_action)
         .service(get_new_trees_action)
         .service(get_tree_action)
         .service(get_tree_actors_action)
-        .service(get_tree_comments_action)
         .service(get_tree_defaults_action)
         .service(get_tree_history_action)
         .service(get_tree_observations_action)

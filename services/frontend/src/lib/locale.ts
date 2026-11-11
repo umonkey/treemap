@@ -137,6 +137,10 @@ class EnglishLocale {
 		return 'Unknown user';
 	}
 
+	public commentSystem(): string {
+		return 'System';
+	}
+
 	public profileTrees(count: number): string {
 		return `${count} trees`;
 	}
@@ -471,7 +475,7 @@ class EnglishLocale {
 	}
 
 	public noComments(): string {
-		return 'No comments for this tree yet.';
+		return 'No comments yet.';
 	}
 
 	public noPhotos(): string {
@@ -500,6 +504,10 @@ class EnglishLocale {
 
 	public commentHint(): string {
 		return 'Suggest edits, maintenance or spot recent issues.';
+	}
+
+	public commentNoPermission(): string {
+		return 'You do not have permission to add comments.';
 	}
 
 	public contextReplace(): string {
@@ -966,6 +974,10 @@ class RussianLocale extends EnglishLocale {
 		return 'Пользователь неизвестен';
 	}
 
+	public commentSystem(): string {
+		return 'Система';
+	}
+
 	public profileTrees(count: number): string {
 		return `${count} деревьев`;
 	}
@@ -1280,7 +1292,7 @@ class RussianLocale extends EnglishLocale {
 	}
 
 	public noComments(): string {
-		return 'Нет комментариев для этого дерева.';
+		return 'Пока нет комментариев.';
 	}
 
 	public noPhotos(): string {
@@ -1309,6 +1321,10 @@ class RussianLocale extends EnglishLocale {
 
 	public commentHint(): string {
 		return 'Предложите правки, уход или отметьте недавние проблемы.';
+	}
+
+	public commentNoPermission(): string {
+		return 'У вас нет прав, чтобы оставлять комментарии.';
 	}
 
 	public contextReplace(): string {
@@ -1775,6 +1791,10 @@ class ArmenianLocale extends EnglishLocale {
 		return 'Անհայտ օգտատեր';
 	}
 
+	public commentSystem(): string {
+		return 'Համակարգ';
+	}
+
 	public profileTrees(count: number): string {
 		return `${count} ծառ`;
 	}
@@ -2093,7 +2113,7 @@ class ArmenianLocale extends EnglishLocale {
 	}
 
 	public noComments(): string {
-		return 'Այս ծառի մասին դեռևս մեկնաբանություններ չկան:';
+		return 'Դեռևս մեկնաբանություններ չկան:';
 	}
 
 	public noPhotos(): string {
@@ -2122,6 +2142,10 @@ class ArmenianLocale extends EnglishLocale {
 
 	public commentHint(): string {
 		return 'Առաջարկեք խմբագրումներ, խնամք կամ նշեք վերջին խնդիրները:';
+	}
+
+	public commentNoPermission(): string {
+		return 'Դուք չունեք մեկնաբանություններ ավելացնելու թույլտվություն:';
 	}
 
 	public contextEditTree(): string {

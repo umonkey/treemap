@@ -114,13 +114,14 @@ CREATE TABLE IF NOT EXISTS user_roles (
 
 CREATE TABLE IF NOT EXISTS comments (
     `id` INT NOT NULL,
-    `tree_id` INT NOT NULL,
+    `entity_type` TEXT NOT NULL,
+    `entity_id` INT NOT NULL,
     `added_at` INT NOT NULL,
-    `added_by` INT NOT NULL,
+    `added_by` INT NULL,
     `message` TEXT NOT NULL,
     PRIMARY KEY(`id`)
 );
-CREATE INDEX IF NOT EXISTS comments_tree_id ON comments (tree_id);
+CREATE INDEX IF NOT EXISTS comments_entity ON comments (entity_type, entity_id);
 CREATE INDEX IF NOT EXISTS comments_added_at ON comments (added_at);
 
 

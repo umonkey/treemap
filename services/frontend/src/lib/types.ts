@@ -154,11 +154,14 @@ export interface IStreet {
 	name: string;
 }
 
+export type CommentEntityType = 'tree' | 'water' | 'panorama' | 'alert';
+
 export interface IComment {
 	id: string;
-	tree_id: number;
+	entity_type: string;
+	entity_id: string;
 	added_at: number;
-	added_by: string;
+	added_by: string | null;
 	message: string;
 }
 

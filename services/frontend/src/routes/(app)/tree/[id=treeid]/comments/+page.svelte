@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import CommentForm from './CommentForm.svelte';
+	import CommentForm from '$lib/components/comments/CommentForm.svelte';
 	import CommentList from './CommentList.svelte';
 	import { PageState } from './page.svelte.ts';
 
@@ -15,4 +15,4 @@
 
 <CommentList comments={pageState.comments} />
 
-<CommentForm onSubmit={pageState.handleSubmitComment} />
+<CommentForm entityType="tree" entityId={id} onSubmitted={pageState.loadComments} />
