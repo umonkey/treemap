@@ -25,16 +25,15 @@ matching_bow_neighbors: 20
 bow_words_to_match: 50
 
 
-# High point count for stability
-min_features: 4000
-min_features_panorama: 4000
+# High point count for stability.  These are the real OpenSfM key names;
+# under the old names the panorama value silently fell back to OpenSfM's
+# default of 16 000 features per image.
+feature_min_frames: 4000
+feature_min_frames_panorama: 4000
 
 # Minimum number of frames a feature must be seen in to create a track.
 # Increasing this significantly reduces memory by filtering out noise.
 min_track_length: 2
-
-# Use masks to ignore the car hood
-use_masks: yes
 
 # Level the reconstruction to gravity (Z-up) without GPS.  Shots carry no GPS,
 # so `auto` falls back to the orientation prior.  `no_roll` assumes the capture
@@ -59,19 +58,11 @@ bundle_max_iterations: 50       # Limit solver iterations and prevent memory spi
 local_bundle_radius: 15
 bundle_new_points_ratio: 1.2    # Optimized for linear street-view sequences to reduce compute time and improve alignment stability
 
-# Memory-efficient solver for large datasets
-ceres_linear_solver: ITERATIVE_SCHUR
-
 # Rigidity settings
 triangulation_min_ray_angle: 1.5  # Lower than 2.0 to keep low-parallax points on straight walking segments
 
 # This must be set to "no" for 360 images, which we are working with.
 optimize_camera_parameters: no
 
-# Setting this to "yes" can optimize performance but introduces the ladder effect.
-reconstruction_clustering: no
-
 # Performance
 processes: ${PROCESSES}
-reconstruction_cluster_size: 500
-reconstruction_cluster_overlap: 50

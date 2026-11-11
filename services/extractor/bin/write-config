@@ -3,15 +3,27 @@
 
 import os
 import pathlib
+import sys
 
 def main():
-    try:
-        cores = len(os.sched_getaffinity(0))
-    except (AttributeError, NotImplementedError, OSError):
+    cores = None
+    override = os.environ.get('PROCESSES')
+    if override is not None:
         try:
-            cores = os.cpu_count() or 4
-        except Exception:
-            cores = 4
+            parsed = int(override)
+        except ValueError:
+            parsed = 0
+        if parsed > 0:
+            cores = parsed
+
+    if cores is None:
+        try:
+            cores = len(os.sched_getaffinity(0))
+        except (AttributeError, NotImplementedError, OSError):
+            try:
+                cores = os.cpu_count() or 4
+            except Exception:
+                cores = 4
 
     dataset = os.environ.get('DATASET', 'var/dataset')
     pathlib.Path(dataset).mkdir(parents=True, exist_ok=True)
@@ -27,6 +39,26 @@ def main():
     target.write_text(content, encoding='utf-8')
 
     print(f"Generated {target} with processes={cores}")
+
+    try:
+        import yaml
+        from opensfm.config import default_config
+    except ImportError:
+        print(
+            "WARNING: opensfm is not importable, skipping OpenSfM config key "
+            "validation (local dev harnesses have no opensfm installed).",
+            file=sys.stderr,
+        )
+        return
+
+    written = yaml.safe_load(target.read_text(encoding='utf-8'))
+    unknown = set(written) - set(default_config())
+    if unknown:
+        print(
+            f"ERROR: unknown OpenSfM config keys: {', '.join(sorted(unknown))}",
+            file=sys.stderr,
+        )
+        sys.exit(1)
 
 if __name__ == '__main__':
     main()

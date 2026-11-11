@@ -7,6 +7,17 @@ use crate::utils::get_timestamp;
 use handlebars::Handlebars;
 use std::sync::Arc;
 
+/// Build the subject line for a notification template.
+fn build_subject(template_name: &str, data: &serde_json::Value) -> String {
+    let name = data.get("name").and_then(|v| v.as_str()).unwrap_or("");
+
+    match template_name {
+        "panorama_processing_failed" => format!("☠️ Panorama processing failed: {name}"),
+        "panorama_ready" => format!("🎉 Panorama ready: {name}"),
+        _ => "Notification from Tree Map".to_string(),
+    }
+}
+
 pub struct EmailDispatcher {
     client: Arc<EmailClient>,
     repo: Arc<EmailRepository>,
@@ -91,28 +102,9 @@ impl EmailDispatcher {
                 Error::Config(format!("Template render error: {e}"))
             })?;
 
-        let subject_string;
-        let subject = match template_name {
-            "panorama_processing_failed" => {
-                let name = data_with_url
-                    .get("name")
-                    .and_then(|v| v.as_str())
-                    .unwrap_or("");
-                subject_string = format!("Panorama processing failed: {name}");
-                &subject_string
-            }
-            "panorama_ready" => {
-                let name = data_with_url
-                    .get("name")
-                    .and_then(|v| v.as_str())
-                    .unwrap_or("");
-                subject_string = format!("Panorama ready: {name}");
-                &subject_string
-            }
-            _ => "Notification from Tree Map",
-        };
+        let subject = build_subject(template_name, &data_with_url);
 
-        self.client.send(to, subject, &html_body, &text_body)
+        self.client.send(to, &subject, &html_body, &text_body)
     }
 
     pub async fn process_email(&self, email: &mut Email) -> Result<()> {
@@ -237,5 +229,23 @@ mod tests {
         assert!(ready_txt.contains("Processing time: 1.5 hours"));
         assert!(ready_txt.contains("Storage size: 2 GB"));
         assert!(ready_txt.contains(&dispatcher.website_url));
+    }
+
+    #[test]
+    fn test_email_subjects_carry_status_emoji() {
+        let failed = build_subject(
+            "panorama_processing_failed",
+            &serde_json::json!({ "name": "Test Panorama" }),
+        );
+        assert_eq!(failed, "☠️ Panorama processing failed: Test Panorama");
+
+        let ready = build_subject(
+            "panorama_ready",
+            &serde_json::json!({ "name": "Test Panorama" }),
+        );
+        assert_eq!(ready, "🎉 Panorama ready: Test Panorama");
+
+        let fallback = build_subject("unknown_event", &serde_json::json!({}));
+        assert_eq!(fallback, "Notification from Tree Map");
     }
 }

@@ -17,7 +17,12 @@ if [ -f "$DATASET/flags/$LOCK" ]; then
     exit 0
 fi
 
-[ -f "$DATASET/config.yaml" ] || bin/write-config
+# Regenerate the dataset config with a single process.  OpenSfM preloads common
+# tracks for every image pair when processes > 1, which is the dominant memory
+# allocation during incremental reconstruction; processes is also forwarded to
+# Ceres as its thread count, so 1 makes it single-threaded.  Feature detection
+# and matching still use all cores.
+PROCESSES=1 bin/write-config
 
 mkdir -p $DATASET/features $DATASET/logs
 

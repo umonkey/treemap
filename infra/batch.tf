@@ -88,8 +88,11 @@ resource "aws_batch_job_definition" "extractor" {
   type                  = "container"
   platform_capabilities = ["EC2"]
 
+  # A memory-killed attempt fails deterministically at the same global bundle
+  # adjustment, and the reconstructed checkpoint flag is only written on success,
+  # so every retry re-runs the ~2.5 hour reconstruction from scratch.
   retry_strategy {
-    attempts = 5
+    attempts = 1
   }
 
   container_properties = jsonencode({
