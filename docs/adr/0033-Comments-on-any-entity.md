@@ -16,7 +16,7 @@ Store comments against a polymorphic `(entity_type, entity_id)` pair and expose 
 Key characteristics:
 
 - `comments` replaces `tree_id` with `entity_type TEXT NOT NULL` and `entity_id INT NOT NULL`. Migration `031-comments-entity.sql` rebuilds the table with the copy-and-drop pattern used by `006-chatbot-alerts-draft.sql` and `024-alert-web-submission.sql`, copies every existing row as `entity_type = 'tree'`, and creates `comments_entity` on `(entity_type, entity_id)` and `comments_added_at` on `(added_at)`.
-- `entity_type` is an open string, not an enum and not a foreign key. The backend lowercases the path segment before storing it. Adding a future entity type needs no migration and no backend change.
+- `entity_type` stays open `TEXT` with no `CHECK` constraint, so adding a type needs no schema migration. The backend models the known set as a closed `CommentEntity` enum that currently contains only `tree`. An unknown path value is rejected with `400 Bad Request`, so nothing can store an unknown type. An unknown stored value is a `500` database-structure error, because `031` rewrites every existing row to `tree` and the API is the only writer. Adding a type later is an enum variant plus loader support, not a migration.
 - The repository reads and counts by both columns. The tree merger reassigns only rows with `entity_type = 'tree'`, so merging two trees cannot move a water source's comments.
 - `GET/POST /v1/comments/{entity_type}/{id}` replace `GET/POST /v1/trees/{id}/comments`, which are removed. This is a breaking API change; the static frontend is the only in-repo client and is updated in the same change.
 - Posting requires `comment:create`, the existing permission. Migration `031` inserts it and grants it to `admin`, `editor`, and `user`, because it previously existed only in the development seed.
@@ -29,12 +29,13 @@ Rejected alternatives:
 
 - One comment table per entity: typed foreign keys and a natural `tree_id`, but it duplicates the table, repository, API, and UI for every entity, and a global recent-comments feed becomes a union of tables.
 - `comment:write` as a new permission name: clearer semantics, but `comment:create` already exists, is already seeded, and means the same operation. A second name would leave two permissions for one action and require a migration to grant both.
-- A closed enum for `entity_type`: enforces the known types in the database, but needs a migration and a backend change for every new entity, and SQLite cannot alter a check constraint without rebuilding the table.
+- A database `CHECK` constraint for `entity_type`: enforces the known types in SQLite, but needs a migration and a table rebuild for every new entity, and SQLite cannot alter a check constraint without rebuilding the table. The backend enum gives the same rejection without touching the schema.
 - Keeping the tree endpoints as aliases: avoids the break, but keeps two code paths and a tree-specific URL for a generic resource.
 
 ## Consequences
 
-- One table, one repository, one API, and one set of components serve every entity, and adding an entity type needs a call site but no migration.
+- One table, one repository, one API, and one set of components serve every entity, and adding an entity type needs an enum variant, loader support, and a call site, but no migration.
+- The closed entity enum rejects unknown types on write: `POST /v1/comments/water/1` returns `400` instead of storing an orphan row. A comment whose stored `entity_type` is not a known variant makes the whole read fail with `500 DatabaseStructure`; only a manual edit can produce one.
 - The database cannot enforce that `entity_id` points at a live row. Deleting an entity leaves its comments orphaned, as deleting a tree already did. A cleanup command can address them, and the missing foreign key is why no entity deletion changes.
 - The two indexes cover the entity lookup and the recent-comments feed without a table scan.
 - `comment:read` is unused until enforced. If reads become private later, both GET handlers and the frontend must add the gate.

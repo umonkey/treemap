@@ -477,7 +477,7 @@ mod tests {
             .comments
             .add(&crate::domain::comment::Comment {
                 id: 1,
-                entity_type: crate::domain::comment::TREE_ENTITY.to_string(),
+                entity_type: crate::domain::comment::CommentEntity::Tree,
                 entity_id: 2,
                 added_by: Some(1),
                 message: "Secondary comment".to_string(),
@@ -505,7 +505,7 @@ mod tests {
         // Verify comments moved
         let comments = service
             .comments
-            .find_by_entity(crate::domain::comment::TREE_ENTITY, 1)
+            .find_by_entity(crate::domain::comment::CommentEntity::Tree, 1)
             .await
             .unwrap();
         assert_eq!(comments.len(), 1);

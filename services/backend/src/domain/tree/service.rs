@@ -1,5 +1,5 @@
 use super::schemas::*;
-use crate::domain::comment::{CommentService, TREE_ENTITY};
+use crate::domain::comment::{CommentEntity, CommentService};
 use crate::domain::prop::{PropRecord, PropRepository};
 use crate::domain::tree::{Tree, TreeRepository, TreeState};
 use crate::domain::user::UserRepository;
@@ -375,7 +375,7 @@ impl TreeService {
         if let Some(comment_text) = comment {
             if !comment_text.trim().is_empty() {
                 self.comments
-                    .add_comment(TREE_ENTITY, tree_id, Some(user_id), &comment_text)
+                    .add_comment(CommentEntity::Tree, tree_id, Some(user_id), &comment_text)
                     .await?;
             }
         }

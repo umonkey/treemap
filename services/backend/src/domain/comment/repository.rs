@@ -1,6 +1,6 @@
 //! Access to the comments table.
 
-use crate::domain::comment::{Comment, TREE_ENTITY};
+use crate::domain::comment::{Comment, CommentEntity};
 use crate::infra::database::{CountQuery, Database, InsertQuery, SelectQuery, Value};
 use crate::services::*;
 use crate::types::*;
@@ -28,16 +28,20 @@ impl CommentRepository {
         self.query_multiple(query).await
     }
 
-    pub async fn find_by_entity(&self, entity_type: &str, entity_id: u64) -> Result<Vec<Comment>> {
+    pub async fn find_by_entity(
+        &self,
+        entity_type: CommentEntity,
+        entity_id: u64,
+    ) -> Result<Vec<Comment>> {
         let query = SelectQuery::new(TABLE)
-            .with_condition("entity_type", Value::from(entity_type.to_string()))
+            .with_condition("entity_type", Value::from(entity_type.as_str()))
             .with_condition("entity_id", Value::from(entity_id as i64));
         self.query_multiple(query).await
     }
 
-    pub async fn count_by_entity(&self, entity_type: &str, entity_id: u64) -> Result<u64> {
+    pub async fn count_by_entity(&self, entity_type: CommentEntity, entity_id: u64) -> Result<u64> {
         let query = CountQuery::new(TABLE)
-            .with_condition("entity_type", Value::from(entity_type.to_string()))
+            .with_condition("entity_type", Value::from(entity_type.as_str()))
             .with_condition("entity_id", Value::from(entity_id as i64));
         self.db.count(query).await
     }
@@ -50,7 +54,7 @@ impl CommentRepository {
                 &sql,
                 &[
                     Value::from(new_tree_id as i64),
-                    Value::from(TREE_ENTITY.to_string()),
+                    Value::from(CommentEntity::Tree.as_str()),
                     Value::from(old_tree_id as i64),
                 ],
             )
@@ -93,10 +97,10 @@ mod tests {
         )
     }
 
-    fn comment(id: u64, entity_type: &str, entity_id: u64) -> Comment {
+    fn comment(id: u64, entity_type: CommentEntity, entity_id: u64) -> Comment {
         Comment {
             id,
-            entity_type: entity_type.to_string(),
+            entity_type,
             entity_id,
             added_at: 0,
             added_by: Some(1),
@@ -104,35 +108,49 @@ mod tests {
         }
     }
 
+    // The API cannot create a non-tree comment, so a raw row proves that the
+    // queries filter on the entity type instead of the id alone.
+    async fn add_water_comment(repo: &CommentRepository) {
+        repo.db
+            .execute_sql(
+                "INSERT INTO comments (id, entity_type, entity_id, added_at, added_by, message) VALUES (9, 'water', 10, 0, 1, 'Water comment')",
+                &[],
+            )
+            .await
+            .expect("Error adding water comment.");
+    }
+
     #[tokio::test]
     async fn test_find_by_entity() {
         let repo = setup().await;
 
-        repo.add(&comment(1, TREE_ENTITY, 10)).await.unwrap();
-        repo.add(&comment(2, TREE_ENTITY, 10)).await.unwrap();
-        repo.add(&comment(3, TREE_ENTITY, 20)).await.unwrap();
-        repo.add(&comment(4, "water", 10)).await.unwrap();
+        repo.add(&comment(1, CommentEntity::Tree, 10))
+            .await
+            .unwrap();
+        repo.add(&comment(2, CommentEntity::Tree, 10))
+            .await
+            .unwrap();
+        repo.add(&comment(3, CommentEntity::Tree, 20))
+            .await
+            .unwrap();
+        add_water_comment(&repo).await;
 
-        let res = repo.find_by_entity(TREE_ENTITY, 10).await.unwrap();
+        let res = repo.find_by_entity(CommentEntity::Tree, 10).await.unwrap();
         assert_eq!(2, res.len());
         assert!(res.iter().all(|r| r.entity_id == 10));
-        assert!(res.iter().all(|r| r.entity_type == TREE_ENTITY));
-
-        let res = repo.find_by_entity("water", 10).await.unwrap();
-        assert_eq!(1, res.len());
-        assert_eq!(4, res[0].id);
+        assert!(res.iter().all(|r| r.entity_type == CommentEntity::Tree));
     }
 
     #[tokio::test]
     async fn test_find_by_entity_keeps_system_comment_authorless() {
         let repo = setup().await;
 
-        let mut system_comment = comment(1, TREE_ENTITY, 10);
+        let mut system_comment = comment(1, CommentEntity::Tree, 10);
         system_comment.added_by = None;
 
         repo.add(&system_comment).await.unwrap();
 
-        let res = repo.find_by_entity(TREE_ENTITY, 10).await.unwrap();
+        let res = repo.find_by_entity(CommentEntity::Tree, 10).await.unwrap();
         assert_eq!(1, res.len());
         assert_eq!(None, res[0].added_by);
     }
@@ -141,35 +159,48 @@ mod tests {
     async fn test_count_by_entity() {
         let repo = setup().await;
 
-        repo.add(&comment(1, TREE_ENTITY, 10)).await.unwrap();
-        repo.add(&comment(2, TREE_ENTITY, 10)).await.unwrap();
-        repo.add(&comment(3, "water", 10)).await.unwrap();
+        repo.add(&comment(1, CommentEntity::Tree, 10))
+            .await
+            .unwrap();
+        repo.add(&comment(2, CommentEntity::Tree, 10))
+            .await
+            .unwrap();
+        add_water_comment(&repo).await;
 
-        let count = repo.count_by_entity(TREE_ENTITY, 10).await.unwrap();
+        let count = repo.count_by_entity(CommentEntity::Tree, 10).await.unwrap();
         assert_eq!(2, count);
-
-        let count = repo.count_by_entity("water", 10).await.unwrap();
-        assert_eq!(1, count);
     }
 
     #[tokio::test]
     async fn test_reassign_all() {
         let repo = setup().await;
 
-        repo.add(&comment(1, TREE_ENTITY, 10)).await.unwrap();
-        repo.add(&comment(2, TREE_ENTITY, 10)).await.unwrap();
-        repo.add(&comment(3, "water", 10)).await.unwrap();
+        repo.add(&comment(1, CommentEntity::Tree, 10))
+            .await
+            .unwrap();
+        repo.add(&comment(2, CommentEntity::Tree, 10))
+            .await
+            .unwrap();
+        add_water_comment(&repo).await;
 
         repo.reassign_all(10, 20).await.unwrap();
 
-        let old = repo.find_by_entity(TREE_ENTITY, 10).await.unwrap();
+        let old = repo.find_by_entity(CommentEntity::Tree, 10).await.unwrap();
         assert_eq!(0, old.len());
 
-        let new = repo.find_by_entity(TREE_ENTITY, 20).await.unwrap();
+        let new = repo.find_by_entity(CommentEntity::Tree, 20).await.unwrap();
         assert_eq!(2, new.len());
 
-        // Non-tree entities with the same id must not move.
-        let water = repo.find_by_entity("water", 10).await.unwrap();
-        assert_eq!(1, water.len());
+        // Non-tree rows with the same id must not move.
+        let water = repo
+            .db
+            .count(
+                CountQuery::new(TABLE)
+                    .with_condition("entity_type", Value::from("water"))
+                    .with_condition("entity_id", Value::from(10i64)),
+            )
+            .await
+            .unwrap();
+        assert_eq!(1, water);
     }
 }

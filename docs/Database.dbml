@@ -129,7 +129,7 @@ Table users {
   last_active_at int [not null, default: 0]
 }
 
-// Polymorphic comment thread; entity_type is an open string.
+// Polymorphic comment thread; entity_type is open text, but the backend accepts only 'tree' today.
 // A null added_by marks a system comment.
 Table comments {
   id int [pk]

@@ -44,7 +44,7 @@ impl CommentRead {
     pub fn from_record(record: &Comment) -> Self {
         Self {
             id: record.id.to_string(),
-            entity_type: record.entity_type.clone(),
+            entity_type: record.entity_type.as_str().to_string(),
             entity_id: record.entity_id.to_string(),
             added_at: record.added_at,
             added_by: record.added_by.map(|id| id.to_string()),
@@ -56,12 +56,13 @@ impl CommentRead {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::domain::comment::CommentEntity;
 
     #[test]
     fn test_from_record_maps_system_comment_without_author() {
         let record = Comment {
             id: 1,
-            entity_type: "tree".to_string(),
+            entity_type: CommentEntity::Tree,
             entity_id: 10,
             added_at: 100,
             added_by: None,

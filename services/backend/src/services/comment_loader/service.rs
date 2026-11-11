@@ -1,7 +1,7 @@
 //! This service class enriches comments with tree and user info.
 
 use super::schemas::CommentList;
-use crate::domain::comment::{Comment, TREE_ENTITY};
+use crate::domain::comment::{Comment, CommentEntity};
 use crate::domain::tree::TreeRepository;
 use crate::domain::user::UserRepository;
 use crate::services::*;
@@ -20,7 +20,7 @@ impl CommentLoader {
 
         let tree_ids: Vec<u64> = comments
             .iter()
-            .filter(|r| r.entity_type == TREE_ENTITY)
+            .filter(|r| r.entity_type == CommentEntity::Tree)
             .map(|r| r.entity_id)
             .collect();
         let trees = self.trees.get_multiple(&tree_ids).await?;
