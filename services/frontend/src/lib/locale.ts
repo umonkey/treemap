@@ -137,6 +137,10 @@ class EnglishLocale {
 		return 'Unknown user';
 	}
 
+	public commentSystem(): string {
+		return 'System';
+	}
+
 	public profileTrees(count: number): string {
 		return `${count} trees`;
 	}
@@ -970,6 +974,10 @@ class RussianLocale extends EnglishLocale {
 		return 'Пользователь неизвестен';
 	}
 
+	public commentSystem(): string {
+		return 'Система';
+	}
+
 	public profileTrees(count: number): string {
 		return `${count} деревьев`;
 	}
@@ -1781,6 +1789,10 @@ class ArmenianLocale extends EnglishLocale {
 
 	public userUnknown(): string {
 		return 'Անհայտ օգտատեր';
+	}
+
+	public commentSystem(): string {
+		return 'Համակարգ';
 	}
 
 	public profileTrees(count: number): string {

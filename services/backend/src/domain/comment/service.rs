@@ -23,7 +23,7 @@ impl CommentService {
         &self,
         entity_type: &str,
         entity_id: u64,
-        user_id: u64,
+        user_id: Option<u64>,
         message: &str,
     ) -> Result<Comment> {
         let id = get_unique_id()?;
@@ -40,7 +40,9 @@ impl CommentService {
 
         self.comments.add(&comment).await?;
 
-        self.users.increment_comment_count(user_id).await?;
+        if let Some(user_id) = user_id {
+            self.users.increment_comment_count(user_id).await?;
+        }
 
         if entity_type == TREE_ENTITY {
             let comments = self
@@ -50,7 +52,7 @@ impl CommentService {
             self.trees.update_comment_count(entity_id, comments).await?;
         }
 
-        info!("Comment {id} added to {entity_type} {entity_id}");
+        info!("Comment {id} added to {entity_type} {entity_id} by {user_id:?}");
 
         Ok(comment)
     }

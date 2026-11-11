@@ -375,7 +375,7 @@ impl TreeService {
         if let Some(comment_text) = comment {
             if !comment_text.trim().is_empty() {
                 self.comments
-                    .add_comment(TREE_ENTITY, tree_id, user_id, &comment_text)
+                    .add_comment(TREE_ENTITY, tree_id, Some(user_id), &comment_text)
                     .await?;
             }
         }

@@ -22,7 +22,8 @@ Key characteristics:
 - Posting requires `comment:create`, the existing permission. Migration `031` inserts it and grants it to `admin`, `editor`, and `user`, because it previously existed only in the development seed.
 - Reading stays public. `comment:read` is registered and granted to `admin`, `editor`, and `user`, but no handler enforces it. It exists so reads can be restricted later without renaming the permission.
 - `trees.comment_count` remains tree-specific. A comment updates the denormalized count only when `entity_type = 'tree'`, and `recalculate_stats` filters on both columns.
-- The frontend moves `Comment`, `CommentInput`, and `CommentForm` to `lib/components/comments/`. `CommentForm` takes an entity type and an id, performs its own request, and checks `comment:create` itself. No water, panorama, or alert surface renders them yet; this change provides the infrastructure.
+- `comments.added_by` is nullable. A null author marks a system comment. The table rebuild in `031` drops the `NOT NULL` constraint, because SQLite cannot alter nullability in place. The public POST still requires `comment:create` and records the authenticated user; only an internal service path can omit the author.
+- The frontend moves `Comment`, `CommentInput`, and `CommentForm` to `lib/components/comments/`. `CommentForm` takes an entity type and an id, performs its own request, and checks `comment:create` itself. A comment without an author renders a localized system label. No water, panorama, or alert surface renders them yet; this change provides the infrastructure.
 
 Rejected alternatives:
 
@@ -38,5 +39,6 @@ Rejected alternatives:
 - The two indexes cover the entity lookup and the recent-comments feed without a table scan.
 - `comment:read` is unused until enforced. If reads become private later, both GET handlers and the frontend must add the gate.
 - `trees.comment_count` is not derived from `comments`. A future entity that needs a count must add its own column or count on demand.
+- A system comment has no author: it does not increment `users.comments_count` and leaves no actor in the audit trail, but it still counts toward `trees.comment_count` for a tree.
 - Migration `031` must run before the new backend serves traffic. The old binary inserts `tree_id`, which the rebuilt table no longer has, and the new binary omits it.
 - External clients of `GET/POST /v1/trees/{id}/comments` break with no compatibility alias.

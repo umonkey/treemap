@@ -99,7 +99,7 @@ mod tests {
             entity_type: entity_type.to_string(),
             entity_id,
             added_at: 0,
-            added_by: 1,
+            added_by: Some(1),
             message: format!("Comment {id}"),
         }
     }
@@ -121,6 +121,20 @@ mod tests {
         let res = repo.find_by_entity("water", 10).await.unwrap();
         assert_eq!(1, res.len());
         assert_eq!(4, res[0].id);
+    }
+
+    #[tokio::test]
+    async fn test_find_by_entity_keeps_system_comment_authorless() {
+        let repo = setup().await;
+
+        let mut system_comment = comment(1, TREE_ENTITY, 10);
+        system_comment.added_by = None;
+
+        repo.add(&system_comment).await.unwrap();
+
+        let res = repo.find_by_entity(TREE_ENTITY, 10).await.unwrap();
+        assert_eq!(1, res.len());
+        assert_eq!(None, res[0].added_by);
     }
 
     #[tokio::test]

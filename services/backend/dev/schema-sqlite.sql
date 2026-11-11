@@ -117,7 +117,7 @@ CREATE TABLE IF NOT EXISTS comments (
     `entity_type` TEXT NOT NULL,
     `entity_id` INT NOT NULL,
     `added_at` INT NOT NULL,
-    `added_by` INT NOT NULL,
+    `added_by` INT NULL,
     `message` TEXT NOT NULL,
     PRIMARY KEY(`id`)
 );

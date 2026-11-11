@@ -41,7 +41,7 @@ pub async fn add_comment_action(
     let entity_type = path.entity_type.to_lowercase();
 
     service
-        .add_comment(&entity_type, path.id, *user_id, &payload.message)
+        .add_comment(&entity_type, path.id, Some(*user_id), &payload.message)
         .await?;
 
     Ok(HttpResponse::Accepted().finish())

@@ -479,7 +479,7 @@ mod tests {
                 id: 1,
                 entity_type: crate::domain::comment::TREE_ENTITY.to_string(),
                 entity_id: 2,
-                added_by: 1,
+                added_by: Some(1),
                 message: "Secondary comment".to_string(),
                 added_at: now,
             })

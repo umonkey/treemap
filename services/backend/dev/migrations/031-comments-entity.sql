@@ -2,12 +2,13 @@ BEGIN;
 
 -- Replace the tree-only `tree_id` with a polymorphic (entity_type, entity_id)
 -- pair so comments can belong to any object. Existing rows become tree comments.
+-- `added_by` is nullable: a null author marks a comment written by the system.
 CREATE TABLE `comments_new` (
     `id` INT NOT NULL,
     `entity_type` TEXT NOT NULL,
     `entity_id` INT NOT NULL,
     `added_at` INT NOT NULL,
-    `added_by` INT NOT NULL,
+    `added_by` INT NULL,
     `message` TEXT NOT NULL,
     PRIMARY KEY(`id`)
 );

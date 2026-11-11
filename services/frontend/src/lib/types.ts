@@ -161,7 +161,7 @@ export interface IComment {
 	entity_type: string;
 	entity_id: string;
 	added_at: number;
-	added_by: string;
+	added_by: string | null;
 	message: string;
 }
 

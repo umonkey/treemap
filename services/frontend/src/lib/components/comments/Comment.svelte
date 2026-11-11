@@ -1,18 +1,26 @@
 <script lang="ts">
+	import { locale } from '$lib/locale';
 	import { getUser } from '$lib/stores/userStore';
 	import type { IComment } from '$lib/types';
 	import { formatDate } from '$lib/utils/strings';
 
 	const { comment }: { comment: IComment } = $props();
 
-	const user = $derived($getUser(comment.added_by));
+	const user = $derived(comment.added_by ? $getUser(comment.added_by) : undefined);
 	const date = $derived(formatDate(comment.added_at));
 </script>
 
 <div class="comment">
 	<blockquote>{comment.message}</blockquote>
 	<div class="meta">
-		{date} · {#if user}{user.name}{:else}unknown user{/if}
+		{date} ·
+		{#if comment.added_by === null}
+			{locale.commentSystem()}
+		{:else if user}
+			{user.name}
+		{:else}
+			{locale.userUnknown()}
+		{/if}
 	</div>
 </div>
 

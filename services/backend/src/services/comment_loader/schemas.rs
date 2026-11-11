@@ -13,7 +13,7 @@ pub struct CommentRead {
     pub entity_type: String,
     pub entity_id: String,
     pub added_at: u64,
-    pub added_by: String,
+    pub added_by: Option<String>,
     pub message: String,
 }
 
@@ -47,8 +47,29 @@ impl CommentRead {
             entity_type: record.entity_type.clone(),
             entity_id: record.entity_id.to_string(),
             added_at: record.added_at,
-            added_by: record.added_by.to_string(),
+            added_by: record.added_by.map(|id| id.to_string()),
             message: record.message.clone(),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_from_record_maps_system_comment_without_author() {
+        let record = Comment {
+            id: 1,
+            entity_type: "tree".to_string(),
+            entity_id: 10,
+            added_at: 100,
+            added_by: None,
+            message: "System message".to_string(),
+        };
+
+        let read = CommentRead::from_record(&record);
+
+        assert_eq!(None, read.added_by);
     }
 }

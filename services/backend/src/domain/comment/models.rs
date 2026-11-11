@@ -11,7 +11,7 @@ pub struct Comment {
     pub entity_type: String,
     pub entity_id: u64,
     pub added_at: u64,
-    pub added_by: u64,
+    pub added_by: Option<u64>,
     pub message: String,
 }
 
@@ -22,7 +22,7 @@ impl Comment {
             entity_type: attributes.require_string("entity_type")?,
             entity_id: attributes.require_u64("entity_id")?,
             added_at: attributes.require_u64("added_at")?,
-            added_by: attributes.require_u64("added_by")?,
+            added_by: attributes.get_u64("added_by")?,
             message: attributes.require_string("message")?,
         })
     }
@@ -36,7 +36,7 @@ impl Comment {
             ),
             ("entity_id".to_string(), Value::from(self.entity_id as i64)),
             ("added_at".to_string(), Value::from(self.added_at as i64)),
-            ("added_by".to_string(), Value::from(self.added_by as i64)),
+            ("added_by".to_string(), Value::from(self.added_by)),
             ("message".to_string(), Value::from(self.message.clone())),
         ])
     }
