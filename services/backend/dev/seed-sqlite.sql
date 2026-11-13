@@ -16,6 +16,7 @@ INSERT OR REPLACE INTO instances (id, domain, name, description, email, enabled,
 INSERT OR IGNORE INTO roles (id) VALUES ('admin');
 INSERT OR IGNORE INTO roles (id) VALUES ('editor');
 INSERT OR IGNORE INTO roles (id) VALUES ('user');
+INSERT OR IGNORE INTO roles (id) VALUES ('viewer');
 
 INSERT OR IGNORE INTO permissions (id) VALUES ('comment:create');
 INSERT OR IGNORE INTO permissions (id) VALUES ('comment:read');
@@ -30,6 +31,9 @@ INSERT OR IGNORE INTO permissions (id) VALUES ('species:manage');
 INSERT OR IGNORE INTO permissions (id) VALUES ('instance:manage');
 INSERT OR IGNORE INTO permissions (id) VALUES ('alert:create');
 INSERT OR IGNORE INTO permissions (id) VALUES ('alert:manage');
+INSERT OR IGNORE INTO permissions (id) VALUES ('photo:read');
+INSERT OR IGNORE INTO permissions (id) VALUES ('photo:create');
+INSERT OR IGNORE INTO permissions (id) VALUES ('photo:manage');
 
 INSERT OR IGNORE INTO role_permissions (role_id, permission_id) SELECT 'admin', id FROM permissions;
 INSERT OR IGNORE INTO role_permissions (role_id, permission_id) VALUES ('editor', 'tree:create');
@@ -44,3 +48,10 @@ INSERT OR IGNORE INTO role_permissions (role_id, permission_id) VALUES ('user', 
 INSERT OR IGNORE INTO role_permissions (role_id, permission_id) VALUES ('user', 'comment:create');
 INSERT OR IGNORE INTO role_permissions (role_id, permission_id) VALUES ('user', 'comment:read');
 INSERT OR IGNORE INTO role_permissions (role_id, permission_id) VALUES ('user', 'alert:create');
+INSERT OR IGNORE INTO role_permissions (role_id, permission_id) VALUES ('editor', 'photo:read');
+INSERT OR IGNORE INTO role_permissions (role_id, permission_id) VALUES ('editor', 'photo:create');
+INSERT OR IGNORE INTO role_permissions (role_id, permission_id) VALUES ('editor', 'photo:manage');
+INSERT OR IGNORE INTO role_permissions (role_id, permission_id) VALUES ('user', 'photo:read');
+INSERT OR IGNORE INTO role_permissions (role_id, permission_id) VALUES ('user', 'photo:create');
+INSERT OR IGNORE INTO role_permissions (role_id, permission_id) VALUES ('viewer', 'photo:read');
+INSERT OR IGNORE INTO role_permissions (role_id, permission_id) VALUES ('viewer', 'comment:read');

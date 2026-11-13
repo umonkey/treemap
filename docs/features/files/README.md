@@ -22,7 +22,7 @@ File storage is available in the hosted service and in self-hosted deployments.
 
 - Object storage: an S3-compatible bucket for originals and derived images. The local filesystem driver does not support direct browser uploads, so a self-hosted deployment must configure object storage.
 - Public file host: a base address that serves the bucket, normally a CDN in front of it. The platform builds every image link from this address.
-- Accounts and roles: uploading and attaching require a signed-in account. The role must allow the relevant action: adding tree photos, submitting a feedback report, or managing water sources.
+- Accounts and roles: uploading and attaching require a signed-in account. The role must allow the relevant action: the Photos tab is available with `photo:read`, adding tree photos needs `photo:create`, and setting a thumbnail or deleting a photo needs `photo:manage`. The same rule covers submitting a feedback report and managing water sources.
 - Devices: any browser with a file picker and camera access can upload. The upload uses a direct connection to object storage, so a stable network helps for large photos.
 - Formats: the reliable formats are JPEG, PNG, and WebP. HEIC and HEIF are rejected because the server cannot decode them; some phones produce these by default and must be set to a compatible format.
 
@@ -63,7 +63,7 @@ The design and its consequences are recorded in [ADR 0031](../../adr/0031-Univer
 ## Questions organisations usually ask
 
 - Are photos public? Yes. Stored images are served from the deployment's file host to anyone with the link. Hiding an image removes it from the platform's responses, but the link may still resolve until the object is removed from storage.
-- Can we delete a photo? A user can remove their own file from the platform, and an operator can delist a file so it no longer appears in responses. Neither is a guaranteed erasure from the object store; a hard removal is a separate storage operation.
+- Can we delete a photo? An editor or administrator can remove a photo from the platform, and an operator can delist a file so it no longer appears in responses. Neither is a guaranteed erasure from the object store; a hard removal is a separate storage operation.
 - Do we keep the original? Yes. The original is stored unchanged, and the platform derives a thumbnail and a display version from it. This costs more storage but allows re-processing and full-resolution viewing.
 - What happens to location metadata? It is removed from the thumbnail and display versions. The original keeps its metadata, so treat the original as sensitive if the source photo carried location data.
 - Can we use our own storage and CDN? Yes, in a self-hosted deployment. The platform needs an S3-compatible bucket and a public base address for the files. The hosted service uses the operator's storage.

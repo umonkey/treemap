@@ -11,6 +11,15 @@ describe('treeTabs', () => {
 			'history'
 		]);
 	});
+
+	it('omits the photos tab when the user cannot read photos', () => {
+		expect(treeTabs('1', false).map((tab) => tab.id)).toEqual([
+			'preview',
+			'comments',
+			'observations',
+			'history'
+		]);
+	});
 });
 
 describe('activeTreeTab', () => {
@@ -28,5 +37,9 @@ describe('activeTreeTab', () => {
 
 	it('returns undefined when the pathname belongs to another tree', () => {
 		expect(activeTreeTab('/tree/2/photos', '1')).toBeUndefined();
+	});
+
+	it('returns undefined for the photos tab when the user cannot read photos', () => {
+		expect(activeTreeTab('/tree/1/photos', '1', false)).toBeUndefined();
 	});
 });

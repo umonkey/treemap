@@ -70,6 +70,28 @@ impl Permission for PanoEdit {
     const NAME: &'static str = "pano:edit";
 }
 
+pub struct PhotoCreate;
+impl Permission for PhotoCreate {
+    const NAME: &'static str = "photo:create";
+}
+
+pub struct PhotoManage;
+impl Permission for PhotoManage {
+    const NAME: &'static str = "photo:manage";
+}
+
+pub struct PhotoRead;
+impl Permission for PhotoRead {
+    const NAME: &'static str = "photo:read";
+}
+
+// The backend does not gate a handler on `photo:read`: tree reads are public
+// and the frontend applies the permission to hide the Photos tab. Keep the
+// marker constructed so the type is not dead code.
+const _: () = {
+    let _ = PhotoRead;
+};
+
 pub struct UserManage;
 impl Permission for UserManage {
     const NAME: &'static str = "user:manage";

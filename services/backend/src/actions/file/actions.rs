@@ -3,7 +3,7 @@ use serde::Deserialize;
 
 use super::schemas::FileStatusResponse;
 use crate::domain::file::FileService;
-use crate::services::app::UserId;
+use crate::services::app::{PhotoManage, RequirePermission};
 use crate::services::Injected;
 use crate::types::{Error, Result};
 
@@ -27,7 +27,7 @@ pub async fn get_file_status_action(
 
 #[delete("/{id:\\d+}")]
 pub async fn delete_file_action(
-    user_id: UserId,
+    user_id: RequirePermission<PhotoManage>,
     file_service: Injected<FileService>,
     path: Path<PathInfo>,
 ) -> Result<HttpResponse> {

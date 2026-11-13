@@ -10,7 +10,7 @@
  * previously failed attempts.
  */
 
-import { addPhotos, uploadSingleFile as uploadSingleFileApi } from '$lib/api/uploads';
+import { addPhotos, createUploadTicket, finishUpload, putFileToStorage } from '$lib/api/uploads';
 import { uploadBus } from '$lib/buses/upload';
 import { showError } from '$lib/errors';
 import { uploadStore } from '$lib/stores/upload';
@@ -18,11 +18,65 @@ import { setUploading } from '$lib/stores/upload';
 import { isDataSaving, isLowPower } from '$lib/utils/device';
 import { createThumbnail } from '$lib/utils/images';
 import { get } from 'svelte/store';
-import { db } from './db';
+import { db, type IUpload, type UploadStage } from './db';
 
-// Delay between file upload attempts.
-const ERROR_DELAY = 5 * 1000;
+// Maximum number of attempts per queue run.
+const MAX_RETRY_ATTEMPTS = 5;
+// Base delay between attempts; doubles on every attempt and is capped.
+const RETRY_BASE_DELAY = 5 * 1000;
+const RETRY_MAX_DELAY = 60 * 1000;
+const RETRY_JITTER = 0.2;
 const SUCCESS_DELAY = 2 * 1000;
+
+/**
+ * Get the delay before the next upload attempt.
+ *
+ * Five seconds, doubled per attempt and capped at one minute, with plus or
+ * minus twenty percent jitter so devices that failed together do not retry
+ * together.
+ */
+export function getRetryDelay(attempt: number): number {
+	const exponent = Math.max(1, Math.floor(attempt)) - 1;
+	const delay = Math.min(RETRY_BASE_DELAY * 2 ** exponent, RETRY_MAX_DELAY);
+	const jitter = delay * RETRY_JITTER;
+
+	return Math.round(delay + (Math.random() * 2 - 1) * jitter);
+}
+
+/**
+ * Whether a failed API call is worth retrying.
+ *
+ * Server errors, rate limits, request timeouts, and transport failures are
+ * transient. Other client errors will not fix themselves.
+ */
+export function isRetryableError(status: number, code?: string): boolean {
+	if (code === 'network_error' || code === 'upload_error') {
+		return true;
+	}
+
+	if (status >= 500) {
+		return true;
+	}
+
+	return status === 408 || status === 429;
+}
+
+/**
+ * An upload failure that remembers which stage failed and how to classify it.
+ */
+export class UploadError extends Error {
+	status: number;
+	code?: string;
+	stage: UploadStage;
+
+	constructor(message: string, status: number, stage: UploadStage, code?: string) {
+		super(message);
+		this.name = 'UploadError';
+		this.status = status;
+		this.stage = stage;
+		this.code = code;
+	}
+}
 
 /**
  * Get the delay to wait after a successful upload.
@@ -63,7 +117,8 @@ export async function addPhotoToUploadQueue(tree_id: string, file: File) {
 		created_at: Date.now(),
 		retry_count: 0,
 		file_id: null,
-		progress: 0
+		progress: 0,
+		stage: 'new'
 	});
 
 	autoStartUpload();
@@ -124,12 +179,19 @@ export const autoStartUpload = async () => {
 
 /**
  * Restart the upload queue by resetting failed uploads.
+ *
+ * Keeps the stage and file id so a manual retry resumes instead of
+ * re-transferring an already uploaded file.
  */
 export async function restartUploadQueue() {
 	await db.uploads
 		.where('status')
 		.anyOf('failed', 'uploading')
-		.modify({ status: 'pending', retry_count: 0 });
+		.modify((u) => {
+			u.status = 'pending';
+			u.retry_count = 0;
+			u.permanently_failed = false;
+		});
 	processUploadQueue();
 }
 
@@ -150,10 +212,12 @@ export async function processUploadQueue() {
 	isProcessing = true;
 	setUploading(true);
 
-	// Auto-restart previously failed uploads.
+	// Auto-restart previously failed uploads, except the ones that need a
+	// manual retry because their error is not transient.
 	await db.uploads
 		.where('status')
 		.anyOf('failed', 'uploading')
+		.and((u) => !u.permanently_failed)
 		.modify({ status: 'pending', retry_count: 0 });
 
 	try {
@@ -162,7 +226,12 @@ export async function processUploadQueue() {
 				const item = await db.uploads
 					.orderBy('created_at')
 					.reverse()
-					.filter((u) => (u.status === 'pending' || u.status === 'failed') && u.retry_count < 5)
+					.filter(
+						(u) =>
+							(u.status === 'pending' || u.status === 'failed') &&
+							!u.permanently_failed &&
+							u.retry_count < MAX_RETRY_ATTEMPTS
+					)
 					.first();
 
 				if (item?.id) {
@@ -179,10 +248,14 @@ export async function processUploadQueue() {
 				break;
 			}
 
-			try {
-				await uploadSingleFile(pending.tree_id, pending.image, pending.id);
+			const uploadId = pending.id;
 
-				await db.uploads.delete(pending.id);
+			try {
+				await processUpload(pending, (progress) => {
+					db.uploads.update(uploadId, { progress });
+				});
+
+				await db.uploads.delete(uploadId);
 
 				uploadBus.emit('success', pending.tree_id);
 
@@ -193,15 +266,38 @@ export async function processUploadQueue() {
 					await new Promise((resolve) => setTimeout(resolve, delay));
 				}
 			} catch (e) {
-				console.error(`[upload] Failed to upload ${pending.id}:`, e);
+				const uploadError = e instanceof UploadError ? e : undefined;
+				const status = uploadError?.status ?? 500;
+				const code = uploadError?.code;
+				const stage = uploadError?.stage ?? pending.stage ?? 'new';
+				const attempt = pending.retry_count + 1;
+				const retryable = isRetryableError(status, code);
+				const terminal = !retryable || attempt >= MAX_RETRY_ATTEMPTS;
 
-				await db.uploads.update(pending.id, {
+				await db.uploads.update(uploadId, {
 					status: 'failed',
-					retry_count: pending.retry_count + 1
+					retry_count: attempt,
+					...(retryable ? {} : { permanently_failed: true })
 				});
 
-				// Wait a bit before retrying or moving to next.
-				await new Promise((resolve) => setTimeout(resolve, ERROR_DELAY));
+				if (terminal) {
+					console.error(
+						`[upload] Upload ${uploadId} failed at stage "${stage}" after ${attempt} attempt(s):`,
+						e
+					);
+				} else {
+					console.warn(
+						`[upload] Upload ${uploadId} failed at stage "${stage}" (attempt ${attempt}), retrying:`,
+						e
+					);
+				}
+
+				// No point in waiting when this record will not be picked again.
+				if (terminal) {
+					continue;
+				}
+
+				await new Promise((resolve) => setTimeout(resolve, getRetryDelay(attempt)));
 			}
 		}
 	} finally {
@@ -211,31 +307,131 @@ export async function processUploadQueue() {
 }
 
 /**
- * Upload a single file and attach it to a tree.
+ * Upload a single queue item and attach it to a tree.
+ *
+ * Resumes at the last persisted stage: the bytes are never transferred again
+ * once the file id is stored, and a finished file is only attached again.
  */
-export async function uploadSingleFile(
-	tree_id: string,
-	blob: Blob,
-	upload_id?: number
+export async function processUpload(
+	item: IUpload,
+	onProgress?: (p: number) => void
 ): Promise<string> {
-	const res = await uploadSingleFileApi(blob, (progress) => {
-		if (upload_id) {
-			db.uploads.update(upload_id, { progress });
+	let stage: UploadStage = item.stage ?? 'new';
+	let file_id = item.file_id;
+	let ticketResetted = false;
+
+	while (true) {
+		if (stage === 'new') {
+			const ticketRes = await createUploadTicket(
+				item.image.size,
+				item.image.type || 'application/octet-stream'
+			);
+
+			if (ticketRes.status !== 200 || !ticketRes.data) {
+				throw new UploadError(
+					ticketRes.error?.description || 'Failed to create an upload ticket',
+					ticketRes.status,
+					'new',
+					ticketRes.error?.code
+				);
+			}
+
+			const { id, url } = ticketRes.data;
+			const putRes = await putFileToStorage(url, item.image, onProgress);
+
+			if (putRes.error) {
+				throw new UploadError(
+					putRes.error.description || 'Failed to upload the file',
+					putRes.status,
+					'new',
+					putRes.error.code
+				);
+			}
+
+			file_id = id;
+
+			// Persist the ticket together with the stage, never before: a failed
+			// PUT must leave the record clean so the next attempt requests a new
+			// ticket instead of reusing an expired URL.
+			if (item.id !== undefined) {
+				await db.uploads.update(item.id, { file_id, stage: 'uploaded' });
+			}
+
+			stage = 'uploaded';
+			continue;
 		}
-	});
-	if (res.status !== 200 || !res.data) {
-		throw new Error(res.error?.description || 'Failed to upload file');
+
+		if (stage === 'uploaded') {
+			if (!file_id) {
+				// Inconsistent record: there is no ticket to finish.
+				stage = 'new';
+				continue;
+			}
+
+			const finishRes = await finishUpload(file_id);
+
+			if (finishRes.status === 404) {
+				// The ticket is gone (for example, the file row was removed).
+				// Drop it and re-upload, at most once per attempt.
+				if (ticketResetted) {
+					throw new UploadError(
+						'The upload ticket is gone',
+						finishRes.status,
+						'uploaded',
+						finishRes.error?.code
+					);
+				}
+
+				ticketResetted = true;
+				file_id = null;
+				stage = 'new';
+
+				if (item.id !== undefined) {
+					await db.uploads.update(item.id, { file_id: null, stage: 'new' });
+				}
+
+				continue;
+			}
+
+			if (finishRes.status >= 400) {
+				throw new UploadError(
+					finishRes.error?.description || 'Failed to finalize the upload',
+					finishRes.status,
+					'uploaded',
+					finishRes.error?.code
+				);
+			}
+
+			if (item.id !== undefined) {
+				await db.uploads.update(item.id, { stage: 'finished' });
+			}
+
+			stage = 'finished';
+			continue;
+		}
+
+		// stage === 'finished'
+		if (!file_id) {
+			// Inconsistent record: nothing to attach.
+			stage = 'new';
+			continue;
+		}
+
+		// Attachment is idempotent server-side (INSERT OR IGNORE plus a UNIQUE
+		// constraint), so retrying after a successful attach is harmless.
+		const attachRes = await addPhotos(item.tree_id, [file_id]);
+
+		if (attachRes.status >= 400) {
+			throw new UploadError(
+				attachRes.error?.description || 'Failed to attach the photo to the tree',
+				attachRes.status,
+				'finished',
+				attachRes.error?.code
+			);
+		}
+
+		return file_id;
 	}
-
-	const file_id = res.data;
-
-	// 2. Attach to tree.
-	const attachRes = await addPhotos(tree_id, [file_id]);
-	if (attachRes.status >= 400) {
-		throw new Error(attachRes.error?.description || 'Failed to attach photo to tree');
-	}
-
-	return file_id;
 }
 
 // Start processing on load if online.

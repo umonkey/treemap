@@ -15,34 +15,32 @@ export async function addPhotos(tree_id: string, files: string[]): Promise<IResp
 }
 
 /**
- * This is how you upload all files.
- * The response is the file id, which is then used for adding photos to trees.
+ * Ask the API for a presigned upload ticket.
  */
-export async function uploadSingleFile(
-	file: Blob,
-	onProgress?: (p: number) => void
-): Promise<IResponse<string>> {
-	const ticketRes = await request<IUploadTicket>('POST', 'v1/upload', {
+export async function createUploadTicket(
+	size: number,
+	contentType: string
+): Promise<IResponse<IUploadTicket>> {
+	return await request<IUploadTicket>('POST', 'v1/upload', {
 		body: JSON.stringify({
-			size: file.size,
-			content_type: file.type || 'application/octet-stream'
+			size,
+			content_type: contentType
 		}),
 		headers: {
 			'Content-Type': 'application/json',
 			...getAuthHeaders()
 		}
 	});
+}
 
-	if (ticketRes.status !== 200 || !ticketRes.data) {
-		return {
-			status: ticketRes.status,
-			data: undefined,
-			error: ticketRes.error
-		};
-	}
-
-	const { id, url } = ticketRes.data;
-
+/**
+ * Transfer the file bytes to object storage using the presigned URL.
+ */
+export async function putFileToStorage(
+	url: string,
+	file: Blob,
+	onProgress?: (p: number) => void
+): Promise<IResponse<void>> {
 	try {
 		const start = performance.now();
 
@@ -102,12 +100,56 @@ export async function uploadSingleFile(
 		};
 	}
 
-	const finishRes = await request<void>('POST', `v1/upload/${id}/finish`, {
+	return {
+		status: 200,
+		data: undefined,
+		error: undefined
+	};
+}
+
+/**
+ * Finalize an uploaded file so the backend starts processing it.
+ */
+export async function finishUpload(id: string): Promise<IResponse<void>> {
+	return await request<void>('POST', `v1/upload/${id}/finish`, {
 		headers: {
 			'Content-Type': 'application/json',
 			...getAuthHeaders()
 		}
 	});
+}
+
+/**
+ * This is how you upload all files.
+ * The response is the file id, which is then used for adding photos to trees.
+ */
+export async function uploadSingleFile(
+	file: Blob,
+	onProgress?: (p: number) => void
+): Promise<IResponse<string>> {
+	const ticketRes = await createUploadTicket(file.size, file.type || 'application/octet-stream');
+
+	if (ticketRes.status !== 200 || !ticketRes.data) {
+		return {
+			status: ticketRes.status,
+			data: undefined,
+			error: ticketRes.error
+		};
+	}
+
+	const { id, url } = ticketRes.data;
+
+	const putRes = await putFileToStorage(url, file, onProgress);
+
+	if (putRes.error) {
+		return {
+			status: putRes.status,
+			data: undefined,
+			error: putRes.error
+		};
+	}
+
+	const finishRes = await finishUpload(id);
 
 	if (finishRes.status >= 400) {
 		return {

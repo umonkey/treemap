@@ -36,7 +36,7 @@ export class Gallery {
 		this.selected = null;
 	};
 
-	private canEdit = (): boolean => get(hasPermission)('tree:edit');
+	private canEdit = (): boolean => get(hasPermission)('photo:create');
 
 	// Only file drags (from the OS or a file manager) should activate the drop
 	// zone; in-page element drags must keep their default behaviour.

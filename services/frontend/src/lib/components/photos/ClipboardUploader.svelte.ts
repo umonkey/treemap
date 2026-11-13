@@ -4,7 +4,7 @@ import { get } from 'svelte/store';
 
 export class ClipboardUploader {
 	handlePaste = async (treeId: string, event: ClipboardEvent) => {
-		if (!get(hasPermission)('tree:edit')) {
+		if (!get(hasPermission)('photo:create')) {
 			return;
 		}
 

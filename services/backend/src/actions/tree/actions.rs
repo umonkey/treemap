@@ -14,7 +14,9 @@ use crate::domain::tree::{
 };
 use crate::domain::tree_file::TreeFileService;
 use crate::domain::user::UserService;
-use crate::services::app::{OptionalUserId, RequirePermission, TreeCreate, UserId};
+use crate::services::app::{
+    OptionalUserId, PhotoCreate, PhotoManage, RequirePermission, TreeCreate, UserId,
+};
 use crate::services::prop_loader::{PropList, PropLoader};
 use crate::services::tree_loader::SingleTreeResponse;
 use crate::services::tree_loader::{TreeList, TreeLoader};
@@ -37,7 +39,7 @@ pub struct UpdatePhotos {
 
 #[post("/{id:\\d+}/photos")]
 pub async fn add_photos_action(
-    user_id: UserId,
+    user_id: RequirePermission<PhotoCreate>,
     path: Path<PathInfo>,
     payload: Json<UpdatePhotos>,
     service: Injected<TreeFileService>,
@@ -430,7 +432,7 @@ pub async fn update_tree_state_action(
 
 #[put("/{id:\\d+}/thumbnail")]
 pub async fn update_tree_thumbnail_action(
-    user_id: UserId,
+    user_id: RequirePermission<PhotoManage>,
     path: Path<PathInfo>,
     payload: Json<ThumbnailPayload>,
     service: Injected<TreeFileService>,

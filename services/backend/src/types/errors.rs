@@ -160,6 +160,21 @@ impl Error {
             }
         }
     }
+
+    // Classifies a database error caused by a transient lock, which a repeated
+    // write of the same statement can recover from. Only classifies: the error
+    // is logged once at the response boundary.
+    pub fn is_transient_lock(&self) -> bool {
+        let Error::DatabaseQuery(message) = self else {
+            return false;
+        };
+
+        let message = message.to_lowercase();
+
+        message.contains("database is locked")
+            || message.contains("database table is locked")
+            || message.contains("sqlite_busy")
+    }
 }
 
 impl From<std::io::Error> for Error {
@@ -274,5 +289,34 @@ impl fmt::Display for Error {
             Error::UserNotFound => write!(f, "UserNotFound"),
             Error::WaterNotFound => write!(f, "WaterNotFound"),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Error;
+
+    #[test]
+    fn test_is_transient_lock_detects_busy_messages() {
+        let locked = Error::DatabaseQuery("SQLite failure: `database is locked`".to_string());
+        let table_locked =
+            Error::DatabaseQuery("SQLite failure: `database table is locked`".to_string());
+        let busy = Error::DatabaseQuery("SQLite failure: SqliteFailure(SQLITE_BUSY)".to_string());
+
+        assert!(locked.is_transient_lock());
+        assert!(table_locked.is_transient_lock());
+        assert!(busy.is_transient_lock());
+    }
+
+    #[test]
+    fn test_is_transient_lock_ignores_other_errors() {
+        let unique =
+            Error::DatabaseQuery("SQLite failure: UNIQUE constraint failed: files.id".to_string());
+        let syntax = Error::DatabaseQuery("syntax error near FROM".to_string());
+
+        assert!(!unique.is_transient_lock());
+        assert!(!syntax.is_transient_lock());
+        assert!(!Error::DuplicateRecord.is_transient_lock());
+        assert!(!Error::DatabaseConnect("database is locked".to_string()).is_transient_lock());
     }
 }

@@ -9,9 +9,18 @@ export interface ITreeTab {
 	suffix: string;
 }
 
-export const treeTabs = (id: string): ITreeTab[] => [
+export const treeTabs = (id: string, canReadPhotos = true): ITreeTab[] => [
 	{ id: 'preview', title: locale.treeTabsPreview(), url: routes.treeDetails(id), suffix: '' },
-	{ id: 'photos', title: locale.treeTabsPhotos(), url: routes.treePhotos(id), suffix: '/photos' },
+	...(canReadPhotos
+		? [
+				{
+					id: 'photos',
+					title: locale.treeTabsPhotos(),
+					url: routes.treePhotos(id),
+					suffix: '/photos'
+				}
+			]
+		: []),
 	{
 		id: 'comments',
 		title: locale.treeTabsComments(),
@@ -33,5 +42,8 @@ export const treeTabs = (id: string): ITreeTab[] => [
 ];
 
 /** The tab the current URL belongs to, or undefined for a non-tab sub-page. */
-export const activeTreeTab = (pathname: string, id: string): ITreeTab | undefined =>
-	treeTabs(id).find((tab) => tab.url === pathname);
+export const activeTreeTab = (
+	pathname: string,
+	id: string,
+	canReadPhotos = true
+): ITreeTab | undefined => treeTabs(id, canReadPhotos).find((tab) => tab.url === pathname);

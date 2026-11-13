@@ -10,6 +10,7 @@
 	import { routes } from '$lib/routes';
 	import { formatSpecies } from '$lib/utils/trees';
 	import { sidebarState } from '$lib/stores/sidebar.svelte';
+	import { hasPermission } from '$lib/stores/authStore';
 	import { mapPoiStore } from '$lib/stores/mapPoi.svelte';
 	import QuickEdit from '$lib/components/QuickEdit.svelte';
 	import ClipboardUploader from '$lib/components/photos/ClipboardUploader.svelte';
@@ -25,7 +26,9 @@
 	const id = $derived(page.params.id as string);
 
 	// The POI store appends this to tree URLs so map clicks keep the open tab.
-	const tabSuffix = $derived(activeTreeTab(page.url.pathname, id)?.suffix ?? '');
+	const tabSuffix = $derived(
+		activeTreeTab(page.url.pathname, id, $hasPermission('photo:read'))?.suffix ?? ''
+	);
 
 	$effect(() => {
 		mapPoiStore.treeTab = tabSuffix;

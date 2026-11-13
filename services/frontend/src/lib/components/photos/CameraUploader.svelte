@@ -9,7 +9,7 @@
 	const state = new CameraUploader();
 </script>
 
-{#if $hasPermission('tree:edit')}
+{#if $hasPermission('photo:create')}
 	<label
 		class="tile camera"
 		class:inline

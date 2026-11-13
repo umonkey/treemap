@@ -18,7 +18,8 @@ People can change their display name and profile picture in their profile; the G
 
 Authentication is available in the hosted service and in self-hosted deployments.
 
-- A Google account. Any Google account can sign in, and a new account immediately receives the standard contributor role, which allows adding trees and comments.
+- A Google account. Any Google account can sign in, and a new account immediately receives the standard contributor role, which allows adding trees, comments and photos.
+- Roles: the standard contributor role can add trees, comments and photos. An editor can also manage photos and content. A read-only viewer role is used for anonymous visitors and can browse photos and comments without changing anything.
 - A standard browser. Google blocks its sign-in flow inside embedded in-app browsers.
 - Hosted service: the site's hostname must be a registered, enabled tenant. Each community or municipality has its own. The platform operator adds it during onboarding.
 - Self-hosted deployment: the operator registers a Google sign-in client for the deployment, allows the callback address, sets a signing secret, builds the frontend with the public client identifier, registers the tenant hostname, and uses HTTPS in production.

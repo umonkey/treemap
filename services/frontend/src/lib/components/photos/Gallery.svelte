@@ -93,7 +93,7 @@
 		{/if}
 	</div>
 
-	{#if $hasPermission('tree:edit')}
+	{#if $hasPermission('photo:create')}
 		<div class="uploaders">
 			<Buttons>
 				<CameraUploader treeId={id} inline />

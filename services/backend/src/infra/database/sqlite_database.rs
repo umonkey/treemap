@@ -11,6 +11,7 @@ use async_trait::async_trait;
 use libsql::params_from_iter;
 use libsql::{Builder, Connection, Database, Transaction};
 use log::{debug, info, warn};
+use std::future::Future;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 use tokio::sync::{Mutex, MutexGuard};
@@ -18,6 +19,44 @@ use tokio::sync::{Mutex, MutexGuard};
 // This is where temporary database files are created to simulate
 // the in-memory database, which doesn't really work as we need with libsql.
 const TEMP_DB_DIR: &str = "var/test-files";
+
+// A statement that failed to acquire the write lock made no changes, so
+// re-executing it is safe. Contention beyond busy_timeout is rare, so the
+// attempt count stays small and only the non-transactional writes retry.
+const BUSY_ATTEMPTS: u32 = 3;
+const BUSY_INITIAL_DELAY: Duration = Duration::from_millis(100);
+
+// Runs a write operation, retrying only when SQLite reports a transient lock.
+// Any other error is returned on the first attempt. Retries are logged at
+// debug: the final error is logged once at the response boundary.
+async fn retry_on_busy<T, F, Fut>(mut operation: F) -> Result<T>
+where
+    F: FnMut() -> Fut,
+    Fut: Future<Output = Result<T>>,
+{
+    let mut attempt = 1;
+
+    loop {
+        match operation().await {
+            Ok(value) => return Ok(value),
+
+            Err(error) if error.is_transient_lock() && attempt < BUSY_ATTEMPTS => {
+                let delay = BUSY_INITIAL_DELAY * 2u32.pow(attempt - 1);
+
+                debug!(
+                    "Database is locked (attempt {attempt} of {BUSY_ATTEMPTS}): {error}; retrying in {}ms",
+                    delay.as_millis()
+                );
+
+                tokio::time::sleep(delay).await;
+
+                attempt += 1;
+            }
+
+            Err(error) => return Err(error),
+        }
+    }
+}
 
 pub struct SqliteDatabase {
     pool: Arc<Database>,
@@ -395,24 +434,30 @@ impl DatabaseInterface for SqliteDatabase {
     }
 
     async fn execute_sql(&self, query: &str, params: &[Value]) -> Result<u64> {
-        let conn = self.connect().await?;
+        retry_on_busy(|| async {
+            let conn = self.connect().await?;
 
-        let rows = conn
-            .execute(query, params_from_iter(params.to_vec()))
-            .await
-            .map_err(Error::from)?;
+            let rows = conn
+                .execute(query, params_from_iter(params.to_vec()))
+                .await
+                .map_err(Error::from)?;
 
-        Ok(rows)
+            Ok(rows)
+        })
+        .await
     }
 
     async fn execute_batch(&self, query: &str) -> Result<()> {
-        let conn = self.connect().await?;
+        retry_on_busy(|| async {
+            let conn = self.connect().await?;
 
-        conn.execute_batch(query).await.map_err(|e| {
-            Error::DatabaseQuery(format!("Error executing SQL batch: {e}; query={query}"))
-        })?;
+            conn.execute_batch(query).await.map_err(|e| {
+                Error::DatabaseQuery(format!("Error executing SQL batch: {e}; query={query}"))
+            })?;
 
-        Ok(())
+            Ok(())
+        })
+        .await
     }
 
     async fn get_record(&self, query: SelectQuery) -> Result<Option<Attributes>> {
@@ -475,5 +520,67 @@ impl Clone for SqliteDatabase {
         Self {
             pool: self.pool.clone(),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{retry_on_busy, BUSY_ATTEMPTS};
+    use crate::types::{Error, Result};
+    use std::sync::atomic::{AtomicU32, Ordering};
+
+    #[tokio::test]
+    async fn test_retry_on_busy_succeeds_after_lock_failures() {
+        let calls = AtomicU32::new(0);
+
+        let result = retry_on_busy(|| async {
+            let attempt = calls.fetch_add(1, Ordering::SeqCst) + 1;
+
+            if attempt < 3 {
+                return Err(Error::DatabaseQuery(
+                    "SQLite failure: `database is locked`".to_string(),
+                ));
+            }
+
+            Ok(7)
+        })
+        .await;
+
+        assert_eq!(result.expect("Error after retries."), 7);
+        assert_eq!(calls.load(Ordering::SeqCst), 3);
+    }
+
+    #[tokio::test]
+    async fn test_retry_on_busy_gives_up_after_attempts() {
+        let calls = AtomicU32::new(0);
+
+        let result: Result<u64> = retry_on_busy(|| async {
+            calls.fetch_add(1, Ordering::SeqCst);
+
+            Err(Error::DatabaseQuery(
+                "SQLite failure: `database is locked`".to_string(),
+            ))
+        })
+        .await;
+
+        assert!(result.is_err());
+        assert_eq!(calls.load(Ordering::SeqCst), BUSY_ATTEMPTS);
+    }
+
+    #[tokio::test]
+    async fn test_retry_on_busy_does_not_retry_other_errors() {
+        let calls = AtomicU32::new(0);
+
+        let result: Result<u64> = retry_on_busy(|| async {
+            calls.fetch_add(1, Ordering::SeqCst);
+
+            Err(Error::DatabaseQuery(
+                "SQLite failure: UNIQUE constraint failed: files.id".to_string(),
+            ))
+        })
+        .await;
+
+        assert!(result.is_err());
+        assert_eq!(calls.load(Ordering::SeqCst), 1);
     }
 }

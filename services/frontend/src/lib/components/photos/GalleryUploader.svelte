@@ -10,7 +10,7 @@
 	const state = new GalleryUploader();
 </script>
 
-{#if $hasPermission('tree:edit') && isTouchDevice()}
+{#if $hasPermission('photo:create') && isTouchDevice()}
 	<label
 		class="tile gallery"
 		class:inline

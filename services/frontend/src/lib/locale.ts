@@ -482,6 +482,10 @@ class EnglishLocale {
 		return 'There are no images for this tree.';
 	}
 
+	public photoReadDenied(): string {
+		return 'You do not have permission to view photos.';
+	}
+
 	public dropPhotos(): string {
 		return 'Drop images here to upload';
 	}
@@ -1297,6 +1301,10 @@ class RussianLocale extends EnglishLocale {
 
 	public noPhotos(): string {
 		return 'Для этого дерева нет изображений.';
+	}
+
+	public photoReadDenied(): string {
+		return 'У вас нет прав на просмотр фотографий.';
 	}
 
 	public dropPhotos(): string {
@@ -2118,6 +2126,10 @@ class ArmenianLocale extends EnglishLocale {
 
 	public noPhotos(): string {
 		return 'Այս ծառի համար պատկերներ չկան:';
+	}
+
+	public photoReadDenied(): string {
+		return 'Դուք չունեք պատկերները դիտելու թույլտվություն:';
 	}
 
 	public dropPhotos(): string {

@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import TabRenderer from '$lib/components/TabRenderer.svelte';
 	import type { ISingleTree } from '$lib/types';
+	import { hasPermission } from '$lib/stores/authStore';
 	import { activeTreeTab, treeTabs } from './TreeTabs.svelte.ts';
 
 	const { tree }: { tree: ISingleTree } = $props();
@@ -14,7 +15,7 @@
 	const comments = $derived(tree.comment_count ?? 0);
 
 	const tabs = $derived(
-		treeTabs(id).map((tab) => ({
+		treeTabs(id, $hasPermission('photo:read')).map((tab) => ({
 			...tab,
 			badge:
 				tab.id === 'photos'
@@ -27,7 +28,7 @@
 		}))
 	);
 
-	const active = $derived(activeTreeTab(page.url.pathname, id)?.id);
+	const active = $derived(activeTreeTab(page.url.pathname, id, $hasPermission('photo:read'))?.id);
 </script>
 
 <TabRenderer {active} {tabs} />
