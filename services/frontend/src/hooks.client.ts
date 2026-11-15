@@ -14,7 +14,11 @@ if (config.environment === 'production') {
 			'Please make sure you have added the image with map.addImage',
 			// Native WKWebView bridge injected by the Facebook/Instagram iOS in-app
 			// browser. Not our code; frames are attributed to the document URL.
-			/window\.webkit\.messageHandlers/
+			/window\.webkit\.messageHandlers/,
+			// Headless Chromium bots (datacenter IPs, spoofed iOS/Android UAs, no GPU
+			// process) throw this while MapLibre creates the map. Every recorded event in
+			// FRONTEND-SA was such a bot; no real device has hit it.
+			/webglcontextcreationerror|Failed to initialize WebGL/
 		],
 
 		// Enable API performance tracing.

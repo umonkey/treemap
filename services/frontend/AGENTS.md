@@ -40,6 +40,24 @@ This directory contains the static frontend for the tree mapping application.
 - All bigint values returned by the backend need to be converted to strings, as JavaScript cannot handle 64-bit integers.
 - API endpoints return `Result<Json<>>` unless they emit no data, then they return a `Result<HttpResponse>` with the right status code.
 
+## Sentry triage
+
+- Before fixing an error reported in Sentry, establish whether it reaches a real
+  user. Most unhandled errors in this app come from crawlers and screenshot bots
+  running headless Chromium, not from people.
+- Inspect the events, not just the issue title: the group tags and per-event
+  metadata are what separate bots from people.
+- Bot fingerprints: datacenter geos (Boardman, Forest City, Altoona, Prineville,
+  Clonee), several "devices" fetching the same URL within seconds, `device.family: K`
+  or another placeholder model, Chrome versions without a build number (`139.0.0`),
+  a rendering engine that contradicts the user agent, and no user, IP or replay.
+- Real-user fingerprints: a user or replay attached, a plausible device model, one
+  coherent geo and session, a repeatable action sequence.
+- Bot-only noise is filtered with a message pattern in `ignoreErrors` in
+  `src/hooks.client.ts`, with a comment stating why the pattern is safe. Do not build
+  a user-facing fallback for a failure that only automation can reach. A real-user
+  failure earns a real fix.
+
 ## Deploy and caching
 
 - `kit.serviceWorker.register` is `false` on purpose. Registration lives in `src/lib/utils/serviceWorker.ts` and treats a refusal as non-fatal. Do not re-enable SvelteKit's auto-registration; it produces unhandled `Rejected` events in Sentry.
