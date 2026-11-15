@@ -92,17 +92,28 @@ class LocationTracker {
 		};
 	};
 
-	private startIfGranted = () => {
-		if (navigator.permissions && navigator.permissions.query) {
-			navigator.permissions.query({ name: 'geolocation' }).then((result) => {
-				if (result.state === 'granted') {
-					this.start();
-				} else {
-					console.debug(`[GEO] Permissions are ${result.state}, not starting.`);
-				}
-			});
-		} else {
-			console.debug('[GEO] Could not query permissions.');
+	private startIfGranted = async () => {
+		try {
+			if (!navigator.permissions?.query) {
+				console.debug('[GEO] Could not query permissions.');
+				return;
+			}
+
+			const result = await navigator.permissions.query({ name: 'geolocation' });
+
+			if (result?.state === 'granted') {
+				this.start();
+			} else {
+				console.debug(`[GEO] Permissions are ${result?.state ?? 'unknown'}, not starting.`);
+			}
+		} catch (error) {
+			// A privacy browser or extension can replace `navigator.permissions.query`
+			// with a shim that calls the native function with the wrong receiver, which
+			// throws "Illegal invocation"; other engines reject names they do not
+			// enumerate. Neither is actionable, and an unhandled rejection is reported
+			// by Sentry's global handler, so an unreadable state means "unknown" and
+			// tracking simply does not auto-start.
+			console.debug('[GEO] Could not query permissions:', error);
 		}
 	};
 }
