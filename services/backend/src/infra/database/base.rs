@@ -7,6 +7,7 @@ use async_trait::async_trait;
 pub trait DatabaseInterface: Send + Sync {
     #[allow(dead_code)]
     async fn transact(&self) -> Result<Box<dyn DatabaseInterface>>;
+    async fn transact_immediate(&self) -> Result<Box<dyn DatabaseInterface>>;
     #[allow(dead_code)]
     async fn commit(&self) -> Result<()>;
     #[allow(dead_code)]

@@ -5,6 +5,18 @@ use std::fmt;
 
 use actix_web::{error::ResponseError, http::header::ContentType, http::StatusCode, HttpResponse};
 
+// SQLite extended result codes for a transient lock: BUSY (5), LOCKED (6) and
+// BUSY_SNAPSHOT (517, which is BUSY with the snapshot bit set). The code stays
+// in the message, so a report tells lock contention apart from a stale
+// snapshot. A statement retry recovers the first two in autocommit mode; a
+// BUSY_SNAPSHOT requires restarting the transaction.
+const SQLITE_BUSY: i32 = 5;
+const SQLITE_LOCKED: i32 = 6;
+const SQLITE_BUSY_SNAPSHOT: i32 = 517;
+
+// Prefixes a database message that carries the SQLite extended result code.
+const SQLITE_CODE_MARKER: &str = "SQLite failure (code ";
+
 #[derive(Debug)]
 pub enum Error {
     AddressNotFound,
@@ -164,16 +176,37 @@ impl Error {
     // Classifies a database error caused by a transient lock, which a repeated
     // write of the same statement can recover from. Only classifies: the error
     // is logged once at the response boundary.
+    //
+    // The retry is valid only for an autocommit statement. Retrying a statement
+    // inside an open transaction cannot recover: the snapshot that caused the
+    // failure is still stale, and the transaction has to be restarted instead.
     pub fn is_transient_lock(&self) -> bool {
         let Error::DatabaseQuery(message) = self else {
             return false;
         };
 
+        let transient_code = Self::sqlite_result_code(message)
+            .is_some_and(|code| matches!(code, SQLITE_BUSY | SQLITE_LOCKED | SQLITE_BUSY_SNAPSHOT));
+
+        if transient_code {
+            return true;
+        }
+
+        // Fallback for messages without a result code: other libsql error
+        // variants only expose the lock state in the text.
         let message = message.to_lowercase();
 
         message.contains("database is locked")
             || message.contains("database table is locked")
             || message.contains("sqlite_busy")
+    }
+
+    // Extracts the SQLite extended result code from a database message, when
+    // the message carries one.
+    fn sqlite_result_code(message: &str) -> Option<i32> {
+        let rest = message.strip_prefix(SQLITE_CODE_MARKER)?;
+
+        rest.split_once(')')?.0.parse().ok()
     }
 }
 
@@ -185,10 +218,19 @@ impl From<std::io::Error> for Error {
 
 impl From<LibSqlError> for Error {
     fn from(e: LibSqlError) -> Self {
-        let message = e.to_string();
+        // Include the SQLite extended result code, otherwise every lock looks
+        // like the same opaque "database is locked" message.
+        let message = match e {
+            LibSqlError::SqliteFailure(code, message) => {
+                format!("{SQLITE_CODE_MARKER}{code}): {message}")
+            }
+            other => other.to_string(),
+        };
+
         if message.contains("UNIQUE constraint failed") {
             return Error::DuplicateRecord;
         }
+
         Error::DatabaseQuery(message)
     }
 }
@@ -295,6 +337,16 @@ impl fmt::Display for Error {
 #[cfg(test)]
 mod tests {
     use super::Error;
+    use libsql::Error as LibSqlError;
+
+    #[test]
+    fn test_is_transient_lock_detects_busy_codes() {
+        for code in [5, 6, 517] {
+            let error = Error::DatabaseQuery(format!("SQLite failure (code {code}): locked"));
+
+            assert!(error.is_transient_lock(), "code {code} should be transient");
+        }
+    }
 
     #[test]
     fn test_is_transient_lock_detects_busy_messages() {
@@ -313,10 +365,38 @@ mod tests {
         let unique =
             Error::DatabaseQuery("SQLite failure: UNIQUE constraint failed: files.id".to_string());
         let syntax = Error::DatabaseQuery("syntax error near FROM".to_string());
+        let persistent =
+            Error::DatabaseQuery("SQLite failure (code 26): file is not a database".to_string());
 
         assert!(!unique.is_transient_lock());
         assert!(!syntax.is_transient_lock());
+        assert!(!persistent.is_transient_lock());
         assert!(!Error::DuplicateRecord.is_transient_lock());
         assert!(!Error::DatabaseConnect("database is locked".to_string()).is_transient_lock());
+    }
+
+    #[test]
+    fn test_from_libsql_error_keeps_result_code() {
+        let error = Error::from(LibSqlError::SqliteFailure(
+            517,
+            "database is locked".to_string(),
+        ));
+
+        let Error::DatabaseQuery(message) = &error else {
+            panic!("expected a database query error");
+        };
+
+        assert!(message.contains("517"));
+        assert!(error.is_transient_lock());
+    }
+
+    #[test]
+    fn test_from_libsql_error_maps_unique_constraint() {
+        let error = Error::from(LibSqlError::SqliteFailure(
+            2067,
+            "UNIQUE constraint failed: files.id".to_string(),
+        ));
+
+        assert!(matches!(error, Error::DuplicateRecord));
     }
 }

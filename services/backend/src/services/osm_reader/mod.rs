@@ -31,23 +31,35 @@ pub struct OsmReaderService {
 }
 
 impl OsmReaderService {
+    // Fetch all tree nodes from Overpass.
+    //
+    // This is network I/O, so it must run before any transaction is opened.
+    pub async fn fetch_osm_nodes(&self, query: &str) -> Result<Vec<OsmTreeRecord>> {
+        info!("Running OSM reader service.");
+
+        self.overpass_client.query(query).await
+    }
+
     // Synchronize the local mirror of OSM data.
     //
-    // Uses the Overpass client to pull all tree nodes and put then in the osm_trees
-    // table for use in the following data merging steps.
+    // Puts the fetched nodes in the osm_trees table for use in the following
+    // data merging steps.
     //
     // Nodes that were not in the response, but existed previously, are considered
     // deleted and are marked as visible=0. Only nodes inside the given bbox are
     // updated, so pulling one instance does not affect other instances.
-    pub async fn update_osm_cache(&self, query: &str, bbox: [f64; 4]) -> Result<()> {
-        info!("Running OSM reader service.");
-
-        let sync_start = get_timestamp();
-
-        let doc = self.overpass_client.query(query).await?;
+    //
+    // The timestamp is the fetch start, taken before the network call, so nodes
+    // added to OSM while the query ran are not marked invisible by this sync.
+    pub async fn apply_osm_cache(
+        &self,
+        nodes: &[OsmTreeRecord],
+        sync_start: u64,
+        bbox: [f64; 4],
+    ) -> Result<()> {
         let mut updated_count = 0;
 
-        for mut node in doc.iter().cloned() {
+        for mut node in nodes.iter().cloned() {
             node.last_seen_at = Some(sync_start);
             node.visible = true;
 
@@ -62,7 +74,7 @@ impl OsmReaderService {
 
         info!(
             "Found {} OSM nodes, had {} updates.",
-            doc.len(),
+            nodes.len(),
             updated_count
         );
 

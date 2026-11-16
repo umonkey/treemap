@@ -1,7 +1,6 @@
 use sentry::protocol::{Event, Request};
 use sentry::ClientInitGuard;
 use std::borrow::Cow;
-use std::sync::Arc;
 use std::time::Duration;
 
 /// Initializes Sentry and logging.
@@ -9,11 +8,12 @@ use std::time::Duration;
 pub fn init() -> Option<ClientInitGuard> {
     let dsn = std::env::var("SENTRY_DSN")
         .ok()
-        .filter(|value| !value.is_empty());
+        .filter(|value| !value.is_empty())
+        .filter(|value| value.parse::<sentry::types::Dsn>().is_ok());
 
     if dsn.is_none() {
         // Since we haven't initialized the logger yet, we use eprintln.
-        eprintln!("SENTRY_DSN is not set; Sentry reporting is disabled.");
+        eprintln!("SENTRY_DSN is not set or invalid; Sentry reporting is disabled.");
         env_logger::try_init().ok();
         return None;
     }
@@ -27,15 +27,28 @@ pub fn init() -> Option<ClientInitGuard> {
     let traces_sample_rate = std::env::var("SENTRY_TRACES_SAMPLE_RATE")
         .ok()
         .and_then(|value| value.parse::<f32>().ok())
-        .unwrap_or(0.1);
+        .filter(|rate| (0.0..=1.0).contains(rate))
+        .unwrap_or(1.0);
 
-    let guard = sentry::init(sentry::ClientOptions {
-        dsn: dsn.and_then(|value| value.parse().ok()),
-        release,
-        traces_sample_rate,
-        before_send: Some(Arc::new(scrub_event)),
-        ..Default::default()
-    });
+    // The SDK has no switch for metrics, so the kill switch lives in the
+    // emission helpers. Metrics are on by default and SENTRY_METRICS=0 turns
+    // them off without a code change.
+    super::metrics::set_enabled(
+        std::env::var("SENTRY_METRICS")
+            .map(|value| value != "0")
+            .unwrap_or(true),
+    );
+
+    let mut options = sentry::ClientOptions::new()
+        .traces_sample_rate(traces_sample_rate)
+        .before_send(scrub_event)
+        .maybe_release(release);
+
+    if let Some(dsn) = dsn {
+        options = options.dsn(&dsn);
+    }
+
+    let guard = sentry::init(options);
 
     // Initialize the logger with Sentry integration.
     // We wrap env_logger so we still get console output.

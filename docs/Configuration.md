@@ -47,4 +47,10 @@ When running the app in Fly.io, secrets must be set using the `fly secrets set K
 Error reporting and tracing are optional and are configured with plain environment variables, not with files in the `.secrets` directory.
 `SENTRY_DSN` holds the client key of the Sentry `backend` project and enables the integration; when it is unset, the application only writes logs as before.
 `SENTRY_RELEASE` is the git commit SHA that tags the error reports; it is normally baked into the images at build time, so it is rarely set by hand.
-`SENTRY_TRACES_SAMPLE_RATE` sets the share of API requests that are traced, as a number between 0.0 and 1.0 (default 0.1).
+`SENTRY_TRACES_SAMPLE_RATE` sets the share of API requests that are traced, as a number between 0.0 and 1.0 (default 1.0, every request is traced). Out-of-range values are ignored.
+`SENTRY_METRICS` turns Application Metrics on or off (default on). Set it to `0` to stop sending request and queue metrics without a code change.
+
+Metrics are sent for every request and every processed queue message, without sampling.
+Each request reports `http.server.request.duration` with the route pattern, the method and the status code, and requests that take 5 seconds or longer also increment `http.server.request.slow`.
+A route pattern is the registered one, such as `/v1/trees/{id}/photos`, never the raw URL, so the number of series stays bounded.
+The queue consumer reports `queue.message.processed`, `queue.message.duration`, `queue.message.wait` and `queue.message.retried`, tagged with the command name.

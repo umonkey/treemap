@@ -51,6 +51,20 @@ pub enum QueueCommand {
     DownloadPanoramaLogs(DownloadPanoramaLogsMessage),
 }
 
+impl QueueCommand {
+    // Stable snake_case identifier used as the `queue.command` metric attribute.
+    pub fn name(&self) -> &'static str {
+        match self {
+            QueueCommand::ProcessFile(_) => "process_file",
+            QueueCommand::UpdateTreeAddress(_) => "update_tree_address",
+            QueueCommand::AddPhoto(_) => "add_photo",
+            QueueCommand::UpdateUserpic(_) => "update_userpic",
+            QueueCommand::UpdatePanoramaStats(_) => "update_panorama_stats",
+            QueueCommand::DownloadPanoramaLogs(_) => "download_panorama_logs",
+        }
+    }
+}
+
 impl ProcessFileMessage {
     pub fn encode(&self) -> String {
         json!({

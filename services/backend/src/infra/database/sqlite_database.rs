@@ -9,7 +9,7 @@ use crate::types::*;
 use crate::utils::get_unique_id;
 use async_trait::async_trait;
 use libsql::params_from_iter;
-use libsql::{Builder, Connection, Database, Transaction};
+use libsql::{Builder, Connection, Database, Transaction, TransactionBehavior};
 use log::{debug, info, warn};
 use std::future::Future;
 use std::sync::Arc;
@@ -60,6 +60,9 @@ where
 
 pub struct SqliteDatabase {
     pool: Arc<Database>,
+    // A remote database does not guarantee a non-deferred transaction, so
+    // immediate transactions fall back to the deferred behaviour there.
+    is_remote: bool,
 }
 
 pub struct SqliteTransaction {
@@ -158,6 +161,7 @@ impl SqliteDatabase {
 
         Ok(Self {
             pool: Arc::new(pool),
+            is_remote: true,
         })
     }
 
@@ -173,6 +177,7 @@ impl SqliteDatabase {
 
         Ok(Self {
             pool: Arc::new(pool),
+            is_remote: false,
         })
     }
 
@@ -193,6 +198,7 @@ impl SqliteDatabase {
 
         Ok(Self {
             pool: Arc::new(pool),
+            is_remote: false,
         })
     }
 
@@ -290,6 +296,10 @@ impl SqliteDatabase {
 #[async_trait]
 impl DatabaseInterface for SqliteTransaction {
     async fn transact(&self) -> Result<Box<dyn DatabaseInterface>> {
+        Err(Error::DatabaseQuery("Already in a transaction".to_string()))
+    }
+
+    async fn transact_immediate(&self) -> Result<Box<dyn DatabaseInterface>> {
         Err(Error::DatabaseQuery("Already in a transaction".to_string()))
     }
 
@@ -394,6 +404,35 @@ impl DatabaseInterface for SqliteDatabase {
             .map_err(|e| Error::DatabaseQuery(e.to_string()))?;
 
         Ok(Box::new(SqliteTransaction::new(tx, conn)))
+    }
+
+    // Starts a transaction that takes the write lock before the first read.
+    //
+    // A deferred transaction takes no lock at BEGIN, so a read establishes a
+    // WAL snapshot and the first write has to promote it. If another
+    // connection committed in between, SQLite fails the promotion with
+    // BUSY_SNAPSHOT, and waiting cannot fix a stale snapshot. Taking the lock
+    // up front turns contention into a normal wait covered by busy_timeout.
+    //
+    // Each attempt opens a fresh connection so a failed BEGIN IMMEDIATE cannot
+    // leave a half-open transaction behind. Nothing has executed at that
+    // point, so a retry cannot duplicate work.
+    async fn transact_immediate(&self) -> Result<Box<dyn DatabaseInterface>> {
+        if self.is_remote {
+            return self.transact().await;
+        }
+
+        retry_on_busy(|| async {
+            let conn = self.connect().await?;
+
+            let tx = conn
+                .transaction_with_behavior(TransactionBehavior::Immediate)
+                .await
+                .map_err(Error::from)?;
+
+            Ok(Box::new(SqliteTransaction::new(tx, conn)) as Box<dyn DatabaseInterface>)
+        })
+        .await
     }
 
     async fn commit(&self) -> Result<()> {
@@ -519,14 +558,17 @@ impl Clone for SqliteDatabase {
     fn clone(&self) -> Self {
         Self {
             pool: self.pool.clone(),
+            is_remote: self.is_remote,
         }
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{retry_on_busy, BUSY_ATTEMPTS};
+    use super::{retry_on_busy, SqliteDatabase, BUSY_ATTEMPTS};
+    use crate::infra::database::base::DatabaseInterface;
     use crate::types::{Error, Result};
+    use libsql::Builder;
     use std::sync::atomic::{AtomicU32, Ordering};
 
     #[tokio::test]
@@ -582,5 +624,47 @@ mod tests {
 
         assert!(result.is_err());
         assert_eq!(calls.load(Ordering::SeqCst), 1);
+    }
+
+    #[tokio::test]
+    async fn test_transact_immediate_takes_the_write_lock() {
+        let path = SqliteDatabase::get_temporary_path().expect("temporary database path");
+        let database = SqliteDatabase::from_local(&path)
+            .await
+            .expect("local database");
+
+        let transaction = database
+            .transact_immediate()
+            .await
+            .expect("immediate transaction");
+
+        let competitor = Builder::new_local(&path)
+            .build()
+            .await
+            .expect("second handle")
+            .connect()
+            .expect("second connection");
+
+        // Keep the test fast: the production timeout is 5 s.
+        competitor
+            .execute_batch("PRAGMA busy_timeout = 50;")
+            .await
+            .expect("busy timeout pragma");
+
+        let blocked = competitor
+            .execute("INSERT INTO roles (id) VALUES ('blocked')", ())
+            .await;
+
+        match blocked {
+            Ok(_) => panic!("an immediate transaction must block a second writer"),
+            Err(e) => assert!(Error::from(e).is_transient_lock()),
+        }
+
+        transaction.commit().await.expect("commit");
+
+        competitor
+            .execute("INSERT INTO roles (id) VALUES ('after-commit')", ())
+            .await
+            .expect("write after commit");
     }
 }

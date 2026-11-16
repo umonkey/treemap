@@ -44,9 +44,9 @@ regex = "1"
 reqwest = { version = "0.12.3", features = ["json"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0", features = ["raw_value"] }
-sentry = { version = "0.34", features = ["log", "backtrace", "contexts", "panic"] }
-sentry-actix = "0.34"
-sentry-log = "0.34"
+sentry = { version = "0.49.5", features = ["log", "backtrace", "contexts", "panic", "metrics"] }
+sentry-actix = "0.49.5"
+sentry-log = "0.49.5"
 snowflaker = "0.3.5"
 tempfile = "3.24.0"
 tokio-stream = "0.1"

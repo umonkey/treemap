@@ -2,6 +2,7 @@ mod dates;
 mod env;
 pub mod gpx;
 mod id;
+pub mod metrics;
 mod osm;
 mod requests;
 pub mod sentry;

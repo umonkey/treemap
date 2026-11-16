@@ -4,6 +4,13 @@
 //! if the response is successful (2xx or 3xx). This significantly speeds up
 //! actions that perform 2 or more database queries by reducing the number
 //! of disk synchronizations.
+//!
+//! The transaction begins IMMEDIATE, so the write lock is taken before the
+//! handler's first read. A deferred transaction would read first, establish a
+//! WAL snapshot, and then fail to promote it to a write if any other process
+//! committed in the meantime (SQLITE_BUSY_SNAPSHOT, reported as `database is
+//! locked`). Waiting cannot recover a stale snapshot, so the lock is taken up
+//! front and contention becomes a normal busy_timeout wait.
 
 use crate::services::AppState;
 use actix_web::{
@@ -77,8 +84,9 @@ where
                 return service.call(req).await;
             }
 
-            // Start a new session (transaction).
-            let session_state = state.session().await.map_err(|e| {
+            // Start a new session (transaction). Immediate, so the write lock
+            // is held from here: the handlers read before they write.
+            let session_state = state.session_immediate().await.map_err(|e| {
                 error!("Could not start a database session: {e}");
                 actix_web::error::ErrorInternalServerError(e)
             })?;

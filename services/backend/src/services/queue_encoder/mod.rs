@@ -225,32 +225,88 @@ mod tests {
     #[test]
     fn test_every_command_decodes() {
         let messages = [
-            ProcessFileMessage { id: 12345 }.encode(),
-            UpdateTreeAddressMessage { id: 12345 }.encode(),
+            (ProcessFileMessage { id: 12345 }.encode(), "process_file"),
+            (
+                UpdateTreeAddressMessage { id: 12345 }.encode(),
+                "update_tree_address",
+            ),
+            (
+                AddPhotoMessage {
+                    tree_id: 12345,
+                    file_id: 67890,
+                }
+                .encode(),
+                "add_photo",
+            ),
+            (
+                UpdateUserpicMessage {
+                    user_id: 12345,
+                    file_id: 67890,
+                }
+                .encode(),
+                "update_userpic",
+            ),
+            (
+                UpdatePanoramaStatsMessage { id: 12345 }.encode(),
+                "update_panorama_stats",
+            ),
+            (
+                DownloadPanoramaLogsMessage {
+                    id: 12345,
+                    log_stream: "extract-1".to_string(),
+                }
+                .encode(),
+                "download_panorama_logs",
+            ),
+        ];
+
+        for (json, expected_name) in messages {
+            let command = QueueCommand::decode(&json).expect("Error parsing command.");
+
+            let command = command.unwrap_or_else(|| panic!("Missing decoder for message: {json}"));
+
+            assert_eq!(
+                command.name(),
+                expected_name,
+                "Unexpected name for message: {json}"
+            );
+        }
+    }
+
+    #[test]
+    fn test_command_names_are_distinct() {
+        let names = [
+            ProcessFileMessage { id: 1 }.encode(),
+            UpdateTreeAddressMessage { id: 1 }.encode(),
             AddPhotoMessage {
-                tree_id: 12345,
-                file_id: 67890,
+                tree_id: 1,
+                file_id: 2,
             }
             .encode(),
             UpdateUserpicMessage {
-                user_id: 12345,
-                file_id: 67890,
+                user_id: 1,
+                file_id: 2,
             }
             .encode(),
-            UpdatePanoramaStatsMessage { id: 12345 }.encode(),
+            UpdatePanoramaStatsMessage { id: 1 }.encode(),
             DownloadPanoramaLogsMessage {
-                id: 12345,
+                id: 1,
                 log_stream: "extract-1".to_string(),
             }
             .encode(),
         ];
 
-        for json in messages {
+        let mut distinct = std::collections::HashSet::new();
+
+        for json in names {
+            let command = QueueCommand::decode(&json)
+                .expect("Error parsing command.")
+                .expect("Missing decoder for message.");
+
             assert!(
-                QueueCommand::decode(&json)
-                    .expect("Error parsing command.")
-                    .is_some(),
-                "Missing decoder for message: {json}"
+                distinct.insert(command.name()),
+                "Duplicate command name: {}",
+                command.name()
             );
         }
     }

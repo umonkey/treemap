@@ -59,6 +59,9 @@ pub use injected::Injected;
 mod middleware;
 pub use middleware::Transaction;
 
+mod request_metrics;
+pub use request_metrics::RequestMetrics;
+
 mod user_id;
 pub use user_id::{OptionalUserId, UserId};
 
@@ -122,7 +125,23 @@ impl AppState {
     pub async fn session(&self) -> Result<Self> {
         let database = Arc::new(self.database.transact().await?);
 
-        Ok(Self {
+        Ok(self.with_database(database))
+    }
+
+    // Starts a session that takes the write lock before the first read.
+    //
+    // Request handlers read before they write (permission checks, lookups),
+    // and a deferred transaction would promote a stale WAL snapshot on the
+    // first write, failing with BUSY_SNAPSHOT. CLI commands keep the deferred
+    // session so a slow manual job does not hold the lock any earlier.
+    pub async fn session_immediate(&self) -> Result<Self> {
+        let database = Arc::new(self.database.transact_immediate().await?);
+
+        Ok(self.with_database(database))
+    }
+
+    fn with_database(&self, database: Arc<Database>) -> Self {
+        Self {
             database,
             config: self.config.clone(),
             queue: self.queue.clone(),
@@ -134,7 +153,7 @@ impl AppState {
             panoramas: self.panoramas.clone(),
             batch: self.batch.clone(),
             email: self.email.clone(),
-        })
+        }
     }
 
     pub fn get_user_id(&self, req: &HttpRequest) -> Result<u64> {

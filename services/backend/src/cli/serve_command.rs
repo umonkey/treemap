@@ -73,13 +73,19 @@ pub async fn serve_command() -> Result<()> {
             )
             .app_data(web::Data::from(state.clone()))
             .app_data(PayloadConfig::new(config.payload_size))
+            .wrap(RequestMetrics)
             // Prioritize because of collisions with wildcards later.
             .service(
                 web::scope("/health")
                     .default_service(web::to(|| async { HttpResponse::NotFound().finish() }))
                     .configure(health_router),
             )
-            .service(web::scope("/mcp").wrap(Transaction).configure(mcp_router))
+            .service(
+                web::scope("/mcp")
+                    .wrap(Transaction)
+                    .wrap(sentry_actix::Sentry::with_transaction())
+                    .configure(mcp_router),
+            )
             .service(
                 web::scope("/tree")
                     .wrap(Transaction)

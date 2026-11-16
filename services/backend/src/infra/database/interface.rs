@@ -25,6 +25,11 @@ impl Database {
         Ok(Self { db: Arc::from(db) })
     }
 
+    pub async fn transact_immediate(&self) -> Result<Self> {
+        let db = self.db.transact_immediate().await?;
+        Ok(Self { db: Arc::from(db) })
+    }
+
     pub async fn commit(&self) -> Result<()> {
         self.db.commit().await
     }

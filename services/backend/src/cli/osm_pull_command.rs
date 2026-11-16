@@ -1,7 +1,7 @@
 use crate::domain::instance::{Instance, InstanceService};
 use crate::services::*;
 use crate::types::Result;
-use crate::utils::build_overpass_query;
+use crate::utils::{build_overpass_query, get_timestamp};
 use log::{error, info, warn};
 
 // Pull OSM data for all instances with pull enabled.
@@ -56,12 +56,21 @@ async fn pull_instance(state: &AppState, instance: &Instance) -> Result<()> {
 
     let query = build_overpass_query(bbox);
 
+    // Fetch before opening the session: the Overpass request is network I/O
+    // and must not happen inside a transaction. The timestamp is the fetch
+    // start, so nodes added while the query runs are not marked invisible.
+    let sync_start = get_timestamp();
+    let nodes = state
+        .build::<OsmReaderService>()?
+        .fetch_osm_nodes(&query)
+        .await?;
+
     let session = state.session().await?;
 
     let service = session.build::<OsmReaderService>()?;
 
-    // Pull new tree nodes, put them in the osm_trees table.
-    service.update_osm_cache(&query, bbox).await?;
+    // Put the pulled nodes in the osm_trees table.
+    service.apply_osm_cache(&nodes, sync_start, bbox).await?;
 
     // Match new OSM nodes to local trees using coordinates.
     service.update_local_trees(bbox, user_id).await?;
