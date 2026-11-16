@@ -47,6 +47,17 @@ async fn manifest_action() -> actix_web::Result<NamedFile> {
     ))
 }
 
+#[get("/.well-known/assetlinks.json")]
+async fn assetlinks_action() -> actix_web::Result<NamedFile> {
+    Ok(
+        NamedFile::open("./static/.well-known/assetlinks.json")?.set_content_type(
+            "application/json"
+                .parse()
+                .expect("assetlinks content type must be a valid MIME type"),
+        ),
+    )
+}
+
 pub async fn serve_command() -> Result<()> {
     let state = Arc::new(AppState::new().await?);
     let config = state.config.clone();
@@ -101,7 +112,6 @@ pub async fn serve_command() -> Result<()> {
                     .default_service(
                         Files::new("", "./static/_app/immutable")
                             .prefer_utf8(true)
-                            .use_hidden_files()
                             .default_handler(web::to(|| async {
                                 HttpResponse::NotFound().finish()
                             })),
@@ -115,7 +125,6 @@ pub async fn serve_command() -> Result<()> {
                     .default_service(
                         Files::new("", "./static/_app")
                             .prefer_utf8(true)
-                            .use_hidden_files()
                             .default_handler(web::to(|| async {
                                 HttpResponse::NotFound().finish()
                             })),
@@ -160,15 +169,17 @@ pub async fn serve_command() -> Result<()> {
                     .service(web::scope("/login").configure(login_router)),
             )
             .service(manifest_action)
+            .service(assetlinks_action)
             // The shell at "/" must always be revalidated, otherwise a client can boot a stale
             // asset graph after a deploy and fail to load chunks that no longer exist. Route it
             // through the same handler as the SPA fallback, which sets the caching headers.
             .service(web::resource("/").to(default_action))
             .service(
+                // Dotfiles under "static" are intentionally not served; each one needs an
+                // explicit route, such as the "/.well-known/assetlinks.json" handler above.
                 Files::new("/", "./static")
                     .prefer_utf8(true)
-                    .index_file("index.html")
-                    .use_hidden_files(),
+                    .index_file("index.html"),
             )
             .default_service(actix_web::web::to(default_action))
     })
